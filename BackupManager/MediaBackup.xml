@@ -2,7 +2,7 @@
 <MediaBackup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <!-- Backup run interval in minutes -->
   <ScheduledBackupRepeatInterval>10</ScheduledBackupRepeatInterval> 
-  <!-- When true a backup scan will run when the app starts-->
+  <!-- When true a backup scan will run when the app starts -->
   <StartScheduledBackup>false</StartScheduledBackup>
   <MasterFolders>
     <!-- List each UNC path that you want to scan for files to backup here -->
@@ -50,6 +50,7 @@
     <FilterRegEx>!*.xml</FilterRegEx>
   </Filters>
   <BackupFiles>
+    <!-- Sample BackupFile entries -->
     <BackupFile>
       <Path>The Unit\The Unit Season 1\The Unit s01.e01 - Copy.mkv</Path>
       <MasterFolder>\\reevesandyc6cc\testdata</MasterFolder>
