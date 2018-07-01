@@ -418,7 +418,7 @@ namespace BackupManager
                     }
                 }
 
-                catch (IOException ex)
+                catch (IOException)
                 {
                     // Sometimes during a copy we get this if we lose the connection to the source NAS drive
                     Utils.Log(logFile, BackupAction.BackupFiles, "IOException during copy. Skipping file.");
