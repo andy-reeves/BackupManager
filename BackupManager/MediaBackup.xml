@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MediaBackup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <!-- Backup run interval in minutes -->
   <ScheduledBackupRepeatInterval>10</ScheduledBackupRepeatInterval> 
+  <!-- When true a backup scan will run when the app starts-->
   <StartScheduledBackup>false</StartScheduledBackup>
   <MasterFolders>
+    <!-- List each UNC path that you want to scan for files to backup here -->
     <MasterFolder>\\reevesandyc6cc\testdata</MasterFolder>
     <MasterFolder>\\nas1\assets1</MasterFolder>
     <MasterFolder>\\nas1\assets2</MasterFolder>
@@ -18,6 +21,7 @@
     <MasterFolder>\\nas3\assets4</MasterFolder>
   </MasterFolders>
   <IndexFolders>
+    <!-- These ar ethe subfolders that will be searched in the shares above -->
     <IndexFolder>_Audio Books</IndexFolder>
     <IndexFolder>_Comedy Shows</IndexFolder>
     <IndexFolder>_Concerts</IndexFolder>
@@ -32,6 +36,7 @@
     <IndexFolder>_Videos</IndexFolder>
   </IndexFolders>
   <Filters>
+    <!-- RegEx's of file to ignore when executing a scan -->
     <FilterRegEx>!*.bup</FilterRegEx>
     <FilterRegEx>!*.db</FilterRegEx>
     <FilterRegEx>!*.dna</FilterRegEx>
