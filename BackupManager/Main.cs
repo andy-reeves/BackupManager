@@ -7,6 +7,7 @@ namespace BackupManager
     using System.Linq;
     using System.Windows.Forms;
     using System.Management;
+    using System.Configuration;
 
     using BackupManager.Entities;
 
@@ -37,7 +38,7 @@ namespace BackupManager
         {
             this.InitializeComponent();
 
-            const string MediabackupXml = @"C:\Dev\BitcasaFileChecker\BackupManager\MediaBackup.xml";
+            string MediabackupXml = ConfigurationManager.AppSettings.Get("MediabackupXml");
 
             string localMediaXml = Path.Combine(Application.StartupPath, "MediaBackup.xml");
 
