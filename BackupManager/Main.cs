@@ -45,15 +45,10 @@ namespace BackupManager
             this.mediaBackup = MediaBackup.Load(File.Exists(localMediaXml) ? localMediaXml : MediabackupXml);
 
 #if !DEBUG
-            this.backupDiskTextBox.Text = Path.Combine(@"\\", System.Environment.MachineName, "backup");
             this.timerTextBox.Text = "1440";
 #endif
             
-#if DEBUG            
             this.backupDiskTextBox.Text = Path.Combine(@"\\", System.Environment.MachineName, "backup");
-
-#endif
-
 
             foreach (string a in this.mediaBackup.MasterFolders)
             {
