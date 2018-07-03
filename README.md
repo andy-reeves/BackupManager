@@ -1,5 +1,7 @@
 # BackupManager
 
+Scans your network folders and creates a backup on a connected external disk. Calculates a hash of all files and records the timestamp. Very large files are supported by calculating a hash from the beginning, middle and end of the file.
+#
 1. Update MediaBackup.xml with the nas folders you want to backup MasterFolders and IndexFolders and (optionally) your PushbulletApiKey.
 2. Connect an external drive and format it
 3. Name the drive 'backup 1'
