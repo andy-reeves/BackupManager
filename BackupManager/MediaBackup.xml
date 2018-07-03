@@ -4,9 +4,9 @@
   <ScheduledBackupRepeatInterval>10</ScheduledBackupRepeatInterval> 
   <!-- When true a backup scan will run when the app starts -->
   <StartScheduledBackup>false</StartScheduledBackup>
+  <PushBulletApiKey>InsertYourPushBulletApiKeyHere</PushBulletApiKey>
   <MasterFolders>
     <!-- List each UNC path that you want to scan for files to backup here -->
-    <MasterFolder>\\reevesandyc6cc\testdata</MasterFolder>
     <MasterFolder>\\nas1\assets1</MasterFolder>
     <MasterFolder>\\nas1\assets2</MasterFolder>
     <MasterFolder>\\nas1\assets3</MasterFolder>
@@ -52,7 +52,7 @@
   <BackupFiles>
     <!-- Sample BackupFile entries -->
     <BackupFile>
-      <Path>The Unit\The Unit Season 1\The Unit s01.e01 - Copy.mkv</Path>
+      <Path>The Unit\The Unit Season 1\The Unit s01.e01.mkv</Path>
       <MasterFolder>\\reevesandyc6cc\testdata</MasterFolder>
       <IndexFolder>_TV Series</IndexFolder>
       <LastWriteTime>2016-08-31T20:23:12.4340183+01:00</LastWriteTime>
@@ -60,7 +60,7 @@
       <Hash>736386c78791fe1c4decd71b63150163</Hash>
     </BackupFile>
     <BackupFile>
-      <Path>The Unit\The Unit Season 1\The Unit s01.e01.mkv</Path>
+      <Path>The Unit\The Unit Season 1\The Unit s01.e02.mkv</Path>
       <MasterFolder>\\reevesandyc6cc\testdata</MasterFolder>
       <IndexFolder>_TV Series</IndexFolder>
       <LastWriteTime>2016-08-31T20:23:12.4340183+01:00</LastWriteTime>

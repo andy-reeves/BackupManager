@@ -198,29 +198,6 @@ namespace BackupManager
             }
         }
 
-    //{
-    //        string driveName = Path.GetPathRoot(path);
-
-    //        if (driveName == null)
-    //        {
-    //            return -1;
-    //        }
-
-    //        string actualDriveName =
-    //            EnsurePathHasATerminatingSeparator(Environment.ExpandEnvironmentVariables(driveName));
-
-    //        foreach (DriveInfo drive in DriveInfo.GetDrives())
-    //        {
-    //            if (drive.IsReady
-    //                && drive.RootDirectory.Name.Equals(actualDriveName, StringComparison.InvariantCultureIgnoreCase))
-    //            {
-    //                return drive.AvailableFreeSpace / (1024 * 1024 * 1024);
-    //            }
-    //        }
-
-    //        return -1;
-    //    }
-
         /// <summary>
         /// The get files.
         /// </summary>
@@ -577,7 +554,7 @@ namespace BackupManager
             return CreateHashForByteArray(startBlock, middleBlock, endBlock);
         }
 
-        public static void SendPushbulletMessage(string title, string message)
+        public static void SendPushbulletMessage(string apiKey, string title, string message)
         {
 
             try
@@ -586,7 +563,7 @@ namespace BackupManager
 
                 User currentUserInformation;
 
-                client = new PushbulletClient("o.7DsY57f3IS7FXOejdR8ncoIXvU3n2yF0");
+                client = new PushbulletClient(apiKey);
 
                 currentUserInformation = client.CurrentUsersInformation();
 
@@ -623,7 +600,15 @@ namespace BackupManager
         public static void Log(string logFilePath, BackupAction backupAction, string text, params object[] args)
         {
             Log(logFilePath, text, args);
-            Utils.SendPushbulletMessage("Backup - " + System.Enum.GetName(typeof(BackupAction), backupAction), string.Format(text, args));
+        }
+
+        public static void Log(string pushBulletApiKey, string logFilePath, BackupAction backupAction, string text, params object[] args)
+        {
+            Log(logFilePath, text, args);
+            if (!string.IsNullOrEmpty(pushBulletApiKey))
+            {
+                Utils.SendPushbulletMessage(pushBulletApiKey, "Backup - " + System.Enum.GetName(typeof(BackupAction), backupAction), string.Format(text, args));
+            }
         }
 
         #endregion

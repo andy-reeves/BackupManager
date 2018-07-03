@@ -70,7 +70,7 @@ namespace BackupManager
 
         #region Methods
 
-        private static void CheckHashOnBackupDisk(
+        private static void CheckHashOnBackupDisk(string pushbulletApiKey,
             string logFile,
             string fullPath,
             BackupFile backupFile,
@@ -80,7 +80,7 @@ namespace BackupManager
 
             if (hashFromFile == Utils.ZeroByteHash)
             {
-                Utils.Log(logFile, BackupAction.CheckBackupDisk, "ERROR: {0} has zerobyte hashcode", fullPath);
+                Utils.Log(pushbulletApiKey, logFile, BackupAction.CheckBackupDisk, "ERROR: {0} has zerobyte hashcode", fullPath);
             }
 
 
@@ -93,7 +93,7 @@ namespace BackupManager
             }
             else
             {
-                Utils.Log(logFile, BackupAction.CheckBackupDisk, "ERROR: {0} has incorrect hashcode", fullPath);
+                Utils.Log(pushbulletApiKey, logFile, BackupAction.CheckBackupDisk, "ERROR: {0} has incorrect hashcode", fullPath);
                 backupFile.BackupDiskChecked = null;
 
                 // clear this too - means the backed up file will be removed on the next run
@@ -139,7 +139,7 @@ namespace BackupManager
                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
                "backup_CheckBackupDisk.txt");
 
-            Utils.Log(logFile, BackupAction.CheckBackupDisk, "Started.");
+            Utils.Log(this.mediaBackup.PushBulletApiKey, logFile, BackupAction.CheckBackupDisk, "Started.");
 
             string backupShare = this.backupDiskTextBox.Text;
 
@@ -147,7 +147,7 @@ namespace BackupManager
             // if not thats a problem
             if (!this.CheckForValidBackupShare(backupShare))
             {
-                Utils.Log(logFile, BackupAction.CheckBackupDisk, "No connected backup disk detected.");
+                Utils.Log(this.mediaBackup.PushBulletApiKey, logFile, BackupAction.CheckBackupDisk, "No connected backup disk detected.");
                 return;
             }
 
@@ -164,7 +164,7 @@ namespace BackupManager
                     p.BackupDisk != null && p.BackupDisk.Equals(backupFolderName, StringComparison.CurrentCultureIgnoreCase));
 
 
-            Utils.Log(logFile, BackupAction.CheckBackupDisk, "Checking {0} - {1}GB free", backupFolderName, Utils.GetDiskFreeSpace(folderToCheck));
+            Utils.Log(this.mediaBackup.PushBulletApiKey, logFile, BackupAction.CheckBackupDisk, "Checking {0} - {1}GB free", backupFolderName, Utils.GetDiskFreeSpace(folderToCheck));
  
             foreach (BackupFile file in filesToReset)
             {
@@ -185,11 +185,11 @@ namespace BackupManager
                 if (this.mediaBackup.Contains(backupFileHash, backupFileFullPath))
                 {
                     BackupFile backupFile = this.mediaBackup.GetBackupFile(backupFileHash, backupFileFullPath);
-                    Utils.Log(logFile, "Checking hash for {0}", backupFileFullPath);
+                    Utils.Log(this.mediaBackup.PushBulletApiKey, logFile, "Checking hash for {0}", backupFileFullPath);
 
                     // Reset the source file hash because we want to confirm the source file can be read 
                     backupFile.ContentsHash = Utils.GetShortMd5HashFromFile(backupFile.FullPath);
-                    CheckHashOnBackupDisk(logFile, backupFileFullPath, backupFile, backupFolderName);
+                    CheckHashOnBackupDisk(this.mediaBackup.PushBulletApiKey, logFile, backupFileFullPath, backupFile, backupFolderName);
 
                     // So we can get the situation where the hash of a file on disk is equal to a hash of a file we have
                     // It could have a different filename on the backup disk though (if we renamed the master file)
@@ -204,7 +204,7 @@ namespace BackupManager
                         string destinationFileName = Path.Combine(folderToCheck, backupFile.IndexFolder, backupFile.RelativePath);
 
                         Directory.CreateDirectory(Path.GetDirectoryName(destinationFileName));
-                        Utils.Log(logFile, BackupAction.CheckBackupDisk, "Renaming {0} to {1}", backupFileFullPath, destinationFileName);
+                        Utils.Log(this.mediaBackup.PushBulletApiKey, logFile, BackupAction.CheckBackupDisk, "Renaming {0} to {1}", backupFileFullPath, destinationFileName);
 
                         File.Move(backupFileFullPath, destinationFileName);
                     }
@@ -214,7 +214,7 @@ namespace BackupManager
                     // Extra file on a backup disk
                     if (deleteExtraFiles)
                     {
-                        Utils.Log(
+                        Utils.Log(this.mediaBackup.PushBulletApiKey,
                             logFile, BackupAction.CheckBackupDisk,
                             "Extra file {0} on backup disk {1} now deleted.",
                             backupFileFullPath,
@@ -227,7 +227,7 @@ namespace BackupManager
                     }
                     else
                     {
-                        Utils.Log(
+                        Utils.Log(this.mediaBackup.PushBulletApiKey,
                             logFile, BackupAction.CheckBackupDisk,
                             "Extra file {0} on backup disk {1}",
                             backupFileFullPath,
@@ -241,7 +241,7 @@ namespace BackupManager
             // Remove all empty folders
             DeleteEmptyDirectories(logFile, folderToCheck);
 
-            Utils.Log(logFile, BackupAction.CheckBackupDisk, "Completed.");
+            Utils.Log(this.mediaBackup.PushBulletApiKey, logFile, BackupAction.CheckBackupDisk, "Completed.");
         }
 
         private void DeleteEmptyDirectories(string logFile, string startLocation)
@@ -251,7 +251,7 @@ namespace BackupManager
                 DeleteEmptyDirectories(logFile, directory);
                 if (Directory.GetFileSystemEntries(directory).Length == 0)
                 {
-                    Utils.Log(logFile, BackupAction.CheckBackupDisk, "Deleting empty folder {0}", directory);
+                    Utils.Log(this.mediaBackup.PushBulletApiKey, logFile, BackupAction.CheckBackupDisk, "Deleting empty folder {0}", directory);
                     Directory.Delete(directory, false);
                 }
             }
@@ -339,7 +339,7 @@ namespace BackupManager
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
                 "backup_CopyMissingFilesToBackupDisk.txt");
 
-            Utils.Log(logFile, BackupAction.BackupFiles, "Started.");
+            Utils.Log(this.mediaBackup.PushBulletApiKey, logFile, BackupAction.BackupFiles, "Started.");
 
             IEnumerable<BackupFile> filesToBackup =
                 this.mediaBackup.BackupFiles.Where(p => string.IsNullOrEmpty(p.BackupDisk));
@@ -361,12 +361,12 @@ namespace BackupManager
 
                     if (File.Exists(destinationFileName))
                     {
-                        Utils.Log(logFile, "Skipping copy as it exists.");
+                        Utils.Log(this.mediaBackup.PushBulletApiKey, logFile, "Skipping copy as it exists.");
 
                         // it could be that the source file hash changed after we read it (we read the hash, updated the master file and then copied it)
                         // in which case check the source hash again and then check the copied file 
                         backupFile.ContentsHash = Utils.GetShortMd5HashFromFile(sourceFileName);
-                        CheckHashOnBackupDisk(logFile, destinationFileName, backupFile, backupFolderName);
+                        CheckHashOnBackupDisk(this.mediaBackup.PushBulletApiKey, logFile, destinationFileName, backupFile, backupFolderName);
                     }
                     else
                     {
@@ -380,29 +380,25 @@ namespace BackupManager
                             {
                                 outOfDiskSpaceMessageSent = false;
 
-                                Utils.Log(logFile, BackupAction.BackupFiles, "Copying {0}", sourceFileName);
+                                Utils.Log(this.mediaBackup.PushBulletApiKey, logFile, BackupAction.BackupFiles, "Copying {0}", sourceFileName);
                                 Directory.CreateDirectory(Path.GetDirectoryName(destinationFileName));
                                 File.Copy(sourceFileName, destinationFileName);
 
                                 // Make sure its not readonly
                                 Utils.ClearFileAttribute(destinationFileName, FileAttributes.ReadOnly);
 
-                                Utils.Log(logFile, "Copy complete.");
+                                Utils.Log(this.mediaBackup.PushBulletApiKey, logFile, "Copy complete.");
 
                                 // it could be that the source file hash changed after we read it (we read the hash, updated the master file and then copied it)
                                 // in which case check the source hash again and then check the copied file 
                                 backupFile.ContentsHash = Utils.GetShortMd5HashFromFile(sourceFileName);
-
-
-
-
-                                CheckHashOnBackupDisk(logFile, destinationFileName, backupFile, backupFolderName);
+                                CheckHashOnBackupDisk(this.mediaBackup.PushBulletApiKey, logFile, destinationFileName, backupFile, backupFolderName);
                             }
                             else
                             {
                                 if (!outOfDiskSpaceMessageSent)
                                 {
-                                    Utils.Log(logFile, BackupAction.BackupFiles, "Skipping {0} as not enough free space", sourceFileName);
+                                    Utils.Log(this.mediaBackup.PushBulletApiKey, logFile, BackupAction.BackupFiles, "Skipping {0} as not enough free space", sourceFileName);
                                     outOfDiskSpaceMessageSent = true;
                                 }
                             }
@@ -417,7 +413,7 @@ namespace BackupManager
                 catch (IOException)
                 {
                     // Sometimes during a copy we get this if we lose the connection to the source NAS drive
-                    Utils.Log(logFile, BackupAction.BackupFiles, "IOException during copy. Skipping file.");
+                    Utils.Log(this.mediaBackup.PushBulletApiKey, logFile, BackupAction.BackupFiles, "IOException during copy. Skipping file.");
                 }
             }
 
@@ -427,17 +423,17 @@ namespace BackupManager
 
             if (filesNotOnBackupDisk.Count() > 0)
             {
-                Utils.Log(logFile, BackupAction.ScanFolders, "{0:n0} files still to backup", filesNotOnBackupDisk.Count());
+                Utils.Log(this.mediaBackup.PushBulletApiKey, logFile, BackupAction.ScanFolders, "{0:n0} files still to backup", filesNotOnBackupDisk.Count());
             }
 
             IEnumerable<BackupFile> filesWithoutDiskChecked = this.mediaBackup.BackupFiles.Where(p => string.IsNullOrEmpty(p.BackupDiskChecked));
 
             if (filesWithoutDiskChecked.Count() > 0)
             {
-                Utils.Log(logFile, BackupAction.ScanFolders, "{0:n0} files still without DiskChecked set", filesWithoutDiskChecked.Count());
+                Utils.Log(this.mediaBackup.PushBulletApiKey, logFile, BackupAction.ScanFolders, "{0:n0} files still without DiskChecked set", filesWithoutDiskChecked.Count());
             }
 
-            Utils.Log(logFile, BackupAction.BackupFiles, "Completed.");
+            Utils.Log(this.mediaBackup.PushBulletApiKey, logFile, BackupAction.BackupFiles, "Completed.");
         }
 
         private void EnsureFile(string path, string masterFolder, string indexFolder)
@@ -482,7 +478,7 @@ namespace BackupManager
 
             foreach (BackupFile file in filesNotOnBackupDisk)
             {
-                Utils.Log(logFile, "'{0}' does not have BackupDisk set.", file.FullPath);
+                Utils.Log(this.mediaBackup.PushBulletApiKey, logFile, "'{0}' does not have BackupDisk set.", file.FullPath);
             }
         }
 
@@ -530,11 +526,11 @@ namespace BackupManager
 
             this.mediaBackup.ClearFlags();
 
-            Utils.Log(logFile, BackupAction.ScanFolders, "Started.");
+            Utils.Log(this.mediaBackup.PushBulletApiKey, logFile, BackupAction.ScanFolders, "Started.");
 
             foreach (string masterFolder in this.mediaBackup.MasterFolders)
             {
-                Utils.Log(logFile, BackupAction.ScanFolders, "Scanning {0}", masterFolder);
+                Utils.Log(this.mediaBackup.PushBulletApiKey, logFile, BackupAction.ScanFolders, "Scanning {0}", masterFolder);
 
                 foreach (string indexFolder in this.mediaBackup.IndexFolders)
                 {
@@ -542,7 +538,7 @@ namespace BackupManager
 
                     if (Directory.Exists(folderToCheck))
                     {
-                        Utils.Log(logFile, "Scanning {0}", folderToCheck);
+                        Utils.Log(this.mediaBackup.PushBulletApiKey, logFile, "Scanning {0}", folderToCheck);
 
                         string[] files = Utils.GetFiles(
                             folderToCheck,
@@ -554,7 +550,7 @@ namespace BackupManager
                         {
                             // Log the file we're checking here                           
 #if DEBUG
-                            Utils.Log(logFile, "Checking {0}", file);
+                            Utils.Log(this.mediaBackup.PushBulletApiKey, logFile, "Checking {0}", file);
 #endif
                             this.EnsureFile(file, masterFolder, indexFolder);
                         }
@@ -590,26 +586,26 @@ namespace BackupManager
                 }
             }
 
-            Utils.Log(logFile, BackupAction.ScanFolders, "{0:n0} files at {1:n0}MB", totalFiles, b / 1024 / 1024);
+            Utils.Log(this.mediaBackup.PushBulletApiKey, logFile, BackupAction.ScanFolders, "{0:n0} files at {1:n0}MB", totalFiles, b / 1024 / 1024);
 
             if (oldestFile != null)
             {
-                Utils.Log(logFile, BackupAction.ScanFolders, "Oldest backup date is {0:n0} days ago at {1} for {2} on {3}", DateTime.Today.Subtract(oldestFileDate).Days, oldestFileDate.ToShortDateString(), oldestFile.GetFileName(), oldestFile.BackupDisk);
+                Utils.Log(this.mediaBackup.PushBulletApiKey, logFile, BackupAction.ScanFolders, "Oldest backup date is {0:n0} days ago at {1} for {2} on {3}", DateTime.Today.Subtract(oldestFileDate).Days, oldestFileDate.ToShortDateString(), oldestFile.GetFileName(), oldestFile.BackupDisk);
             }
 
             IEnumerable<BackupFile> filesNotOnBackupDisk =
                this.mediaBackup.BackupFiles.Where(p => string.IsNullOrEmpty(p.BackupDisk));
 
-            Utils.Log(logFile, BackupAction.ScanFolders, "{0:n0} files to backup", filesNotOnBackupDisk.Count());
+            Utils.Log(this.mediaBackup.PushBulletApiKey, logFile, BackupAction.ScanFolders, "{0:n0} files to backup", filesNotOnBackupDisk.Count());
 
             IEnumerable<BackupFile> filesWithoutDiskChecked =
                this.mediaBackup.BackupFiles.Where(p => string.IsNullOrEmpty(p.BackupDiskChecked));
 
-            Utils.Log(logFile, BackupAction.ScanFolders, "{0:n0} files without DiskChecked set", filesWithoutDiskChecked.Count());
+            Utils.Log(this.mediaBackup.PushBulletApiKey, logFile, BackupAction.ScanFolders, "{0:n0} files without DiskChecked set", filesWithoutDiskChecked.Count());
             
             
 
-            Utils.Log(logFile, BackupAction.ScanFolders, "Completed.");
+            Utils.Log(this.mediaBackup.PushBulletApiKey, logFile, BackupAction.ScanFolders, "Completed.");
         }
 
         #endregion
@@ -703,7 +699,7 @@ namespace BackupManager
             catch (Exception ex)
             {
 
-                Utils.Log(
+                Utils.Log(this.mediaBackup.PushBulletApiKey,
                     LogFile, BackupAction.General,
                     "Exception occured {0}",
                     ex.Message);
@@ -781,7 +777,7 @@ namespace BackupManager
 
             foreach (BackupFile disk in disks)
             {
-                Utils.Log(
+                Utils.Log(this.mediaBackup.PushBulletApiKey,
                         LogFile, BackupAction.CheckBackupDisk,
                         "Backup disks not checked in 90 days - {0}", disk.BackupDisk);
             }
