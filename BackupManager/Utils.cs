@@ -602,7 +602,7 @@ namespace BackupManager
             Log(logFilePath, text, args);
         }
 
-        public static void Log(string pushBulletApiKey, string logFilePath, BackupAction backupAction, string text, params object[] args)
+        public static void LogWithPushBullet(string pushBulletApiKey, string logFilePath, BackupAction backupAction, string text, params object[] args)
         {
             Log(logFilePath, text, args);
             if (!string.IsNullOrEmpty(pushBulletApiKey))

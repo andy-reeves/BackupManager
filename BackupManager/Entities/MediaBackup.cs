@@ -55,7 +55,7 @@ namespace BackupManager.Entities
         public void BackupMediaFile()
         {
             // take a copy of the xml file
-            string destinationFileName = "MediaBackup-" + DateTime.Now.ToString("yy-MM-dd-HH-mm-ss") + ".xml";
+            string destinationFileName = "MediaBackup-" + DateTime.Now.ToString("yy-MM-dd-HH-mm-ss.ff") + ".xml";
             string destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), destinationFileName);
 
             File.Copy(this.mediaBackupPath, destinationPath); 
