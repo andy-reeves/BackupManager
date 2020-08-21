@@ -29,6 +29,8 @@ namespace BackupManager.Entities
 
         public int ScheduledBackupRepeatInterval;
 
+        public int DifferenceInFileCountAllowedPercentage;
+
         public string PushBulletApiKey;
 
         // We need to store 2 hashes
