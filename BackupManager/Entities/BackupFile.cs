@@ -1,7 +1,4 @@
-﻿
-
-
-namespace BackupManager.Entities
+﻿namespace BackupManager.Entities
 {
     using System;
     using System.Diagnostics;

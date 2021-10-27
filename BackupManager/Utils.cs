@@ -554,13 +554,17 @@ namespace BackupManager
 
             return CreateHashForByteArray(startBlock, middleBlock, endBlock);
         }
-        public static void SendPushoverMessage(string userKey, string appToken, string title, string message)
+        public static void SendPushoverMessage(string userKey, string appToken, string title, PushoverPriority priority, string message)
         {
+
+            var p = Convert.ChangeType(priority, priority.GetTypeCode());
+
             try
             {
                 NameValueCollection parameters = new NameValueCollection {
                 { "token", appToken },
                 { "user", userKey },
+                { "priority", p.ToString() },
                 { "message", message },
                 { "title", title }
                 };
@@ -588,20 +592,20 @@ namespace BackupManager
             }
         }
 
-        public static void Log(string logFilePath, BackupAction backupAction, string text, params object[] args)
+        public static void LogWithPushover(string pushoverUserKey, string pushoverAppToken, string logFilePath, BackupAction backupAction, string text, params object[] args)
         {
-            Log(logFilePath, text, args);
+            LogWithPushover(pushoverUserKey, pushoverAppToken, logFilePath, backupAction,PushoverPriority.Normal, text, args);
         }
 
-        public static void LogWithPushover(string userKey, string appToken, string logFilePath, BackupAction backupAction, string text, params object[] args)
+        public static void LogWithPushover(string pushoverUserKey, string pushoverAppToken, string logFilePath, BackupAction backupAction, PushoverPriority priority, string text, params object[] args)
         {
-            Log(logFilePath, text, args);
-            if (!string.IsNullOrEmpty(appToken))
+            Log(logFilePath, System.Enum.GetName(typeof(BackupAction), backupAction) + " " + text, args);
+            
+            if (!string.IsNullOrEmpty(pushoverAppToken))
             {
-                Utils.SendPushoverMessage(userKey,appToken, System.Enum.GetName(typeof(BackupAction), backupAction), string.Format(text, args));
+                Utils.SendPushoverMessage(pushoverUserKey, pushoverAppToken, System.Enum.GetName(typeof(BackupAction), backupAction), priority, string.Format(text, args));
             }
         }
-
         #endregion
 
         #region Methods

@@ -143,7 +143,7 @@ namespace BackupManager
                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
                "backup_CheckBackupDisk.txt");
 
-            Utils.Log(logFile, BackupAction.CheckBackupDisk, "Started.");
+            Utils.Log(logFile, "CheckBackupDisk Started.");
 
             string backupShare = this.backupDiskTextBox.Text;
 
@@ -167,8 +167,13 @@ namespace BackupManager
                     p =>
                     p.BackupDisk != null && p.BackupDisk.Equals(backupFolderName, StringComparison.CurrentCultureIgnoreCase));
 
+            long diskFreeSpace = Utils.GetDiskFreeSpace(folderToCheck);
+            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "Checking {0} - {1}GB free", backupFolderName, diskFreeSpace);
 
-            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "Checking {0} - {1}GB free", backupFolderName, Utils.GetDiskFreeSpace(folderToCheck));
+            if (diskFreeSpace < this.mediaBackup.MinimumCriticalBackupDiskSpace)
+            {
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk,PushoverPriority.High, "{0}GB free is very low. Prepare new backup disk.", diskFreeSpace);
+            }
 
             foreach (BackupFile file in filesToReset)
             {
@@ -188,7 +193,7 @@ namespace BackupManager
                 if (this.mediaBackup.Contains(backupFileHash, backupFileFullPath))
                 {
                     BackupFile backupFile = this.mediaBackup.GetBackupFile(backupFileHash, backupFileFullPath);
-                    Utils.Log(logFile, BackupAction.CheckBackupDisk, "Checking hash for {0}", backupFileFullPath);
+                    Utils.Log(logFile, "Checking hash for {0}", backupFileFullPath);
 
                     // Reset the source file hash because we want to confirm the source file can be read 
                     backupFile.ContentsHash = Utils.GetShortMd5HashFromFile(backupFile.FullPath);
@@ -572,6 +577,15 @@ namespace BackupManager
             {
                 Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "Scanning {0}", masterFolder);
 
+                // Get the Freespace in GB
+                long freeSpaceOnCurrentMasterFolder = Utils.GetDiskFreeSpace(masterFolder);
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "{0}GB free on {1}", freeSpaceOnCurrentMasterFolder, masterFolder);
+
+                if (freeSpaceOnCurrentMasterFolder < this.mediaBackup.MinimumCriticalMasterFolderSpace)
+                {
+                    Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "Free space on {0} is too low", masterFolder);
+                }
+
                 foreach (string indexFolder in this.mediaBackup.IndexFolders)
                 {
                     string folderToCheck = Path.Combine(masterFolder, indexFolder);
@@ -720,11 +734,11 @@ namespace BackupManager
             {
                 backupTimer.Stop();
 
-                // Take a copy of the current count of xml files we backup up last time
-                // ScanFolders
+                // Take a copy of the current count of files we backup up last time
+                // Then ScanFolders
                 // If the new file count is less than x% lower then abort
-                // This happens if the server running the backup cannot connect to the nas devices
-                // It'll then delete everything off the connected backup disk as it doesn't think they're needed
+                // This happens if the server running the backup cannot connect to the nas devices sometimes
+                // It'll then delete everything off the connected backup disk as it doesn't think they're needed so this will prevent that
 
                 long oldFileCount = this.mediaBackup.BackupFiles.Count();
 
@@ -732,19 +746,10 @@ namespace BackupManager
                 {
                     long minimumFileCountAllowed = oldFileCount - (oldFileCount * this.mediaBackup.DifferenceInFileCountAllowedPercentage / 100);
 
-                    //Utils.LogWithPushBullet(this.mediaBackup.PushBulletApiKey,
-                    //LogFile, BackupAction.General, "INFO: oldFileCount = {0}", oldFileCount);
-
-                    //Utils.LogWithPushBullet(this.mediaBackup.PushBulletApiKey,
-                    //   LogFile, BackupAction.General, "INFO: minimumFileCountAllowed = {0}", minimumFileCountAllowed);
-
                     // Update the master file
                     this.ScanFolders();
 
                     long newFileCount = this.mediaBackup.BackupFiles.Count();
-
-                    //Utils.LogWithPushBullet(this.mediaBackup.PushBulletApiKey,
-                    //LogFile, BackupAction.General, "INFO: newFileCount = {0}", newFileCount);
 
                     if (newFileCount < minimumFileCountAllowed)
                     {

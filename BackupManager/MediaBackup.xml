@@ -7,6 +7,9 @@
   <PushoverUserKey>InsertYourPushoverUserKeyHere</PushoverUserKey>
   <PushoverAppToken>InsertYourPushoverAppTokenHere</PushoverAppToken>
   <DifferenceInFileCountAllowedPercentage>2</DifferenceInFileCountAllowedPercentage>
+  <ScheduledBackupRepeatInterval>1440</ScheduledBackupRepeatInterval>
+  <MinimumCriticalMasterFolderSpace>200</MinimumCriticalMasterFolderSpace>
+  <MinimumCriticalBackupDiskSpace>1</MinimumCriticalBackupDiskSpace>
   <MasterFolders>
     <!-- List each UNC path that you want to scan for files to backup here -->
     <MasterFolder>\\nas1\assets1</MasterFolder>

@@ -1,6 +1,4 @@
-﻿
-
-namespace BackupManager.Entities
+﻿namespace BackupManager.Entities
 {
     using System;
     using System.Collections;
@@ -29,10 +27,18 @@ namespace BackupManager.Entities
 
         public int ScheduledBackupRepeatInterval;
 
+        public int DifferenceInFileCountAllowedPercentage;
+
         public string PushoverAppToken;
 
         public string PushoverUserKey;
-        
+
+        // Minimum space before we throw a critical Disk space message in GB for MasterFolders
+        public int MinimumCriticalMasterFolderSpace;
+
+        // Minimum space before we throw a critical Disk space message in GB for backup disks
+        public int MinimumCriticalBackupDiskSpace;
+
         // We need to store 2 hashes
         // 1 hash is from the file content hashcodes and the leafname of the file. This allows for files to have duplicate contents but be stored
         // somewhere else as a different name. Thie happened with The Porridge movie which is also stored as a Tv episode.
@@ -267,7 +273,7 @@ namespace BackupManager.Entities
                 backupFile.Flag = false;
             }
         }
-
+        /// Removes any files that have a matching flag value as the one provided.
         public void RemoveFilesWithFlag(bool flag, bool clearHashes)
         {
             var filesToRemove = new Collection<BackupFile>();
