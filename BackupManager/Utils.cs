@@ -16,10 +16,8 @@ namespace BackupManager
     using System.Security.Cryptography;
     using System.Text.RegularExpressions;
     using System.Runtime.InteropServices;
-
-    using PushbulletSharp;
-    using PushbulletSharp.Models.Requests;
-    using PushbulletSharp.Models.Responses;
+    using System.Collections.Specialized;
+    using System.Net;
 
     /// <summary>
     /// The utils.
@@ -63,6 +61,8 @@ namespace BackupManager
         /// The md 5.
         /// </summary>
         private static readonly MD5CryptoServiceProvider Md5 = new MD5CryptoServiceProvider();
+
+        
 
         #endregion
 
@@ -489,8 +489,7 @@ namespace BackupManager
 
         public static DateTime GetFileLastWriteTime(string fileName)
         {
-            // Sometimes the file doesn't have a valid time
-
+            // Sometimes the file doesn't have a valid LastModifiedTime 
             var fi = new FileInfo(fileName);
 
             DateTime returnValue;
@@ -499,9 +498,11 @@ namespace BackupManager
             {
                 returnValue = fi.LastWriteTime;
             }
-            catch (ArgumentOutOfRangeException ex)
+            catch (ArgumentOutOfRangeException)
             {
-                throw new ArgumentOutOfRangeException(string.Format("Couldn't read LastAccessTime on {0}", fileName), ex);
+                //If we cant read the LastWriteTime then copy the LastAccessTime over it and use that instead
+                fi.LastWriteTime = fi.LastAccessTime;
+                returnValue = fi.LastWriteTime;
             }
 
             return returnValue;
@@ -553,35 +554,25 @@ namespace BackupManager
 
             return CreateHashForByteArray(startBlock, middleBlock, endBlock);
         }
-
-        public static void SendPushbulletMessage(string apiKey, string title, string message)
+        public static void SendPushoverMessage(string userKey, string appToken, string title, string message)
         {
-
             try
             {
-                PushbulletClient client;
+                NameValueCollection parameters = new NameValueCollection {
+                { "token", appToken },
+                { "user", userKey },
+                { "message", message },
+                { "title", title }
+                };
 
-                User currentUserInformation;
-
-                client = new PushbulletClient(apiKey);
-
-                currentUserInformation = client.CurrentUsersInformation();
-
-                if (currentUserInformation != null)
-                {
-                    PushNoteRequest request = new PushNoteRequest()
-                    {
-                        Email = currentUserInformation.Email,
-                        Title = title,
-                        Body = message
-                    };
-
-                    PushResponse response = client.PushNote(request);
+                using (var client = new WebClient())
+                { 
+                    client.UploadValues("https://api.pushover.net/1/messages.json", parameters);
                 }
             }
             catch (Exception)
             {
-                // we ignore any pushbullet problems
+                // we ignore any push problems
             }
         }
 
@@ -602,12 +593,12 @@ namespace BackupManager
             Log(logFilePath, text, args);
         }
 
-        public static void Log(string pushBulletApiKey, string logFilePath, BackupAction backupAction, string text, params object[] args)
+        public static void LogWithPushover(string userKey, string appToken, string logFilePath, BackupAction backupAction, string text, params object[] args)
         {
             Log(logFilePath, text, args);
-            if (!string.IsNullOrEmpty(pushBulletApiKey))
+            if (!string.IsNullOrEmpty(appToken))
             {
-                Utils.SendPushbulletMessage(pushBulletApiKey, "Backup - " + System.Enum.GetName(typeof(BackupAction), backupAction), string.Format(text, args));
+                Utils.SendPushoverMessage(userKey,appToken, System.Enum.GetName(typeof(BackupAction), backupAction), string.Format(text, args));
             }
         }
 

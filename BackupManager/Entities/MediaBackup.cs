@@ -29,8 +29,10 @@ namespace BackupManager.Entities
 
         public int ScheduledBackupRepeatInterval;
 
-        public string PushBulletApiKey;
+        public string PushoverAppToken;
 
+        public string PushoverUserKey;
+        
         // We need to store 2 hashes
         // 1 hash is from the file content hashcodes and the leafname of the file. This allows for files to have duplicate contents but be stored
         // somewhere else as a different name. Thie happened with The Porridge movie which is also stored as a Tv episode.
@@ -55,7 +57,7 @@ namespace BackupManager.Entities
         public void BackupMediaFile()
         {
             // take a copy of the xml file
-            string destinationFileName = "MediaBackup-" + DateTime.Now.ToString("yy-MM-dd-HH-mm-ss") + ".xml";
+            string destinationFileName = "MediaBackup-" + DateTime.Now.ToString("yy-MM-dd-HH-mm-ss.ff") + ".xml";
             string destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), destinationFileName);
 
             File.Copy(this.mediaBackupPath, destinationPath); 

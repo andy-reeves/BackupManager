@@ -4,7 +4,9 @@
   <ScheduledBackupRepeatInterval>10</ScheduledBackupRepeatInterval> 
   <!-- When true a backup scan will run when the app starts -->
   <StartScheduledBackup>false</StartScheduledBackup>
-  <PushBulletApiKey>InsertYourPushBulletApiKeyHere</PushBulletApiKey>
+  <PushoverUserKey>InsertYourPushoverUserKeyHere</PushoverUserKey>
+  <PushoverAppToken>InsertYourPushoverAppTokenHere</PushoverAppToken>
+  <DifferenceInFileCountAllowedPercentage>2</DifferenceInFileCountAllowedPercentage>
   <MasterFolders>
     <!-- List each UNC path that you want to scan for files to backup here -->
     <MasterFolder>\\nas1\assets1</MasterFolder>
