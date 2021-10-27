@@ -720,8 +720,42 @@ namespace BackupManager
             {
                 backupTimer.Stop();
 
-                // Update the master file
-                this.ScanFolders();
+                // Take a copy of the current count of xml files we backup up last time
+                // ScanFolders
+                // If the new file count is less than x% lower then abort
+                // This happens if the server running the backup cannot connect to the nas devices
+                // It'll then delete everything off the connected backup disk as it doesn't think they're needed
+
+                long oldFileCount = this.mediaBackup.BackupFiles.Count();
+
+                if (this.mediaBackup.DifferenceInFileCountAllowedPercentage != 0)
+                {
+                    long minimumFileCountAllowed = oldFileCount - (oldFileCount * this.mediaBackup.DifferenceInFileCountAllowedPercentage / 100);
+
+                    //Utils.LogWithPushBullet(this.mediaBackup.PushBulletApiKey,
+                    //LogFile, BackupAction.General, "INFO: oldFileCount = {0}", oldFileCount);
+
+                    //Utils.LogWithPushBullet(this.mediaBackup.PushBulletApiKey,
+                    //   LogFile, BackupAction.General, "INFO: minimumFileCountAllowed = {0}", minimumFileCountAllowed);
+
+                    // Update the master file
+                    this.ScanFolders();
+
+                    long newFileCount = this.mediaBackup.BackupFiles.Count();
+
+                    //Utils.LogWithPushBullet(this.mediaBackup.PushBulletApiKey,
+                    //LogFile, BackupAction.General, "INFO: newFileCount = {0}", newFileCount);
+
+                    if (newFileCount < minimumFileCountAllowed)
+                    {
+                        throw new Exception("ERROR: The count of files to backup is too low. Check connections to nas drives.");
+                    }
+                }
+                else
+                {
+                    // Update the master file
+                    this.ScanFolders();
+                }
 
                 // checks for backup disks not verified in > 90 days
                 this.CheckForOldBackupDisks();
