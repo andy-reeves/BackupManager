@@ -470,7 +470,13 @@ namespace BackupManager
 
             if (filesNotOnBackupDisk.Count() > 0)
             {
-                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "{0:n0} files still to backup", filesNotOnBackupDisk.Count());
+                long sizeOfFiles = 0;
+                foreach (BackupFile file in filesNotOnBackupDisk)
+                {   
+                    sizeOfFiles += file.Length;
+                }
+
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "{0:n0} files still to backup with a size of {1}MB", filesNotOnBackupDisk.Count(), sizeOfFiles/1024/1024);
             }
 
             IEnumerable<BackupFile> filesWithoutDiskChecked = this.mediaBackup.BackupFiles.Where(p => string.IsNullOrEmpty(p.BackupDiskChecked));
