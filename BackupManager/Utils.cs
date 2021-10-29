@@ -556,17 +556,17 @@ namespace BackupManager
         }
         public static void SendPushoverMessage(string userKey, string appToken, string title, PushoverPriority priority, string message)
         {
-
-            var p = Convert.ChangeType(priority, priority.GetTypeCode());
+            string timeStamp = new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds().ToString();
 
             try
             {
                 NameValueCollection parameters = new NameValueCollection {
                 { "token", appToken },
                 { "user", userKey },
-                { "priority", p.ToString() },
+                { "priority", Convert.ChangeType(priority, priority.GetTypeCode()).ToString() },
                 { "message", message },
-                { "title", title }
+                { "title", title } ,
+                { "timestamp", timeStamp }
                 };
 
                 using (var client = new WebClient())
