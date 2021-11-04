@@ -476,7 +476,7 @@ namespace BackupManager
                     sizeOfFiles += file.Length;
                 }
 
-                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "{0:n0} files still to backup with a size of {1}MB", filesNotOnBackupDisk.Count(), sizeOfFiles/1024/1024);
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "{0:n0} files still to backup with a size of {1:n0}GB", filesNotOnBackupDisk.Count(), sizeOfFiles/1024/1024/1024);
             }
 
             IEnumerable<BackupFile> filesWithoutDiskChecked = this.mediaBackup.BackupFiles.Where(p => string.IsNullOrEmpty(p.BackupDiskChecked));
@@ -583,38 +583,45 @@ namespace BackupManager
             {
                 Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "Scanning {0}", masterFolder);
 
-                // Get the Freespace in GB
-                long freeSpaceOnCurrentMasterFolder = Utils.GetDiskFreeSpace(masterFolder);
-                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "{0}GB free on {1}", freeSpaceOnCurrentMasterFolder, masterFolder);
-
-                if (freeSpaceOnCurrentMasterFolder < this.mediaBackup.MinimumCriticalMasterFolderSpace)
+                if (Directory.Exists(masterFolder))
                 {
-                    Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "Free space on {0} is too low", masterFolder);
-                }
+                    // Get the Freespace in GB
+                    long freeSpaceOnCurrentMasterFolder = Utils.GetDiskFreeSpace(masterFolder);
+                    Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "{0}GB free on {1}", freeSpaceOnCurrentMasterFolder, masterFolder);
 
-                foreach (string indexFolder in this.mediaBackup.IndexFolders)
-                {
-                    string folderToCheck = Path.Combine(masterFolder, indexFolder);
-
-                    if (Directory.Exists(folderToCheck))
+                    if (freeSpaceOnCurrentMasterFolder < this.mediaBackup.MinimumCriticalMasterFolderSpace)
                     {
-                        Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "Scanning {0}", folderToCheck);
+                        Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "Free space on {0} is too low", masterFolder);
+                    }
 
-                        string[] files = Utils.GetFiles(
-                            folderToCheck,
-                            filters,
-                            SearchOption.AllDirectories,
-                            FileAttributes.Hidden);
+                    foreach (string indexFolder in this.mediaBackup.IndexFolders)
+                    {
+                        string folderToCheck = Path.Combine(masterFolder, indexFolder);
 
-                        foreach (string file in files)
+                        if (Directory.Exists(folderToCheck))
                         {
-                            // Log the file we're checking here                           
+                            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "Scanning {0}", folderToCheck);
+
+                            string[] files = Utils.GetFiles(
+                                folderToCheck,
+                                filters,
+                                SearchOption.AllDirectories,
+                                FileAttributes.Hidden);
+
+                            foreach (string file in files)
+                            {
+                                // Log the file we're checking here                           
 #if DEBUG
                             Utils.Log(logFile, "Checking {0}", file);
 #endif
-                            this.EnsureFile(file, masterFolder, indexFolder);
+                                this.EnsureFile(file, masterFolder, indexFolder);
+                            }
                         }
                     }
+                }
+                else
+                {
+                    Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "{0} doesn't exist", masterFolder);
                 }
             }
 

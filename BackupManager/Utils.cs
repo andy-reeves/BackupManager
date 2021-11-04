@@ -572,6 +572,8 @@ namespace BackupManager
                 using (var client = new WebClient())
                 { 
                     client.UploadValues("https://api.pushover.net/1/messages.json", parameters);
+
+                    System.Threading.Thread.Sleep(2000); // ensures there's at least a 1s gap between messages
                 }
             }
             catch (Exception)
