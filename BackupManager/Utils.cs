@@ -489,7 +489,7 @@ namespace BackupManager
 
         public static DateTime GetFileLastWriteTime(string fileName)
         {
-            // Sometimes the file doesn't have a valid LastModifiedTime 
+            // Sometimes the file doesn't have a valid LastWriteTime 
             var fi = new FileInfo(fileName);
 
             DateTime returnValue;

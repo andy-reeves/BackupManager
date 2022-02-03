@@ -180,7 +180,7 @@
             // if this path is already added then return it
             if (this.paths.Contains(fullPath))
             {
-                // check the timestamp againist what we have
+                // check the timestamp against what we have
                 backupFile = (BackupFile)this.paths[fullPath];
 
                 var t = backupFile.LastWriteTime;
@@ -246,6 +246,23 @@
             this.paths.Add(fullPath, backupFile);
 
             return backupFile;
+        }
+
+        public BackupFile GetBackupFile(string fileName)
+        {
+            // try and find a file based on the filename only
+            // if more than 1 file than return the first one
+
+            foreach (BackupFile b in this.BackupFiles)
+            {
+                if (b.GetFileName().StartsWith(fileName))
+                {
+                    return b;
+                }
+
+            }
+
+            return null;
         }
 
         public BackupFile GetBackupFile(string hash, string path)

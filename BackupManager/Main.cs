@@ -45,10 +45,11 @@ namespace BackupManager
 
 #if !DEBUG
             this.timerTextBox.Text = "1440";
-#endif
-
             this.backupDiskTextBox.Text = Path.Combine(@"\\", System.Environment.MachineName, "backup");
 
+#endif
+
+            
             foreach (string a in this.mediaBackup.MasterFolders)
             {
                 this.masterFoldersComboBox.Items.Add(a);
@@ -497,7 +498,7 @@ namespace BackupManager
                 throw new ApplicationException("IndexFolder is empty. Not supported.");
             }
 
-            // if indexFolder is empty and we start with underscore then exclude it
+            // if we start with underscore then exclude it
             string pathAfterMaster = path.SubstringAfter(masterFolder, StringComparison.CurrentCultureIgnoreCase);
 
             if (pathAfterMaster.StartsWith(@"\_") && string.IsNullOrEmpty(indexFolder))
@@ -755,12 +756,12 @@ namespace BackupManager
 
                 long oldFileCount = this.mediaBackup.BackupFiles.Count();
 
+                // Update the master file
+                this.ScanFolders();
+
                 if (this.mediaBackup.DifferenceInFileCountAllowedPercentage != 0)
                 {
                     long minimumFileCountAllowed = oldFileCount - (oldFileCount * this.mediaBackup.DifferenceInFileCountAllowedPercentage / 100);
-
-                    // Update the master file
-                    this.ScanFolders();
 
                     long newFileCount = this.mediaBackup.BackupFiles.Count();
 
@@ -769,13 +770,8 @@ namespace BackupManager
                         throw new Exception("ERROR: The count of files to backup is too low. Check connections to nas drives.");
                     }
                 }
-                else
-                {
-                    // Update the master file
-                    this.ScanFolders();
-                }
 
-                // checks for backup disks not verified in > 90 days
+                // checks for backup disks not verified in > xx days
                 this.CheckForOldBackupDisks();
 
                 // Check the connected backup disk (removing any extra files we dont need)
@@ -997,6 +993,82 @@ namespace BackupManager
                     this.mediaBackup.Save();
                 }
             }
+        }
+
+        private void RenameTVButton_Click(object sender, EventArgs e)
+        {
+            // rename TV backup files
+
+            // Scans the connected backup disk and finds all its files
+
+            string logFile = Path.Combine(
+               Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+               "backup_RenameTVEpisodes.txt");
+
+            Utils.Log(logFile, "Rename TV episodes Started.");
+
+            string backupShare = this.backupDiskTextBox.Text;
+
+            // In this shared folder there should be another folder that starts with 'Backup' like 'Backup 18'
+            // if not thats a problem
+            if (!this.CheckForValidBackupShare(backupShare))
+            {
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "No connected backup disk detected.");
+                return;
+            }
+
+            string backupFolderName = this.GetBackupFolderName(backupShare);
+
+            string folderToCheck = Path.Combine(backupShare, backupFolderName);
+
+            // reset the filters because we want to search for all extra files
+            string filters = "*";
+
+            string[] backupDiskFiles = Utils.GetFiles(
+                folderToCheck,
+                filters,
+                SearchOption.AllDirectories,
+                FileAttributes.Hidden);
+
+            foreach (string backupFileFullPath in backupDiskFiles)
+            {
+                // only the TV files
+
+                if (backupFileFullPath.Contains("\\_TV Series\\"))
+                {
+                    // find a file in the backup list that starts with this filename
+                    // for example if we have 'Nikita s01.e01' on disk we want to match 'Nikita s01.e01 Pilot'
+                    string backupDiskFilenameWithoutExtension = System.IO.Path.GetFileNameWithoutExtension(backupFileFullPath);
+
+                    string backupDiskFilename = backupFileFullPath.Substring(folderToCheck.Length + 1); // trim off the unc and backup disk parts
+
+                    BackupFile backupFile = this.mediaBackup.GetBackupFile(backupDiskFilenameWithoutExtension);
+
+                    // found a file that matches
+
+                    if (backupFile != null)
+                    {
+                        if (Path.Combine(backupFile.IndexFolder, backupFile.RelativePath) != backupDiskFilename)
+                        {
+                            Utils.Log(logFile, "Found a file match {0}", backupFile.FullPath);
+
+                            string destinationFileName = Path.Combine(folderToCheck, backupFile.IndexFolder, backupFile.RelativePath);
+
+                            Directory.CreateDirectory(Path.GetDirectoryName(destinationFileName));
+                            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "Renaming {0} to {1}", backupFileFullPath, destinationFileName);
+
+                            File.Move(backupFileFullPath, destinationFileName);
+                        }
+                    }
+                }
+            }
+
+            this.mediaBackup.Save();
+
+            // Remove all empty folders
+            DeleteEmptyDirectories(logFile, folderToCheck);
+
+            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "Completed.");
         }
     }
 }
