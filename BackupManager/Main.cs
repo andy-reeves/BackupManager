@@ -1037,7 +1037,7 @@ namespace BackupManager
                 if (backupFileFullPath.Contains("\\_TV Series\\"))
                 {
                     // find a file in the backup list that starts with this filename
-                    // for example if we have 'Nikita s01.e01' on disk we want to match 'Nikita s01.e01 Pilot'
+                    // for example if we have 'Nikita s01.e01 Pilot' on disk we want to match 'Nikita s01.e01 Pilot [WebDL-1080p]'
                     string backupDiskFilenameWithoutExtension = System.IO.Path.GetFileNameWithoutExtension(backupFileFullPath);
 
                     string backupDiskFilename = backupFileFullPath.Substring(folderToCheck.Length + 1); // trim off the unc and backup disk parts

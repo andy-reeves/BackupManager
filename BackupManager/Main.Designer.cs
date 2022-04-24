@@ -188,7 +188,6 @@
             this.toolTip.SetToolTip(this.renameTVFilesButton, "Checks a connected backup disk.\r\nSets the BackupDisk and the BackupDiskChecked (i" +
         "f the HashCode is correct). DELETES FILES.");
             this.renameTVFilesButton.UseVisualStyleBackColor = true;
-            this.renameTVFilesButton.Visible = false;
             this.renameTVFilesButton.Click += new System.EventHandler(this.RenameTVButton_Click);
             // 
             // timerButton
@@ -303,7 +302,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(700, 925);
+            this.ClientSize = new System.Drawing.Size(700, 993);
             this.Controls.Add(this.renameTVFilesButton);
             this.Controls.Add(this.restoreMasterFolderComboBox);
             this.Controls.Add(this.restoreFilesToMasterFolderButton);
