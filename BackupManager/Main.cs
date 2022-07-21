@@ -1070,5 +1070,81 @@ namespace BackupManager
 
             Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "Completed.");
         }
+
+        private void renameMoviesButton_Click(object sender, EventArgs e)
+        {
+            // rename Movie backup files
+
+            // Scans the connected backup disk and finds all its files
+
+            string logFile = Path.Combine(
+               Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+               "backup_RenameMovies.txt");
+
+            Utils.Log(logFile, "Rename Movies Started.");
+
+            string backupShare = this.backupDiskTextBox.Text;
+
+            // In this shared folder there should be another folder that starts with 'Backup' like 'Backup 18'
+            // if not thats a problem
+            if (!this.CheckForValidBackupShare(backupShare))
+            {
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "No connected backup disk detected.");
+                return;
+            }
+
+            string backupFolderName = this.GetBackupFolderName(backupShare);
+
+            string folderToCheck = Path.Combine(backupShare, backupFolderName);
+
+            // reset the filters because we want to search for all extra files
+            string filters = "*";
+
+            string[] backupDiskFiles = Utils.GetFiles(
+                folderToCheck,
+                filters,
+                SearchOption.AllDirectories,
+                FileAttributes.Hidden);
+
+            foreach (string backupFileFullPath in backupDiskFiles)
+            {
+                // only the Movie files
+
+                if (backupFileFullPath.Contains("\\_Movies\\"))
+                {
+                    // find a file in the backup list that starts with this filename
+                    // for example if we have 'Jurassic Park (1995) [Bluray-1080p]' on disk we want to match 'Jurassic Park (1995) [Bluray-1080p] {tmdb:123456}'
+                    string backupDiskFilenameWithoutExtension = System.IO.Path.GetFileNameWithoutExtension(backupFileFullPath);
+
+                    string backupDiskFilename = backupFileFullPath.Substring(folderToCheck.Length + 1); // trim off the unc and backup disk parts
+
+                    BackupFile backupFile = this.mediaBackup.GetBackupFile(backupDiskFilenameWithoutExtension);
+
+                    // found a file that matches
+
+                    if (backupFile != null)
+                    {
+                        if (Path.Combine(backupFile.IndexFolder, backupFile.RelativePath) != backupDiskFilename)
+                        {
+                            Utils.Log(logFile, "Found a file match {0}", backupFile.FullPath);
+
+                            string destinationFileName = Path.Combine(folderToCheck, backupFile.IndexFolder, backupFile.RelativePath);
+
+                            Directory.CreateDirectory(Path.GetDirectoryName(destinationFileName));
+                            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "Renaming {0} to {1}", backupFileFullPath, destinationFileName);
+
+                            File.Move(backupFileFullPath, destinationFileName);
+                        }
+                    }
+                }
+            }
+
+            this.mediaBackup.Save();
+
+            // Remove all empty folders
+            DeleteEmptyDirectories(logFile, folderToCheck);
+
+            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "Completed.");
+        }
     }
 }
