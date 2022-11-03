@@ -42,6 +42,7 @@
             this.button3 = new System.Windows.Forms.Button();
             this.renameTVFilesButton = new System.Windows.Forms.Button();
             this.renameMoviesButton = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
             this.timerButton = new System.Windows.Forms.Button();
             this.backupTimer = new System.Windows.Forms.Timer(this.components);
             this.timerTextBox = new System.Windows.Forms.TextBox();
@@ -53,6 +54,7 @@
             this.listFilesNotCheckedInXXButton = new System.Windows.Forms.Button();
             this.restoreFilesToMasterFolderButton = new System.Windows.Forms.Button();
             this.restoreMasterFolderComboBox = new System.Windows.Forms.ComboBox();
+            this.button4 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // updateMasterFilesButton
@@ -170,9 +172,9 @@
             // 
             // renameTVFilesButton
             // 
-            this.renameTVFilesButton.Location = new System.Drawing.Point(64, 486);
+            this.renameTVFilesButton.Location = new System.Drawing.Point(54, 525);
             this.renameTVFilesButton.Name = "renameTVFilesButton";
-            this.renameTVFilesButton.Size = new System.Drawing.Size(217, 25);
+            this.renameTVFilesButton.Size = new System.Drawing.Size(143, 25);
             this.renameTVFilesButton.TabIndex = 33;
             this.renameTVFilesButton.Text = "Rename TV backup files";
             this.toolTip.SetToolTip(this.renameTVFilesButton, "Checks a connected backup disk.\r\nSets the BackupDisk and the BackupDiskChecked (i" +
@@ -183,9 +185,9 @@
             // 
             // renameMoviesButton
             // 
-            this.renameMoviesButton.Location = new System.Drawing.Point(64, 517);
+            this.renameMoviesButton.Location = new System.Drawing.Point(203, 525);
             this.renameMoviesButton.Name = "renameMoviesButton";
-            this.renameMoviesButton.Size = new System.Drawing.Size(217, 25);
+            this.renameMoviesButton.Size = new System.Drawing.Size(143, 25);
             this.renameMoviesButton.TabIndex = 34;
             this.renameMoviesButton.Text = "Rename Movie backup files";
             this.toolTip.SetToolTip(this.renameMoviesButton, "Checks a connected backup disk.\r\nSets the BackupDisk and the BackupDiskChecked (i" +
@@ -193,6 +195,19 @@
             this.renameMoviesButton.UseVisualStyleBackColor = true;
             this.renameMoviesButton.Visible = false;
             this.renameMoviesButton.Click += new System.EventHandler(this.renameMoviesButton_Click);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(17, 525);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(316, 25);
+            this.button2.TabIndex = 35;
+            this.button2.Text = "Rename all backup files,  check backup disk, delete files";
+            this.toolTip.SetToolTip(this.button2, "Checks a connected backup disk.\r\nSets the BackupDisk and the BackupDiskChecked (i" +
+        "f the HashCode is correct). DELETES FILES.");
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Visible = false;
+            this.button2.Click += new System.EventHandler(this.button2_Click_1);
             // 
             // timerButton
             // 
@@ -292,11 +307,25 @@
             this.restoreMasterFolderComboBox.Size = new System.Drawing.Size(167, 21);
             this.restoreMasterFolderComboBox.TabIndex = 32;
             // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(64, 496);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(217, 39);
+            this.button4.TabIndex = 36;
+            this.button4.Text = "Check backup disk, delete files and then copy files";
+            this.toolTip.SetToolTip(this.button4, "Checks a connected backup disk.\r\nSets the BackupDisk and the BackupDiskChecked (i" +
+        "f the HashCode is correct). DELETES FILES.");
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(350, 478);
+            this.ClientSize = new System.Drawing.Size(350, 547);
+            this.Controls.Add(this.button4);
+            this.Controls.Add(this.button2);
             this.Controls.Add(this.renameMoviesButton);
             this.Controls.Add(this.renameTVFilesButton);
             this.Controls.Add(this.restoreMasterFolderComboBox);
@@ -356,6 +385,8 @@
         private System.Windows.Forms.ComboBox restoreMasterFolderComboBox;
         private System.Windows.Forms.Button renameTVFilesButton;
         private System.Windows.Forms.Button renameMoviesButton;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button4;
     }
 }
 

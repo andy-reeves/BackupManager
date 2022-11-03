@@ -570,10 +570,12 @@ namespace BackupManager
                 };
 
                 using (var client = new WebClient())
-                { 
+                {
                     client.UploadValues("https://api.pushover.net/1/messages.json", parameters);
 
-                    System.Threading.Thread.Sleep(2000); // ensures there's at least a 1s gap between messages
+#if DEBUG
+                    System.Threading.Thread.Sleep(2000); // ensures there's at least a 2s gap between messages
+#endif
                 }
             }
             catch (Exception)
@@ -608,9 +610,9 @@ namespace BackupManager
                 Utils.SendPushoverMessage(pushoverUserKey, pushoverAppToken, System.Enum.GetName(typeof(BackupAction), backupAction), priority, string.Format(text, args));
             }
         }
-        #endregion
+#endregion
 
-        #region Methods
+#region Methods
 
         /// <summary>
         /// The byte array to string.
@@ -853,7 +855,7 @@ namespace BackupManager
             return (char)(i - 10 + 65 + 32);
         }
 
-        #endregion
+#endregion
 
         public static bool GetDiskFreeSpace(string folderName, out long freespace)
         {

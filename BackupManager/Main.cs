@@ -611,10 +611,76 @@ namespace BackupManager
 
                             foreach (string file in files)
                             {
-                                // Log the file we're checking here                           
 #if DEBUG
-                            Utils.Log(logFile, "Checking {0}", file);
+                                // Log the file we're checking here    
+                                Utils.Log(logFile, "Checking {0}", file);
 #endif
+                                // Checks for TV only
+                                if (file.Contains("_TV Series"))
+                                {
+                                    if (!file.Contains("tvdb") && !file.Contains("tmdb"))
+                                    {
+                                        Utils.Log(logFile, "INFO: TV Series has missing tvdb-/tmdb- in the filepath {0}", file);
+                                    }
+                                }
+
+                                // Checks for Movies only
+                                if (file.Contains("_Movies"))
+                                {
+                                    if (!file.Contains("tmdb"))
+                                    {
+                                        if (!(file.Contains("-featurette.") ||
+                                            file.Contains("-other.") ||
+                                            file.Contains("-interview.") ||
+                                            file.Contains("-scene.") ||
+                                            file.Contains("-short.") ||
+                                            file.Contains("-deleted.") ||
+                                            file.Contains("-behindthescenes.") ||
+                                            file.Contains("-trailer.")))
+                                            Utils.Log(logFile, "INFO: Movie has missing tmdb- in the filename {0}", file);
+                                    }
+                                }
+
+                                // Checks for Movies, TV, Comedy or Concerts (Video files)
+                                if (file.Contains("_TV Series") ||
+                                    file.Contains("_Movies") ||
+                                    file.Contains("_Concerts") ||
+                                    file.Contains("_Comedy"))
+                                {
+                                    if (file.Contains("subtitles"))
+                                    {
+                                        Utils.Log(logFile, "INFO: Video has 'subtitles' in the filename {0}", file);
+                                    }
+
+                                    if (file.Contains(" ()"))
+                                    {
+                                        Utils.Log(logFile, "INFO: Video has a missing year in the filename {0}", file);
+                                    }
+
+                                    if (file.Contains(" (0)"))
+                                    {
+                                        Utils.Log(logFile, "INFO: Video has a '0' year in the filename {0}", file);
+                                    }
+
+                                    if (!(file.EndsWith(".mkv") ||
+                                       file.EndsWith(".mp4") ||
+                                       file.EndsWith(".mpg") ||
+                                       file.EndsWith(".ts") ||
+                                       file.EndsWith(".avi")))
+                                    {
+                                        Utils.Log(logFile, "INFO: Video has an invalid file extension in the filename {0}", file);
+                                    }
+                                }
+
+                                // All files except Backup
+                                if (!file.Contains("_Backup"))
+                                {
+                                    if (file.Contains("._"))
+                                    {
+                                        Utils.Log(logFile, "INFO: File has '._' in the filename {0}", file);
+                                    }
+                                }
+
                                 this.EnsureFile(file, masterFolder, indexFolder);
                             }
                         }
@@ -629,7 +695,6 @@ namespace BackupManager
             this.mediaBackup.RemoveFilesWithFlag(false, true);
 
             this.mediaBackup.Save();
-
 
             var totalFiles = this.mediaBackup.BackupFiles.Count();
 
@@ -674,7 +739,7 @@ namespace BackupManager
             Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "Completed.");
         }
 
-        #endregion
+#endregion
 
         private void checkDiskAndDeleteButton_Click(object sender, EventArgs e)
         {
@@ -1042,10 +1107,18 @@ namespace BackupManager
 
                     string backupDiskFilename = backupFileFullPath.Substring(folderToCheck.Length + 1); // trim off the unc and backup disk parts
 
+                    // Remove the "." back in and trim after sxxexx too
+
+                    // replace ".e" with "e"
+                    backupDiskFilenameWithoutExtension = backupDiskFilenameWithoutExtension.Replace(".e", "e");
+
                     BackupFile backupFile = this.mediaBackup.GetBackupFile(backupDiskFilenameWithoutExtension);
 
-                    // found a file that matches
+                    // for tv:
+                    // Files on disk are like Archer (2009)\Archer (2009) Season 1\Archer (2009) s01.e01 xxxxxxxxx etc
+                    // This needs to match with "Archer (2009) s01e01 xxxxxxxx" which has a fullstop removed and other stuff after it now
 
+                    // found a file that matches
                     if (backupFile != null)
                     {
                         if (Path.Combine(backupFile.IndexFolder, backupFile.RelativePath) != backupDiskFilename)
@@ -1113,27 +1186,34 @@ namespace BackupManager
                 if (backupFileFullPath.Contains("\\_Movies\\"))
                 {
                     // find a file in the backup list that starts with this filename
-                    // for example if we have 'Jurassic Park (1995) [Bluray-1080p]' on disk we want to match 'Jurassic Park (1995) [Bluray-1080p] {tmdb:123456}'
+                    // Files on disk are like "Iron Man 3 (2013) xxxxxxxx.mkv
+                    // This needs to match with "Iron Man 3 (2013) {tmdb-xxxx} {edition-Directors Cut} xxxxx.mkv"
+                    // Ant-Man and the Wasp (2018) {tmdb-363088} [Remux-2160p][PQ][TrueHD Atmos 7.1][h265].mkv
                     string backupDiskFilenameWithoutExtension = System.IO.Path.GetFileNameWithoutExtension(backupFileFullPath);
 
                     string backupDiskFilename = backupFileFullPath.Substring(folderToCheck.Length + 1); // trim off the unc and backup disk parts
 
+                    // replace " - [" with " ["
+                    //backupDiskFilenameWithoutExtension = backupDiskFilenameWithoutExtension.Replace(" - [", " [");
+                    backupDiskFilenameWithoutExtension = backupDiskFilenameWithoutExtension.SubstringBeforeLast(" - [",StringComparison.InvariantCultureIgnoreCase);
+
                     BackupFile backupFile = this.mediaBackup.GetBackupFile(backupDiskFilenameWithoutExtension);
 
                     // found a file that matches
-
                     if (backupFile != null)
                     {
                         if (Path.Combine(backupFile.IndexFolder, backupFile.RelativePath) != backupDiskFilename)
                         {
-                            Utils.Log(logFile, "Found a file match {0}", backupFile.FullPath);
-
                             string destinationFileName = Path.Combine(folderToCheck, backupFile.IndexFolder, backupFile.RelativePath);
 
-                            Directory.CreateDirectory(Path.GetDirectoryName(destinationFileName));
-                            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "Renaming {0} to {1}", backupFileFullPath, destinationFileName);
+                            if (destinationFileName != backupFileFullPath)
+                            {
+                                Utils.Log(logFile, "Found a file match {0}", backupFile.FullPath);
+                                Directory.CreateDirectory(Path.GetDirectoryName(destinationFileName));
+                                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "Renaming {0} to {1}", backupFileFullPath, destinationFileName);
 
-                            File.Move(backupFileFullPath, destinationFileName);
+                                File.Move(backupFileFullPath, destinationFileName);
+                            }
                         }
                     }
                 }
@@ -1145,6 +1225,37 @@ namespace BackupManager
             DeleteEmptyDirectories(logFile, folderToCheck);
 
             Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "Completed.");
+        }
+
+        private void button2_Click_1(object sender, EventArgs e)
+        {
+            DialogResult answer = MessageBox.Show(
+              "Are you sure you want rename files and then delete any extra files on the backup disk not in our list?",
+              "Delete extra files",
+              MessageBoxButtons.YesNo);
+
+            if (answer == DialogResult.Yes)
+            {
+                RenameTVButton_Click(sender, e);
+                renameMoviesButton_Click(sender, e);
+                this.CheckConnectedDisk(true);
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            DialogResult answer = MessageBox.Show(
+               "Are you sure you want delete any extra files on the backup disk not in our list?",
+               "Delete extra files",
+               MessageBoxButtons.YesNo);
+
+            if (answer == DialogResult.Yes)
+            {
+                this.CheckConnectedDisk(true);
+
+                // now copy files
+                CopyFiles();
+            }
         }
     }
 }
