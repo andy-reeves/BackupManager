@@ -21,8 +21,6 @@ namespace BackupManager
         /// </summary>
         private const string BackupDrivePrefix = "Backup ";
 
-        private const long MinimumFreeSpaceToLeaveOnBackupDrive = 10 * 1024 * 1024; // 10MB in bytes
-
         #endregion
 
         #region Fields
@@ -422,7 +420,7 @@ namespace BackupManager
 
                         var b = Utils.GetDiskFreeSpace(backupShare, out availableSpace);
 
-                        if (availableSpace > MinimumFreeSpaceToLeaveOnBackupDrive)
+                        if (availableSpace > (this.mediaBackup.MinimumFreeSpaceToLeaveOnBackupDrive *1024*1024))
                         {
                             if (availableSpace > sourceFileInfo.Length)
                             {
@@ -620,7 +618,8 @@ namespace BackupManager
                                 {
                                     if (!file.Contains("tvdb") && !file.Contains("tmdb"))
                                     {
-                                        Utils.Log(logFile, "INFO: TV Series has missing tvdb-/tmdb- in the filepath {0}", file);
+                                        //Utils.Log(logFile, "INFO: TV Series has missing tvdb-/tmdb- in the filepath {0}", file);
+                                        Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "TV Series has missing tvdb-/tmdb- in the filepath {0}", file);
                                     }
                                 }
 
@@ -637,7 +636,8 @@ namespace BackupManager
                                             file.Contains("-deleted.") ||
                                             file.Contains("-behindthescenes.") ||
                                             file.Contains("-trailer.")))
-                                            Utils.Log(logFile, "INFO: Movie has missing tmdb- in the filename {0}", file);
+                                            //Utils.Log(logFile, "INFO: Movie has missing tmdb- in the filename {0}", file);
+                                        Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "Movie has missing tmdb- in the filename {0}", file);
                                     }
                                 }
 
@@ -649,26 +649,51 @@ namespace BackupManager
                                 {
                                     if (file.Contains("subtitles"))
                                     {
-                                        Utils.Log(logFile, "INFO: Video has 'subtitles' in the filename {0}", file);
+                                        //Utils.Log(logFile, "INFO: Video has 'subtitles' in the filename {0}", file);
+                                        Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "Video has 'subtitles' in the filename {0}", file);
                                     }
 
                                     if (file.Contains(" ()"))
                                     {
-                                        Utils.Log(logFile, "INFO: Video has a missing year in the filename {0}", file);
+                                        //Utils.Log(logFile, "INFO: Video has a missing year in the filename {0}", file);
+                                        Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "Video has a missing year in the filename {0}", file);
                                     }
 
                                     if (file.Contains(" (0)"))
                                     {
-                                        Utils.Log(logFile, "INFO: Video has a '0' year in the filename {0}", file);
+                                        //Utils.Log(logFile, "INFO: Video has a '0' year in the filename {0}", file);
+                                        Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "Video has a '0' year in the filename {0}", file);
                                     }
 
                                     if (!(file.EndsWith(".mkv") ||
                                        file.EndsWith(".mp4") ||
                                        file.EndsWith(".mpg") ||
+                                       file.EndsWith(".mpeg") ||
                                        file.EndsWith(".ts") ||
+                                       file.EndsWith(".srt") ||
                                        file.EndsWith(".avi")))
                                     {
-                                        Utils.Log(logFile, "INFO: Video has an invalid file extension in the filename {0}", file);
+                                        //Utils.Log(logFile, "INFO: Video has an invalid file extension in the filename {0}", file);
+                                        Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "Video has an invalid file extension in the filename {0}", file);
+                                    }
+
+                                    //Edition checks '{edition-EXTENDED EDITION}'
+                                    if (file.Contains("{edition-"))
+                                    {
+                                        bool found = false;
+                                        foreach(string s in this.mediaBackup.EditionsAllowed)
+                                        {
+                                            if (file.Contains("{edition-" + s, StringComparison.OrdinalIgnoreCase))
+                                            {
+                                                found = true;
+                                                break;
+                                            }
+                                        }
+                                        if (!found)
+                                        {
+                                           // Utils.Log(logFile, "INFO: File has '{edition-' in the filename {0} but no valid edition specification", file);
+                                            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "File has 'edition-' in the filename {0} but no valid edition specification", file);
+                                        }
                                     }
                                 }
 
@@ -677,7 +702,8 @@ namespace BackupManager
                                 {
                                     if (file.Contains("._"))
                                     {
-                                        Utils.Log(logFile, "INFO: File has '._' in the filename {0}", file);
+                                        //Utils.Log(logFile, "INFO: File has '._' in the filename {0}", file);
+                                        Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "File has '._' in the filename {0}", file);
                                     }
                                 }
 
@@ -919,10 +945,18 @@ namespace BackupManager
         {
             string LogFile = Path.Combine(
              Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-             "backup_ListFilesWithBackupNotCheckedIn90days.txt");
+             "backup_ListFilesWithBackupNotCheckedInNNdays.txt");
+
+            int numberOfDays = mediaBackup.DaysToReportOldBackupDisks;
+
+
+
+
+
+
 
             IEnumerable<BackupFile> files =
-                this.mediaBackup.BackupFiles.Where(p => p.BackupDiskChecked != null && DateTime.Parse(p.BackupDiskChecked).AddDays(90) < DateTime.Today);
+                this.mediaBackup.BackupFiles.Where(p => p.BackupDiskChecked != null && DateTime.Parse(p.BackupDiskChecked).AddDays(numberOfDays) < DateTime.Today);
 
             IEnumerable<BackupFile> disks = files.GroupBy(p => p.BackupDisk).Select(p => p.First());
 
@@ -930,12 +964,12 @@ namespace BackupManager
             {
                 Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken,
                         LogFile, BackupAction.CheckBackupDisk,
-                        "Backup disks not checked in 90 days - {0}", disk.BackupDisk);
+                        "Backup disks not checked in {0} days - {1}", numberOfDays, disk.BackupDisk);
             }
 
             Utils.Log(
                     LogFile,
-                    "Listing files not checked in 90 days");
+                    "Listing files not checked in NN days");
 
             foreach (BackupFile file in files)
             {

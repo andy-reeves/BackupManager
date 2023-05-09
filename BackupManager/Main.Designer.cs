@@ -284,7 +284,7 @@
             this.listFilesNotCheckedInXXButton.Name = "listFilesNotCheckedInXXButton";
             this.listFilesNotCheckedInXXButton.Size = new System.Drawing.Size(217, 33);
             this.listFilesNotCheckedInXXButton.TabIndex = 30;
-            this.listFilesNotCheckedInXXButton.Text = "List files with Backup hash not checked for 90 days";
+            this.listFilesNotCheckedInXXButton.Text = "List files with Backup hash not checked for nn days";
             this.listFilesNotCheckedInXXButton.UseVisualStyleBackColor = true;
             this.listFilesNotCheckedInXXButton.Click += new System.EventHandler(this.button6_Click);
             // 

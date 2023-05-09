@@ -354,6 +354,11 @@ namespace System
             return s.Length > length ? s.Substring(0, length - 1) + "…" : s;
         }
 
+        public static bool Contains(this string source, string toCheck, StringComparison comp)
+        {
+            return source?.IndexOf(toCheck, comp) >= 0;
+        }
+
         #endregion
     }
 }

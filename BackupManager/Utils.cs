@@ -573,7 +573,7 @@ namespace BackupManager
                 {
                     client.UploadValues("https://api.pushover.net/1/messages.json", parameters);
 
-#if DEBUG
+#if !DEBUG
                     System.Threading.Thread.Sleep(2000); // ensures there's at least a 2s gap between messages
 #endif
                 }

@@ -10,11 +10,13 @@
   <ScheduledBackupRepeatInterval>1440</ScheduledBackupRepeatInterval>
   <MinimumCriticalMasterFolderSpace>200</MinimumCriticalMasterFolderSpace>
   <MinimumCriticalBackupDiskSpace>1</MinimumCriticalBackupDiskSpace>
+  <DaysToReportOldBackupDisks>90</DaysToReportOldBackupDisks>
+  <MinimumFreeSpaceToLeaveOnBackupDrive>10</MinimumFreeSpaceToLeaveOnBackupDrive>
   <MasterFolders>
     <!-- List each UNC path that you want to scan for files to backup here -->
-    <MasterFolder>\\nas1\assets1</MasterFolder>
-    <MasterFolder>\\nas1\assets2</MasterFolder>
-    <MasterFolder>\\nas1\assets3</MasterFolder>
+	<MasterFolder>\\nas1\assets1</MasterFolder>
+	<MasterFolder>\\nas1\assets2</MasterFolder>
+	<MasterFolder>\\nas1\assets3</MasterFolder>
     <MasterFolder>\\nas1\assets4</MasterFolder>
     <MasterFolder>\\nas2\assets1</MasterFolder>
     <MasterFolder>\\nas2\assets2</MasterFolder>
@@ -54,6 +56,38 @@
     <FilterRegEx>!*.vob</FilterRegEx>
     <FilterRegEx>!*.xml</FilterRegEx>
   </Filters>
+  <EditionsAllowed>
+    <Edition>10th Anniversary Edition</Edition>
+    <Edition>20th Anniversary Edition</Edition>
+    <Edition>25th Anniversary Edition</Edition>
+    <Edition>30th Anniversary Edition</Edition>
+    <Edition>40th Anniversary Edition</Edition>
+    <Edition>50th Anniversary Edition</Edition>
+    <Edition>60th Anniversary Edition</Edition>
+    <Edition>70th Anniversary Edition</Edition>
+    <Edition>4K Edition</Edition>
+    <Edition>Bluray Edition</Edition>
+    <Edition>Chronological Edition</Edition>
+    <Edition>Collectors Edition</Edition>
+    <Edition>Criterion Collection</Edition>
+    <Edition>Diamond Edition</Edition>
+    <Edition>Directors Cut</Edition>
+    <Edition>DVD Edition</Edition>
+    <Edition>Extended Edition</Edition>
+    <Edition>IMAX Edition</Edition>
+    <Edition>Redux Edition</Edition>
+    <Edition>Remastered Edition</Edition>
+    <Edition>Restored Edition</Edition>
+    <Edition>Special Edition</Edition>
+    <Edition>The Complete Extended Edition</Edition>
+    <Edition>The Final Cut</Edition>
+    <Edition>The Godfather Coda</Edition>
+    <Edition>The Richard Donner Cut</Edition>
+    <Edition>Theatrical Edition</Edition>
+    <Edition>Ultimate Edition</Edition>
+    <Edition>Uncut Edition</Edition>
+    <Edition>Unrated Edition</Edition>
+  </EditionsAllowed>
   <BackupFiles>
     <!-- Sample BackupFile entries -->
     <BackupFile>

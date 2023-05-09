@@ -20,6 +20,10 @@
         [XmlArrayItem("FilterRegEx")]
         public Collection<string> Filters;
 
+        //If the file name contains an edition like '{edition-EXTENDED EDITION}' then check its one of these
+        [XmlArrayItem("Edition")]
+        public Collection<string> EditionsAllowed;
+
         [XmlArrayItem("BackupFile")]
         public Collection<BackupFile> BackupFiles;
 
@@ -38,6 +42,12 @@
 
         // Minimum space before we throw a critical Disk space message in GB for backup disks
         public int MinimumCriticalBackupDiskSpace;
+
+        // Minimum space on a backup disk in MB for backup disks
+        public int MinimumFreeSpaceToLeaveOnBackupDrive;
+
+        //Days To Report Old Backup Disks
+        public int DaysToReportOldBackupDisks;
 
         // We need to store 2 hashes
         // 1 hash is from the file content hashcodes and the leafname of the file. This allows for files to have duplicate contents but be stored
