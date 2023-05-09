@@ -24,6 +24,9 @@
         [XmlArrayItem("Edition")]
         public Collection<string> EditionsAllowed;
 
+        [XmlArrayItem("VideoFormat")]
+        public Collection<string> VideoFoldersFormatsAllowed;
+
         [XmlArrayItem("BackupFile")]
         public Collection<BackupFile> BackupFiles;
 

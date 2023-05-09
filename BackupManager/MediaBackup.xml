@@ -14,9 +14,9 @@
   <MinimumFreeSpaceToLeaveOnBackupDrive>10</MinimumFreeSpaceToLeaveOnBackupDrive>
   <MasterFolders>
     <!-- List each UNC path that you want to scan for files to backup here -->
-	<MasterFolder>\\nas1\assets1</MasterFolder>
-	<MasterFolder>\\nas1\assets2</MasterFolder>
-	<MasterFolder>\\nas1\assets3</MasterFolder>
+    <MasterFolder>\\nas1\assets1</MasterFolder>
+    <MasterFolder>\\nas1\assets2</MasterFolder>
+    <MasterFolder>\\nas1\assets3</MasterFolder>
     <MasterFolder>\\nas1\assets4</MasterFolder>
     <MasterFolder>\\nas2\assets1</MasterFolder>
     <MasterFolder>\\nas2\assets2</MasterFolder>
@@ -56,6 +56,15 @@
     <FilterRegEx>!*.vob</FilterRegEx>
     <FilterRegEx>!*.xml</FilterRegEx>
   </Filters>
+  <VideoFoldersFormatsAllowed>
+    <VideoFormat>.mkv</VideoFormat>
+    <VideoFormat>.mp4</VideoFormat>
+    <VideoFormat>.mpg</VideoFormat>
+    <VideoFormat>.mpeg</VideoFormat>
+    <VideoFormat>.ts</VideoFormat>
+    <VideoFormat>.srt</VideoFormat>
+    <VideoFormat>.avi</VideoFormat>
+  </VideoFoldersFormatsAllowed>
   <EditionsAllowed>
     <Edition>10th Anniversary Edition</Edition>
     <Edition>20th Anniversary Edition</Edition>
