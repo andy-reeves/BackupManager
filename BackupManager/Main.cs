@@ -47,7 +47,7 @@ namespace BackupManager
 
 #endif
 
-            
+
             foreach (string a in this.mediaBackup.MasterFolders)
             {
                 this.masterFoldersComboBox.Items.Add(a);
@@ -171,7 +171,7 @@ namespace BackupManager
 
             if (diskFreeSpace < this.mediaBackup.MinimumCriticalBackupDiskSpace)
             {
-                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk,PushoverPriority.High, "{0}GB free is very low. Prepare new backup disk.", diskFreeSpace);
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, PushoverPriority.High, "{0}GB free is very low. Prepare new backup disk.", diskFreeSpace);
             }
 
             foreach (BackupFile file in filesToReset)
@@ -419,8 +419,9 @@ namespace BackupManager
                         long availableSpace;
 
                         var b = Utils.GetDiskFreeSpace(backupShare, out availableSpace);
+                        Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "Remaining disk freespace {0:n0}MB", availableSpace / 1024/ 1024);
 
-                        if (availableSpace > (this.mediaBackup.MinimumFreeSpaceToLeaveOnBackupDrive *1024*1024))
+                        if (availableSpace > (this.mediaBackup.MinimumFreeSpaceToLeaveOnBackupDrive * 1024 * 1024))
                         {
                             if (availableSpace > sourceFileInfo.Length)
                             {
@@ -471,11 +472,11 @@ namespace BackupManager
             {
                 long sizeOfFiles = 0;
                 foreach (BackupFile file in filesNotOnBackupDisk)
-                {   
+                {
                     sizeOfFiles += file.Length;
                 }
 
-                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "{0:n0} files still to backup with a size of {1:n0}GB", filesNotOnBackupDisk.Count(), sizeOfFiles/1024/1024/1024);
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "{0:n0} files still to backup with a size of {1:n0}GB", filesNotOnBackupDisk.Count(), sizeOfFiles / 1024 / 1024 / 1024);
             }
 
             IEnumerable<BackupFile> filesWithoutDiskChecked = this.mediaBackup.BackupFiles.Where(p => string.IsNullOrEmpty(p.BackupDiskChecked));
@@ -760,7 +761,7 @@ namespace BackupManager
             Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "Completed.");
         }
 
-#endregion
+        #endregion
 
         private void checkDiskAndDeleteButton_Click(object sender, EventArgs e)
         {
@@ -883,7 +884,7 @@ namespace BackupManager
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void listFilesOnBackupDiskButton_Click(object sender, EventArgs e)
         {
             string LogFile = Path.Combine(
                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
@@ -1224,7 +1225,7 @@ namespace BackupManager
 
                     // replace " - [" with " ["
                     //backupDiskFilenameWithoutExtension = backupDiskFilenameWithoutExtension.Replace(" - [", " [");
-                    backupDiskFilenameWithoutExtension = backupDiskFilenameWithoutExtension.SubstringBeforeLast(" - [",StringComparison.InvariantCultureIgnoreCase);
+                    backupDiskFilenameWithoutExtension = backupDiskFilenameWithoutExtension.SubstringBeforeLast(" - [", StringComparison.InvariantCultureIgnoreCase);
 
                     BackupFile backupFile = this.mediaBackup.GetBackupFile(backupDiskFilenameWithoutExtension);
 
@@ -1271,7 +1272,7 @@ namespace BackupManager
             }
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        private void checkBackupDeleteAndCopyButton_Click(object sender, EventArgs e)
         {
             DialogResult answer = MessageBox.Show(
                "Are you sure you want delete any extra files on the backup disk not in our list?",
@@ -1284,6 +1285,40 @@ namespace BackupManager
 
                 // now copy files
                 CopyFiles();
+            }
+        }
+
+        private void listMoviesWithMultipleFilesButton_Click(object sender, EventArgs e)
+        {
+            // listing movies with multiple files
+
+            string LogFile = Path.Combine(
+               Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+               "backup_ListMoviesWithMultipleFiles.txt");
+
+            foreach (BackupFile file in this.mediaBackup.BackupFiles)
+            {
+                if (file.IndexFolder == "_Movies")
+                {
+                    string movieFolderName = file.RelativePath.Substring(0, file.RelativePath.IndexOf("\\"));
+
+                    string movieFilename = file.RelativePath.Substring(file.RelativePath.IndexOf("\\") + 1);
+
+                    if (movieFilename.StartsWith(movieFolderName) && movieFilename.Contains("{tmdb-") && movieFilename.EndsWith(".mkv"))
+                    {
+                        IEnumerable<BackupFile> otherFiles =
+                    this.mediaBackup.BackupFiles.Where(p => p.RelativePath.StartsWith(movieFolderName + "\\" + movieFolderName) &&
+                    p.RelativePath != file.RelativePath && p.RelativePath.EndsWith(".mkv"));
+
+                        foreach (BackupFile additionalFile in otherFiles)
+                        {
+                            Utils.Log(
+                            LogFile,
+                            "{0}",
+                            additionalFile.FullPath);
+                        }
+                    }
+                }
             }
         }
     }
