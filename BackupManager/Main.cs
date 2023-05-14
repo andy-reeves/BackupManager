@@ -417,17 +417,14 @@ namespace BackupManager
                     else
                     {
                         long availableSpace;
-
-                        var b = Utils.GetDiskFreeSpace(backupShare, out availableSpace);
-                        Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "Remaining disk freespace {0:n0}MB", availableSpace / 1024/ 1024);
+                        var result = Utils.GetDiskFreeSpace(backupShare, out availableSpace);
 
                         if (availableSpace > (this.mediaBackup.MinimumFreeSpaceToLeaveOnBackupDrive * 1024 * 1024))
                         {
                             if (availableSpace > sourceFileInfo.Length)
                             {
                                 outOfDiskSpaceMessageSent = false;
-
-                                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "Copying {0}", sourceFileName);
+                                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "{0:n0}MB free. Copying {1}", availableSpace / 1024 / 1024, sourceFileName);
                                 Directory.CreateDirectory(Path.GetDirectoryName(destinationFileName));
                                 File.Copy(sourceFileName, destinationFileName);
 
@@ -486,6 +483,9 @@ namespace BackupManager
                 Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "{0:n0} files still without DiskChecked set", filesWithoutDiskChecked.Count());
             }
 
+            long availableSpaceOnBackupDisk;
+            var b = Utils.GetDiskFreeSpace(backupShare, out availableSpaceOnBackupDisk);
+            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "{0:n0}MB free on backup disk.", availableSpaceOnBackupDisk / 1024 / 1024);
             Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "Completed.");
         }
 
