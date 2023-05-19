@@ -62,7 +62,7 @@ namespace BackupManager
         /// </summary>
         private static readonly MD5CryptoServiceProvider Md5 = new MD5CryptoServiceProvider();
 
-        
+
 
         #endregion
 
@@ -125,8 +125,8 @@ namespace BackupManager
         /// A String of the hash.
         /// </returns>
         public static string CreateHashForByteArray(
-            byte[] firstByteArray, 
-            byte[] secondByteArray, 
+            byte[] firstByteArray,
+            byte[] secondByteArray,
             byte[] thirdByteArray)
         {
             byte[] byteArrayToHash;
@@ -154,10 +154,10 @@ namespace BackupManager
             if (thirdByteArray != null)
             {
                 Buffer.BlockCopy(
-                    thirdByteArray, 
-                    0, 
-                    byteArrayToHash, 
-                    firstByteArray.Length + secondByteArray.Length, 
+                    thirdByteArray,
+                    0,
+                    byteArrayToHash,
+                    firstByteArray.Length + secondByteArray.Length,
                     thirdByteArray.Length);
             }
 
@@ -172,30 +172,6 @@ namespace BackupManager
         public static void EnsureDirectories(string filePath)
         {
             Directory.CreateDirectory(new FileInfo(filePath).DirectoryName);
-        }
-
-        /// <summary>
-        /// Returns the drive free space in GB for the drive this file is on.
-        /// </summary>
-        /// <param name="path">
-        /// </param>
-        /// <returns>
-        /// Freespace in GB
-        /// </returns>
-        public static long GetDiskFreeSpace(string path)
-        {
-            long availableSpace;
-
-            var result = Utils.GetDiskFreeSpace(path, out availableSpace);
-
-            if (result)
-            {
-                return availableSpace / (1024 * 1024 * 1024);
-            }
-            else
-            {
-                return 0;
-            }
         }
 
         /// <summary>
@@ -248,9 +224,9 @@ namespace BackupManager
         /// The <see cref="string[]"/>.
         /// </returns>
         public static string[] GetFiles(
-            string path, 
-            string filters, 
-            SearchOption searchOption, 
+            string path,
+            string filters,
+            SearchOption searchOption,
             FileAttributes directoryAttributesToIgnore)
         {
             return GetFiles(path, filters, searchOption, directoryAttributesToIgnore, 0);
@@ -298,10 +274,10 @@ namespace BackupManager
         /// The <see cref="string[]"/>.
         /// </returns>
         public static string[] GetFiles(
-            string path, 
-            string filters, 
-            SearchOption searchOption, 
-            FileAttributes directoryAttributesToIgnore, 
+            string path,
+            string filters,
+            SearchOption searchOption,
+            FileAttributes directoryAttributesToIgnore,
             FileAttributes fileAttributesToIgnore)
         {
             if (!Directory.Exists(path))
@@ -598,21 +574,21 @@ namespace BackupManager
 
         public static void LogWithPushover(string pushoverUserKey, string pushoverAppToken, string logFilePath, BackupAction backupAction, string text, params object[] args)
         {
-            LogWithPushover(pushoverUserKey, pushoverAppToken, logFilePath, backupAction,PushoverPriority.Normal, text, args);
+            LogWithPushover(pushoverUserKey, pushoverAppToken, logFilePath, backupAction, PushoverPriority.Normal, text, args);
         }
 
         public static void LogWithPushover(string pushoverUserKey, string pushoverAppToken, string logFilePath, BackupAction backupAction, PushoverPriority priority, string text, params object[] args)
         {
             Log(logFilePath, System.Enum.GetName(typeof(BackupAction), backupAction) + " " + text, args);
-            
+
             if (!string.IsNullOrEmpty(pushoverAppToken))
             {
                 Utils.SendPushoverMessage(pushoverUserKey, pushoverAppToken, System.Enum.GetName(typeof(BackupAction), backupAction), priority, string.Format(text, args));
             }
         }
-#endregion
+        #endregion
 
-#region Methods
+        #region Methods
 
         /// <summary>
         /// The byte array to string.
@@ -855,11 +831,20 @@ namespace BackupManager
             return (char)(i - 10 + 65 + 32);
         }
 
-#endregion
-
-        public static bool GetDiskFreeSpace(string folderName, out long freespace)
+        #endregion
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="folderName"></param>
+        /// <param name="freespace"in bytes></param>
+        /// <param name="totalBytes">in bytes</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static bool GetDiskInfo(string folderName, out long freespace, out long totalBytes)
         {
             freespace = 0;
+            totalBytes = 0;
+
             if (string.IsNullOrEmpty(folderName))
             {
                 throw new ArgumentNullException("folderName");
@@ -870,17 +855,47 @@ namespace BackupManager
                 folderName += '\\';
             }
 
-            ulong free = 0, dummy1 = 0, dummy2 = 0;
+            ulong free = 0, total = 0, dummy2 = 0;
 
-            if (Utils.GetDiskFreeSpaceEx(folderName, out free, out dummy1, out dummy2))
+            if (Utils.GetDiskFreeSpaceEx(folderName, out free, out total, out dummy2))
             {
                 freespace = Convert.ToInt64(free);
+                totalBytes = Convert.ToInt64(total);
                 return true;
             }
             else
             {
                 return false;
             }
+        }
+        /// <summary>
+        /// Formats a string containing the disk size with a suffix
+        /// </summary>
+        /// <param name="diskSpace">in bytes</param>
+        /// <returns>a string like x TB, x GB, x MB or x KB depending on size</returns>
+        public static string FormatDiskSpace(long diskSpace)
+        {
+            // if diskspace greater than 1GB return xGB
+            // if diskspace greater than 1MB return xMB
+            // else return xKB
+
+            if (diskSpace > 1099511627776)
+            {
+                return string.Format("{0:0.#} TB", (decimal)diskSpace / 1099511627776);
+            }
+
+            if (diskSpace > 1073741824)
+            {
+                return string.Format("{0:n0} GB", diskSpace / 1073741824);
+            }
+
+            if (diskSpace > 1048576)
+            {
+                return string.Format("{0:n0} MB", diskSpace / 1048576);
+
+            }
+
+            return string.Format("{0:n0} KB", diskSpace / 1024);
         }
     }
 }

@@ -56,6 +56,8 @@
             this.listFilesNotCheckedInXXButton = new System.Windows.Forms.Button();
             this.restoreFilesToMasterFolderButton = new System.Windows.Forms.Button();
             this.restoreMasterFolderComboBox = new System.Windows.Forms.ComboBox();
+            this.testPushoverAlertsButton = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // updateMasterFilesButton
@@ -108,7 +110,7 @@
             this.backupDiskTextBox.Name = "backupDiskTextBox";
             this.backupDiskTextBox.Size = new System.Drawing.Size(217, 20);
             this.backupDiskTextBox.TabIndex = 7;
-            this.backupDiskTextBox.Text = "D:\\";
+            this.backupDiskTextBox.Text = "d:\\";
             // 
             // listFilesNotOnBackupButton
             // 
@@ -212,7 +214,7 @@
             // 
             // checkBackupDeleteAndCopyButton
             // 
-            this.checkBackupDeleteAndCopyButton.Location = new System.Drawing.Point(64, 508);
+            this.checkBackupDeleteAndCopyButton.Location = new System.Drawing.Point(64, 542);
             this.checkBackupDeleteAndCopyButton.Name = "checkBackupDeleteAndCopyButton";
             this.checkBackupDeleteAndCopyButton.Size = new System.Drawing.Size(217, 39);
             this.checkBackupDeleteAndCopyButton.TabIndex = 36;
@@ -333,11 +335,33 @@
             this.restoreMasterFolderComboBox.Size = new System.Drawing.Size(167, 21);
             this.restoreMasterFolderComboBox.TabIndex = 32;
             // 
+            // testPushoverAlertsButton
+            // 
+            this.testPushoverAlertsButton.Location = new System.Drawing.Point(179, 509);
+            this.testPushoverAlertsButton.Name = "testPushoverAlertsButton";
+            this.testPushoverAlertsButton.Size = new System.Drawing.Size(102, 27);
+            this.testPushoverAlertsButton.TabIndex = 38;
+            this.testPushoverAlertsButton.Text = "pushover High";
+            this.testPushoverAlertsButton.UseVisualStyleBackColor = true;
+            this.testPushoverAlertsButton.Click += new System.EventHandler(this.testPushoverAlertsButton_Click);
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(64, 509);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(109, 27);
+            this.button4.TabIndex = 39;
+            this.button4.Text = "pushover Normal";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(350, 556);
+            this.ClientSize = new System.Drawing.Size(350, 586);
+            this.Controls.Add(this.button4);
+            this.Controls.Add(this.testPushoverAlertsButton);
             this.Controls.Add(this.listMoviesWithMultipleFilesButton);
             this.Controls.Add(this.checkBackupDeleteAndCopyButton);
             this.Controls.Add(this.button2);
@@ -403,6 +427,8 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button checkBackupDeleteAndCopyButton;
         private System.Windows.Forms.Button listMoviesWithMultipleFilesButton;
+        private System.Windows.Forms.Button testPushoverAlertsButton;
+        private System.Windows.Forms.Button button4;
     }
 }
 

@@ -30,6 +30,9 @@
         [XmlArrayItem("BackupFile")]
         public Collection<BackupFile> BackupFiles;
 
+        [XmlArrayItem("BackupDisk")]
+        public Collection<BackupDisk> BackupDisks;
+
         public bool StartScheduledBackup;
 
         public int ScheduledBackupRepeatInterval;
@@ -276,6 +279,26 @@
             }
 
             return null;
+        }
+
+        public BackupDisk GetBackupDisk(string diskName, string backupShare)
+        {
+            // try and find a disk based on the diskname only
+            // if more than 1 disk than return the first one
+
+            foreach (BackupDisk b in this.BackupDisks)
+            {
+                if (b.Name.StartsWith(diskName))
+                {
+                    b.BackupShare = backupShare;
+                    return b;
+                }
+
+            }
+
+            BackupDisk disk = new BackupDisk(diskName, backupShare);
+            this.BackupDisks.Add(disk);
+            return disk;
         }
 
         public BackupFile GetBackupFile(string hash, string path)
