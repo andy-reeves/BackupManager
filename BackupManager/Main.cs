@@ -389,13 +389,10 @@ namespace BackupManager
                                 File.Copy(sourceFileName, destinationFileName);
                                 DateTime endTime = DateTime.UtcNow;
 
-                                TimeSpan timeTaken = endTime - startTime;
-                                double speed = sourceFileInfo.Length / 1048576 / timeTaken.TotalSeconds;
+                                Utils.Log(logFile, "Copy complete at {0:n2} MB/s.", sourceFileInfo.Length / 1048576 / (endTime - startTime).TotalSeconds);
 
                                 // Make sure its not readonly
                                 Utils.ClearFileAttribute(destinationFileName, FileAttributes.ReadOnly);
-
-                                Utils.Log(logFile, "Copy complete at {0:n2} MB/s.", speed);
 
                                 // it could be that the source file hash changed after we read it (we read the hash, updated the master file and then copied it)
                                 // in which case check the source hash again and then check the copied file 
@@ -406,7 +403,9 @@ namespace BackupManager
                             {
                                 if (!outOfDiskSpaceMessageSent)
                                 {
-                                    Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "Skipping {0} as not enough free space", sourceFileName);
+                                    Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile,
+                                        BackupAction.BackupFiles, "Skipping {0} as not enough free space for {1)", sourceFileName,
+                                        Utils.FormatDiskSpace(sourceFileInfo.Length));
                                     outOfDiskSpaceMessageSent = true;
                                 }
                             }
