@@ -345,7 +345,7 @@ namespace BackupManager
             Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "Started.");
 
             IEnumerable<BackupFile> filesToBackup =
-                this.mediaBackup.BackupFiles.Where(p => string.IsNullOrEmpty(p.BackupDisk));
+                this.mediaBackup.BackupFiles.Where(p => string.IsNullOrEmpty(p.BackupDisk)).OrderByDescending(q => q.Length);
 
             bool outOfDiskSpaceMessageSent = false;
 
@@ -384,12 +384,18 @@ namespace BackupManager
                                 outOfDiskSpaceMessageSent = false;
                                 Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "{0} free. Copying {1}", Utils.FormatDiskSpace(availableSpace), sourceFileName);
                                 Directory.CreateDirectory(Path.GetDirectoryName(destinationFileName));
+                                
+                                DateTime startTime = DateTime.UtcNow;
                                 File.Copy(sourceFileName, destinationFileName);
+                                DateTime endTime = DateTime.UtcNow;
+
+                                TimeSpan timeTaken = endTime - startTime;
+                                double speed = sourceFileInfo.Length / 1048576 / timeTaken.TotalSeconds;
 
                                 // Make sure its not readonly
                                 Utils.ClearFileAttribute(destinationFileName, FileAttributes.ReadOnly);
 
-                                Utils.Log(logFile, "Copy complete.");
+                                Utils.Log(logFile, "Copy complete at {0:n2} MB/s.", speed);
 
                                 // it could be that the source file hash changed after we read it (we read the hash, updated the master file and then copied it)
                                 // in which case check the source hash again and then check the copied file 
@@ -412,10 +418,10 @@ namespace BackupManager
                     }
                 }
 
-                catch (IOException)
+                catch (IOException ex)
                 {
                     // Sometimes during a copy we get this if we lose the connection to the source NAS drive
-                    Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "IOException during copy. Skipping file.");
+                    Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "IOException during copy. Skipping file. Details {0}", ex.ToString());
                 }
             }
             result = disk.Update(this.mediaBackup.BackupFiles);
