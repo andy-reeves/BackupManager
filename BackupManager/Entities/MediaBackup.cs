@@ -106,7 +106,7 @@
             {
                 if (string.IsNullOrEmpty(folder))
                 {
-                    throw new ApplicationException("Empty indexfolders are now not supported.");
+                    throw new ApplicationException("Empty indexfolders are now not supported");
                 }
             }
 
@@ -117,7 +117,7 @@
 
                 if (backupFile.ContentsHash == Utils.ZeroByteHash)
                 {
-                    throw new ApplicationException("Zerobyte Hash detected on Load.");
+                    throw new ApplicationException("Zerobyte Hash detected on load");
                 }
 
                 if (!mediaBackup.hashesAndFileNames.Contains(backupFile.Hash) && !mediaBackup.paths.Contains(backupFile.FullPath))

@@ -142,7 +142,7 @@ namespace BackupManager
                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
                "backup_CheckBackupDisk.txt");
 
-            Utils.Log(logFile, "CheckBackupDisk Started.");
+            Utils.Log(logFile, "CheckBackupDisk Started");
 
             string backupShare = this.backupDiskTextBox.Text;
 
@@ -150,7 +150,7 @@ namespace BackupManager
             // if not thats a problem
             if (!BackupDisk.CheckForValidBackupShare(backupShare))
             {
-                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "No connected backup disk detected.");
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "No connected backup disk detected");
                 return;
             }
 
@@ -179,7 +179,7 @@ namespace BackupManager
 
             if (disk.FreeSpace < this.mediaBackup.MinimumCriticalBackupDiskSpace)
             {
-                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, PushoverPriority.High, "{0} free is very low. Prepare new backup disk.", Utils.FormatDiskSpace(disk.FreeSpace));
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, PushoverPriority.High, "{0} free is very low. Prepare new backup disk", Utils.FormatDiskSpace(disk.FreeSpace));
             }
 
             foreach (BackupFile file in filesToReset)
@@ -231,7 +231,7 @@ namespace BackupManager
                     {
                         Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken,
                             logFile, BackupAction.CheckBackupDisk,
-                            "Extra file {0} on backup disk {1} now deleted.",
+                            "Extra file {0} on backup disk {1} now deleted",
                             backupFileFullPath,
                             backupFolderName);
 
@@ -261,7 +261,7 @@ namespace BackupManager
             // Remove all empty folders
             DeleteEmptyDirectories(logFile, folderToCheck);
 
-            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "Completed.");
+            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "Completed");
         }
 
         private void DeleteEmptyDirectories(string logFile, string startLocation)
@@ -342,7 +342,7 @@ namespace BackupManager
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
                 "backup_CopyMissingFilesToBackupDisk.txt");
 
-            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "Started.");
+            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "Started");
 
             IEnumerable<BackupFile> filesToBackup =
                 this.mediaBackup.BackupFiles.Where(p => string.IsNullOrEmpty(p.BackupDisk)).OrderByDescending(q => q.Length);
@@ -355,7 +355,7 @@ namespace BackupManager
                 {
                     if (string.IsNullOrEmpty(backupFile.IndexFolder))
                     {
-                        throw new ApplicationException("Index folder is empty.");
+                        throw new ApplicationException("Index folder is empty");
                     }
 
                     string destinationFileName = Path.Combine(insertedBackupDrive, backupFile.IndexFolder, backupFile.RelativePath);
@@ -364,7 +364,7 @@ namespace BackupManager
 
                     if (File.Exists(destinationFileName))
                     {
-                        Utils.Log(logFile, "Skipping copy as it exists.");
+                        Utils.Log(logFile, "Skipping copy as it exists");
 
                         // it could be that the source file hash changed after we read it (we read the hash, updated the master file and then copied it)
                         // in which case check the source hash again and then check the copied file 
@@ -389,7 +389,7 @@ namespace BackupManager
                                 File.Copy(sourceFileName, destinationFileName);
                                 DateTime endTime = DateTime.UtcNow;
 
-                                Utils.Log(logFile, "Copy complete at {0:n2} MB/s.", sourceFileInfo.Length / 1048576 / (endTime - startTime).TotalSeconds);
+                                Utils.Log(logFile, "Copy complete at {0:n2} MB/s", sourceFileInfo.Length / 1048576 / (endTime - startTime).TotalSeconds);
 
                                 // Make sure its not readonly
                                 Utils.ClearFileAttribute(destinationFileName, FileAttributes.ReadOnly);
@@ -450,8 +450,8 @@ namespace BackupManager
                 Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "{0:n0} files still without DiskChecked set", filesWithoutDiskChecked.Count());
             }
 
-            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "{0} free on backup disk.", Utils.FormatDiskSpace(disk.FreeSpace));
-            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, PushoverPriority.High, "Completed.");
+            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "{0} free on backup disk", Utils.FormatDiskSpace(disk.FreeSpace));
+            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, PushoverPriority.High, "Completed");
         }
 
         private void EnsureFile(string path, string masterFolder, string indexFolder)
@@ -459,7 +459,7 @@ namespace BackupManager
             // Empty Index folder is now no longer allowed
             if (string.IsNullOrEmpty(indexFolder))
             {
-                throw new ApplicationException("IndexFolder is empty. Not supported.");
+                throw new ApplicationException("IndexFolder is empty. Not supported");
             }
 
             // if we start with underscore then exclude it
@@ -474,12 +474,12 @@ namespace BackupManager
 
             if (backupFile == null)
             {
-                MessageBox.Show(string.Format("Duplicate hashcode detected indicated a copy of a file at {0}.", path), "DuplicateFile", MessageBoxButtons.OK);
+                MessageBox.Show(string.Format("Duplicate hashcode detected indicated a copy of a file at {0}", path), "DuplicateFile", MessageBoxButtons.OK);
             }
 
             if (string.IsNullOrEmpty(backupFile.ContentsHash))
             {
-                throw new ApplicationException("Hash is null or empty.");
+                throw new ApplicationException("Hash is null or empty");
             }
 
             backupFile.Flag = true;
@@ -496,7 +496,7 @@ namespace BackupManager
 
             foreach (BackupFile file in filesNotOnBackupDisk)
             {
-                Utils.Log(logFile, "'{0}' does not have BackupDisk set.", file.FullPath);
+                Utils.Log(logFile, "'{0}' does not have BackupDisk set", file.FullPath);
             }
         }
 
@@ -542,7 +542,7 @@ namespace BackupManager
 
             this.mediaBackup.ClearFlags();
 
-            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "Started.");
+            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "Started");
 
             foreach (string masterFolder in this.mediaBackup.MasterFolders)
             {
@@ -730,7 +730,7 @@ namespace BackupManager
 
             Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "{0} files without DiskChecked set", filesWithoutDiskChecked.Count());
 
-            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "Completed.");
+            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "Completed");
         }
 
         #endregion
@@ -761,7 +761,7 @@ namespace BackupManager
             {
                 Utils.Log(
                     LogFile,
-                    "'{0}' does not have BackupDiskChecked set on backup disk {1} so clearing the BackupDisk.",
+                    "'{0}' does not have BackupDiskChecked set on backup disk {1} so clearing the BackupDisk",
                     file.FullPath,
                     file.BackupDisk);
 
@@ -826,7 +826,7 @@ namespace BackupManager
 
                     if (newFileCount < minimumFileCountAllowed)
                     {
-                        throw new Exception("ERROR: The count of files to backup is too low. Check connections to nas drives.");
+                        throw new Exception("ERROR: The count of files to backup is too low. Check connections to nas drives");
                     }
                 }
 
@@ -964,7 +964,7 @@ namespace BackupManager
                 if (this.masterFoldersComboBox.SelectedItem == null)
                 {
                     MessageBox.Show(
-                    "You must select a master folder that you'd files the files from backup disks restored for. This is typically the drive that is now failing.",
+                    "You must select a master folder that you'd files the files from backup disks restored for. This is typically the drive that is now failing",
                     "Restore backup files",
                     MessageBoxButtons.OK);
                     return;
@@ -975,7 +975,7 @@ namespace BackupManager
                 if (this.restoreMasterFolderComboBox.SelectedItem == null)
                 {
                     MessageBox.Show(
-                    "You must select a master folder that you'd files the files from backup copied to. This is typically a new drive that will replace the failing drive.",
+                    "You must select a master folder that you'd files the files from backup copied to. This is typically a new drive that will replace the failing drive",
                     "Restore backup files",
                     MessageBoxButtons.OK);
                     return;
@@ -985,7 +985,7 @@ namespace BackupManager
                 if (string.Equals(masterFolder, targetMasterFolder, StringComparison.CurrentCultureIgnoreCase))
                 {
                     MessageBox.Show(
-                   "You must select 2 different master folders.",
+                   "You must select 2 different master folders",
                    "Restore backup files",
                    MessageBoxButtons.OK);
                     return;
@@ -1013,7 +1013,7 @@ namespace BackupManager
                     if (!EnsureConnectedBackupDisk(file.BackupDisk))
                     {
                         MessageBox.Show(
-                  "Cannot connect to the backup drive required.",
+                  "Cannot connect to the backup drive required",
                   "Restore backup files",
                   MessageBoxButtons.OK);
                         return;
@@ -1066,7 +1066,7 @@ namespace BackupManager
                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
                "backup_RenameTVEpisodes.txt");
 
-            Utils.Log(logFile, "Rename TV episodes Started.");
+            Utils.Log(logFile, "Rename TV episodes started");
 
             string backupShare = this.backupDiskTextBox.Text;
 
@@ -1074,7 +1074,7 @@ namespace BackupManager
             // if not thats a problem
             if (!BackupDisk.CheckForValidBackupShare(backupShare))
             {
-                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "No connected backup disk detected.");
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "No connected backup disk detected");
                 return;
             }
 
@@ -1137,7 +1137,7 @@ namespace BackupManager
             // Remove all empty folders
             DeleteEmptyDirectories(logFile, folderToCheck);
 
-            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "Completed.");
+            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "Completed");
         }
 
         private void renameMoviesButton_Click(object sender, EventArgs e)
@@ -1149,7 +1149,7 @@ namespace BackupManager
                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
                "backup_RenameMovies.txt");
 
-            Utils.Log(logFile, "Rename Movies Started.");
+            Utils.Log(logFile, "Rename Movies Started");
 
             string backupShare = this.backupDiskTextBox.Text;
 
@@ -1157,7 +1157,7 @@ namespace BackupManager
             // if not thats a problem
             if (!BackupDisk.CheckForValidBackupShare(backupShare))
             {
-                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "No connected backup disk detected.");
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "No connected backup disk detected");
                 return;
             }
 
@@ -1219,7 +1219,7 @@ namespace BackupManager
             // Remove all empty folders
             DeleteEmptyDirectories(logFile, folderToCheck);
 
-            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "Completed.");
+            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "Completed");
         }
 
         private void button2_Click_1(object sender, EventArgs e)
@@ -1293,7 +1293,7 @@ namespace BackupManager
             string logFile = Path.Combine(
               Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
               "backup_TestPushoverAlerts.txt");
-            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.General, PushoverPriority.High, "High priority test.");
+            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.General, PushoverPriority.High, "High priority test");
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -1303,7 +1303,7 @@ namespace BackupManager
               Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
               "backup_TestPushoverAlerts.txt");
 
-            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.General, PushoverPriority.Normal, "Normal priority test.");
+            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.General, PushoverPriority.Normal, "Normal priority test");
         }
     }
 }

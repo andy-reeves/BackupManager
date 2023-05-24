@@ -154,7 +154,7 @@
 
             if (this.ContentsHash == Utils.ZeroByteHash)
             {
-                throw new ApplicationException(string.Format("File '{0}' has zerobyte Hashcode.", this.FullPath));
+                throw new ApplicationException(string.Format("File '{0}' has zerobyte Hashcode", this.FullPath));
             }
 
             // force the hash to be re-calculated 
@@ -172,7 +172,7 @@
 
             if (this.Length == 0)
             {
-                throw new ApplicationException(string.Format("File '{0}' has 0 length.", this.FullPath));
+                throw new ApplicationException(string.Format("File '{0}' has 0 length", this.FullPath));
             }
         }
     }
