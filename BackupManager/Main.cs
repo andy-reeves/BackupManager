@@ -347,6 +347,17 @@ namespace BackupManager
             IEnumerable<BackupFile> filesToBackup =
                 this.mediaBackup.BackupFiles.Where(p => string.IsNullOrEmpty(p.BackupDisk)).OrderByDescending(q => q.Length);
 
+            if (filesToBackup.Count() > 0)
+            {
+                long sizeOfFiles = 0;
+                foreach (BackupFile file in filesToBackup)
+                {
+                    sizeOfFiles += file.Length;
+                }
+
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "{0:n0} files to backup with a size of {1}", filesToBackup.Count(), Utils.FormatDiskSpace(sizeOfFiles));
+            }
+
             bool outOfDiskSpaceMessageSent = false;
 
             foreach (BackupFile backupFile in filesToBackup)
@@ -440,14 +451,14 @@ namespace BackupManager
                     sizeOfFiles += file.Length;
                 }
 
-                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "{0:n0} files still to backup with a size of {1}", filesNotOnBackupDisk.Count(), Utils.FormatDiskSpace(sizeOfFiles));
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "{0:n0} files still to backup with a size of {1}", filesNotOnBackupDisk.Count(), Utils.FormatDiskSpace(sizeOfFiles));
             }
 
             IEnumerable<BackupFile> filesWithoutDiskChecked = this.mediaBackup.BackupFiles.Where(p => string.IsNullOrEmpty(p.BackupDiskChecked));
 
             if (filesWithoutDiskChecked.Count() > 0)
             {
-                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "{0:n0} files still without DiskChecked set", filesWithoutDiskChecked.Count());
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "{0:n0} files still without DiskChecked set", filesWithoutDiskChecked.Count());
             }
 
             Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "{0} free on backup disk", Utils.FormatDiskSpace(disk.FreeSpace));
