@@ -347,12 +347,10 @@ namespace BackupManager
             IEnumerable<BackupFile> filesToBackup =
                 this.mediaBackup.BackupFiles.Where(p => string.IsNullOrEmpty(p.BackupDisk)).OrderByDescending(q => q.Length);
 
-            if (filesToBackup.Count() > 0)
-            {
-                long sizeOfFiles = filesToBackup.Sum(x => x.Length);
+            long sizeOfFiles = filesToBackup.Sum(x => x.Length);
 
-                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "{0:n0} files to backup with a size of {1}", filesToBackup.Count(), Utils.FormatDiskSpace(sizeOfFiles));
-            }
+            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles,
+                "{0:n0} files to backup at {1}", filesToBackup.Count(), Utils.FormatDiskSpace(sizeOfFiles));
 
             bool outOfDiskSpaceMessageSent = false;
 
@@ -368,6 +366,7 @@ namespace BackupManager
                     string destinationFileName = Path.Combine(insertedBackupDrive, backupFile.IndexFolder, backupFile.RelativePath);
                     string sourceFileName = backupFile.FullPath;
                     FileInfo sourceFileInfo = new FileInfo(sourceFileName);
+                    string sourceFileSize = Utils.FormatDiskSpace(sourceFileInfo.Length);
 
                     if (File.Exists(destinationFileName))
                     {
@@ -384,12 +383,13 @@ namespace BackupManager
                         long totalBytes;
                         result = Utils.GetDiskInfo(backupShare, out availableSpace, out totalBytes);
 
+
                         if (availableSpace > (this.mediaBackup.MinimumFreeSpaceToLeaveOnBackupDrive * 1024 * 1024))
                         {
                             if (availableSpace > sourceFileInfo.Length)
                             {
                                 outOfDiskSpaceMessageSent = false;
-                                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "{0} free. Copying {1}", Utils.FormatDiskSpace(availableSpace), sourceFileName);
+                                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "{0} free. Copying {1} at {2}", Utils.FormatDiskSpace(availableSpace), sourceFileName, sourceFileSize);
                                 Directory.CreateDirectory(Path.GetDirectoryName(destinationFileName));
 
                                 DateTime startTime = DateTime.UtcNow;
@@ -410,7 +410,6 @@ namespace BackupManager
                             {
                                 if (!outOfDiskSpaceMessageSent)
                                 {
-                                    string sourceFileSize = Utils.FormatDiskSpace(sourceFileInfo.Length);
                                     Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "Skipping {0} as not enough free space for {1}", sourceFileName, sourceFileSize);
                                     outOfDiskSpaceMessageSent = true;
                                 }
@@ -437,13 +436,13 @@ namespace BackupManager
 
             this.mediaBackup.Save();
 
-            IEnumerable<BackupFile> filesNotOnBackupDisk = this.mediaBackup.BackupFiles.Where(p => string.IsNullOrEmpty(p.BackupDisk));
+            IEnumerable<BackupFile> filesStillNotOnBackupDisk = this.mediaBackup.BackupFiles.Where(p => string.IsNullOrEmpty(p.BackupDisk));
 
-            if (filesNotOnBackupDisk.Count() > 0)
+            if (filesStillNotOnBackupDisk.Count() > 0)
             {
-                long sizeOfFiles = filesNotOnBackupDisk.Sum(p => p.Length);
+                sizeOfFiles = filesStillNotOnBackupDisk.Sum(p => p.Length);
 
-                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "{0:n0} files still to backup with a size of {1}", filesNotOnBackupDisk.Count(), Utils.FormatDiskSpace(sizeOfFiles));
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "{0:n0} files still to backup at {1}", filesStillNotOnBackupDisk.Count(), Utils.FormatDiskSpace(sizeOfFiles));
             }
 
             IEnumerable<BackupFile> filesWithoutDiskChecked = this.mediaBackup.BackupFiles.Where(p => string.IsNullOrEmpty(p.BackupDiskChecked));
@@ -549,17 +548,16 @@ namespace BackupManager
 
             foreach (string masterFolder in this.mediaBackup.MasterFolders)
             {
-                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "Scanning {0}", masterFolder);
-
                 if (Directory.Exists(masterFolder))
                 {         
                     long freeSpaceOnCurrentMasterFolder;
-                    long totalBytes;
-                    Utils.GetDiskInfo(masterFolder, out freeSpaceOnCurrentMasterFolder, out totalBytes);
+                    long totalBytesOnMasterFolderDisk;
+                    Utils.GetDiskInfo(masterFolder, out freeSpaceOnCurrentMasterFolder, out totalBytesOnMasterFolderDisk);
 
-                    Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "{0} free on {1}", Utils.FormatDiskSpace(freeSpaceOnCurrentMasterFolder), masterFolder);
+                    Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "{0} free from {1} on {2}",
+                        Utils.FormatDiskSpace(freeSpaceOnCurrentMasterFolder), Utils.FormatDiskSpace(totalBytesOnMasterFolderDisk), masterFolder);
 
-                    if (freeSpaceOnCurrentMasterFolder < this.mediaBackup.MinimumCriticalMasterFolderSpace)
+                    if (freeSpaceOnCurrentMasterFolder < (this.mediaBackup.MinimumCriticalMasterFolderSpace * 1024 * 1024))
                     {
                         Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "Free space on {0} is too low", masterFolder);
                     }
@@ -686,25 +684,29 @@ namespace BackupManager
 
             this.mediaBackup.RemoveFilesWithFlag(false, true);
 
-            this.mediaBackup.Save();
-
             var totalFiles = this.mediaBackup.BackupFiles.Count();
 
-            long totalFileSize = 0;
-            long fileSizeToCopy = 0;
+            long totalFileSize = mediaBackup.BackupFiles.Sum(p => p.Length);
+
+            IEnumerable<BackupFile> filesNotOnBackupDisk = this.mediaBackup.BackupFiles.Where(p => string.IsNullOrEmpty(p.BackupDisk));
+
+            long fileSizeToCopy = filesNotOnBackupDisk.Sum(p => p.Length);
+
+            // sometimes we can end up with backupfiles that have a <DiskChecked> entry but not a <BackupDisk>
+            // if backupdisk isnull or empty then clear diskchecked before saving
+            foreach(var backupFile in filesNotOnBackupDisk)
+            {
+                backupFile.BackupDiskChecked = null;
+            }
+
+            this.mediaBackup.Save();
 
             DateTime oldestFileDate = DateTime.Today;
             BackupFile oldestFile = null;
 
             foreach (var backupFile in this.mediaBackup.BackupFiles)
             {
-                totalFileSize += backupFile.Length;
-
-                if (backupFile.BackupDiskChecked == null)
-                {
-                    fileSizeToCopy += backupFile.Length;
-                }
-                else
+                if (!string.IsNullOrEmpty(backupFile.BackupDiskChecked))
                 {
                     DateTime backupFileDate = DateTime.Parse(backupFile.BackupDiskChecked);
 
@@ -722,16 +724,13 @@ namespace BackupManager
             {
                 Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "Oldest backup date is {0:n0} days ago at {1} for {2} on {3}", DateTime.Today.Subtract(oldestFileDate).Days, oldestFileDate.ToShortDateString(), oldestFile.GetFileName(), oldestFile.BackupDisk);
             }
-
-            IEnumerable<BackupFile> filesNotOnBackupDisk =
-               this.mediaBackup.BackupFiles.Where(p => string.IsNullOrEmpty(p.BackupDisk));
-
-            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "{0} files to backup at {1}", filesNotOnBackupDisk.Count(), Utils.FormatDiskSpace(fileSizeToCopy));
+           
+            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "{0:n0} files to backup at {1}", filesNotOnBackupDisk.Count(), Utils.FormatDiskSpace(fileSizeToCopy));
 
             IEnumerable<BackupFile> filesWithoutDiskChecked =
                this.mediaBackup.BackupFiles.Where(p => string.IsNullOrEmpty(p.BackupDiskChecked));
 
-            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "{0} files without DiskChecked set", filesWithoutDiskChecked.Count());
+            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "{0:n0} files without DiskChecked set", filesWithoutDiskChecked.Count());
 
             Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "Completed");
         }

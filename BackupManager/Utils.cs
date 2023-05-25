@@ -836,7 +836,7 @@ namespace BackupManager
         /// 
         /// </summary>
         /// <param name="folderName"></param>
-        /// <param name="freespace"in bytes></param>
+        /// <param name="freespace">in bytes</param>
         /// <param name="totalBytes">in bytes</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>

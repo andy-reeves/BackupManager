@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MediaBackup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <!-- Backup run interval in minutes -->
-  <ScheduledBackupRepeatInterval>10</ScheduledBackupRepeatInterval> 
-  <!-- When true a backup scan will run when the app starts -->
-  <StartScheduledBackup>false</StartScheduledBackup>
   <PushoverUserKey>InsertYourPushoverUserKeyHere</PushoverUserKey>
   <PushoverAppToken>InsertYourPushoverAppTokenHere</PushoverAppToken>
+  
+  <!-- When true a backup scan will run when the app starts -->
+  <StartScheduledBackup>false</StartScheduledBackup>
+  <!-- A bigger percentage difference than this and the backup stops -->
   <DifferenceInFileCountAllowedPercentage>2</DifferenceInFileCountAllowedPercentage>
+  <!--  ScheduledBackupRepeatInterval in mins -->
   <ScheduledBackupRepeatInterval>1440</ScheduledBackupRepeatInterval>
+  <!-- MinimumCriticalMasterFolderSpace in MB -->
   <MinimumCriticalMasterFolderSpace>200</MinimumCriticalMasterFolderSpace>
+  <!-- MinimumCriticalBackupDiskSpace in MB -->
   <MinimumCriticalBackupDiskSpace>1</MinimumCriticalBackupDiskSpace>
+  <!-- After this many days the backup warns to check the disks again -->
   <DaysToReportOldBackupDisks>90</DaysToReportOldBackupDisks>
+  <!-- MinimumFreeSpaceToLeaveOnBackupDrive in MB -->
   <MinimumFreeSpaceToLeaveOnBackupDrive>10</MinimumFreeSpaceToLeaveOnBackupDrive>
   <MasterFolders>
     <!-- List each UNC path that you want to scan for files to backup here -->
@@ -28,9 +33,9 @@
     <MasterFolder>\\nas3\assets4</MasterFolder>
   </MasterFolders>
   <IndexFolders>
-    <!-- These ar ethe subfolders that will be searched in the shares above -->
+    <!-- These are the subfolders that will be searched in the shares above -->
     <IndexFolder>_Audio Books</IndexFolder>
-    <IndexFolder>_Comedy Shows</IndexFolder>
+    <IndexFolder>_Comedy</IndexFolder>
     <IndexFolder>_Concerts</IndexFolder>
     <IndexFolder>_MMA</IndexFolder>
     <IndexFolder>_Movies</IndexFolder>
@@ -39,7 +44,7 @@
     <IndexFolder>_Pictures</IndexFolder>
     <IndexFolder>_Playlists</IndexFolder>
     <IndexFolder>_Sport</IndexFolder>
-    <IndexFolder>_TV Series</IndexFolder>
+    <IndexFolder>_TV</IndexFolder>
     <IndexFolder>_Videos</IndexFolder>
   </IndexFolders>
   <Filters>
