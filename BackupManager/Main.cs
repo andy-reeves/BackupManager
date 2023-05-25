@@ -185,6 +185,7 @@ namespace BackupManager
             foreach (BackupFile file in filesToReset)
             {
                 file.BackupDisk = null;
+                file.BackupDiskChecked = null;
             }
 
             string[] backupDiskFiles = Utils.GetFiles(
@@ -726,11 +727,6 @@ namespace BackupManager
             }
            
             Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "{0:n0} files to backup at {1}", filesNotOnBackupDisk.Count(), Utils.FormatDiskSpace(fileSizeToCopy));
-
-            IEnumerable<BackupFile> filesWithoutDiskChecked =
-               this.mediaBackup.BackupFiles.Where(p => string.IsNullOrEmpty(p.BackupDiskChecked));
-
-            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "{0:n0} files without DiskChecked set", filesWithoutDiskChecked.Count());
 
             Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "Completed");
         }
