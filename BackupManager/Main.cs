@@ -349,11 +349,7 @@ namespace BackupManager
 
             if (filesToBackup.Count() > 0)
             {
-                long sizeOfFiles = 0;
-                foreach (BackupFile file in filesToBackup)
-                {
-                    sizeOfFiles += file.Length;
-                }
+                long sizeOfFiles = filesToBackup.Sum(x => x.Length);
 
                 Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "{0:n0} files to backup with a size of {1}", filesToBackup.Count(), Utils.FormatDiskSpace(sizeOfFiles));
             }
@@ -445,11 +441,7 @@ namespace BackupManager
 
             if (filesNotOnBackupDisk.Count() > 0)
             {
-                long sizeOfFiles = 0;
-                foreach (BackupFile file in filesNotOnBackupDisk)
-                {
-                    sizeOfFiles += file.Length;
-                }
+                long sizeOfFiles = filesNotOnBackupDisk.Sum(p => p.Length);
 
                 Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "{0:n0} files still to backup with a size of {1}", filesNotOnBackupDisk.Count(), Utils.FormatDiskSpace(sizeOfFiles));
             }
@@ -794,7 +786,6 @@ namespace BackupManager
 
                 // Fire once as you've clicked the button
                 ScheduledBackup();
-
             }
             else
             {
