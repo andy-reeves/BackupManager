@@ -869,10 +869,10 @@ namespace BackupManager
             }
         }
         /// <summary>
-        /// Formats a string containing the disk size with a suffix
+        /// Formats a string containing a disk size with a suffix
         /// </summary>
         /// <param name="diskSpace">in bytes</param>
-        /// <returns>a string like x TB, x GB, x MB or x KB depending on size</returns>
+        /// <returns>a string like x.yTB, xGB, xMB or xKB depending on size</returns>
         public static string FormatDiskSpace(long diskSpace)
         {
             // if diskspace greater than 1GB return xGB
@@ -881,21 +881,21 @@ namespace BackupManager
 
             if (diskSpace > 1099511627776)
             {
-                return string.Format("{0:0.#} TB", (decimal)diskSpace / 1099511627776);
+                return string.Format("{0:0.#}TB", (decimal)diskSpace / 1099511627776);
             }
 
             if (diskSpace > 1073741824)
             {
-                return string.Format("{0:n0} GB", diskSpace / 1073741824);
+                return string.Format("{0:n0}GB", diskSpace / 1073741824);
             }
 
             if (diskSpace > 1048576)
             {
-                return string.Format("{0:n0} MB", diskSpace / 1048576);
+                return string.Format("{0:n0}MB", diskSpace / 1048576);
 
             }
 
-            return string.Format("{0:n0} KB", diskSpace / 1024);
+            return string.Format("{0:n0}KB", diskSpace / 1024);
         }
     }
 }

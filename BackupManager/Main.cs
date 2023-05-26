@@ -592,8 +592,10 @@ namespace BackupManager
                                     }
                                 }
 
-                                // Checks for Movies only
-                                if (file.Contains("_Movies"))
+                                // Checks for Movies, Comedy, Concerts only
+                                if (file.Contains("_Movies") ||
+                                    file.Contains("_Concerts") ||
+                                    file.Contains("_Comedy"))
                                 {
                                     if (!file.Contains("tmdb"))
                                     {
@@ -606,6 +608,24 @@ namespace BackupManager
                                             file.Contains("-behindthescenes.") ||
                                             file.Contains("-trailer.")))
                                             Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "Movie has missing tmdb- in the filename {0}", file);
+                                    }
+
+                                    if (!(file.Contains("-featurette.") ||
+                                            file.Contains("-other.") ||
+                                            file.Contains("-interview.") ||
+                                            file.Contains("-scene.") ||
+                                            file.Contains("-short.") ||
+                                            file.Contains("-deleted.") ||
+                                            file.Contains("-behindthescenes.") ||
+                                            file.Contains("-trailer.")))
+                                    {
+                                        FileInfo fileInfo = new FileInfo(file);
+                                        string movieDirectoryName = fileInfo.Directory.Name;
+                                        string fileLeafName = fileInfo.Name;
+                                        if (!fileLeafName.StartsWith(movieDirectoryName))
+                                        {
+                                            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "Movie filename doesn't start with the folder name in the filename {0}", file);
+                                        }
                                     }
                                 }
 
