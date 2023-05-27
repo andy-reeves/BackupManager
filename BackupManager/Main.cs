@@ -426,7 +426,7 @@ namespace BackupManager
                 catch (IOException ex)
                 {
                     // Sometimes during a copy we get this if we lose the connection to the source NAS drive
-                    Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "IOException during copy. Skipping file. Details {0}", ex.ToString());
+                    Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles,PushoverPriority.High, "IOException during copy. Skipping file. Details {0}", ex.ToString());
                 }
             }
             result = disk.Update(this.mediaBackup.BackupFiles);
