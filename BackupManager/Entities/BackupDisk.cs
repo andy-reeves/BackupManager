@@ -22,7 +22,9 @@
 		[XmlIgnore]
 		public string BackupShare;
 
-		public BackupDisk()
+        public string BackupPath { get => Path.Combine(this.BackupShare, this.Name); }
+
+        public BackupDisk()
 		{
 		}
 
@@ -32,6 +34,7 @@
 			this.BackupShare = backupShare;
 
 			BackupDisk.CheckForValidBackupShare(this.BackupShare);
+
 		}
 		public bool Update(Collection<BackupFile> backupFiles)
 		{

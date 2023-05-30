@@ -146,15 +146,24 @@ namespace BackupManager
 
             string backupShare = this.backupDiskTextBox.Text;
 
-            if (!BackupDisk.CheckForValidBackupShare(backupShare))
+            // check the backupDisks has an entry for this disk
+            BackupDisk disk = this.mediaBackup.GetBackupDisk(backupShare);
+            if (disk == null)
             {
-                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, PushoverPriority.High, "No connected backup disk detected");
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, PushoverPriority.High, "Error updating info for backup share {0}", backupShare);
                 return;
             }
 
-            string backupFolderName = BackupDisk.GetBackupFolderName(backupShare);
+            var result = disk.Update(this.mediaBackup.BackupFiles);
 
-            string folderToCheck = Path.Combine(backupShare, backupFolderName);
+            if (!result)
+            {   // In this shared folder there should be another folder that starts with 'Backup' like 'Backup 18'
+                // if not thats a problem
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, PushoverPriority.High, "Error updating info for backup disk {0}", disk.Name);
+                return;
+            }
+
+            string folderToCheck = disk.BackupPath;
 
             // reset the filters because we want to search for all extra files
             string filters = "*";
@@ -162,20 +171,9 @@ namespace BackupManager
             IEnumerable<BackupFile> filesToReset =
                 this.mediaBackup.BackupFiles.Where(
                     p =>
-                    p.BackupDisk != null && p.BackupDisk.Equals(backupFolderName, StringComparison.CurrentCultureIgnoreCase));
+                    p.BackupDisk != null && p.BackupDisk.Equals(disk.Name, StringComparison.CurrentCultureIgnoreCase));
 
-            // check the backupDisks has an entry for this disk
-            BackupDisk disk = this.mediaBackup.GetBackupDisk(backupFolderName, backupShare);
-            var result = disk.Update(this.mediaBackup.BackupFiles);
-
-            if (!result)
-            {   // In this shared folder there should be another folder that starts with 'Backup' like 'Backup 18'
-                // if not thats a problem
-                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, PushoverPriority.High, "Error updating info for backup disk {0}", backupFolderName);
-                return;
-            }
-
-            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "Checking {0} - {1} with {2} free", backupFolderName, Utils.FormatDiskSpace(disk.TotalSize), Utils.FormatDiskSpace(disk.FreeSpace));
+            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "Checking {0} - {1} with {2} free", disk.Name, Utils.FormatDiskSpace(disk.TotalSize), Utils.FormatDiskSpace(disk.FreeSpace));
 
             if (disk.FreeSpace < this.mediaBackup.MinimumCriticalBackupDiskSpace)
             {
@@ -205,7 +203,7 @@ namespace BackupManager
 
                     // Reset the source file hash because we want to confirm the source file can be read 
                     backupFile.ContentsHash = Utils.GetShortMd5HashFromFile(backupFile.FullPath);
-                    CheckHashOnBackupDisk(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, backupFileFullPath, backupFile, backupFolderName);
+                    CheckHashOnBackupDisk(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, backupFileFullPath, backupFile, disk.Name);
 
                     // So we can get the situation where the hash of a file on disk is equal to a hash of a file we have
                     // It could have a different filename on the backup disk though (if we renamed the master file)
@@ -234,7 +232,7 @@ namespace BackupManager
                             logFile, BackupAction.CheckBackupDisk,
                             "Extra file {0} on backup disk {1} now deleted",
                             backupFileFullPath,
-                            backupFolderName);
+disk.Name);
 
                         Utils.ClearFileAttribute(backupFileFullPath, FileAttributes.ReadOnly);
 
@@ -247,14 +245,14 @@ namespace BackupManager
                             logFile, BackupAction.CheckBackupDisk,
                             "Extra file {0} on backup disk {1}",
                             backupFileFullPath,
-                            backupFolderName);
+disk.Name);
                     }
                 }
             }
             result = disk.Update(this.mediaBackup.BackupFiles);
             if (!result)
             {
-                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, PushoverPriority.High, "Error updating info for backup disk {0}", backupFolderName);
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, PushoverPriority.High, "Error updating info for backup disk {0}", disk.Name);
                 return;
             }
 
@@ -319,31 +317,28 @@ namespace BackupManager
 
         private void CopyFiles()
         {
-            string backupShare = this.backupDiskTextBox.Text;
-
-            // In this shared folder there should be another folder that starts with 'Backup' like 'Backup 18'
-            // if not thats a problem
-            if (!BackupDisk.CheckForValidBackupShare(backupShare))
-            {
-                return;
-            }
-
             string logFile = Path.Combine(
                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
                "backup_CopyMissingFilesToBackupDisk.txt");
 
-            string backupFolderName = BackupDisk.GetBackupFolderName(backupShare);
-
-            string insertedBackupDrive = Path.Combine(backupShare, backupFolderName);
+            string backupShare = this.backupDiskTextBox.Text;
 
             // check the backupDisks has an entry for this disk
-            BackupDisk disk = this.mediaBackup.GetBackupDisk(backupFolderName, backupShare);
+            BackupDisk disk = this.mediaBackup.GetBackupDisk(backupShare);
+            if (disk == null)
+            {
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, PushoverPriority.High, "Error updating info for backup share {0}", backupShare);
+                return;
+            }
+
             var result = disk.Update(this.mediaBackup.BackupFiles);
             if (!result)
             {
-                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, PushoverPriority.High, "Error updating info for backup disk {0}", backupFolderName);
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, PushoverPriority.High, "Error updating info for backup  {0}", disk.Name);
                 return;
             }
+
+            string insertedBackupDrive = disk.BackupPath;
 
             Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "Started");
 
@@ -378,7 +373,7 @@ namespace BackupManager
                         // it could be that the source file hash changed after we read it (we read the hash, updated the master file and then copied it)
                         // in which case check the source hash again and then check the copied file 
                         backupFile.ContentsHash = Utils.GetShortMd5HashFromFile(sourceFileName);
-                        CheckHashOnBackupDisk(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, destinationFileName, backupFile, backupFolderName);
+                        CheckHashOnBackupDisk(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, destinationFileName, backupFile, disk.Name);
                     }
                     else
                     {
@@ -407,7 +402,7 @@ namespace BackupManager
                                 // it could be that the source file hash changed after we read it (we read the hash, updated the master file and then copied it)
                                 // in which case check the source hash again and then check the copied file 
                                 backupFile.ContentsHash = Utils.GetShortMd5HashFromFile(sourceFileName);
-                                CheckHashOnBackupDisk(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, destinationFileName, backupFile, backupFolderName);
+                                CheckHashOnBackupDisk(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, destinationFileName, backupFile, disk.Name);
                             }
                             else
                             {
@@ -435,7 +430,7 @@ namespace BackupManager
             result = disk.Update(this.mediaBackup.BackupFiles);
             if (!result)
             {
-                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, PushoverPriority.High, "Error updating info for backup disk {0}", backupFolderName);
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, PushoverPriority.High, "Error updating info for backup disk {0}", disk.Name);
                 return;
             }
 

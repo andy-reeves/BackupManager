@@ -281,10 +281,16 @@
             return null;
         }
 
-        public BackupDisk GetBackupDisk(string diskName, string backupShare)
+        public BackupDisk GetBackupDisk(string backupShare)
         {
             // try and find a disk based on the diskname only
             // if more than 1 disk than return the first one
+            string diskName = BackupDisk.GetBackupFolderName(backupShare);
+
+            if (string.IsNullOrEmpty(diskName))
+            {
+                return null;
+            }
 
             foreach (BackupDisk b in this.BackupDisks)
             {
