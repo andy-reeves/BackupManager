@@ -293,7 +293,6 @@
                     b.BackupShare = backupShare;
                     return b;
                 }
-
             }
 
             BackupDisk disk = new BackupDisk(diskName, backupShare);

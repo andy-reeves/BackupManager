@@ -146,11 +146,9 @@ namespace BackupManager
 
             string backupShare = this.backupDiskTextBox.Text;
 
-            // In this shared folder there should be another folder that starts with 'Backup' like 'Backup 18'
-            // if not thats a problem
             if (!BackupDisk.CheckForValidBackupShare(backupShare))
             {
-                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "No connected backup disk detected");
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, PushoverPriority.High, "No connected backup disk detected");
                 return;
             }
 
@@ -171,7 +169,8 @@ namespace BackupManager
             var result = disk.Update(this.mediaBackup.BackupFiles);
 
             if (!result)
-            {
+            {   // In this shared folder there should be another folder that starts with 'Backup' like 'Backup 18'
+                // if not thats a problem
                 Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, PushoverPriority.High, "Error updating info for backup disk {0}", backupFolderName);
                 return;
             }
