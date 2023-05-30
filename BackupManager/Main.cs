@@ -172,7 +172,8 @@ namespace BackupManager
 
             if (!result)
             {
-                MessageBox.Show(String.Format("Error updating info for backup disk {0}", backupFolderName), "Backup Disk Error");
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, PushoverPriority.High, "Error updating info for backup disk {0}", backupFolderName);
+                return;
             }
 
             Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "Checking {0} - {1} with {2} free", backupFolderName, Utils.FormatDiskSpace(disk.TotalSize), Utils.FormatDiskSpace(disk.FreeSpace));
@@ -254,7 +255,8 @@ namespace BackupManager
             result = disk.Update(this.mediaBackup.BackupFiles);
             if (!result)
             {
-                MessageBox.Show(String.Format("Error updating info for backup disk {0}", backupFolderName), "Backup Disk Error");
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, PushoverPriority.High, "Error updating info for backup disk {0}", backupFolderName);
+                return;
             }
 
             this.mediaBackup.Save();
@@ -327,6 +329,10 @@ namespace BackupManager
                 return;
             }
 
+            string logFile = Path.Combine(
+               Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+               "backup_CopyMissingFilesToBackupDisk.txt");
+
             string backupFolderName = BackupDisk.GetBackupFolderName(backupShare);
 
             string insertedBackupDrive = Path.Combine(backupShare, backupFolderName);
@@ -336,12 +342,9 @@ namespace BackupManager
             var result = disk.Update(this.mediaBackup.BackupFiles);
             if (!result)
             {
-                MessageBox.Show(String.Format("Error updating info for backup disk {0}", backupFolderName), "Backup Disk Error");
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, PushoverPriority.High, "Error updating info for backup disk {0}", backupFolderName);
+                return;
             }
-
-            string logFile = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                "backup_CopyMissingFilesToBackupDisk.txt");
 
             Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "Started");
 
@@ -429,10 +432,12 @@ namespace BackupManager
                     Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles,PushoverPriority.High, "IOException during copy. Skipping file. Details {0}", ex.ToString());
                 }
             }
+
             result = disk.Update(this.mediaBackup.BackupFiles);
             if (!result)
             {
-                MessageBox.Show(String.Format("Error updating info for backup disk {0}", backupFolderName), "Backup Disk Error");
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, PushoverPriority.High, "Error updating info for backup disk {0}", backupFolderName);
+                return;
             }
 
             this.mediaBackup.Save();
