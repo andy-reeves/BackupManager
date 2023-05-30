@@ -591,7 +591,7 @@ disk.Name);
                                     }
                                 }
 
-                                // Checks for Movies, Comedy, Concerts only
+                                // Checks for Movies, Comedy, Concerts only (main Video folders)
                                 if (file.Contains("_Movies") ||
                                     file.Contains("_Concerts") ||
                                     file.Contains("_Comedy"))
@@ -618,17 +618,42 @@ disk.Name);
                                             file.Contains("-behindthescenes.") ||
                                             file.Contains("-trailer.")))
                                     {
-                                        FileInfo fileInfo = new FileInfo(file);
-                                        string movieDirectoryName = fileInfo.Directory.Name;
-                                        string fileLeafName = fileInfo.Name;
-                                        if (!fileLeafName.StartsWith(movieDirectoryName))
+                                        FileInfo movieFileInfo = new FileInfo(file);
+                                        if (!movieFileInfo.Name.StartsWith(movieFileInfo.Directory.Name))
                                         {
                                             Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "Movie filename doesn't start with the folder name in the filename {0}", file);
                                         }
                                     }
+
+                                    //Edition checks '{edition-EXTENDED EDITION}'
+                                    if (file.Contains("{edition-"))
+                                    {
+                                        bool found = false;
+                                        foreach (string s in this.mediaBackup.EditionsAllowed)
+                                        {
+                                            if (file.Contains("{edition-" + s, StringComparison.OrdinalIgnoreCase))
+                                            {
+                                                found = true;
+                                                break;
+                                            }
+                                        }
+                                        if (!found)
+                                        {
+                                            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "File has 'edition-' in the filename {0} but no valid edition specification", file);
+                                        }
+                                    }
+
+                                    // check that movies only have files in the directories and no subfolders
+                                    FileInfo fileInfo = new FileInfo(file);
+
+                                    DirectoryInfo[] siblingDirectories = fileInfo.Directory.GetDirectories();
+                                    if (siblingDirectories != null && siblingDirectories.Count() > 0)
+                                    {
+                                        Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "File {0} has folders alongside it", file);
+                                    }
                                 }
 
-                                // Checks for Movies, TV, Comedy or Concerts (Video files)
+                                // Checks for Movies, TV, Comedy or Concerts (All Video files)
                                 if (file.Contains("_TV") ||
                                     file.Contains("_Movies") ||
                                     file.Contains("_Concerts") ||
@@ -661,25 +686,7 @@ disk.Name);
                                     if (!found)
                                     {
                                         Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "Video has an invalid file extension in the filename {0}", file);
-                                    }
-
-                                    //Edition checks '{edition-EXTENDED EDITION}'
-                                    if (file.Contains("{edition-"))
-                                    {
-                                        found = false;
-                                        foreach (string s in this.mediaBackup.EditionsAllowed)
-                                        {
-                                            if (file.Contains("{edition-" + s, StringComparison.OrdinalIgnoreCase))
-                                            {
-                                                found = true;
-                                                break;
-                                            }
-                                        }
-                                        if (!found)
-                                        {
-                                            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "File has 'edition-' in the filename {0} but no valid edition specification", file);
-                                        }
-                                    }
+                                    } 
                                 }
 
                                 // All files except Backup
