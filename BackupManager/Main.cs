@@ -589,6 +589,31 @@ disk.Name);
                                     {
                                         Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "TV Series has missing tvdb-/tmdb- in the filepath {0}", file);
                                     }
+
+                                    // check that tv files only have directories in the parents parent and no files
+                                    FileInfo fileInfo = new FileInfo(file);
+
+                                    FileInfo[] grandparentFiles = fileInfo.Directory.Parent.GetFiles();
+                                    if (grandparentFiles != null && grandparentFiles.Count() > 0)
+                                    {
+                                        // files are allowed here as long as they end with a special feature name suffix
+                                        foreach (FileInfo grandparentFile in grandparentFiles)
+                                        {
+                                            string fName = grandparentFile.Name;
+                                            if (!(fName.Contains("-featurette.") ||
+                                               fName.Contains("-other.") ||
+                                               fName.Contains("-interview.") ||
+                                               fName.Contains("-scene.") ||
+                                               fName.Contains("-short.") ||
+                                               fName.Contains("-deleted.") ||
+                                               fName.Contains("-behindthescenes.") ||
+                                               fName.Contains("-trailer.")))
+                                            {
+                                                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "TV File {0} has files in the grandparent folder which aren't special features.", file);
+                                            }
+                                        }
+                                    }
+
                                 }
 
                                 // Checks for Movies, Comedy, Concerts only (main Video folders)
@@ -868,7 +893,7 @@ disk.Name);
             {
 
                 Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken,
-                    LogFile, BackupAction.General,
+                    LogFile, BackupAction.General,PushoverPriority.High,
                     "Exception occured {0}",
                     ex.Message);
             }
