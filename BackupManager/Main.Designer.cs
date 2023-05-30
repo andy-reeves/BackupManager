@@ -40,9 +40,6 @@
             this.backupHashCodeCheckedButton = new System.Windows.Forms.Button();
             this.checkDiskAndDeleteButton = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
-            this.renameTVFilesButton = new System.Windows.Forms.Button();
-            this.renameMoviesButton = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
             this.checkBackupDeleteAndCopyButton = new System.Windows.Forms.Button();
             this.listMoviesWithMultipleFilesButton = new System.Windows.Forms.Button();
             this.timerButton = new System.Windows.Forms.Button();
@@ -172,45 +169,6 @@
         "master file.");
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // renameTVFilesButton
-            // 
-            this.renameTVFilesButton.Location = new System.Drawing.Point(124, 569);
-            this.renameTVFilesButton.Name = "renameTVFilesButton";
-            this.renameTVFilesButton.Size = new System.Drawing.Size(143, 25);
-            this.renameTVFilesButton.TabIndex = 33;
-            this.renameTVFilesButton.Text = "Rename TV backup files";
-            this.toolTip.SetToolTip(this.renameTVFilesButton, "Checks a connected backup disk.\r\nSets the BackupDisk and the BackupDiskChecked (i" +
-        "f the HashCode is correct). DELETES FILES.");
-            this.renameTVFilesButton.UseVisualStyleBackColor = true;
-            this.renameTVFilesButton.Visible = false;
-            this.renameTVFilesButton.Click += new System.EventHandler(this.RenameTVButton_Click);
-            // 
-            // renameMoviesButton
-            // 
-            this.renameMoviesButton.Location = new System.Drawing.Point(203, 568);
-            this.renameMoviesButton.Name = "renameMoviesButton";
-            this.renameMoviesButton.Size = new System.Drawing.Size(143, 25);
-            this.renameMoviesButton.TabIndex = 34;
-            this.renameMoviesButton.Text = "Rename Movie backup files";
-            this.toolTip.SetToolTip(this.renameMoviesButton, "Checks a connected backup disk.\r\nSets the BackupDisk and the BackupDiskChecked (i" +
-        "f the HashCode is correct). DELETES FILES.");
-            this.renameMoviesButton.UseVisualStyleBackColor = true;
-            this.renameMoviesButton.Visible = false;
-            this.renameMoviesButton.Click += new System.EventHandler(this.renameMoviesButton_Click);
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(17, 569);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(316, 25);
-            this.button2.TabIndex = 35;
-            this.button2.Text = "Rename all backup files,  check backup disk, delete files";
-            this.toolTip.SetToolTip(this.button2, "Checks a connected backup disk.\r\nSets the BackupDisk and the BackupDiskChecked (i" +
-        "f the HashCode is correct). DELETES FILES.");
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Visible = false;
-            this.button2.Click += new System.EventHandler(this.button2_Click_1);
             // 
             // checkBackupDeleteAndCopyButton
             // 
@@ -364,9 +322,6 @@
             this.Controls.Add(this.testPushoverAlertsButton);
             this.Controls.Add(this.listMoviesWithMultipleFilesButton);
             this.Controls.Add(this.checkBackupDeleteAndCopyButton);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.renameMoviesButton);
-            this.Controls.Add(this.renameTVFilesButton);
             this.Controls.Add(this.restoreMasterFolderComboBox);
             this.Controls.Add(this.restoreFilesToMasterFolderButton);
             this.Controls.Add(this.listFilesNotCheckedInXXButton);
@@ -422,9 +377,6 @@
         private System.Windows.Forms.Button listFilesNotCheckedInXXButton;
         private System.Windows.Forms.Button restoreFilesToMasterFolderButton;
         private System.Windows.Forms.ComboBox restoreMasterFolderComboBox;
-        private System.Windows.Forms.Button renameTVFilesButton;
-        private System.Windows.Forms.Button renameMoviesButton;
-        private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button checkBackupDeleteAndCopyButton;
         private System.Windows.Forms.Button listMoviesWithMultipleFilesButton;
         private System.Windows.Forms.Button testPushoverAlertsButton;
