@@ -879,23 +879,42 @@ namespace BackupManager
             // if diskspace greater than 1MB return xMB
             // else return xKB
 
-            if (diskSpace > 1099511627776)
+            long oneTerabyte = 1099511627776;
+            long oneGigabyte = 1073741824;
+            long oneMegabyte = 1048576;
+            long oneKilobyte = 1024;
+
+            if (diskSpace > oneTerabyte)
             {
-                return string.Format("{0:0.#}TB", (decimal)diskSpace / 1099511627776);
+                return string.Format("{0:0.#}TB", (decimal)diskSpace / oneTerabyte);
             }
 
-            if (diskSpace > 1073741824)
+            if (diskSpace > (25 * oneGigabyte))
             {
-                return string.Format("{0:n0}GB", diskSpace / 1073741824);
+                return string.Format("{0:n0}GB", diskSpace / oneGigabyte);
             }
 
-            if (diskSpace > 1048576)
+            if (diskSpace > oneGigabyte)
             {
-                return string.Format("{0:n0}MB", diskSpace / 1048576);
-
+                return string.Format("{0:0.#}GB", (decimal)diskSpace / oneGigabyte);
             }
 
-            return string.Format("{0:n0}KB", diskSpace / 1024);
+            if (diskSpace > (25 * oneMegabyte))
+            {
+                return string.Format("{0:n0}MB", diskSpace / oneMegabyte);
+            }
+
+            if (diskSpace > oneMegabyte)
+            {
+                return string.Format("{0:0.#}MB", (decimal)diskSpace / oneMegabyte);
+            }
+
+            if (diskSpace > oneKilobyte)
+            {
+                return string.Format("{0:n0}KB", diskSpace / oneKilobyte);
+            }
+
+            return string.Format("{0:n0}bytes", diskSpace);
         }
     }
 }
