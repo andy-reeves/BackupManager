@@ -549,7 +549,7 @@ disk.Name);
             foreach (string masterFolder in this.mediaBackup.MasterFolders)
             {
                 if (Directory.Exists(masterFolder))
-                {         
+                {
                     long freeSpaceOnCurrentMasterFolder;
                     long totalBytesOnMasterFolderDisk;
                     Utils.GetDiskInfo(masterFolder, out freeSpaceOnCurrentMasterFolder, out totalBytesOnMasterFolderDisk);
@@ -621,19 +621,6 @@ disk.Name);
                                     file.Contains("_Concerts") ||
                                     file.Contains("_Comedy"))
                                 {
-                                    if (!file.Contains("tmdb"))
-                                    {
-                                        if (!(file.Contains("-featurette.") ||
-                                            file.Contains("-other.") ||
-                                            file.Contains("-interview.") ||
-                                            file.Contains("-scene.") ||
-                                            file.Contains("-short.") ||
-                                            file.Contains("-deleted.") ||
-                                            file.Contains("-behindthescenes.") ||
-                                            file.Contains("-trailer.")))
-                                            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "Movie has missing tmdb- in the filename {0}", file);
-                                    }
-
                                     if (!(file.Contains("-featurette.") ||
                                             file.Contains("-other.") ||
                                             file.Contains("-interview.") ||
@@ -643,6 +630,11 @@ disk.Name);
                                             file.Contains("-behindthescenes.") ||
                                             file.Contains("-trailer.")))
                                     {
+                                        if (!file.Contains("tmdb"))
+                                        {
+                                            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "Movie has missing tmdb- in the filename {0}", file);
+                                        }
+
                                         FileInfo movieFileInfo = new FileInfo(file);
                                         if (!movieFileInfo.Name.StartsWith(movieFileInfo.Directory.Name))
                                         {
@@ -726,7 +718,7 @@ disk.Name);
                                     if (!found)
                                     {
                                         Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "Video has an invalid file extension in the filename {0}", file);
-                                    } 
+                                    }
                                 }
 
                                 // All files except Backup
