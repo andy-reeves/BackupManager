@@ -573,8 +573,8 @@ disk.Name);
                             string[] files = Utils.GetFiles(
                                 folderToCheck,
                                 filters,
-                                SearchOption.AllDirectories,
-                                FileAttributes.Hidden);
+                                SearchOption.AllDirectories
+                                );
 
                             foreach (string file in files)
                             {
@@ -609,7 +609,7 @@ disk.Name);
                                                fName.Contains("-behindthescenes.") ||
                                                fName.Contains("-trailer.")))
                                             {
-                                                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "TV File {0} has files in the grandparent folder which aren't special features.", file);
+                                                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "TV File {0} has files in the grandparent folder which aren't special features", file);
                                             }
                                         }
                                     }
@@ -699,6 +699,11 @@ disk.Name);
                                         Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "Video has a '0' year in the filename {0}", file);
                                     }
 
+                                    if (file.Contains(" Proper]"))
+                                    {
+                                        Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "Video has ' Proper]' in the filename {0}", file);
+                                    }
+
                                     bool found = false;
                                     foreach (string s in this.mediaBackup.VideoFoldersFormatsAllowed)
                                     {
@@ -717,9 +722,10 @@ disk.Name);
                                 // All files except Backup
                                 if (!file.Contains("_Backup"))
                                 {
-                                    if (file.Contains("._"))
+                                    // MACOS Browser files (these are hidden too)
+                                    if (file.Contains(".DS_Store"))
                                     {
-                                        Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "File has '._' in the filename {0}", file);
+                                        Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "File has '.DS_Store' in the filename {0}", file);
                                     }
                                 }
 
