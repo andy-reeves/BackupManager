@@ -722,11 +722,8 @@ disk.Name);
                                 // All files except Backup
                                 if (!file.Contains("_Backup"))
                                 {
-                                    // MACOS Browser files (these are hidden too)
-                                    if (file.Contains(".DS_Store"))
-                                    {
-                                        Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "File has '.DS_Store' in the filename {0}", file);
-                                    }
+                                    // Placeholder for file scans
+
                                 }
 
                                 this.EnsureFile(file, masterFolder, indexFolder);
