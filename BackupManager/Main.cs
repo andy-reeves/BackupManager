@@ -704,6 +704,16 @@ disk.Name);
                                         Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "Video has ' Proper]' in the filename {0}", file);
                                     }
 
+                                    if (file.Contains(" Proper REAL]"))
+                                    {
+                                        Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "Video has ' Proper REAL]' in the filename {0}", file);
+                                    }
+
+                                    if (file.Contains(" REAL]"))
+                                    {
+                                        Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, PushoverPriority.High, "Video has ' REAL]' in the filename {0}", file);
+                                    }
+
                                     bool found = false;
                                     foreach (string s in this.mediaBackup.VideoFoldersFormatsAllowed)
                                     {
