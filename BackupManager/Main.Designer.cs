@@ -192,7 +192,6 @@
             this.toolTip.SetToolTip(this.listMoviesWithMultipleFilesButton, "Checks a connected backup disk.\r\nSets the BackupDisk and the BackupDiskChecked (i" +
         "f the HashCode is correct). Doesn\'t delete any files.");
             this.listMoviesWithMultipleFilesButton.UseVisualStyleBackColor = true;
-            this.listMoviesWithMultipleFilesButton.Visible = false;
             this.listMoviesWithMultipleFilesButton.Click += new System.EventHandler(this.listMoviesWithMultipleFilesButton_Click);
             // 
             // timerButton

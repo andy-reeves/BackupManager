@@ -1089,6 +1089,9 @@ disk.Name);
                             if (!mediaBackup.DisksToSkipOnRestore.Contains(lastBackupDisk, StringComparer.CurrentCultureIgnoreCase) && !string.IsNullOrEmpty(lastBackupDisk))
                             {
                                 mediaBackup.DisksToSkipOnRestore.Add(lastBackupDisk);
+
+                                // This is to save the backup disks we've completed so far
+                                this.mediaBackup.Save();
                             }
 
                             // count the number of files on this disk
