@@ -21,7 +21,8 @@
 
 		[XmlIgnore]
 		public string BackupShare;
-
+       
+        [XmlIgnore]
         public string BackupPath { get => Path.Combine(this.BackupShare, this.Name); }
 
         public BackupDisk()
@@ -36,7 +37,22 @@
 			BackupDisk.CheckForValidBackupShare(this.BackupShare);
 
 		}
-		public bool Update(Collection<BackupFile> backupFiles)
+
+        /// <summary>
+        /// Gets the number only of this disk
+        /// </summary>
+        [XmlIgnore()]
+        public int Number
+        {
+            get {
+                string diskNumberString = Name.SubstringAfter(' ');
+                if (string.IsNullOrEmpty(diskNumberString)) { return 0; }
+
+                return int.Parse(diskNumberString);
+            }
+        }
+
+        public bool Update(Collection<BackupFile> backupFiles)
 		{
 			if (!BackupDisk.CheckForValidBackupShare(this.BackupShare))
 			{

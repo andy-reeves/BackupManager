@@ -102,6 +102,12 @@
     <Edition>Uncut Edition</Edition>
     <Edition>Unrated Edition</Edition>
   </EditionsAllowed>
+  <DisksToSkipOnRestore>
+    <DiskToSkip>Backup 1</DiskToSkip>
+    <DiskToSkip>Backup 2</DiskToSkip>
+    <DiskToSkip>Backup 3</DiskToSkip>
+    <DiskToSkip>Backup 4</DiskToSkip>
+  </DisksToSkipOnRestore>
   <BackupFiles>
     <!-- Sample BackupFile entries -->
     <BackupFile>

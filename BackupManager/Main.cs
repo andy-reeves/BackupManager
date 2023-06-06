@@ -277,7 +277,7 @@ disk.Name);
             }
         }
 
-        private bool EnsureConnectedBackupDisk(string backupDisk)
+        private bool EnsureConnectedBackupDisk(string backupDisk, string logFile)
         {
             // checks the specified backup disk is connected already and returns if it is
             //if its not it prompts the user to insert correct disk and waits
@@ -291,6 +291,8 @@ disk.Name);
             string currentConnectedBackupDiskName = BackupDisk.GetBackupFolderName(this.backupDiskTextBox.Text);
             while (currentConnectedBackupDiskName != backupDisk)
             {
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.General, PushoverPriority.High, "Connect new backup drive to restore from {0}", backupDisk);
+
                 DialogResult answer =
             MessageBox.Show(
                 String.Format("Please connect backup disk {0} so we can continue restoring files. Have you connected this disk now?", backupDisk),
@@ -351,11 +353,17 @@ disk.Name);
                 "{0:n0} files to backup at {1}", filesToBackup.Count(), Utils.FormatDiskSpace(sizeOfFiles));
 
             bool outOfDiskSpaceMessageSent = false;
+   
+            int totalFileCount = filesToBackup.Count();
+
+            int fileCounter = 0;
 
             foreach (BackupFile backupFile in filesToBackup)
             {
                 try
                 {
+                    fileCounter++;
+
                     if (string.IsNullOrEmpty(backupFile.IndexFolder))
                     {
                         throw new ApplicationException("Index folder is empty");
@@ -368,7 +376,7 @@ disk.Name);
 
                     if (File.Exists(destinationFileName))
                     {
-                        Utils.Log(logFile, "Skipping copy as it exists");
+                        Utils.Log(logFile, "[{0}/{1}] Skipping copy as it exists", fileCounter, totalFileCount);
 
                         // it could be that the source file hash changed after we read it (we read the hash, updated the master file and then copied it)
                         // in which case check the source hash again and then check the copied file 
@@ -381,13 +389,13 @@ disk.Name);
                         long totalBytes;
                         result = Utils.GetDiskInfo(backupShare, out availableSpace, out totalBytes);
 
-
                         if (availableSpace > (this.mediaBackup.MinimumFreeSpaceToLeaveOnBackupDrive * 1024 * 1024))
                         {
                             if (availableSpace > sourceFileInfo.Length)
                             {
                                 outOfDiskSpaceMessageSent = false;
-                                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "{0} free. Copying {1} at {2}", Utils.FormatDiskSpace(availableSpace), sourceFileName, sourceFileSize);
+                                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "[{0}/{1}] {2} free. Copying {3} at {4}",
+                                    destinationFileName, backupFile, Utils.FormatDiskSpace(availableSpace), sourceFileName, sourceFileSize);
                                 Directory.CreateDirectory(Path.GetDirectoryName(destinationFileName));
 
                                 DateTime startTime = DateTime.UtcNow;
@@ -423,7 +431,7 @@ disk.Name);
                 catch (IOException ex)
                 {
                     // Sometimes during a copy we get this if we lose the connection to the source NAS drive
-                    Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles,PushoverPriority.High, "IOException during copy. Skipping file. Details {0}", ex.ToString());
+                    Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, PushoverPriority.High, "IOException during copy. Skipping file. Details {0}", ex.ToString());
                 }
             }
 
@@ -941,7 +949,7 @@ disk.Name);
             string masterFolder = this.masterFoldersComboBox.SelectedItem.ToString();
 
             IEnumerable<BackupFile> files =
-                this.mediaBackup.BackupFiles.Where(p => p.MasterFolder == masterFolder);
+                this.mediaBackup.BackupFiles.Where(p => p.MasterFolder == masterFolder).OrderBy(q => q.BackupDiskNumber);
 
             Utils.Log(
                     LogFile,
@@ -954,6 +962,13 @@ disk.Name);
                     LogFile,
                     "{0} : {1}",
                     file.FullPath, file.BackupDisk);
+                if (string.IsNullOrEmpty(file.BackupDisk))
+                {
+                    Utils.Log(
+                    LogFile,
+                    "ERROR: {0} : not on a backup disk",
+                    file.FullPath);
+                }
             }
         }
 
@@ -1035,17 +1050,8 @@ disk.Name);
                 }
                 string targetMasterFolder = this.restoreMasterFolderComboBox.SelectedItem.ToString();
 
-                if (string.Equals(masterFolder, targetMasterFolder, StringComparison.CurrentCultureIgnoreCase))
-                {
-                    MessageBox.Show(
-                   "You must select 2 different master folders",
-                   "Restore backup files",
-                   MessageBoxButtons.OK);
-                    return;
-                }
-
                 IEnumerable<BackupFile> files =
-                    this.mediaBackup.BackupFiles.Where(p => p.MasterFolder == masterFolder && p.BackupDisk != null).OrderBy(q => q.BackupDisk);
+                    this.mediaBackup.BackupFiles.Where(p => p.MasterFolder == masterFolder && p.BackupDisk != null).OrderBy(q => q.BackupDiskNumber);
 
                 Utils.Log(
                         LogFile,
@@ -1060,52 +1066,78 @@ disk.Name);
 
                 string backupShare = this.backupDiskTextBox.Text;
 
+                string lastBackupDisk = string.Empty;
+                int fileCounter = 0;
+                int countOfFiles = 0;
+
                 foreach (BackupFile file in files)
                 {
-                    //we  need to check the correct disk is connected and prompt if not
-                    if (!EnsureConnectedBackupDisk(file.BackupDisk))
+                    if (!this.mediaBackup.DisksToSkipOnRestore.Contains(file.BackupDisk, StringComparer.CurrentCultureIgnoreCase))
                     {
-                        MessageBox.Show(
-                  "Cannot connect to the backup drive required",
-                  "Restore backup files",
-                  MessageBoxButtons.OK);
-                        return;
+                        //we  need to check the correct disk is connected and prompt if not
+                        if (!EnsureConnectedBackupDisk(file.BackupDisk, LogFile))
+                        {
+                            MessageBox.Show(
+                      "Cannot connect to the backup drive required",
+                      "Restore backup files",
+                      MessageBoxButtons.OK);
+                            return;
+                        }
+
+                        if (file.BackupDisk != lastBackupDisk)
+                        {
+                            if (!mediaBackup.DisksToSkipOnRestore.Contains(lastBackupDisk, StringComparer.CurrentCultureIgnoreCase) && !string.IsNullOrEmpty(lastBackupDisk))
+                            {
+                                mediaBackup.DisksToSkipOnRestore.Add(lastBackupDisk);
+                            }
+
+                            // count the number of files on this disk
+                            countOfFiles = files.Count(p => p.BackupDisk == file.BackupDisk);
+                            fileCounter = 0;
+                        }
+
+                        fileCounter++;
+
+                        // calculate the source path
+                        // calculate the destination path
+                        string sourceFileFullPath = Path.Combine(backupShare, file.BackupDisk, file.IndexFolder, file.RelativePath);
+
+                        string targetFilePath = Path.Combine(targetMasterFolder, file.IndexFolder, file.RelativePath);
+
+                        if (File.Exists(targetFilePath))
+                        {
+                            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, LogFile, BackupAction.Restore, "[{0}/{1}] {2} Already exists", fileCounter, countOfFiles, targetFilePath);
+                        }
+                        else
+                        {
+                            if (File.Exists(sourceFileFullPath))
+                            {
+                                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, LogFile, BackupAction.Restore, "[{0}/{1}] Copying {2} as {3}", fileCounter, countOfFiles, sourceFileFullPath, targetFilePath);
+                                Utils.EnsureDirectories(targetFilePath);
+                                File.Copy(sourceFileFullPath, targetFilePath);
+                            }
+                            else
+                            {
+                                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, LogFile, BackupAction.Restore, "[{0}/{1}] {2} doesn't exist", fileCounter, countOfFiles, sourceFileFullPath);
+                            }
+                        }
+
+                        if (file.ContentsHash == Utils.GetShortMd5HashFromFile(targetFilePath))
+                        {
+                            file.MasterFolder = targetMasterFolder;
+                        }
+                        else
+                        {
+                            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, LogFile, BackupAction.Restore, PushoverPriority.High, "ERROR: '{0}' has a different Hashcode", targetFilePath);
+                        }
+
+
                     }
 
-                    // calculate the source path
-                    // calculate the destination path
-                    string sourceFileFullPath = Path.Combine(backupShare, file.BackupDisk, file.IndexFolder, file.RelativePath);
-
-                    string targetFilePath = Path.Combine(targetMasterFolder, file.IndexFolder, file.RelativePath);
-
-                    // log that we're copying the file from the backup disk to the new location
-
-                    Utils.Log(
-                        LogFile,
-                        "Copying {0} to {1}",
-                        sourceFileFullPath, targetFilePath);
-
-                    Utils.EnsureDirectories(targetFilePath);
-
-                    if (!File.Exists(targetFilePath))
-                    {
-                        File.Copy(sourceFileFullPath, targetFilePath);
-                    }
-
-                    if (file.ContentsHash == Utils.GetShortMd5HashFromFile(targetFilePath))
-                    {
-                        file.MasterFolder = targetMasterFolder;
-                    }
-                    else
-                    {
-                        Utils.Log(
-                   LogFile,
-                   "ERROR: '{0}' already exists in the target but has a different Hashcode", targetFilePath);
-                    }
-                    // we save everytime so its always correct
-                    // all the master folders are different now so save the file
-                    this.mediaBackup.Save();
+                    lastBackupDisk = file.BackupDisk;
                 }
+
+                this.mediaBackup.Save();
             }
         }
         

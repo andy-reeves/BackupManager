@@ -27,6 +27,9 @@
         [XmlArrayItem("VideoFormat")]
         public Collection<string> VideoFoldersFormatsAllowed;
 
+        [XmlArrayItem("DiskToSkip")]
+        public Collection<string> DisksToSkipOnRestore;
+
         [XmlArrayItem("BackupFile")]
         public Collection<BackupFile> BackupFiles;
 

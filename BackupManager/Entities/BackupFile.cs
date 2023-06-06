@@ -65,11 +65,27 @@
             {
                 if (fullPath == null)
                 {
-                    fullPath = System.IO.Path.Combine(this.MasterFolder, this.IndexFolder, this.RelativePath);
-
+                    fullPath = Path.Combine(this.MasterFolder, this.IndexFolder, this.RelativePath);
                 }
 
                 return fullPath;
+            }
+        }
+
+        /// <summary>
+        /// Gets the number only of this disk this file is on. 0 if not backed up
+        /// </summary>
+        [XmlIgnore()]
+        public int BackupDiskNumber
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(BackupDisk)) {  return 0; }
+
+                string diskNumberString = BackupDisk.SubstringAfter(' ');
+                if (string.IsNullOrEmpty(diskNumberString)) { return 0; }
+
+                return int.Parse(diskNumberString);
             }
         }
 
