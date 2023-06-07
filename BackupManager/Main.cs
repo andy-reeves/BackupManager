@@ -1102,17 +1102,20 @@ disk.Name);
                             }
                             else
                             {
-                                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.Restore, "[{0}/{1}] {2} doesn't exist", fileCounter, countOfFiles, sourceFileFullPath);
+                                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.Restore,PushoverPriority.High, "[{0}/{1}] {2} doesn't exist", fileCounter, countOfFiles, sourceFileFullPath);
                             }
                         }
 
-                        if (file.ContentsHash == Utils.GetShortMd5HashFromFile(targetFilePath))
+                        if (File.Exists(targetFilePath))
                         {
-                            file.MasterFolder = targetMasterFolder;
-                        }
-                        else
-                        {
-                            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.Restore, PushoverPriority.High, "ERROR: '{0}' has a different Hashcode", targetFilePath);
+                            if (file.ContentsHash == Utils.GetShortMd5HashFromFile(targetFilePath))
+                            {
+                                file.MasterFolder = targetMasterFolder;
+                            }
+                            else
+                            {
+                                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.Restore, PushoverPriority.High, "ERROR: '{0}' has a different Hashcode", targetFilePath);
+                            }
                         }
                     }
 
