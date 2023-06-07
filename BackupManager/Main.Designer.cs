@@ -73,9 +73,9 @@
             // 
             // checkConnectedBackupDriveButton
             // 
-            this.checkConnectedBackupDriveButton.Location = new System.Drawing.Point(344, 146);
+            this.checkConnectedBackupDriveButton.Location = new System.Drawing.Point(344, 144);
             this.checkConnectedBackupDriveButton.Name = "checkConnectedBackupDriveButton";
-            this.checkConnectedBackupDriveButton.Size = new System.Drawing.Size(217, 23);
+            this.checkConnectedBackupDriveButton.Size = new System.Drawing.Size(217, 35);
             this.checkConnectedBackupDriveButton.TabIndex = 1;
             this.checkConnectedBackupDriveButton.Text = "Check connected backup disk";
             this.toolTip.SetToolTip(this.checkConnectedBackupDriveButton, "Checks a connected backup disk.\r\nSets the BackupDisk and the BackupDiskChecked (i" +
@@ -149,9 +149,9 @@
             // 
             // checkDiskAndDeleteButton
             // 
-            this.checkDiskAndDeleteButton.Location = new System.Drawing.Point(344, 173);
+            this.checkDiskAndDeleteButton.Location = new System.Drawing.Point(344, 184);
             this.checkDiskAndDeleteButton.Name = "checkDiskAndDeleteButton";
-            this.checkDiskAndDeleteButton.Size = new System.Drawing.Size(217, 42);
+            this.checkDiskAndDeleteButton.Size = new System.Drawing.Size(217, 48);
             this.checkDiskAndDeleteButton.TabIndex = 19;
             this.checkDiskAndDeleteButton.Text = "Check connected backup disk (and remove extra files)";
             this.toolTip.SetToolTip(this.checkDiskAndDeleteButton, "Checks a connected backup disk.\r\nSets the BackupDisk and the BackupDiskChecked (i" +
@@ -174,7 +174,7 @@
             // 
             // checkBackupDeleteAndCopyButton
             // 
-            this.checkBackupDeleteAndCopyButton.Location = new System.Drawing.Point(344, 263);
+            this.checkBackupDeleteAndCopyButton.Location = new System.Drawing.Point(100, 290);
             this.checkBackupDeleteAndCopyButton.Name = "checkBackupDeleteAndCopyButton";
             this.checkBackupDeleteAndCopyButton.Size = new System.Drawing.Size(217, 39);
             this.checkBackupDeleteAndCopyButton.TabIndex = 36;
@@ -248,7 +248,7 @@
             // 
             // listFilesInMasterFolderButton
             // 
-            this.listFilesInMasterFolderButton.Location = new System.Drawing.Point(100, 289);
+            this.listFilesInMasterFolderButton.Location = new System.Drawing.Point(344, 235);
             this.listFilesInMasterFolderButton.Name = "listFilesInMasterFolderButton";
             this.listFilesInMasterFolderButton.Size = new System.Drawing.Size(217, 23);
             this.listFilesInMasterFolderButton.TabIndex = 26;
@@ -277,11 +277,11 @@
             // 
             // restoreFilesToMasterFolderButton
             // 
-            this.restoreFilesToMasterFolderButton.Location = new System.Drawing.Point(344, 219);
+            this.restoreFilesToMasterFolderButton.Location = new System.Drawing.Point(344, 261);
             this.restoreFilesToMasterFolderButton.Name = "restoreFilesToMasterFolderButton";
-            this.restoreFilesToMasterFolderButton.Size = new System.Drawing.Size(217, 40);
+            this.restoreFilesToMasterFolderButton.Size = new System.Drawing.Size(217, 23);
             this.restoreFilesToMasterFolderButton.TabIndex = 31;
-            this.restoreFilesToMasterFolderButton.Text = "Restore files to master folder from backup disks";
+            this.restoreFilesToMasterFolderButton.Text = "Restore files to master folder from backup";
             this.restoreFilesToMasterFolderButton.UseVisualStyleBackColor = true;
             this.restoreFilesToMasterFolderButton.Click += new System.EventHandler(this.restoreFilesButton_Click);
             // 
@@ -338,7 +338,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(568, 316);
+            this.ClientSize = new System.Drawing.Size(568, 335);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.button4);
