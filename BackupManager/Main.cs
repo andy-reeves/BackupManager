@@ -771,7 +771,7 @@ disk.Name);
 
             foreach (var backupFile in this.mediaBackup.BackupFiles)
             {
-                if (!string.IsNullOrEmpty(backupFile.BackupDiskChecked))
+                if (backupFile.BackupDiskChecked.HasValue())
                 {
                     DateTime backupFileDate = DateTime.Parse(backupFile.BackupDiskChecked);
 
@@ -1086,7 +1086,7 @@ disk.Name);
 
                         if (file.BackupDisk != lastBackupDisk)
                         {
-                            if (!mediaBackup.DisksToSkipOnRestore.Contains(lastBackupDisk, StringComparer.CurrentCultureIgnoreCase) && !string.IsNullOrEmpty(lastBackupDisk))
+                            if (!mediaBackup.DisksToSkipOnRestore.Contains(lastBackupDisk, StringComparer.CurrentCultureIgnoreCase) && lastBackupDisk.HasValue())
                             {
                                 mediaBackup.DisksToSkipOnRestore.Add(lastBackupDisk);
 

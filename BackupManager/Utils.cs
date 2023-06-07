@@ -294,7 +294,7 @@ namespace BackupManager
 
             IEnumerable<string> include =
                 from filter in filters.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                where !string.IsNullOrEmpty(filter.Trim())
+                where filter.Trim().HasValue()
                 select filter.Trim();
 
             IEnumerable<string> exclude = from filter in include where filter.Contains(@"!") select filter;
@@ -595,7 +595,7 @@ namespace BackupManager
             string textToWrite = DateTime.Now.ToString("dd-MM-yy HH:mm:ss") + " : " + string.Format(text, args);
 
             Console.WriteLine(textToWrite);
-            if (!string.IsNullOrEmpty(logFilePath))
+            if (logFilePath.HasValue())
             {
                 EnsureDirectories(logFilePath);
                 File.AppendAllLines(logFilePath, new[] { textToWrite });
@@ -610,7 +610,7 @@ namespace BackupManager
         public static void LogWithPushover(string pushoverUserKey, string pushoverAppToken, string logFilePath, BackupAction backupAction, PushoverPriority priority, string text, params object[] args)
         {
             Log(logFilePath, Enum.GetName(typeof(BackupAction), backupAction) + " " + text, args);
-            if (!string.IsNullOrEmpty(pushoverAppToken))
+            if (pushoverAppToken.HasValue())
             {
                 Utils.SendPushoverMessage(pushoverUserKey, pushoverAppToken, Enum.GetName(typeof(BackupAction), backupAction), priority, string.Format(text, args));
             }
@@ -619,9 +619,7 @@ namespace BackupManager
         public static void LogWithPushover(string pushoverUserKey, string pushoverAppToken, string logFilePath, BackupAction backupAction, PushoverPriority priority, PushoverRetry retry,PushoverExpires expires, string text, params object[] args)
         {
             Log(logFilePath, Enum.GetName(typeof(BackupAction), backupAction) + " " + text, args);
-
-
-            if (!string.IsNullOrEmpty(pushoverAppToken))
+            if (pushoverAppToken.HasValue())
             {
                 Utils.SendPushoverMessage(pushoverUserKey, pushoverAppToken, Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, string.Format(text, args));
             }
