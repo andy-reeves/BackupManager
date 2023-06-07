@@ -55,11 +55,13 @@
             this.restoreMasterFolderComboBox = new System.Windows.Forms.ComboBox();
             this.testPushoverAlertsButton = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // updateMasterFilesButton
             // 
-            this.updateMasterFilesButton.Location = new System.Drawing.Point(64, 45);
+            this.updateMasterFilesButton.Location = new System.Drawing.Point(100, 33);
             this.updateMasterFilesButton.Name = "updateMasterFilesButton";
             this.updateMasterFilesButton.Size = new System.Drawing.Size(217, 23);
             this.updateMasterFilesButton.TabIndex = 0;
@@ -71,7 +73,7 @@
             // 
             // checkConnectedBackupDriveButton
             // 
-            this.checkConnectedBackupDriveButton.Location = new System.Drawing.Point(64, 235);
+            this.checkConnectedBackupDriveButton.Location = new System.Drawing.Point(344, 146);
             this.checkConnectedBackupDriveButton.Name = "checkConnectedBackupDriveButton";
             this.checkConnectedBackupDriveButton.Size = new System.Drawing.Size(217, 23);
             this.checkConnectedBackupDriveButton.TabIndex = 1;
@@ -83,7 +85,7 @@
             // 
             // copyFilesToBackupDriveButton
             // 
-            this.copyFilesToBackupDriveButton.Location = new System.Drawing.Point(64, 104);
+            this.copyFilesToBackupDriveButton.Location = new System.Drawing.Point(100, 88);
             this.copyFilesToBackupDriveButton.Name = "copyFilesToBackupDriveButton";
             this.copyFilesToBackupDriveButton.Size = new System.Drawing.Size(217, 23);
             this.copyFilesToBackupDriveButton.TabIndex = 5;
@@ -95,7 +97,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(27, 19);
+            this.label1.Location = new System.Drawing.Point(28, 12);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(70, 13);
             this.label1.TabIndex = 6;
@@ -103,7 +105,7 @@
             // 
             // backupDiskTextBox
             // 
-            this.backupDiskTextBox.Location = new System.Drawing.Point(124, 16);
+            this.backupDiskTextBox.Location = new System.Drawing.Point(100, 9);
             this.backupDiskTextBox.Name = "backupDiskTextBox";
             this.backupDiskTextBox.Size = new System.Drawing.Size(217, 20);
             this.backupDiskTextBox.TabIndex = 7;
@@ -111,7 +113,7 @@
             // 
             // listFilesNotOnBackupButton
             // 
-            this.listFilesNotOnBackupButton.Location = new System.Drawing.Point(64, 74);
+            this.listFilesNotOnBackupButton.Location = new System.Drawing.Point(100, 60);
             this.listFilesNotOnBackupButton.Name = "listFilesNotOnBackupButton";
             this.listFilesNotOnBackupButton.Size = new System.Drawing.Size(217, 23);
             this.listFilesNotOnBackupButton.TabIndex = 11;
@@ -122,7 +124,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(64, 206);
+            this.button1.Location = new System.Drawing.Point(100, 183);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(217, 23);
             this.button1.TabIndex = 16;
@@ -134,7 +136,7 @@
             // 
             // backupHashCodeCheckedButton
             // 
-            this.backupHashCodeCheckedButton.Location = new System.Drawing.Point(64, 135);
+            this.backupHashCodeCheckedButton.Location = new System.Drawing.Point(100, 117);
             this.backupHashCodeCheckedButton.Name = "backupHashCodeCheckedButton";
             this.backupHashCodeCheckedButton.Size = new System.Drawing.Size(217, 23);
             this.backupHashCodeCheckedButton.TabIndex = 17;
@@ -147,7 +149,7 @@
             // 
             // checkDiskAndDeleteButton
             // 
-            this.checkDiskAndDeleteButton.Location = new System.Drawing.Point(64, 263);
+            this.checkDiskAndDeleteButton.Location = new System.Drawing.Point(344, 173);
             this.checkDiskAndDeleteButton.Name = "checkDiskAndDeleteButton";
             this.checkDiskAndDeleteButton.Size = new System.Drawing.Size(217, 42);
             this.checkDiskAndDeleteButton.TabIndex = 19;
@@ -159,7 +161,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(64, 165);
+            this.button3.Location = new System.Drawing.Point(100, 144);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(217, 35);
             this.button3.TabIndex = 20;
@@ -172,7 +174,7 @@
             // 
             // checkBackupDeleteAndCopyButton
             // 
-            this.checkBackupDeleteAndCopyButton.Location = new System.Drawing.Point(64, 542);
+            this.checkBackupDeleteAndCopyButton.Location = new System.Drawing.Point(344, 263);
             this.checkBackupDeleteAndCopyButton.Name = "checkBackupDeleteAndCopyButton";
             this.checkBackupDeleteAndCopyButton.Size = new System.Drawing.Size(217, 39);
             this.checkBackupDeleteAndCopyButton.TabIndex = 36;
@@ -184,7 +186,7 @@
             // 
             // listMoviesWithMultipleFilesButton
             // 
-            this.listMoviesWithMultipleFilesButton.Location = new System.Drawing.Point(64, 480);
+            this.listMoviesWithMultipleFilesButton.Location = new System.Drawing.Point(344, 60);
             this.listMoviesWithMultipleFilesButton.Name = "listMoviesWithMultipleFilesButton";
             this.listMoviesWithMultipleFilesButton.Size = new System.Drawing.Size(217, 23);
             this.listMoviesWithMultipleFilesButton.TabIndex = 37;
@@ -196,7 +198,7 @@
             // 
             // timerButton
             // 
-            this.timerButton.Location = new System.Drawing.Point(64, 309);
+            this.timerButton.Location = new System.Drawing.Point(344, 6);
             this.timerButton.Name = "timerButton";
             this.timerButton.Size = new System.Drawing.Size(75, 23);
             this.timerButton.TabIndex = 21;
@@ -211,7 +213,7 @@
             // 
             // timerTextBox
             // 
-            this.timerTextBox.Location = new System.Drawing.Point(145, 311);
+            this.timerTextBox.Location = new System.Drawing.Point(425, 8);
             this.timerTextBox.Name = "timerTextBox";
             this.timerTextBox.Size = new System.Drawing.Size(28, 20);
             this.timerTextBox.TabIndex = 22;
@@ -220,7 +222,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(179, 314);
+            this.label2.Location = new System.Drawing.Point(459, 11);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(28, 13);
             this.label2.TabIndex = 23;
@@ -228,9 +230,9 @@
             // 
             // listFilesOnBackupDiskButton
             // 
-            this.listFilesOnBackupDiskButton.Location = new System.Drawing.Point(64, 337);
+            this.listFilesOnBackupDiskButton.Location = new System.Drawing.Point(183, 210);
             this.listFilesOnBackupDiskButton.Name = "listFilesOnBackupDiskButton";
-            this.listFilesOnBackupDiskButton.Size = new System.Drawing.Size(143, 23);
+            this.listFilesOnBackupDiskButton.Size = new System.Drawing.Size(134, 23);
             this.listFilesOnBackupDiskButton.TabIndex = 24;
             this.listFilesOnBackupDiskButton.Text = "List files on backup disk";
             this.listFilesOnBackupDiskButton.UseVisualStyleBackColor = true;
@@ -238,17 +240,17 @@
             // 
             // listFilesTextBox
             // 
-            this.listFilesTextBox.Location = new System.Drawing.Point(213, 339);
+            this.listFilesTextBox.Location = new System.Drawing.Point(100, 212);
             this.listFilesTextBox.Name = "listFilesTextBox";
-            this.listFilesTextBox.Size = new System.Drawing.Size(68, 20);
+            this.listFilesTextBox.Size = new System.Drawing.Size(77, 20);
             this.listFilesTextBox.TabIndex = 25;
             this.listFilesTextBox.Text = "backup 1";
             // 
             // listFilesInMasterFolderButton
             // 
-            this.listFilesInMasterFolderButton.Location = new System.Drawing.Point(30, 365);
+            this.listFilesInMasterFolderButton.Location = new System.Drawing.Point(100, 289);
             this.listFilesInMasterFolderButton.Name = "listFilesInMasterFolderButton";
-            this.listFilesInMasterFolderButton.Size = new System.Drawing.Size(143, 23);
+            this.listFilesInMasterFolderButton.Size = new System.Drawing.Size(217, 23);
             this.listFilesInMasterFolderButton.TabIndex = 26;
             this.listFilesInMasterFolderButton.Text = "List files on MasterFolder";
             this.listFilesInMasterFolderButton.UseVisualStyleBackColor = true;
@@ -258,16 +260,16 @@
             // 
             this.masterFoldersComboBox.BackColor = System.Drawing.SystemColors.Window;
             this.masterFoldersComboBox.FormattingEnabled = true;
-            this.masterFoldersComboBox.Location = new System.Drawing.Point(179, 367);
+            this.masterFoldersComboBox.Location = new System.Drawing.Point(100, 237);
             this.masterFoldersComboBox.Name = "masterFoldersComboBox";
-            this.masterFoldersComboBox.Size = new System.Drawing.Size(167, 21);
+            this.masterFoldersComboBox.Size = new System.Drawing.Size(217, 21);
             this.masterFoldersComboBox.TabIndex = 29;
             // 
             // listFilesNotCheckedInXXButton
             // 
-            this.listFilesNotCheckedInXXButton.Location = new System.Drawing.Point(64, 441);
+            this.listFilesNotCheckedInXXButton.Location = new System.Drawing.Point(344, 33);
             this.listFilesNotCheckedInXXButton.Name = "listFilesNotCheckedInXXButton";
-            this.listFilesNotCheckedInXXButton.Size = new System.Drawing.Size(217, 33);
+            this.listFilesNotCheckedInXXButton.Size = new System.Drawing.Size(217, 23);
             this.listFilesNotCheckedInXXButton.TabIndex = 30;
             this.listFilesNotCheckedInXXButton.Text = "List files with Backup hash not checked for nn days";
             this.listFilesNotCheckedInXXButton.UseVisualStyleBackColor = true;
@@ -275,9 +277,9 @@
             // 
             // restoreFilesToMasterFolderButton
             // 
-            this.restoreFilesToMasterFolderButton.Location = new System.Drawing.Point(30, 394);
+            this.restoreFilesToMasterFolderButton.Location = new System.Drawing.Point(344, 219);
             this.restoreFilesToMasterFolderButton.Name = "restoreFilesToMasterFolderButton";
-            this.restoreFilesToMasterFolderButton.Size = new System.Drawing.Size(143, 40);
+            this.restoreFilesToMasterFolderButton.Size = new System.Drawing.Size(217, 40);
             this.restoreFilesToMasterFolderButton.TabIndex = 31;
             this.restoreFilesToMasterFolderButton.Text = "Restore files to master folder from backup disks";
             this.restoreFilesToMasterFolderButton.UseVisualStyleBackColor = true;
@@ -287,16 +289,16 @@
             // 
             this.restoreMasterFolderComboBox.BackColor = System.Drawing.SystemColors.Window;
             this.restoreMasterFolderComboBox.FormattingEnabled = true;
-            this.restoreMasterFolderComboBox.Location = new System.Drawing.Point(179, 405);
+            this.restoreMasterFolderComboBox.Location = new System.Drawing.Point(100, 263);
             this.restoreMasterFolderComboBox.Name = "restoreMasterFolderComboBox";
-            this.restoreMasterFolderComboBox.Size = new System.Drawing.Size(167, 21);
+            this.restoreMasterFolderComboBox.Size = new System.Drawing.Size(217, 21);
             this.restoreMasterFolderComboBox.TabIndex = 32;
             // 
             // testPushoverAlertsButton
             // 
-            this.testPushoverAlertsButton.Location = new System.Drawing.Point(179, 509);
+            this.testPushoverAlertsButton.Location = new System.Drawing.Point(344, 117);
             this.testPushoverAlertsButton.Name = "testPushoverAlertsButton";
-            this.testPushoverAlertsButton.Size = new System.Drawing.Size(102, 27);
+            this.testPushoverAlertsButton.Size = new System.Drawing.Size(217, 23);
             this.testPushoverAlertsButton.TabIndex = 38;
             this.testPushoverAlertsButton.Text = "pushover High";
             this.testPushoverAlertsButton.UseVisualStyleBackColor = true;
@@ -304,19 +306,41 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(64, 509);
+            this.button4.Location = new System.Drawing.Point(344, 88);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(109, 27);
+            this.button4.Size = new System.Drawing.Size(217, 23);
             this.button4.TabIndex = 39;
             this.button4.Text = "pushover Normal";
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(12, 242);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(86, 13);
+            this.label3.TabIndex = 40;
+            this.label3.Text = "Src master folder";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 266);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(92, 13);
+            this.label4.TabIndex = 41;
+            this.label4.Text = "Dest master folder";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(350, 586);
+            this.ClientSize = new System.Drawing.Size(568, 316);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.testPushoverAlertsButton);
             this.Controls.Add(this.listMoviesWithMultipleFilesButton);
@@ -380,6 +404,8 @@
         private System.Windows.Forms.Button listMoviesWithMultipleFilesButton;
         private System.Windows.Forms.Button testPushoverAlertsButton;
         private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label4;
     }
 }
 
