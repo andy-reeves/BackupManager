@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.IO;
     using System.Linq;
@@ -85,7 +86,7 @@
             string destinationFileName = "MediaBackup-" + DateTime.Now.ToString("yy-MM-dd-HH-mm-ss.ff") + ".xml";
             string destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), destinationFileName);
 
-            File.Copy(this.mediaBackupPath, destinationPath); 
+            File.Copy(this.mediaBackupPath, destinationPath);
         }
 
         public static MediaBackup Load(string path)
@@ -142,7 +143,7 @@
                 mediaBackup.Save();
                 mediaBackup.ClearFlags();
             }
- 
+
             return mediaBackup;
         }
 
@@ -160,7 +161,7 @@
             using (StreamWriter streamWriter = new StreamWriter(this.mediaBackupPath))
             {
                 xmlSerializer.Serialize(streamWriter, this);
-            } 
+            }
         }
 
         public static string GetRelativePathFromBackupPath(string fullPath, string backupFolder,
@@ -227,7 +228,7 @@
                         // clear the backup details as the master file hash has changed
                         backupFile.BackupDisk = null;
                         backupFile.BackupDiskChecked = null;
-                    }  
+                    }
                 }
 
                 // Check the file length
@@ -278,7 +279,6 @@
                 {
                     return b;
                 }
-
             }
 
             return null;
@@ -320,7 +320,17 @@
 
             return null;
         }
-       
+
+        public IEnumerable<BackupFile> GetBackupFilesWithDiskCheckedEmpty()
+        {
+            return BackupFiles.Where(p => string.IsNullOrEmpty(p.BackupDiskChecked));
+        }
+
+        public IEnumerable<BackupFile> GetBackupFilesWithBackupDiskEmpty()
+        {
+            return BackupFiles.Where(p => string.IsNullOrEmpty(p.BackupDisk));
+        }
+
         public bool Contains(string hash, string path)
         {
             string hashKey = BackupFile.GetFileHash(hash, path);

@@ -255,7 +255,7 @@
             this.listFilesInMasterFolderButton.TabIndex = 26;
             this.listFilesInMasterFolderButton.Text = "List files on MasterFolder";
             this.listFilesInMasterFolderButton.UseVisualStyleBackColor = true;
-            this.listFilesInMasterFolderButton.Click += new System.EventHandler(this.button5_Click);
+            this.listFilesInMasterFolderButton.Click += new System.EventHandler(this.listFilesInMasterFolderButton_Click);
             // 
             // masterFoldersComboBox
             // 
