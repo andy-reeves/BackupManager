@@ -341,7 +341,7 @@
             this.testPushoverEmergencyButton.Name = "testPushoverEmergencyButton";
             this.testPushoverEmergencyButton.Size = new System.Drawing.Size(217, 23);
             this.testPushoverEmergencyButton.TabIndex = 42;
-            this.testPushoverEmergencyButton.Text = "pushover Emeregency";
+            this.testPushoverEmergencyButton.Text = "pushover Emergency";
             this.testPushoverEmergencyButton.UseVisualStyleBackColor = true;
             this.testPushoverEmergencyButton.Click += new System.EventHandler(this.testPushoverEmergencyButton_Click);
             // 
