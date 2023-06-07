@@ -53,10 +53,11 @@
             this.listFilesNotCheckedInXXButton = new System.Windows.Forms.Button();
             this.restoreFilesToMasterFolderButton = new System.Windows.Forms.Button();
             this.restoreMasterFolderComboBox = new System.Windows.Forms.ComboBox();
-            this.testPushoverAlertsButton = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
+            this.testPushoverHighButton = new System.Windows.Forms.Button();
+            this.testPushoverNormalButton = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.testPushoverEmergencyButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // updateMasterFilesButton
@@ -73,9 +74,9 @@
             // 
             // checkConnectedBackupDriveButton
             // 
-            this.checkConnectedBackupDriveButton.Location = new System.Drawing.Point(244, 144);
+            this.checkConnectedBackupDriveButton.Location = new System.Drawing.Point(244, 183);
             this.checkConnectedBackupDriveButton.Name = "checkConnectedBackupDriveButton";
-            this.checkConnectedBackupDriveButton.Size = new System.Drawing.Size(217, 35);
+            this.checkConnectedBackupDriveButton.Size = new System.Drawing.Size(217, 50);
             this.checkConnectedBackupDriveButton.TabIndex = 1;
             this.checkConnectedBackupDriveButton.Text = "Check connected backup disk";
             this.toolTip.SetToolTip(this.checkConnectedBackupDriveButton, "Checks a connected backup disk.\r\nSets the BackupDisk and the BackupDiskChecked (i" +
@@ -149,9 +150,9 @@
             // 
             // checkDiskAndDeleteButton
             // 
-            this.checkDiskAndDeleteButton.Location = new System.Drawing.Point(244, 184);
+            this.checkDiskAndDeleteButton.Location = new System.Drawing.Point(244, 290);
             this.checkDiskAndDeleteButton.Name = "checkDiskAndDeleteButton";
-            this.checkDiskAndDeleteButton.Size = new System.Drawing.Size(217, 48);
+            this.checkDiskAndDeleteButton.Size = new System.Drawing.Size(217, 39);
             this.checkDiskAndDeleteButton.TabIndex = 19;
             this.checkDiskAndDeleteButton.Text = "Check connected backup disk (and remove extra files)";
             this.toolTip.SetToolTip(this.checkDiskAndDeleteButton, "Checks a connected backup disk.\r\nSets the BackupDisk and the BackupDiskChecked (i" +
@@ -294,25 +295,25 @@
             this.restoreMasterFolderComboBox.Size = new System.Drawing.Size(128, 21);
             this.restoreMasterFolderComboBox.TabIndex = 32;
             // 
-            // testPushoverAlertsButton
+            // testPushoverHighButton
             // 
-            this.testPushoverAlertsButton.Location = new System.Drawing.Point(244, 117);
-            this.testPushoverAlertsButton.Name = "testPushoverAlertsButton";
-            this.testPushoverAlertsButton.Size = new System.Drawing.Size(217, 23);
-            this.testPushoverAlertsButton.TabIndex = 38;
-            this.testPushoverAlertsButton.Text = "pushover High";
-            this.testPushoverAlertsButton.UseVisualStyleBackColor = true;
-            this.testPushoverAlertsButton.Click += new System.EventHandler(this.testPushoverAlertsButton_Click);
+            this.testPushoverHighButton.Location = new System.Drawing.Point(244, 117);
+            this.testPushoverHighButton.Name = "testPushoverHighButton";
+            this.testPushoverHighButton.Size = new System.Drawing.Size(217, 23);
+            this.testPushoverHighButton.TabIndex = 38;
+            this.testPushoverHighButton.Text = "pushover High";
+            this.testPushoverHighButton.UseVisualStyleBackColor = true;
+            this.testPushoverHighButton.Click += new System.EventHandler(this.testPushoverHighButton_Click);
             // 
-            // button4
+            // testPushoverNormalButton
             // 
-            this.button4.Location = new System.Drawing.Point(244, 88);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(217, 23);
-            this.button4.TabIndex = 39;
-            this.button4.Text = "pushover Normal";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.testPushoverNormalButton.Location = new System.Drawing.Point(244, 88);
+            this.testPushoverNormalButton.Name = "testPushoverNormalButton";
+            this.testPushoverNormalButton.Size = new System.Drawing.Size(217, 23);
+            this.testPushoverNormalButton.TabIndex = 39;
+            this.testPushoverNormalButton.Text = "pushover Normal";
+            this.testPushoverNormalButton.UseVisualStyleBackColor = true;
+            this.testPushoverNormalButton.Click += new System.EventHandler(this.testPushoverNormalButton_Click);
             // 
             // label3
             // 
@@ -334,15 +335,26 @@
             this.label4.Text = "Dest master folder";
             this.label4.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
+            // testPushoverEmergencyButton
+            // 
+            this.testPushoverEmergencyButton.Location = new System.Drawing.Point(244, 144);
+            this.testPushoverEmergencyButton.Name = "testPushoverEmergencyButton";
+            this.testPushoverEmergencyButton.Size = new System.Drawing.Size(217, 23);
+            this.testPushoverEmergencyButton.TabIndex = 42;
+            this.testPushoverEmergencyButton.Text = "pushover Emeregency";
+            this.testPushoverEmergencyButton.UseVisualStyleBackColor = true;
+            this.testPushoverEmergencyButton.Click += new System.EventHandler(this.testPushoverEmergencyButton_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(468, 335);
+            this.Controls.Add(this.testPushoverEmergencyButton);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.button4);
-            this.Controls.Add(this.testPushoverAlertsButton);
+            this.Controls.Add(this.testPushoverNormalButton);
+            this.Controls.Add(this.testPushoverHighButton);
             this.Controls.Add(this.listMoviesWithMultipleFilesButton);
             this.Controls.Add(this.checkBackupDeleteAndCopyButton);
             this.Controls.Add(this.restoreMasterFolderComboBox);
@@ -402,10 +414,11 @@
         private System.Windows.Forms.ComboBox restoreMasterFolderComboBox;
         private System.Windows.Forms.Button checkBackupDeleteAndCopyButton;
         private System.Windows.Forms.Button listMoviesWithMultipleFilesButton;
-        private System.Windows.Forms.Button testPushoverAlertsButton;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button testPushoverHighButton;
+        private System.Windows.Forms.Button testPushoverNormalButton;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button testPushoverEmergencyButton;
     }
 }
 

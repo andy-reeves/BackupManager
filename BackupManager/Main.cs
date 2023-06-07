@@ -150,7 +150,7 @@ namespace BackupManager
             BackupDisk disk = this.mediaBackup.GetBackupDisk(backupShare);
             if (disk == null)
             {
-                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, PushoverPriority.High, "Error updating info for backup share {0}", backupShare);
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, PushoverPriority.Emergency, "Error updating info for backup share {0}", backupShare);
                 return;
             }
 
@@ -159,7 +159,7 @@ namespace BackupManager
             if (!result)
             {   // In this shared folder there should be another folder that starts with 'Backup' like 'Backup 18'
                 // if not thats a problem
-                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, PushoverPriority.High, "Error updating info for backup disk {0}", disk.Name);
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, PushoverPriority.Emergency, "Error updating info for backup disk {0}", disk.Name);
                 return;
             }
 
@@ -252,7 +252,7 @@ disk.Name);
             result = disk.Update(this.mediaBackup.BackupFiles);
             if (!result)
             {
-                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, PushoverPriority.High, "Error updating info for backup disk {0}", disk.Name);
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, PushoverPriority.Emergency, "Error updating info for backup disk {0}", disk.Name);
                 return;
             }
 
@@ -329,14 +329,14 @@ disk.Name);
             BackupDisk disk = this.mediaBackup.GetBackupDisk(backupShare);
             if (disk == null)
             {
-                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, PushoverPriority.High, "Error updating info for backup share {0}", backupShare);
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, PushoverPriority.Emergency, "Error updating info for backup share {0}", backupShare);
                 return;
             }
 
             var result = disk.Update(this.mediaBackup.BackupFiles);
             if (!result)
             {
-                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, PushoverPriority.High, "Error updating info for backup  {0}", disk.Name);
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, PushoverPriority.Emergency, "Error updating info for backup  {0}", disk.Name);
                 return;
             }
 
@@ -431,14 +431,14 @@ disk.Name);
                 catch (IOException ex)
                 {
                     // Sometimes during a copy we get this if we lose the connection to the source NAS drive
-                    Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, PushoverPriority.High, "IOException during copy. Skipping file. Details {0}", ex.ToString());
+                    Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, PushoverPriority.Emergency, "IOException during copy. Skipping file. Details {0}", ex.ToString());
                 }
             }
 
             result = disk.Update(this.mediaBackup.BackupFiles);
             if (!result)
             {
-                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, PushoverPriority.High, "Error updating info for backup disk {0}", disk.Name);
+                Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, PushoverPriority.Emergency, "Error updating info for backup disk {0}", disk.Name);
                 return;
             }
 
@@ -906,7 +906,7 @@ disk.Name);
             {
 
                 Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken,
-                    LogFile, BackupAction.General,PushoverPriority.High,
+                    LogFile, BackupAction.General,PushoverPriority.Emergency,
                     "Exception occured {0}",
                     ex.Message);
             }
@@ -1194,23 +1194,30 @@ disk.Name);
             }
         }
 
-        private void testPushoverAlertsButton_Click(object sender, EventArgs e)
+        private void testPushoverHighButton_Click(object sender, EventArgs e)
         {
-            // test pushover alerts
             string logFile = Path.Combine(
               Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
               "backup_TestPushoverAlerts.txt");
             Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.General, PushoverPriority.High, "High priority test");
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        private void testPushoverNormalButton_Click(object sender, EventArgs e)
         {
-            // test pushover alerts
             string logFile = Path.Combine(
               Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
               "backup_TestPushoverAlerts.txt");
 
             Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.General, PushoverPriority.Normal, "Normal priority test");
+        }
+
+        private void testPushoverEmergencyButton_Click(object sender, EventArgs e)
+        {
+            string logFile = Path.Combine(
+              Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+              "backup_TestPushoverAlerts.txt");
+
+            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.General, PushoverPriority.Emergency, "Emergency priority test");
         }
     }
 }

@@ -545,6 +545,12 @@ namespace BackupManager
                 { "timestamp", timeStamp }
                 };
 
+                if (priority == PushoverPriority.Emergency)
+                {
+                    parameters.Add("retry", "30");
+                    parameters.Add("expire", "30");
+                }
+
                 using (var client = new WebClient())
                 {
                     client.UploadValues("https://api.pushover.net/1/messages.json", parameters);
