@@ -1,5 +1,4 @@
-﻿
-namespace BackupManager
+﻿namespace BackupManager
 {
     public enum PushoverPriority
     {
@@ -10,4 +9,3 @@ namespace BackupManager
         Emergency = 2
     }
 }
-

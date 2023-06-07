@@ -530,7 +530,13 @@ namespace BackupManager
 
             return CreateHashForByteArray(startBlock, middleBlock, endBlock);
         }
+
         public static void SendPushoverMessage(string userKey, string appToken, string title, PushoverPriority priority, string message)
+        {
+            Utils.SendPushoverMessage(userKey, appToken, title, priority, PushoverRetry.None, PushoverExpires.Immediately, message);
+        }
+
+        public static void SendPushoverMessage(string userKey, string appToken, string title, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires, string message)
         {
             string timeStamp = new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds().ToString();
 
@@ -545,10 +551,28 @@ namespace BackupManager
                 { "timestamp", timeStamp }
                 };
 
+
                 if (priority == PushoverPriority.Emergency)
                 {
-                    parameters.Add("retry", "30");
-                    parameters.Add("expire", "30");
+                    if (retry == PushoverRetry.None)
+                    {
+                        retry = PushoverRetry.ThirtySeconds;
+                    }
+
+                    if (expires == PushoverExpires.Immediately)
+                    {
+                        expires = PushoverExpires.FiveMinutes;
+                    }
+                }
+
+                if (retry != PushoverRetry.None)
+                {
+                    parameters.Add("retry", Convert.ChangeType(retry, retry.GetTypeCode()).ToString());
+                }
+
+                if (expires != PushoverExpires.Immediately)
+                {
+                    parameters.Add("expire", Convert.ChangeType(expires, expires.GetTypeCode()).ToString());
                 }
 
                 using (var client = new WebClient())
@@ -585,11 +609,21 @@ namespace BackupManager
 
         public static void LogWithPushover(string pushoverUserKey, string pushoverAppToken, string logFilePath, BackupAction backupAction, PushoverPriority priority, string text, params object[] args)
         {
-            Log(logFilePath, System.Enum.GetName(typeof(BackupAction), backupAction) + " " + text, args);
+            Log(logFilePath, Enum.GetName(typeof(BackupAction), backupAction) + " " + text, args);
+            if (!string.IsNullOrEmpty(pushoverAppToken))
+            {
+                Utils.SendPushoverMessage(pushoverUserKey, pushoverAppToken, Enum.GetName(typeof(BackupAction), backupAction), priority, string.Format(text, args));
+            }
+        }
+
+        public static void LogWithPushover(string pushoverUserKey, string pushoverAppToken, string logFilePath, BackupAction backupAction, PushoverPriority priority, PushoverRetry retry,PushoverExpires expires, string text, params object[] args)
+        {
+            Log(logFilePath, Enum.GetName(typeof(BackupAction), backupAction) + " " + text, args);
+
 
             if (!string.IsNullOrEmpty(pushoverAppToken))
             {
-                Utils.SendPushoverMessage(pushoverUserKey, pushoverAppToken, System.Enum.GetName(typeof(BackupAction), backupAction), priority, string.Format(text, args));
+                Utils.SendPushoverMessage(pushoverUserKey, pushoverAppToken, Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, string.Format(text, args));
             }
         }
         #endregion

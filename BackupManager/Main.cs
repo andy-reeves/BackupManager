@@ -1217,7 +1217,7 @@ disk.Name);
               Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
               "backup_TestPushoverAlerts.txt");
 
-            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.General, PushoverPriority.Emergency, "Emergency priority test");
+            Utils.LogWithPushover(this.mediaBackup.PushoverUserKey, this.mediaBackup.PushoverAppToken, logFile, BackupAction.General, PushoverPriority.Emergency,PushoverRetry.OneMinute, PushoverExpires.OneHour, "Emergency priority test");
         }
     }
 }
