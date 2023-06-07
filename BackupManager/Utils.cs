@@ -551,7 +551,6 @@ namespace BackupManager
                 { "timestamp", timeStamp }
                 };
 
-
                 if (priority == PushoverPriority.Emergency)
                 {
                     if (retry == PushoverRetry.None)
