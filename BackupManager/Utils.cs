@@ -312,7 +312,7 @@ namespace BackupManager
                                                      .Replace(".", @"\.")
                                                      .Replace("*", ".*")
                                                      .Replace("?", ".")
-                                                 select string.Format("^{0}$", replace);
+                                                 select $"^{replace}$";
 
             var excludeRegex = new Regex(string.Join("|", excludeFilters.ToArray()), RegexOptions.IgnoreCase);
 
@@ -533,7 +533,7 @@ namespace BackupManager
 
         public static void SendPushoverMessage(string userKey, string appToken, string title, PushoverPriority priority, string message)
         {
-            Utils.SendPushoverMessage(userKey, appToken, title, priority, PushoverRetry.None, PushoverExpires.Immediately, message);
+            SendPushoverMessage(userKey, appToken, title, priority, PushoverRetry.None, PushoverExpires.Immediately, message);
         }
 
         public static void SendPushoverMessage(string userKey, string appToken, string title, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires, string message)
@@ -579,7 +579,7 @@ namespace BackupManager
                     client.UploadValues("https://api.pushover.net/1/messages.json", parameters);
 
 #if !DEBUG
-                    System.Threading.Thread.Sleep(2000); // ensures there's at least a 2s gap between messages
+                    System.Threading.Thread.Sleep(1000); // ensures there's at least a 1s gap between messages
 #endif
                 }
             }
@@ -591,7 +591,7 @@ namespace BackupManager
 
         public static void Log(string logFilePath, string text, params object[] args)
         {
-            string textToWrite = DateTime.Now.ToString("dd-MM-yy HH:mm:ss") + " : " + string.Format(text, args);
+            string textToWrite = $"{DateTime.Now.ToString("dd-MM-yy HH:mm:ss")} : {string.Format(text, args)}";
 
             Console.WriteLine(textToWrite);
             if (logFilePath.HasValue())
@@ -609,18 +609,30 @@ namespace BackupManager
         public static void LogWithPushover(string pushoverUserKey, string pushoverAppToken, string logFilePath, BackupAction backupAction, PushoverPriority priority, string text, params object[] args)
         {
             Log(logFilePath, Enum.GetName(typeof(BackupAction), backupAction) + " " + text, args);
+            
             if (pushoverAppToken.HasValue())
             {
-                Utils.SendPushoverMessage(pushoverUserKey, pushoverAppToken, Enum.GetName(typeof(BackupAction), backupAction), priority, string.Format(text, args));
+                SendPushoverMessage(pushoverUserKey,
+                                    pushoverAppToken,
+                                    Enum.GetName(typeof(BackupAction), backupAction),
+                                    priority,
+                                    string.Format(text, args));
             }
         }
 
         public static void LogWithPushover(string pushoverUserKey, string pushoverAppToken, string logFilePath, BackupAction backupAction, PushoverPriority priority, PushoverRetry retry,PushoverExpires expires, string text, params object[] args)
         {
             Log(logFilePath, Enum.GetName(typeof(BackupAction), backupAction) + " " + text, args);
+            
             if (pushoverAppToken.HasValue())
             {
-                Utils.SendPushoverMessage(pushoverUserKey, pushoverAppToken, Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, string.Format(text, args));
+                SendPushoverMessage(pushoverUserKey,
+                                    pushoverAppToken,
+                                    Enum.GetName(typeof(BackupAction), backupAction),
+                                    priority,
+                                    retry,
+                                    expires,
+                                    string.Format(text, args));
             }
         }
         #endregion
@@ -923,35 +935,35 @@ namespace BackupManager
 
             if (diskSpace > oneTerabyte)
             {
-                return string.Format("{0:0.#}TB", (decimal)diskSpace / oneTerabyte);
+                return $"{(decimal)diskSpace / oneTerabyte:0.#}TB";
             }
 
             if (diskSpace > (25 * oneGigabyte))
             {
-                return string.Format("{0:n0}GB", diskSpace / oneGigabyte);
+                return $"{diskSpace / oneGigabyte:n0}GB";
             }
 
             if (diskSpace > oneGigabyte)
             {
-                return string.Format("{0:0.#}GB", (decimal)diskSpace / oneGigabyte);
+                return $"{(decimal)diskSpace / oneGigabyte:0.#}GB";
             }
 
             if (diskSpace > (25 * oneMegabyte))
             {
-                return string.Format("{0:n0}MB", diskSpace / oneMegabyte);
+                return $"{diskSpace / oneMegabyte:n0}MB";
             }
 
             if (diskSpace > oneMegabyte)
             {
-                return string.Format("{0:0.#}MB", (decimal)diskSpace / oneMegabyte);
+                return $"{(decimal)diskSpace / oneMegabyte:0.#}MB";
             }
 
             if (diskSpace > oneKilobyte)
             {
-                return string.Format("{0:n0}KB", diskSpace / oneKilobyte);
+                return $"{diskSpace / oneKilobyte:n0}KB";
             }
 
-            return string.Format("{0:n0}bytes", diskSpace);
+            return $"{diskSpace:n0}bytes";
         }
     }
 }

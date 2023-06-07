@@ -226,8 +226,8 @@
                         this.hashesAndFileNames.Add(backupFile.Hash, backupFile);
 
                         // clear the backup details as the master file hash has changed
-                        backupFile.BackupDisk = null;
-                        backupFile.BackupDiskChecked = null;
+                        backupFile.Disk = null;
+                        backupFile.DiskChecked = null;
                     }
                 }
 
@@ -323,12 +323,12 @@
 
         public IEnumerable<BackupFile> GetBackupFilesWithDiskCheckedEmpty()
         {
-            return BackupFiles.Where(p => string.IsNullOrEmpty(p.BackupDiskChecked));
+            return BackupFiles.Where(p => string.IsNullOrEmpty(p.DiskChecked));
         }
 
-        public IEnumerable<BackupFile> GetBackupFilesWithBackupDiskEmpty()
+        public IEnumerable<BackupFile> GetBackupFilesWithDiskEmpty()
         {
-            return BackupFiles.Where(p => string.IsNullOrEmpty(p.BackupDisk));
+            return BackupFiles.Where(p => string.IsNullOrEmpty(p.Disk));
         }
 
         public bool Contains(string hash, string path)

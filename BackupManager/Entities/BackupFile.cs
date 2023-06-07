@@ -40,10 +40,10 @@
         }
 
         [XmlElement("Disk")]
-        public string BackupDisk;
+        public string Disk;
        
         [XmlElement("DiskChecked")]
-        public string BackupDiskChecked;
+        public string DiskChecked;
 
         /// <summary>
         /// The last modified date/time of the file.
@@ -80,9 +80,9 @@
         {
             get
             {
-                if (string.IsNullOrEmpty(BackupDisk)) {  return 0; }
+                if (string.IsNullOrEmpty(Disk)) { return 0; }
 
-                string diskNumberString = BackupDisk.SubstringAfter(' ');
+                string diskNumberString = Disk.SubstringAfter(' ');
                 if (string.IsNullOrEmpty(diskNumberString)) { return 0; }
 
                 return int.Parse(diskNumberString);
@@ -118,7 +118,7 @@
         /// <param name="indexFolder"></param>
         public BackupFile(string fullPath, string masterFolder, string indexFolder)
         {
-            this.SetFullPath(fullPath, masterFolder, indexFolder);
+            SetFullPath(fullPath, masterFolder, indexFolder);
         }
 
         public void SetFullPath(string fullPath, string masterFolder, string indexFolder)
@@ -130,65 +130,63 @@
 
             this.fullPath = fullPath;
 
-            this.RelativePath = GetRelativePath(fullPath, masterFolder, indexFolder);
+            RelativePath = GetRelativePath(fullPath, masterFolder, indexFolder);
 
-            this.MasterFolder = masterFolder;
-            this.IndexFolder = indexFolder;
+            MasterFolder = masterFolder;
+            IndexFolder = indexFolder;
 
-            this.UpdateContentsHash();
-            this.UpdateLastWriteTime();
-            this.UpdateFileLength();
+            UpdateContentsHash();
+            UpdateLastWriteTime();
+            UpdateFileLength();
         }
 
         private static string GetRelativePath(string fullPath, string masterFolder, string indexFolder)
         {
-            var p = System.IO.Path.Combine(masterFolder, indexFolder);
+            string combinedPath = Path.Combine(masterFolder, indexFolder);
 
-            if (!fullPath.StartsWith(p))
+            if (!fullPath.StartsWith(combinedPath))
             {
                 throw new ArgumentException();
             }
 
-            var g = fullPath.SubstringAfter(p, StringComparison.CurrentCultureIgnoreCase);
-
-            return g.TrimStart(new[] { '\\' });
+            return fullPath.SubstringAfter(combinedPath, StringComparison.CurrentCultureIgnoreCase).TrimStart(new[] { '\\' });
         }
 
         public static string GetFileHash(string hash, string path)
         {
-            return hash + "-" + System.IO.Path.GetFileName(path);
+            return hash + "-" + Path.GetFileName(path);
         }
 
         public string GetFileName()
         {
-            return System.IO.Path.GetFileName(this.fullPath);
+            return Path.GetFileName(fullPath);
         }
 
         public void UpdateContentsHash()
         {
-            this.ContentsHash = Utils.GetShortMd5HashFromFile(this.FullPath);
+            ContentsHash = Utils.GetShortMd5HashFromFile(FullPath);
 
-            if (this.ContentsHash == Utils.ZeroByteHash)
+            if (ContentsHash == Utils.ZeroByteHash)
             {
-                throw new ApplicationException(string.Format("File '{0}' has zerobyte Hashcode", this.FullPath));
+                throw new ApplicationException($"File '{FullPath}' has zerobyte Hashcode");
             }
 
             // force the hash to be re-calculated 
-            this.hash = null;
+            hash = null;
         }
 
         public void UpdateLastWriteTime()
         {
-            this.LastWriteTime = Utils.GetFileLastWriteTime(this.FullPath);
+            LastWriteTime = Utils.GetFileLastWriteTime(FullPath);
         }
 
         public void UpdateFileLength()
         {
-            this.Length = Utils.GetFileLength(this.FullPath);
+            Length = Utils.GetFileLength(FullPath);
 
-            if (this.Length == 0)
+            if (Length == 0)
             {
-                throw new ApplicationException(string.Format("File '{0}' has 0 length", this.FullPath));
+                throw new ApplicationException($"File '{FullPath}' has 0 length");
             }
         }
     }

@@ -73,7 +73,7 @@
 			this.TotalSize = totalBytes;
 
 			IEnumerable<BackupFile> files =
-			   backupFiles.Where(p => p.BackupDisk == this.Name);
+			   backupFiles.Where(p => p.Disk == this.Name);
 
 			this.TotalFiles = files.Count();
 
