@@ -31,7 +31,7 @@ namespace BackupManager
 
 #if !DEBUG
             timerTextBox.Text = "1440";
-            backupDiskTextBox.Text = Path.Combine(@"\\", System.Environment.MachineName, "backup");
+            backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
 #endif
 
             foreach (string a in mediaBackup.MasterFolders)
@@ -89,21 +89,20 @@ namespace BackupManager
             }
         }
 
-        private void BackupHashCodeCheckedButtonClick(object sender, EventArgs e)
+        private void BackupHashCodeCheckedButton_Click(object sender, EventArgs e)
         {
             string LogFile = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
                 "backup_FilesWithoutBackupDiskChecked.txt");
 
-            IEnumerable<BackupFile> files = mediaBackup.GetBackupFilesWithDiskCheckedEmpty();
 
-            foreach (BackupFile file in files)
+            foreach (BackupFile file in mediaBackup.GetBackupFilesWithDiskCheckedEmpty())
             {
                 Utils.Log(LogFile, $"{file.FullPath} does not have DiskChecked set on disk {file.Disk}");
             }
         }
 
-        private void CheckConnectedBackupDriveButtonClick(object sender, EventArgs e)
+        private void CheckConnectedBackupDriveButton_Click(object sender, EventArgs e)
         {
             CheckConnectedDisk(false);
         }
@@ -571,7 +570,7 @@ namespace BackupManager
             backupFile.Flag = true;
         }
 
-        private void ListFilesNotOnBackupDriveButtonClick(object sender, EventArgs e)
+        private void ListFilesNotOnBackupDriveButton_Click(object sender, EventArgs e)
         {
             string logFile = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
@@ -585,7 +584,7 @@ namespace BackupManager
             }
         }
 
-        private void RecalculateHashcodesButtonClick(object sender, EventArgs e)
+        private void RecalculateHashcodesButton_Click(object sender, EventArgs e)
         {
             DialogResult answer =
                 MessageBox.Show(

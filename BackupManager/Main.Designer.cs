@@ -82,7 +82,7 @@
             this.toolTip.SetToolTip(this.checkConnectedBackupDriveButton, "Checks a connected backup disk.\r\nSets the BackupDisk and the BackupDiskChecked (i" +
         "f the HashCode is correct). Doesn\'t delete any files.");
             this.checkConnectedBackupDriveButton.UseVisualStyleBackColor = true;
-            this.checkConnectedBackupDriveButton.Click += new System.EventHandler(this.CheckConnectedBackupDriveButtonClick);
+            this.checkConnectedBackupDriveButton.Click += new System.EventHandler(this.CheckConnectedBackupDriveButton_Click);
             // 
             // copyFilesToBackupDriveButton
             // 
@@ -121,7 +121,7 @@
             this.listFilesNotOnBackupButton.Text = "2. Files not on a Backup disk";
             this.toolTip.SetToolTip(this.listFilesNotOnBackupButton, "Outputs files that are not yet on a Backup drive.");
             this.listFilesNotOnBackupButton.UseVisualStyleBackColor = true;
-            this.listFilesNotOnBackupButton.Click += new System.EventHandler(this.ListFilesNotOnBackupDriveButtonClick);
+            this.listFilesNotOnBackupButton.Click += new System.EventHandler(this.ListFilesNotOnBackupDriveButton_Click);
             // 
             // button1
             // 
@@ -133,7 +133,7 @@
             this.toolTip.SetToolTip(this.button1, "Recalculates all the Hashcodes from the Master Files. Only use this is the hash a" +
         "lgorithm has been changed.");
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.RecalculateHashcodesButtonClick);
+            this.button1.Click += new System.EventHandler(this.RecalculateHashcodesButton_Click);
             // 
             // backupHashCodeCheckedButton
             // 
@@ -146,7 +146,7 @@
         " to a backup disk but the Hashcode is now different. We\'ve probably updated the " +
         "master file.");
             this.backupHashCodeCheckedButton.UseVisualStyleBackColor = true;
-            this.backupHashCodeCheckedButton.Click += new System.EventHandler(this.BackupHashCodeCheckedButtonClick);
+            this.backupHashCodeCheckedButton.Click += new System.EventHandler(this.BackupHashCodeCheckedButton_Click);
             // 
             // checkDiskAndDeleteButton
             // 
