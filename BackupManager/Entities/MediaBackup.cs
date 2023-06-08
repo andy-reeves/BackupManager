@@ -110,7 +110,7 @@
             {
                 if (string.IsNullOrEmpty(folder))
                 {
-                    throw new ApplicationException("Empty indexfolders are now not supported");
+                    throw new ApplicationException("Empty indexfolders are not supported");
                 }
             }
 

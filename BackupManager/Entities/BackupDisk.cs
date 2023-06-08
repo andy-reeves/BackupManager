@@ -25,6 +25,12 @@
         [XmlIgnore]
         public string BackupPath { get => Path.Combine(this.BackupShare, this.Name); }
 
+        [XmlIgnore]
+        public string TotalSizeFormatted { get => Utils.FormatDiskSpace(TotalSize); }
+        
+        [XmlIgnore]
+        public string FreespaceFormatted { get => Utils.FormatDiskSpace(FreeSpace); }
+
         public BackupDisk()
 		{
 		}

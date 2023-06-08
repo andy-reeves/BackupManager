@@ -65,7 +65,7 @@
             {
                 if (fullPath == null)
                 {
-                    fullPath = Path.Combine(this.MasterFolder, this.IndexFolder, this.RelativePath);
+                    fullPath = Path.Combine(MasterFolder, IndexFolder, RelativePath);
                 }
 
                 return fullPath;
@@ -99,7 +99,7 @@
             {
                 if (hash == null)
                 {
-                    hash = GetFileHash(this.ContentsHash, this.RelativePath);
+                    hash = GetFileHash(ContentsHash, RelativePath);
                 }
 
                 return hash;
