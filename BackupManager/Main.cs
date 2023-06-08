@@ -457,7 +457,7 @@ namespace BackupManager
                                                           mediaBackup.PushoverAppToken,
                                                           logFile,
                                                           BackupAction.BackupFiles,
-                                                          $"Skipping {sourceFileName} as not enough free space for {sourceFileSize}"
+                                                          $"[{fileCounter}/{totalFileCount}] Skipping {sourceFileName} as not enough free space for {sourceFileSize}"
                                                           );
                                     outOfDiskSpaceMessageSent = true;
                                 }
