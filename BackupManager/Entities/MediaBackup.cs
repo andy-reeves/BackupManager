@@ -69,10 +69,10 @@
 
         public MediaBackup()
         {
-            this.MasterFolders = new Collection<string>();
-            this.IndexFolders = new Collection<string>();
-            this.Filters = new Collection<string>();
-            this.BackupFiles = new Collection<BackupFile>();
+            MasterFolders = new Collection<string>();
+            IndexFolders = new Collection<string>();
+            Filters = new Collection<string>();
+            BackupFiles = new Collection<BackupFile>();
         }
 
         public MediaBackup(string mediaBackupPath)
@@ -86,7 +86,7 @@
             string destinationFileName = "MediaBackup-" + DateTime.Now.ToString("yy-MM-dd-HH-mm-ss.ff") + ".xml";
             string destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), destinationFileName);
 
-            File.Copy(this.mediaBackupPath, destinationPath);
+            File.Copy(mediaBackupPath, destinationPath);
         }
 
         public static MediaBackup Load(string path)
@@ -153,12 +153,12 @@
 
             XmlSerializer xmlSerializer = new XmlSerializer(typeof(MediaBackup));
 
-            if (File.Exists(this.mediaBackupPath))
+            if (File.Exists(mediaBackupPath))
             {
-                File.SetAttributes(this.mediaBackupPath, FileAttributes.Normal);
+                File.SetAttributes(mediaBackupPath, FileAttributes.Normal);
             }
 
-            using (StreamWriter streamWriter = new StreamWriter(this.mediaBackupPath))
+            using (StreamWriter streamWriter = new StreamWriter(mediaBackupPath))
             {
                 xmlSerializer.Serialize(streamWriter, this);
             }
@@ -198,10 +198,10 @@
             BackupFile backupFile;
 
             // if this path is already added then return it
-            if (this.paths.Contains(fullPath))
+            if (paths.Contains(fullPath))
             {
                 // check the timestamp against what we have
-                backupFile = (BackupFile)this.paths[fullPath];
+                backupFile = (BackupFile)paths[fullPath];
 
                 var t = backupFile.LastWriteTime;
                 var u = Utils.GetFileLastWriteTime(fullPath);
@@ -217,13 +217,13 @@
                     // has the hash changed too?
                     if (hash != backupFile.ContentsHash)
                     {
-                        if (this.hashesAndFileNames.Contains(backupFile.Hash))
+                        if (hashesAndFileNames.Contains(backupFile.Hash))
                         {
-                            this.hashesAndFileNames.Remove(backupFile.Hash);
+                            hashesAndFileNames.Remove(backupFile.Hash);
                         }
 
                         backupFile.ContentsHash = hash;
-                        this.hashesAndFileNames.Add(backupFile.Hash, backupFile);
+                        hashesAndFileNames.Add(backupFile.Hash, backupFile);
 
                         // clear the backup details as the master file hash has changed
                         backupFile.Disk = null;
@@ -244,26 +244,26 @@
 
             string hashKey = BackupFile.GetFileHash(hash, fullPath);
 
-            if (this.hashesAndFileNames.Contains(hashKey))
+            if (hashesAndFileNames.Contains(hashKey))
             {
-                var b = (BackupFile)this.hashesAndFileNames[hashKey];
+                var b = (BackupFile)hashesAndFileNames[hashKey];
 
-                if (this.paths.Contains(b.FullPath))
+                if (paths.Contains(b.FullPath))
                 {
-                    this.paths.Remove(b.FullPath);
+                    paths.Remove(b.FullPath);
                 }
 
                 b.SetFullPath(fullPath, masterFolder, indexFolder);
-                this.paths.Add(fullPath, b);
+                paths.Add(fullPath, b);
 
                 return b;
             }
 
             backupFile = new BackupFile(fullPath, masterFolder, indexFolder);
-            this.BackupFiles.Add(backupFile);
+            BackupFiles.Add(backupFile);
 
-            this.hashesAndFileNames.Add(backupFile.Hash, backupFile);
-            this.paths.Add(fullPath, backupFile);
+            hashesAndFileNames.Add(backupFile.Hash, backupFile);
+            paths.Add(fullPath, backupFile);
 
             return backupFile;
         }
@@ -273,11 +273,11 @@
             // try and find a file based on the filename only
             // if more than 1 file than return the first one
 
-            foreach (BackupFile b in this.BackupFiles)
+            foreach (BackupFile backupFile in BackupFiles)
             {
-                if (b.GetFileName().StartsWith(fileName))
+                if (backupFile.GetFileName().StartsWith(fileName))
                 {
-                    return b;
+                    return backupFile;
                 }
             }
 
@@ -295,17 +295,17 @@
                 return null;
             }
 
-            foreach (BackupDisk b in this.BackupDisks)
+            foreach (BackupDisk backupDisk in BackupDisks)
             {
-                if (b.Name.Equals(diskName, StringComparison.CurrentCultureIgnoreCase))
+                if (backupDisk.Name.Equals(diskName, StringComparison.CurrentCultureIgnoreCase))
                 {
-                    b.BackupShare = backupShare;
-                    return b;
+                    backupDisk.BackupShare = backupShare;
+                    return backupDisk;
                 }
             }
 
             BackupDisk disk = new BackupDisk(diskName, backupShare);
-            this.BackupDisks.Add(disk);
+            BackupDisks.Add(disk);
             return disk;
         }
 
@@ -313,9 +313,9 @@
         {
             string hashKey = BackupFile.GetFileHash(hash, path);
 
-            if (this.hashesAndFileNames.Contains(hashKey))
+            if (hashesAndFileNames.Contains(hashKey))
             {
-                return (BackupFile)this.hashesAndFileNames[hashKey];
+                return (BackupFile)hashesAndFileNames[hashKey];
             }
 
             return null;
@@ -334,12 +334,12 @@
         public bool Contains(string hash, string path)
         {
             string hashKey = BackupFile.GetFileHash(hash, path);
-            return this.hashesAndFileNames.Contains(hashKey);
+            return hashesAndFileNames.Contains(hashKey);
         }
 
         public void ClearFlags()
         {
-            foreach (BackupFile backupFile in this.BackupFiles)
+            foreach (BackupFile backupFile in BackupFiles)
             {
                 backupFile.Flag = false;
             }
@@ -349,7 +349,7 @@
         {
             var filesToRemove = new Collection<BackupFile>();
 
-            foreach (BackupFile backupFile in this.BackupFiles.Where(backupFile => backupFile.Flag == flag))
+            foreach (BackupFile backupFile in BackupFiles.Where(backupFile => backupFile.Flag == flag))
             {
                 filesToRemove.Add(backupFile);
             }
@@ -358,20 +358,20 @@
             {
                 if (clearHashes)
                 {
-                    if (this.hashesAndFileNames.Contains(backupFile.Hash))
+                    if (hashesAndFileNames.Contains(backupFile.Hash))
                     {
-                        this.hashesAndFileNames.Remove(backupFile.Hash);
+                        hashesAndFileNames.Remove(backupFile.Hash);
                     }
 
-                    if (this.paths.Contains(backupFile.FullPath))
+                    if (paths.Contains(backupFile.FullPath))
                     {
-                        this.paths.Remove(backupFile.FullPath);
+                        paths.Remove(backupFile.FullPath);
                     }
                 }
 
-                if (this.BackupFiles.Contains(backupFile))
+                if (BackupFiles.Contains(backupFile))
                 {
-                    this.BackupFiles.Remove(backupFile);
+                    BackupFiles.Remove(backupFile);
                 }
             }
         }

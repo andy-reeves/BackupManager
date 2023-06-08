@@ -838,7 +838,6 @@ namespace BackupManager
             {
                 buffer = new byte[byteCountToReturn];
 
-                // count = fileStream.Read(buffer, 0, Convert.ToInt32(byteCountToReturn));
                 int length = Convert.ToInt32(byteCountToReturn);
                 int count;
                 while ((count = fileStream.Read(buffer, sum, length - sum)) > 0)
@@ -904,9 +903,9 @@ namespace BackupManager
                 folderName += '\\';
             }
 
-            ulong free = 0, total = 0, dummy2 = 0;
+            ulong free, total;
 
-            if (Utils.GetDiskFreeSpaceEx(folderName, out free, out total, out dummy2))
+            if (GetDiskFreeSpaceEx(folderName, out free, out total, out _))
             {
                 freespace = Convert.ToInt64(free);
                 totalBytes = Convert.ToInt64(total);
