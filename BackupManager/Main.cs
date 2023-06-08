@@ -578,11 +578,11 @@ namespace BackupManager
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
                 "backup_FilesNotOnABackupDisk.txt");
 
-            IEnumerable<BackupFile> filesNotOnBackupDisk = mediaBackup.GetBackupFilesWithDiskEmpty();
+            IEnumerable<BackupFile> filesNotOnBackupDisk = mediaBackup.GetBackupFilesWithDiskEmpty().OrderByDescending(p => p.Length);
 
             foreach (BackupFile file in filesNotOnBackupDisk)
             {
-                Utils.Log(logFile, $"{file.FullPath} does not have BackupDisk set");
+                Utils.Log(logFile, $"{file.FullPath} at {Utils.FormatDiskSpace(file.Length)}");
             }
         }
 
