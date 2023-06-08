@@ -589,9 +589,9 @@ namespace BackupManager
             }
         }
 
-        public static void Log(string logFilePath, string text, params object[] args)
+        public static void Log(string logFilePath, string text)
         {
-            string textToWrite = $"{DateTime.Now.ToString("dd-MM-yy HH:mm:ss")} : {string.Format(text, args)}";
+            string textToWrite = $"{DateTime.Now.ToString("dd-MM-yy HH:mm:ss")} : {text}";
 
             Console.WriteLine(textToWrite);
             if (logFilePath.HasValue())
@@ -601,29 +601,29 @@ namespace BackupManager
             }
         }
 
-        public static void LogWithPushover(string pushoverUserKey, string pushoverAppToken, string logFilePath, BackupAction backupAction, string text, params object[] args)
+        public static void LogWithPushover(string pushoverUserKey, string pushoverAppToken, string logFilePath, BackupAction backupAction, string text)//, params object[] args)
         {
-            LogWithPushover(pushoverUserKey, pushoverAppToken, logFilePath, backupAction, PushoverPriority.Normal, text, args);
+            LogWithPushover(pushoverUserKey, pushoverAppToken, logFilePath, backupAction, PushoverPriority.Normal, text);//, args);
         }
 
-        public static void LogWithPushover(string pushoverUserKey, string pushoverAppToken, string logFilePath, BackupAction backupAction, PushoverPriority priority, string text, params object[] args)
+        public static void LogWithPushover(string pushoverUserKey, string pushoverAppToken, string logFilePath, BackupAction backupAction, PushoverPriority priority, string text)//, params object[] args)
         {
-            Log(logFilePath, Enum.GetName(typeof(BackupAction), backupAction) + " " + text, args);
-            
+            Log(logFilePath, Enum.GetName(typeof(BackupAction), backupAction) + " " + text);
+
             if (pushoverAppToken.HasValue())
             {
                 SendPushoverMessage(pushoverUserKey,
                                     pushoverAppToken,
                                     Enum.GetName(typeof(BackupAction), backupAction),
                                     priority,
-                                    string.Format(text, args));
+                                    text);
             }
         }
 
-        public static void LogWithPushover(string pushoverUserKey, string pushoverAppToken, string logFilePath, BackupAction backupAction, PushoverPriority priority, PushoverRetry retry,PushoverExpires expires, string text, params object[] args)
+        public static void LogWithPushover(string pushoverUserKey, string pushoverAppToken, string logFilePath, BackupAction backupAction, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires, string text)
         {
-            Log(logFilePath, Enum.GetName(typeof(BackupAction), backupAction) + " " + text, args);
-            
+            Log(logFilePath, Enum.GetName(typeof(BackupAction), backupAction) + " " + text);
+
             if (pushoverAppToken.HasValue())
             {
                 SendPushoverMessage(pushoverUserKey,
@@ -632,7 +632,7 @@ namespace BackupManager
                                     priority,
                                     retry,
                                     expires,
-                                    string.Format(text, args));
+                                    text);
             }
         }
         #endregion

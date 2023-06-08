@@ -297,7 +297,7 @@
 
             foreach (BackupDisk b in this.BackupDisks)
             {
-                if (b.Name.StartsWith(diskName))
+                if (b.Name.Equals(diskName, StringComparison.CurrentCultureIgnoreCase))
                 {
                     b.BackupShare = backupShare;
                     return b;
