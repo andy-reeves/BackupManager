@@ -123,7 +123,7 @@ namespace BackupManager
 
             Utils.Log(logFile, "CheckBackupDisk Started");
 
-            string backupShare = this.backupDiskTextBox.Text;
+            string backupShare = backupDiskTextBox.Text;
 
             // check the backupDisks has an entry for this disk
             BackupDisk disk = mediaBackup.GetBackupDisk(backupShare);
@@ -251,6 +251,8 @@ namespace BackupManager
                 }
             }
 
+            DeleteEmptyDirectories(logFile, folderToCheck);
+
             disk.DiskChecked = DateTime.Now.ToString("yyyy-MM-dd");
 
             result = disk.Update(mediaBackup.BackupFiles);
@@ -268,9 +270,17 @@ namespace BackupManager
 
             mediaBackup.Save();
 
-            DeleteEmptyDirectories(logFile, folderToCheck);
+            Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                                  mediaBackup.PushoverAppToken,
+                                  logFile,
+                                  BackupAction.CheckBackupDisk,
+                                  $"{disk.Name} - {disk.TotalSizeFormatted} with {disk.FreespaceFormatted} free");
 
-            Utils.LogWithPushover(mediaBackup.PushoverUserKey, mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "Completed");
+            Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                                  mediaBackup.PushoverAppToken,
+                                  logFile,
+                                  BackupAction.CheckBackupDisk,
+                                  "Completed");
         }
 
         private void DeleteEmptyDirectories(string logFile, string startLocation)
