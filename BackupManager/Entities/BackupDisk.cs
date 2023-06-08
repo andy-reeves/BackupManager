@@ -71,7 +71,7 @@
 
         public bool Update(Collection<BackupFile> backupFiles)
 		{
-			if (!BackupDisk.CheckForValidBackupShare(this.BackupShare))
+			if (!CheckForValidBackupShare(this.BackupShare))
 			{
 				return false;
 			}
@@ -89,8 +89,7 @@
 			this.FreeSpace = availableSpace;
 			this.TotalSize = totalBytes;
 
-			IEnumerable<BackupFile> files =
-			   backupFiles.Where(p => p.Disk == this.Name);
+            IEnumerable<BackupFile> files = backupFiles.Where(p => p.Disk == this.Name);
 
 			this.TotalFiles = files.Count();
 

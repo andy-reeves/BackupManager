@@ -251,6 +251,8 @@ namespace BackupManager
                 }
             }
 
+            disk.DiskChecked = DateTime.Now.ToString("yyyy-MM-dd");
+
             result = disk.Update(mediaBackup.BackupFiles);
             if (!result)
             {
