@@ -11,12 +11,24 @@
 	{
 		public string Name;
 
+        /// <summary>
+        /// Date the disk was last scanned
+        /// </summary>
 		public string DiskChecked;
 
+        /// <summary>
+        /// Total size of the disk
+        /// </summary>
 		public long TotalSize;
 
+        /// <summary>
+        /// Total number of files on the disk
+        /// </summary>
 		public long TotalFiles;
 
+        /// <summary>
+        /// Total freespace on the disk
+        /// </summary>
 		public long FreeSpace;
 
 		[XmlIgnore]
@@ -37,11 +49,10 @@
 
 		public BackupDisk(string diskName, string backupShare)
 		{
-			this.Name = diskName;
-			this.BackupShare = backupShare;
+			Name = diskName;
+			BackupShare = backupShare;
 
-			BackupDisk.CheckForValidBackupShare(this.BackupShare);
-
+			CheckForValidBackupShare(BackupShare);
 		}
 
         /// <summary>
