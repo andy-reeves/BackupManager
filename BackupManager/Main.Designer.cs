@@ -58,6 +58,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.testPushoverEmergencyButton = new System.Windows.Forms.Button();
+            this.reportBackupDiskStatusButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // updateMasterFilesButton
@@ -74,9 +75,9 @@
             // 
             // checkConnectedBackupDriveButton
             // 
-            this.checkConnectedBackupDriveButton.Location = new System.Drawing.Point(244, 183);
+            this.checkConnectedBackupDriveButton.Location = new System.Drawing.Point(10, 290);
             this.checkConnectedBackupDriveButton.Name = "checkConnectedBackupDriveButton";
-            this.checkConnectedBackupDriveButton.Size = new System.Drawing.Size(217, 50);
+            this.checkConnectedBackupDriveButton.Size = new System.Drawing.Size(217, 39);
             this.checkConnectedBackupDriveButton.TabIndex = 1;
             this.checkConnectedBackupDriveButton.Text = "Check connected backup disk";
             this.toolTip.SetToolTip(this.checkConnectedBackupDriveButton, "Checks a connected backup disk.\r\nSets the BackupDisk and the BackupDiskChecked (i" +
@@ -150,7 +151,7 @@
             // 
             // checkDiskAndDeleteButton
             // 
-            this.checkDiskAndDeleteButton.Location = new System.Drawing.Point(244, 290);
+            this.checkDiskAndDeleteButton.Location = new System.Drawing.Point(10, 335);
             this.checkDiskAndDeleteButton.Name = "checkDiskAndDeleteButton";
             this.checkDiskAndDeleteButton.Size = new System.Drawing.Size(217, 39);
             this.checkDiskAndDeleteButton.TabIndex = 19;
@@ -171,11 +172,11 @@
         " to a backup disk but the Hashcode is now different. We\'ve probably updated the " +
         "master file.");
             this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.button3.Click += new System.EventHandler(this.FilesWithoutBackupDiskChecked_Click);
             // 
             // checkBackupDeleteAndCopyButton
             // 
-            this.checkBackupDeleteAndCopyButton.Location = new System.Drawing.Point(10, 290);
+            this.checkBackupDeleteAndCopyButton.Location = new System.Drawing.Point(244, 335);
             this.checkBackupDeleteAndCopyButton.Name = "checkBackupDeleteAndCopyButton";
             this.checkBackupDeleteAndCopyButton.Size = new System.Drawing.Size(217, 39);
             this.checkBackupDeleteAndCopyButton.TabIndex = 36;
@@ -274,7 +275,7 @@
             this.listFilesNotCheckedInXXButton.TabIndex = 30;
             this.listFilesNotCheckedInXXButton.Text = "Check for old Backup disks";
             this.listFilesNotCheckedInXXButton.UseVisualStyleBackColor = true;
-            this.listFilesNotCheckedInXXButton.Click += new System.EventHandler(this.button6_Click);
+            this.listFilesNotCheckedInXXButton.Click += new System.EventHandler(this.CheckForOldBackupDisks_Click);
             // 
             // restoreFilesToMasterFolderButton
             // 
@@ -345,11 +346,23 @@
             this.testPushoverEmergencyButton.UseVisualStyleBackColor = true;
             this.testPushoverEmergencyButton.Click += new System.EventHandler(this.testPushoverEmergencyButton_Click);
             // 
+            // reportBackupDiskStatusButton
+            // 
+            this.reportBackupDiskStatusButton.Location = new System.Drawing.Point(244, 173);
+            this.reportBackupDiskStatusButton.Name = "reportBackupDiskStatusButton";
+            this.reportBackupDiskStatusButton.Size = new System.Drawing.Size(217, 23);
+            this.reportBackupDiskStatusButton.TabIndex = 43;
+            this.reportBackupDiskStatusButton.Text = "Report backup disk status";
+            this.toolTip.SetToolTip(this.reportBackupDiskStatusButton, "Outputs files that are not yet on a Backup drive.");
+            this.reportBackupDiskStatusButton.UseVisualStyleBackColor = true;
+            this.reportBackupDiskStatusButton.Click += new System.EventHandler(this.reportBackupDiskStatusButton_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(468, 335);
+            this.ClientSize = new System.Drawing.Size(468, 378);
+            this.Controls.Add(this.reportBackupDiskStatusButton);
             this.Controls.Add(this.testPushoverEmergencyButton);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -419,6 +432,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button testPushoverEmergencyButton;
+        private System.Windows.Forms.Button reportBackupDiskStatusButton;
     }
 }
 

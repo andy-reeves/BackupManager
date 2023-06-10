@@ -1005,7 +1005,7 @@ namespace BackupManager
             }
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void FilesWithoutBackupDiskChecked_Click(object sender, EventArgs e)
         {
             string LogFile = Path.Combine(
                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
@@ -1148,7 +1148,7 @@ namespace BackupManager
             }
         }
 
-        private void button6_Click(object sender, EventArgs e)
+        private void CheckForOldBackupDisks_Click(object sender, EventArgs e)
         {
             CheckForOldBackupDisks();
         }
@@ -1421,6 +1421,26 @@ namespace BackupManager
                                   PushoverRetry.OneMinute,
                                   PushoverExpires.OneHour,
                                   "Emergency priority test");
+        }
+
+        private void reportBackupDiskStatusButton_Click(object sender, EventArgs e)
+        {
+            string logFile = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                "backup_ReportBackupDiskStatus.txt");
+
+            IEnumerable<BackupDisk> disks = mediaBackup.BackupDisks.OrderBy(p => p.Number);
+            
+            foreach (BackupDisk disk in disks)
+            {
+                DateTime d = DateTime.Parse(disk.DiskChecked);
+                Utils.Log(logFile, $"{disk.Name} at {disk.TotalSizeFormatted} with {disk.FreespaceFormatted} free. Last check: {d:dd-MMM-yy}");
+            }
+
+            long totalDiskSpace = mediaBackup.BackupDisks.Sum(p => p.TotalSize);
+            long totalFreespace = mediaBackup.BackupDisks.Sum(p => p.FreeSpace);
+
+            Utils.Log(logFile, $"Total avialable storage is {Utils.FormatDiskSpace(totalDiskSpace)} with {Utils.FormatDiskSpace(totalFreespace)} free");
         }
     }
 }
