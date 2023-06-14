@@ -1,15 +1,15 @@
 ﻿namespace BackupManager.Entities
 {
-	using System;
-	using System.Xml.Serialization;
-	using System.IO;
-	using System.Linq;
-	using System.Collections.Generic;
+    using System;
+    using System.Xml.Serialization;
+    using System.IO;
+    using System.Linq;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
 
     public class BackupDisk
-	{
-		public string Name;
+    {
+        public string Name;
 
         /// <summary>
         /// Date the disk was last scanned
@@ -31,29 +31,29 @@
         /// </summary>
 		public long FreeSpace;
 
-		[XmlIgnore]
-		public string BackupShare;
-       
+        [XmlIgnore]
+        public string BackupShare;
+
         [XmlIgnore]
         public string BackupPath { get => Path.Combine(this.BackupShare, this.Name); }
 
         [XmlIgnore]
         public string TotalSizeFormatted { get => Utils.FormatDiskSpace(TotalSize); }
-        
+
         [XmlIgnore]
         public string FreespaceFormatted { get => Utils.FormatDiskSpace(FreeSpace); }
 
         public BackupDisk()
-		{
-		}
+        {
+        }
 
-		public BackupDisk(string diskName, string backupShare)
-		{
-			Name = diskName;
-			BackupShare = backupShare;
+        public BackupDisk(string diskName, string backupShare)
+        {
+            Name = diskName;
+            BackupShare = backupShare;
 
-			CheckForValidBackupShare(BackupShare);
-		}
+            CheckForValidBackupShare(BackupShare);
+        }
 
         /// <summary>
         /// Gets the number only of this disk
@@ -61,7 +61,8 @@
         [XmlIgnore()]
         public int Number
         {
-            get {
+            get
+            {
                 string diskNumberString = Name.SubstringAfter(' ');
                 if (string.IsNullOrEmpty(diskNumberString)) { return 0; }
 
@@ -70,88 +71,66 @@
         }
 
         public bool Update(Collection<BackupFile> backupFiles)
-		{
-			if (!CheckForValidBackupShare(this.BackupShare))
-			{
-				return false;
-			}
-
-			// Now scan disk for info;
-			long availableSpace;
-			long totalBytes;
-			var result = Utils.GetDiskInfo(this.BackupShare, out availableSpace, out totalBytes);
-
-			if (!result)
+        {
+            if (!CheckForValidBackupShare(this.BackupShare))
             {
-				return false;
+                return false;
             }
 
-			this.FreeSpace = availableSpace;
-			this.TotalSize = totalBytes;
+            // Now scan disk for info;
+            long availableSpace;
+            long totalBytes;
+            var result = Utils.GetDiskInfo(this.BackupShare, out availableSpace, out totalBytes);
+
+            if (!result)
+            {
+                return false;
+            }
+
+            this.FreeSpace = availableSpace;
+            this.TotalSize = totalBytes;
 
             IEnumerable<BackupFile> files = backupFiles.Where(p => p.Disk == this.Name);
 
-			this.TotalFiles = files.Count();
+            this.TotalFiles = files.Count();
 
-			return true;
-		}
+            return true;
+        }
 
-		public static string GetBackupFolderName(string sharePath)
-		{
-			var a = new DirectoryInfo(sharePath);
+        public static string GetBackupFolderName(string sharePath)
+        {
+            if (string.IsNullOrEmpty(sharePath)) return null;
 
-			var b = from file in a.GetDirectories()
-					where
-						(((file.Attributes & FileAttributes.Hidden) == 0) & ((file.Attributes & FileAttributes.System) == 0))
-					select file;
+            DirectoryInfo sharePathDirectoryInfo = new DirectoryInfo(sharePath);
 
-			// In here there should be 1 directory starting with 'backup '
+            if (sharePathDirectoryInfo == null || !sharePathDirectoryInfo.Exists)
+            {
+                return null;
+            }
 
-			if (b.Count() != 1)
-			{
-				return null;
-			}
-			var c = b.Single();
+            IEnumerable<DirectoryInfo> directoriesInRootFolder = from file in sharePathDirectoryInfo.GetDirectories()
+                                           where
+                                               ((file.Attributes & FileAttributes.Hidden) == 0) & ((file.Attributes & FileAttributes.System) == 0)
+                                           select file;
 
-			if (!c.Name.StartsWith("backup ", StringComparison.CurrentCultureIgnoreCase))
-			{
-				return null;
-			}
+            // In here there should be 1 directory starting with 'backup '
+            if (directoriesInRootFolder.Count() != 1)
+            {
+                return null;
+            }
+            var firstDirectory = directoriesInRootFolder.Single();
 
-			return c.Name;
-		}
+            if (!firstDirectory.Name.StartsWith("backup ", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return null;
+            }
 
-		public static bool CheckForValidBackupShare(string sharePath)
-		{
-			var a = new DirectoryInfo(sharePath);
+            return firstDirectory.Name;
+        }
 
-			if (a == null || !a.Exists)
-			{
-				return false;
-			}
-
-			var b = from file in a.GetDirectories()
-					where
-						(((file.Attributes & FileAttributes.Hidden) == 0) & ((file.Attributes & FileAttributes.System) == 0))
-					select file;
-
-			if (b.Count() == 0)
-			{
-				return false;
-			}
-			if (b.Count() != 1)
-			{
-				return false;
-			}
-
-			var c = b.Single();
-
-			if (!c.Name.StartsWith("backup ", StringComparison.CurrentCultureIgnoreCase))
-			{
-				return false;
-			}
-
-			return true;
-		}
-	}
+        public static bool CheckForValidBackupShare(string sharePath)
+        {
+            return !string.IsNullOrEmpty(GetBackupFolderName(sharePath));
+        }
+    }
 }
