@@ -35,14 +35,12 @@
                 contentsHash = value;
 
                 // force the combined hash to be re-calculated
-                this.hash = null;
+                hash = null;
             }
         }
 
-        [XmlElement("Disk")]
         public string Disk;
        
-        [XmlElement("DiskChecked")]
         public string DiskChecked;
 
         /// <summary>

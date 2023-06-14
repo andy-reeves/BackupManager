@@ -95,7 +95,6 @@ namespace BackupManager
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
                 "backup_FilesWithoutBackupDiskChecked.txt");
 
-
             foreach (BackupFile file in mediaBackup.GetBackupFilesWithDiskCheckedEmpty())
             {
                 Utils.Log(LogFile, $"{file.FullPath} does not have DiskChecked set on disk {file.Disk}");
@@ -389,7 +388,6 @@ namespace BackupManager
             long sizeOfFiles = filesToBackup.Sum(x => x.Length);
 
             int totalFileCount = filesToBackup.Count();
-
 
             Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                   mediaBackup.PushoverAppToken,
