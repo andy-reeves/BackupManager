@@ -1,29 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BackupManager
+﻿namespace BackupManager
 {
     public static class IntegerExtensions
     {
         /// <summary>
         /// Returns an ordinal string of the number.
         /// </summary>
-        /// <param name="num"></param>
-        /// <returns></returns>
-        public static string ToOrdinalString(this int num)
+        /// <param name="number">The number.</param>
+        /// <returns>Ordinal value of positive integers, or <see cref="int.ToString"/> if less than 1.</returns>
+        public static string ToOrdinalString(this int number)
         {
-            string number = num.ToString();
+            string numberString = number.ToString();
 
-            if (num <= 0) return string.Empty;
-            if (number.EndsWith("11") || number.EndsWith("12") || number.EndsWith("13")) return number + "th";
-            if (number.EndsWith("1")) return number + "st";
-            if (number.EndsWith("2")) return number + "nd";
-            if (number.EndsWith("3")) return number + "rd";
+            if (number < 1) return numberString;
+            if (numberString.EndsWith("11") || numberString.EndsWith("12") || numberString.EndsWith("13")) return numberString + "th";
+            if (numberString.EndsWith("1")) return numberString + "st";
+            if (numberString.EndsWith("2")) return numberString + "nd";
+            if (numberString.EndsWith("3")) return numberString + "rd";
 
-            return number + "th";
+            return numberString + "th";
         }
     }
 }
