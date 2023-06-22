@@ -32,6 +32,18 @@ namespace System
         #region Methods
 
         /// <summary>
+        /// Returns the TitleCase of the string but fixes 10Th to 10th etc.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static string ToTitleCaseIgnoreOrdinals(this string text)
+        {
+            string input = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(text);
+            string result = Regex.Replace(input, "([0-9]st)|([0-9]th)|([0-9]rd)|([0-9]nd)", new MatchEvaluator((m) => m.Captures[0].Value.ToLower()), RegexOptions.IgnoreCase);
+            return result;
+        }
+
+        /// <summary>
         /// Capitalizes the first character of the specified string.
         /// </summary>
         /// <param name="s">

@@ -149,7 +149,12 @@
 
             return fullPath.SubstringAfter(combinedPath, StringComparison.CurrentCultureIgnoreCase).TrimStart(new[] { '\\' });
         }
-
+        /// <summary>
+        /// Returns a hash of the contents follwed by '-' and then the leafname
+        /// </summary>
+        /// <param name="hash"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public static string GetFileHash(string hash, string path)
         {
             return hash + "-" + Path.GetFileName(path);

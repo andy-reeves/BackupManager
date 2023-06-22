@@ -18,7 +18,7 @@ namespace BackupManager
     using System.Runtime.InteropServices;
     using System.Collections.Specialized;
     using System.Net;
-
+    
     /// <summary>
     /// The utils.
     /// </summary>
@@ -69,7 +69,7 @@ namespace BackupManager
         #region Public Methods and Operators
 
         /// <summary>
-        /// Returns True if any of the attrbutes to check for are set in the value.
+        /// Returns True if any of the attributes to check for are set in the value.
         /// </summary>
         /// <param name="value">
         /// </param>

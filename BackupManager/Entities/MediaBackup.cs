@@ -214,7 +214,7 @@
 
                     hash = Utils.GetShortMd5HashFromFile(fullPath);
 
-                    // has the hash changed too?
+                    // has the contents hash changed too?
                     if (hash != backupFile.ContentsHash)
                     {
                         if (hashesAndFileNames.Contains(backupFile.Hash))
@@ -262,7 +262,7 @@
             backupFile = new BackupFile(fullPath, masterFolder, indexFolder);
             BackupFiles.Add(backupFile);
 
-            hashesAndFileNames.Add(backupFile.Hash, backupFile);
+            hashesAndFileNames.Add(backupFile.Hash, backupFile); 
             paths.Add(fullPath, backupFile);
 
             return backupFile;
