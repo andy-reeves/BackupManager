@@ -60,6 +60,7 @@
     <Compile Include="BackupAction.cs" />
     <Compile Include="Entities\BackupDisk.cs" />
     <Compile Include="Entities\BackupFile.cs" />
+    <Compile Include="Extensions\IntegerExtensions.cs" />
     <Compile Include="Main.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -73,7 +74,7 @@
     <Compile Include="PushoverExpires.cs" />
     <Compile Include="PushoverPriority.cs" />
     <Compile Include="PushoverRetry.cs" />
-    <Compile Include="StringExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Utils.cs" />
     <EmbeddedResource Include="Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
