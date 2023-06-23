@@ -70,6 +70,11 @@
             }
         }
 
+        /// <summary>
+        /// Updates the file count on this disk and the total and freespace.
+        /// </summary>
+        /// <param name="backupFiles"></param>
+        /// <returns></returns>
         public bool Update(Collection<BackupFile> backupFiles)
         {
             if (!CheckForValidBackupShare(this.BackupShare))
@@ -131,6 +136,14 @@
         public static bool CheckForValidBackupShare(string sharePath)
         {
             return !string.IsNullOrEmpty(GetBackupFolderName(sharePath));
+        }
+
+        /// <summary>
+        /// Updates the DiskChecked with the current date as 'yyyy-MM-dd'.
+        /// </summary>
+        public void UpdateDiskChecked()
+        {
+            DiskChecked = DateTime.Now.ToString("yyyy-MM-dd");
         }
     }
 }

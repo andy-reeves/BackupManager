@@ -222,12 +222,11 @@
                             hashesAndFileNames.Remove(backupFile.Hash);
                         }
 
-                        backupFile.ContentsHash = hash;
+                        backupFile.UpdateContentsHash();
                         hashesAndFileNames.Add(backupFile.Hash, backupFile);
 
                         // clear the backup details as the master file hash has changed
-                        backupFile.Disk = null;
-                        backupFile.DiskChecked = null;
+                        backupFile.ClearDiskChecked();
                     }
                 }
 

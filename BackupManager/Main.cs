@@ -59,36 +59,6 @@ namespace BackupManager
 
         #region Methods
 
-        private static void CheckHashOnBackupDisk(string pushoverUserKey, string pushoverAppToken,
-            string logFile,
-            string fullPath,
-            BackupFile backupFile,
-            string driveName)
-        {
-            string hashFromFile = Utils.GetShortMd5HashFromFile(fullPath);
-
-            if (hashFromFile == Utils.ZeroByteHash)
-            {
-                Utils.LogWithPushover(pushoverUserKey, pushoverAppToken, logFile, BackupAction.CheckBackupDisk, $"ERROR: {fullPath} has zerobyte hashcode");
-            }
-
-            backupFile.Disk = driveName;
-
-            if (hashFromFile == backupFile.ContentsHash)
-            {
-                // Hash matches so update backup checked date
-                backupFile.DiskChecked = DateTime.Now.ToString("yyyy-MM-dd");
-            }
-            else
-            {
-                Utils.LogWithPushover(pushoverUserKey, pushoverAppToken, logFile, BackupAction.CheckBackupDisk, $"ERROR: {fullPath} has incorrect hashcode");
-                backupFile.DiskChecked = null;
-
-                // clear this too - means the backed up file will be removed on the next run
-                backupFile.Disk = null;
-            }
-        }
-
         private void BackupHashCodeCheckedButton_Click(object sender, EventArgs e)
         {
             string LogFile = Path.Combine(
@@ -179,8 +149,7 @@ namespace BackupManager
 
             foreach (BackupFile file in filesToReset)
             {
-                file.Disk = null;
-                file.DiskChecked = null;
+                file.ClearDiskChecked();
             }
 
             string[] backupDiskFiles = Utils.GetFiles(
@@ -198,14 +167,13 @@ namespace BackupManager
                     BackupFile backupFile = mediaBackup.GetBackupFile(backupFileHash, backupFileFullPath);
                     Utils.Log(logFile, $"Checking hash for {backupFileFullPath}");
 
-                    // Reset the source file hash because we want to confirm the source file can be read 
-                    backupFile.ContentsHash = Utils.GetShortMd5HashFromFile(backupFile.FullPath);
-                    CheckHashOnBackupDisk(mediaBackup.PushoverUserKey, mediaBackup.PushoverAppToken, logFile, backupFileFullPath, backupFile, disk.Name);
+                    // This forces a hash check on the source and backup disk files
+                    backupFile.CheckContentHashes(disk);
 
+                    
                     // So we can get the situation where the hash of a file on disk is equal to a hash of a file we have
                     // It could have a different filename on the backup disk though (if we renamed the master file)
                     // check the filenames are equal and rename on the backup disk if they're not
-
                     string backupDiskFilename = backupFileFullPath.Substring(folderToCheck.Length + 1); // trim off the unc and backup disk parts
 
                     string masterFilename = Path.Combine(backupFile.IndexFolder, backupFile.RelativePath);
@@ -252,7 +220,7 @@ namespace BackupManager
 
             DeleteEmptyDirectories(logFile, folderToCheck);
 
-            disk.DiskChecked = DateTime.Now.ToString("yyyy-MM-dd");
+            disk.UpdateDiskChecked();
 
             result = disk.Update(mediaBackup.BackupFiles);
             if (!result)
@@ -422,8 +390,7 @@ namespace BackupManager
 
                         // it could be that the source file hash changed after we read it (we read the hash, updated the master file and then copied it)
                         // in which case check the source hash again and then check the copied file 
-                        backupFile.ContentsHash = Utils.GetShortMd5HashFromFile(sourceFileName);
-                        CheckHashOnBackupDisk(mediaBackup.PushoverUserKey, mediaBackup.PushoverAppToken, logFile, destinationFileName, backupFile, disk.Name);
+                        backupFile.CheckContentHashes(disk);
                     }
                     else
                     {
@@ -456,8 +423,8 @@ namespace BackupManager
 
                                 // it could be that the source file hash changed after we read it (we read the hash, updated the master file and then copied it)
                                 // in which case check the source hash again and then check the copied file 
-                                backupFile.ContentsHash = Utils.GetShortMd5HashFromFile(sourceFileName);
-                                CheckHashOnBackupDisk(mediaBackup.PushoverUserKey, mediaBackup.PushoverAppToken, logFile, destinationFileName, backupFile, disk.Name);
+                                backupFile.UpdateContentsHash();
+                                backupFile.CheckContentHashes(disk);
                             }
                             else
                             {
@@ -606,7 +573,7 @@ namespace BackupManager
             {
                 foreach (BackupFile backupFile in mediaBackup.BackupFiles)
                 {
-                    backupFile.ContentsHash = Utils.GetShortMd5HashFromFile(backupFile.FullPath);
+                    backupFile.UpdateContentsHash();
                 }
 
                 mediaBackup.Save();
@@ -940,10 +907,10 @@ namespace BackupManager
 
             // sometimes we can end up with backupfiles that have a <DiskChecked> entry but not a <BackupDisk>
             // if backupdisk isnull or empty then clear diskchecked before saving
-            foreach (BackupFile backupFile in filesNotOnBackupDisk)
-            {
-                backupFile.DiskChecked = null;
-            }
+            //foreach (BackupFile backupFile in filesNotOnBackupDisk)
+            //{
+             //   backupFile.DiskChecked = null;
+           // }
 
             mediaBackup.Save();
 
@@ -976,7 +943,7 @@ namespace BackupManager
                                       mediaBackup.PushoverAppToken,
                                       logFile,
                                       BackupAction.ScanFolders,
-                                      $"Oldest backup date is { DateTime.Today.Subtract(oldestFileDate).Days:n0} days ago at {oldestFileDate.ToShortDateString()} for {oldestFile.GetFileName()} on {oldestFile.Disk}");
+                                      $"Oldest backup date is { DateTime.Today.Subtract(oldestFileDate).Days:n0} day(s) ago at {oldestFileDate.ToShortDateString()} for {oldestFile.GetFileName()} on {oldestFile.Disk}");
             }
 
             Utils.LogWithPushover(mediaBackup.PushoverUserKey,
@@ -1095,13 +1062,11 @@ namespace BackupManager
             }
             catch (Exception ex)
             {
-
                 Utils.LogWithPushover(mediaBackup.PushoverUserKey, mediaBackup.PushoverAppToken,
                     LogFile, BackupAction.General, PushoverPriority.Emergency,
                     $"Exception occured {ex}"
                     );
             }
-
             finally
             {
                 backupTimer.Start();
@@ -1180,7 +1145,7 @@ namespace BackupManager
             {
                 int days = DateTime.Today.Subtract(DateTime.Parse(file.DiskChecked)).Days;
 
-                Utils.Log(LogFile, $"{file.FullPath} - not checked in {days} days on disk {file.Disk}");
+                Utils.Log(LogFile, $"{file.FullPath} - not checked in {days} day(s) on disk {file.Disk}");
             }
         }
 
@@ -1340,8 +1305,6 @@ namespace BackupManager
             if (answer == DialogResult.Yes)
             {
                 CheckConnectedDisk(true);
-
-                // now copy files
                 CopyFiles();
             }
         }

@@ -30,18 +30,29 @@
         [XmlElement("Hash")]
         public string ContentsHash
         {
-            get { return contentsHash; }
-            set { 
-                contentsHash = value;
+            get
+            {
+                if (string.IsNullOrEmpty(contentsHash))
+                {
+                    UpdateContentsHash();
+                }
 
-                // force the combined hash to be re-calculated
-                hash = null;
+                return contentsHash;
+            }
+            set
+            {
+                if (value != contentsHash)
+                {
+                    contentsHash = value;
+                    // force the combined hash to be re-calculated
+                    hash = null;
+                }
             }
         }
 
-        public string Disk;
-       
-        public string DiskChecked;
+        private string disk;
+
+        private string diskChecked;
 
         /// <summary>
         /// The last modified date/time of the file.
@@ -49,7 +60,7 @@
         public DateTime LastWriteTime;
 
         /// <summary>
-        /// The size in bytes of the file.
+        /// The size of the file in bytes.
         /// </summary>
         public long Length;
 
@@ -104,6 +115,41 @@
             }
         }
 
+        public string DiskChecked
+        {
+            get
+            {
+                return diskChecked;
+            }
+            set
+            {
+                // If you clear the DiskChecked then we automatically clear the Disk property too
+                if (string.IsNullOrEmpty(value))
+                {
+                    disk = null;
+                }
+
+                diskChecked = value;
+            }
+        }
+
+        public string Disk
+        {
+            get
+            {
+                return disk;
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    diskChecked = null;
+                }
+
+                disk = value;
+            }
+        }
+
         public BackupFile()
         {
         }
@@ -117,6 +163,25 @@
         public BackupFile(string fullPath, string masterFolder, string indexFolder)
         {
             SetFullPath(fullPath, masterFolder, indexFolder);
+        }
+
+        /// <summary>
+        /// Updates the DiskChecked with the current date as 'yyyy-MM-dd' and the backup disk provided.
+        /// </summary>
+        /// <param name="backupDisk">The disk this file ewas checked on.</param>
+        public void UpdateDiskChecked(string backupDisk)
+        {
+            disk = backupDisk;
+            diskChecked = DateTime.Now.ToString("yyyy-MM-dd");
+        }
+
+        /// <summary>
+        /// Resets Disk and DiskChecked to null.
+        /// </summary>
+        public void ClearDiskChecked()
+        {
+            disk = null;
+            diskChecked = null;
         }
 
         public void SetFullPath(string fullPath, string masterFolder, string indexFolder)
@@ -165,17 +230,28 @@
             return Path.GetFileName(fullPath);
         }
 
-        public void UpdateContentsHash()
+        /// <summary>
+        /// Calculates the hash of the file contents from the Source location which also resets the hash of the filename-contents too if changed.
+        /// </summary>
+        /// <exception cref="ApplicationException"></exception>
+        public void UpdateContentsHash(string newContentsHash)
         {
-            ContentsHash = Utils.GetShortMd5HashFromFile(FullPath);
-
-            if (ContentsHash == Utils.ZeroByteHash)
+            if (newContentsHash == Utils.ZeroByteHash)
             {
-                throw new ApplicationException($"File '{FullPath}' has zerobyte Hashcode");
+                throw new ApplicationException($"Zerobyte Hashcode");
             }
 
-            // force the hash to be re-calculated 
-            hash = null;
+            ContentsHash = newContentsHash;
+        }
+
+        /// <summary>
+        /// Calculates the hash of the file contents from the Source location which also resets the hash of the filename-contents too if changed.
+        /// </summary>
+        /// <exception cref="ApplicationException"></exception>
+        public void UpdateContentsHash()
+        {
+            string newContentsHash = Utils.GetShortMd5HashFromFile(FullPath);
+            UpdateContentsHash(newContentsHash);
         }
 
         public void UpdateLastWriteTime()
@@ -190,6 +266,42 @@
             if (Length == 0)
             {
                 throw new ApplicationException($"File '{FullPath}' has 0 length");
+            }
+        }
+
+        /// <summary>
+        /// Checks the files hash at the source location and at the backup location match. Updates DiskChecked accordingly.
+        /// </summary>
+        /// <param name="disk">The BackupDisk the BackupFile is on</param>
+        /// <exception cref="Exception"></exception>
+        public void CheckContentHashes(BackupDisk disk)
+        {
+            string backupDiskFullPath = Path.Combine(disk.BackupPath, IndexFolder, RelativePath);
+            string sourceDiskFullPath = FullPath;
+
+            string hashFromSourceFile = Utils.GetShortMd5HashFromFile(sourceDiskFullPath);
+
+            if (hashFromSourceFile == Utils.ZeroByteHash)
+            {
+                throw new Exception($"ERROR: { sourceDiskFullPath } has zerobyte hashcode");
+            }
+
+            string hashFrombackupDiskFile = Utils.GetShortMd5HashFromFile(backupDiskFullPath);
+
+            if (hashFrombackupDiskFile == Utils.ZeroByteHash)
+            {
+                throw new Exception($"ERROR: { hashFrombackupDiskFile } has zerobyte hashcode");
+            }
+
+            if (hashFrombackupDiskFile == hashFromSourceFile)
+            {
+                // Hashes match so update it and the backup checked date too
+                UpdateContentsHash(hashFrombackupDiskFile);
+                UpdateDiskChecked(disk.Name);
+            }
+            else
+            {
+                throw new Exception($"ERROR: {hashFromSourceFile} and {hashFrombackupDiskFile} have different hashcodes");
             }
         }
     }
