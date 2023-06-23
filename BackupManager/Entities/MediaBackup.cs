@@ -374,5 +374,31 @@
                 }
             }
         }
+
+        /// <summary>
+        /// Returns the oldest BackupFile we have using the DiskChecked property.
+        /// </summary>
+        /// <returns></returns>
+        public BackupFile GetOldestFile()
+        {
+            DateTime oldestFileDate = DateTime.Today;
+            BackupFile oldestFile = null;
+
+            foreach (var backupFile in BackupFiles)
+            {
+                if (backupFile.DiskChecked.HasValue())
+                {
+                    DateTime backupFileDate = DateTime.Parse(backupFile.DiskChecked);
+
+                    if (backupFileDate < oldestFileDate)
+                    {
+                        oldestFileDate = backupFileDate;
+                        oldestFile = backupFile;
+                    }
+                }
+            }
+
+            return oldestFile;
+        }
     }
 }

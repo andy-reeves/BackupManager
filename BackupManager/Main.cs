@@ -896,6 +896,7 @@ namespace BackupManager
             }
 
             mediaBackup.RemoveFilesWithFlag(false, true);
+            mediaBackup.Save();
 
             var totalFiles = mediaBackup.BackupFiles.Count();
 
@@ -905,33 +906,18 @@ namespace BackupManager
 
             long fileSizeToCopy = filesNotOnBackupDisk.Sum(p => p.Length);
 
-            mediaBackup.Save();
-
-            DateTime oldestFileDate = DateTime.Today;
-            BackupFile oldestFile = null;
-
-            foreach (var backupFile in mediaBackup.BackupFiles)
-            {
-                if (backupFile.DiskChecked.HasValue())
-                {
-                    DateTime backupFileDate = DateTime.Parse(backupFile.DiskChecked);
-
-                    if (backupFileDate < oldestFileDate)
-                    {
-                        oldestFileDate = backupFileDate;
-                        oldestFile = backupFile;
-                    }
-                }
-            }
-
             Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                   mediaBackup.PushoverAppToken,
                                   logFile,
                                   BackupAction.ScanFolders,
                                   $"{totalFiles:n0} files at {Utils.FormatDiskSpace(totalFileSize)}");
 
+            BackupFile oldestFile = mediaBackup.GetOldestFile();
+
             if (oldestFile != null)
             {
+                DateTime oldestFileDate = DateTime.Parse(oldestFile.DiskChecked);
+
                 Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                       mediaBackup.PushoverAppToken,
                                       logFile,
