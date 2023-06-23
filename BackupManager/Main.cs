@@ -905,13 +905,6 @@ namespace BackupManager
 
             long fileSizeToCopy = filesNotOnBackupDisk.Sum(p => p.Length);
 
-            // sometimes we can end up with backupfiles that have a <DiskChecked> entry but not a <BackupDisk>
-            // if backupdisk isnull or empty then clear diskchecked before saving
-            //foreach (BackupFile backupFile in filesNotOnBackupDisk)
-            //{
-             //   backupFile.DiskChecked = null;
-           // }
-
             mediaBackup.Save();
 
             DateTime oldestFileDate = DateTime.Today;
