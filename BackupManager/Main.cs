@@ -652,8 +652,7 @@ namespace BackupManager
 
                             foreach (string file in files)
                             {
-#if DEBUG
-                                // Log the file we're checking here    
+#if DEBUG    
                                 Utils.Log(logFile, $"Checking {file}");
 #endif
                                 // Checks for TV only

@@ -280,6 +280,15 @@ namespace BackupManager
             FileAttributes directoryAttributesToIgnore,
             FileAttributes fileAttributesToIgnore)
         {
+#if DEBUG
+              string logFile = Path.Combine(
+              Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+              "backup_BuildMasterFileList.txt");
+
+
+            Log(logFile, $"Enter GetFiles with {path}");
+#endif
+
             if (!Directory.Exists(path))
             {
                 return new string[] { };
@@ -339,6 +348,9 @@ namespace BackupManager
 
                 foreach (string filter in include)
                 {
+#if DEBUG  
+                    Log(logFile, $"Checking {dir} with {filter} filter");
+#endif
                     string[] allfiles = Directory.GetFiles(dir, filter, SearchOption.TopDirectoryOnly);
 
                     IEnumerable<string> collection = exclude.Any()
@@ -349,6 +361,10 @@ namespace BackupManager
                         collection.Where(p => (!AnyFlagSet(new FileInfo(p).Attributes, fileAttributesToIgnore))));
                 }
             }
+
+#if DEBUG
+            Log(logFile, $"Exit GetFiles with {path}");
+#endif
 
             return foundFiles.ToArray();
         }
