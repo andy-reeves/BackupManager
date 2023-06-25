@@ -631,7 +631,7 @@ namespace BackupManager
                                           mediaBackup.PushoverAppToken, 
                                           logFile,
                                           BackupAction.ScanFolders,
-                                          $"Testing {masterFolder}\n Read: {readSpeed} Write: {writeSpeed}");
+                                          $"Testing {masterFolder}\nRead: {readSpeed}\nWrite: {writeSpeed}");
 
                     if (freeSpaceOnCurrentMasterFolder < (mediaBackup.MinimumCriticalMasterFolderSpace * 1024 * 1024))
                     {

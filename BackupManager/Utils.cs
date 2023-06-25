@@ -608,7 +608,8 @@ namespace BackupManager
 
         public static void Log(string logFilePath, string text)
         {
-            string textToWrite = $"{DateTime.Now.ToString("dd-MM-yy HH:mm:ss")} : {text}";
+            string textForLogFile = text.Replace('\n', ' ');
+            string textToWrite = $"{DateTime.Now.ToString("dd-MM-yy HH:mm:ss")} : {textForLogFile}";
 
             Console.WriteLine(textToWrite);
             if (logFilePath.HasValue())
@@ -618,12 +619,12 @@ namespace BackupManager
             }
         }
 
-        public static void LogWithPushover(string pushoverUserKey, string pushoverAppToken, string logFilePath, BackupAction backupAction, string text)//, params object[] args)
+        public static void LogWithPushover(string pushoverUserKey, string pushoverAppToken, string logFilePath, BackupAction backupAction, string text)
         {
-            LogWithPushover(pushoverUserKey, pushoverAppToken, logFilePath, backupAction, PushoverPriority.Normal, text);//, args);
+            LogWithPushover(pushoverUserKey, pushoverAppToken, logFilePath, backupAction, PushoverPriority.Normal, text);
         }
 
-        public static void LogWithPushover(string pushoverUserKey, string pushoverAppToken, string logFilePath, BackupAction backupAction, PushoverPriority priority, string text)//, params object[] args)
+        public static void LogWithPushover(string pushoverUserKey, string pushoverAppToken, string logFilePath, BackupAction backupAction, PushoverPriority priority, string text)
         {
             Log(logFilePath, Enum.GetName(typeof(BackupAction), backupAction) + " " + text);
 
