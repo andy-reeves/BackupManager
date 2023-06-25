@@ -135,7 +135,7 @@ namespace BackupManager
                                   mediaBackup.PushoverAppToken,
                                   logFile,
                                   BackupAction.CheckBackupDisk,
-                                  $"Checking {disk.Name} - {disk.TotalSizeFormatted} with {disk.FreespaceFormatted} free");
+                                  $"{disk.Name}\n{disk.TotalSizeFormatted} with {disk.FreespaceFormatted} free");
 
             if (disk.FreeSpace < mediaBackup.MinimumCriticalBackupDiskSpace)
             {
@@ -407,7 +407,7 @@ namespace BackupManager
                                                       mediaBackup.PushoverAppToken,
                                                       logFile,
                                                       BackupAction.BackupFiles,
-                                                      $"[{fileCounter}/{totalFileCount}] {Utils.FormatDiskSpace(availableSpace)} free. Copying {sourceFileName} at {sourceFileSize}"
+                                                      $"[{fileCounter}/{totalFileCount}] {Utils.FormatDiskSpace(availableSpace)} free.\nCopying {sourceFileName} at {sourceFileSize}"
                                                       );
 
                                 Directory.CreateDirectory(Path.GetDirectoryName(destinationFileName));
@@ -617,7 +617,7 @@ namespace BackupManager
 
                     string totalBytesOnMasterFolderDiskFormatted = Utils.FormatDiskSpace(totalBytesOnMasterFolderDisk);
                     string freeSpaceOnCurrentMasterFolderFormatted = Utils.FormatDiskSpace(freeSpaceOnCurrentMasterFolder);
-                    string text = $"{freeSpaceOnCurrentMasterFolderFormatted} free from {totalBytesOnMasterFolderDiskFormatted} on {masterFolder}";
+                    string text = $"{masterFolder}\n{freeSpaceOnCurrentMasterFolderFormatted} free from {totalBytesOnMasterFolderDiskFormatted}";
 
                     Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                           mediaBackup.PushoverAppToken,
@@ -631,7 +631,7 @@ namespace BackupManager
                                           mediaBackup.PushoverAppToken, 
                                           logFile,
                                           BackupAction.ScanFolders,
-                                          $"Testing {masterFolder}, Read: {readSpeed} Write: {writeSpeed}");
+                                          $"Testing {masterFolder}\n Read: {readSpeed} Write: {writeSpeed}");
 
                     if (freeSpaceOnCurrentMasterFolder < (mediaBackup.MinimumCriticalMasterFolderSpace * 1024 * 1024))
                     {
@@ -654,7 +654,7 @@ namespace BackupManager
                                                   mediaBackup.PushoverAppToken,
                                                   logFile,
                                                   BackupAction.ScanFolders,
-                                                  $"Scanning {folderToCheck}"
+                                                  $"{folderToCheck}"
                                                   );
 
                             string[] files = Utils.GetFiles(folderToCheck, filters, SearchOption.AllDirectories);
@@ -1356,7 +1356,7 @@ namespace BackupManager
                                   logFile,
                                   BackupAction.General,
                                   PushoverPriority.Normal,
-                                  "Normal priority test");
+                                  "Normal priority test\nLine 2\nLine 3");
         }
 
         private void testPushoverEmergencyButton_Click(object sender, EventArgs e)
