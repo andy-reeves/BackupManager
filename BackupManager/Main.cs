@@ -601,6 +601,8 @@ namespace BackupManager
 
             string filters = string.Join(",", mediaBackup.Filters.ToArray());
 
+            string readSpeed, writeSpeed;
+
             mediaBackup.ClearFlags();
 
             Utils.LogWithPushover(mediaBackup.PushoverUserKey, mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "Started");
@@ -623,6 +625,13 @@ namespace BackupManager
                                           BackupAction.ScanFolders,
                                           text
                                           );
+
+                    Utils.DiskSpeedTest(masterFolder, out readSpeed, out writeSpeed);
+                    Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                                          mediaBackup.PushoverAppToken, 
+                                          logFile,
+                                          BackupAction.ScanFolders,
+                                          $"Testing {masterFolder}, Read: {readSpeed} Write: {writeSpeed}");
 
                     if (freeSpaceOnCurrentMasterFolder < (mediaBackup.MinimumCriticalMasterFolderSpace * 1024 * 1024))
                     {
@@ -1011,8 +1020,6 @@ namespace BackupManager
                 // It'll then delete everything off the connected backup disk as it doesn't think they're needed so this will prevent that
 
                 long oldFileCount = mediaBackup.BackupFiles.Count();
-
-                speedTestAllMasterFolders(logFile);
 
                 // Update the master file
                 ScanFolders();
