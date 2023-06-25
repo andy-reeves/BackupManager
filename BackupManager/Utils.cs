@@ -18,7 +18,8 @@ namespace BackupManager
     using System.Runtime.InteropServices;
     using System.Collections.Specialized;
     using System.Net;
-    
+    using System.Text;
+
     /// <summary>
     /// The utils.
     /// </summary>
@@ -281,9 +282,9 @@ namespace BackupManager
             FileAttributes fileAttributesToIgnore)
         {
 #if DEBUG
-              string logFile = Path.Combine(
-              Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-              "backup_BuildMasterFileList.txt");
+            string logFile = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+            "backup_BuildMasterFileList.txt");
 
 
             Log(logFile, $"Enter GetFiles with {path}");
@@ -979,6 +980,91 @@ namespace BackupManager
             }
 
             return $"{diskSpace:n0}bytes";
+        }
+        /// <summary>
+        /// Generates a random character string for the size provided.
+        /// </summary>
+        /// <param name="size"></param>
+        /// <returns></returns>
+        public static string RandomString(ulong size)
+        {
+            StringBuilder builder = new StringBuilder();
+            Random random = new Random();
+            char ch;
+            for (ulong i = 0; i < size; i++)
+            {
+                ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
+                builder.Append(ch);
+            }
+            return builder.ToString();
+        }
+
+        /// <summary>
+        /// Runs a speedtest on the disk provided.
+        /// </summary>
+        /// <param name="pathToDiskToTest">The path to test.</param>
+        /// <param name="readSpeed">in MB/s</param>
+        /// <param name="writeSpeed">in MB/s</param>
+        /// <returns></returns>
+        public static bool DiskSpeedTest(string pathToDiskToTest, out string readSpeed, out string writeSpeed)
+        {
+            ulong testFileSize = 100 * 1048576;// in MB
+            int testIterations = 1;
+
+            string tempPath = Path.GetTempPath();
+
+            readSpeed = DiskSpeedTest(pathToDiskToTest, tempPath, testFileSize, testIterations);
+            writeSpeed = DiskSpeedTest(tempPath, pathToDiskToTest, testFileSize, testIterations);
+            return true;
+        }
+
+        public static string DiskSpeedTest(string sourcePath, string destinationPath, ulong testFileSize, int testIterations)
+        {
+            ulong randomStringSize = 200000;
+            int streamWriteBufferSize = 2 * 1048576;
+
+            string randomText = RandomString(randomStringSize);
+            double totalPerf;
+            DateTime startTime;
+            DateTime stopTime;
+            ulong appendIterations = testFileSize / randomStringSize;
+
+            totalPerf = 0;
+
+            for (int j = 1; j <= testIterations; j++)
+            {
+                string firstPathFilename = sourcePath + "\\" + j + "test.tmp";
+                string secondPathFilename = destinationPath + "\\" + j + "test.tmp";
+
+                if (File.Exists(firstPathFilename))
+                {
+                    File.Delete(firstPathFilename);
+                }
+
+                if (File.Exists(secondPathFilename))
+                {
+                    File.Delete(secondPathFilename);
+                }
+
+                StreamWriter sWriter = new StreamWriter(firstPathFilename, true, Encoding.UTF8, streamWriteBufferSize);
+                for (ulong i = 1; i <= appendIterations; i++)
+                {
+                    sWriter.Write(randomText);
+                }
+                sWriter.Close();
+
+                testFileSize = (ulong)GetFileLength(firstPathFilename);
+
+                startTime = DateTime.Now;
+                File.Copy(firstPathFilename, secondPathFilename);
+                stopTime = DateTime.Now;
+                File.Delete(firstPathFilename);
+                File.Delete(secondPathFilename);
+                TimeSpan interval = stopTime - startTime;
+                totalPerf += (testFileSize / 1024 / 1024) / (interval.TotalMilliseconds * 1000);
+            }
+
+            return (totalPerf / testIterations).ToString("F2") + "MB/s";
         }
     }
 }

@@ -42,6 +42,7 @@
             this.button3 = new System.Windows.Forms.Button();
             this.checkBackupDeleteAndCopyButton = new System.Windows.Forms.Button();
             this.listMoviesWithMultipleFilesButton = new System.Windows.Forms.Button();
+            this.reportBackupDiskStatusButton = new System.Windows.Forms.Button();
             this.timerButton = new System.Windows.Forms.Button();
             this.backupTimer = new System.Windows.Forms.Timer(this.components);
             this.timerTextBox = new System.Windows.Forms.TextBox();
@@ -58,7 +59,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.testPushoverEmergencyButton = new System.Windows.Forms.Button();
-            this.reportBackupDiskStatusButton = new System.Windows.Forms.Button();
+            this.speedTestButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // updateMasterFilesButton
@@ -197,6 +198,17 @@
         "f the HashCode is correct). Doesn\'t delete any files.");
             this.listMoviesWithMultipleFilesButton.UseVisualStyleBackColor = true;
             this.listMoviesWithMultipleFilesButton.Click += new System.EventHandler(this.listMoviesWithMultipleFilesButton_Click);
+            // 
+            // reportBackupDiskStatusButton
+            // 
+            this.reportBackupDiskStatusButton.Location = new System.Drawing.Point(244, 173);
+            this.reportBackupDiskStatusButton.Name = "reportBackupDiskStatusButton";
+            this.reportBackupDiskStatusButton.Size = new System.Drawing.Size(217, 23);
+            this.reportBackupDiskStatusButton.TabIndex = 43;
+            this.reportBackupDiskStatusButton.Text = "Report backup disk status";
+            this.toolTip.SetToolTip(this.reportBackupDiskStatusButton, "Outputs files that are not yet on a Backup drive.");
+            this.reportBackupDiskStatusButton.UseVisualStyleBackColor = true;
+            this.reportBackupDiskStatusButton.Click += new System.EventHandler(this.reportBackupDiskStatusButton_Click);
             // 
             // timerButton
             // 
@@ -346,22 +358,23 @@
             this.testPushoverEmergencyButton.UseVisualStyleBackColor = true;
             this.testPushoverEmergencyButton.Click += new System.EventHandler(this.testPushoverEmergencyButton_Click);
             // 
-            // reportBackupDiskStatusButton
+            // speedTestButton
             // 
-            this.reportBackupDiskStatusButton.Location = new System.Drawing.Point(244, 173);
-            this.reportBackupDiskStatusButton.Name = "reportBackupDiskStatusButton";
-            this.reportBackupDiskStatusButton.Size = new System.Drawing.Size(217, 23);
-            this.reportBackupDiskStatusButton.TabIndex = 43;
-            this.reportBackupDiskStatusButton.Text = "Report backup disk status";
-            this.toolTip.SetToolTip(this.reportBackupDiskStatusButton, "Outputs files that are not yet on a Backup drive.");
-            this.reportBackupDiskStatusButton.UseVisualStyleBackColor = true;
-            this.reportBackupDiskStatusButton.Click += new System.EventHandler(this.reportBackupDiskStatusButton_Click);
+            this.speedTestButton.Location = new System.Drawing.Point(244, 204);
+            this.speedTestButton.Name = "speedTestButton";
+            this.speedTestButton.Size = new System.Drawing.Size(217, 23);
+            this.speedTestButton.TabIndex = 44;
+            this.speedTestButton.Text = "Speed test all master folders";
+            this.toolTip.SetToolTip(this.speedTestButton, "Outputs files that are not yet on a Backup drive.");
+            this.speedTestButton.UseVisualStyleBackColor = true;
+            this.speedTestButton.Click += new System.EventHandler(this.speedTestButton_Click);
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(468, 378);
+            this.Controls.Add(this.speedTestButton);
             this.Controls.Add(this.reportBackupDiskStatusButton);
             this.Controls.Add(this.testPushoverEmergencyButton);
             this.Controls.Add(this.label4);
@@ -433,6 +446,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button testPushoverEmergencyButton;
         private System.Windows.Forms.Button reportBackupDiskStatusButton;
+        private System.Windows.Forms.Button speedTestButton;
     }
 }
 

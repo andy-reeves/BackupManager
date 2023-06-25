@@ -36,7 +36,7 @@ namespace BackupManager
 
             foreach (string a in mediaBackup.MasterFolders)
             {
-                masterFoldersComboBox.Items.Add(a);
+                masterFoldersComboBox.Items.Add(a); 
             }
 
             foreach (string a in mediaBackup.MasterFolders)
@@ -996,7 +996,7 @@ namespace BackupManager
 
         private void ScheduledBackup()
         {
-            string LogFile = Path.Combine(
+            string logFile = Path.Combine(
                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
                "backup_ScheduledBackup.txt");
 
@@ -1011,6 +1011,8 @@ namespace BackupManager
                 // It'll then delete everything off the connected backup disk as it doesn't think they're needed so this will prevent that
 
                 long oldFileCount = mediaBackup.BackupFiles.Count();
+
+                speedTestAllMasterFolders(logFile);
 
                 // Update the master file
                 ScanFolders();
@@ -1041,7 +1043,7 @@ namespace BackupManager
             catch (Exception ex)
             {
                 Utils.LogWithPushover(mediaBackup.PushoverUserKey, mediaBackup.PushoverAppToken,
-                    LogFile, BackupAction.General, PushoverPriority.Emergency,
+                    logFile, BackupAction.General, PushoverPriority.Emergency,
                     $"Exception occured {ex}"
                     );
             }
@@ -1069,22 +1071,26 @@ namespace BackupManager
 
         private void listFilesInMasterFolderButton_Click(object sender, EventArgs e)
         {
-            string LogFile = Path.Combine(
+            string logFile = Path.Combine(
               Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
               "backup_ListFilesInMasterFolder.txt");
 
             string masterFolder = this.masterFoldersComboBox.SelectedItem.ToString();
 
             IEnumerable<BackupFile> files = mediaBackup.BackupFiles.Where(p => p.MasterFolder == masterFolder).OrderBy(q => q.BackupDiskNumber);
+            string readSpeed, writeSpeed;
 
-            Utils.Log(LogFile, $"Listing files in master folder {masterFolder}");
+            Utils.DiskSpeedTest(masterFolder, out readSpeed, out writeSpeed);
+            Utils.Log(logFile, $"testing {masterFolder}, Read: {readSpeed} Write: {writeSpeed}");
+
+            Utils.Log(logFile, $"Listing files in master folder {masterFolder}");
 
             foreach (BackupFile file in files)
             {
-                Utils.Log(LogFile, $"{file.FullPath} : {file.Disk}");
+                Utils.Log(logFile, $"{file.FullPath} : {file.Disk}");
                 if (string.IsNullOrEmpty(file.Disk))
                 {
-                    Utils.Log(LogFile, $"ERROR: {file.FullPath} : not on a backup disk");
+                    Utils.Log(logFile, $"ERROR: {file.FullPath} : not on a backup disk");
                 }
             }
         }
@@ -1380,6 +1386,26 @@ namespace BackupManager
             long totalFreespace = mediaBackup.BackupDisks.Sum(p => p.FreeSpace);
 
             Utils.Log(logFile, $"Total avialable storage is {Utils.FormatDiskSpace(totalDiskSpace)} with {Utils.FormatDiskSpace(totalFreespace)} free");
+        }
+
+        private void speedTestButton_Click(object sender, EventArgs e)
+        {
+            string logFile = Path.Combine(
+               Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+               "backup_MasterFoldersSpeedTest.txt");
+
+            speedTestAllMasterFolders(logFile);
+        }
+
+        private void speedTestAllMasterFolders(string logFile)
+        {
+            string readSpeed, writeSpeed;
+
+            foreach (string masterFolder in mediaBackup.MasterFolders)
+            {
+                Utils.DiskSpeedTest(masterFolder, out readSpeed, out writeSpeed);
+                Utils.Log(logFile, $"testing {masterFolder}, Read: {readSpeed} Write: {writeSpeed}");
+            }
         }
     }
 }
