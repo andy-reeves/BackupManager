@@ -1009,7 +1009,7 @@ namespace BackupManager
         /// <returns></returns>
         public static bool DiskSpeedTest(string pathToDiskToTest, out string readSpeed, out string writeSpeed)
         {
-            ulong testFileSize = 100 * 1048576;// in MB
+            ulong testFileSize = 200 * 1048576;// in MB
             int testIterations = 1;
 
             string tempPath = Path.GetTempPath();

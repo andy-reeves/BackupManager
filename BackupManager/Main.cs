@@ -131,11 +131,17 @@ namespace BackupManager
                     p =>
                     p.Disk != null && p.Disk.Equals(disk.Name, StringComparison.CurrentCultureIgnoreCase));
 
+            string readSpeed, writeSpeed;
+
+            Utils.DiskSpeedTest(folderToCheck, out readSpeed, out writeSpeed);
+
+            string text = $"Name: {disk.Name}\nTotal: {disk.TotalSizeFormatted}\nFree: {disk.FreespaceFormatted}\nRead: {readSpeed}\nWrite: {writeSpeed}";
+
             Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                   mediaBackup.PushoverAppToken,
                                   logFile,
                                   BackupAction.CheckBackupDisk,
-                                  $"{disk.Name}\n{disk.TotalSizeFormatted} with {disk.FreespaceFormatted} free");
+                                  text);
 
             if (disk.FreeSpace < mediaBackup.MinimumCriticalBackupDiskSpace)
             {
