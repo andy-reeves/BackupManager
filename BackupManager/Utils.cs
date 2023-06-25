@@ -1061,7 +1061,7 @@ namespace BackupManager
                 File.Delete(firstPathFilename);
                 File.Delete(secondPathFilename);
                 TimeSpan interval = stopTime - startTime;
-                totalPerf += (testFileSize / 1024 / 1024) / (interval.TotalMilliseconds * 1000);
+                totalPerf += (testFileSize / 1024/1024) / interval.TotalSeconds;
             }
 
             return (totalPerf / testIterations).ToString("F2") + "MB/s";
