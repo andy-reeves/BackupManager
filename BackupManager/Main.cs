@@ -617,7 +617,9 @@ namespace BackupManager
 
                     string totalBytesOnMasterFolderDiskFormatted = Utils.FormatDiskSpace(totalBytesOnMasterFolderDisk);
                     string freeSpaceOnCurrentMasterFolderFormatted = Utils.FormatDiskSpace(freeSpaceOnCurrentMasterFolder);
-                    string text = $"{masterFolder}\n{freeSpaceOnCurrentMasterFolderFormatted} free from {totalBytesOnMasterFolderDiskFormatted}";
+                    Utils.DiskSpeedTest(masterFolder, out readSpeed, out writeSpeed);
+
+                    string text = $"{masterFolder}\n{freeSpaceOnCurrentMasterFolderFormatted} free from {totalBytesOnMasterFolderDiskFormatted}\nRead: {readSpeed}\nWrite: {writeSpeed}";
 
                     Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                           mediaBackup.PushoverAppToken,
@@ -625,13 +627,6 @@ namespace BackupManager
                                           BackupAction.ScanFolders,
                                           text
                                           );
-
-                    Utils.DiskSpeedTest(masterFolder, out readSpeed, out writeSpeed);
-                    Utils.LogWithPushover(mediaBackup.PushoverUserKey,
-                                          mediaBackup.PushoverAppToken, 
-                                          logFile,
-                                          BackupAction.ScanFolders,
-                                          $"Testing {masterFolder}\nRead: {readSpeed}\nWrite: {writeSpeed}");
 
                     if (freeSpaceOnCurrentMasterFolder < (mediaBackup.MinimumCriticalMasterFolderSpace * 1024 * 1024))
                     {
