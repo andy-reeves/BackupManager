@@ -243,11 +243,13 @@ namespace BackupManager
 
             mediaBackup.Save();
 
+            text = $"Name: {disk.Name}\nTotal: {disk.TotalSizeFormatted}\nFree: {disk.FreespaceFormatted}";
+
             Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                   mediaBackup.PushoverAppToken,
                                   logFile,
                                   BackupAction.CheckBackupDisk,
-                                  $"{disk.Name} - {disk.TotalSizeFormatted} with {disk.FreespaceFormatted} free");
+                                  text);
 
             Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                   mediaBackup.PushoverAppToken,
@@ -633,6 +635,28 @@ namespace BackupManager
                                           BackupAction.ScanFolders,
                                           text
                                           );
+                    
+                    if (Utils.Int32FromDiskSpeedSpeed(readSpeed) < mediaBackup.MinimumMasterFolderReadSpeed)
+                    {
+                        Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                                         mediaBackup.PushoverAppToken,
+                                         logFile,
+                                         BackupAction.ScanFolders,
+                                         PushoverPriority.High,
+                                         $"Read speed is below MinimumCritical of {mediaBackup.MinimumMasterFolderReadSpeed}MB/s"
+                                         );
+                    }
+
+                    if (Utils.Int32FromDiskSpeedSpeed(writeSpeed) < mediaBackup.MinimumMasterFolderWriteSpeed)
+                    {
+                        Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                                         mediaBackup.PushoverAppToken,
+                                         logFile,
+                                         BackupAction.ScanFolders,
+                                         PushoverPriority.High,
+                                         $"Write speed is below MinimumCritical of {mediaBackup.MinimumMasterFolderWriteSpeed}MB/s"
+                                         );
+                    }
 
                     if (freeSpaceOnCurrentMasterFolder < (mediaBackup.MinimumCriticalMasterFolderSpace * 1024 * 1024))
                     {

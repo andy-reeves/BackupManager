@@ -2,7 +2,6 @@
 <MediaBackup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <PushoverUserKey>InsertYourPushoverUserKeyHere</PushoverUserKey>
   <PushoverAppToken>InsertYourPushoverAppTokenHere</PushoverAppToken>
-  
   <!-- When true a backup scan will run when the app starts -->
   <StartScheduledBackup>false</StartScheduledBackup>
   <!-- A bigger percentage difference than this and the backup stops -->
@@ -17,6 +16,10 @@
   <DaysToReportOldBackupDisks>90</DaysToReportOldBackupDisks>
   <!-- MinimumFreeSpaceToLeaveOnBackupDrive in MB -->
   <MinimumFreeSpaceToLeaveOnBackupDrive>10</MinimumFreeSpaceToLeaveOnBackupDrive>
+  <!-- Minimum read speed in MB/s -->
+  <MinimumMasterFolderReadSpeed>30</MinimumMasterFolderReadSpeed>
+  <!-- Minimum write speed in MB/s -->
+  <MinimumMasterFolderWriteSpeed>50</MinimumMasterFolderWriteSpeed>
   <MasterFolders>
     <!-- List each UNC path that you want to scan for files to backup here -->
     <MasterFolder>\\nas1\assets1</MasterFolder>

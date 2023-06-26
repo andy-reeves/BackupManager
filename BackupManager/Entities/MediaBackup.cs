@@ -58,6 +58,12 @@
 
         //Days To Report Old Backup Disks
         public int DaysToReportOldBackupDisks;
+        
+        // MinimumMasterFolderReadSpeed in MB/s
+        public int MinimumMasterFolderReadSpeed;
+
+        // MinimumMasterFolderWriteSpeed in MB/s
+        public int MinimumMasterFolderWriteSpeed;
 
         // We need to store 2 hashes
         // 1 hash is from the file content hashcodes and the leafname of the file. This allows for files to have duplicate contents but be stored

@@ -1001,6 +1001,16 @@ namespace BackupManager
         }
 
         /// <summary>
+        /// Returns an Int32 from a string like '26.47MB/s'
+        /// </summary>
+        /// <param name="diskSpeed"></param>
+        /// <returns></returns>
+        public static int Int32FromDiskSpeedSpeed(string diskSpeed)
+        {
+            return Convert.ToInt32(Math.Floor(Convert.ToDouble(diskSpeed.SubstringBefore("MB", StringComparison.CurrentCultureIgnoreCase))));
+        }
+
+        /// <summary>
         /// Runs a speedtest on the disk provided.
         /// </summary>
         /// <param name="pathToDiskToTest">The path to test.</param>
