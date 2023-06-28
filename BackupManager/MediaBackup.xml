@@ -34,6 +34,14 @@
     <MasterFolder>\\nas3\assets2</MasterFolder>
     <MasterFolder>\\nas3\assets3</MasterFolder>
     <MasterFolder>\\nas3\assets4</MasterFolder>
+    <MasterFolder>\\nas4\assets1</MasterFolder>
+    <MasterFolder>\\nas4\assets2</MasterFolder>
+    <MasterFolder>\\nas4\assets3</MasterFolder>
+    <MasterFolder>\\nas4\assets4</MasterFolder>
+    <MasterFolder>\\nas5\assets1</MasterFolder>
+    <MasterFolder>\\nas5\assets2</MasterFolder>
+    <MasterFolder>\\nas5\assets3</MasterFolder>
+    <MasterFolder>\\nas5\assets4</MasterFolder>
   </MasterFolders>
   <IndexFolders>
     <!-- These are the subfolders that will be searched in the shares above -->

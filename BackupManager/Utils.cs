@@ -1023,23 +1023,66 @@ namespace BackupManager
         }
 
         /// <summary>
-        /// Returns an Int32 from a string like '26.47MB/s'
+        /// Formats a string containing a disk speed with a suitable suffix
         /// </summary>
-        /// <param name="diskSpeed"></param>
-        /// <returns></returns>
-        public static int Int32FromDiskSpeedString(string diskSpeed)
+        /// <param name="diskSpeed">in bytes per second</param>
+        /// <returns>a string like x.yTB/s, xGB/s, xMB/s or xKB/s or bytes/s depending on speed</returns>
+        public static string FormatDiskSpeed(long diskSpeed)
         {
-            return Convert.ToInt32(Math.Floor(Convert.ToDouble(diskSpeed.SubstringBefore("MB", StringComparison.CurrentCultureIgnoreCase))));
+            // if disk speed greater than 1TB/s return x.yTB/s
+            // if disk speed greater than 25GB/s return xGB/s
+            // if disk speed greater than 1GB/s return x.yGB/s
+            // if disk speed greater than 25MB/s return x.yMB/s
+            // if disk speed greater than 1MB/s return x.yyMB/s
+            // if disk speed greater than 1KB/s return xKB/s
+            // else return bytes/s
+
+            long oneTerabyte = 1099511627776;
+            long oneGigabyte = 1073741824;
+            long oneMegabyte = 1048576;
+            long oneKilobyte = 1024;
+
+            if (diskSpeed > oneTerabyte)
+            {
+                return $"{(decimal)diskSpeed / oneTerabyte:0.#}TB/s";
+            }
+
+            if (diskSpeed > (25 * oneGigabyte))
+            {
+                return $"{diskSpeed / oneGigabyte:n0}GB/s";
+            }
+
+            if (diskSpeed > oneGigabyte)
+            {
+                return $"{(decimal)diskSpeed / oneGigabyte:0.#}GB/s";
+            }
+
+            if (diskSpeed > (25 * oneMegabyte))
+            {
+                return $"{(decimal)diskSpeed / oneMegabyte:0.#}MB/s";
+            }
+
+            if (diskSpeed > oneMegabyte)
+            {
+                return $"{(decimal)diskSpeed / oneMegabyte:0.##}MB/s";
+            }
+
+            if (diskSpeed > oneKilobyte)
+            {
+                return $"{diskSpeed / oneKilobyte:n0}KB/s";
+            }
+
+            return $"{diskSpeed:n0}bytes/s";
         }
 
         /// <summary>
         /// Runs a speedtest on the disk provided.
         /// </summary>
         /// <param name="pathToDiskToTest">The path to test.</param>
-        /// <param name="readSpeed">in MB/s</param>
-        /// <param name="writeSpeed">in MB/s</param>
+        /// <param name="readSpeed">in bytes per second</param>
+        /// <param name="writeSpeed">in bytes per second</param>
         /// <returns></returns>
-        public static bool DiskSpeedTest(string pathToDiskToTest, out string readSpeed, out string writeSpeed)
+        public static bool DiskSpeedTest(string pathToDiskToTest, out int readSpeed, out int writeSpeed)
         {
             ulong testFileSize = 200 * 1048576;// in MB
             int testIterations = 1;
@@ -1051,7 +1094,7 @@ namespace BackupManager
             return true;
         }
 
-        public static string DiskSpeedTest(string sourcePath, string destinationPath, ulong testFileSize, int testIterations)
+        public static int DiskSpeedTest(string sourcePath, string destinationPath, ulong testFileSize, int testIterations)
         {
             ulong randomStringSize = 200000;
             int streamWriteBufferSize = 2 * 1048576;
@@ -1094,10 +1137,10 @@ namespace BackupManager
                 File.Delete(firstPathFilename);
                 File.Delete(secondPathFilename);
                 TimeSpan interval = stopTime - startTime;
-                totalPerf += (testFileSize / 1024/1024) / interval.TotalSeconds;
+                totalPerf += testFileSize / interval.TotalSeconds;
             }
 
-            return (totalPerf / testIterations).ToString("F2") + "MB/s";
+            return (int)totalPerf / testIterations;
         }
     }
 }

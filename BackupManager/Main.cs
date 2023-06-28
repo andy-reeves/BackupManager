@@ -36,7 +36,7 @@ namespace BackupManager
 
             foreach (string a in mediaBackup.MasterFolders)
             {
-                masterFoldersComboBox.Items.Add(a); 
+                masterFoldersComboBox.Items.Add(a);
             }
 
             foreach (string a in mediaBackup.MasterFolders)
@@ -131,11 +131,11 @@ namespace BackupManager
                     p =>
                     p.Disk != null && p.Disk.Equals(disk.Name, StringComparison.CurrentCultureIgnoreCase));
 
-            string readSpeed, writeSpeed;
+            int readSpeed, writeSpeed;
 
             Utils.DiskSpeedTest(folderToCheck, out readSpeed, out writeSpeed);
 
-            string text = $"Name: {disk.Name}\nTotal: {disk.TotalSizeFormatted}\nFree: {disk.FreespaceFormatted}\nRead: {readSpeed}\nWrite: {writeSpeed}";
+            string text = $"Name: {disk.Name}\nTotal: {disk.TotalSizeFormatted}\nFree: {disk.FreespaceFormatted}\nRead: {Utils.FormatDiskSpeed(readSpeed)}\nWrite: {Utils.FormatDiskSpeed(writeSpeed)}";
 
             Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                   mediaBackup.PushoverAppToken,
@@ -176,7 +176,7 @@ namespace BackupManager
                     // This forces a hash check on the source and backup disk files
                     backupFile.CheckContentHashes(disk);
 
-                    
+
                     // So we can get the situation where the hash of a file on disk is equal to a hash of a file we have
                     // It could have a different filename on the backup disk though (if we renamed the master file)
                     // check the filenames are equal and rename on the backup disk if they're not
@@ -609,7 +609,7 @@ namespace BackupManager
 
             string filters = string.Join(",", mediaBackup.Filters.ToArray());
 
-            string readSpeed, writeSpeed;
+            int readSpeed, writeSpeed;
 
             mediaBackup.ClearFlags();
 
@@ -634,8 +634,8 @@ namespace BackupManager
                         Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                          mediaBackup.PushoverAppToken,
                                          logFile,
-                                         BackupAction.ScanFolders,PushoverPriority.High,
-                                         $"{masterFolder} is not writeable/available"
+                                         BackupAction.ScanFolders, PushoverPriority.High,
+                                         $"{masterFolder} is not writeable"
                                          );
                     }
 
@@ -655,26 +655,26 @@ namespace BackupManager
                                           BackupAction.ScanFolders,
                                           text
                                           );
-                    
-                    if (Utils.Int32FromDiskSpeedString(readSpeed) < mediaBackup.MinimumMasterFolderReadSpeed)
+
+                    if (readSpeed < mediaBackup.MinimumMasterFolderReadSpeed)
                     {
                         Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                          mediaBackup.PushoverAppToken,
                                          logFile,
                                          BackupAction.ScanFolders,
                                          PushoverPriority.High,
-                                         $"Read speed is below MinimumCritical of {mediaBackup.MinimumMasterFolderReadSpeed}MB/s"
+                                         $"Read speed is below MinimumCritical of {Utils.FormatDiskSpeed(mediaBackup.MinimumMasterFolderReadSpeed)}"
                                          );
                     }
 
-                    if (Utils.Int32FromDiskSpeedString(writeSpeed) < mediaBackup.MinimumMasterFolderWriteSpeed)
+                    if (writeSpeed < mediaBackup.MinimumMasterFolderWriteSpeed)
                     {
                         Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                          mediaBackup.PushoverAppToken,
                                          logFile,
                                          BackupAction.ScanFolders,
                                          PushoverPriority.High,
-                                         $"Write speed is below MinimumCritical of {mediaBackup.MinimumMasterFolderWriteSpeed}MB/s"
+                                         $"Write speed is below MinimumCritical of {Utils.FormatDiskSpeed(mediaBackup.MinimumMasterFolderWriteSpeed)}"
                                          );
                     }
 
@@ -1130,10 +1130,10 @@ namespace BackupManager
             string masterFolder = this.masterFoldersComboBox.SelectedItem.ToString();
 
             IEnumerable<BackupFile> files = mediaBackup.BackupFiles.Where(p => p.MasterFolder == masterFolder).OrderBy(q => q.BackupDiskNumber);
-            string readSpeed, writeSpeed;
+            int readSpeed, writeSpeed;
 
             Utils.DiskSpeedTest(masterFolder, out readSpeed, out writeSpeed);
-            Utils.Log(logFile, $"testing {masterFolder}, Read: {readSpeed} Write: {writeSpeed}");
+            Utils.Log(logFile, $"testing {masterFolder}, Read: {Utils.FormatDiskSpeed(readSpeed)} Write: {Utils.FormatDiskSpeed(writeSpeed)}");
 
             Utils.Log(logFile, $"Listing files in master folder {masterFolder}");
 
@@ -1427,7 +1427,7 @@ namespace BackupManager
                 "backup_ReportBackupDiskStatus.txt");
 
             IEnumerable<BackupDisk> disks = mediaBackup.BackupDisks.OrderBy(p => p.Number);
-            
+
             foreach (BackupDisk disk in disks)
             {
                 DateTime d = DateTime.Parse(disk.DiskChecked);
@@ -1446,17 +1446,15 @@ namespace BackupManager
                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
                "backup_MasterFoldersSpeedTest.txt");
 
-            speedTestAllMasterFolders(logFile);
-        }
-
-        private void speedTestAllMasterFolders(string logFile)
-        {
-            string readSpeed, writeSpeed;
+            int readSpeed, writeSpeed;
 
             foreach (string masterFolder in mediaBackup.MasterFolders)
             {
-                Utils.DiskSpeedTest(masterFolder, out readSpeed, out writeSpeed);
-                Utils.Log(logFile, $"testing {masterFolder}, Read: {readSpeed} Write: {writeSpeed}");
+                if (Utils.IsFolderWritable(masterFolder))
+                {
+                    Utils.DiskSpeedTest(masterFolder, out readSpeed, out writeSpeed);
+                    Utils.Log(logFile, $"testing {masterFolder}, Read: {Utils.FormatDiskSpeed(readSpeed)} Write: {Utils.FormatDiskSpeed(writeSpeed)}");
+                }
             }
         }
     }
