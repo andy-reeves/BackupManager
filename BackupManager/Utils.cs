@@ -1001,11 +1001,33 @@ namespace BackupManager
         }
 
         /// <summary>
+        /// Checks the folder is writeable
+        /// </summary>
+        /// <param name="folderPath"></param>
+        /// <returns>True if writeable else false</returns>
+        public static bool IsFolderWritable(string folderPath)
+        {
+            try
+            {
+                using (FileStream fs = File.Create(
+                  Path.Combine(folderPath, Path.GetRandomFileName()),
+                  1, FileOptions.DeleteOnClose)
+                  )
+                { }
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Returns an Int32 from a string like '26.47MB/s'
         /// </summary>
         /// <param name="diskSpeed"></param>
         /// <returns></returns>
-        public static int Int32FromDiskSpeedSpeed(string diskSpeed)
+        public static int Int32FromDiskSpeedString(string diskSpeed)
         {
             return Convert.ToInt32(Math.Floor(Convert.ToDouble(diskSpeed.SubstringBefore("MB", StringComparison.CurrentCultureIgnoreCase))));
         }

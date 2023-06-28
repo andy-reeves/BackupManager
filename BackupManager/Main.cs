@@ -617,8 +617,28 @@ namespace BackupManager
 
             foreach (string masterFolder in mediaBackup.MasterFolders)
             {
+                if (!Directory.Exists(masterFolder))
+                {
+                    Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                                     mediaBackup.PushoverAppToken,
+                                     logFile,
+                                     BackupAction.ScanFolders, PushoverPriority.High,
+                                     $"{masterFolder} is not available"
+                                     );
+                }
+
                 if (Directory.Exists(masterFolder))
                 {
+                    if (!Utils.IsFolderWritable(masterFolder))
+                    {
+                        Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                                         mediaBackup.PushoverAppToken,
+                                         logFile,
+                                         BackupAction.ScanFolders,PushoverPriority.High,
+                                         $"{masterFolder} is not writeable/available"
+                                         );
+                    }
+
                     long freeSpaceOnCurrentMasterFolder;
                     long totalBytesOnMasterFolderDisk;
                     Utils.GetDiskInfo(masterFolder, out freeSpaceOnCurrentMasterFolder, out totalBytesOnMasterFolderDisk);
@@ -636,7 +656,7 @@ namespace BackupManager
                                           text
                                           );
                     
-                    if (Utils.Int32FromDiskSpeedSpeed(readSpeed) < mediaBackup.MinimumMasterFolderReadSpeed)
+                    if (Utils.Int32FromDiskSpeedString(readSpeed) < mediaBackup.MinimumMasterFolderReadSpeed)
                     {
                         Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                          mediaBackup.PushoverAppToken,
@@ -647,7 +667,7 @@ namespace BackupManager
                                          );
                     }
 
-                    if (Utils.Int32FromDiskSpeedSpeed(writeSpeed) < mediaBackup.MinimumMasterFolderWriteSpeed)
+                    if (Utils.Int32FromDiskSpeedString(writeSpeed) < mediaBackup.MinimumMasterFolderWriteSpeed)
                     {
                         Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                          mediaBackup.PushoverAppToken,
