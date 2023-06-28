@@ -642,12 +642,14 @@ namespace BackupManager
                     long freeSpaceOnCurrentMasterFolder;
                     long totalBytesOnMasterFolderDisk;
                     Utils.GetDiskInfo(masterFolder, out freeSpaceOnCurrentMasterFolder, out totalBytesOnMasterFolderDisk);
+                    Utils.DiskSpeedTest(masterFolder, out readSpeed, out writeSpeed);
 
                     string totalBytesOnMasterFolderDiskFormatted = Utils.FormatDiskSpace(totalBytesOnMasterFolderDisk);
                     string freeSpaceOnCurrentMasterFolderFormatted = Utils.FormatDiskSpace(freeSpaceOnCurrentMasterFolder);
-                    Utils.DiskSpeedTest(masterFolder, out readSpeed, out writeSpeed);
+                    string readSpeedFormatted = Utils.FormatDiskSpeed(readSpeed);
+                    string writeSpeedFormatted = Utils.FormatDiskSpeed(writeSpeed);
 
-                    string text = $"{masterFolder}\nTotal: {totalBytesOnMasterFolderDiskFormatted}\nFree: {freeSpaceOnCurrentMasterFolderFormatted}\nRead: {readSpeed}\nWrite: {writeSpeed}";
+                    string text = $"{masterFolder}\nTotal: {totalBytesOnMasterFolderDiskFormatted}\nFree: {freeSpaceOnCurrentMasterFolderFormatted}\nRead: {readSpeedFormatted}\nWrite: {writeSpeedFormatted}";
 
                     Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                           mediaBackup.PushoverAppToken,
