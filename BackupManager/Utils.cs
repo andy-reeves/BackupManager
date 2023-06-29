@@ -1027,7 +1027,7 @@ namespace BackupManager
         /// </summary>
         /// <param name="diskSpeed">in bytes per second</param>
         /// <returns>a string like x.yTB/s, xGB/s, xMB/s or xKB/s or bytes/s depending on speed</returns>
-        public static string FormatDiskSpeed(long diskSpeed)
+        public static string FormatDiskSpeed(ulong diskSpeed)
         {
             // if disk speed greater than 1TB/s return x.yTB/s
             // if disk speed greater than 25GB/s return xGB/s
@@ -1037,14 +1037,14 @@ namespace BackupManager
             // if disk speed greater than 1KB/s return xKB/s
             // else return bytes/s
 
-            long oneTerabyte = 1099511627776;
-            long oneGigabyte = 1073741824;
-            long oneMegabyte = 1048576;
-            long oneKilobyte = 1024;
+            ulong oneTerabyte = 1099511627776;
+            ulong oneGigabyte = 1073741824;
+            ulong oneMegabyte = 1048576;
+            ulong oneKilobyte = 1024;
 
             if (diskSpeed > oneTerabyte)
             {
-                return $"{(decimal)diskSpeed / oneTerabyte:0.#}TB/s";
+                return $"{(decimal)diskSpeed / oneTerabyte:0.0}TB/s";
             }
 
             if (diskSpeed > (25 * oneGigabyte))
@@ -1054,17 +1054,17 @@ namespace BackupManager
 
             if (diskSpeed > oneGigabyte)
             {
-                return $"{(decimal)diskSpeed / oneGigabyte:0.#}GB/s";
+                return $"{(decimal)diskSpeed / oneGigabyte:0.0}GB/s";
             }
 
             if (diskSpeed > (25 * oneMegabyte))
             {
-                return $"{(decimal)diskSpeed / oneMegabyte:0.#}MB/s";
+                return $"{(decimal)diskSpeed / oneMegabyte:0.0}MB/s";
             }
 
             if (diskSpeed > oneMegabyte)
             {
-                return $"{(decimal)diskSpeed / oneMegabyte:0.##}MB/s";
+                return $"{(decimal)diskSpeed / oneMegabyte:0.00}MB/s";
             }
 
             if (diskSpeed > oneKilobyte)
@@ -1082,7 +1082,7 @@ namespace BackupManager
         /// <param name="readSpeed">in bytes per second</param>
         /// <param name="writeSpeed">in bytes per second</param>
         /// <returns></returns>
-        public static bool DiskSpeedTest(string pathToDiskToTest, out int readSpeed, out int writeSpeed)
+        public static bool DiskSpeedTest(string pathToDiskToTest, out ulong readSpeed, out ulong writeSpeed)
         {
             ulong testFileSize = 200 * 1048576;// in MB
             int testIterations = 1;
@@ -1094,7 +1094,7 @@ namespace BackupManager
             return true;
         }
 
-        public static int DiskSpeedTest(string sourcePath, string destinationPath, ulong testFileSize, int testIterations)
+        public static ulong DiskSpeedTest(string sourcePath, string destinationPath, ulong testFileSize, int testIterations)
         {
             ulong randomStringSize = 200000;
             int streamWriteBufferSize = 2 * 1048576;
@@ -1140,7 +1140,7 @@ namespace BackupManager
                 totalPerf += testFileSize / interval.TotalSeconds;
             }
 
-            return (int)totalPerf / testIterations;
+            return Convert.ToUInt64(totalPerf / testIterations);
         }
     }
 }

@@ -131,7 +131,7 @@ namespace BackupManager
                     p =>
                     p.Disk != null && p.Disk.Equals(disk.Name, StringComparison.CurrentCultureIgnoreCase));
 
-            int readSpeed, writeSpeed;
+            ulong readSpeed, writeSpeed;
 
             Utils.DiskSpeedTest(folderToCheck, out readSpeed, out writeSpeed);
 
@@ -609,7 +609,7 @@ namespace BackupManager
 
             string filters = string.Join(",", mediaBackup.Filters.ToArray());
 
-            int readSpeed, writeSpeed;
+            ulong readSpeed, writeSpeed;
 
             mediaBackup.ClearFlags();
 
@@ -658,25 +658,25 @@ namespace BackupManager
                                           text
                                           );
 
-                    if (readSpeed < mediaBackup.MinimumMasterFolderReadSpeed)
+                    if (readSpeed < (Convert.ToUInt64(mediaBackup.MinimumMasterFolderReadSpeed *1024*1024)))
                     {
                         Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                          mediaBackup.PushoverAppToken,
                                          logFile,
                                          BackupAction.ScanFolders,
                                          PushoverPriority.High,
-                                         $"Read speed is below MinimumCritical of {Utils.FormatDiskSpeed(mediaBackup.MinimumMasterFolderReadSpeed)}"
+                                         $"Read speed is below MinimumCritical of {Utils.FormatDiskSpeed(Convert.ToUInt64(mediaBackup.MinimumMasterFolderReadSpeed*1024*1024))}"
                                          );
                     }
 
-                    if (writeSpeed < mediaBackup.MinimumMasterFolderWriteSpeed)
+                    if (writeSpeed < (Convert.ToUInt64(mediaBackup.MinimumMasterFolderWriteSpeed*1024*1024)))
                     {
                         Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                          mediaBackup.PushoverAppToken,
                                          logFile,
                                          BackupAction.ScanFolders,
                                          PushoverPriority.High,
-                                         $"Write speed is below MinimumCritical of {Utils.FormatDiskSpeed(mediaBackup.MinimumMasterFolderWriteSpeed)}"
+                                         $"Write speed is below MinimumCritical of {Utils.FormatDiskSpeed(Convert.ToUInt64(mediaBackup.MinimumMasterFolderWriteSpeed*1024*1024))}"
                                          );
                     }
 
@@ -1132,7 +1132,7 @@ namespace BackupManager
             string masterFolder = this.masterFoldersComboBox.SelectedItem.ToString();
 
             IEnumerable<BackupFile> files = mediaBackup.BackupFiles.Where(p => p.MasterFolder == masterFolder).OrderBy(q => q.BackupDiskNumber);
-            int readSpeed, writeSpeed;
+            ulong readSpeed, writeSpeed;
 
             Utils.DiskSpeedTest(masterFolder, out readSpeed, out writeSpeed);
             Utils.Log(logFile, $"testing {masterFolder}, Read: {Utils.FormatDiskSpeed(readSpeed)} Write: {Utils.FormatDiskSpeed(writeSpeed)}");
@@ -1448,7 +1448,7 @@ namespace BackupManager
                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
                "backup_MasterFoldersSpeedTest.txt");
 
-            int readSpeed, writeSpeed;
+            ulong readSpeed, writeSpeed;
 
             foreach (string masterFolder in mediaBackup.MasterFolders)
             {
