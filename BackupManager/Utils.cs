@@ -952,7 +952,7 @@ namespace BackupManager
 
             if (diskSpace > oneTerabyte)
             {
-                return $"{(decimal)diskSpace / oneTerabyte:0.#}TB";
+                return $"{(decimal)diskSpace / oneTerabyte:0.0}TB";
             }
 
             if (diskSpace > (25 * oneGigabyte))
@@ -962,7 +962,7 @@ namespace BackupManager
 
             if (diskSpace > oneGigabyte)
             {
-                return $"{(decimal)diskSpace / oneGigabyte:0.#}GB";
+                return $"{(decimal)diskSpace / oneGigabyte:0.0}GB";
             }
 
             if (diskSpace > (25 * oneMegabyte))
@@ -972,7 +972,7 @@ namespace BackupManager
 
             if (diskSpace > oneMegabyte)
             {
-                return $"{(decimal)diskSpace / oneMegabyte:0.#}MB";
+                return $"{(decimal)diskSpace / oneMegabyte:0.0}MB";
             }
 
             if (diskSpace > oneKilobyte)
@@ -1059,12 +1059,12 @@ namespace BackupManager
 
             if (diskSpeed > (25 * oneMegabyte))
             {
-                return $"{(decimal)diskSpeed / oneMegabyte:0.0}MB/s";
+                return $"{diskSpeed / oneMegabyte:n0}MB/s";
             }
 
             if (diskSpeed > oneMegabyte)
             {
-                return $"{(decimal)diskSpeed / oneMegabyte:0.00}MB/s";
+                return $"{(decimal)diskSpeed / oneMegabyte:0.0}MB/s";
             }
 
             if (diskSpeed > oneKilobyte)
