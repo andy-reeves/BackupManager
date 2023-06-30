@@ -135,7 +135,7 @@ namespace BackupManager
 
             Utils.DiskSpeedTest(folderToCheck, out readSpeed, out writeSpeed);
 
-            string text = $"Name: {disk.Name}\nTotal: {disk.CapacityFormatted}\nFree: {disk.AvailableSpaceFormatted}\nRead: {Utils.FormatSpeed(readSpeed)}\nWrite: {Utils.FormatSpeed(writeSpeed)}";
+            string text = $"Name: {disk.Name}\nTotal: {disk.CapacityFormatted}\nFree: {disk.FreeFormatted}\nRead: {Utils.FormatSpeed(readSpeed)}\nWrite: {Utils.FormatSpeed(writeSpeed)}";
 
             Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                   mediaBackup.PushoverAppToken,
@@ -143,14 +143,14 @@ namespace BackupManager
                                   BackupAction.CheckBackupDisk,
                                   text);
 
-            if (disk.AvailableSpace < mediaBackup.MinimumCriticalBackupDiskSpace * Utils.BytesInOneGigabyte)
+            if (disk.Free < mediaBackup.MinimumCriticalBackupDiskSpace * Utils.BytesInOneGigabyte)
             {
                 Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                       mediaBackup.PushoverAppToken,
                                       logFile,
                                       BackupAction.CheckBackupDisk,
                                       PushoverPriority.High,
-                                      $"{disk.AvailableSpaceFormatted} free is very low. Prepare new backup disk");
+                                      $"{disk.FreeFormatted} free is very low. Prepare new backup disk");
             }
 
             foreach (BackupFile file in filesToReset)
@@ -243,7 +243,7 @@ namespace BackupManager
 
             mediaBackup.Save();
 
-            text = $"Name: {disk.Name}\nTotal: {disk.CapacityFormatted}\nFree: {disk.AvailableSpaceFormatted}\nFiles: {disk.TotalFiles:n0}";
+            text = $"Name: {disk.Name}\nTotal: {disk.CapacityFormatted}\nFree: {disk.FreeFormatted}\nFiles: {disk.TotalFiles:n0}";
 
             Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                   mediaBackup.PushoverAppToken,
@@ -515,7 +515,7 @@ namespace BackupManager
                                   mediaBackup.PushoverAppToken,
                                   logFile,
                                   BackupAction.BackupFiles,
-                                  $"{disk.AvailableSpaceFormatted} free on backup disk"
+                                  $"{disk.FreeFormatted} free on backup disk"
                                   );
 
             Utils.LogWithPushover(mediaBackup.PushoverUserKey,
@@ -1434,12 +1434,12 @@ namespace BackupManager
 
             foreach (BackupDisk disk in disks)
             {
-                DateTime d = DateTime.Parse(disk.DiskChecked);
-                Utils.Log(logFile, $"{disk.Name} at {disk.CapacityFormatted} with {disk.AvailableSpaceFormatted} free. Last check: {d:dd-MMM-yy}");
+                DateTime d = DateTime.Parse(disk.Checked);
+                Utils.Log(logFile, $"{disk.Name} at {disk.CapacityFormatted} with {disk.FreeFormatted} free. Last check: {d:dd-MMM-yy}");
             }
 
             string totalSizeFormatted = Utils.FormatSize(mediaBackup.BackupDisks.Sum(p => p.Capacity));
-            string totalFreespaceFormatted = Utils.FormatSize(mediaBackup.BackupDisks.Sum(p => p.AvailableSpace));
+            string totalFreespaceFormatted = Utils.FormatSize(mediaBackup.BackupDisks.Sum(p => p.Free));
 
             Utils.Log(logFile, $"Total available storage is {totalSizeFormatted} with {totalFreespaceFormatted} free");
         }

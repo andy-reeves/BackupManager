@@ -14,7 +14,7 @@
         /// <summary>
         /// Date the disk was last scanned
         /// </summary>
-		public string DiskChecked;
+		public string Checked;
 
         /// <summary>
         /// Capacity of the disk in bytes
@@ -29,7 +29,7 @@
         /// <summary>
         /// Available space on the disk in bytes
         /// </summary>
-		public long AvailableSpace;
+		public long Free;
 
         [XmlIgnore]
         public string BackupShare;
@@ -41,7 +41,7 @@
         public string CapacityFormatted { get => Utils.FormatSize(Capacity); }
 
         [XmlIgnore]
-        public string AvailableSpaceFormatted { get => Utils.FormatSize(AvailableSpace); }
+        public string FreeFormatted { get => Utils.FormatSize(Free); }
 
         public BackupDisk()
         {
@@ -92,7 +92,7 @@
                 return false;
             }
 
-            AvailableSpace = availableSpace;
+            Free = availableSpace;
             Capacity = totalBytes;
 
             IEnumerable<BackupFile> files = backupFiles.Where(p => p.Disk == Name);
@@ -143,7 +143,7 @@
         /// </summary>
         public void UpdateDiskChecked()
         {
-            DiskChecked = DateTime.Now.ToString("yyyy-MM-dd");
+            Checked = DateTime.Now.ToString("yyyy-MM-dd");
         }
     }
 }
