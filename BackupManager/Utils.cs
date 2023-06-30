@@ -368,7 +368,7 @@ namespace BackupManager
                 foreach (string filter in include)
                 {
 #if DEBUG  
-                    Log(logFile, $"Checking {dir} with {filter} filter");
+                    // Log(logFile, $"Checking {dir} with {filter} filter");
 #endif
                     string[] allfiles = Directory.GetFiles(dir, filter, SearchOption.TopDirectoryOnly);
 

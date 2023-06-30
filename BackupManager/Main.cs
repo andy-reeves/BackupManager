@@ -424,7 +424,9 @@ namespace BackupManager
                                 File.Copy(sourceFileName, destinationFileName);
                                 DateTime endTime = DateTime.UtcNow;
 
-                                Utils.Log(logFile, $"Copy complete at {sourceFileInfo.Length / 1048576 / (endTime - startTime).TotalSeconds:n2} MB/s");
+                                string copySpeed = Utils.FormatDiskSpeed(Convert.ToInt64(sourceFileInfo.Length / (endTime - startTime).TotalSeconds));
+
+                                Utils.Log(logFile, $"Copy complete at {copySpeed}");
 
                                 // Make sure its not readonly
                                 Utils.ClearFileAttribute(destinationFileName, FileAttributes.ReadOnly);
@@ -709,7 +711,7 @@ namespace BackupManager
                             foreach (string file in files)
                             {
 #if DEBUG    
-                                Utils.Log(logFile, $"Checking {file}");
+                                // Utils.Log(logFile, $"Checking {file}");
 #endif
                                 // Checks for TV only
                                 if (file.Contains("_TV"))
