@@ -243,7 +243,7 @@ namespace BackupManager
 
             mediaBackup.Save();
 
-            text = $"Name: {disk.Name}\nTotal: {disk.TotalSizeFormatted}\nFree: {disk.FreespaceFormatted}\n Files: {disk.TotalFiles}";
+            text = $"Name: {disk.Name}\nTotal: {disk.TotalSizeFormatted}\nFree: {disk.FreespaceFormatted}\nFiles: {disk.TotalFiles:n0}";
 
             Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                   mediaBackup.PushoverAppToken,
