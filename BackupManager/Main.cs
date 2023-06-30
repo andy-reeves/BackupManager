@@ -131,7 +131,7 @@ namespace BackupManager
                     p =>
                     p.Disk != null && p.Disk.Equals(disk.Name, StringComparison.CurrentCultureIgnoreCase));
 
-            ulong readSpeed, writeSpeed;
+            long readSpeed, writeSpeed;
 
             Utils.DiskSpeedTest(folderToCheck, out readSpeed, out writeSpeed);
 
@@ -243,7 +243,7 @@ namespace BackupManager
 
             mediaBackup.Save();
 
-            text = $"Name: {disk.Name}\nTotal: {disk.TotalSizeFormatted}\nFree: {disk.FreespaceFormatted}";
+            text = $"Name: {disk.Name}\nTotal: {disk.TotalSizeFormatted}\nFree: {disk.FreespaceFormatted}\n Files: {disk.TotalFiles}";
 
             Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                   mediaBackup.PushoverAppToken,
@@ -406,7 +406,7 @@ namespace BackupManager
                         long totalBytes;
                         result = Utils.GetDiskInfo(backupShare, out availableSpace, out totalBytes);
 
-                        if (availableSpace > (mediaBackup.MinimumFreeSpaceToLeaveOnBackupDrive * 1024 * 1024))
+                        if (availableSpace > (mediaBackup.MinimumFreeSpaceToLeaveOnBackupDrive * Utils.BytesInOneMegabyte))
                         {
                             if (availableSpace > sourceFileInfo.Length)
                             {
@@ -609,7 +609,7 @@ namespace BackupManager
 
             string filters = string.Join(",", mediaBackup.Filters.ToArray());
 
-            ulong readSpeed, writeSpeed;
+            long readSpeed, writeSpeed;
 
             mediaBackup.ClearFlags();
 
@@ -658,29 +658,29 @@ namespace BackupManager
                                           text
                                           );
 
-                    if (readSpeed < (Convert.ToUInt64(mediaBackup.MinimumMasterFolderReadSpeed *1024*1024)))
+                    if (readSpeed < Utils.ConvertMBtoBytes(mediaBackup.MinimumMasterFolderReadSpeed))
                     {
                         Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                          mediaBackup.PushoverAppToken,
                                          logFile,
                                          BackupAction.ScanFolders,
                                          PushoverPriority.High,
-                                         $"Read speed is below MinimumCritical of {Utils.FormatDiskSpeed(Convert.ToUInt64(mediaBackup.MinimumMasterFolderReadSpeed*1024*1024))}"
+                                         $"Read speed is below MinimumCritical of {Utils.FormatDiskSpeed(Utils.ConvertMBtoBytes(mediaBackup.MinimumMasterFolderReadSpeed))}"
                                          );
                     }
 
-                    if (writeSpeed < (Convert.ToUInt64(mediaBackup.MinimumMasterFolderWriteSpeed*1024*1024)))
+                    if (writeSpeed < Utils.ConvertMBtoBytes(mediaBackup.MinimumMasterFolderWriteSpeed))
                     {
                         Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                          mediaBackup.PushoverAppToken,
                                          logFile,
                                          BackupAction.ScanFolders,
                                          PushoverPriority.High,
-                                         $"Write speed is below MinimumCritical of {Utils.FormatDiskSpeed(Convert.ToUInt64(mediaBackup.MinimumMasterFolderWriteSpeed*1024*1024))}"
+                                         $"Write speed is below MinimumCritical of {Utils.FormatDiskSpeed(Utils.ConvertMBtoBytes(mediaBackup.MinimumMasterFolderWriteSpeed))}"
                                          );
                     }
 
-                    if (freeSpaceOnCurrentMasterFolder < (mediaBackup.MinimumCriticalMasterFolderSpace * 1024 * 1024))
+                    if (freeSpaceOnCurrentMasterFolder < Utils.ConvertMBtoBytes(mediaBackup.MinimumCriticalMasterFolderSpace))
                     {
                         Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                               mediaBackup.PushoverAppToken,
@@ -1132,7 +1132,7 @@ namespace BackupManager
             string masterFolder = this.masterFoldersComboBox.SelectedItem.ToString();
 
             IEnumerable<BackupFile> files = mediaBackup.BackupFiles.Where(p => p.MasterFolder == masterFolder).OrderBy(q => q.BackupDiskNumber);
-            ulong readSpeed, writeSpeed;
+            long readSpeed, writeSpeed;
 
             Utils.DiskSpeedTest(masterFolder, out readSpeed, out writeSpeed);
             Utils.Log(logFile, $"testing {masterFolder}, Read: {Utils.FormatDiskSpeed(readSpeed)} Write: {Utils.FormatDiskSpeed(writeSpeed)}");
@@ -1448,7 +1448,7 @@ namespace BackupManager
                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
                "backup_MasterFoldersSpeedTest.txt");
 
-            ulong readSpeed, writeSpeed;
+            long readSpeed, writeSpeed;
 
             foreach (string masterFolder in mediaBackup.MasterFolders)
             {

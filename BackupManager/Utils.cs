@@ -28,26 +28,34 @@ namespace BackupManager
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetDiskFreeSpaceEx(string lpDirectoryName,
-        out ulong lpFreeBytesAvailable,
-        out ulong lpTotalNumberOfBytes,
-        out ulong lpTotalNumberOfFreeBytes);
+        out long lpFreeBytesAvailable,
+        out long lpTotalNumberOfBytes,
+        out long lpTotalNumberOfFreeBytes);
 
         #region Constants
 
         /// <summary>
         ///     The end block size.
         /// </summary>
-        private const int EndBlockSize = 16 * 1024; // 16K
+        private const int EndBlockSize = 16 * BytesInOneKilobyte; // 16K
 
         /// <summary>
         ///     The middle block size.
         /// </summary>
-        private const int MiddleBlockSize = 16 * 1024; // 16K
+        private const int MiddleBlockSize = 16 * BytesInOneKilobyte; // 16K
 
         /// <summary>
         ///     The start block size.
         /// </summary>
-        private const int StartBlockSize = 16 * 1024; // 16K
+        private const int StartBlockSize = 16 * BytesInOneKilobyte; // 16K
+
+        public const long BytesInOneTerabyte = 1099511627776;
+
+        public const int BytesInOneGigabyte = 1073741824;
+
+        public const int BytesInOneMegabyte = 1048576;
+
+        public const int BytesInOneKilobyte = 1024;
 
         #endregion
 
@@ -68,6 +76,16 @@ namespace BackupManager
         #endregion
 
         #region Public Methods and Operators
+       
+        /// <summary>
+        /// Covertss a MB value to a size in Bytes
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static long ConvertMBtoBytes(long value)
+        {
+            return Convert.ToInt64(value * BytesInOneMegabyte);
+        }
 
         /// <summary>
         /// Returns True if any of the attributes to check for are set in the value.
@@ -384,7 +402,7 @@ namespace BackupManager
         /// </returns>
         public static string GetHashFromFile(string fileName, HashAlgorithm algorithm)
         {
-            using (var stream = new BufferedStream(File.OpenRead(fileName), 1048576))
+            using (BufferedStream stream = new BufferedStream(File.OpenRead(fileName), BytesInOneMegabyte))
             {
                 return ByteArrayToString(algorithm.ComputeHash(stream));
             }
@@ -407,7 +425,7 @@ namespace BackupManager
         /// </returns>
         public static byte[] GetRemoteFileByteArray(Stream fileStream, long offset, long byteCountToReturn)
         {
-            var buffer = new byte[byteCountToReturn];
+            byte[] buffer = new byte[byteCountToReturn];
 
             int count;
             int sum = 0;
@@ -483,19 +501,19 @@ namespace BackupManager
         public static DateTime GetFileLastWriteTime(string fileName)
         {
             // Sometimes the file doesn't have a valid LastWriteTime 
-            var fi = new FileInfo(fileName);
+            FileInfo fileInfo = new FileInfo(fileName);
 
             DateTime returnValue;
 
             try
             {
-                returnValue = fi.LastWriteTime;
+                returnValue = fileInfo.LastWriteTime;
             }
             catch (ArgumentOutOfRangeException)
             {
                 //If we cant read the LastWriteTime then copy the LastAccessTime over it and use that instead
-                fi.LastWriteTime = fi.LastAccessTime;
-                returnValue = fi.LastWriteTime;
+                fileInfo.LastWriteTime = fileInfo.LastAccessTime;
+                returnValue = fileInfo.LastWriteTime;
             }
 
             return returnValue;
@@ -921,18 +939,7 @@ namespace BackupManager
                 folderName += '\\';
             }
 
-            ulong free, total;
-
-            if (GetDiskFreeSpaceEx(folderName, out free, out total, out _))
-            {
-                freespace = Convert.ToInt64(free);
-                totalBytes = Convert.ToInt64(total);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return GetDiskFreeSpaceEx(folderName, out freespace, out totalBytes, out _);
         }
         /// <summary>
         /// Formats a string containing a disk size with a suffix
@@ -941,43 +948,34 @@ namespace BackupManager
         /// <returns>a string like x.yTB, xGB, xMB or xKB depending on size</returns>
         public static string FormatDiskSpace(long diskSpace)
         {
-            // if diskspace greater than 1GB return xGB
-            // if diskspace greater than 1MB return xMB
-            // else return xKB
-
-            long oneTerabyte = 1099511627776;
-            long oneGigabyte = 1073741824;
-            long oneMegabyte = 1048576;
-            long oneKilobyte = 1024;
-
-            if (diskSpace > oneTerabyte)
+            if (diskSpace > BytesInOneTerabyte)
             {
-                return $"{(decimal)diskSpace / oneTerabyte:0.0}TB";
+                return $"{(decimal)diskSpace / BytesInOneTerabyte:0.0}TB";
             }
 
-            if (diskSpace > (25 * oneGigabyte))
+            if (diskSpace > 25 * (long)BytesInOneGigabyte)
             {
-                return $"{diskSpace / oneGigabyte:n0}GB";
+                return $"{diskSpace / BytesInOneGigabyte:n0}GB";
             }
 
-            if (diskSpace > oneGigabyte)
+            if (diskSpace > BytesInOneGigabyte)
             {
-                return $"{(decimal)diskSpace / oneGigabyte:0.0}GB";
+                return $"{(decimal)diskSpace / BytesInOneGigabyte:0.0}GB";
             }
 
-            if (diskSpace > (25 * oneMegabyte))
+            if (diskSpace > (25 * BytesInOneMegabyte))
             {
-                return $"{diskSpace / oneMegabyte:n0}MB";
+                return $"{diskSpace / BytesInOneMegabyte:n0}MB";
             }
 
-            if (diskSpace > oneMegabyte)
+            if (diskSpace > BytesInOneMegabyte)
             {
-                return $"{(decimal)diskSpace / oneMegabyte:0.0}MB";
+                return $"{(decimal)diskSpace / BytesInOneMegabyte:0.0}MB";
             }
 
-            if (diskSpace > oneKilobyte)
+            if (diskSpace > BytesInOneKilobyte)
             {
-                return $"{diskSpace / oneKilobyte:n0}KB";
+                return $"{diskSpace / BytesInOneKilobyte:n0}KB";
             }
 
             return $"{diskSpace:n0}bytes";
@@ -987,12 +985,12 @@ namespace BackupManager
         /// </summary>
         /// <param name="size"></param>
         /// <returns></returns>
-        public static string RandomString(ulong size)
+        public static string RandomString(long size)
         {
             StringBuilder builder = new StringBuilder();
             Random random = new Random();
             char ch;
-            for (ulong i = 0; i < size; i++)
+            for (long i = 0; i < size; i++)
             {
                 ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
                 builder.Append(ch);
@@ -1027,7 +1025,7 @@ namespace BackupManager
         /// </summary>
         /// <param name="diskSpeed">in bytes per second</param>
         /// <returns>a string like x.yTB/s, xGB/s, xMB/s or xKB/s or bytes/s depending on speed</returns>
-        public static string FormatDiskSpeed(ulong diskSpeed)
+        public static string FormatDiskSpeed(long diskSpeed)
         {
             // if disk speed greater than 1TB/s return x.yTB/s
             // if disk speed greater than 25GB/s return xGB/s
@@ -1037,39 +1035,34 @@ namespace BackupManager
             // if disk speed greater than 1KB/s return xKB/s
             // else return bytes/s
 
-            ulong oneTerabyte = 1099511627776;
-            ulong oneGigabyte = 1073741824;
-            ulong oneMegabyte = 1048576;
-            ulong oneKilobyte = 1024;
-
-            if (diskSpeed > oneTerabyte)
+            if (diskSpeed > BytesInOneTerabyte)
             {
-                return $"{(decimal)diskSpeed / oneTerabyte:0.0}TB/s";
+                return $"{(decimal)diskSpeed / BytesInOneTerabyte:0.0}TB/s";
             }
 
-            if (diskSpeed > (25 * oneGigabyte))
+            if (diskSpeed > (25 * (long)BytesInOneGigabyte))
             {
-                return $"{diskSpeed / oneGigabyte:n0}GB/s";
+                return $"{diskSpeed / BytesInOneGigabyte:n0}GB/s";
             }
 
-            if (diskSpeed > oneGigabyte)
+            if (diskSpeed > BytesInOneGigabyte)
             {
-                return $"{(decimal)diskSpeed / oneGigabyte:0.0}GB/s";
+                return $"{(decimal)diskSpeed / BytesInOneGigabyte:0.0}GB/s";
             }
 
-            if (diskSpeed > (25 * oneMegabyte))
+            if (diskSpeed > (25 * BytesInOneMegabyte))
             {
-                return $"{diskSpeed / oneMegabyte:n0}MB/s";
+                return $"{diskSpeed / BytesInOneMegabyte:n0}MB/s";
             }
 
-            if (diskSpeed > oneMegabyte)
+            if (diskSpeed > BytesInOneMegabyte)
             {
-                return $"{(decimal)diskSpeed / oneMegabyte:0.0}MB/s";
+                return $"{(decimal)diskSpeed / BytesInOneMegabyte:0.0}MB/s";
             }
 
-            if (diskSpeed > oneKilobyte)
+            if (diskSpeed > BytesInOneKilobyte)
             {
-                return $"{diskSpeed / oneKilobyte:n0}KB/s";
+                return $"{diskSpeed / BytesInOneKilobyte:n0}KB/s";
             }
 
             return $"{diskSpeed:n0}bytes/s";
@@ -1082,9 +1075,9 @@ namespace BackupManager
         /// <param name="readSpeed">in bytes per second</param>
         /// <param name="writeSpeed">in bytes per second</param>
         /// <returns></returns>
-        public static bool DiskSpeedTest(string pathToDiskToTest, out ulong readSpeed, out ulong writeSpeed)
+        public static bool DiskSpeedTest(string pathToDiskToTest, out long readSpeed, out long writeSpeed)
         {
-            ulong testFileSize = 200 * 1048576;// in MB
+            long testFileSize = 200 * BytesInOneMegabyte;
             int testIterations = 1;
 
             string tempPath = Path.GetTempPath();
@@ -1094,16 +1087,16 @@ namespace BackupManager
             return true;
         }
 
-        public static ulong DiskSpeedTest(string sourcePath, string destinationPath, ulong testFileSize, int testIterations)
+        public static long DiskSpeedTest(string sourcePath, string destinationPath, long testFileSize, int testIterations)
         {
-            ulong randomStringSize = 200000;
-            int streamWriteBufferSize = 2 * 1048576;
+            long randomStringSize = 200000;
+            int streamWriteBufferSize = 2 * BytesInOneMegabyte;
 
             string randomText = RandomString(randomStringSize);
             double totalPerf;
             DateTime startTime;
             DateTime stopTime;
-            ulong appendIterations = testFileSize / randomStringSize;
+            long appendIterations = testFileSize / randomStringSize;
 
             totalPerf = 0;
 
@@ -1123,13 +1116,13 @@ namespace BackupManager
                 }
 
                 StreamWriter sWriter = new StreamWriter(firstPathFilename, true, Encoding.UTF8, streamWriteBufferSize);
-                for (ulong i = 1; i <= appendIterations; i++)
+                for (long i = 1; i <= appendIterations; i++)
                 {
                     sWriter.Write(randomText);
                 }
                 sWriter.Close();
 
-                testFileSize = (ulong)GetFileLength(firstPathFilename);
+                testFileSize = GetFileLength(firstPathFilename);
 
                 startTime = DateTime.Now;
                 File.Copy(firstPathFilename, secondPathFilename);
@@ -1140,7 +1133,7 @@ namespace BackupManager
                 totalPerf += testFileSize / interval.TotalSeconds;
             }
 
-            return Convert.ToUInt64(totalPerf / testIterations);
+            return Convert.ToInt64(totalPerf / testIterations);
         }
     }
 }

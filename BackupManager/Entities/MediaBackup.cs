@@ -47,22 +47,34 @@
 
         public string PushoverUserKey;
 
-        // Minimum space before we throw a critical Disk space message in GB for MasterFolders
-        public int MinimumCriticalMasterFolderSpace;
+        /// <summary>
+        /// Minimum space before we throw a critical Disk space message in GB for MasterFolders
+        /// </summary>
+        public long MinimumCriticalMasterFolderSpace;
 
-        // Minimum space before we throw a critical Disk space message in GB for backup disks
-        public int MinimumCriticalBackupDiskSpace;
+        /// <summary>
+        /// Minimum space before we throw a critical Disk space message in GB for backup disks
+        /// </summary>
+        public long MinimumCriticalBackupDiskSpace;
 
-        // Minimum space on a backup disk in MB for backup disks
-        public int MinimumFreeSpaceToLeaveOnBackupDrive;
+        /// <summary>
+        /// Minimum space on a backup disk in MB for backup disks
+        /// </summary>
+        public long MinimumFreeSpaceToLeaveOnBackupDrive;
 
-        //Days To Report Old Backup Disks
+        /// <summary>
+        /// Days To Report Old Backup Disks
+        /// </summary>
         public int DaysToReportOldBackupDisks;
-        
-        // MinimumMasterFolderReadSpeed in MB/s
+
+        /// <summary>
+        /// MinimumMasterFolderReadSpeed in MB/s
+        /// </summary>
         public int MinimumMasterFolderReadSpeed;
 
-        // MinimumMasterFolderWriteSpeed in MB/s
+        /// <summary>
+        /// MinimumMasterFolderWriteSpeed in MB/s
+        /// </summary>
         public int MinimumMasterFolderWriteSpeed;
 
         // We need to store 2 hashes

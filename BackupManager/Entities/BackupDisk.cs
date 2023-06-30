@@ -85,19 +85,19 @@
             // Now scan disk for info;
             long availableSpace;
             long totalBytes;
-            var result = Utils.GetDiskInfo(this.BackupShare, out availableSpace, out totalBytes);
+            var result = Utils.GetDiskInfo(BackupShare, out availableSpace, out totalBytes);
 
             if (!result)
             {
                 return false;
             }
 
-            this.FreeSpace = availableSpace;
-            this.TotalSize = totalBytes;
+            FreeSpace = availableSpace;
+            TotalSize = totalBytes;
 
             IEnumerable<BackupFile> files = backupFiles.Where(p => p.Disk == this.Name);
 
-            this.TotalFiles = files.Count();
+            TotalFiles = files.Count();
 
             return true;
         }
