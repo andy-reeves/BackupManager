@@ -942,43 +942,43 @@ namespace BackupManager
             return GetDiskFreeSpaceEx(folderName, out freespace, out totalBytes, out _);
         }
         /// <summary>
-        /// Formats a string containing a disk size with a suffix
+        /// Formats a string containing a size in bytes with a suitable suffix
         /// </summary>
-        /// <param name="diskSpace">in bytes</param>
-        /// <returns>a string like x.yTB, xGB, xMB or xKB depending on size</returns>
-        public static string FormatDiskSpace(long diskSpace)
+        /// <param name="value">Size in bytes</param>
+        /// <returns>a string like x.yTB, xGB, xMB or xKB depending on the size</returns>
+        public static string FormatSize(long value)
         {
-            if (diskSpace > BytesInOneTerabyte)
+            if (value > BytesInOneTerabyte)
             {
-                return $"{(decimal)diskSpace / BytesInOneTerabyte:0.0}TB";
+                return $"{(decimal)value / BytesInOneTerabyte:0.0}TB";
             }
 
-            if (diskSpace > 25 * (long)BytesInOneGigabyte)
+            if (value > 25 * (long)BytesInOneGigabyte)
             {
-                return $"{diskSpace / BytesInOneGigabyte:n0}GB";
+                return $"{value / BytesInOneGigabyte:n0}GB";
             }
 
-            if (diskSpace > BytesInOneGigabyte)
+            if (value > BytesInOneGigabyte)
             {
-                return $"{(decimal)diskSpace / BytesInOneGigabyte:0.0}GB";
+                return $"{(decimal)value / BytesInOneGigabyte:0.0}GB";
             }
 
-            if (diskSpace > (25 * BytesInOneMegabyte))
+            if (value > (25 * BytesInOneMegabyte))
             {
-                return $"{diskSpace / BytesInOneMegabyte:n0}MB";
+                return $"{value / BytesInOneMegabyte:n0}MB";
             }
 
-            if (diskSpace > BytesInOneMegabyte)
+            if (value > BytesInOneMegabyte)
             {
-                return $"{(decimal)diskSpace / BytesInOneMegabyte:0.0}MB";
+                return $"{(decimal)value / BytesInOneMegabyte:0.0}MB";
             }
 
-            if (diskSpace > BytesInOneKilobyte)
+            if (value > BytesInOneKilobyte)
             {
-                return $"{diskSpace / BytesInOneKilobyte:n0}KB";
+                return $"{value / BytesInOneKilobyte:n0}KB";
             }
 
-            return $"{diskSpace:n0}bytes";
+            return $"{value:n0}bytes";
         }
         /// <summary>
         /// Generates a random character string for the size provided.
@@ -1021,11 +1021,11 @@ namespace BackupManager
         }
 
         /// <summary>
-        /// Formats a string containing a disk speed with a suitable suffix
+        /// Formats a string containing a speed with a suitable suffix
         /// </summary>
-        /// <param name="diskSpeed">in bytes per second</param>
+        /// <param name="value">in bytes per second</param>
         /// <returns>a string like x.yTB/s, xGB/s, xMB/s or xKB/s or bytes/s depending on speed</returns>
-        public static string FormatDiskSpeed(long diskSpeed)
+        public static string FormatSpeed(long value)
         {
             // if disk speed greater than 1TB/s return x.yTB/s
             // if disk speed greater than 25GB/s return xGB/s
@@ -1035,37 +1035,37 @@ namespace BackupManager
             // if disk speed greater than 1KB/s return xKB/s
             // else return bytes/s
 
-            if (diskSpeed > BytesInOneTerabyte)
+            if (value > BytesInOneTerabyte)
             {
-                return $"{(decimal)diskSpeed / BytesInOneTerabyte:0.0}TB/s";
+                return $"{(decimal)value / BytesInOneTerabyte:0.0}TB/s";
             }
 
-            if (diskSpeed > (25 * (long)BytesInOneGigabyte))
+            if (value > (25 * (long)BytesInOneGigabyte))
             {
-                return $"{diskSpeed / BytesInOneGigabyte:n0}GB/s";
+                return $"{value / BytesInOneGigabyte:n0}GB/s";
             }
 
-            if (diskSpeed > BytesInOneGigabyte)
+            if (value > BytesInOneGigabyte)
             {
-                return $"{(decimal)diskSpeed / BytesInOneGigabyte:0.0}GB/s";
+                return $"{(decimal)value / BytesInOneGigabyte:0.0}GB/s";
             }
 
-            if (diskSpeed > (25 * BytesInOneMegabyte))
+            if (value > (25 * BytesInOneMegabyte))
             {
-                return $"{diskSpeed / BytesInOneMegabyte:n0}MB/s";
+                return $"{value / BytesInOneMegabyte:n0}MB/s";
             }
 
-            if (diskSpeed > BytesInOneMegabyte)
+            if (value > BytesInOneMegabyte)
             {
-                return $"{(decimal)diskSpeed / BytesInOneMegabyte:0.0}MB/s";
+                return $"{(decimal)value / BytesInOneMegabyte:0.0}MB/s";
             }
 
-            if (diskSpeed > BytesInOneKilobyte)
+            if (value > BytesInOneKilobyte)
             {
-                return $"{diskSpeed / BytesInOneKilobyte:n0}KB/s";
+                return $"{value / BytesInOneKilobyte:n0}KB/s";
             }
 
-            return $"{diskSpeed:n0}bytes/s";
+            return $"{value:n0}bytes/s";
         }
 
         /// <summary>

@@ -135,7 +135,7 @@ namespace BackupManager
 
             Utils.DiskSpeedTest(folderToCheck, out readSpeed, out writeSpeed);
 
-            string text = $"Name: {disk.Name}\nTotal: {disk.TotalSizeFormatted}\nFree: {disk.FreespaceFormatted}\nRead: {Utils.FormatDiskSpeed(readSpeed)}\nWrite: {Utils.FormatDiskSpeed(writeSpeed)}";
+            string text = $"Name: {disk.Name}\nTotal: {disk.TotalSizeFormatted}\nFree: {disk.FreespaceFormatted}\nRead: {Utils.FormatSpeed(readSpeed)}\nWrite: {Utils.FormatSpeed(writeSpeed)}";
 
             Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                   mediaBackup.PushoverAppToken,
@@ -369,7 +369,7 @@ namespace BackupManager
                                   mediaBackup.PushoverAppToken,
                                   logFile,
                                   BackupAction.BackupFiles,
-                                  $"{totalFileCount:n0} files to backup at {Utils.FormatDiskSpace(sizeOfFiles)}"
+                                  $"{totalFileCount:n0} files to backup at {Utils.FormatSize(sizeOfFiles)}"
                                  );
 
             bool outOfDiskSpaceMessageSent = false;
@@ -390,7 +390,7 @@ namespace BackupManager
                     string destinationFileName = Path.Combine(insertedBackupDrive, backupFile.IndexFolder, backupFile.RelativePath);
                     string sourceFileName = backupFile.FullPath;
                     FileInfo sourceFileInfo = new FileInfo(sourceFileName);
-                    string sourceFileSize = Utils.FormatDiskSpace(sourceFileInfo.Length);
+                    string sourceFileSize = Utils.FormatSize(sourceFileInfo.Length);
 
                     if (File.Exists(destinationFileName))
                     {
@@ -415,7 +415,7 @@ namespace BackupManager
                                                       mediaBackup.PushoverAppToken,
                                                       logFile,
                                                       BackupAction.BackupFiles,
-                                                      $"[{fileCounter}/{totalFileCount}] {Utils.FormatDiskSpace(availableSpace)} free.\nCopying {sourceFileName} at {sourceFileSize}"
+                                                      $"[{fileCounter}/{totalFileCount}] {Utils.FormatSize(availableSpace)} free.\nCopying {sourceFileName} at {sourceFileSize}"
                                                       );
 
                                 Directory.CreateDirectory(Path.GetDirectoryName(destinationFileName));
@@ -424,7 +424,7 @@ namespace BackupManager
                                 File.Copy(sourceFileName, destinationFileName);
                                 DateTime endTime = DateTime.UtcNow;
 
-                                string copySpeed = Utils.FormatDiskSpeed(Convert.ToInt64(sourceFileInfo.Length / (endTime - startTime).TotalSeconds));
+                                string copySpeed = Utils.FormatSpeed(Convert.ToInt64(sourceFileInfo.Length / (endTime - startTime).TotalSeconds));
 
                                 Utils.Log(logFile, $"Copy complete at {copySpeed}");
 
@@ -444,7 +444,7 @@ namespace BackupManager
                                                           mediaBackup.PushoverAppToken,
                                                           logFile,
                                                           BackupAction.BackupFiles,
-                                                          $"[{fileCounter}/{totalFileCount}] {Utils.FormatDiskSpace(availableSpace)} free. Skipping {sourceFileName} as not enough free space for {sourceFileSize}"
+                                                          $"[{fileCounter}/{totalFileCount}] {Utils.FormatSize(availableSpace)} free. Skipping {sourceFileName} as not enough free space for {sourceFileSize}"
                                                           );
                                     outOfDiskSpaceMessageSent = true;
                                 }
@@ -495,7 +495,7 @@ namespace BackupManager
                                       mediaBackup.PushoverAppToken,
                                       logFile,
                                       BackupAction.BackupFiles,
-                                      $"{filesStillNotOnBackupDisk.Count():n0} files still to backup at {Utils.FormatDiskSpace(sizeOfFiles)}"
+                                      $"{filesStillNotOnBackupDisk.Count():n0} files still to backup at {Utils.FormatSize(sizeOfFiles)}"
                                       );
             }
 
@@ -567,7 +567,7 @@ namespace BackupManager
 
             foreach (BackupFile file in filesNotOnBackupDisk)
             {
-                Utils.Log(logFile, $"{file.FullPath} at {Utils.FormatDiskSpace(file.Length)}");
+                Utils.Log(logFile, $"{file.FullPath} at {Utils.FormatSize(file.Length)}");
             }
         }
 
@@ -646,10 +646,10 @@ namespace BackupManager
                     Utils.GetDiskInfo(masterFolder, out freeSpaceOnCurrentMasterFolder, out totalBytesOnMasterFolderDisk);
                     Utils.DiskSpeedTest(masterFolder, out readSpeed, out writeSpeed);
 
-                    string totalBytesOnMasterFolderDiskFormatted = Utils.FormatDiskSpace(totalBytesOnMasterFolderDisk);
-                    string freeSpaceOnCurrentMasterFolderFormatted = Utils.FormatDiskSpace(freeSpaceOnCurrentMasterFolder);
-                    string readSpeedFormatted = Utils.FormatDiskSpeed(readSpeed);
-                    string writeSpeedFormatted = Utils.FormatDiskSpeed(writeSpeed);
+                    string totalBytesOnMasterFolderDiskFormatted = Utils.FormatSize(totalBytesOnMasterFolderDisk);
+                    string freeSpaceOnCurrentMasterFolderFormatted = Utils.FormatSize(freeSpaceOnCurrentMasterFolder);
+                    string readSpeedFormatted = Utils.FormatSpeed(readSpeed);
+                    string writeSpeedFormatted = Utils.FormatSpeed(writeSpeed);
 
                     string text = $"{masterFolder}\nTotal: {totalBytesOnMasterFolderDiskFormatted}\nFree: {freeSpaceOnCurrentMasterFolderFormatted}\nRead: {readSpeedFormatted}\nWrite: {writeSpeedFormatted}";
 
@@ -667,7 +667,7 @@ namespace BackupManager
                                          logFile,
                                          BackupAction.ScanFolders,
                                          PushoverPriority.High,
-                                         $"Read speed is below MinimumCritical of {Utils.FormatDiskSpeed(Utils.ConvertMBtoBytes(mediaBackup.MinimumMasterFolderReadSpeed))}"
+                                         $"Read speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.MinimumMasterFolderReadSpeed))}"
                                          );
                     }
 
@@ -678,7 +678,7 @@ namespace BackupManager
                                          logFile,
                                          BackupAction.ScanFolders,
                                          PushoverPriority.High,
-                                         $"Write speed is below MinimumCritical of {Utils.FormatDiskSpeed(Utils.ConvertMBtoBytes(mediaBackup.MinimumMasterFolderWriteSpeed))}"
+                                         $"Write speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.MinimumMasterFolderWriteSpeed))}"
                                          );
                     }
 
@@ -967,7 +967,7 @@ namespace BackupManager
                                   mediaBackup.PushoverAppToken,
                                   logFile,
                                   BackupAction.ScanFolders,
-                                  $"{totalFiles:n0} files at {Utils.FormatDiskSpace(totalFileSize)}");
+                                  $"{totalFiles:n0} files at {Utils.FormatSize(totalFileSize)}");
 
             BackupFile oldestFile = mediaBackup.GetOldestFile();
 
@@ -986,7 +986,7 @@ namespace BackupManager
                                   mediaBackup.PushoverAppToken,
                                   logFile,
                                   BackupAction.ScanFolders,
-                                  $"{filesNotOnBackupDisk.Count():n0} files to backup at { Utils.FormatDiskSpace(fileSizeToCopy)}");
+                                  $"{filesNotOnBackupDisk.Count():n0} files to backup at { Utils.FormatSize(fileSizeToCopy)}");
 
             Utils.LogWithPushover(mediaBackup.PushoverUserKey, mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "Completed");
         }
@@ -1137,7 +1137,7 @@ namespace BackupManager
             long readSpeed, writeSpeed;
 
             Utils.DiskSpeedTest(masterFolder, out readSpeed, out writeSpeed);
-            Utils.Log(logFile, $"testing {masterFolder}, Read: {Utils.FormatDiskSpeed(readSpeed)} Write: {Utils.FormatDiskSpeed(writeSpeed)}");
+            Utils.Log(logFile, $"testing {masterFolder}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
 
             Utils.Log(logFile, $"Listing files in master folder {masterFolder}");
 
@@ -1441,7 +1441,7 @@ namespace BackupManager
             long totalDiskSpace = mediaBackup.BackupDisks.Sum(p => p.TotalSize);
             long totalFreespace = mediaBackup.BackupDisks.Sum(p => p.FreeSpace);
 
-            Utils.Log(logFile, $"Total avialable storage is {Utils.FormatDiskSpace(totalDiskSpace)} with {Utils.FormatDiskSpace(totalFreespace)} free");
+            Utils.Log(logFile, $"Total avialable storage is {Utils.FormatSize(totalDiskSpace)} with {Utils.FormatSize(totalFreespace)} free");
         }
 
         private void speedTestButton_Click(object sender, EventArgs e)
@@ -1457,7 +1457,7 @@ namespace BackupManager
                 if (Utils.IsFolderWritable(masterFolder))
                 {
                     Utils.DiskSpeedTest(masterFolder, out readSpeed, out writeSpeed);
-                    Utils.Log(logFile, $"testing {masterFolder}, Read: {Utils.FormatDiskSpeed(readSpeed)} Write: {Utils.FormatDiskSpeed(writeSpeed)}");
+                    Utils.Log(logFile, $"testing {masterFolder}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
                 }
             }
         }

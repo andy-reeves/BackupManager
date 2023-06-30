@@ -38,10 +38,10 @@
         public string BackupPath { get => Path.Combine(this.BackupShare, this.Name); }
 
         [XmlIgnore]
-        public string TotalSizeFormatted { get => Utils.FormatDiskSpace(TotalSize); }
+        public string TotalSizeFormatted { get => Utils.FormatSize(TotalSize); }
 
         [XmlIgnore]
-        public string FreespaceFormatted { get => Utils.FormatDiskSpace(FreeSpace); }
+        public string FreespaceFormatted { get => Utils.FormatSize(FreeSpace); }
 
         public BackupDisk()
         {
