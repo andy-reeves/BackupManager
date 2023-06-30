@@ -17,9 +17,9 @@
 		public string DiskChecked;
 
         /// <summary>
-        /// Total size of the disk
+        /// Capacity of the disk in bytes
         /// </summary>
-		public long TotalSize;
+		public long Capacity;
 
         /// <summary>
         /// Total number of files on the disk
@@ -27,21 +27,21 @@
 		public long TotalFiles;
 
         /// <summary>
-        /// Total freespace on the disk
+        /// Available space on the disk in bytes
         /// </summary>
-		public long FreeSpace;
+		public long AvailableSpace;
 
         [XmlIgnore]
         public string BackupShare;
 
         [XmlIgnore]
-        public string BackupPath { get => Path.Combine(this.BackupShare, this.Name); }
+        public string BackupPath { get => Path.Combine(BackupShare, Name); }
 
         [XmlIgnore]
-        public string TotalSizeFormatted { get => Utils.FormatSize(TotalSize); }
+        public string CapacityFormatted { get => Utils.FormatSize(Capacity); }
 
         [XmlIgnore]
-        public string FreespaceFormatted { get => Utils.FormatSize(FreeSpace); }
+        public string AvailableSpaceFormatted { get => Utils.FormatSize(AvailableSpace); }
 
         public BackupDisk()
         {
@@ -92,10 +92,10 @@
                 return false;
             }
 
-            FreeSpace = availableSpace;
-            TotalSize = totalBytes;
+            AvailableSpace = availableSpace;
+            Capacity = totalBytes;
 
-            IEnumerable<BackupFile> files = backupFiles.Where(p => p.Disk == this.Name);
+            IEnumerable<BackupFile> files = backupFiles.Where(p => p.Disk == Name);
 
             TotalFiles = files.Count();
 
