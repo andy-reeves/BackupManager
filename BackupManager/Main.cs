@@ -1162,8 +1162,8 @@ namespace BackupManager
 
             int numberOfDays = mediaBackup.DaysToReportOldBackupDisks;
 
-            IEnumerable<BackupFile> files =
-                mediaBackup.BackupFiles.Where(p => p.DiskChecked != null && DateTime.Parse(p.DiskChecked).AddDays(numberOfDays) < DateTime.Today);
+            IEnumerable<BackupFile> files = mediaBackup.BackupFiles.Where(p => p.DiskChecked.HasValue() &&
+                                            DateTime.Parse(p.DiskChecked).AddDays(numberOfDays) < DateTime.Today);
 
             IEnumerable<BackupFile> disks = files.GroupBy(p => p.Disk).Select(p => p.First());
 
@@ -1227,7 +1227,7 @@ namespace BackupManager
                 }
                 string targetMasterFolder = restoreMasterFolderComboBox.SelectedItem.ToString();
 
-                IEnumerable<BackupFile> files = mediaBackup.GetBackupFilesInMasterFolder(masterFolder).Where(p => p.Disk != null);
+                IEnumerable<BackupFile> files = mediaBackup.GetBackupFilesInMasterFolder(masterFolder).Where(p => p.Disk.HasValue());
 
                 Utils.Log(logFile, $"Restoring files from master folder {masterFolder}");
                 Utils.Log(logFile, $"Restoring files to target master folder {targetMasterFolder}");
