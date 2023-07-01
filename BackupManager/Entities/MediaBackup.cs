@@ -340,7 +340,7 @@
         /// <returns></returns>
         public IEnumerable<BackupFile> GetBackupFilesOnBackupDisk(string diskName)
         {
-            return BackupFiles.Where(p => p.Disk.Equals(diskName, StringComparison.CurrentCultureIgnoreCase));
+            return BackupFiles.Where(p =>p.Disk.HasValue() && p.Disk.Equals(diskName, StringComparison.CurrentCultureIgnoreCase));
         }
 
         /// <summary>
