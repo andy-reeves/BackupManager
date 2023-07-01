@@ -126,14 +126,6 @@ namespace BackupManager
 
             string folderToCheck = disk.BackupPath;
 
-            // reset the filters because we want to search for all extra files
-            string filters = "*";
-
-            IEnumerable<BackupFile> filesToReset =
-                mediaBackup.BackupFiles.Where(
-                    p =>
-                    p.Disk != null && p.Disk.Equals(disk.Name, StringComparison.CurrentCultureIgnoreCase));
-
             long readSpeed, writeSpeed;
 
             Utils.DiskSpeedTest(folderToCheck, DiskSpeedTestFileSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
@@ -156,6 +148,8 @@ namespace BackupManager
                                       $"{disk.FreeFormatted} free is very low. Prepare new backup disk");
             }
 
+            IEnumerable<BackupFile> filesToReset = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name);
+
             foreach (BackupFile file in filesToReset)
             {
                 file.ClearDiskChecked();
@@ -163,7 +157,7 @@ namespace BackupManager
 
             string[] backupDiskFiles = Utils.GetFiles(
                 folderToCheck,
-                filters,
+                "*",
                 SearchOption.AllDirectories,
                 FileAttributes.Hidden);
 
@@ -1118,7 +1112,7 @@ namespace BackupManager
                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
                "backup_ListFilesOnBackupDisk.txt");
 
-            IEnumerable<BackupFile> files = mediaBackup.BackupFiles.Where(p => p.Disk == listFilesTextBox.Text);
+            IEnumerable<BackupFile> files = mediaBackup.GetBackupFilesOnBackupDisk(listFilesTextBox.Text);
 
             Utils.Log(LogFile, $"Listing files on backup disk {listFilesTextBox.Text}");
 
@@ -1136,7 +1130,8 @@ namespace BackupManager
 
             string masterFolder = this.masterFoldersComboBox.SelectedItem.ToString();
 
-            IEnumerable<BackupFile> files = mediaBackup.BackupFiles.Where(p => p.MasterFolder == masterFolder).OrderBy(q => q.BackupDiskNumber);
+            IEnumerable<BackupFile> files = mediaBackup.GetBackupFilesInMasterFolder(masterFolder);
+            
             long readSpeed, writeSpeed;
 
             Utils.DiskSpeedTest(masterFolder, DiskSpeedTestFileSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
@@ -1232,8 +1227,7 @@ namespace BackupManager
                 }
                 string targetMasterFolder = restoreMasterFolderComboBox.SelectedItem.ToString();
 
-                IEnumerable<BackupFile> files =
-                    mediaBackup.BackupFiles.Where(p => p.MasterFolder == masterFolder && p.Disk != null).OrderBy(q => q.BackupDiskNumber);
+                IEnumerable<BackupFile> files = mediaBackup.GetBackupFilesInMasterFolder(masterFolder).Where(p => p.Disk != null);
 
                 Utils.Log(logFile, $"Restoring files from master folder {masterFolder}");
                 Utils.Log(logFile, $"Restoring files to target master folder {targetMasterFolder}");
@@ -1370,9 +1364,9 @@ namespace BackupManager
 
                     if (movieFilename.StartsWith(movieFolderName) && movieFilename.Contains("{tmdb-") && movieFilename.EndsWith(".mkv"))
                     {
-                        IEnumerable<BackupFile> otherFiles =
-                    mediaBackup.BackupFiles.Where(p => p.RelativePath.StartsWith(movieFolderName + "\\" + movieFolderName) &&
-                    p.RelativePath != file.RelativePath && p.RelativePath.EndsWith(".mkv"));
+                        IEnumerable<BackupFile> otherFiles = mediaBackup.BackupFiles.Where(p => p.RelativePath.StartsWith(movieFolderName + "\\" + movieFolderName)
+                        && p.RelativePath != file.RelativePath
+                        && p.RelativePath.EndsWith(".mkv"));
 
                         foreach (BackupFile additionalFile in otherFiles)
                         {

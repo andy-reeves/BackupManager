@@ -285,6 +285,11 @@
             return backupFile;
         }
 
+        /// <summary>
+        /// Get a BackupDisk for the current backupShare
+        /// </summary>
+        /// <param name="backupShare"></param>
+        /// <returns></returns>
         public BackupDisk GetBackupDisk(string backupShare)
         {
             // try and find a disk based on the diskname only
@@ -328,6 +333,30 @@
             return BackupFiles.Where(p => string.IsNullOrEmpty(p.DiskChecked));
         }
 
+        /// <summary>
+        /// Get BackupFiles on the diskName provided.
+        /// </summary>
+        /// <param name="diskName"></param>
+        /// <returns></returns>
+        public IEnumerable<BackupFile> GetBackupFilesOnBackupDisk(string diskName)
+        {
+            return BackupFiles.Where(p => p.Disk.Equals(diskName, StringComparison.CurrentCultureIgnoreCase));
+        }
+
+        /// <summary>
+        /// Get BackupFiles that are in the MasterFolder provided
+        /// </summary>
+        /// <param name="masterFolder"></param>
+        /// <returns></returns>
+        public IEnumerable<BackupFile> GetBackupFilesInMasterFolder(string masterFolder)
+        {
+            return BackupFiles.Where(p => p.MasterFolder == masterFolder).OrderBy(q => q.BackupDiskNumber);
+        }
+
+        /// <summary>
+        /// Get BackupFiles where Disk is not null or Empty
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<BackupFile> GetBackupFilesWithDiskEmpty()
         {
             return BackupFiles.Where(p => string.IsNullOrEmpty(p.Disk));
