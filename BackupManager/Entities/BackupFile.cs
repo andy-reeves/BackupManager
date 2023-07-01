@@ -121,14 +121,15 @@
         }
 
         /// <summary>
-        /// A date/time this file was last checked. If this is cleared then the Disk is automatically set to null also.
+        /// A date/time this file was last checked. If this is cleared then the Disk is automatically set to null also. Returns string.Empty if no value
         /// </summary>
         public string DiskChecked
         {
             get
             {
-                return diskChecked;
+                return string.IsNullOrEmpty(diskChecked) ? string.Empty : diskChecked;
             }
+
             set
             {
                 // If you clear the DiskChecked then we automatically clear the Disk property too
@@ -142,14 +143,15 @@
         }
 
         /// <summary>
-        /// The backup disk this file is on or Empty if its not on a backup yet. If this is cleared then the DiskChecked is also cleared.
+        /// The backup disk this file is on or string.Empty if its not on a backup yet. If this is cleared then the DiskChecked is also cleared.
         /// </summary>
         public string Disk
         {
             get
             {
-                return disk;
+                return string.IsNullOrEmpty(disk) ? string.Empty : disk;
             }
+
             set
             {
                 if (string.IsNullOrEmpty(value))
