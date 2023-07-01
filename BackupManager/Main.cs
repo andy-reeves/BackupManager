@@ -15,6 +15,9 @@ namespace BackupManager
 
         private readonly MediaBackup mediaBackup;
 
+        private const int DiskSpeedTestFileSize = 200 * Utils.BytesInOneMegabyte;
+        private const int DiskSpeedTestIterations = 1;
+
         #endregion
 
         #region Constructors and Destructors
@@ -133,7 +136,7 @@ namespace BackupManager
 
             long readSpeed, writeSpeed;
 
-            Utils.DiskSpeedTest(folderToCheck, out readSpeed, out writeSpeed);
+            Utils.DiskSpeedTest(folderToCheck, DiskSpeedTestFileSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
 
             string text = $"Name: {disk.Name}\nTotal: {disk.CapacityFormatted}\nFree: {disk.FreeFormatted}\nRead: {Utils.FormatSpeed(readSpeed)}\nWrite: {Utils.FormatSpeed(writeSpeed)}";
 
@@ -644,7 +647,7 @@ namespace BackupManager
                     long freeSpaceOnCurrentMasterFolder;
                     long totalBytesOnMasterFolderDisk;
                     Utils.GetDiskInfo(masterFolder, out freeSpaceOnCurrentMasterFolder, out totalBytesOnMasterFolderDisk);
-                    Utils.DiskSpeedTest(masterFolder, out readSpeed, out writeSpeed);
+                    Utils.DiskSpeedTest(masterFolder, DiskSpeedTestFileSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
 
                     string totalBytesOnMasterFolderDiskFormatted = Utils.FormatSize(totalBytesOnMasterFolderDisk);
                     string freeSpaceOnCurrentMasterFolderFormatted = Utils.FormatSize(freeSpaceOnCurrentMasterFolder);
@@ -979,7 +982,7 @@ namespace BackupManager
                                       mediaBackup.PushoverAppToken,
                                       logFile,
                                       BackupAction.ScanFolders,
-                                      $"Oldest backup date is { DateTime.Today.Subtract(oldestFileDate).Days:n0} day(s) ago at {oldestFileDate.ToShortDateString()} for {oldestFile.GetFileName()} on {oldestFile.Disk}");
+                                      $"Oldest backup date is { DateTime.Today.Subtract(oldestFileDate).Days:n0} day(s) ago at {oldestFileDate.ToShortDateString()} for {oldestFile.FileName} on {oldestFile.Disk}");
             }
 
             Utils.LogWithPushover(mediaBackup.PushoverUserKey,
@@ -1136,7 +1139,7 @@ namespace BackupManager
             IEnumerable<BackupFile> files = mediaBackup.BackupFiles.Where(p => p.MasterFolder == masterFolder).OrderBy(q => q.BackupDiskNumber);
             long readSpeed, writeSpeed;
 
-            Utils.DiskSpeedTest(masterFolder, out readSpeed, out writeSpeed);
+            Utils.DiskSpeedTest(masterFolder, DiskSpeedTestFileSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
             Utils.Log(logFile, $"testing {masterFolder}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
 
             Utils.Log(logFile, $"Listing files in master folder {masterFolder}");
@@ -1456,7 +1459,7 @@ namespace BackupManager
             {
                 if (Utils.IsFolderWritable(masterFolder))
                 {
-                    Utils.DiskSpeedTest(masterFolder, out readSpeed, out writeSpeed);
+                    Utils.DiskSpeedTest(masterFolder, DiskSpeedTestFileSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
                     Utils.Log(logFile, $"testing {masterFolder}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
                 }
             }

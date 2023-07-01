@@ -14,6 +14,12 @@
 
         private string contentsHash;
 
+        private string fileName;
+
+        private string disk;
+
+        private string diskChecked;
+
         /// <summary>
         /// The relative path of the file.
         /// </summary>
@@ -50,10 +56,6 @@
             }
         }
 
-        private string disk;
-
-        private string diskChecked;
-
         /// <summary>
         /// The last modified date/time of the file.
         /// </summary>
@@ -67,6 +69,9 @@
         [XmlIgnore]
         public bool Flag;
 
+        /// <summary>
+        /// The full path to the backup file on the source disk.
+        /// </summary>
         [XmlIgnore()]
         public string FullPath
         {
@@ -115,6 +120,9 @@
             }
         }
 
+        /// <summary>
+        /// A date/time this file was last checked. If this is cleared then the Disk is automatically set to null also.
+        /// </summary>
         public string DiskChecked
         {
             get
@@ -133,6 +141,9 @@
             }
         }
 
+        /// <summary>
+        /// The backup disk this file is on or Empty if its not on a backup yet. If this is cleared then the DiskChecked is also cleared.
+        /// </summary>
         public string Disk
         {
             get
@@ -215,7 +226,7 @@
             return fullPath.SubstringAfter(combinedPath, StringComparison.CurrentCultureIgnoreCase).TrimStart(new[] { '\\' });
         }
         /// <summary>
-        /// Returns a hash of the contents follwed by '-' and then the leafname
+        /// Returns a hash of the contents followed by '-' and then the leafname
         /// </summary>
         /// <param name="hash"></param>
         /// <param name="path"></param>
@@ -225,9 +236,21 @@
             return hash + "-" + Path.GetFileName(path);
         }
 
-        public string GetFileName()
+        /// <summary>
+        /// Returns the filename and extension of the BackupFile.
+        /// </summary>
+        /// <returns>The filename and extension of the file</returns>
+        public string FileName
         {
-            return Path.GetFileName(fullPath);
+            get
+            {
+                if (string.IsNullOrEmpty(fileName))
+                {
+                    fileName = Path.GetFileName(FullPath);
+                }
+
+                return fileName;
+            }
         }
 
         /// <summary>
@@ -250,15 +273,21 @@
         /// <exception cref="ApplicationException"></exception>
         public void UpdateContentsHash()
         {
-            string newContentsHash = Utils.GetShortMd5HashFromFile(FullPath);
-            UpdateContentsHash(newContentsHash);
+            UpdateContentsHash(Utils.GetShortMd5HashFromFile(FullPath));
         }
 
+        /// <summary>
+        /// Updates the LastWriteTime of the file from the file on the source disk. If LastWriteTime isn't set it uses LastAccessTime instead
+        /// </summary>
         public void UpdateLastWriteTime()
         {
             LastWriteTime = Utils.GetFileLastWriteTime(FullPath);
         }
 
+        /// <summary>
+        /// Updates the file length of the file from the source disk. If its 0 then an Exception is thrown.
+        /// </summary>
+        /// <exception cref="ApplicationException"></exception>
         public void UpdateFileLength()
         {
             Length = Utils.GetFileLength(FullPath);
@@ -273,20 +302,17 @@
         /// Checks the files hash at the source location and at the backup location match. Updates DiskChecked accordingly.
         /// </summary>
         /// <param name="disk">The BackupDisk the BackupFile is on</param>
-        /// <exception cref="Exception"></exception>
+        /// <exception cref="ApplicationException"></exception>
         public void CheckContentHashes(BackupDisk disk)
         {
-            string backupDiskFullPath = Path.Combine(disk.BackupPath, IndexFolder, RelativePath);
-            string sourceDiskFullPath = FullPath;
-
-            string hashFromSourceFile = Utils.GetShortMd5HashFromFile(sourceDiskFullPath);
+            string hashFromSourceFile = Utils.GetShortMd5HashFromFile(FullPath);
 
             if (hashFromSourceFile == Utils.ZeroByteHash)
             {
-                throw new Exception($"ERROR: { sourceDiskFullPath } has zerobyte hashcode");
+                throw new Exception($"ERROR: { FullPath} has zerobyte hashcode");
             }
 
-            string hashFrombackupDiskFile = Utils.GetShortMd5HashFromFile(backupDiskFullPath);
+            string hashFrombackupDiskFile = Utils.GetShortMd5HashFromFile(Path.Combine(disk.BackupPath, IndexFolder, RelativePath));
 
             if (hashFrombackupDiskFile == Utils.ZeroByteHash)
             {
@@ -301,7 +327,7 @@
             }
             else
             {
-                throw new Exception($"ERROR: {hashFromSourceFile} and {hashFrombackupDiskFile} have different hashcodes");
+                throw new ApplicationException($"ERROR: {hashFromSourceFile} and {hashFrombackupDiskFile} have different hashcodes");
             }
         }
     }

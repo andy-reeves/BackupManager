@@ -35,34 +35,46 @@ namespace BackupManager
         #region Constants
 
         /// <summary>
-        ///     The end block size.
+        /// The end block size.
         /// </summary>
         private const int EndBlockSize = 16 * BytesInOneKilobyte; // 16K
 
         /// <summary>
-        ///     The middle block size.
+        /// The middle block size.
         /// </summary>
         private const int MiddleBlockSize = 16 * BytesInOneKilobyte; // 16K
 
         /// <summary>
-        ///     The start block size.
+        /// The start block size.
         /// </summary>
         private const int StartBlockSize = 16 * BytesInOneKilobyte; // 16K
 
-        public const long BytesInOneTerabyte = 1099511627776;
+        /// <summary>
+        /// The number of bytes in one Terabyte. 2^40 bytes.
+        /// </summary>
+        public const long BytesInOneTerabyte = 1_099_511_627_776;
 
-        public const int BytesInOneGigabyte = 1073741824;
+        /// <summary>
+        /// The number of bytes in one Gigabyte. 2^30 bytes.
+        /// </summary>
+        public const int BytesInOneGigabyte = 1_073_741_824;
 
-        public const int BytesInOneMegabyte = 1048576;
+        /// <summary>
+        /// The number of bytes in one Megabyte. 2^20 bytes.
+        /// </summary>
+        public const int BytesInOneMegabyte = 1_048_576;
 
-        public const int BytesInOneKilobyte = 1024;
+        /// <summary>
+        /// The number of bytes in one Kilobyte. 2^10 bytes.
+        /// </summary>
+        public const int BytesInOneKilobyte = 1_024;
 
         #endregion
 
         #region Static Fields
 
         /// <summary>
-        ///     This is the Hash for a file containing 48K of only zero bytes.
+        /// This is the Hash for a file containing 48K of only zero bytes.
         /// </summary>
         public static string ZeroByteHash = "f4f35d60b3cc18aaa6d8d92f0cd3708a";
 
@@ -70,8 +82,6 @@ namespace BackupManager
         /// The md 5.
         /// </summary>
         private static readonly MD5CryptoServiceProvider Md5 = new MD5CryptoServiceProvider();
-
-
 
         #endregion
 
@@ -194,7 +204,7 @@ namespace BackupManager
         }
 
         /// <summary>
-        /// The get files.
+        /// Returns all the files in the path provided.
         /// </summary>
         /// <param name="path">
         /// The path.
@@ -299,15 +309,6 @@ namespace BackupManager
             FileAttributes directoryAttributesToIgnore,
             FileAttributes fileAttributesToIgnore)
         {
-#if DEBUG
-            string logFile = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-            "backup_BuildMasterFileList.txt");
-
-
-            Log(logFile, $"Enter GetFiles with {path}");
-#endif
-
             if (!Directory.Exists(path))
             {
                 return new string[] { };
@@ -367,9 +368,6 @@ namespace BackupManager
 
                 foreach (string filter in include)
                 {
-#if DEBUG  
-                    // Log(logFile, $"Checking {dir} with {filter} filter");
-#endif
                     string[] allfiles = Directory.GetFiles(dir, filter, SearchOption.TopDirectoryOnly);
 
                     IEnumerable<string> collection = exclude.Any()
@@ -381,15 +379,11 @@ namespace BackupManager
                 }
             }
 
-#if DEBUG
-            Log(logFile, $"Exit GetFiles with {path}");
-#endif
-
             return foundFiles.ToArray();
         }
 
         /// <summary>
-        /// The get hash from file.
+        /// The hash from file.
         /// </summary>
         /// <param name="fileName">
         /// The file name.
@@ -500,7 +494,6 @@ namespace BackupManager
 
         public static DateTime GetFileLastWriteTime(string fileName)
         {
-            // Sometimes the file doesn't have a valid LastWriteTime 
             FileInfo fileInfo = new FileInfo(fileName);
 
             DateTime returnValue;
@@ -511,6 +504,7 @@ namespace BackupManager
             }
             catch (ArgumentOutOfRangeException)
             {
+                // Sometimes the file doesn't have a valid LastWriteTime 
                 //If we cant read the LastWriteTime then copy the LastAccessTime over it and use that instead
                 fileInfo.LastWriteTime = fileInfo.LastAccessTime;
                 returnValue = fileInfo.LastWriteTime;
@@ -925,10 +919,7 @@ namespace BackupManager
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
         public static bool GetDiskInfo(string folderName, out long freespace, out long totalBytes)
-        {
-            freespace = 0;
-            totalBytes = 0;
-
+        { 
             if (string.IsNullOrEmpty(folderName))
             {
                 throw new ArgumentNullException("folderName");
@@ -941,6 +932,7 @@ namespace BackupManager
 
             return GetDiskFreeSpaceEx(folderName, out freespace, out totalBytes, out _);
         }
+
         /// <summary>
         /// Formats a string containing a size in bytes with a suitable suffix
         /// </summary>
@@ -980,6 +972,7 @@ namespace BackupManager
 
             return $"{value:n0}bytes";
         }
+
         /// <summary>
         /// Generates a random character string for the size provided.
         /// </summary>
@@ -1002,7 +995,7 @@ namespace BackupManager
         /// Checks the folder is writeable
         /// </summary>
         /// <param name="folderPath"></param>
-        /// <returns>True if writeable else false</returns>
+        /// <returns>True if writeable else False</returns>
         public static bool IsFolderWritable(string folderPath)
         {
             try
@@ -1075,22 +1068,20 @@ namespace BackupManager
         /// <param name="readSpeed">in bytes per second</param>
         /// <param name="writeSpeed">in bytes per second</param>
         /// <returns></returns>
-        public static bool DiskSpeedTest(string pathToDiskToTest, out long readSpeed, out long writeSpeed)
+        public static bool DiskSpeedTest(string pathToDiskToTest, long testFileSize, int testIterations, out long readSpeed, out long writeSpeed)
         {
-            long testFileSize = 200 * BytesInOneMegabyte;
-            int testIterations = 1;
-
             string tempPath = Path.GetTempPath();
 
             readSpeed = DiskSpeedTest(pathToDiskToTest, tempPath, testFileSize, testIterations);
             writeSpeed = DiskSpeedTest(tempPath, pathToDiskToTest, testFileSize, testIterations);
+
             return true;
         }
 
         public static long DiskSpeedTest(string sourcePath, string destinationPath, long testFileSize, int testIterations)
         {
-            long randomStringSize = 200000;
-            int streamWriteBufferSize = 2 * BytesInOneMegabyte;
+            long randomStringSize = 500_000;
+            int streamWriteBufferSize = 20 * BytesInOneMegabyte;
 
             string randomText = RandomString(randomStringSize);
             double totalPerf;
@@ -1115,20 +1106,23 @@ namespace BackupManager
                     File.Delete(secondPathFilename);
                 }
 
-                StreamWriter sWriter = new StreamWriter(firstPathFilename, true, Encoding.UTF8, streamWriteBufferSize);
-                for (long i = 1; i <= appendIterations; i++)
+                using (StreamWriter sWriter = new StreamWriter(firstPathFilename, true, Encoding.UTF8, streamWriteBufferSize))
                 {
-                    sWriter.Write(randomText);
+                    for (long i = 1; i <= appendIterations; i++)
+                    {
+                        sWriter.Write(randomText);
+                    }
                 }
-                sWriter.Close();
 
                 testFileSize = GetFileLength(firstPathFilename);
 
                 startTime = DateTime.Now;
                 File.Copy(firstPathFilename, secondPathFilename);
                 stopTime = DateTime.Now;
+
                 File.Delete(firstPathFilename);
                 File.Delete(secondPathFilename);
+
                 TimeSpan interval = stopTime - startTime;
                 totalPerf += testFileSize / interval.TotalSeconds;
             }

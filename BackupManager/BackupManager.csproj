@@ -69,7 +69,6 @@
     </Compile>
     <Compile Include="Entities\MediaBackup.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Prompt.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PushoverExpires.cs" />
     <Compile Include="PushoverPriority.cs" />

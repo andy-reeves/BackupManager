@@ -197,9 +197,9 @@
         }
 
         /// <summary>
-        /// 
+        /// Gets a BackupFile representing the file at fullPath
         /// </summary>
-        /// <param name="fullPath">Full fullPath.</param>
+        /// <param name="fullPath">The fullPath to the file.</param>
         /// <param name="masterFolder"></param>
         /// <param name="indexFolder"></param>
         /// <returns></returns>
@@ -285,22 +285,6 @@
             return backupFile;
         }
 
-        public BackupFile GetBackupFile(string fileName)
-        {
-            // try and find a file based on the filename only
-            // if more than 1 file than return the first one
-
-            foreach (BackupFile backupFile in BackupFiles)
-            {
-                if (backupFile.GetFileName().StartsWith(fileName))
-                {
-                    return backupFile;
-                }
-            }
-
-            return null;
-        }
-
         public BackupDisk GetBackupDisk(string backupShare)
         {
             // try and find a disk based on the diskname only
@@ -326,16 +310,17 @@
             return disk;
         }
 
+        /// <summary>
+        /// Gets a BackupFile from the hash and path provided.
+        /// </summary>
+        /// <param name="hash"></param>
+        /// <param name="path"></param>
+        /// <returns>Null if it doen't exist.</returns>
         public BackupFile GetBackupFile(string hash, string path)
         {
             string hashKey = BackupFile.GetFileHash(hash, path);
 
-            if (hashesAndFileNames.Contains(hashKey))
-            {
-                return (BackupFile)hashesAndFileNames[hashKey];
-            }
-
-            return null;
+            return hashesAndFileNames.Contains(hashKey) ? (BackupFile)hashesAndFileNames[hashKey] : null;
         }
 
         public IEnumerable<BackupFile> GetBackupFilesWithDiskCheckedEmpty()
@@ -348,10 +333,15 @@
             return BackupFiles.Where(p => string.IsNullOrEmpty(p.Disk));
         }
 
+        /// <summary>
+        /// Returns True if this hash and path exist already
+        /// </summary>
+        /// <param name="hash"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public bool Contains(string hash, string path)
         {
-            string hashKey = BackupFile.GetFileHash(hash, path);
-            return hashesAndFileNames.Contains(hashKey);
+            return hashesAndFileNames.Contains(BackupFile.GetFileHash(hash, path));
         }
 
         public void ClearFlags()
@@ -361,6 +351,7 @@
                 backupFile.Flag = false;
             }
         }
+
         /// Removes any files that have a matching flag value as the one provided.
         public void RemoveFilesWithFlag(bool flag, bool clearHashes)
         {

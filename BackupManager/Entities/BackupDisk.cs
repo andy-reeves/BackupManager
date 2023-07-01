@@ -9,10 +9,13 @@
 
     public class BackupDisk
     {
+        /// <summary>
+        /// The name of the backup disk and the main folder on the disk. Typically like 'backup 23'
+        /// </summary>
         public string Name;
 
         /// <summary>
-        /// Date the disk was last scanned
+        /// Date the disk was last scanned and checked
         /// </summary>
 		public string Checked;
 
@@ -31,15 +34,27 @@
         /// </summary>
 		public long Free;
 
+        /// <summary>
+        /// The current backup share. Typically like '\\media\backup'
+        /// </summary>
         [XmlIgnore]
         public string BackupShare;
 
+        /// <summary>
+        /// The full path to the main backup folder. Typically like '\\media\backup\backup23'
+        /// </summary>
         [XmlIgnore]
         public string BackupPath { get => Path.Combine(BackupShare, Name); }
 
+        /// <summary>
+        /// The capacilty of the disk formatted for display like '12.6TB'
+        /// </summary>
         [XmlIgnore]
         public string CapacityFormatted { get => Utils.FormatSize(Capacity); }
 
+        /// <summary>
+        /// Thge free space of the disk formatted for display like '1.2GB'
+        /// </summary>
         [XmlIgnore]
         public string FreeFormatted { get => Utils.FormatSize(Free); }
 
@@ -56,7 +71,7 @@
         }
 
         /// <summary>
-        /// Gets the number only of this disk
+        /// Gets the number only of this disk. Typically used for sorting disk lists.
         /// </summary>
         [XmlIgnore()]
         public int Number
@@ -71,7 +86,7 @@
         }
 
         /// <summary>
-        /// Updates the file count on this disk and the total and freespace.
+        /// Updates the file count on this disk and the total and free space.
         /// </summary>
         /// <param name="backupFiles"></param>
         /// <returns></returns>
@@ -102,6 +117,11 @@
             return true;
         }
 
+        /// <summary>
+        /// Gets the backup folder name from the sharePath provided
+        /// </summary>
+        /// <param name="sharePath">The path to the backyup disk</param>
+        /// <returns>The backup folder name or null if it couldn't be determined.</returns>
         public static string GetBackupFolderName(string sharePath)
         {
             if (string.IsNullOrEmpty(sharePath)) return null;
@@ -123,7 +143,8 @@
             {
                 return null;
             }
-            var firstDirectory = directoriesInRootFolder.Single();
+
+            DirectoryInfo firstDirectory = directoriesInRootFolder.Single();
 
             if (!firstDirectory.Name.StartsWith("backup ", StringComparison.CurrentCultureIgnoreCase))
             {
@@ -133,6 +154,11 @@
             return firstDirectory.Name;
         }
 
+        /// <summary>
+        /// Returns True if the sharePath contains a valid backup folder like 'backup 23'.
+        /// </summary>
+        /// <param name="sharePath">The path to the backup share folder</param>
+        /// <returns>False is the sharePath doesn't contain a valid folder.</returns>
         public static bool CheckForValidBackupShare(string sharePath)
         {
             return !string.IsNullOrEmpty(GetBackupFolderName(sharePath));
