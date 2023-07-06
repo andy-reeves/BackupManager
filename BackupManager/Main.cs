@@ -146,6 +146,8 @@ namespace BackupManager
 
             string text = $"Name: {disk.Name}\nTotal: {disk.CapacityFormatted}\nFree: {disk.FreeFormatted}\nRead: {Utils.FormatSpeed(readSpeed)}\nWrite: {Utils.FormatSpeed(writeSpeed)}";
 
+            bool diskInfoMessageWasTheLastSent = true;
+
             Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                   mediaBackup.PushoverAppToken,
                                   logFile,
@@ -195,6 +197,8 @@ namespace BackupManager
                                  logFile,
                                  BackupAction.CheckBackupDisk, PushoverPriority.High,
                                  $"There was an error with the hashcodes on the source and backup disk. Its likely the sourcefile has changed since the last backup of {backupFile.FullPath}");
+
+                        diskInfoMessageWasTheLastSent = false;
                     }
                     else
                     {
@@ -211,13 +215,16 @@ namespace BackupManager
 
                             Directory.CreateDirectory(Path.GetDirectoryName(destinationFileName));
                             Utils.LogWithPushover(mediaBackup.PushoverUserKey,
-                                                  mediaBackup.PushoverAppToken,
+
+                                mediaBackup.PushoverAppToken,
                                                   logFile,
                                                   BackupAction.CheckBackupDisk,
                                                   $"Renaming {backupFileFullPath} to {destinationFileName}"
                                                   );
 
                             File.Move(backupFileFullPath, destinationFileName);
+
+                            diskInfoMessageWasTheLastSent = false;
                         }
                     }
                 }
@@ -234,6 +241,7 @@ namespace BackupManager
 
                         Utils.ClearFileAttribute(backupFileFullPath, FileAttributes.ReadOnly);
                         File.Delete(backupFileFullPath);
+                        diskInfoMessageWasTheLastSent = false;
                     }
                     else
                     {
@@ -242,6 +250,7 @@ namespace BackupManager
                                               logFile,
                                               BackupAction.CheckBackupDisk,
                                               $"Extra file {backupFileFullPath} on backup disk {disk.Name}");
+                        diskInfoMessageWasTheLastSent = false;
                     }
                 }
             }
@@ -265,14 +274,16 @@ namespace BackupManager
 
             mediaBackup.Save();
 
-            text = $"Name: {disk.Name}\nTotal: {disk.CapacityFormatted}\nFree: {disk.FreeFormatted}\nFiles: {disk.TotalFiles:n0}";
+            if (!diskInfoMessageWasTheLastSent)
+            {
+                text = $"Name: {disk.Name}\nTotal: {disk.CapacityFormatted}\nFree: {disk.FreeFormatted}\nFiles: {disk.TotalFiles:n0}";
 
-            Utils.LogWithPushover(mediaBackup.PushoverUserKey,
-                                  mediaBackup.PushoverAppToken,
-                                  logFile,
-                                  BackupAction.CheckBackupDisk,
-                                  text);
-
+                Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                                      mediaBackup.PushoverAppToken,
+                                      logFile,
+                                      BackupAction.CheckBackupDisk,
+                                      text);
+            }
             Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                   mediaBackup.PushoverAppToken,
                                   logFile,
@@ -1021,7 +1032,7 @@ namespace BackupManager
                                       mediaBackup.PushoverAppToken,
                                       logFile,
                                       BackupAction.ScanFolders,
-                                      $"Oldest backup date is { DateTime.Today.Subtract(oldestFileDate).Days:n0} day(s) ago at {oldestFileDate.ToShortDateString()} for {oldestFile.FileName} on {oldestFile.Disk}");
+                                      $"Oldest backup date is { DateTime.Today.Subtract(oldestFileDate).Days:n0} day(s) ago on {oldestFileDate.ToShortDateString()} on {oldestFile.Disk}");
             }
 
             Utils.LogWithPushover(mediaBackup.PushoverUserKey,
