@@ -482,7 +482,7 @@
             {
                 text += $"{videoFormatsAllowed}\n";
             }
-            Utils.LogWithPushover(PushoverUserKey, PushoverAppToken, logFile, BackupAction.General, $"videoFormatsAllowed:\n{text}");
+            Utils.LogWithPushover(PushoverUserKey, PushoverAppToken, logFile, BackupAction.General, $"VideoFormatsAllowed:\n{text}");
 
             text = string.Empty;
             foreach (string disksToSkip in DisksToSkipOnRestore)
