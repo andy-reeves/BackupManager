@@ -36,6 +36,14 @@ namespace BackupManager
 
             mediaBackup = MediaBackup.Load(File.Exists(localMediaXml) ? localMediaXml : MediabackupXml);
 
+            string logFile = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                "backup_ApplicationStarted.txt");
+
+            mediaBackup.LogParameters(logFile);
+
+
+
 #if !DEBUG
             backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
 #endif
@@ -70,13 +78,13 @@ namespace BackupManager
 
         private void BackupHashCodeCheckedButton_Click(object sender, EventArgs e)
         {
-            string LogFile = Path.Combine(
+            string logFile = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
                 "backup_FilesWithoutBackupDiskChecked.txt");
 
             foreach (BackupFile file in mediaBackup.GetBackupFilesWithDiskCheckedEmpty())
             {
-                Utils.Log(LogFile, $"{file.FullPath} does not have DiskChecked set on disk {file.Disk}");
+                Utils.Log(logFile, $"{file.FullPath} does not have DiskChecked set on disk {file.Disk}");
             }
         }
 
@@ -430,7 +438,7 @@ namespace BackupManager
                         long totalBytes;
                         result = Utils.GetDiskInfo(backupShare, out availableSpace, out totalBytes);
 
-                        if (availableSpace > (mediaBackup.MinimumFreeSpaceToLeaveOnBackupDrive * Utils.BytesInOneMegabyte))
+                        if (availableSpace > (mediaBackup.MinimumFreeSpaceToLeaveOnBackupDisk * Utils.BytesInOneMegabyte))
                         {
                             if (availableSpace > sourceFileInfo.Length)
                             {
