@@ -37,9 +37,15 @@
         [XmlArrayItem("BackupDisk")]
         public Collection<BackupDisk> BackupDisks;
 
+        /// <summary>
+        /// If True the scheduled backup will start when the application starts at the scheudled time
+        /// </summary>
         public bool StartScheduledBackup;
 
-        public int ScheduledBackupRepeatInterval;
+        /// <summary>
+        /// The start time for the scheudled backup
+        /// </summary>
+        public string ScheduledBackupStartTime;
 
         public int DifferenceInFileCountAllowedPercentage;
 

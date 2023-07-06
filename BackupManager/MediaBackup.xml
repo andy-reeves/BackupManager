@@ -6,8 +6,8 @@
   <StartScheduledBackup>false</StartScheduledBackup>
   <!-- A bigger percentage difference than this and the backup stops -->
   <DifferenceInFileCountAllowedPercentage>2</DifferenceInFileCountAllowedPercentage>
-  <!--  ScheduledBackupRepeatInterval in mins -->
-  <ScheduledBackupRepeatInterval>1440</ScheduledBackupRepeatInterval>
+  <!--  ScheduledBackupStartTime as hh:mm -->
+  <ScheduledBackupStartTime>11:00</ScheduledBackupStartTime>
   <!-- MinimumCriticalMasterFolderSpace in MB -->
   <MinimumCriticalMasterFolderSpace>200</MinimumCriticalMasterFolderSpace>
   <!-- MinimumCriticalBackupDiskSpace in MB -->

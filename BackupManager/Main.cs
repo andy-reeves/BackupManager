@@ -20,6 +20,10 @@ namespace BackupManager
 
         #endregion
 
+        private DailyTrigger trigger;
+
+        Action triggerAction;
+        
         #region Constructors and Destructors
 
         public Main()
@@ -33,7 +37,6 @@ namespace BackupManager
             mediaBackup = MediaBackup.Load(File.Exists(localMediaXml) ? localMediaXml : MediabackupXml);
 
 #if !DEBUG
-            timerTextBox.Text = "1440";
             backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
 #endif
 
@@ -47,15 +50,18 @@ namespace BackupManager
                 restoreMasterFolderComboBox.Items.Add(a);
             }
 
-            if (mediaBackup.ScheduledBackupRepeatInterval != 0)
-            {
-                timerTextBox.Text = mediaBackup.ScheduledBackupRepeatInterval.ToString();
-            }
+            triggerAction = () => { ScheduledBackup(); };
+
+            DateTime startTime = DateTime.Parse(mediaBackup.ScheduledBackupStartTime);
+
+            hoursNumericUpDown.Value = startTime.Hour;
+
+            minutesNumericUpDown.Value = startTime.Minute;
 
             if (mediaBackup.StartScheduledBackup)
             {
                 timerButton_Click(null, null);
-            }
+            }  
         }
 
         #endregion
@@ -93,7 +99,7 @@ namespace BackupManager
                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
                "backup_CheckBackupDisk.txt");
 
-            Utils.Log(logFile, "CheckBackupDisk Started");
+            Utils.LogWithPushover(mediaBackup.PushoverUserKey, mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "Started");
 
             string backupShare = backupDiskTextBox.Text;
 
@@ -171,29 +177,40 @@ namespace BackupManager
                     Utils.Log(logFile, $"Checking hash for {backupFileFullPath}");
 
                     // This forces a hash check on the source and backup disk files
-                    backupFile.CheckContentHashes(disk);
+                    bool returnValue = backupFile.CheckContentHashes(disk);
 
-
-                    // So we can get the situation where the hash of a file on disk is equal to a hash of a file we have
-                    // It could have a different filename on the backup disk though (if we renamed the master file)
-                    // check the filenames are equal and rename on the backup disk if they're not
-                    string backupDiskFilename = backupFileFullPath.Substring(folderToCheck.Length + 1); // trim off the unc and backup disk parts
-
-                    string masterFilename = Path.Combine(backupFile.IndexFolder, backupFile.RelativePath);
-
-                    if (!backupDiskFilename.Equals(masterFilename))
+                    if (returnValue == false)
                     {
-                        string destinationFileName = Path.Combine(folderToCheck, backupFile.IndexFolder, backupFile.RelativePath);
-
-                        Directory.CreateDirectory(Path.GetDirectoryName(destinationFileName));
+                        // There was an error with the hashcodes of the source file anf the file on the backup disk
                         Utils.LogWithPushover(mediaBackup.PushoverUserKey,
-                                              mediaBackup.PushoverAppToken,
-                                              logFile,
-                                              BackupAction.CheckBackupDisk,
-                                              $"Renaming {backupFileFullPath} to {destinationFileName}"
-                                              );
+                                 mediaBackup.PushoverAppToken,
+                                 logFile,
+                                 BackupAction.CheckBackupDisk, PushoverPriority.High,
+                                 $"There was an error with the hashcodes on the source and backup disk. Its likely the sourcefile has changed since the last backup of {backupFile.FullPath}");
+                    }
+                    else
+                    {
+                        // So we can get the situation where the hash of a file on disk is equal to a hash of a file we have
+                        // It could have a different filename on the backup disk though (if we renamed the master file)
+                        // check the filenames are equal and rename on the backup disk if they're not
+                        string backupDiskFilename = backupFileFullPath.Substring(folderToCheck.Length + 1); // trim off the unc and backup disk parts
 
-                        File.Move(backupFileFullPath, destinationFileName);
+                        string masterFilename = Path.Combine(backupFile.IndexFolder, backupFile.RelativePath);
+
+                        if (!backupDiskFilename.Equals(masterFilename))
+                        {
+                            string destinationFileName = Path.Combine(folderToCheck, backupFile.IndexFolder, backupFile.RelativePath);
+
+                            Directory.CreateDirectory(Path.GetDirectoryName(destinationFileName));
+                            Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                                                  mediaBackup.PushoverAppToken,
+                                                  logFile,
+                                                  BackupAction.CheckBackupDisk,
+                                                  $"Renaming {backupFileFullPath} to {destinationFileName}"
+                                                  );
+
+                            File.Move(backupFileFullPath, destinationFileName);
+                        }
                     }
                 }
                 else
@@ -395,7 +412,17 @@ namespace BackupManager
 
                         // it could be that the source file hash changed after we read it (we read the hash, updated the master file and then copied it)
                         // in which case check the source hash again and then check the copied file 
-                        backupFile.CheckContentHashes(disk);
+                        bool returnValue = backupFile.CheckContentHashes(disk);
+
+                        if (returnValue == false)
+                        {
+                            // There was an error with the hashcodes of the source file anf the file on the backup disk
+                            Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                                     mediaBackup.PushoverAppToken,
+                                     logFile,
+                                     BackupAction.CheckBackupDisk, PushoverPriority.High,
+                                     $"There was an error with the hashcodes on the source and backup disk. Its likely the sourcefile has changed since the last backup of {backupFile.FullPath}");
+                        }
                     }
                     else
                     {
@@ -431,7 +458,17 @@ namespace BackupManager
                                 // it could be that the source file hash changed after we read it (we read the hash, updated the master file and then copied it)
                                 // in which case check the source hash again and then check the copied file 
                                 backupFile.UpdateContentsHash();
-                                backupFile.CheckContentHashes(disk);
+                                bool returnValue = backupFile.CheckContentHashes(disk);
+
+                                if (returnValue == false)
+                                {
+                                    // There was an error with the hashcodes of the source file anf the file on the backup disk
+                                    Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                                             mediaBackup.PushoverAppToken,
+                                             logFile,
+                                             BackupAction.CheckBackupDisk, PushoverPriority.High,
+                                             $"There was an error with the hashcodes on the source and backup disk. Its likely the sourcefile has changed since the last backup of {backupFile.FullPath}");
+                                }
                             }
                             else
                             {
@@ -932,7 +969,7 @@ namespace BackupManager
                                     // Placeholder for file scans
                                 }
 
-                                this.EnsureFile(file, masterFolder, indexFolder);
+                                EnsureFile(file, masterFolder, indexFolder);
                             }
                         }
                     }
@@ -1026,27 +1063,24 @@ namespace BackupManager
 
         private void timerButton_Click(object sender, EventArgs e)
         {
-            // Start Timer
-            backupTimer.Interval = Convert.ToInt32(timerTextBox.Text) * 60 * 1000;
-
             if (timerButton.Text == "Start timer")
             {
-                backupTimer.Start();
                 timerButton.Text = "Stop timer";
+                // Fire once if CheckBox is ticked
+                if (runOnTimerStartCheckBox.Checked)
+                {
+                    ScheduledBackup();
+                }
 
-                // Fire once as you've clicked the button
-                ScheduledBackup();
+                trigger = new DailyTrigger(Convert.ToInt32(hoursNumericUpDown.Value), Convert.ToInt32(minutesNumericUpDown.Value));
+
+                trigger.OnTimeTriggered += triggerAction;  
             }
             else
             {
-                backupTimer.Stop();
                 timerButton.Text = "Start timer";
+                trigger.OnTimeTriggered -= triggerAction;
             }
-        }
-
-        private void backupTimer_Tick(object sender, EventArgs e)
-        {
-            ScheduledBackup();
         }
 
         private void ScheduledBackup()
@@ -1057,8 +1091,6 @@ namespace BackupManager
 
             try
             {
-                backupTimer.Stop();
-
                 // Take a copy of the current count of files we backup up last time
                 // Then ScanFolders
                 // If the new file count is less than x% lower then abort
@@ -1090,8 +1122,6 @@ namespace BackupManager
 
                 // Copy any files that need a backup
                 CopyFiles();
-
-                backupTimer.Start();
             }
             catch (Exception ex)
             {
@@ -1099,10 +1129,6 @@ namespace BackupManager
                     logFile, BackupAction.General, PushoverPriority.Emergency,
                     $"Exception occured {ex}"
                     );
-            }
-            finally
-            {
-                backupTimer.Start();
             }
         }
 
@@ -1457,6 +1483,36 @@ namespace BackupManager
                     Utils.Log(logFile, $"testing {masterFolder}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
                 }
             }
+        }
+
+        private void minutesNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            if (minutesNumericUpDown.Value == 60)
+            {
+                minutesNumericUpDown.Value = 0;
+            }
+
+            if (minutesNumericUpDown.Value == -1)
+            {
+                minutesNumericUpDown.Value = 59;
+            }
+
+            mediaBackup.ScheduledBackupStartTime = $"{hoursNumericUpDown.Value}:{minutesNumericUpDown.Value}";
+        }
+
+        private void hoursNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            if (hoursNumericUpDown.Value == 24)
+            {
+                hoursNumericUpDown.Value = 0;
+            }
+
+            if (hoursNumericUpDown.Value == -1)
+            {
+                hoursNumericUpDown.Value = 23;
+            }
+
+            mediaBackup.ScheduledBackupStartTime = $"{hoursNumericUpDown.Value}:{minutesNumericUpDown.Value}";
         }
     }
 }

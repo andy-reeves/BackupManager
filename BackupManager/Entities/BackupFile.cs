@@ -305,32 +305,32 @@
         /// </summary>
         /// <param name="disk">The BackupDisk the BackupFile is on</param>
         /// <exception cref="ApplicationException"></exception>
-        public void CheckContentHashes(BackupDisk disk)
+        public bool CheckContentHashes(BackupDisk disk)
         {
             string hashFromSourceFile = Utils.GetShortMd5HashFromFile(FullPath);
 
             if (hashFromSourceFile == Utils.ZeroByteHash)
             {
-                throw new Exception($"ERROR: { FullPath} has zerobyte hashcode");
+                throw new ApplicationException($"ERROR: {FullPath} has zerobyte hashcode");
             }
 
             string hashFrombackupDiskFile = Utils.GetShortMd5HashFromFile(Path.Combine(disk.BackupPath, IndexFolder, RelativePath));
 
             if (hashFrombackupDiskFile == Utils.ZeroByteHash)
             {
-                throw new Exception($"ERROR: { hashFrombackupDiskFile } has zerobyte hashcode");
+                throw new ApplicationException($"ERROR: {hashFrombackupDiskFile} has zerobyte hashcode");
             }
 
-            if (hashFrombackupDiskFile == hashFromSourceFile)
+            if (hashFrombackupDiskFile != hashFromSourceFile)
             {
-                // Hashes match so update it and the backup checked date too
-                UpdateContentsHash(hashFrombackupDiskFile);
-                UpdateDiskChecked(disk.Name);
+                // Hashes are now different on source and backup
+                return false;
             }
-            else
-            {
-                throw new ApplicationException($"ERROR: {hashFromSourceFile} and {hashFrombackupDiskFile} have different hashcodes");
-            }
+
+            // Hashes match so update it and the backup checked date too
+            UpdateContentsHash(hashFrombackupDiskFile);
+            UpdateDiskChecked(disk.Name);
+            return true;
         }
     }
 }

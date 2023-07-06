@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BackupAction.cs" />
+    <Compile Include="DailyTrigger.cs" />
     <Compile Include="Entities\BackupDisk.cs" />
     <Compile Include="Entities\BackupFile.cs" />
     <Compile Include="Extensions\IntegerExtensions.cs" />

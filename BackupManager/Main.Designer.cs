@@ -43,10 +43,8 @@
             this.checkBackupDeleteAndCopyButton = new System.Windows.Forms.Button();
             this.listMoviesWithMultipleFilesButton = new System.Windows.Forms.Button();
             this.reportBackupDiskStatusButton = new System.Windows.Forms.Button();
+            this.speedTestButton = new System.Windows.Forms.Button();
             this.timerButton = new System.Windows.Forms.Button();
-            this.backupTimer = new System.Windows.Forms.Timer(this.components);
-            this.timerTextBox = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
             this.listFilesOnBackupDiskButton = new System.Windows.Forms.Button();
             this.listFilesTextBox = new System.Windows.Forms.TextBox();
             this.listFilesInMasterFolderButton = new System.Windows.Forms.Button();
@@ -59,7 +57,13 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.testPushoverEmergencyButton = new System.Windows.Forms.Button();
-            this.speedTestButton = new System.Windows.Forms.Button();
+            this.hoursNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.minutesNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.runOnTimerStartCheckBox = new System.Windows.Forms.CheckBox();
+            ((System.ComponentModel.ISupportInitialize)(this.hoursNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.minutesNumericUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // updateMasterFilesButton
@@ -152,7 +156,7 @@
             // 
             // checkDiskAndDeleteButton
             // 
-            this.checkDiskAndDeleteButton.Location = new System.Drawing.Point(10, 335);
+            this.checkDiskAndDeleteButton.Location = new System.Drawing.Point(10, 356);
             this.checkDiskAndDeleteButton.Name = "checkDiskAndDeleteButton";
             this.checkDiskAndDeleteButton.Size = new System.Drawing.Size(217, 39);
             this.checkDiskAndDeleteButton.TabIndex = 19;
@@ -177,7 +181,7 @@
             // 
             // checkBackupDeleteAndCopyButton
             // 
-            this.checkBackupDeleteAndCopyButton.Location = new System.Drawing.Point(244, 335);
+            this.checkBackupDeleteAndCopyButton.Location = new System.Drawing.Point(244, 356);
             this.checkBackupDeleteAndCopyButton.Name = "checkBackupDeleteAndCopyButton";
             this.checkBackupDeleteAndCopyButton.Size = new System.Drawing.Size(217, 39);
             this.checkBackupDeleteAndCopyButton.TabIndex = 36;
@@ -210,37 +214,26 @@
             this.reportBackupDiskStatusButton.UseVisualStyleBackColor = true;
             this.reportBackupDiskStatusButton.Click += new System.EventHandler(this.reportBackupDiskStatusButton_Click);
             // 
+            // speedTestButton
+            // 
+            this.speedTestButton.Location = new System.Drawing.Point(244, 204);
+            this.speedTestButton.Name = "speedTestButton";
+            this.speedTestButton.Size = new System.Drawing.Size(217, 23);
+            this.speedTestButton.TabIndex = 44;
+            this.speedTestButton.Text = "Speed test all master folders";
+            this.toolTip.SetToolTip(this.speedTestButton, "Outputs files that are not yet on a Backup drive.");
+            this.speedTestButton.UseVisualStyleBackColor = true;
+            this.speedTestButton.Click += new System.EventHandler(this.speedTestButton_Click);
+            // 
             // timerButton
             // 
-            this.timerButton.Location = new System.Drawing.Point(244, 6);
+            this.timerButton.Location = new System.Drawing.Point(398, 319);
             this.timerButton.Name = "timerButton";
-            this.timerButton.Size = new System.Drawing.Size(75, 23);
+            this.timerButton.Size = new System.Drawing.Size(63, 23);
             this.timerButton.TabIndex = 21;
             this.timerButton.Text = "Start timer";
             this.timerButton.UseVisualStyleBackColor = true;
             this.timerButton.Click += new System.EventHandler(this.timerButton_Click);
-            // 
-            // backupTimer
-            // 
-            this.backupTimer.Interval = 5000;
-            this.backupTimer.Tick += new System.EventHandler(this.backupTimer_Tick);
-            // 
-            // timerTextBox
-            // 
-            this.timerTextBox.Location = new System.Drawing.Point(325, 8);
-            this.timerTextBox.Name = "timerTextBox";
-            this.timerTextBox.Size = new System.Drawing.Size(45, 20);
-            this.timerTextBox.TabIndex = 22;
-            this.timerTextBox.Text = "5";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(376, 11);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(28, 13);
-            this.label2.TabIndex = 23;
-            this.label2.Text = "mins";
             // 
             // listFilesOnBackupDiskButton
             // 
@@ -358,22 +351,96 @@
             this.testPushoverEmergencyButton.UseVisualStyleBackColor = true;
             this.testPushoverEmergencyButton.Click += new System.EventHandler(this.testPushoverEmergencyButton_Click);
             // 
-            // speedTestButton
+            // hoursNumericUpDown
             // 
-            this.speedTestButton.Location = new System.Drawing.Point(244, 204);
-            this.speedTestButton.Name = "speedTestButton";
-            this.speedTestButton.Size = new System.Drawing.Size(217, 23);
-            this.speedTestButton.TabIndex = 44;
-            this.speedTestButton.Text = "Speed test all master folders";
-            this.toolTip.SetToolTip(this.speedTestButton, "Outputs files that are not yet on a Backup drive.");
-            this.speedTestButton.UseVisualStyleBackColor = true;
-            this.speedTestButton.Click += new System.EventHandler(this.speedTestButton_Click);
+            this.hoursNumericUpDown.Location = new System.Drawing.Point(329, 294);
+            this.hoursNumericUpDown.Maximum = new decimal(new int[] {
+            24,
+            0,
+            0,
+            0});
+            this.hoursNumericUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            -2147483648});
+            this.hoursNumericUpDown.Name = "hoursNumericUpDown";
+            this.hoursNumericUpDown.Size = new System.Drawing.Size(36, 20);
+            this.hoursNumericUpDown.TabIndex = 45;
+            this.hoursNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.hoursNumericUpDown.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.hoursNumericUpDown.ValueChanged += new System.EventHandler(this.hoursNumericUpDown_ValueChanged);
+            // 
+            // minutesNumericUpDown
+            // 
+            this.minutesNumericUpDown.Location = new System.Drawing.Point(373, 294);
+            this.minutesNumericUpDown.Maximum = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
+            this.minutesNumericUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            -2147483648});
+            this.minutesNumericUpDown.Name = "minutesNumericUpDown";
+            this.minutesNumericUpDown.Size = new System.Drawing.Size(36, 20);
+            this.minutesNumericUpDown.TabIndex = 46;
+            this.minutesNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.minutesNumericUpDown.Value = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            this.minutesNumericUpDown.ValueChanged += new System.EventHandler(this.minutesNumericUpDown_ValueChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(299, 296);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(30, 13);
+            this.label2.TabIndex = 47;
+            this.label2.Text = "Time";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(364, 297);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(10, 13);
+            this.label5.TabIndex = 48;
+            this.label5.Text = ":";
+            this.label5.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // runOnTimerStartCheckBox
+            // 
+            this.runOnTimerStartCheckBox.AutoSize = true;
+            this.runOnTimerStartCheckBox.Checked = true;
+            this.runOnTimerStartCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.runOnTimerStartCheckBox.Location = new System.Drawing.Point(247, 322);
+            this.runOnTimerStartCheckBox.Name = "runOnTimerStartCheckBox";
+            this.runOnTimerStartCheckBox.Size = new System.Drawing.Size(109, 17);
+            this.runOnTimerStartCheckBox.TabIndex = 49;
+            this.runOnTimerStartCheckBox.Text = "Run on timer start";
+            this.runOnTimerStartCheckBox.UseVisualStyleBackColor = true;
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(468, 378);
+            this.ClientSize = new System.Drawing.Size(468, 401);
+            this.Controls.Add(this.runOnTimerStartCheckBox);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.minutesNumericUpDown);
+            this.Controls.Add(this.hoursNumericUpDown);
             this.Controls.Add(this.speedTestButton);
             this.Controls.Add(this.reportBackupDiskStatusButton);
             this.Controls.Add(this.testPushoverEmergencyButton);
@@ -390,8 +457,6 @@
             this.Controls.Add(this.listFilesInMasterFolderButton);
             this.Controls.Add(this.listFilesTextBox);
             this.Controls.Add(this.listFilesOnBackupDiskButton);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.timerTextBox);
             this.Controls.Add(this.timerButton);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.checkDiskAndDeleteButton);
@@ -409,6 +474,8 @@
             this.Name = "Main";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Backup Manager";
+            ((System.ComponentModel.ISupportInitialize)(this.hoursNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.minutesNumericUpDown)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -428,9 +495,6 @@
         private System.Windows.Forms.Button checkDiskAndDeleteButton;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button timerButton;
-        private System.Windows.Forms.Timer backupTimer;
-        private System.Windows.Forms.TextBox timerTextBox;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button listFilesOnBackupDiskButton;
         private System.Windows.Forms.TextBox listFilesTextBox;
         private System.Windows.Forms.Button listFilesInMasterFolderButton;
@@ -447,6 +511,11 @@
         private System.Windows.Forms.Button testPushoverEmergencyButton;
         private System.Windows.Forms.Button reportBackupDiskStatusButton;
         private System.Windows.Forms.Button speedTestButton;
+        private System.Windows.Forms.NumericUpDown hoursNumericUpDown;
+        private System.Windows.Forms.NumericUpDown minutesNumericUpDown;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.CheckBox runOnTimerStartCheckBox;
     }
 }
 
