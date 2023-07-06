@@ -942,7 +942,7 @@ namespace BackupManager
         {
             if (value > BytesInOneTerabyte)
             {
-                return $"{(decimal)value / BytesInOneTerabyte:0.0}TB";
+                return $"{(decimal)value / BytesInOneTerabyte:0.#}TB";
             }
 
             if (value > 25 * (long)BytesInOneGigabyte)
@@ -952,7 +952,7 @@ namespace BackupManager
 
             if (value > BytesInOneGigabyte)
             {
-                return $"{(decimal)value / BytesInOneGigabyte:0.0}GB";
+                return $"{(decimal)value / BytesInOneGigabyte:0.#}GB";
             }
 
             if (value > (25 * BytesInOneMegabyte))
@@ -962,7 +962,7 @@ namespace BackupManager
 
             if (value > BytesInOneMegabyte)
             {
-                return $"{(decimal)value / BytesInOneMegabyte:0.0}MB";
+                return $"{(decimal)value / BytesInOneMegabyte:0.#}MB";
             }
 
             if (value > BytesInOneKilobyte)
@@ -1030,7 +1030,7 @@ namespace BackupManager
 
             if (value > BytesInOneTerabyte)
             {
-                return $"{(decimal)value / BytesInOneTerabyte:0.0}TB/s";
+                return $"{(decimal)value / BytesInOneTerabyte:0.#}TB/s";
             }
 
             if (value > (25 * (long)BytesInOneGigabyte))
@@ -1040,7 +1040,7 @@ namespace BackupManager
 
             if (value > BytesInOneGigabyte)
             {
-                return $"{(decimal)value / BytesInOneGigabyte:0.0}GB/s";
+                return $"{(decimal)value / BytesInOneGigabyte:0.#}GB/s";
             }
 
             if (value > (25 * BytesInOneMegabyte))
@@ -1050,7 +1050,7 @@ namespace BackupManager
 
             if (value > BytesInOneMegabyte)
             {
-                return $"{(decimal)value / BytesInOneMegabyte:0.0}MB/s";
+                return $"{(decimal)value / BytesInOneMegabyte:0.#}MB/s";
             }
 
             if (value > BytesInOneKilobyte)
