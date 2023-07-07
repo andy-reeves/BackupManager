@@ -8,6 +8,7 @@ namespace BackupManager
     using System.Windows.Forms;
     using System.Configuration;
     using BackupManager.Entities;
+    using System.Diagnostics;
 
     public partial class Main : Form
     {
@@ -23,7 +24,7 @@ namespace BackupManager
         private DailyTrigger trigger;
 
         Action triggerAction;
-        
+
         #region Constructors and Destructors
 
         public Main()
@@ -68,8 +69,9 @@ namespace BackupManager
 
             if (mediaBackup.StartScheduledBackup)
             {
+                monitoringButton_Click(null, null);
                 timerButton_Click(null, null);
-            }  
+            }
         }
 
         #endregion
@@ -1032,14 +1034,14 @@ namespace BackupManager
                                       mediaBackup.PushoverAppToken,
                                       logFile,
                                       BackupAction.ScanFolders,
-                                      $"Oldest backup date is { DateTime.Today.Subtract(oldestFileDate).Days:n0} day(s) ago on {oldestFileDate.ToShortDateString()} on {oldestFile.Disk}");
+                                      $"Oldest backup date is {DateTime.Today.Subtract(oldestFileDate).Days:n0} day(s) ago on {oldestFileDate.ToShortDateString()} on {oldestFile.Disk}");
             }
 
             Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                   mediaBackup.PushoverAppToken,
                                   logFile,
                                   BackupAction.ScanFolders,
-                                  $"{filesNotOnBackupDisk.Count():n0} files to backup at { Utils.FormatSize(fileSizeToCopy)}");
+                                  $"{filesNotOnBackupDisk.Count():n0} files to backup at {Utils.FormatSize(fileSizeToCopy)}");
 
             Utils.LogWithPushover(mediaBackup.PushoverUserKey, mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "Completed");
         }
@@ -1093,7 +1095,7 @@ namespace BackupManager
 
                 trigger = new DailyTrigger(Convert.ToInt32(hoursNumericUpDown.Value), Convert.ToInt32(minutesNumericUpDown.Value));
 
-                trigger.OnTimeTriggered += triggerAction;  
+                trigger.OnTimeTriggered += triggerAction;
             }
             else
             {
@@ -1176,7 +1178,7 @@ namespace BackupManager
             string masterFolder = this.masterFoldersComboBox.SelectedItem.ToString();
 
             IEnumerable<BackupFile> files = mediaBackup.GetBackupFilesInMasterFolder(masterFolder);
-            
+
             long readSpeed, writeSpeed;
 
             Utils.DiskSpeedTest(masterFolder, DiskSpeedTestFileSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
@@ -1218,7 +1220,7 @@ namespace BackupManager
                                       mediaBackup.PushoverAppToken,
                                       LogFile,
                                       BackupAction.CheckBackupDisk,
-                                      $"Backup disks not checked in { numberOfDays} days - {disk.Disk}"
+                                      $"Backup disks not checked in {numberOfDays} days - {disk.Disk}"
                                       );
             }
 
@@ -1532,6 +1534,120 @@ namespace BackupManager
             }
 
             mediaBackup.ScheduledBackupStartTime = $"{hoursNumericUpDown.Value}:{minutesNumericUpDown.Value}";
+        }
+
+        private void monitoringButton_Click(object sender, EventArgs e)
+        {
+            string logFile = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+            "backup_Monitoring.txt");
+
+            if (monitoringButton.Text == "Start monitoring")
+            {
+                Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                              mediaBackup.PushoverAppToken,
+                              logFile,
+                              BackupAction.Monitoring, "Started"
+                            );
+
+                monitoringTimer_Tick(null, null);
+
+                monitoringTimer.Interval = mediaBackup.MonitorInterval * 1000;
+                monitoringTimer.Start();
+                monitoringButton.Text = "Stop monitoring";
+            }
+            else
+            {
+                monitoringTimer.Stop();
+                Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                              mediaBackup.PushoverAppToken,
+                              logFile,
+                              BackupAction.Monitoring, "Stopped"
+                            );
+
+                monitoringButton.Text = "Start monitoring";
+            }
+        }
+
+        private void monitoringTimer_Tick(object sender, EventArgs e)
+        {
+            string logFile = Path.Combine(
+             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+             "backup_Monitoring.txt");
+
+            foreach (Monitor monitor in mediaBackup.Monitors)
+            {
+                bool result = monitor.Port > 0 ?
+                    Utils.ConnectionExists(monitor.Url, monitor.Port) :
+                    Utils.UrlExists(monitor.Url, monitor.Timeout * 1000);
+
+                // The monitor is down
+                if (!result)
+                {
+                    string text = $"Monitor '{monitor.Name}' is down.";
+
+                    Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                                 mediaBackup.PushoverAppToken,
+                                 logFile,
+                                 BackupAction.Monitoring,
+                                 PushoverPriority.High,
+                                 text);
+
+                    if (monitor.ProcessToKill.HasValue())
+                    {
+                        text = $"Stopping {monitor.ProcessToKill} processes";
+
+                        Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                                mediaBackup.PushoverAppToken,
+                                logFile,
+                                BackupAction.Monitoring,
+                                PushoverPriority.High,
+                                text);
+
+                        Utils.KillProcesses(monitor.ProcessToKill);
+                    }
+
+                    if (monitor.ApplicationToStart.HasValue())
+                    {
+                        text = $"Starting {monitor.ApplicationToStart}";
+ 
+                        Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                              mediaBackup.PushoverAppToken,
+                              logFile,
+                              BackupAction.Monitoring,
+                              PushoverPriority.High,
+                              text);
+
+                        string processToStart = Environment.ExpandEnvironmentVariables(monitor.ApplicationToStart);
+                        var newProcess = Process.Start(processToStart, monitor.ApplicationToStartArguments);
+
+                        if (newProcess == null)
+                        {
+                            Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                             mediaBackup.PushoverAppToken,
+                             logFile,
+                             BackupAction.Monitoring,
+                             PushoverPriority.High,
+                             "Failed to start the new process.");
+                        }
+                    }
+
+                    if (monitor.ServiceToRestart.HasValue())
+                    {
+                        result = Utils.RestartService(monitor.ServiceToRestart, 5000);
+                        if (!result)
+                        {
+                            Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                            mediaBackup.PushoverAppToken,
+                            logFile,
+                            BackupAction.Monitoring,
+                            PushoverPriority.High,
+                            $"Failed to restart the service {monitor.Name}");
+                        }
+                    }
+                }
+            }
+
         }
     }
 }

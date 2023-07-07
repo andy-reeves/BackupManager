@@ -20,6 +20,18 @@
   <MinimumMasterFolderReadSpeed>30</MinimumMasterFolderReadSpeed>
   <!-- Minimum write speed in MB/s -->
   <MinimumMasterFolderWriteSpeed>50</MinimumMasterFolderWriteSpeed>
+  <!-- Monitor interval in seconds -->
+  <MonitorInterval>60</MonitorInterval>
+  <Monitors>
+    <Monitor>
+      <Name>Plex</Name>
+      <Url></Url>
+      <Timeout>30</Timeout>
+      <ProcessToKill>plex media server</ProcessToKill>
+      <ApplicationToStart>"%ProgramFiles(x86)%\Plex\Plex Media Server\Plex Media Server.exe"</ApplicationToStart>
+    </Monitor>
+
+  </Monitors>
   <MasterFolders>
     <!-- List each UNC path that you want to scan for files to backup here -->
     <MasterFolder>\\nas1\assets1</MasterFolder>

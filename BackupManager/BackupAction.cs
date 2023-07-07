@@ -7,6 +7,7 @@ namespace BackupManager
         ScanFolders,
         BackupFiles,
         CheckBackupDisk,
-        Restore
+        Restore,
+        Monitoring
     }
 }

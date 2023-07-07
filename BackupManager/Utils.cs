@@ -19,6 +19,9 @@ namespace BackupManager
     using System.Collections.Specialized;
     using System.Net;
     using System.Text;
+    using System.Diagnostics;
+    using System.Net.Sockets;
+    using System.ServiceProcess;
 
     /// <summary>
     /// The utils.
@@ -86,7 +89,7 @@ namespace BackupManager
         #endregion
 
         #region Public Methods and Operators
-       
+
         /// <summary>
         /// Covertss a MB value to a size in Bytes
         /// </summary>
@@ -618,6 +621,96 @@ namespace BackupManager
             }
         }
 
+        /// <summary>
+        /// KIlls matching processes
+        /// </summary>
+        /// <param name="processName"></param>
+        /// <returns>True if they were killed and False otherwise</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        public static bool KillProcesses(string processName)
+        {
+            // without '.exe'
+            var processes = Process.GetProcesses().Where(pr => string.Equals(pr.ProcessName, processName, StringComparison.CurrentCultureIgnoreCase));
+
+            try
+            {
+                foreach (var process in processes)
+                {
+                    process.Kill();
+                }
+                return true;
+            }
+
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Returns True if the Url returns a 200 response with a timeout of 30 seconds
+        /// </summary>
+        /// <param name="url">The url to check</param>
+        /// <param name="timeout">Timeout in seconds</param>
+        /// <returns>True if success code returned</returns>
+        public static bool UrlExists(string url)
+        {
+            return UrlExists(url, 30 * 1000);
+        }
+
+        /// <summary>
+        /// Returns True if the Url returns a 200 response
+        /// </summary>
+        /// <param name="url">The url to check</param>
+        /// <param name="timeout">Timeout in milliseconds</param>
+        /// <returns>True if success code returned</returns>
+        public static bool UrlExists(string url, int timeout)
+        {
+            try
+            {
+                HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
+                request.Method = "GET";
+                request.Timeout = timeout;
+
+                using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
+                {
+                    return (response.StatusCode == HttpStatusCode.OK);
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Returns True if the host has something on that port
+        /// <param name="host">The host to check</param>
+        /// <param name="port">The port to connect on</param>
+        /// <returns>True if that host returns ConnectionRefused when trying to connect</returns>
+        public static bool ConnectionExists(string host, int port)
+        {
+            try
+            {
+                using (TcpClient tcpClient = new TcpClient())
+                {
+                    tcpClient.Connect(host, port);
+                }
+
+                return true;
+            }
+            catch (SocketException ex)
+            {
+                return ex.SocketErrorCode == SocketError.ConnectionRefused;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public static void Log(string logFilePath, string text)
         {
             string textForLogFile = text.Replace('\n', ' ');
@@ -919,7 +1012,7 @@ namespace BackupManager
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
         public static bool GetDiskInfo(string folderName, out long freespace, out long totalBytes)
-        { 
+        {
             if (string.IsNullOrEmpty(folderName))
             {
                 throw new ArgumentNullException("folderName");
@@ -1078,6 +1171,44 @@ namespace BackupManager
             return true;
         }
 
+        public static bool RestartService(string serviceName, int timeoutMilliseconds)
+        {
+            ServiceController service = new ServiceController(serviceName);
+            
+            try
+            {
+                int millisec1 = Environment.TickCount;
+                TimeSpan timeout = TimeSpan.FromMilliseconds(timeoutMilliseconds);
+
+                if (service.Status == ServiceControllerStatus.Running)
+                {
+                    service.Stop();
+                }
+
+                service.WaitForStatus(ServiceControllerStatus.Stopped, timeout);
+
+                // count the rest of the timeout
+                int millisec2 = Environment.TickCount;
+                timeout = TimeSpan.FromMilliseconds(timeoutMilliseconds - (millisec2 - millisec1));
+
+                if (service.Status.Equals(ServiceControllerStatus.Stopped))
+                {
+                    service.Start();
+                }
+                else if (service.Status.Equals(ServiceControllerStatus.Paused))
+                {
+                    service.Continue();
+                }
+
+                service.WaitForStatus(ServiceControllerStatus.Running, timeout);
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
         public static long DiskSpeedTest(string sourcePath, string destinationPath, long testFileSize, int testIterations)
         {
             long randomStringSize = 500_000;

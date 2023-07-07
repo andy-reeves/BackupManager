@@ -34,6 +34,9 @@
         [XmlArrayItem("BackupFile")]
         public Collection<BackupFile> BackupFiles;
 
+        [XmlArrayItem("Monitor")]
+        public Collection<Monitor> Monitors;
+
         [XmlArrayItem("BackupDisk")]
         public Collection<BackupDisk> BackupDisks;
 
@@ -48,6 +51,12 @@
         public string ScheduledBackupStartTime;
 
         public int DifferenceInFileCountAllowedPercentage;
+
+        /// <summary>
+        /// Interval in seconds
+        /// </summary>
+        public int MonitorInterval;
+
 
         public string PushoverAppToken;
 
@@ -523,6 +532,10 @@
 
             Utils.LogWithPushover(PushoverUserKey, PushoverAppToken, logFile, BackupAction.General,
                 $"DaysToReportOldBackupDisks : {DaysToReportOldBackupDisks}");
+
+            Utils.LogWithPushover(PushoverUserKey, PushoverAppToken, logFile, BackupAction.General,
+               $"MonitorInterval : {MonitorInterval}");
+
         }
     }
 }

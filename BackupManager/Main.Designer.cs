@@ -62,6 +62,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.runOnTimerStartCheckBox = new System.Windows.Forms.CheckBox();
+            this.monitoringButton = new System.Windows.Forms.Button();
+            this.monitoringTimer = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.hoursNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minutesNumericUpDown)).BeginInit();
             this.SuspendLayout();
@@ -431,11 +433,29 @@
             this.runOnTimerStartCheckBox.Text = "Run on timer start";
             this.runOnTimerStartCheckBox.UseVisualStyleBackColor = true;
             // 
+            // monitoringButton
+            // 
+            this.monitoringButton.Location = new System.Drawing.Point(130, 401);
+            this.monitoringButton.Name = "monitoringButton";
+            this.monitoringButton.Size = new System.Drawing.Size(217, 39);
+            this.monitoringButton.TabIndex = 50;
+            this.monitoringButton.Text = "Start monitoring";
+            this.toolTip.SetToolTip(this.monitoringButton, "Checks a connected backup disk.\r\nSets the BackupDisk and the BackupDiskChecked (i" +
+        "f the HashCode is correct). Doesn\'t delete any files.");
+            this.monitoringButton.UseVisualStyleBackColor = true;
+            this.monitoringButton.Click += new System.EventHandler(this.monitoringButton_Click);
+            // 
+            // monitoringTimer
+            // 
+            this.monitoringTimer.Interval = 60000;
+            this.monitoringTimer.Tick += new System.EventHandler(this.monitoringTimer_Tick);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(468, 401);
+            this.ClientSize = new System.Drawing.Size(468, 447);
+            this.Controls.Add(this.monitoringButton);
             this.Controls.Add(this.runOnTimerStartCheckBox);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label2);
@@ -516,6 +536,8 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.CheckBox runOnTimerStartCheckBox;
+        private System.Windows.Forms.Button monitoringButton;
+        private System.Windows.Forms.Timer monitoringTimer;
     }
 }
 
