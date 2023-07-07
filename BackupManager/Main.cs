@@ -1584,7 +1584,7 @@ namespace BackupManager
                 // The monitor is down
                 if (!result)
                 {
-                    string text = $"Monitor '{monitor.Name}' is down.";
+                    string text = $"Monitor '{monitor.Name}' is down";
 
                     Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                  mediaBackup.PushoverAppToken,
