@@ -686,10 +686,10 @@ namespace BackupManager
         }
 
         /// <summary>
-        /// Returns True if the host has something on that port
+        /// Returns True if the host can be connected to on that port
         /// <param name="host">The host to check</param>
         /// <param name="port">The port to connect on</param>
-        /// <returns>True if that host returns ConnectionRefused when trying to connect</returns>
+        /// <returns>True if the connection is made</returns>
         public static bool ConnectionExists(string host, int port)
         {
             try
@@ -701,10 +701,7 @@ namespace BackupManager
 
                 return true;
             }
-            catch (SocketException ex)
-            {
-                return ex.SocketErrorCode == SocketError.ConnectionRefused;
-            }
+
             catch
             {
                 return false;
@@ -1171,6 +1168,12 @@ namespace BackupManager
             return true;
         }
 
+        /// <summary>
+        /// Restarts the Windows Service specified
+        /// </summary>
+        /// <param name="serviceName"></param>
+        /// <param name="timeoutMilliseconds"></param>
+        /// <returns></returns>
         public static bool RestartService(string serviceName, int timeoutMilliseconds)
         {
             ServiceController service = new ServiceController(serviceName);
