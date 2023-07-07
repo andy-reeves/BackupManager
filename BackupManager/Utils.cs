@@ -622,7 +622,7 @@ namespace BackupManager
         }
 
         /// <summary>
-        /// KIlls matching processes
+        /// KIlls matching processes. All the processes that start with ProcessName are stopped
         /// </summary>
         /// <param name="processName"></param>
         /// <returns>True if they were killed and False otherwise</returns>
@@ -631,8 +631,9 @@ namespace BackupManager
         /// <exception cref="ArgumentException"></exception>
         public static bool KillProcesses(string processName)
         {
-            // without '.exe'
-            var processes = Process.GetProcesses().Where(pr => string.Equals(pr.ProcessName, processName, StringComparison.CurrentCultureIgnoreCase));
+            // without '.exe' and check for all that match 
+            IEnumerable<Process> processes = Process.GetProcesses().Where(p =>
+                    p.ProcessName.StartsWith(processName, StringComparison.CurrentCultureIgnoreCase));
 
             try
             {
@@ -1173,7 +1174,7 @@ namespace BackupManager
         /// </summary>
         /// <param name="serviceName"></param>
         /// <param name="timeoutMilliseconds"></param>
-        /// <returns></returns>
+        /// <returns>True if the service restarted successfully</returns>
         public static bool RestartService(string serviceName, int timeoutMilliseconds)
         {
             ServiceController service = new ServiceController(serviceName);

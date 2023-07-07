@@ -1595,7 +1595,7 @@ namespace BackupManager
 
                     if (monitor.ProcessToKill.HasValue())
                     {
-                        text = $"Stopping {monitor.ProcessToKill} processes";
+                        text = $"Stopping all '{monitor.ProcessToKill}' processes that match";
 
                         Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                 mediaBackup.PushoverAppToken,
@@ -1628,13 +1628,22 @@ namespace BackupManager
                              logFile,
                              BackupAction.Monitoring,
                              PushoverPriority.High,
-                             "Failed to start the new process.");
+                             $"Failed to start the new process '{monitor.Name}'");
+                        }
+                        else
+                        {
+                            Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                              mediaBackup.PushoverAppToken,
+                              logFile,
+                              BackupAction.Monitoring,
+                              PushoverPriority.Normal,
+                              $"'{monitor.Name}' started");
                         }
                     }
 
                     if (monitor.ServiceToRestart.HasValue())
                     {
-                        text = $"Restarting {monitor.ServiceToRestart}";
+                        text = $"Restarting '{monitor.ServiceToRestart}'";
 
                         Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                               mediaBackup.PushoverAppToken,
@@ -1645,14 +1654,23 @@ namespace BackupManager
 
                         result = Utils.RestartService(monitor.ServiceToRestart, 5000);
 
-                        if (!result)
+                        if (result)
+                        {
+                            Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                             mediaBackup.PushoverAppToken,
+                             logFile,
+                             BackupAction.Monitoring,
+                             PushoverPriority.Normal,
+                             $"'{monitor.Name}' started");
+                        }
+                        else
                         {
                             Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                             mediaBackup.PushoverAppToken,
                             logFile,
                             BackupAction.Monitoring,
                             PushoverPriority.High,
-                            $"Failed to restart the service {monitor.Name}");
+                            $"Failed to restart the service '{monitor.Name}'");
                         }
                     }
                 }
