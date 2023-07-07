@@ -1601,7 +1601,7 @@ namespace BackupManager
                                 mediaBackup.PushoverAppToken,
                                 logFile,
                                 BackupAction.Monitoring,
-                                PushoverPriority.High,
+                                PushoverPriority.Normal,
                                 text);
 
                         Utils.KillProcesses(monitor.ProcessToKill);
@@ -1615,7 +1615,7 @@ namespace BackupManager
                               mediaBackup.PushoverAppToken,
                               logFile,
                               BackupAction.Monitoring,
-                              PushoverPriority.High,
+                              PushoverPriority.Normal,
                               text);
 
                         string processToStart = Environment.ExpandEnvironmentVariables(monitor.ApplicationToStart);
@@ -1634,7 +1634,17 @@ namespace BackupManager
 
                     if (monitor.ServiceToRestart.HasValue())
                     {
+                        text = $"Restarting {monitor.ServiceToRestart}";
+
+                        Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                              mediaBackup.PushoverAppToken,
+                              logFile,
+                              BackupAction.Monitoring,
+                              PushoverPriority.Normal,
+                              text);
+
                         result = Utils.RestartService(monitor.ServiceToRestart, 5000);
+
                         if (!result)
                         {
                             Utils.LogWithPushover(mediaBackup.PushoverUserKey,
