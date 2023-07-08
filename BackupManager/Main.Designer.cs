@@ -465,7 +465,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(468, 447);
+            this.ClientSize = new System.Drawing.Size(468, 419);
             this.Controls.Add(this.killProcessesButton);
             this.Controls.Add(this.monitoringButton);
             this.Controls.Add(this.runOnTimerStartCheckBox);
