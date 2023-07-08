@@ -44,6 +44,7 @@
             this.listMoviesWithMultipleFilesButton = new System.Windows.Forms.Button();
             this.reportBackupDiskStatusButton = new System.Windows.Forms.Button();
             this.speedTestButton = new System.Windows.Forms.Button();
+            this.monitoringButton = new System.Windows.Forms.Button();
             this.timerButton = new System.Windows.Forms.Button();
             this.listFilesOnBackupDiskButton = new System.Windows.Forms.Button();
             this.listFilesTextBox = new System.Windows.Forms.TextBox();
@@ -62,8 +63,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.runOnTimerStartCheckBox = new System.Windows.Forms.CheckBox();
-            this.monitoringButton = new System.Windows.Forms.Button();
             this.monitoringTimer = new System.Windows.Forms.Timer(this.components);
+            this.killProcessesButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.hoursNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minutesNumericUpDown)).BeginInit();
             this.SuspendLayout();
@@ -158,7 +159,7 @@
             // 
             // checkDiskAndDeleteButton
             // 
-            this.checkDiskAndDeleteButton.Location = new System.Drawing.Point(10, 356);
+            this.checkDiskAndDeleteButton.Location = new System.Drawing.Point(10, 344);
             this.checkDiskAndDeleteButton.Name = "checkDiskAndDeleteButton";
             this.checkDiskAndDeleteButton.Size = new System.Drawing.Size(217, 39);
             this.checkDiskAndDeleteButton.TabIndex = 19;
@@ -183,7 +184,7 @@
             // 
             // checkBackupDeleteAndCopyButton
             // 
-            this.checkBackupDeleteAndCopyButton.Location = new System.Drawing.Point(244, 356);
+            this.checkBackupDeleteAndCopyButton.Location = new System.Drawing.Point(244, 344);
             this.checkBackupDeleteAndCopyButton.Name = "checkBackupDeleteAndCopyButton";
             this.checkBackupDeleteAndCopyButton.Size = new System.Drawing.Size(217, 39);
             this.checkBackupDeleteAndCopyButton.TabIndex = 36;
@@ -227,11 +228,23 @@
             this.speedTestButton.UseVisualStyleBackColor = true;
             this.speedTestButton.Click += new System.EventHandler(this.speedTestButton_Click);
             // 
+            // monitoringButton
+            // 
+            this.monitoringButton.Location = new System.Drawing.Point(358, 315);
+            this.monitoringButton.Name = "monitoringButton";
+            this.monitoringButton.Size = new System.Drawing.Size(103, 23);
+            this.monitoringButton.TabIndex = 50;
+            this.monitoringButton.Text = "Start monitoring";
+            this.toolTip.SetToolTip(this.monitoringButton, "Checks a connected backup disk.\r\nSets the BackupDisk and the BackupDiskChecked (i" +
+        "f the HashCode is correct). Doesn\'t delete any files.");
+            this.monitoringButton.UseVisualStyleBackColor = true;
+            this.monitoringButton.Click += new System.EventHandler(this.monitoringButton_Click);
+            // 
             // timerButton
             // 
-            this.timerButton.Location = new System.Drawing.Point(398, 319);
+            this.timerButton.Location = new System.Drawing.Point(245, 315);
             this.timerButton.Name = "timerButton";
-            this.timerButton.Size = new System.Drawing.Size(63, 23);
+            this.timerButton.Size = new System.Drawing.Size(103, 23);
             this.timerButton.TabIndex = 21;
             this.timerButton.Text = "Start timer";
             this.timerButton.UseVisualStyleBackColor = true;
@@ -355,7 +368,7 @@
             // 
             // hoursNumericUpDown
             // 
-            this.hoursNumericUpDown.Location = new System.Drawing.Point(329, 294);
+            this.hoursNumericUpDown.Location = new System.Drawing.Point(272, 290);
             this.hoursNumericUpDown.Maximum = new decimal(new int[] {
             24,
             0,
@@ -379,7 +392,7 @@
             // 
             // minutesNumericUpDown
             // 
-            this.minutesNumericUpDown.Location = new System.Drawing.Point(373, 294);
+            this.minutesNumericUpDown.Location = new System.Drawing.Point(316, 290);
             this.minutesNumericUpDown.Maximum = new decimal(new int[] {
             60,
             0,
@@ -404,7 +417,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(299, 296);
+            this.label2.Location = new System.Drawing.Point(242, 292);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(30, 13);
             this.label2.TabIndex = 47;
@@ -414,7 +427,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(364, 297);
+            this.label5.Location = new System.Drawing.Point(307, 293);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(10, 13);
             this.label5.TabIndex = 48;
@@ -426,35 +439,34 @@
             this.runOnTimerStartCheckBox.AutoSize = true;
             this.runOnTimerStartCheckBox.Checked = true;
             this.runOnTimerStartCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.runOnTimerStartCheckBox.Location = new System.Drawing.Point(247, 322);
+            this.runOnTimerStartCheckBox.Location = new System.Drawing.Point(358, 291);
             this.runOnTimerStartCheckBox.Name = "runOnTimerStartCheckBox";
             this.runOnTimerStartCheckBox.Size = new System.Drawing.Size(109, 17);
             this.runOnTimerStartCheckBox.TabIndex = 49;
             this.runOnTimerStartCheckBox.Text = "Run on timer start";
             this.runOnTimerStartCheckBox.UseVisualStyleBackColor = true;
             // 
-            // monitoringButton
-            // 
-            this.monitoringButton.Location = new System.Drawing.Point(130, 401);
-            this.monitoringButton.Name = "monitoringButton";
-            this.monitoringButton.Size = new System.Drawing.Size(217, 39);
-            this.monitoringButton.TabIndex = 50;
-            this.monitoringButton.Text = "Start monitoring";
-            this.toolTip.SetToolTip(this.monitoringButton, "Checks a connected backup disk.\r\nSets the BackupDisk and the BackupDiskChecked (i" +
-        "f the HashCode is correct). Doesn\'t delete any files.");
-            this.monitoringButton.UseVisualStyleBackColor = true;
-            this.monitoringButton.Click += new System.EventHandler(this.monitoringButton_Click);
-            // 
             // monitoringTimer
             // 
             this.monitoringTimer.Interval = 60000;
             this.monitoringTimer.Tick += new System.EventHandler(this.monitoringTimer_Tick);
+            // 
+            // killProcessesButton
+            // 
+            this.killProcessesButton.Location = new System.Drawing.Point(244, 389);
+            this.killProcessesButton.Name = "killProcessesButton";
+            this.killProcessesButton.Size = new System.Drawing.Size(217, 23);
+            this.killProcessesButton.TabIndex = 51;
+            this.killProcessesButton.Text = "Kill processes / stop services";
+            this.killProcessesButton.UseVisualStyleBackColor = true;
+            this.killProcessesButton.Click += new System.EventHandler(this.killProcessesButton_Click);
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(468, 447);
+            this.Controls.Add(this.killProcessesButton);
             this.Controls.Add(this.monitoringButton);
             this.Controls.Add(this.runOnTimerStartCheckBox);
             this.Controls.Add(this.label5);
@@ -538,6 +550,7 @@
         private System.Windows.Forms.CheckBox runOnTimerStartCheckBox;
         private System.Windows.Forms.Button monitoringButton;
         private System.Windows.Forms.Timer monitoringTimer;
+        private System.Windows.Forms.Button killProcessesButton;
     }
 }
 

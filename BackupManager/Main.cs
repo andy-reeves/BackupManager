@@ -9,7 +9,7 @@ namespace BackupManager
     using System.Configuration;
     using BackupManager.Entities;
     using System.Diagnostics;
-
+    
     public partial class Main : Form
     {
         #region Fields
@@ -1676,6 +1676,48 @@ namespace BackupManager
                 }
             }
 
+        }
+
+        private void killProcessesButton_Click(object sender, EventArgs e)
+        {
+            string logFile = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+            "backupKillProcesses.txt");
+
+            foreach (Monitor monitor in mediaBackup.Monitors)
+            {
+                if (monitor.ProcessToKill.HasValue())
+                {
+                    Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                            mediaBackup.PushoverAppToken,
+                            logFile,
+                            BackupAction.Monitoring,
+                            PushoverPriority.Normal,
+                            $"Stopping all '{monitor.ProcessToKill}' processes that match");
+
+                    Utils.KillProcesses(monitor.ProcessToKill);
+                }
+
+                if (monitor.ServiceToRestart.HasValue())
+                {
+                    Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                          mediaBackup.PushoverAppToken,
+                          logFile,
+                          BackupAction.Monitoring,
+                          PushoverPriority.Normal,
+                          $"Stopping '{monitor.ServiceToRestart}'");
+
+                    if (!Utils.StopService(monitor.ServiceToRestart, 5000))
+                    {
+                        Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                        mediaBackup.PushoverAppToken,
+                        logFile,
+                        BackupAction.Monitoring,
+                        PushoverPriority.High,
+                        $"Failed to stop the service '{monitor.Name}'");
+                    }
+                }
+            }
         }
     }
 }

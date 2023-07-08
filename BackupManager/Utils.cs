@@ -1170,6 +1170,36 @@ namespace BackupManager
         }
 
         /// <summary>
+        /// Stops the Windows Service specified if its running
+        /// </summary>
+        /// <param name="serviceName"></param>
+        /// <param name="timeoutMilliseconds"></param>
+        /// <returns>True if the service stopped successfully or it was stopped already</returns>
+        public static bool StopService(string serviceName, int timeoutMilliseconds)
+        {
+            ServiceController service = new ServiceController(serviceName);
+
+            try
+            {
+                TimeSpan timeout = TimeSpan.FromMilliseconds(timeoutMilliseconds);
+
+                if (service.Status == ServiceControllerStatus.Running)
+                {
+                    service.Stop();
+                }
+
+                service.WaitForStatus(ServiceControllerStatus.Stopped, timeout);
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+
+        /// <summary>
         /// Restarts the Windows Service specified
         /// </summary>
         /// <param name="serviceName"></param>
