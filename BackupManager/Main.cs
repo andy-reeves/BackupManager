@@ -811,6 +811,18 @@ namespace BackupManager
                                             }
                                         }
                                     }
+
+                                    // check the filename doesn't have TBA in it
+                                    if (file.Contains("TBA"))
+                                    {
+                                        Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                                                                    mediaBackup.PushoverAppToken,
+                                                                    logFile,
+                                                                    BackupAction.ScanFolders,
+                                                                    PushoverPriority.High,
+                                                                    $"TV File {file} has TBA in the filename"
+                                                                    );
+                                    }
                                 }
 
                                 // Checks for Movies, Comedy, Concerts only (main Video folders)
