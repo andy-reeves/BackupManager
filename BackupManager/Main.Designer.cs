@@ -201,8 +201,7 @@
             this.listMoviesWithMultipleFilesButton.Size = new System.Drawing.Size(217, 23);
             this.listMoviesWithMultipleFilesButton.TabIndex = 37;
             this.listMoviesWithMultipleFilesButton.Text = "List movies with multiple movie files";
-            this.toolTip.SetToolTip(this.listMoviesWithMultipleFilesButton, "Checks a connected backup disk.\r\nSets the BackupDisk and the BackupDiskChecked (i" +
-        "f the HashCode is correct). Doesn\'t delete any files.");
+            this.toolTip.SetToolTip(this.listMoviesWithMultipleFilesButton, "Lists any movies that have multiple video files in the same folder");
             this.listMoviesWithMultipleFilesButton.UseVisualStyleBackColor = true;
             this.listMoviesWithMultipleFilesButton.Click += new System.EventHandler(this.listMoviesWithMultipleFilesButton_Click);
             // 
@@ -213,7 +212,7 @@
             this.reportBackupDiskStatusButton.Size = new System.Drawing.Size(217, 23);
             this.reportBackupDiskStatusButton.TabIndex = 43;
             this.reportBackupDiskStatusButton.Text = "Report backup disk status";
-            this.toolTip.SetToolTip(this.reportBackupDiskStatusButton, "Outputs files that are not yet on a Backup drive.");
+            this.toolTip.SetToolTip(this.reportBackupDiskStatusButton, "Reports the status of each backup disk");
             this.reportBackupDiskStatusButton.UseVisualStyleBackColor = true;
             this.reportBackupDiskStatusButton.Click += new System.EventHandler(this.reportBackupDiskStatusButton_Click);
             // 
@@ -224,7 +223,7 @@
             this.speedTestButton.Size = new System.Drawing.Size(217, 23);
             this.speedTestButton.TabIndex = 44;
             this.speedTestButton.Text = "Speed test all master folders";
-            this.toolTip.SetToolTip(this.speedTestButton, "Outputs files that are not yet on a Backup drive.");
+            this.toolTip.SetToolTip(this.speedTestButton, "Runs the speed test on all master folders");
             this.speedTestButton.UseVisualStyleBackColor = true;
             this.speedTestButton.Click += new System.EventHandler(this.speedTestButton_Click);
             // 
@@ -235,8 +234,7 @@
             this.monitoringButton.Size = new System.Drawing.Size(103, 23);
             this.monitoringButton.TabIndex = 50;
             this.monitoringButton.Text = "Start monitoring";
-            this.toolTip.SetToolTip(this.monitoringButton, "Checks a connected backup disk.\r\nSets the BackupDisk and the BackupDiskChecked (i" +
-        "f the HashCode is correct). Doesn\'t delete any files.");
+            this.toolTip.SetToolTip(this.monitoringButton, "Starts the service monitoring");
             this.monitoringButton.UseVisualStyleBackColor = true;
             this.monitoringButton.Click += new System.EventHandler(this.monitoringButton_Click);
             // 
