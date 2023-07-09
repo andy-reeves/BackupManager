@@ -512,6 +512,17 @@ namespace BackupManager
                     }
                 }
 
+                catch (FileNotFoundException)
+                {
+                    Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                                          mediaBackup.PushoverAppToken,
+                                          logFile,
+                                          BackupAction.BackupFiles,
+                                          PushoverPriority.High,
+                                          $"{backupFile.FullPath} is not found. It's most likely been replaced since our scan."
+                                         );
+                }
+
                 catch (IOException ex)
                 {
                     // Sometimes during a copy we get this if we lose the connection to the source NAS drive
