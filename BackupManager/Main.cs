@@ -23,7 +23,10 @@ namespace BackupManager
 
         private DailyTrigger trigger;
 
-        Action triggerAction;
+        private Action triggerAction;
+
+        // When the serice monitoring has been enabled this is True
+        private bool serviceMonitoringRunning;
 
         #region Constructors and Destructors
 
@@ -1135,11 +1138,27 @@ namespace BackupManager
 
             try
             {
+                // check the service monitor is running
                 // Take a copy of the current count of files we backup up last time
                 // Then ScanFolders
                 // If the new file count is less than x% lower then abort
                 // This happens if the server running the backup cannot connect to the nas devices sometimes
                 // It'll then delete everything off the connected backup disk as it doesn't think they're needed so this will prevent that
+
+                if (serviceMonitoringRunning)
+                {
+                    Utils.LogWithPushover(mediaBackup.PushoverUserKey, mediaBackup.PushoverAppToken,
+                                        logFile, BackupAction.General,
+                                        $"Service monitoring is running every {mediaBackup.MonitorInterval} seconds."
+                                        );
+                }
+                else
+                {
+                    Utils.LogWithPushover(mediaBackup.PushoverUserKey, mediaBackup.PushoverAppToken,
+                                        logFile, BackupAction.General, PushoverPriority.High,
+                                        $"Service monitoring is not running."
+                                        );
+                }
 
                 long oldFileCount = mediaBackup.BackupFiles.Count();
 
@@ -1565,7 +1584,20 @@ namespace BackupManager
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
             "backup_Monitoring.txt");
 
-            if (monitoringButton.Text == "Start monitoring")
+            if (serviceMonitoringRunning)
+
+            {
+                monitoringTimer.Stop();
+                Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                              mediaBackup.PushoverAppToken,
+                              logFile,
+                              BackupAction.Monitoring, "Stopped"
+                            );
+
+                monitoringButton.Text = "Start monitoring";
+                serviceMonitoringRunning = false;
+            }
+            else
             {
                 Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                               mediaBackup.PushoverAppToken,
@@ -1578,17 +1610,7 @@ namespace BackupManager
                 monitoringTimer.Interval = mediaBackup.MonitorInterval * 1000;
                 monitoringTimer.Start();
                 monitoringButton.Text = "Stop monitoring";
-            }
-            else
-            {
-                monitoringTimer.Stop();
-                Utils.LogWithPushover(mediaBackup.PushoverUserKey,
-                              mediaBackup.PushoverAppToken,
-                              logFile,
-                              BackupAction.Monitoring, "Stopped"
-                            );
-
-                monitoringButton.Text = "Start monitoring";
+                serviceMonitoringRunning = true;
             }
         }
 
