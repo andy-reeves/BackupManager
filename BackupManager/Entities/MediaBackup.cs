@@ -93,10 +93,18 @@
         public int MinimumMasterFolderWriteSpeed;
 
         // We need to store 2 hashes
-        // 1 hash is from the file content hashcodes and the leafname of the file. This allows for files to have duplicate contents but be stored
-        // somewhere else as a different name. Thie happened with The Porridge movie which is also stored as a Tv episode.
-        // The other hash is of the file full path names as these are unique too and lets us look them up faster without reading the disk
-        private readonly Hashtable hashesAndFileNames = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
+        // the main hash is keyed on the FullPath (in lowercase) and retuerns a BackupFile
+        // the second hash is keyed off the contents hash of the file and the relative path
+        // (doesn't include the masterfolder or indexfolder)
+        // we do this so we can look up files quickly by 
+        // contents hashes are not unique. Duplicate files in different locations
+        // The only guaranteed unique value is the fullpath
+        // The second hashtable is far when we've moved files from one master folder to another.
+        // We dont want to delete the file off backup and then copy it again so we try a rename
+        // as long as the file has the same relative path we can find it and rename it
+
+        // This happened with The Porridge movie which is also stored as a Tv episode.
+        private readonly Hashtable contentsHashIndexFolderAndRelativePath = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
 
         private readonly Hashtable paths = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
 
@@ -151,15 +159,14 @@
 
             foreach (BackupFile backupFile in mediaBackup.BackupFiles)
             {
-
                 if (backupFile.ContentsHash == Utils.ZeroByteHash)
                 {
                     throw new ApplicationException("Zerobyte Hash detected on load");
                 }
 
-                if (!mediaBackup.hashesAndFileNames.Contains(backupFile.Hash) && !mediaBackup.paths.Contains(backupFile.FullPath))
+                if (!mediaBackup.contentsHashIndexFolderAndRelativePath.Contains(backupFile.Hash) && !mediaBackup.paths.Contains(backupFile.FullPath))
                 {
-                    mediaBackup.hashesAndFileNames.Add(backupFile.Hash, backupFile);
+                    mediaBackup.contentsHashIndexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
                     mediaBackup.paths.Add(backupFile.FullPath, backupFile);
                 }
                 else
@@ -197,18 +204,40 @@
             }
         }
 
-        public static string GetRelativePathFromBackupPath(string fullPath, string backupFolder,
-                                                           string insertedBackupDrive)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="backupFileFullPath"></param>
+        /// <returns>Null if the backupFileFullPath doesn't start with any MasterFolders/IndexFolder combination</returns>
+        internal string GetRelativePath(string backupFileFullPath)
         {
-            var driveAndPath = Path.Combine(insertedBackupDrive, backupFolder);
+            foreach (string indexFolder in
+            // from the full backupdisk path provided we need to find the relative path
+            // it's some combination of MasterFolder and IndexFolder but we dont know which
 
-            if (!fullPath.StartsWith(driveAndPath))
+            from indexFolder in IndexFolders
+
+            where backupFileFullPath.StartsWith(indexFolder, StringComparison.CurrentCultureIgnoreCase)
+            select indexFolder)
             {
-                throw new ArgumentException();
+                return backupFileFullPath.Substring(indexFolder.Length + 1);
             }
 
-            return
-                fullPath.SubstringAfter(driveAndPath, StringComparison.CurrentCultureIgnoreCase).TrimStart(new[] { '\\' });
+            return null;
+        }
+
+        internal string GetIndexFolder(string backupFileFullPath)
+        {
+            foreach (string indexFolder in
+            // from the backupdisk path provided we need to find the relative path
+            from indexFolder in IndexFolders
+            where backupFileFullPath.StartsWith(indexFolder, StringComparison.CurrentCultureIgnoreCase)
+            select indexFolder)
+            {
+                return indexFolder;
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -220,13 +249,16 @@
         /// <returns></returns>
         public BackupFile GetBackupFile(string fullPath, string masterFolder, string indexFolder)
         {
+            Utils.Trace("GetBackupFile enter");
+            Utils.Trace($"Params: path={fullPath}");
+
             // we hash the path of the file so we can look it up quickly
             // then we check the ModifiedTime and size
             // if these have changed we redo the hash
             // files with same hash are allowed (Porridge TV ep and movie)
             // files can't have same hash and same filename though
 
-            string hash;
+            string hashOfContents;
 
             BackupFile backupFile;
 
@@ -245,18 +277,18 @@
                     // update the timestamp as its changed/missing
                     backupFile.LastWriteTime = u;
 
-                    hash = Utils.GetShortMd5HashFromFile(fullPath);
+                    hashOfContents = Utils.GetShortMd5HashFromFile(fullPath);
 
                     // has the contents hash changed too?
-                    if (hash != backupFile.ContentsHash)
+                    if (hashOfContents != backupFile.ContentsHash)
                     {
-                        if (hashesAndFileNames.Contains(backupFile.Hash))
+                        if (contentsHashIndexFolderAndRelativePath.Contains(backupFile.Hash))
                         {
-                            hashesAndFileNames.Remove(backupFile.Hash);
+                            contentsHashIndexFolderAndRelativePath.Remove(backupFile.Hash);
                         }
 
                         backupFile.UpdateContentsHash();
-                        hashesAndFileNames.Add(backupFile.Hash, backupFile);
+                        contentsHashIndexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
 
                         // clear the backup details as the master file hash has changed
                         backupFile.ClearDiskChecked();
@@ -269,34 +301,39 @@
                     backupFile.UpdateFileLength();
                 }
 
+                Utils.Trace("GetBackupFile exit1");
                 return backupFile;
             }
 
-            hash = Utils.GetShortMd5HashFromFile(fullPath);
+            hashOfContents = Utils.GetShortMd5HashFromFile(fullPath);
 
-            string hashKey = BackupFile.GetFileHash(hash, fullPath);
+            string relativePath = BackupFile.GetRelativePath(fullPath, masterFolder, indexFolder);
 
-            if (hashesAndFileNames.Contains(hashKey))
+            string hashKey = BackupFile.GetFileHash(hashOfContents, Path.Combine(indexFolder, relativePath));
+
+            if (contentsHashIndexFolderAndRelativePath.Contains(hashKey))
             {
-                var b = (BackupFile)hashesAndFileNames[hashKey];
+                backupFile = (BackupFile)contentsHashIndexFolderAndRelativePath[hashKey];
 
-                if (paths.Contains(b.FullPath))
+                if (paths.Contains(backupFile.FullPath))
                 {
-                    paths.Remove(b.FullPath);
+                    paths.Remove(backupFile.FullPath);
                 }
 
-                b.SetFullPath(fullPath, masterFolder, indexFolder);
-                paths.Add(fullPath, b);
+                backupFile.SetFullPath(fullPath, masterFolder, indexFolder);
+                paths.Add(fullPath, backupFile);
 
-                return b;
+                Utils.Trace("GetBackupFile exit2");
+                return backupFile;
             }
 
             backupFile = new BackupFile(fullPath, masterFolder, indexFolder);
             BackupFiles.Add(backupFile);
 
-            hashesAndFileNames.Add(backupFile.Hash, backupFile);
+            contentsHashIndexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
             paths.Add(fullPath, backupFile);
 
+            Utils.Trace("GetBackupFile exit3");
             return backupFile;
         }
 
@@ -307,6 +344,8 @@
         /// <returns></returns>
         public BackupDisk GetBackupDisk(string backupShare)
         {
+            Utils.Trace("GetBackupDisk enter");
+
             // try and find a disk based on the diskname only
             // if more than 1 disk than return the first one
             string diskName = BackupDisk.GetBackupFolderName(backupShare);
@@ -327,6 +366,8 @@
 
             BackupDisk disk = new BackupDisk(diskName, backupShare);
             BackupDisks.Add(disk);
+
+            Utils.Trace("GetBackupDisk exit");
             return disk;
         }
 
@@ -339,8 +380,17 @@
         public BackupFile GetBackupFile(string hash, string path)
         {
             string hashKey = BackupFile.GetFileHash(hash, path);
+            return contentsHashIndexFolderAndRelativePath.Contains(hashKey) ? (BackupFile)contentsHashIndexFolderAndRelativePath[hashKey] : null;
+        }
 
-            return hashesAndFileNames.Contains(hashKey) ? (BackupFile)hashesAndFileNames[hashKey] : null;
+        /// <summary>
+        /// Gets a BackupFile from the fullPath provided.
+        /// </summary>
+        /// <param name="fullPath"></param>
+        /// <returns>Null if it doen't exist.</returns>
+        public BackupFile GetBackupFile(string fullPath)
+        {
+            return paths.Contains(fullPath) ? (BackupFile)paths[fullPath] : null;
         }
 
         public IEnumerable<BackupFile> GetBackupFilesWithDiskCheckedEmpty()
@@ -378,14 +428,24 @@
         }
 
         /// <summary>
-        /// Returns True if this hash and path exist already
+        /// Returns True if this hash and relativePath exist already
         /// </summary>
         /// <param name="hash"></param>
-        /// <param name="path"></param>
+        /// <param name="relativePath"></param>
         /// <returns></returns>
-        public bool Contains(string hash, string path)
+        public bool Contains(string hash, string relativePath)
         {
-            return hashesAndFileNames.Contains(BackupFile.GetFileHash(hash, path));
+            return contentsHashIndexFolderAndRelativePath.Contains(BackupFile.GetFileHash(hash, relativePath));
+        }
+
+        /// <summary>
+        /// Returns True if this hash and fullPath (from a MasterFolder) exist already
+        /// </summary>
+        /// <param name="fullPath"></param>
+        /// <returns></returns>
+        public bool Contains(string fullPath)
+        {
+            return paths.Contains(fullPath);
         }
 
         public void ClearFlags()
@@ -410,9 +470,9 @@
             {
                 if (clearHashes)
                 {
-                    if (hashesAndFileNames.Contains(backupFile.Hash))
+                    if (contentsHashIndexFolderAndRelativePath.Contains(backupFile.Hash))
                     {
-                        hashesAndFileNames.Remove(backupFile.Hash);
+                        contentsHashIndexFolderAndRelativePath.Remove(backupFile.Hash);
                     }
 
                     if (paths.Contains(backupFile.FullPath))

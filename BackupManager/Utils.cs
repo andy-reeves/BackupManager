@@ -549,6 +549,7 @@ namespace BackupManager
         public static string GetShortMd5HashFromFile(string path)
         {
             Trace("GetShortMd5HashFromFile enter");
+            Trace($"Params: path={path}");
 
             if (string.IsNullOrEmpty(path))
             {
@@ -1367,7 +1368,7 @@ namespace BackupManager
         internal static void Trace(string value)
         {
             string textToWrite = $"{DateTime.Now.ToString("dd-MM-yy HH:mm:ss.ff")} : {value.Replace('\n', ' ')}";
-            System.Diagnostics.Trace.WriteLine(textToWrite);
+            System.Diagnostics.Trace.WriteLine(textToWrite);  
         }
     }
 }

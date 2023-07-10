@@ -91,7 +91,7 @@
             this.toolTip.SetToolTip(this.checkConnectedBackupDiskButton, "Checks a connected backup disk.\r\nSets the BackupDisk and the BackupDiskChecked (i" +
         "f the HashCode is correct). Doesn\'t delete any files.");
             this.checkConnectedBackupDiskButton.UseVisualStyleBackColor = true;
-            this.checkConnectedBackupDiskButton.Click += new System.EventHandler(this.CheckConnectedBackupDriveButton_Click);
+            this.checkConnectedBackupDiskButton.Click += new System.EventHandler(this.CheckConnectedBackupDiskButton_Click);
             // 
             // copyFilesToBackupDiskButton
             // 

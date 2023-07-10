@@ -104,7 +104,7 @@
         }
 
         /// <summary>
-        /// This is a combination key of the hash of the file contents and the file name.
+        /// This is a combination key of the hash of the file contents and the files indexfolder and relative path.
         /// </summary>
         [XmlIgnore()]
         public string Hash
@@ -113,7 +113,7 @@
             {
                 if (hash == null)
                 {
-                    hash = GetFileHash(ContentsHash, RelativePath);
+                    hash = GetFileHash(ContentsHash, Path.Combine(IndexFolder, RelativePath));
                 }
 
                 return hash;
@@ -215,8 +215,15 @@
             UpdateLastWriteTime();
             UpdateFileLength();
         }
-
-        private static string GetRelativePath(string fullPath, string masterFolder, string indexFolder)
+        /// <summary>
+        /// Returns the remaining path from fullPath after masterFolder and indexFolder
+        /// </summary>
+        /// <param name="fullPath"></param>
+        /// <param name="masterFolder"></param>
+        /// <param name="indexFolder"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        internal static string GetRelativePath(string fullPath, string masterFolder, string indexFolder)
         {
             string combinedPath = Path.Combine(masterFolder, indexFolder);
 
@@ -228,14 +235,14 @@
             return fullPath.SubstringAfter(combinedPath, StringComparison.CurrentCultureIgnoreCase).TrimStart(new[] { '\\' });
         }
         /// <summary>
-        /// Returns a hash of the contents followed by '-' and then the leafname
+        /// Returns a hash of the contents followed by '-' and the path provided.
         /// </summary>
         /// <param name="hash"></param>
-        /// <param name="path"></param>
+        /// /// <param name="path"></param>
         /// <returns></returns>
-        public static string GetFileHash(string hash, string path)
+        public static string GetFileHash(string hash,  string path)
         {
-            return hash + "-" + Path.GetFileName(path);
+            return hash + "-" + path;
         }
 
         /// <summary>
@@ -305,6 +312,7 @@
         /// </summary>
         /// <param name="disk">The BackupDisk the BackupFile is on</param>
         /// <exception cref="ApplicationException"></exception>
+        /// <returns>False is the hashes are different</returns>
         public bool CheckContentHashes(BackupDisk disk)
         {
             string hashFromSourceFile = Utils.GetShortMd5HashFromFile(FullPath);

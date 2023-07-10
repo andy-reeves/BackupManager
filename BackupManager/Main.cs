@@ -101,7 +101,7 @@ namespace BackupManager
 
         }
 
-        private void CheckConnectedBackupDriveButton_Click(object sender, EventArgs e)
+        private void CheckConnectedBackupDiskButton_Click(object sender, EventArgs e)
         {
             Utils.Trace("CheckConnectedBackupDriveButton_Click enter");
 
@@ -196,12 +196,14 @@ namespace BackupManager
             {
                 string backupFileHash = Utils.GetShortMd5HashFromFile(backupFileFullPath);
 
-                if (mediaBackup.Contains(backupFileHash, backupFileFullPath))
+                string backupFileIndexFolderRelativePath = backupFileFullPath.Substring(folderToCheck.Length + 1);
+              
+                if (mediaBackup.Contains(backupFileHash, backupFileIndexFolderRelativePath))
                 {
-                    BackupFile backupFile = mediaBackup.GetBackupFile(backupFileHash, backupFileFullPath);
-                    Utils.Log(logFile, $"Checking hash for {backupFileFullPath}");
+                    BackupFile backupFile = mediaBackup.GetBackupFile(backupFileHash, backupFileIndexFolderRelativePath);
 
                     // This forces a hash check on the source and backup disk files
+                    Utils.Log(logFile, $"Checking hash for {backupFileFullPath}");
                     bool returnValue = backupFile.CheckContentHashes(disk);
 
                     if (returnValue == false)
@@ -214,33 +216,6 @@ namespace BackupManager
                                  $"There was an error with the hashcodes on the source and backup disk. Its likely the sourcefile has changed since the last backup of {backupFile.FullPath}");
 
                         diskInfoMessageWasTheLastSent = false;
-                    }
-                    else
-                    {
-                        // So we can get the situation where the hash of a file on disk is equal to a hash of a file we have
-                        // It could have a different filename on the backup disk though (if we renamed the master file)
-                        // check the filenames are equal and rename on the backup disk if they're not
-                        string backupDiskFilename = backupFileFullPath.Substring(folderToCheck.Length + 1); // trim off the unc and backup disk parts
-
-                        string masterFilename = Path.Combine(backupFile.IndexFolder, backupFile.RelativePath);
-
-                        if (!backupDiskFilename.Equals(masterFilename))
-                        {
-                            string destinationFileName = Path.Combine(folderToCheck, backupFile.IndexFolder, backupFile.RelativePath);
-
-                            Directory.CreateDirectory(Path.GetDirectoryName(destinationFileName));
-                            Utils.LogWithPushover(mediaBackup.PushoverUserKey,
-
-                                mediaBackup.PushoverAppToken,
-                                                  logFile,
-                                                  BackupAction.CheckBackupDisk,
-                                                  $"Renaming {backupFileFullPath} to {destinationFileName}"
-                                                  );
-
-                            File.Move(backupFileFullPath, destinationFileName);
-
-                            diskInfoMessageWasTheLastSent = false;
-                        }
                     }
                 }
                 else
@@ -814,9 +789,8 @@ namespace BackupManager
 
                             foreach (string file in files)
                             {
-#if DEBUG    
-                                // Utils.Log(logFile, $"Checking {file}");
-#endif
+                                Utils.Trace($"Checking {file}");
+
                                 // Checks for TV only
                                 if (file.Contains("_TV"))
                                 {
