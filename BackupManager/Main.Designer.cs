@@ -30,16 +30,16 @@
         {
             this.components = new System.ComponentModel.Container();
             this.updateMasterFilesButton = new System.Windows.Forms.Button();
-            this.checkConnectedBackupDriveButton = new System.Windows.Forms.Button();
-            this.copyFilesToBackupDriveButton = new System.Windows.Forms.Button();
+            this.checkConnectedBackupDiskButton = new System.Windows.Forms.Button();
+            this.copyFilesToBackupDiskButton = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.backupDiskTextBox = new System.Windows.Forms.TextBox();
-            this.listFilesNotOnBackupButton = new System.Windows.Forms.Button();
+            this.listFilesNotOnBackupDiskButton = new System.Windows.Forms.Button();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.button1 = new System.Windows.Forms.Button();
-            this.backupHashCodeCheckedButton = new System.Windows.Forms.Button();
+            this.recalculateAllHashesButton = new System.Windows.Forms.Button();
+            this.listFilesWithoutBackupDiskCheckedButton = new System.Windows.Forms.Button();
             this.checkDiskAndDeleteButton = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
+            this.clearBackupDiskForFilesWithoutBackupDiskCheckedButton = new System.Windows.Forms.Button();
             this.checkBackupDeleteAndCopyButton = new System.Windows.Forms.Button();
             this.listMoviesWithMultipleFilesButton = new System.Windows.Forms.Button();
             this.reportBackupDiskStatusButton = new System.Windows.Forms.Button();
@@ -81,28 +81,28 @@
             this.updateMasterFilesButton.UseVisualStyleBackColor = true;
             this.updateMasterFilesButton.Click += new System.EventHandler(this.UpdateMasterFilesButtonClick);
             // 
-            // checkConnectedBackupDriveButton
+            // checkConnectedBackupDiskButton
             // 
-            this.checkConnectedBackupDriveButton.Location = new System.Drawing.Point(10, 290);
-            this.checkConnectedBackupDriveButton.Name = "checkConnectedBackupDriveButton";
-            this.checkConnectedBackupDriveButton.Size = new System.Drawing.Size(217, 39);
-            this.checkConnectedBackupDriveButton.TabIndex = 1;
-            this.checkConnectedBackupDriveButton.Text = "Check connected backup disk";
-            this.toolTip.SetToolTip(this.checkConnectedBackupDriveButton, "Checks a connected backup disk.\r\nSets the BackupDisk and the BackupDiskChecked (i" +
+            this.checkConnectedBackupDiskButton.Location = new System.Drawing.Point(10, 290);
+            this.checkConnectedBackupDiskButton.Name = "checkConnectedBackupDiskButton";
+            this.checkConnectedBackupDiskButton.Size = new System.Drawing.Size(217, 39);
+            this.checkConnectedBackupDiskButton.TabIndex = 1;
+            this.checkConnectedBackupDiskButton.Text = "Check connected backup disk";
+            this.toolTip.SetToolTip(this.checkConnectedBackupDiskButton, "Checks a connected backup disk.\r\nSets the BackupDisk and the BackupDiskChecked (i" +
         "f the HashCode is correct). Doesn\'t delete any files.");
-            this.checkConnectedBackupDriveButton.UseVisualStyleBackColor = true;
-            this.checkConnectedBackupDriveButton.Click += new System.EventHandler(this.CheckConnectedBackupDriveButton_Click);
+            this.checkConnectedBackupDiskButton.UseVisualStyleBackColor = true;
+            this.checkConnectedBackupDiskButton.Click += new System.EventHandler(this.CheckConnectedBackupDriveButton_Click);
             // 
-            // copyFilesToBackupDriveButton
+            // copyFilesToBackupDiskButton
             // 
-            this.copyFilesToBackupDriveButton.Location = new System.Drawing.Point(10, 88);
-            this.copyFilesToBackupDriveButton.Name = "copyFilesToBackupDriveButton";
-            this.copyFilesToBackupDriveButton.Size = new System.Drawing.Size(217, 23);
-            this.copyFilesToBackupDriveButton.TabIndex = 5;
-            this.copyFilesToBackupDriveButton.Text = "3. Copy files from master to backup disk";
-            this.toolTip.SetToolTip(this.copyFilesToBackupDriveButton, "Copies any files without a Backup disk set to a connected Backup drive.");
-            this.copyFilesToBackupDriveButton.UseVisualStyleBackColor = true;
-            this.copyFilesToBackupDriveButton.Click += new System.EventHandler(this.CopyFilesToBackupDriveButtonClick);
+            this.copyFilesToBackupDiskButton.Location = new System.Drawing.Point(10, 88);
+            this.copyFilesToBackupDiskButton.Name = "copyFilesToBackupDiskButton";
+            this.copyFilesToBackupDiskButton.Size = new System.Drawing.Size(217, 23);
+            this.copyFilesToBackupDiskButton.TabIndex = 5;
+            this.copyFilesToBackupDiskButton.Text = "3. Copy files from master to backup disk";
+            this.toolTip.SetToolTip(this.copyFilesToBackupDiskButton, "Copies any files without a Backup disk set to a connected Backup drive.");
+            this.copyFilesToBackupDiskButton.UseVisualStyleBackColor = true;
+            this.copyFilesToBackupDiskButton.Click += new System.EventHandler(this.CopyFilesToBackupDiskButton_Click);
             // 
             // label1
             // 
@@ -121,41 +121,41 @@
             this.backupDiskTextBox.TabIndex = 7;
             this.backupDiskTextBox.Text = "d:\\";
             // 
-            // listFilesNotOnBackupButton
+            // listFilesNotOnBackupDiskButton
             // 
-            this.listFilesNotOnBackupButton.Location = new System.Drawing.Point(10, 60);
-            this.listFilesNotOnBackupButton.Name = "listFilesNotOnBackupButton";
-            this.listFilesNotOnBackupButton.Size = new System.Drawing.Size(217, 23);
-            this.listFilesNotOnBackupButton.TabIndex = 11;
-            this.listFilesNotOnBackupButton.Text = "2. Files not on a Backup disk";
-            this.toolTip.SetToolTip(this.listFilesNotOnBackupButton, "Outputs files that are not yet on a Backup drive.");
-            this.listFilesNotOnBackupButton.UseVisualStyleBackColor = true;
-            this.listFilesNotOnBackupButton.Click += new System.EventHandler(this.ListFilesNotOnBackupDriveButton_Click);
+            this.listFilesNotOnBackupDiskButton.Location = new System.Drawing.Point(10, 60);
+            this.listFilesNotOnBackupDiskButton.Name = "listFilesNotOnBackupDiskButton";
+            this.listFilesNotOnBackupDiskButton.Size = new System.Drawing.Size(217, 23);
+            this.listFilesNotOnBackupDiskButton.TabIndex = 11;
+            this.listFilesNotOnBackupDiskButton.Text = "2. Files not on a Backup disk";
+            this.toolTip.SetToolTip(this.listFilesNotOnBackupDiskButton, "Outputs files that are not yet on a Backup drive.");
+            this.listFilesNotOnBackupDiskButton.UseVisualStyleBackColor = true;
+            this.listFilesNotOnBackupDiskButton.Click += new System.EventHandler(this.ListFilesNotOnBackupDiskButton_Click);
             // 
-            // button1
+            // recalculateAllHashesButton
             // 
-            this.button1.Location = new System.Drawing.Point(10, 183);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(217, 23);
-            this.button1.TabIndex = 16;
-            this.button1.Text = "Recalculate all Hashes from Master Files";
-            this.toolTip.SetToolTip(this.button1, "Recalculates all the Hashcodes from the Master Files. Only use this is the hash a" +
+            this.recalculateAllHashesButton.Location = new System.Drawing.Point(10, 183);
+            this.recalculateAllHashesButton.Name = "recalculateAllHashesButton";
+            this.recalculateAllHashesButton.Size = new System.Drawing.Size(217, 23);
+            this.recalculateAllHashesButton.TabIndex = 16;
+            this.recalculateAllHashesButton.Text = "Recalculate all Hashes from Master Files";
+            this.toolTip.SetToolTip(this.recalculateAllHashesButton, "Recalculates all the Hashcodes from the Master Files. Only use this is the hash a" +
         "lgorithm has been changed.");
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.RecalculateHashcodesButton_Click);
+            this.recalculateAllHashesButton.UseVisualStyleBackColor = true;
+            this.recalculateAllHashesButton.Click += new System.EventHandler(this.recalculateAllHashesButton_Click);
             // 
-            // backupHashCodeCheckedButton
+            // listFilesWithoutBackupDiskCheckedButton
             // 
-            this.backupHashCodeCheckedButton.Location = new System.Drawing.Point(10, 117);
-            this.backupHashCodeCheckedButton.Name = "backupHashCodeCheckedButton";
-            this.backupHashCodeCheckedButton.Size = new System.Drawing.Size(217, 23);
-            this.backupHashCodeCheckedButton.TabIndex = 17;
-            this.backupHashCodeCheckedButton.Text = "4. Files without BackupDiskChecked set";
-            this.toolTip.SetToolTip(this.backupHashCodeCheckedButton, "Lists files that have a null BackupDiskChecked value. This means it\'s been copied" +
+            this.listFilesWithoutBackupDiskCheckedButton.Location = new System.Drawing.Point(10, 117);
+            this.listFilesWithoutBackupDiskCheckedButton.Name = "listFilesWithoutBackupDiskCheckedButton";
+            this.listFilesWithoutBackupDiskCheckedButton.Size = new System.Drawing.Size(217, 23);
+            this.listFilesWithoutBackupDiskCheckedButton.TabIndex = 17;
+            this.listFilesWithoutBackupDiskCheckedButton.Text = "4. Files without BackupDiskChecked set";
+            this.toolTip.SetToolTip(this.listFilesWithoutBackupDiskCheckedButton, "Lists files that have a null BackupDiskChecked value. This means it\'s been copied" +
         " to a backup disk but the Hashcode is now different. We\'ve probably updated the " +
         "master file.");
-            this.backupHashCodeCheckedButton.UseVisualStyleBackColor = true;
-            this.backupHashCodeCheckedButton.Click += new System.EventHandler(this.BackupHashCodeCheckedButton_Click);
+            this.listFilesWithoutBackupDiskCheckedButton.UseVisualStyleBackColor = true;
+            this.listFilesWithoutBackupDiskCheckedButton.Click += new System.EventHandler(this.ListFilesWithoutBackupDiskCheckedButton_Click);
             // 
             // checkDiskAndDeleteButton
             // 
@@ -169,18 +169,18 @@
             this.checkDiskAndDeleteButton.UseVisualStyleBackColor = true;
             this.checkDiskAndDeleteButton.Click += new System.EventHandler(this.checkDiskAndDeleteButton_Click);
             // 
-            // button3
+            // clearBackupDiskForFilesWithoutBackupDiskCheckedButton
             // 
-            this.button3.Location = new System.Drawing.Point(10, 144);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(217, 35);
-            this.button3.TabIndex = 20;
-            this.button3.Text = "5. Clear backupdisk for files without BackupDiskChecked";
-            this.toolTip.SetToolTip(this.button3, "Lists files that have a null BackupDiskChecked value. This means it\'s been copied" +
+            this.clearBackupDiskForFilesWithoutBackupDiskCheckedButton.Location = new System.Drawing.Point(10, 144);
+            this.clearBackupDiskForFilesWithoutBackupDiskCheckedButton.Name = "clearBackupDiskForFilesWithoutBackupDiskCheckedButton";
+            this.clearBackupDiskForFilesWithoutBackupDiskCheckedButton.Size = new System.Drawing.Size(217, 35);
+            this.clearBackupDiskForFilesWithoutBackupDiskCheckedButton.TabIndex = 20;
+            this.clearBackupDiskForFilesWithoutBackupDiskCheckedButton.Text = "5. Clear backupdisk for files without BackupDiskChecked";
+            this.toolTip.SetToolTip(this.clearBackupDiskForFilesWithoutBackupDiskCheckedButton, "Lists files that have a null BackupDiskChecked value. This means it\'s been copied" +
         " to a backup disk but the Hashcode is now different. We\'ve probably updated the " +
         "master file.");
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.FilesWithoutBackupDiskChecked_Click);
+            this.clearBackupDiskForFilesWithoutBackupDiskCheckedButton.UseVisualStyleBackColor = true;
+            this.clearBackupDiskForFilesWithoutBackupDiskCheckedButton.Click += new System.EventHandler(this.clearBackupDiskForFilesWithoutBackupDiskCheckedButton_Click);
             // 
             // checkBackupDeleteAndCopyButton
             // 
@@ -488,15 +488,15 @@
             this.Controls.Add(this.listFilesTextBox);
             this.Controls.Add(this.listFilesOnBackupDiskButton);
             this.Controls.Add(this.timerButton);
-            this.Controls.Add(this.button3);
+            this.Controls.Add(this.clearBackupDiskForFilesWithoutBackupDiskCheckedButton);
             this.Controls.Add(this.checkDiskAndDeleteButton);
-            this.Controls.Add(this.backupHashCodeCheckedButton);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.listFilesNotOnBackupButton);
+            this.Controls.Add(this.listFilesWithoutBackupDiskCheckedButton);
+            this.Controls.Add(this.recalculateAllHashesButton);
+            this.Controls.Add(this.listFilesNotOnBackupDiskButton);
             this.Controls.Add(this.backupDiskTextBox);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.copyFilesToBackupDriveButton);
-            this.Controls.Add(this.checkConnectedBackupDriveButton);
+            this.Controls.Add(this.copyFilesToBackupDiskButton);
+            this.Controls.Add(this.checkConnectedBackupDiskButton);
             this.Controls.Add(this.updateMasterFilesButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
@@ -514,16 +514,16 @@
         #endregion
 
         private System.Windows.Forms.Button updateMasterFilesButton;
-        private System.Windows.Forms.Button checkConnectedBackupDriveButton;
-        private System.Windows.Forms.Button copyFilesToBackupDriveButton;
+        private System.Windows.Forms.Button checkConnectedBackupDiskButton;
+        private System.Windows.Forms.Button copyFilesToBackupDiskButton;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox backupDiskTextBox;
-        private System.Windows.Forms.Button listFilesNotOnBackupButton;
+        private System.Windows.Forms.Button listFilesNotOnBackupDiskButton;
         private System.Windows.Forms.ToolTip toolTip;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button backupHashCodeCheckedButton;
+        private System.Windows.Forms.Button recalculateAllHashesButton;
+        private System.Windows.Forms.Button listFilesWithoutBackupDiskCheckedButton;
         private System.Windows.Forms.Button checkDiskAndDeleteButton;
-        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button clearBackupDiskForFilesWithoutBackupDiskCheckedButton;
         private System.Windows.Forms.Button timerButton;
         private System.Windows.Forms.Button listFilesOnBackupDiskButton;
         private System.Windows.Forms.TextBox listFilesTextBox;

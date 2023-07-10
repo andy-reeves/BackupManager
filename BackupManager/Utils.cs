@@ -22,6 +22,7 @@ namespace BackupManager
     using System.Diagnostics;
     using System.Net.Sockets;
     using System.ServiceProcess;
+    using static System.Net.Mime.MediaTypeNames;
 
     /// <summary>
     /// The utils.
@@ -312,6 +313,8 @@ namespace BackupManager
             FileAttributes directoryAttributesToIgnore,
             FileAttributes fileAttributesToIgnore)
         {
+            Trace("GetFiles enter");
+
             if (!Directory.Exists(path))
             {
                 return new string[] { };
@@ -382,6 +385,8 @@ namespace BackupManager
                 }
             }
 
+            Trace("GetFiles exit");
+
             return foundFiles.ToArray();
         }
 
@@ -399,9 +404,14 @@ namespace BackupManager
         /// </returns>
         public static string GetHashFromFile(string fileName, HashAlgorithm algorithm)
         {
+            Trace("GetHashFromFile enter");
+
             using (BufferedStream stream = new BufferedStream(File.OpenRead(fileName), BytesInOneMegabyte))
             {
-                return ByteArrayToString(algorithm.ComputeHash(stream));
+                string value = ByteArrayToString(algorithm.ComputeHash(stream));
+
+                Trace("GetHashFromFile exit");
+                return value;
             }
         }
 
@@ -422,6 +432,8 @@ namespace BackupManager
         /// </returns>
         public static byte[] GetRemoteFileByteArray(Stream fileStream, long offset, long byteCountToReturn)
         {
+            Trace("GetRemoteFileByteArray enter");
+
             byte[] buffer = new byte[byteCountToReturn];
 
             int count;
@@ -436,9 +448,12 @@ namespace BackupManager
             {
                 var byteArray = new byte[sum];
                 Buffer.BlockCopy(buffer, 0, byteArray, 0, sum);
+                
+                Trace("GetRemoteFileByteArray exit");
                 return byteArray;
             }
 
+            Trace("GetRemoteFileByteArray exit");
             return buffer;
         }
 
@@ -456,6 +471,8 @@ namespace BackupManager
         /// </returns>
         public static string GetShortMd5HashFromFile(FileStream stream, long size)
         {
+            Trace("GetShortMd5HashFromFile enter");
+
             if (stream == null)
             {
                 return null;
@@ -487,7 +504,11 @@ namespace BackupManager
                 startBlock = GetLocalFileByteArray(stream, 0, size);
             }
 
-            return CreateHashForByteArray(startBlock, middleBlock, endBlock);
+            string value =  CreateHashForByteArray(startBlock, middleBlock, endBlock);
+
+            Trace("GetShortMd5HashFromFile exit");
+            return value;
+
         }
 
         public static long GetFileLength(string fileName)
@@ -527,6 +548,8 @@ namespace BackupManager
         /// </returns>
         public static string GetShortMd5HashFromFile(string path)
         {
+            Trace("GetShortMd5HashFromFile enter");
+
             if (string.IsNullOrEmpty(path))
             {
                 return null;
@@ -560,7 +583,10 @@ namespace BackupManager
                 startBlock = GetLocalFileByteArray(path, 0, size);
             }
 
-            return CreateHashForByteArray(startBlock, middleBlock, endBlock);
+            string value = CreateHashForByteArray(startBlock, middleBlock, endBlock);
+
+            Trace("GetShortMd5HashFromFile exit");
+            return value;
         }
 
         public static void SendPushoverMessage(string userKey, string appToken, string title, PushoverPriority priority, string message)
@@ -570,6 +596,8 @@ namespace BackupManager
 
         public static void SendPushoverMessage(string userKey, string appToken, string title, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires, string message)
         {
+            Trace("SendPushoverMessage enter");
+
             string timeStamp = new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds().ToString();
 
             try
@@ -619,6 +647,8 @@ namespace BackupManager
             {
                 // we ignore any push problems
             }
+
+            Trace("SendPushoverMessage exit");
         }
 
         /// <summary>
@@ -631,6 +661,8 @@ namespace BackupManager
         /// <exception cref="ArgumentException"></exception>
         public static bool KillProcesses(string processName)
         {
+            Trace("KillProcesses enter");
+
             // without '.exe' and check for all that match 
             IEnumerable<Process> processes = Process.GetProcesses().Where(p =>
                     p.ProcessName.StartsWith(processName, StringComparison.CurrentCultureIgnoreCase));
@@ -641,13 +673,15 @@ namespace BackupManager
                 {
                     process.Kill();
                 }
-                return true;
             }
 
             catch (Exception)
             {
                 return false;
             }
+  
+            Trace("KillProcesses exit");
+            return true;
         }
 
         /// <summary>
@@ -669,6 +703,8 @@ namespace BackupManager
         /// <returns>True if success code returned</returns>
         public static bool UrlExists(string url, int timeout)
         {
+            Trace("UrlExists enter");
+            bool returnValue;
             try
             {
                 HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
@@ -677,13 +713,16 @@ namespace BackupManager
 
                 using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
                 {
-                    return (response.StatusCode == HttpStatusCode.OK);
+                    returnValue = response.StatusCode == HttpStatusCode.OK;
                 }
             }
             catch
             {
                 return false;
             }
+
+            Trace("UrlExists exit");
+            return returnValue;
         }
 
         /// <summary>
@@ -693,20 +732,23 @@ namespace BackupManager
         /// <returns>True if the connection is made</returns>
         public static bool ConnectionExists(string host, int port)
         {
+            Trace("ConnectionExists enter");
+
             try
             {
                 using (TcpClient tcpClient = new TcpClient())
                 {
                     tcpClient.Connect(host, port);
                 }
-
-                return true;
             }
 
             catch
             {
                 return false;
             }
+
+            Trace("ConnectionExists exit");
+            return true;
         }
 
         public static void Log(string logFilePath, string text)
@@ -720,6 +762,8 @@ namespace BackupManager
                 EnsureDirectories(logFilePath);
                 File.AppendAllLines(logFilePath, new[] { textToWrite });
             }
+
+            Trace(textForLogFile);
         }
 
         public static void LogWithPushover(string pushoverUserKey, string pushoverAppToken, string logFilePath, BackupAction backupAction, string text)
@@ -1011,6 +1055,8 @@ namespace BackupManager
         /// <exception cref="ArgumentNullException"></exception>
         public static bool GetDiskInfo(string folderName, out long freespace, out long totalBytes)
         {
+            Trace("GetDiskInfo enter");
+
             if (string.IsNullOrEmpty(folderName))
             {
                 throw new ArgumentNullException("folderName");
@@ -1021,7 +1067,10 @@ namespace BackupManager
                 folderName += '\\';
             }
 
-            return GetDiskFreeSpaceEx(folderName, out freespace, out totalBytes, out _);
+            bool returnValue = GetDiskFreeSpaceEx(folderName, out freespace, out totalBytes, out _);
+
+            Trace("GetDiskInfo exit");
+            return returnValue;
         }
 
         /// <summary>
@@ -1071,6 +1120,8 @@ namespace BackupManager
         /// <returns></returns>
         public static string RandomString(long size)
         {
+            Trace("RandomString enter");
+
             StringBuilder builder = new StringBuilder();
             Random random = new Random();
             char ch;
@@ -1079,7 +1130,11 @@ namespace BackupManager
                 ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
                 builder.Append(ch);
             }
-            return builder.ToString();
+
+            string returnValue = builder.ToString();
+
+            Trace("RandomString exit");
+            return returnValue;
         }
 
         /// <summary>
@@ -1161,11 +1216,14 @@ namespace BackupManager
         /// <returns></returns>
         public static bool DiskSpeedTest(string pathToDiskToTest, long testFileSize, int testIterations, out long readSpeed, out long writeSpeed)
         {
+            Trace("DiskSpeedTest enter");
+
             string tempPath = Path.GetTempPath();
 
             readSpeed = DiskSpeedTest(pathToDiskToTest, tempPath, testFileSize, testIterations);
             writeSpeed = DiskSpeedTest(tempPath, pathToDiskToTest, testFileSize, testIterations);
 
+            Trace("DiskSpeedTest exit");
             return true;
         }
 
@@ -1177,6 +1235,8 @@ namespace BackupManager
         /// <returns>True if the service stopped successfully or it was stopped already</returns>
         public static bool StopService(string serviceName, int timeoutMilliseconds)
         {
+            Trace("StopService enter");
+
             ServiceController service = new ServiceController(serviceName);
 
             try
@@ -1189,13 +1249,14 @@ namespace BackupManager
                 }
 
                 service.WaitForStatus(ServiceControllerStatus.Stopped, timeout);
-
-                return true;
             }
             catch
             {
                 return false;
             }
+
+            Trace("StopService exit");
+            return true;
         }
 
 
@@ -1207,6 +1268,8 @@ namespace BackupManager
         /// <returns>True if the service restarted successfully</returns>
         public static bool RestartService(string serviceName, int timeoutMilliseconds)
         {
+            Trace("RestartService enter");
+
             ServiceController service = new ServiceController(serviceName);
             
             try
@@ -1235,16 +1298,19 @@ namespace BackupManager
                 }
 
                 service.WaitForStatus(ServiceControllerStatus.Running, timeout);
-
-                return true;
             }
             catch
             {
                 return false;
             }
+
+            Trace("RestartService exit");
+            return true;
         }
         public static long DiskSpeedTest(string sourcePath, string destinationPath, long testFileSize, int testIterations)
         {
+            Trace("DiskSpeedTest enter");
+
             long randomStringSize = 500_000;
             int streamWriteBufferSize = 20 * BytesInOneMegabyte;
 
@@ -1292,7 +1358,16 @@ namespace BackupManager
                 totalPerf += testFileSize / interval.TotalSeconds;
             }
 
-            return Convert.ToInt64(totalPerf / testIterations);
+            long returnValue =  Convert.ToInt64(totalPerf / testIterations);
+
+            Trace("DiskSpeedTest exit");
+            return returnValue;
+        }
+
+        internal static void Trace(string value)
+        {
+            string textToWrite = $"{DateTime.Now.ToString("dd-MM-yy HH:mm:ss.ff")} : {value.Replace('\n', ' ')}";
+            System.Diagnostics.Trace.WriteLine(textToWrite);
         }
     }
 }

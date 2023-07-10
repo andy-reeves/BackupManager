@@ -9,7 +9,8 @@ namespace BackupManager
     using System.Configuration;
     using BackupManager.Entities;
     using System.Diagnostics;
-    
+    using System.Linq.Expressions;
+
     public partial class Main : Form
     {
         #region Fields
@@ -28,11 +29,20 @@ namespace BackupManager
         // When the serice monitoring has been enabled this is True
         private bool serviceMonitoringRunning;
 
+        private string logFile = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager.log");
+
         #region Constructors and Destructors
 
         public Main()
         {
             InitializeComponent();
+
+            string traceFile = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManagerTrace.log");
+
+            Trace.Listeners.Add(new TextWriterTraceListener(traceFile,"TRACE"));
+            Utils.Trace("Trace is on");
 
             string MediabackupXml = ConfigurationManager.AppSettings.Get("MediabackupXml");
 
@@ -40,13 +50,7 @@ namespace BackupManager
 
             mediaBackup = MediaBackup.Load(File.Exists(localMediaXml) ? localMediaXml : MediabackupXml);
 
-            string logFile = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                "backup_ApplicationStarted.txt");
-
             mediaBackup.LogParameters(logFile);
-
-
 
 #if !DEBUG
             backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
@@ -75,31 +79,41 @@ namespace BackupManager
                 monitoringButton_Click(null, null);
                 timerButton_Click(null, null);
             }
+
+            Utils.Trace("Main exit");
         }
 
         #endregion
 
         #region Methods
 
-        private void BackupHashCodeCheckedButton_Click(object sender, EventArgs e)
+        private void ListFilesWithoutBackupDiskCheckedButton_Click(object sender, EventArgs e)
         {
-            string logFile = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                "backup_FilesWithoutBackupDiskChecked.txt");
+            Utils.Trace("ListFilesWithoutBackupDiskCheckedButton_Click enter");
+
+            Utils.Log(logFile, "Listing files without DiskChecked");
 
             foreach (BackupFile file in mediaBackup.GetBackupFilesWithDiskCheckedEmpty())
             {
                 Utils.Log(logFile, $"{file.FullPath} does not have DiskChecked set on disk {file.Disk}");
             }
+            Utils.Trace("ListFilesWithoutBackupDiskCheckedButton_Click exit");
+
         }
 
         private void CheckConnectedBackupDriveButton_Click(object sender, EventArgs e)
         {
+            Utils.Trace("CheckConnectedBackupDriveButton_Click enter");
+
             CheckConnectedDisk(false);
+
+            Utils.Trace("CheckConnectedBackupDriveButton_Click exit");
         }
 
         private void CheckConnectedDisk(bool deleteExtraFiles)
         {
+            Utils.Trace("CheckConnectedDisk enter");
+
             // Scans the connected backup disk and finds all its files
             // for each for found calculate the hash from the backup disk
             // find that hash in the backup data file
@@ -107,10 +121,6 @@ namespace BackupManager
             // checks the file still exists there
             // if it does compare the hashcodes and update results
             // force a recalc of both the hashes to check the files can both be read correctly
-
-            string logFile = Path.Combine(
-               Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-               "backup_CheckBackupDisk.txt");
 
             Utils.LogWithPushover(mediaBackup.PushoverUserKey, mediaBackup.PushoverAppToken, logFile, BackupAction.CheckBackupDisk, "Started");
 
@@ -294,10 +304,14 @@ namespace BackupManager
                                   logFile,
                                   BackupAction.CheckBackupDisk,
                                   "Completed");
+
+            Utils.Trace("CheckConnectedDisk exit");
         }
 
         private void DeleteEmptyDirectories(string logFile, string startLocation)
         {
+            Utils.Trace("DeleteEmptyDirectories enter");
+
             foreach (string directory in Directory.GetDirectories(startLocation))
             {
                 DeleteEmptyDirectories(logFile, directory);
@@ -311,10 +325,14 @@ namespace BackupManager
                     Directory.Delete(directory, false);
                 }
             }
+
+            Utils.Trace("DeleteEmptyDirectories enter");
         }
 
         private bool EnsureConnectedBackupDisk(string backupDisk, string logFile)
         {
+            Utils.Trace("EnsureConnectedBackupDisk enter");
+
             // checks the specified backup disk is connected already and returns if it is
             //if its not it prompts the user to insert correct disk and waits
             // user clicks 'Yes' inserted and then returns
@@ -350,21 +368,25 @@ namespace BackupManager
                 }
             }
 
+            Utils.Trace("EnsureConnectedBackupDisk exit");
+
             return true;
         }
 
-        private void CopyFilesToBackupDriveButtonClick(object sender, EventArgs e)
+        private void CopyFilesToBackupDiskButton_Click(object sender, EventArgs e)
         {
+            Utils.Trace("CopyFilesToBackupDiskButton_Click enter");
+
             CopyFiles();
+
+            Utils.Trace("CopyFilesToBackupDiskButton_Click exit");
         }
 
         private void CopyFiles()
         {
-            string logFile = Path.Combine(
-               Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-               "backup_CopyMissingFilesToBackupDisk.txt");
+            Utils.Trace("CopyFiles enter");
 
-            string backupShare = this.backupDiskTextBox.Text;
+            string backupShare = backupDiskTextBox.Text;
 
             // check the backupDisks has an entry for this disk
             BackupDisk disk = mediaBackup.GetBackupDisk(backupShare);
@@ -593,10 +615,14 @@ namespace BackupManager
                                   BackupAction.BackupFiles,
                                   PushoverPriority.High,
                                   "Completed");
+  
+            Utils.Trace("CopyFiles exit");
         }
 
         private void EnsureFile(string path, string masterFolder, string indexFolder)
         {
+            Utils.Trace("EnsureFile enter");
+
             // Empty Index folder is not allowed
             if (string.IsNullOrEmpty(indexFolder))
             {
@@ -624,24 +650,29 @@ namespace BackupManager
             }
 
             backupFile.Flag = true;
+
+            Utils.Trace("EnsureFile exit");
         }
 
-        private void ListFilesNotOnBackupDriveButton_Click(object sender, EventArgs e)
+        private void ListFilesNotOnBackupDiskButton_Click(object sender, EventArgs e)
         {
-            string logFile = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                "backup_FilesNotOnABackupDisk.txt");
+            Utils.Trace("ListFilesNotOnBackupDiskButton_Click enter");
 
             IEnumerable<BackupFile> filesNotOnBackupDisk = mediaBackup.GetBackupFilesWithDiskEmpty().OrderByDescending(p => p.Length);
 
+            Utils.Log(logFile, "Listing files not on a backup disk");
             foreach (BackupFile file in filesNotOnBackupDisk)
             {
                 Utils.Log(logFile, $"{file.FullPath} at {Utils.FormatSize(file.Length)}");
             }
+
+            Utils.Trace("ListFilesNotOnBackupDiskButton_Click exit");
         }
 
-        private void RecalculateHashcodesButton_Click(object sender, EventArgs e)
+        private void recalculateAllHashesButton_Click(object sender, EventArgs e)
         {
+            Utils.Trace("recalculateAllHashesButton_Click enter");
+
             DialogResult answer =
                 MessageBox.Show(
                     "Are you sure you want to recalculate the hashcodes from the master files?",
@@ -657,10 +688,14 @@ namespace BackupManager
 
                 mediaBackup.Save();
             }
+
+            Utils.Trace("recalculateAllHashesButton_Click exit");
         }
 
         private void UpdateMasterFilesButtonClick(object sender, EventArgs e)
         {
+            Utils.Trace("UpdateMasterFilesButtonClick enter");
+
             DialogResult answer = MessageBox.Show(
                 "Are you sure you want to rebuild the master list?",
                 "Rebuild master list",
@@ -670,13 +705,13 @@ namespace BackupManager
             {
                 ScanFolders();
             }
+
+            Utils.Trace("UpdateMasterFilesButtonClick exit");
         }
 
         private void ScanFolders()
         {
-            string logFile = Path.Combine(
-               Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-               "backup_BuildMasterFileList.txt");
+            Utils.Trace("ScanFolders enter");
 
             string filters = string.Join(",", mediaBackup.Filters.ToArray());
 
@@ -1070,12 +1105,16 @@ namespace BackupManager
                                   $"{filesNotOnBackupDisk.Count():n0} files to backup at {Utils.FormatSize(fileSizeToCopy)}");
 
             Utils.LogWithPushover(mediaBackup.PushoverUserKey, mediaBackup.PushoverAppToken, logFile, BackupAction.ScanFolders, "Completed");
+ 
+            Utils.Trace("ScanFolders exit");
         }
 
         #endregion
 
         private void checkDiskAndDeleteButton_Click(object sender, EventArgs e)
         {
+            Utils.Trace("checkDiskAndDeleteButton_Click enter");
+
             DialogResult answer = MessageBox.Show(
                "Are you sure you want delete any extra files on the backup disk not in our list?",
                "Delete extra files",
@@ -1085,20 +1124,22 @@ namespace BackupManager
             {
                 CheckConnectedDisk(true);
             }
+
+            Utils.Trace("checkDiskAndDeleteButton_Click exit");
         }
 
-        private void FilesWithoutBackupDiskChecked_Click(object sender, EventArgs e)
+        private void clearBackupDiskForFilesWithoutBackupDiskCheckedButton_Click(object sender, EventArgs e)
         {
-            string LogFile = Path.Combine(
-               Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-               "backup_FilesWithoutBackupDiskChecked.txt");
+            Utils.Trace("clearBackupDiskForFilesWithoutBackupDiskCheckedButton_Click enter");
 
             IEnumerable<BackupFile> files = mediaBackup.GetBackupFilesWithDiskCheckedEmpty();
+
+            Utils.Log(logFile, "Clearing Disk for files without DiskChecked");
 
             foreach (BackupFile file in files)
             {
                 Utils.Log(
-                    LogFile,
+                    logFile,
                     $"{file.FullPath} does not have DiskChecked set on backup disk {file.Disk} so clearing the BackupDisk"
                     );
 
@@ -1106,10 +1147,14 @@ namespace BackupManager
             }
 
             mediaBackup.Save();
+
+            Utils.Trace("clearBackupDiskForFilesWithoutBackupDiskCheckedButton_Click exit");
         }
 
         private void timerButton_Click(object sender, EventArgs e)
         {
+            Utils.Trace("timerButton_Click enter");
+
             if (timerButton.Text == "Start timer")
             {
                 timerButton.Text = "Stop timer";
@@ -1128,13 +1173,13 @@ namespace BackupManager
                 timerButton.Text = "Start timer";
                 trigger.OnTimeTriggered -= triggerAction;
             }
+
+            Utils.Trace("timerButton_Click exit");
         }
 
         private void ScheduledBackup()
         {
-            string logFile = Path.Combine(
-               Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-               "backup_ScheduledBackup.txt");
+            Utils.Trace("ScheduledBackup enter");
 
             try
             {
@@ -1149,14 +1194,14 @@ namespace BackupManager
                 {
                     Utils.LogWithPushover(mediaBackup.PushoverUserKey, mediaBackup.PushoverAppToken,
                                         logFile, BackupAction.General,
-                                        $"Service monitoring is running every {mediaBackup.MonitorInterval} seconds."
+                                        $"Service monitoring is running every {mediaBackup.MonitorInterval} seconds"
                                         );
                 }
                 else
                 {
                     Utils.LogWithPushover(mediaBackup.PushoverUserKey, mediaBackup.PushoverAppToken,
                                         logFile, BackupAction.General, PushoverPriority.High,
-                                        $"Service monitoring is not running."
+                                        $"Service monitoring is not running"
                                         );
                 }
 
@@ -1193,40 +1238,41 @@ namespace BackupManager
                     $"Exception occured {ex}"
                     );
             }
+
+            Utils.Trace("ScheduledBackup exit");
         }
 
         private void listFilesOnBackupDiskButton_Click(object sender, EventArgs e)
         {
-            string LogFile = Path.Combine(
-               Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-               "backup_ListFilesOnBackupDisk.txt");
+            Utils.Trace("listFilesOnBackupDiskButton_Click enter");
 
             IEnumerable<BackupFile> files = mediaBackup.GetBackupFilesOnBackupDisk(listFilesTextBox.Text);
 
-            Utils.Log(LogFile, $"Listing files on backup disk {listFilesTextBox.Text}");
+            Utils.Log(logFile, $"Listing files on backup disk {listFilesTextBox.Text}");
 
             foreach (BackupFile file in files)
             {
-                Utils.Log(LogFile, $"{file.FullPath}");
+                Utils.Log(logFile, $"{file.FullPath}");
             }
+
+            Utils.Trace("listFilesOnBackupDiskButton_Click exit");
+
         }
 
         private void listFilesInMasterFolderButton_Click(object sender, EventArgs e)
         {
-            string logFile = Path.Combine(
-              Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-              "backup_ListFilesInMasterFolder.txt");
+            Utils.Trace("listFilesInMasterFolderButton_Click enter");
 
-            string masterFolder = this.masterFoldersComboBox.SelectedItem.ToString();
+            string masterFolder = masterFoldersComboBox.SelectedItem.ToString();
 
             IEnumerable<BackupFile> files = mediaBackup.GetBackupFilesInMasterFolder(masterFolder);
+
+            Utils.Log(logFile, $"Listing files in master folder {masterFolder}");
 
             long readSpeed, writeSpeed;
 
             Utils.DiskSpeedTest(masterFolder, DiskSpeedTestFileSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
             Utils.Log(logFile, $"testing {masterFolder}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
-
-            Utils.Log(logFile, $"Listing files in master folder {masterFolder}");
 
             foreach (BackupFile file in files)
             {
@@ -1236,18 +1282,22 @@ namespace BackupManager
                     Utils.Log(logFile, $"ERROR: {file.FullPath} : not on a backup disk");
                 }
             }
+
+            Utils.Trace("listFilesInMasterFolderButton_Click exit");
         }
 
         private void CheckForOldBackupDisks_Click(object sender, EventArgs e)
         {
+            Utils.Trace("CheckForOldBackupDisks_Click enter");
+
             CheckForOldBackupDisks();
+
+            Utils.Trace("CheckForOldBackupDisks_Click exit");
         }
 
         private void CheckForOldBackupDisks()
         {
-            string LogFile = Path.Combine(
-             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-             "backup_ListFilesWithBackupNotCheckedInNNdays.txt");
+            Utils.Trace("CheckForOldBackupDisks enter");
 
             int numberOfDays = mediaBackup.DaysToReportOldBackupDisks;
 
@@ -1260,24 +1310,28 @@ namespace BackupManager
             {
                 Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                       mediaBackup.PushoverAppToken,
-                                      LogFile,
+                                      logFile,
                                       BackupAction.CheckBackupDisk,
                                       $"Backup disks not checked in {numberOfDays} days - {disk.Disk}"
                                       );
             }
 
-            Utils.Log(LogFile, "Listing files not checked in NN days");
+            Utils.Log(logFile, "Listing files not checked in NN days");
 
             foreach (BackupFile file in files)
             {
                 int days = DateTime.Today.Subtract(DateTime.Parse(file.DiskChecked)).Days;
 
-                Utils.Log(LogFile, $"{file.FullPath} - not checked in {days} day(s) on disk {file.Disk}");
+                Utils.Log(logFile, $"{file.FullPath} - not checked in {days} day(s) on disk {file.Disk}");
             }
+
+            Utils.Trace("CheckForOldBackupDisks exit");
         }
 
         private void restoreFilesButton_Click(object sender, EventArgs e)
         {
+            Utils.Trace("restoreFilesButton_Click enter");
+
             // loop through all the files looking for the master folder specified in the top drop down and copy to the bottom drop down 
             // for each file order by backup disk
             // prompt for the back up disk to be inserted 
@@ -1291,10 +1345,6 @@ namespace BackupManager
 
             if (answer == DialogResult.Yes)
             {
-                string logFile = Path.Combine(
-                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                 "backup_RestoringBackupDisks.txt");
-
                 if (masterFoldersComboBox.SelectedItem == null)
                 {
                     MessageBox.Show(
@@ -1419,10 +1469,14 @@ namespace BackupManager
 
                 mediaBackup.Save();
             }
+
+            Utils.Trace("restoreFilesButton_Click exit");
         }
 
         private void checkBackupDeleteAndCopyButton_Click(object sender, EventArgs e)
         {
+            Utils.Trace("checkBackupDeleteAndCopyButton_Click enter");
+
             DialogResult answer = MessageBox.Show(
                "Are you sure you want delete any extra files on the backup disk not in our list?",
                "Delete extra files",
@@ -1433,15 +1487,17 @@ namespace BackupManager
                 CheckConnectedDisk(true);
                 CopyFiles();
             }
+
+            Utils.Trace("checkBackupDeleteAndCopyButton_Click exit");
         }
 
         private void listMoviesWithMultipleFilesButton_Click(object sender, EventArgs e)
         {
+            Utils.Trace("listMoviesWithMultipleFilesButton_Click enter");
+
             // listing movies with multiple files
 
-            string logFile = Path.Combine(
-               Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-               "backup_ListMoviesWithMultipleFiles.txt");
+            Utils.Log(logFile, "Listing movies with multiple files in folder");
 
             foreach (BackupFile file in mediaBackup.BackupFiles)
             {
@@ -1464,13 +1520,14 @@ namespace BackupManager
                     }
                 }
             }
+
+            Utils.Trace("listMoviesWithMultipleFilesButton_Click exit");
+
         }
 
         private void testPushoverHighButton_Click(object sender, EventArgs e)
         {
-            string logFile = Path.Combine(
-              Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-              "backup_TestPushoverAlerts.txt");
+            Utils.Trace("testPushoverHighButton_Click enter");
 
             Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                   mediaBackup.PushoverAppToken,
@@ -1478,13 +1535,13 @@ namespace BackupManager
                                   BackupAction.General,
                                   PushoverPriority.High,
                                   "High priority test");
+
+            Utils.Trace("testPushoverHighButton_Click exit");
         }
 
         private void testPushoverNormalButton_Click(object sender, EventArgs e)
         {
-            string logFile = Path.Combine(
-              Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-              "backup_TestPushoverAlerts.txt");
+            Utils.Trace("testPushoverNormalButton_Click enter");
 
             Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                   mediaBackup.PushoverAppToken,
@@ -1492,13 +1549,13 @@ namespace BackupManager
                                   BackupAction.General,
                                   PushoverPriority.Normal,
                                   "Normal priority test\nLine 2\nLine 3");
+
+            Utils.Trace("testPushoverNormalButton_Click exit");
         }
 
         private void testPushoverEmergencyButton_Click(object sender, EventArgs e)
         {
-            string logFile = Path.Combine(
-              Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-              "backup_TestPushoverAlerts.txt");
+            Utils.Trace("testPushoverEmergencyButton_Click enter");
 
             Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                   mediaBackup.PushoverAppToken,
@@ -1508,15 +1565,17 @@ namespace BackupManager
                                   PushoverRetry.OneMinute,
                                   PushoverExpires.OneHour,
                                   "Emergency priority test");
+
+            Utils.Trace("testPushoverEmergencyButton_Click exit");
         }
 
         private void reportBackupDiskStatusButton_Click(object sender, EventArgs e)
         {
-            string logFile = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                "backup_ReportBackupDiskStatus.txt");
+            Utils.Trace("reportBackupDiskStatusButton_Click enter");
 
             IEnumerable<BackupDisk> disks = mediaBackup.BackupDisks.OrderBy(p => p.Number);
+
+            Utils.Log(logFile, "Listing backup disk statuses");
 
             foreach (BackupDisk disk in disks)
             {
@@ -1528,15 +1587,18 @@ namespace BackupManager
             string totalFreespaceFormatted = Utils.FormatSize(mediaBackup.BackupDisks.Sum(p => p.Free));
 
             Utils.Log(logFile, $"Total available storage is {totalSizeFormatted} with {totalFreespaceFormatted} free");
+
+            Utils.Trace("reportBackupDiskStatusButton_Click exit");
+
         }
 
         private void speedTestButton_Click(object sender, EventArgs e)
         {
-            string logFile = Path.Combine(
-               Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-               "backup_MasterFoldersSpeedTest.txt");
+            Utils.Trace("speedTestButton_Click enter");
 
             long readSpeed, writeSpeed;
+
+            Utils.Log(logFile, "Speed testing all master folders");
 
             foreach (string masterFolder in mediaBackup.MasterFolders)
             {
@@ -1546,10 +1608,14 @@ namespace BackupManager
                     Utils.Log(logFile, $"testing {masterFolder}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
                 }
             }
+
+            Utils.Trace("speedTestButton_Click exit");
         }
 
         private void minutesNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
+            Utils.Trace("minutesNumericUpDown_ValueChanged enter");
+
             if (minutesNumericUpDown.Value == 60)
             {
                 minutesNumericUpDown.Value = 0;
@@ -1561,10 +1627,14 @@ namespace BackupManager
             }
 
             mediaBackup.ScheduledBackupStartTime = $"{hoursNumericUpDown.Value}:{minutesNumericUpDown.Value}";
+
+            Utils.Trace("minutesNumericUpDown_ValueChanged exit");
         }
 
         private void hoursNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
+            Utils.Trace("hoursNumericUpDown_ValueChanged enter");
+
             if (hoursNumericUpDown.Value == 24)
             {
                 hoursNumericUpDown.Value = 0;
@@ -1576,16 +1646,15 @@ namespace BackupManager
             }
 
             mediaBackup.ScheduledBackupStartTime = $"{hoursNumericUpDown.Value}:{minutesNumericUpDown.Value}";
+
+            Utils.Trace("hoursNumericUpDown_ValueChanged exit");
         }
 
         private void monitoringButton_Click(object sender, EventArgs e)
         {
-            string logFile = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-            "backup_Monitoring.txt");
+            Utils.Trace("monitoringButton_Click enter");
 
             if (serviceMonitoringRunning)
-
             {
                 monitoringTimer.Stop();
                 Utils.LogWithPushover(mediaBackup.PushoverUserKey,
@@ -1612,13 +1681,13 @@ namespace BackupManager
                 monitoringButton.Text = "Stop monitoring";
                 serviceMonitoringRunning = true;
             }
+
+            Utils.Trace("monitoringButton_Click exit");
         }
 
         private void monitoringTimer_Tick(object sender, EventArgs e)
         {
-            string logFile = Path.Combine(
-             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-             "backup_Monitoring.txt");
+            Utils.Trace("monitoringTimer_Tick enter");
 
             foreach (Monitor monitor in mediaBackup.Monitors)
             {
@@ -1721,13 +1790,12 @@ namespace BackupManager
                 }
             }
 
+            Utils.Trace("monitoringTimer_Tick exit");
         }
 
         private void killProcessesButton_Click(object sender, EventArgs e)
         {
-            string logFile = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-            "backupKillProcesses.txt");
+            Utils.Trace("killProcessesButton_Click enter");
 
             foreach (Monitor monitor in mediaBackup.Monitors)
             {
@@ -1763,6 +1831,8 @@ namespace BackupManager
                     }
                 }
             }
+
+            Utils.Trace("killProcessesButton_Click exit");
         }
     }
 }
