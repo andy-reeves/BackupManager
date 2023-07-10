@@ -203,7 +203,7 @@ namespace BackupManager
                     BackupFile backupFile = mediaBackup.GetBackupFile(backupFileHash, backupFileIndexFolderRelativePath);
 
                     // This forces a hash check on the source and backup disk files
-                    Utils.Log(logFile, $"Checking hash for {backupFileFullPath}");
+                    Utils.Trace($"Checking hash for {backupFileFullPath}");
                     bool returnValue = backupFile.CheckContentHashes(disk);
 
                     if (returnValue == false)
@@ -471,7 +471,7 @@ namespace BackupManager
 
                                 string copySpeed = Utils.FormatSpeed(Convert.ToInt64(sourceFileInfo.Length / (endTime - startTime).TotalSeconds));
 
-                                Utils.Log(logFile, $"Copy complete at {copySpeed}");
+                                Utils.Trace($"Copy complete at {copySpeed}");
 
                                 // Make sure its not readonly
                                 Utils.ClearFileAttribute(destinationFileName, FileAttributes.ReadOnly);
