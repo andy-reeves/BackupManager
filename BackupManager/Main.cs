@@ -1298,7 +1298,15 @@ namespace BackupManager
                                       );
             }
 
-            Utils.Log(logFile, "Listing files not checked in NN days");
+            if (files.Count() == 0)
+            {
+                Utils.Log(logFile, $"All files checked in last {mediaBackup.DaysToReportOldBackupDisks} days");
+
+            }
+            else
+            {
+                Utils.Log(logFile, $"Listing files not checked in {mediaBackup.DaysToReportOldBackupDisks} days");
+            }
 
             foreach (BackupFile file in files)
             {
