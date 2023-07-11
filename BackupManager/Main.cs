@@ -289,23 +289,39 @@ namespace BackupManager
             Utils.Trace("CheckConnectedDisk exit");
         }
 
-        private void DeleteEmptyDirectories(string logFile, string startLocation)
+        private void DeleteEmptyDirectories(string logFile, string directory)
         {
             Utils.Trace("DeleteEmptyDirectories enter");
 
-            foreach (string directory in Directory.GetDirectories(startLocation))
+            if (string.IsNullOrEmpty(directory))
             {
-                DeleteEmptyDirectories(logFile, directory);
-                if (Directory.GetFileSystemEntries(directory).Length == 0)
+                throw new ArgumentException("Directory is a null reference or an empty string", "directory");
+            }
+            try
+            {
+                foreach (var subDirectory in Directory.EnumerateDirectories(directory))
                 {
-                    Utils.LogWithPushover(mediaBackup.PushoverUserKey,
-                                          mediaBackup.PushoverAppToken,
-                                          logFile,
-                                          BackupAction.CheckBackupDisk,
-                                          $"Deleting empty folder {directory}");
-                    Directory.Delete(directory, false);
+                    DeleteEmptyDirectories(logFile, subDirectory);
+                }
+
+                var entries = Directory.EnumerateFileSystemEntries(directory);
+
+                if (!entries.Any())
+                {
+                    try
+                    {
+                        Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                                              mediaBackup.PushoverAppToken,
+                                              logFile,
+                                              BackupAction.CheckBackupDisk,
+                                              $"Deleting empty folder {directory}");
+                        Directory.Delete(directory);
+                    }
+                    catch (UnauthorizedAccessException) { }
+                    catch (DirectoryNotFoundException) { }
                 }
             }
+            catch (UnauthorizedAccessException) { }
 
             Utils.Trace("DeleteEmptyDirectories exit");
         }
