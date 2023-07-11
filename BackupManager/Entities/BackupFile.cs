@@ -104,7 +104,7 @@
         }
 
         /// <summary>
-        /// This is a combination key of the hash of the file contents and the files indexfolder and relative path.
+        /// This is a combination key of index folder and relative path.
         /// </summary>
         [XmlIgnore()]
         public string Hash
@@ -113,7 +113,7 @@
             {
                 if (hash == null)
                 {
-                    hash = GetFileHash(ContentsHash, Path.Combine(IndexFolder, RelativePath));
+                    hash = Path.Combine(IndexFolder, RelativePath);
                 }
 
                 return hash;
@@ -234,16 +234,6 @@
 
             return fullPath.SubstringAfter(combinedPath, StringComparison.CurrentCultureIgnoreCase).TrimStart(new[] { '\\' });
         }
-        /// <summary>
-        /// Returns a hash of the contents followed by '-' and the path provided.
-        /// </summary>
-        /// <param name="hash"></param>
-        /// /// <param name="path"></param>
-        /// <returns></returns>
-        public static string GetFileHash(string hash,  string path)
-        {
-            return hash + "-" + path;
-        }
 
         /// <summary>
         /// Returns the filename and extension of the BackupFile.
@@ -315,6 +305,16 @@
         /// <returns>False is the hashes are different</returns>
         public bool CheckContentHashes(BackupDisk disk)
         {
+            if (!File.Exists(FullPath))
+            {
+                return false;   
+            }
+
+            if (!File.Exists(Path.Combine(disk.BackupPath, IndexFolder, RelativePath)))
+            {
+                return false;
+            }
+
             string hashFromSourceFile = Utils.GetShortMd5HashFromFile(FullPath);
 
             if (hashFromSourceFile == Utils.ZeroByteHash)
@@ -336,7 +336,6 @@
             }
 
             // Hashes match so update it and the backup checked date too
-            UpdateContentsHash(hashFrombackupDiskFile);
             UpdateDiskChecked(disk.Name);
             return true;
         }

@@ -194,55 +194,61 @@ namespace BackupManager
 
             foreach (string backupFileFullPath in backupDiskFiles)
             {
-                string backupFileHash = Utils.GetShortMd5HashFromFile(backupFileFullPath);
-
                 string backupFileIndexFolderRelativePath = backupFileFullPath.Substring(folderToCheck.Length + 1);
-              
-                if (mediaBackup.Contains(backupFileHash, backupFileIndexFolderRelativePath))
+
+                if (mediaBackup.Contains(backupFileIndexFolderRelativePath))
                 {
-                    BackupFile backupFile = mediaBackup.GetBackupFile(backupFileHash, backupFileIndexFolderRelativePath);
+                    BackupFile backupFile = mediaBackup.GetBackupFile(backupFileIndexFolderRelativePath);
 
-                    // This forces a hash check on the source and backup disk files
-                    Utils.Trace($"Checking hash for {backupFileFullPath}");
-                    bool returnValue = backupFile.CheckContentHashes(disk);
-
-                    if (returnValue == false)
+                    // This happens when the file we have on the backup disk is no longer in the masterFolder
+                    if (File.Exists(backupFile.FullPath))
                     {
-                        // There was an error with the hashcodes of the source file anf the file on the backup disk
-                        Utils.LogWithPushover(mediaBackup.PushoverUserKey,
-                                 mediaBackup.PushoverAppToken,
-                                 logFile,
-                                 BackupAction.CheckBackupDisk, PushoverPriority.High,
-                                 $"There was an error with the hashcodes on the source and backup disk. Its likely the sourcefile has changed since the last backup of {backupFile.FullPath}");
+                        // This forces a hash check on the source and backup disk files
+                        Utils.Trace($"Checking hash for {backupFile.Hash}");
+                        bool returnValue = backupFile.CheckContentHashes(disk);
 
-                        diskInfoMessageWasTheLastSent = false;
+                        if (returnValue == false)
+                        {
+                            // There was an error with the hashcodes of the source file anf the file on the backup disk
+                            Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                                     mediaBackup.PushoverAppToken,
+                                     logFile,
+                                     BackupAction.CheckBackupDisk, PushoverPriority.High,
+                                     $"There was an error with the hashcodes on the source and backup disk. Its likely the sourcefile has changed since the last backup of {backupFile.FullPath}");
+
+                            diskInfoMessageWasTheLastSent = false;
+                            continue;
+                        }
+                        else
+                        {
+                            continue;
+                        }
                     }
+                }
+
+                // Extra file on a backup disk
+                if (deleteExtraFiles)
+                {
+                    Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                                          mediaBackup.PushoverAppToken,
+                                          logFile,
+                                          BackupAction.CheckBackupDisk,
+                                          $"Extra file {backupFileFullPath} on backup disk {disk.Name} now deleted");
+
+                    Utils.ClearFileAttribute(backupFileFullPath, FileAttributes.ReadOnly);
+                    File.Delete(backupFileFullPath);
+                    diskInfoMessageWasTheLastSent = false;
                 }
                 else
                 {
-                    // Extra file on a backup disk
-                    if (deleteExtraFiles)
-                    {
-                        Utils.LogWithPushover(mediaBackup.PushoverUserKey,
-                                              mediaBackup.PushoverAppToken,
-                                              logFile,
-                                              BackupAction.CheckBackupDisk,
-                                              $"Extra file {backupFileFullPath} on backup disk {disk.Name} now deleted");
-
-                        Utils.ClearFileAttribute(backupFileFullPath, FileAttributes.ReadOnly);
-                        File.Delete(backupFileFullPath);
-                        diskInfoMessageWasTheLastSent = false;
-                    }
-                    else
-                    {
-                        Utils.LogWithPushover(mediaBackup.PushoverUserKey,
-                                              mediaBackup.PushoverAppToken,
-                                              logFile,
-                                              BackupAction.CheckBackupDisk,
-                                              $"Extra file {backupFileFullPath} on backup disk {disk.Name}");
-                        diskInfoMessageWasTheLastSent = false;
-                    }
+                    Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                                          mediaBackup.PushoverAppToken,
+                                          logFile,
+                                          BackupAction.CheckBackupDisk,
+                                          $"Extra file {backupFileFullPath} on backup disk {disk.Name}");
+                    diskInfoMessageWasTheLastSent = false;
                 }
+
             }
 
             DeleteEmptyDirectories(logFile, folderToCheck);
