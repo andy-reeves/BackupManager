@@ -6,7 +6,6 @@
     using System.Collections.ObjectModel;
     using System.IO;
     using System.Linq;
-    using System.Security.Policy;
     using System.Xml.Serialization;
 
     public class MediaBackup
@@ -57,7 +56,6 @@
         /// Interval in seconds
         /// </summary>
         public int MonitorInterval;
-
 
         public string PushoverAppToken;
 
@@ -257,16 +255,17 @@
                     backupFile.UpdateFileLength();
                 }
 
-                Utils.Trace("GetBackupFile exit1");
+                Utils.Trace("GetBackupFile exit");
                 return backupFile;
             }
 
             backupFile = new BackupFile(fullPath, masterFolder, indexFolder);
+            Utils.Trace($"Adding backup file {backupFile.RelativePath}");
             BackupFiles.Add(backupFile);
 
             indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
 
-            Utils.Trace("GetBackupFile exit3");
+            Utils.Trace("GetBackupFile exit");
             return backupFile;
         }
 
@@ -305,7 +304,7 @@
         }
 
         /// <summary>
-        /// Gets a BackupFile from the path provided.
+        /// Gets a BackupFile from the path provided. Path should include indexfolder and relativePath
         /// </summary>
         /// <param name="path"></param>
         /// <returns>Null if it doen't exist.</returns>
@@ -349,7 +348,7 @@
         }
 
         /// <summary>
-        /// Returns True if this path exists already
+        /// Returns True if this path exists already. Path should contain indexfolder and relativepath.
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>

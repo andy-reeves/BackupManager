@@ -9,7 +9,6 @@ namespace BackupManager
     using System.Configuration;
     using BackupManager.Entities;
     using System.Diagnostics;
-    using System.Linq.Expressions;
 
     public partial class Main : Form
     {
@@ -626,14 +625,6 @@ namespace BackupManager
                 throw new ApplicationException("IndexFolder is empty. Not supported");
             }
 
-            // if we start with underscore then exclude it
-            string pathAfterMaster = path.SubstringAfter(masterFolder, StringComparison.CurrentCultureIgnoreCase);
-
-            if (pathAfterMaster.StartsWith(@"\_") && string.IsNullOrEmpty(indexFolder))
-            {
-                return;
-            }
-
             BackupFile backupFile = mediaBackup.GetBackupFile(path, masterFolder, indexFolder);
 
             if (backupFile == null)
@@ -643,7 +634,7 @@ namespace BackupManager
 
             if (string.IsNullOrEmpty(backupFile.ContentsHash))
             {
-                throw new ApplicationException("Hash is null or empty");
+                throw new ApplicationException("ContentHash is null or empty");
             }
 
             backupFile.Flag = true;
@@ -1350,7 +1341,7 @@ namespace BackupManager
                     return;
                 }
 
-                string masterFolder = this.masterFoldersComboBox.SelectedItem.ToString();
+                string masterFolder = masterFoldersComboBox.SelectedItem.ToString();
 
                 if (restoreMasterFolderComboBox.SelectedItem == null)
                 {
@@ -1492,7 +1483,6 @@ namespace BackupManager
             Utils.Trace("listMoviesWithMultipleFilesButton_Click enter");
 
             // listing movies with multiple files
-
             Utils.Log(logFile, "Listing movies with multiple files in folder");
 
             foreach (BackupFile file in mediaBackup.BackupFiles)
@@ -1518,7 +1508,6 @@ namespace BackupManager
             }
 
             Utils.Trace("listMoviesWithMultipleFilesButton_Click exit");
-
         }
 
         private void testPushoverHighButton_Click(object sender, EventArgs e)
@@ -1585,7 +1574,6 @@ namespace BackupManager
             Utils.Log(logFile, $"Total available storage is {totalSizeFormatted} with {totalFreespaceFormatted} free");
 
             Utils.Trace("reportBackupDiskStatusButton_Click exit");
-
         }
 
         private void speedTestButton_Click(object sender, EventArgs e)

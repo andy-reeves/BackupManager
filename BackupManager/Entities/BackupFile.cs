@@ -21,7 +21,7 @@
         private string diskChecked;
 
         /// <summary>
-        /// The relative path of the file.
+        /// The relative path of the file. Doesn't include MasterFolder or IndexFolder.
         /// </summary>
         [XmlElement("Path")]
         public string RelativePath;
@@ -49,9 +49,7 @@
             {
                 if (value != contentsHash)
                 {
-                    contentsHash = value;
-                    // force the combined hash to be re-calculated
-                    hash = null;
+                    contentsHash = value; 
                 }
             }
         }
@@ -253,10 +251,10 @@
         }
 
         /// <summary>
-        /// Calculates the hash of the file contents from the Source location which also resets the hash of the filename-contents too if changed.
+        /// Updates the hash of the file contents to newContentsHash.
         /// </summary>
         /// <exception cref="ApplicationException"></exception>
-        public void UpdateContentsHash(string newContentsHash)
+        private void UpdateContentsHash(string newContentsHash)
         {
             if (newContentsHash == Utils.ZeroByteHash)
             {
@@ -267,7 +265,7 @@
         }
 
         /// <summary>
-        /// Calculates the hash of the file contents from the Source location which also resets the hash of the filename-contents too if changed.
+        /// Calculates the hash of the file contents from the Source location.
         /// </summary>
         /// <exception cref="ApplicationException"></exception>
         public void UpdateContentsHash()

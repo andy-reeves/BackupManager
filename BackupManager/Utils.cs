@@ -22,7 +22,6 @@ namespace BackupManager
     using System.Diagnostics;
     using System.Net.Sockets;
     using System.ServiceProcess;
-    using static System.Net.Mime.MediaTypeNames;
 
     /// <summary>
     /// The utils.
@@ -386,7 +385,6 @@ namespace BackupManager
             }
 
             Trace("GetFiles exit");
-
             return foundFiles.ToArray();
         }
 
@@ -508,7 +506,6 @@ namespace BackupManager
 
             Trace("GetShortMd5HashFromFile exit");
             return value;
-
         }
 
         public static long GetFileLength(string fileName)
