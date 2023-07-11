@@ -36,11 +36,6 @@ namespace BackupManager
         public Main()
         {
             InitializeComponent();
-
-            string traceFile = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManagerTrace.log");
-
-            Trace.Listeners.Add(new TextWriterTraceListener(traceFile,"TRACE"));
             Utils.Trace("Trace is on");
 
             string MediabackupXml = ConfigurationManager.AppSettings.Get("MediabackupXml");
