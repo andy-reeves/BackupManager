@@ -307,7 +307,7 @@ namespace BackupManager
                 }
             }
 
-            Utils.Trace("DeleteEmptyDirectories enter");
+            Utils.Trace("DeleteEmptyDirectories exit");
         }
 
         private bool EnsureConnectedBackupDisk(string backupDisk, string logFile)
