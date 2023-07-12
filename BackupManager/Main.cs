@@ -28,9 +28,15 @@ namespace BackupManager
         // When the serice monitoring has been enabled this is True
         private bool serviceMonitoringRunning;
 
+#if DEBUG
+        private string logFile = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManagerDebug.log");
+#endif
+
+#if !DEBUG
         private string logFile = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager.log");
-
+#endif
         #region Constructors and Destructors
 
         public Main()

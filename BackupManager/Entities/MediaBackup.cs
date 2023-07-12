@@ -202,7 +202,7 @@
         /// <param name="fullPath">The fullPath to the file.</param>
         /// <param name="masterFolder"></param>
         /// <param name="indexFolder"></param>
-        /// <returns></returns>
+        /// <returns>Null if it wasn't found or couldn't be created</returns>
         public BackupFile GetBackupFile(string fullPath, string masterFolder, string indexFolder)
         {
             Utils.Trace("GetBackupFile enter");
@@ -225,34 +225,59 @@
             // if this path is already added then return it
             if (indexFolderAndRelativePath.Contains(hashKey))
             {
-                // check the timestamp against what we have
                 backupFile = (BackupFile)indexFolderAndRelativePath[hashKey];
 
-                var t = backupFile.LastWriteTime;
-                var u = Utils.GetFileLastWriteTime(fullPath);
-
-                // if the file on disk is different then check the hash 
-                if (t != u)
+                // consider a file a.txt thats on \\nas1\assets1 in indexFolder _TV and on \\nas1\assets4 in _TV too
+                // this has same index folder and path but its a different file
+                if (backupFile.MasterFolder != masterFolder)
                 {
-                    // update the timestamp as its changed/missing
-                    backupFile.LastWriteTime = u;
+                    // This is similar file in different master folders
+                    // This also happens if a file is moved from 1 masterFolder to another
+                    // its old location is still in the xml but the new location will be found on disk
+                    Utils.Trace($"Duplicate file detected at {fullPath} and {backupFile.FullPath}");
 
+                    // First we can check the hash of both
+                    // its its the same hash then we can assume the file has just been moved
                     hashOfContents = Utils.GetShortMd5HashFromFile(fullPath);
-
-                    // has the contents hash changed too?
-                    if (hashOfContents != backupFile.ContentsHash)
+                    if (hashOfContents == backupFile.ContentsHash)
                     {
-                        backupFile.UpdateContentsHash();
-
-                        // clear the backup details as the master file hash has changed
-                        backupFile.ClearDiskChecked();
+                        backupFile.MasterFolder = masterFolder;
+                    }
+                    else
+                    {
+                        Utils.Trace($"Hashes are different on the duplicate files");
+                        Utils.Trace("GetBackupFile exit error");
+                        return null;
                     }
                 }
-
-                // Check the file length
-                if (backupFile.Length == 0)
+                else
                 {
-                    backupFile.UpdateFileLength();
+                    // check the timestamp against what we have
+                    var lastWriteTimeFromMasterFile = Utils.GetFileLastWriteTime(fullPath);
+
+                    // if the file on disk is different then check the hash 
+                    if (backupFile.LastWriteTime != lastWriteTimeFromMasterFile)
+                    {
+                        // update the timestamp as its changed/missing
+                        backupFile.LastWriteTime = lastWriteTimeFromMasterFile;
+
+                        hashOfContents = Utils.GetShortMd5HashFromFile(fullPath);
+
+                        // has the contents hash changed too?
+                        if (hashOfContents != backupFile.ContentsHash)
+                        {
+                            backupFile.UpdateContentsHash();
+
+                            // clear the backup details as the master file hash has changed
+                            backupFile.ClearDiskChecked();
+                        }
+                    }
+
+                    // Check the file length
+                    if (backupFile.Length == 0)
+                    {
+                        backupFile.UpdateFileLength();
+                    }
                 }
 
                 Utils.Trace("GetBackupFile exit");
