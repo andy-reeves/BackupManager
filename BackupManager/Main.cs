@@ -50,11 +50,11 @@ namespace BackupManager
 
             Utils.Trace("Trace is on");
 
-            string MediabackupXml = ConfigurationManager.AppSettings.Get("MediabackupXml");
+            string mediaBackupXml = ConfigurationManager.AppSettings.Get("MediaBackupXml");
 
             string localMediaXml = Path.Combine(Application.StartupPath, "MediaBackup.xml");
 
-            mediaBackup = MediaBackup.Load(File.Exists(localMediaXml) ? localMediaXml : MediabackupXml);
+            mediaBackup = MediaBackup.Load(File.Exists(localMediaXml) ? localMediaXml : mediaBackupXml);
 
             mediaBackup.LogParameters(logFile);
 
@@ -497,7 +497,10 @@ namespace BackupManager
                                 File.Copy(sourceFileName, destinationFileName);
                                 DateTime endTime = DateTime.UtcNow;
 
-                                string copySpeed = Utils.FormatSpeed(Convert.ToInt64(sourceFileInfo.Length / (endTime - startTime).TotalSeconds));
+                                double timeTaken = (endTime - startTime).TotalSeconds;
+                                Utils.Trace($"timeTaken {timeTaken}");
+                                Utils.Trace($"sourceFileInfo.Length {sourceFileInfo.Length}");
+                                string copySpeed = Utils.FormatSpeed(Convert.ToInt64(sourceFileInfo.Length /timeTaken));
 
                                 Utils.Trace($"Copy complete at {copySpeed}");
 
