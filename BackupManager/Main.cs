@@ -62,6 +62,10 @@ namespace BackupManager
             backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
 #endif
 
+#if DEBUG
+            backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "BackupMgrTest");
+#endif
+
             foreach (string a in mediaBackup.MasterFolders)
             {
                 masterFoldersComboBox.Items.Add(a);
@@ -89,7 +93,7 @@ namespace BackupManager
             Utils.Trace("Main exit");
         }
 
-        #endregion
+#endregion
 
         #region Methods
 
@@ -640,11 +644,6 @@ namespace BackupManager
             if (backupFile == null)
             {
                 throw new ApplicationException($"Duplicate hashcode detected indicated a copy of a file at {path}");
-            }
-
-            if (string.IsNullOrEmpty(backupFile.ContentsHash))
-            {
-                throw new ApplicationException("ContentHash is null or empty");
             }
 
             backupFile.Flag = true;

@@ -555,8 +555,9 @@ namespace BackupManager
 
             long size = new FileInfo(path).Length;
 
-            if (size <= 0)
+            if (size == 0)
             {
+                Trace("GetShortMd5HashFromFile exit1");
                 return string.Empty;
             }
 
@@ -583,7 +584,7 @@ namespace BackupManager
 
             string value = CreateHashForByteArray(startBlock, middleBlock, endBlock);
 
-            Trace("GetShortMd5HashFromFile exit");
+            Trace("GetShortMd5HashFromFile exit2");
             return value;
         }
 

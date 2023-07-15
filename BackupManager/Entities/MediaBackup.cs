@@ -241,6 +241,7 @@
                     hashOfContents = Utils.GetShortMd5HashFromFile(fullPath);
                     if (hashOfContents == backupFile.ContentsHash)
                     {
+                        Utils.Trace($"Changing masterFolder on {backupFile.FullPath} to {masterFolder}");
                         backupFile.MasterFolder = masterFolder;
                     }
                     else

@@ -8,7 +8,6 @@
     [DebuggerDisplay("RelativePath = {RelativePath}")]
     public class BackupFile
     {
-        private string fullPath;
 
         private string hash;
 
@@ -38,12 +37,8 @@
         {
             get
             {
-                if (string.IsNullOrEmpty(contentsHash))
-                {
-                    UpdateContentsHash();
-                }
-
-                return contentsHash;
+                // Empty files are allowed so empty contentsHash is also fine
+                return string.IsNullOrEmpty(contentsHash) ? string.Empty : contentsHash;
             }
             set
             {
@@ -75,12 +70,8 @@
         {
             get
             {
-                if (fullPath == null)
-                {
-                    fullPath = Path.Combine(MasterFolder, IndexFolder, RelativePath);
-                }
-
-                return fullPath;
+                // always calculate the FullPath incase the MasterFolder, IndexFolder or RelativePath properties have been changed.
+                return Path.Combine(MasterFolder, IndexFolder, RelativePath);
             }
         }
 
@@ -202,8 +193,6 @@
                 throw new FileNotFoundException();
             }
 
-            this.fullPath = fullPath;
-
             RelativePath = GetRelativePath(fullPath, masterFolder, indexFolder);
 
             MasterFolder = masterFolder;
@@ -282,17 +271,12 @@
         }
 
         /// <summary>
-        /// Updates the file length of the file from the source disk. If its 0 then an Exception is thrown.
+        /// Updates the file length of the file from the source disk. Zero byte files are allowed.
         /// </summary>
         /// <exception cref="ApplicationException"></exception>
         public void UpdateFileLength()
         {
             Length = Utils.GetFileLength(FullPath);
-
-            if (Length == 0)
-            {
-                throw new ApplicationException($"File '{FullPath}' has 0 length");
-            }
         }
 
         /// <summary>
