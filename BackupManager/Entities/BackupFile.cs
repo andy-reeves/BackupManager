@@ -38,8 +38,14 @@
             get
             {
                 // Empty files are allowed so empty contentsHash is also fine
-                return string.IsNullOrEmpty(contentsHash) ? string.Empty : contentsHash;
+                if (contentsHash == null)
+                {
+                    UpdateContentsHash();
+                }
+
+                return contentsHash;
             }
+
             set
             {
                 if (value != contentsHash)
@@ -100,12 +106,7 @@
         {
             get
             {
-                if (hash == null)
-                {
-                    hash = Path.Combine(IndexFolder, RelativePath);
-                }
-
-                return hash;
+                return Path.Combine(IndexFolder, RelativePath);
             }
         }
 
@@ -273,7 +274,6 @@
         /// <summary>
         /// Updates the file length of the file from the source disk. Zero byte files are allowed.
         /// </summary>
-        /// <exception cref="ApplicationException"></exception>
         public void UpdateFileLength()
         {
             Length = Utils.GetFileLength(FullPath);
