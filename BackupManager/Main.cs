@@ -412,8 +412,6 @@ namespace BackupManager
                 return;
             }
 
-            string insertedBackupDrive = disk.BackupPath;
-
             Utils.LogWithPushover(mediaBackup.PushoverUserKey, mediaBackup.PushoverAppToken, logFile, BackupAction.BackupFiles, "Started");
 
             IEnumerable<BackupFile> filesToBackup = mediaBackup.GetBackupFilesWithDiskEmpty().OrderByDescending(q => q.Length);
@@ -444,7 +442,13 @@ namespace BackupManager
                         throw new ApplicationException("Index folder is empty");
                     }
 
-                    string destinationFileName = Path.Combine(insertedBackupDrive, backupFile.IndexFolder, backupFile.RelativePath);
+                    string destinationFileName = backupFile.BackupDiskFullPath(disk.BackupPath);
+
+                    // We use a temporary name for the copy first and then rename it after
+                    // This is in case the Backup is aborted during the copy
+                    // This file will be seen on the next scan and removed
+                    string destinationFileNameTemp = destinationFileName + ".copying";
+
                     string sourceFileName = backupFile.FullPath;
                     FileInfo sourceFileInfo = new FileInfo(sourceFileName);
                     string sourceFileSize = Utils.FormatSize(sourceFileInfo.Length);
@@ -463,7 +467,7 @@ namespace BackupManager
                             Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                      mediaBackup.PushoverAppToken,
                                      logFile,
-                                     BackupAction.CheckBackupDisk, PushoverPriority.High,
+                                     BackupAction.BackupFiles, PushoverPriority.High,
                                      $"There was an error with the hashcodes on the source master folder and the backup disk. Its likely the sourcefile has changed since the last backup of {backupFile.FullPath} to {destinationFileName}");
                         }
                     }
@@ -487,9 +491,12 @@ namespace BackupManager
 
                                 Directory.CreateDirectory(Path.GetDirectoryName(destinationFileName));
 
+                                Utils.DeleteFile(destinationFileNameTemp);
+
                                 DateTime startTime = DateTime.UtcNow;
-                                File.Copy(sourceFileName, destinationFileName);
+                                File.Copy(sourceFileName, destinationFileNameTemp);
                                 DateTime endTime = DateTime.UtcNow;
+                                File.Move(destinationFileNameTemp, destinationFileName);
 
                                 double timeTaken = (endTime - startTime).TotalSeconds;
                                 Utils.Trace($"timeTaken {timeTaken}");
@@ -512,7 +519,7 @@ namespace BackupManager
                                     Utils.LogWithPushover(mediaBackup.PushoverUserKey,
                                              mediaBackup.PushoverAppToken,
                                              logFile,
-                                             BackupAction.CheckBackupDisk, PushoverPriority.High,
+                                             BackupAction.BackupFiles, PushoverPriority.High,
                                              $"There was an error with the hashcodes on the source and backup disk. Its likely the sourcefile has changed since the last backup of {backupFile.FullPath} to {destinationFileName}");
                                 }
                             }

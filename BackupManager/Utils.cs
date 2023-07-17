@@ -1368,5 +1368,18 @@ namespace BackupManager
             string textToWrite = $"{DateTime.Now.ToString("dd-MM-yy HH:mm:ss.ff")} : {value.Replace('\n', ' ')}";
             System.Diagnostics.Trace.WriteLine(textToWrite);  
         }
+
+        /// <summary>
+        /// Deletes the file specified if it exists even if it was readonly.
+        /// </summary>
+        /// <param name="path"></param>
+        internal static void DeleteFile(string path)
+        {
+            if (File.Exists(path))
+            {
+                ClearFileAttribute(path, FileAttributes.ReadOnly);
+                File.Delete(path);
+            }
+        }
     }
 }

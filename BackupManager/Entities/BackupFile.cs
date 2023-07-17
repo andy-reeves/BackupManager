@@ -73,11 +73,20 @@
         {
             get
             {
-                // always calculate the FullPath incase the MasterFolder, IndexFolder or RelativePath properties have been changed.
+                // always calculate the FullPath in case the MasterFolder, IndexFolder or RelativePath properties have been changed.
                 return Path.Combine(MasterFolder, IndexFolder, RelativePath);
             }
         }
 
+        /// <summary>
+        /// The full path to the backup file on the backup disk.
+        /// </summary>
+        public string BackupDiskFullPath(string backupPath)
+        {
+            // always calculate path in case the MasterFolder, IndexFolder or RelativePath properties have been changed.
+            return Path.Combine(backupPath, IndexFolder, RelativePath);
+        }
+       
         /// <summary>
         /// Gets the number only of this disk this file is on. 0 if not backed up
         /// </summary>
