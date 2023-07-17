@@ -1381,5 +1381,58 @@ namespace BackupManager
                 File.Delete(path);
             }
         }
+
+        private static void DeleteEmptyDirectories(string directory, List<string> list)
+        {
+            Trace("DeleteEmptyDirectories enter");
+
+            try
+            {
+                foreach (var subDirectory in Directory.EnumerateDirectories(directory))
+                {
+                    DeleteEmptyDirectories(subDirectory, list);
+                }
+
+                var entries = Directory.EnumerateFileSystemEntries(directory);
+
+                if (!entries.Any())
+                {
+                    try
+                    {
+                        Trace($"Deleting empty folder {directory}");
+                        list.Add(directory);
+                        Directory.Delete(directory);
+                    }
+                    catch (UnauthorizedAccessException) { }
+                    catch (DirectoryNotFoundException) { }
+                }
+            }
+            catch (UnauthorizedAccessException) { }
+
+            Trace("DeleteEmptyDirectories exit");
+        }
+
+        /// <summary>
+        /// Deletes any empty directories in the directory specified and checks recursively all its sub-directories.
+        /// </summary>
+        /// <param name="directory">The directory to check</param>
+        /// <exception cref="ArgumentException"></exception>
+        /// <returns>An array of the directory paths that were removed</returns>
+        internal static string[] DeleteEmptyDirectories(string directory)
+        {
+            Trace("DeleteEmptyDirectories enter");
+
+            if (string.IsNullOrEmpty(directory))
+            {
+                throw new ArgumentException("Directory is a null reference or an empty string", "directory");
+            }
+
+            List<string> listOfDirectoriesDeleted = new List<string>();
+
+            DeleteEmptyDirectories(directory, listOfDirectoriesDeleted);
+
+            Trace("DeleteEmptyDirectories exit");
+            return listOfDirectoriesDeleted.ToArray();
+        }
     }
 }
