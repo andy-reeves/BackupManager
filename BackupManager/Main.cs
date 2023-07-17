@@ -451,7 +451,7 @@ namespace BackupManager
 
                     if (File.Exists(destinationFileName))
                     {
-                        Utils.Log(logFile, $"[{fileCounter}/{totalFileCount}] Skipping copy as it exists");
+                        Utils.Log(logFile, $"[{fileCounter}/{totalFileCount}] Skipping copy as it exists. Checking hashes instead.");
 
                         // it could be that the source file hash changed after we read it (we read the hash, updated the master file and then copied it)
                         // in which case check the source hash again and then check the copied file 
@@ -464,7 +464,7 @@ namespace BackupManager
                                      mediaBackup.PushoverAppToken,
                                      logFile,
                                      BackupAction.CheckBackupDisk, PushoverPriority.High,
-                                     $"There was an error with the hashcodes on the source and backup disk. Its likely the sourcefile has changed since the last backup of {backupFile.FullPath}");
+                                     $"There was an error with the hashcodes on the source master folder and the backup disk. Its likely the sourcefile has changed since the last backup of {backupFile.FullPath} to {destinationFileName}");
                         }
                     }
                     else
@@ -513,7 +513,7 @@ namespace BackupManager
                                              mediaBackup.PushoverAppToken,
                                              logFile,
                                              BackupAction.CheckBackupDisk, PushoverPriority.High,
-                                             $"There was an error with the hashcodes on the source and backup disk. Its likely the sourcefile has changed since the last backup of {backupFile.FullPath}");
+                                             $"There was an error with the hashcodes on the source and backup disk. Its likely the sourcefile has changed since the last backup of {backupFile.FullPath} to {destinationFileName}");
                                 }
                             }
                             else
