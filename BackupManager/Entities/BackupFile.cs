@@ -8,9 +8,6 @@
     [DebuggerDisplay("RelativePath = {RelativePath}")]
     public class BackupFile
     {
-
-        private string hash;
-
         private string contentsHash;
 
         private string fileName;
@@ -50,7 +47,7 @@
             {
                 if (value != contentsHash)
                 {
-                    contentsHash = value; 
+                    contentsHash = value;
                 }
             }
         }
@@ -292,7 +289,9 @@
                 return false;   
             }
 
-            if (!File.Exists(Path.Combine(disk.BackupPath, IndexFolder, RelativePath)))
+            string pathToBackupDiskFile = Path.Combine(disk.BackupPath, IndexFolder, RelativePath);
+            
+            if (!File.Exists(pathToBackupDiskFile))
             {
                 return false;
             }
@@ -304,7 +303,7 @@
                 throw new ApplicationException($"ERROR: {FullPath} has zerobyte hashcode");
             }
 
-            string hashFrombackupDiskFile = Utils.GetShortMd5HashFromFile(Path.Combine(disk.BackupPath, IndexFolder, RelativePath));
+            string hashFrombackupDiskFile = Utils.GetShortMd5HashFromFile(pathToBackupDiskFile);
 
             if (hashFrombackupDiskFile == Utils.ZeroByteHash)
             {
@@ -317,8 +316,9 @@
                 return false;
             }
 
-            // Hashes match so update it and the backup checked date too
+            // Hashes match so update it as checked and the backup checked date too
             UpdateDiskChecked(disk.Name);
+
             return true;
         }
     }

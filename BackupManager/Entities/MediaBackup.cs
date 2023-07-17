@@ -296,6 +296,30 @@
         }
 
         /// <summary>
+        /// Ensures the BackupFile exists and sets the Flag=TRUE 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="masterFolder"></param>
+        /// <param name="indexFolder"></param>
+        /// <exception cref="ApplicationException"></exception>
+        internal void EnsureFile(string path, string masterFolder, string indexFolder)
+        {
+            Utils.Trace("EnsureFile enter");
+
+            // Empty Index folder is not allowed
+            if (string.IsNullOrEmpty(indexFolder))
+            {
+                throw new ApplicationException("IndexFolder is empty. Not supported");
+            }
+
+            BackupFile backupFile = GetBackupFile(path, masterFolder, indexFolder)
+                                    ?? throw new ApplicationException($"Duplicate hashcode detected indicated a copy of a file at {path}");
+            backupFile.Flag = true;
+
+            Utils.Trace("EnsureFile exit");
+        }
+
+        /// <summary>
         /// Get a BackupDisk for the current backupShare
         /// </summary>
         /// <param name="backupShare"></param>

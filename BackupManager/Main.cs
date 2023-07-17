@@ -31,9 +31,7 @@ namespace BackupManager
 #if DEBUG
         private string logFile = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManagerDebug.log");
-#endif
-
-#if !DEBUG
+#else 
         private string logFile = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager.log");
 #endif
@@ -46,9 +44,10 @@ namespace BackupManager
 #if DEBUG
             Trace.Listeners.Add(new TextWriterTraceListener(Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),"BackupManagerTrace.log"), "myListener"));
+            backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "BackupMgrTest");
+#else
+            backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
 #endif
-
-            Utils.Trace("Trace is on");
 
             string mediaBackupXml = ConfigurationManager.AppSettings.Get("MediaBackupXml");
 
@@ -57,14 +56,6 @@ namespace BackupManager
             mediaBackup = MediaBackup.Load(File.Exists(localMediaXml) ? localMediaXml : mediaBackupXml);
 
             mediaBackup.LogParameters(logFile);
-
-#if !DEBUG
-            backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
-#endif
-
-#if DEBUG
-            backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "BackupMgrTest");
-#endif
 
             foreach (string a in mediaBackup.MasterFolders)
             {
@@ -108,7 +99,6 @@ namespace BackupManager
                 Utils.Log(logFile, $"{file.FullPath} does not have DiskChecked set on disk {file.Disk}");
             }
             Utils.Trace("ListFilesWithoutBackupDiskCheckedButton_Click exit");
-
         }
 
         private void CheckConnectedBackupDiskButton_Click(object sender, EventArgs e)
@@ -629,28 +619,6 @@ namespace BackupManager
             Utils.Trace("CopyFiles exit");
         }
 
-        private void EnsureFile(string path, string masterFolder, string indexFolder)
-        {
-            Utils.Trace("EnsureFile enter");
-
-            // Empty Index folder is not allowed
-            if (string.IsNullOrEmpty(indexFolder))
-            {
-                throw new ApplicationException("IndexFolder is empty. Not supported");
-            }
-
-            BackupFile backupFile = mediaBackup.GetBackupFile(path, masterFolder, indexFolder);
-
-            if (backupFile == null)
-            {
-                throw new ApplicationException($"Duplicate hashcode detected indicated a copy of a file at {path}");
-            }
-
-            backupFile.Flag = true;
-
-            Utils.Trace("EnsureFile exit");
-        }
-
         private void ListFilesNotOnBackupDiskButton_Click(object sender, EventArgs e)
         {
             Utils.Trace("ListFilesNotOnBackupDiskButton_Click enter");
@@ -1047,7 +1015,7 @@ namespace BackupManager
                                     // Placeholder for file scans
                                 }
 
-                                EnsureFile(file, masterFolder, indexFolder);
+                                mediaBackup.EnsureFile(file, masterFolder, indexFolder);
                             }
                         }
                     }
@@ -1067,7 +1035,7 @@ namespace BackupManager
             mediaBackup.RemoveFilesWithFlag(false, true);
             mediaBackup.Save();
 
-            var totalFiles = mediaBackup.BackupFiles.Count();
+            int totalFiles = mediaBackup.BackupFiles.Count();
 
             long totalFileSize = mediaBackup.BackupFiles.Sum(p => p.Length);
 
@@ -1252,7 +1220,6 @@ namespace BackupManager
             }
 
             Utils.Trace("listFilesOnBackupDiskButton_Click exit");
-
         }
 
         private void listFilesInMasterFolderButton_Click(object sender, EventArgs e)
