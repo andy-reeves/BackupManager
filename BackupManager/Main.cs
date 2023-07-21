@@ -1680,25 +1680,38 @@ namespace BackupManager
                               text);
 
                         string processToStart = Environment.ExpandEnvironmentVariables(monitor.ApplicationToStart);
-                        var newProcess = Process.Start(processToStart, monitor.ApplicationToStartArguments);
 
-                        if (newProcess == null)
+                        if (File.Exists(processToStart))
                         {
-                            Utils.LogWithPushover(mediaBackup.PushoverUserKey,
-                             mediaBackup.PushoverAppToken,
-                             logFile,
-                             BackupAction.Monitoring,
-                             PushoverPriority.High,
-                             $"Failed to start the new process '{monitor.Name}'");
+                            var newProcess = Process.Start(processToStart, monitor.ApplicationToStartArguments);
+
+                            if (newProcess == null)
+                            {
+                                Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                                 mediaBackup.PushoverAppToken,
+                                 logFile,
+                                 BackupAction.Monitoring,
+                                 PushoverPriority.High,
+                                 $"Failed to start the new process '{monitor.Name}'");
+                            }
+                            else
+                            {
+                                Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                                  mediaBackup.PushoverAppToken,
+                                  logFile,
+                                  BackupAction.Monitoring,
+                                  PushoverPriority.Normal,
+                                  $"'{monitor.Name}' started");
+                            }
                         }
                         else
                         {
                             Utils.LogWithPushover(mediaBackup.PushoverUserKey,
-                              mediaBackup.PushoverAppToken,
-                              logFile,
-                              BackupAction.Monitoring,
-                              PushoverPriority.Normal,
-                              $"'{monitor.Name}' started");
+                                 mediaBackup.PushoverAppToken,
+                                 logFile,
+                                 BackupAction.Monitoring,
+                                 PushoverPriority.High,
+                                 $"Failed to start the new process '{monitor.Name}' as its not found at {monitor.ApplicationToStart}");
                         }
                     }
 
