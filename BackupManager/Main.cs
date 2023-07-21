@@ -1711,7 +1711,7 @@ namespace BackupManager
                                  logFile,
                                  BackupAction.Monitoring,
                                  PushoverPriority.High,
-                                 $"Failed to start the new process '{monitor.Name}' as its not found at {monitor.ApplicationToStart}");
+                                 $"Failed to start the new process '{monitor.Name}' as its not found at {monitor.ApplicationToStart} (expanded to {processToStart})");
                         }
                     }
 
