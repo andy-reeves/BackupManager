@@ -1638,9 +1638,15 @@ namespace BackupManager
 
             foreach (Monitor monitor in mediaBackup.Monitors)
             {
-                bool result = monitor.Port > 0 ?
-                    Utils.ConnectionExists(monitor.Url, monitor.Port) :
-                    Utils.UrlExists(monitor.Url, monitor.Timeout * 1000);
+                bool result;
+                if (monitor.Port > 0)
+                {
+                    result = Utils.ConnectionExists(monitor.Url, monitor.Port);
+                }
+                else
+                {
+                    result = Utils.UrlExists(monitor.Url, monitor.Timeout * 1000);
+                }
 
                 // The monitor is down
                 if (!result)
@@ -1726,7 +1732,7 @@ namespace BackupManager
                               PushoverPriority.Normal,
                               text);
 
-                        result = Utils.RestartService(monitor.ServiceToRestart, 5000);
+                        result = Utils.RestartService(monitor.ServiceToRestart, monitor.Timeout * 1000);
 
                         if (result)
                         {
