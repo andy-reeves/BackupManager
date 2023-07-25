@@ -9,7 +9,7 @@
         public int Timeout;
 
         /// <summary>
-        /// THe name of any processes to kill if the monitor is detected down. Wildcards allowed.
+        /// The name of any processes to kill if the monitor is detected down. Wildcards allowed.
         /// </summary>
         public string ProcessToKill;
         

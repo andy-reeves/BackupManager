@@ -57,15 +57,11 @@ namespace BackupManager
 
             mediaBackup.LogParameters(logFile);
 
-            foreach (string a in mediaBackup.MasterFolders)
-            {
-                masterFoldersComboBox.Items.Add(a);
-            }
+            string[] masterFoldersArray = mediaBackup.MasterFolders.ToArray();
 
-            foreach (string a in mediaBackup.MasterFolders)
-            {
-                restoreMasterFolderComboBox.Items.Add(a);
-            }
+            listMasterFoldersComboBox.Items.AddRange(masterFoldersArray);
+            masterFoldersComboBox.Items.AddRange(masterFoldersArray);
+            restoreMasterFolderComboBox.Items.AddRange(masterFoldersArray);
 
             triggerAction = () => { ScheduledBackup(); };
 
@@ -1098,9 +1094,9 @@ namespace BackupManager
         {
             Utils.Trace("timerButton_Click enter");
 
-            if (timerButton.Text == "Start timer")
+            if (timerButton.Text == "Start")
             {
-                timerButton.Text = "Stop timer";
+                timerButton.Text = "Stop";
                 // Fire once if CheckBox is ticked
                 if (runOnTimerStartCheckBox.Checked)
                 {
@@ -1113,7 +1109,7 @@ namespace BackupManager
             }
             else
             {
-                timerButton.Text = "Start timer";
+                timerButton.Text = "Start";
                 trigger.OnTimeTriggered -= triggerAction;
             }
 
@@ -1205,7 +1201,7 @@ namespace BackupManager
         {
             Utils.Trace("listFilesInMasterFolderButton_Click enter");
 
-            string masterFolder = masterFoldersComboBox.SelectedItem.ToString();
+            string masterFolder = listMasterFoldersComboBox.SelectedItem.ToString();
 
             IEnumerable<BackupFile> files = mediaBackup.GetBackupFilesInMasterFolder(masterFolder);
 
@@ -1799,6 +1795,20 @@ namespace BackupManager
             }
 
             Utils.Trace("killProcessesButton_Click exit");
+        }
+
+        private void testPushoverLowButton_Click(object sender, EventArgs e)
+        {
+            Utils.Trace("testPushoverLowButton_Click enter");
+
+            Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                                  mediaBackup.PushoverAppToken,
+                                  logFile,
+                                  BackupAction.General,
+                                  PushoverPriority.Low,
+                                  "Low priority test\nLine 2\nLine 3");
+
+            Utils.Trace("testPushoverLowButton_Click exit");
         }
     }
 }

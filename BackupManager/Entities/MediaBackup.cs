@@ -46,7 +46,7 @@
         public bool StartScheduledBackup;
 
         /// <summary>
-        /// The start time for the scheudled backup
+        /// The start time for the scheduled backup
         /// </summary>
         public string ScheduledBackupStartTime;
 
