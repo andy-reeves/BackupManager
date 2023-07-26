@@ -68,11 +68,11 @@
             this.listMasterFoldersComboBox = new System.Windows.Forms.ComboBox();
             this.label6 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.testPushoverLowButton = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.testPushoverLowButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.hoursNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minutesNumericUpDown)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -504,6 +504,16 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Pushover tests";
             // 
+            // testPushoverLowButton
+            // 
+            this.testPushoverLowButton.Location = new System.Drawing.Point(32, 18);
+            this.testPushoverLowButton.Name = "testPushoverLowButton";
+            this.testPushoverLowButton.Size = new System.Drawing.Size(69, 23);
+            this.testPushoverLowButton.TabIndex = 43;
+            this.testPushoverLowButton.Text = "Low";
+            this.testPushoverLowButton.UseVisualStyleBackColor = true;
+            this.testPushoverLowButton.Click += new System.EventHandler(this.testPushoverLowButton_Click);
+            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.restoreFilesToMasterFolderButton);
@@ -556,16 +566,6 @@
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Scheduled Backup";
             // 
-            // testPushoverLowButton
-            // 
-            this.testPushoverLowButton.Location = new System.Drawing.Point(32, 18);
-            this.testPushoverLowButton.Name = "testPushoverLowButton";
-            this.testPushoverLowButton.Size = new System.Drawing.Size(69, 23);
-            this.testPushoverLowButton.TabIndex = 43;
-            this.testPushoverLowButton.Text = "Low";
-            this.testPushoverLowButton.UseVisualStyleBackColor = true;
-            this.testPushoverLowButton.Click += new System.EventHandler(this.testPushoverLowButton_Click);
-            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -595,7 +595,6 @@
             this.Controls.Add(this.updateMasterFilesButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
-            this.MinimizeBox = false;
             this.Name = "Main";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Backup Manager";
