@@ -23,7 +23,9 @@ namespace BackupManager
 
         private DailyTrigger trigger;
 
-        private Action triggerAction;
+        private Action scheduledBackupAction;
+        
+        private Action monitoringAction;
 
         // When the serice monitoring has been enabled this is True
         private bool serviceMonitoringRunning;
@@ -63,7 +65,9 @@ namespace BackupManager
             masterFoldersComboBox.Items.AddRange(masterFoldersArray);
             restoreMasterFolderComboBox.Items.AddRange(masterFoldersArray);
 
-            triggerAction = () => { ScheduledBackup(); };
+            scheduledBackupAction = () => { ScheduledBackup(); };
+
+            monitoringAction = () => { MonitorServices(); };
 
             DateTime startTime = DateTime.Parse(mediaBackup.ScheduledBackupStartTime);
 
@@ -1105,12 +1109,12 @@ namespace BackupManager
 
                 trigger = new DailyTrigger(Convert.ToInt32(hoursNumericUpDown.Value), Convert.ToInt32(minutesNumericUpDown.Value));
 
-                trigger.OnTimeTriggered += triggerAction;
+                trigger.OnTimeTriggered += scheduledBackupAction;
             }
             else
             {
                 timerButton.Text = "Start";
-                trigger.OnTimeTriggered -= triggerAction;
+                trigger.OnTimeTriggered -= scheduledBackupAction;
             }
 
             Utils.Trace("timerButton_Click exit");
@@ -1628,9 +1632,15 @@ namespace BackupManager
             Utils.Trace("monitoringButton_Click exit");
         }
 
+
         private void monitoringTimer_Tick(object sender, EventArgs e)
         {
-            Utils.Trace("monitoringTimer_Tick enter");
+            monitoringAction.Invoke();
+        }
+
+        private void MonitorServices()
+        {
+            Utils.Trace("MonitorServices enter");
 
             foreach (Monitor monitor in mediaBackup.Monitors)
             {
@@ -1752,7 +1762,7 @@ namespace BackupManager
                 }
             }
 
-            Utils.Trace("monitoringTimer_Tick exit");
+            Utils.Trace("MonitorServices exit");
         }
 
         private void killProcessesButton_Click(object sender, EventArgs e)
