@@ -1101,10 +1101,11 @@ namespace BackupManager
             if (timerButton.Text == "Start")
             {
                 timerButton.Text = "Stop";
+                
                 // Fire once if CheckBox is ticked
                 if (runOnTimerStartCheckBox.Checked)
                 {
-                    ScheduledBackup();
+                    scheduledBackupAction.BeginInvoke(scheduledBackupAction.EndInvoke, null);
                 }
 
                 trigger = new DailyTrigger(Convert.ToInt32(hoursNumericUpDown.Value), Convert.ToInt32(minutesNumericUpDown.Value));
@@ -1635,7 +1636,7 @@ namespace BackupManager
 
         private void monitoringTimer_Tick(object sender, EventArgs e)
         {
-            monitoringAction.Invoke();
+            monitoringAction.BeginInvoke(monitoringAction.EndInvoke, null);
         }
 
         private void MonitorServices()
