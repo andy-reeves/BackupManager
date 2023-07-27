@@ -482,7 +482,6 @@ namespace BackupManager
 
                                 // it could be that the source file hash changed after we read it (we read the hash, updated the master file and then copied it)
                                 // in which case check the source hash again and then check the copied file 
-                                backupFile.UpdateContentsHash();
                                 bool returnValue = backupFile.CheckContentHashes(disk);
 
                                 if (returnValue == false)

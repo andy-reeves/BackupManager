@@ -286,7 +286,7 @@
         }
 
         /// <summary>
-        /// Checks the files hash at the source location and at the backup location match. Updates DiskChecked accordingly.
+        /// Checks the files hash at the source location and at the backup location match. Updates DiskChecked and ContentsHash accordingly.
         /// </summary>
         /// <param name="disk">The BackupDisk the BackupFile is on</param>
         /// <exception cref="ApplicationException"></exception>
@@ -311,6 +311,8 @@
             {
                 throw new ApplicationException($"ERROR: {FullPath} has zerobyte hashcode");
             }
+
+            ContentsHash = hashFromSourceFile;
 
             string hashFrombackupDiskFile = Utils.GetShortMd5HashFromFile(pathToBackupDiskFile);
 
