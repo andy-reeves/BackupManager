@@ -58,6 +58,16 @@
         [XmlIgnore]
         public string FreeFormatted { get => Utils.FormatSize(Free); }
 
+        /// <summary>
+        /// The last read speed of this disk as a formatted string
+        /// </summary>
+        public string LastReadSpeed;
+
+        /// <summary>
+        /// The last write speed of this disk as a formatted string
+        /// </summary>
+        public string LastWriteSpeed;
+
         public BackupDisk()
         {
         }

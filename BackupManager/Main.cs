@@ -169,6 +169,10 @@ namespace BackupManager
                                   BackupAction.CheckBackupDisk,
                                   text);
 
+            // put the latest speed tests into the BackupDisk xml
+            disk.LastReadSpeed = Utils.FormatSpeed(readSpeed);
+            disk.LastWriteSpeed = Utils.FormatSpeed(writeSpeed);
+
             if (disk.Free < mediaBackup.MinimumCriticalBackupDiskSpace * Utils.BytesInOneGigabyte)
             {
                 Utils.LogWithPushover(mediaBackup.PushoverUserKey,
