@@ -218,7 +218,7 @@ namespace BackupManager
                                      mediaBackup.PushoverAppToken,
                                      logFile,
                                      BackupAction.CheckBackupDisk, PushoverPriority.High,
-                                     $"There was an error with the hashcodes on the source and backup disk. Its likely the sourcefile has changed since the last backup of {backupFile.FullPath} or the file was partially copied last time. It could be that the source file or destination file are corrupted though.");
+                                     $"There was an error with the hashcodes on the source and backup disk. It's likely the sourcefile has changed since the last backup of {backupFile.FullPath}. It could be that the source file or destination file are corrupted though.");
 
                             diskInfoMessageWasTheLastSent = false;
                             continue;
