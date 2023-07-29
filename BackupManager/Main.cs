@@ -477,8 +477,9 @@ namespace BackupManager
                                 double timeTaken = (endTime - startTime).TotalSeconds;
                                 Utils.Trace($"timeTaken {timeTaken}");
                                 Utils.Trace($"sourceFileInfo.Length {sourceFileInfo.Length}");
-                                string copySpeed = Utils.FormatSpeed(Convert.ToInt64(sourceFileInfo.Length /timeTaken));
 
+                                string copySpeed = timeTaken > 0 ?
+                                    Utils.FormatSpeed(Convert.ToInt64(sourceFileInfo.Length / timeTaken)) : "a very fast speed";
                                 Utils.Trace($"Copy complete at {copySpeed}");
 
                                 // Make sure its not readonly
