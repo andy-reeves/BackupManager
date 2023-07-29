@@ -118,8 +118,8 @@
         {
             // take a copy of the xml file
             string destinationFileName = "MediaBackup-" + DateTime.Now.ToString("yy-MM-dd-HH-mm-ss.ff") + ".xml";
-            string destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), destinationFileName);
-
+            string destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager", destinationFileName);
+            Utils.EnsureDirectories(destinationPath);
             File.Copy(mediaBackupPath, destinationPath);
         }
 
