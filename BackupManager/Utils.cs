@@ -22,6 +22,7 @@ namespace BackupManager
     using System.Diagnostics;
     using System.Net.Sockets;
     using System.ServiceProcess;
+    using static System.Net.Mime.MediaTypeNames;
 
     /// <summary>
     /// Common Utilty fuctions in a static class
@@ -95,6 +96,11 @@ namespace BackupManager
         /// The Pushover AppToken used for all logging.
         /// </summary>
         internal static string PushoverAppToken;
+
+        /// <summary>
+        /// We use this to pad our logging messages
+        /// </summary>
+        private static int LengthOfLargestBackupActionEnumNames;
 
         /// <summary>
         /// The MD5 Crypto Provider
@@ -774,6 +780,25 @@ namespace BackupManager
             return true;
         }
 
+        internal static void Log(BackupAction action, string message)
+        {
+            string actionText = Enum.GetName(typeof(BackupAction), action)+": ";
+
+            if (LengthOfLargestBackupActionEnumNames == 0)
+            {
+                
+                foreach (string enumName in Enum.GetNames(typeof(BackupAction)))
+                {
+                    if (enumName.Length > LengthOfLargestBackupActionEnumNames)
+                    {
+                        LengthOfLargestBackupActionEnumNames = enumName.Length;
+                    }
+                }
+            }
+
+            Log(actionText.PadRight(LengthOfLargestBackupActionEnumNames + 2) + message);
+        }
+
         /// <summary>
         /// Writes the text to the logfile
         /// </summary>
@@ -781,7 +806,7 @@ namespace BackupManager
         public static void Log(string text)
         {
             string textForLogFile = text.Replace('\n', ' ');
-            string textToWrite = $"{DateTime.Now:dd-MM-yy HH:mm:ss} : {textForLogFile}";
+            string textToWrite = $"{DateTime.Now:dd-MM-yy HH:mm:ss}: {textForLogFile}";
 
             Console.WriteLine(textToWrite);
             if (LogFile.HasValue())
@@ -799,7 +824,7 @@ namespace BackupManager
         /// <param name="text"></param>
         public static void LogWithPushover(BackupAction backupAction, string text)
         {
-            LogWithPushover( backupAction, PushoverPriority.Normal, text);
+            LogWithPushover(backupAction, PushoverPriority.Normal, text);
         }
 
         /// <summary>
@@ -810,9 +835,9 @@ namespace BackupManager
         /// <param name="text"></param>
         public static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, string text)
         {
-            Log(Enum.GetName(typeof(BackupAction), backupAction) + " " + text);
+            Log(backupAction, text);
 
-            if (PushoverAppToken.HasValue())
+            if (PushoverAppToken.HasValue() && PushoverAppToken != "InsertYourPushoverAppTokenHere")
             {
                 SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction),
                                     priority,
@@ -830,7 +855,7 @@ namespace BackupManager
         /// <param name="text"></param>
         public static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires, string text)
         {
-            Log(Enum.GetName(typeof(BackupAction), backupAction) + " " + text);
+            Log(backupAction, text);
 
             if (PushoverAppToken.HasValue())
             {
