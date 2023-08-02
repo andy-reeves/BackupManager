@@ -81,9 +81,13 @@ namespace BackupManager
 
             minutesNumericUpDown.Value = startTime.Minute;
 
-            if (mediaBackup.StartScheduledBackup)
+            if (mediaBackup.StartMonitoring)
             {
                 monitoringButton_Click(null, null);
+            }
+
+            if (mediaBackup.StartScheduledBackup)
+            {
                 timerButton_Click(null, null);
             }
 

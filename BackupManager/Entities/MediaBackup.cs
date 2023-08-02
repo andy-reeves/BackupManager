@@ -41,9 +41,14 @@
         public Collection<BackupDisk> BackupDisks;
 
         /// <summary>
-        /// If True the scheduled backup will start when the application starts at the scheudled time
+        /// If True the scheduled backup will start when the application starts
         /// </summary>
         public bool StartScheduledBackup;
+
+        /// <summary>
+        /// If True the service monitoring will start when the application starts
+        /// </summary>
+        public bool StartMonitoring;
 
         /// <summary>
         /// The start time for the scheduled backup
@@ -517,20 +522,20 @@
             }
             Utils.LogWithPushover(BackupAction.General, $"DisksToSkipOnRestore:\n{text}");
 
-            Utils.LogWithPushover(BackupAction.General,
-               $"StartScheduledBackup : {StartScheduledBackup}");
+            Utils.LogWithPushover(BackupAction.General, $"StartMonitoring : {StartMonitoring}");
 
-            Utils.LogWithPushover(BackupAction.General,
-                $"ScheduledBackupStartTime : {ScheduledBackupStartTime}");
+            Utils.LogWithPushover(BackupAction.General, $"MonitorInterval : {MonitorInterval}");
+
+            Utils.LogWithPushover(BackupAction.General, $"StartScheduledBackup : {StartScheduledBackup}");
+
+            Utils.LogWithPushover(BackupAction.General, $"ScheduledBackupStartTime : {ScheduledBackupStartTime}");
 
             Utils.LogWithPushover(BackupAction.General,
                 $"DifferenceInFileCountAllowedPercentage : {DifferenceInFileCountAllowedPercentage}");
 
-            Utils.LogWithPushover(BackupAction.General,
-                $"PushoverAppToken : {PushoverAppToken}");
+            Utils.LogWithPushover(BackupAction.General, $"PushoverAppToken : {PushoverAppToken}");
 
-            Utils.LogWithPushover(BackupAction.General,
-                $"PushoverUserKey : {PushoverUserKey}");
+            Utils.LogWithPushover(BackupAction.General, $"PushoverUserKey : {PushoverUserKey}");
 
             Utils.LogWithPushover(BackupAction.General,
                 $"MinimumCriticalMasterFolderSpace : {MinimumCriticalMasterFolderSpace}");
@@ -549,9 +554,6 @@
 
             Utils.LogWithPushover(BackupAction.General,
                 $"DaysToReportOldBackupDisks : {DaysToReportOldBackupDisks}");
-
-            Utils.LogWithPushover(BackupAction.General,
-               $"MonitorInterval : {MonitorInterval}");
         }
     }
 }
