@@ -1825,5 +1825,18 @@ namespace BackupManager
 
             Utils.Trace("testPushoverLowButton_Click exit");
         }
+
+        private void Main_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Utils.Trace("Main_FormClosed enter");
+
+            Utils.LogWithPushover(mediaBackup.PushoverUserKey,
+                                  mediaBackup.PushoverAppToken,
+                                  logFile,
+                                  BackupAction.General, PushoverPriority.High, "BackupManager stopped"
+                                  );
+
+            Utils.Trace("Main_FormClosed exit");
+        }
     }
 }

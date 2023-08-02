@@ -470,7 +470,7 @@
         internal void LogParameters(string logFile)
         {
             Utils.LogWithPushover(PushoverUserKey, PushoverAppToken, logFile, BackupAction.General,
-             $"Application started");
+             $"BackupManager started");
 
             string text = string.Empty;
             foreach (string masterFolder in MasterFolders)
