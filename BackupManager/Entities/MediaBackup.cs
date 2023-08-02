@@ -114,11 +114,14 @@
             this.mediaBackupPath = mediaBackupPath;
         }
 
+        /// <summary>
+        /// Creates a backup of the current xml file
+        /// </summary>
         public void BackupMediaFile()
         {
             // take a copy of the xml file
             string destinationFileName = "MediaBackup-" + DateTime.Now.ToString("yy-MM-dd-HH-mm-ss.ff") + ".xml";
-            string destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager", destinationFileName);
+            string destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups", destinationFileName);
             Utils.EnsureDirectories(destinationPath);
             File.Copy(mediaBackupPath, destinationPath);
         }
