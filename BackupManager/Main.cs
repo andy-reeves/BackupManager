@@ -59,10 +59,11 @@ namespace BackupManager
 
             mediaBackup = MediaBackup.Load(File.Exists(localMediaXml) ? localMediaXml : mediaBackupXml);
 
-            mediaBackup.LogParameters(logFile);
-
             Utils.PushoverUserKey = mediaBackup.PushoverUserKey;
             Utils.PushoverAppToken = mediaBackup.PushoverAppToken;
+
+            // Log the parameters after setting the Pushover keys in the Utils class
+            mediaBackup.LogParameters(logFile);
 
             // Populate the MasterFolders combo boxes
             string[] masterFoldersArray = mediaBackup.MasterFolders.ToArray();
