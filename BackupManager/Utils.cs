@@ -24,7 +24,7 @@ namespace BackupManager
     using System.ServiceProcess;
 
     /// <summary>
-    /// The utils.
+    /// Common Utilty fuctions in a static class
     /// </summary>
     public class Utils
     {
@@ -55,22 +55,27 @@ namespace BackupManager
         /// <summary>
         /// The number of bytes in one Terabyte. 2^40 bytes.
         /// </summary>
-        public const long BytesInOneTerabyte = 1_099_511_627_776;
+        internal const long BytesInOneTerabyte = 1_099_511_627_776;
 
         /// <summary>
         /// The number of bytes in one Gigabyte. 2^30 bytes.
         /// </summary>
-        public const int BytesInOneGigabyte = 1_073_741_824;
+        internal const int BytesInOneGigabyte = 1_073_741_824;
 
         /// <summary>
         /// The number of bytes in one Megabyte. 2^20 bytes.
         /// </summary>
-        public const int BytesInOneMegabyte = 1_048_576;
+        internal const int BytesInOneMegabyte = 1_048_576;
 
         /// <summary>
         /// The number of bytes in one Kilobyte. 2^10 bytes.
         /// </summary>
-        public const int BytesInOneKilobyte = 1_024;
+        internal const int BytesInOneKilobyte = 1_024;
+
+        /// <summary>
+        /// The URL of the Pushover messaging service.
+        /// </summary>
+        private const string PushoverAddress = "https://api.pushover.net/1/messages.json";
 
         #endregion
 
@@ -79,12 +84,30 @@ namespace BackupManager
         /// <summary>
         /// This is the Hash for a file containing 48K of only zero bytes.
         /// </summary>
-        public static string ZeroByteHash = "f4f35d60b3cc18aaa6d8d92f0cd3708a";
+        internal static readonly string ZeroByteHash = "f4f35d60b3cc18aaa6d8d92f0cd3708a";
 
         /// <summary>
-        /// The md 5.
+        /// The Pushover UserKey used for all logging.
+        /// </summary>
+        internal static string PushoverUserKey;
+
+        /// <summary>
+        /// The Pushover AppToken used for all logging.
+        /// </summary>
+        internal static string PushoverAppToken;
+
+        /// <summary>
+        /// The MD5 Crypto Provider
         /// </summary>
         private static readonly MD5CryptoServiceProvider Md5 = new MD5CryptoServiceProvider();
+
+#if DEBUG
+        private static readonly string LogFile = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManagerDebug.log");
+#else
+        private static readonly string LogFile = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager.log");
+#endif
 
         #endregion
 
@@ -588,12 +611,12 @@ namespace BackupManager
             return value;
         }
 
-        public static void SendPushoverMessage(string userKey, string appToken, string title, PushoverPriority priority, string message)
+        public static void SendPushoverMessage(string title, PushoverPriority priority, string message)
         {
-            SendPushoverMessage(userKey, appToken, title, priority, PushoverRetry.None, PushoverExpires.Immediately, message);
+            SendPushoverMessage(title, priority, PushoverRetry.None, PushoverExpires.Immediately, message);
         }
 
-        public static void SendPushoverMessage(string userKey, string appToken, string title, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires, string message)
+        public static void SendPushoverMessage(string title, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires, string message)
         {
             Trace("SendPushoverMessage enter");
 
@@ -602,8 +625,8 @@ namespace BackupManager
             try
             {
                 NameValueCollection parameters = new NameValueCollection {
-                { "token", appToken },
-                { "user", userKey },
+                { "token", Utils.PushoverAppToken},
+                { "user", Utils.PushoverUserKey },
                 { "priority", Convert.ChangeType(priority, priority.GetTypeCode()).ToString() },
                 { "message", message },
                 { "title", title } ,
@@ -635,16 +658,17 @@ namespace BackupManager
 
                 using (var client = new WebClient())
                 {
-                    client.UploadValues("https://api.pushover.net/1/messages.json", parameters);
+                    client.UploadValues(PushoverAddress, parameters);
 
 #if !DEBUG
                     System.Threading.Thread.Sleep(500); // ensures there's at least a 500ms gap between messages
 #endif
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 // we ignore any push problems
+                Log($"Exception sending Pushover message {ex}");
             }
 
             Trace("SendPushoverMessage exit");
@@ -750,49 +774,67 @@ namespace BackupManager
             return true;
         }
 
-        public static void Log(string logFilePath, string text)
+        /// <summary>
+        /// Writes the text to the logfile
+        /// </summary>
+        /// <param name="text"></param>
+        public static void Log(string text)
         {
             string textForLogFile = text.Replace('\n', ' ');
-            string textToWrite = $"{DateTime.Now.ToString("dd-MM-yy HH:mm:ss")} : {textForLogFile}";
+            string textToWrite = $"{DateTime.Now:dd-MM-yy HH:mm:ss} : {textForLogFile}";
 
             Console.WriteLine(textToWrite);
-            if (logFilePath.HasValue())
+            if (LogFile.HasValue())
             {
-                EnsureDirectories(logFilePath);
-                File.AppendAllLines(logFilePath, new[] { textToWrite });
+                EnsureDirectories(LogFile);
+                File.AppendAllLines(LogFile, new[] { textToWrite });
             }
 
             Trace(textForLogFile);
         }
-
-        public static void LogWithPushover(string pushoverUserKey, string pushoverAppToken, string logFilePath, BackupAction backupAction, string text)
+        /// <summary>
+        /// Logs the text to the LogFile and sends a Pushover message
+        /// </summary>
+        /// <param name="backupAction"></param>
+        /// <param name="text"></param>
+        public static void LogWithPushover(BackupAction backupAction, string text)
         {
-            LogWithPushover(pushoverUserKey, pushoverAppToken, logFilePath, backupAction, PushoverPriority.Normal, text);
+            LogWithPushover( backupAction, PushoverPriority.Normal, text);
         }
 
-        public static void LogWithPushover(string pushoverUserKey, string pushoverAppToken, string logFilePath, BackupAction backupAction, PushoverPriority priority, string text)
+        /// <summary>
+        /// Logs the text to the LogFile and sends a Pushover message
+        /// </summary>
+        /// <param name="backupAction"></param>
+        /// <param name="priority"></param>
+        /// <param name="text"></param>
+        public static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, string text)
         {
-            Log(logFilePath, Enum.GetName(typeof(BackupAction), backupAction) + " " + text);
+            Log(Enum.GetName(typeof(BackupAction), backupAction) + " " + text);
 
-            if (pushoverAppToken.HasValue())
+            if (PushoverAppToken.HasValue())
             {
-                SendPushoverMessage(pushoverUserKey,
-                                    pushoverAppToken,
-                                    Enum.GetName(typeof(BackupAction), backupAction),
+                SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction),
                                     priority,
                                     text);
             }
         }
 
-        public static void LogWithPushover(string pushoverUserKey, string pushoverAppToken, string logFilePath, BackupAction backupAction, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires, string text)
+        /// <summary>
+        /// Logs the text to the LogFile and sends a Pushover message
+        /// </summary>
+        /// <param name="backupAction"></param>
+        /// <param name="priority"></param>
+        /// <param name="retry"></param>
+        /// <param name="expires"></param>
+        /// <param name="text"></param>
+        public static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires, string text)
         {
-            Log(logFilePath, Enum.GetName(typeof(BackupAction), backupAction) + " " + text);
+            Log(Enum.GetName(typeof(BackupAction), backupAction) + " " + text);
 
-            if (pushoverAppToken.HasValue())
+            if (PushoverAppToken.HasValue())
             {
-                SendPushoverMessage(pushoverUserKey,
-                                    pushoverAppToken,
-                                    Enum.GetName(typeof(BackupAction), backupAction),
+                SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction),
                                     priority,
                                     retry,
                                     expires,

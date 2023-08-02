@@ -469,7 +469,7 @@
         }
         internal void LogParameters(string logFile)
         {
-            Utils.LogWithPushover(PushoverUserKey, PushoverAppToken, logFile, BackupAction.General,
+            Utils.LogWithPushover(BackupAction.General,
              $"BackupManager started");
 
             string text = string.Empty;
@@ -477,77 +477,77 @@
             {
                 text += $"{masterFolder}\n";
             }
-            Utils.LogWithPushover(PushoverUserKey, PushoverAppToken, logFile, BackupAction.General, $"MasterFolders:\n{text}");
+            Utils.LogWithPushover(BackupAction.General, $"MasterFolders:\n{text}");
 
             text = string.Empty;
             foreach (string indexFolder in IndexFolders)
             {
                 text += $"{indexFolder}\n";
             }
-            Utils.LogWithPushover(PushoverUserKey, PushoverAppToken, logFile, BackupAction.General, $"IndexFolders:\n{text}");
+            Utils.LogWithPushover(BackupAction.General, $"IndexFolders:\n{text}");
 
             text = string.Empty;
             foreach (string filter in Filters)
             {
                 text += $"{filter}\n";
             }
-            Utils.LogWithPushover(PushoverUserKey, PushoverAppToken, logFile, BackupAction.General, $"Filters:\n{text}");
+            Utils.LogWithPushover(BackupAction.General, $"Filters:\n{text}");
 
             text = string.Empty;
             foreach (string edition in EditionsAllowed)
             {
                 text += $"{edition}\n";
             }
-            Utils.LogWithPushover(PushoverUserKey, PushoverAppToken, logFile, BackupAction.General, $"Editions:\n{text}");
+            Utils.LogWithPushover(BackupAction.General, $"Editions:\n{text}");
 
             text = string.Empty;
             foreach (string videoFormatsAllowed in VideoFoldersFormatsAllowed)
             {
                 text += $"{videoFormatsAllowed}\n";
             }
-            Utils.LogWithPushover(PushoverUserKey, PushoverAppToken, logFile, BackupAction.General, $"VideoFormatsAllowed:\n{text}");
+            Utils.LogWithPushover(BackupAction.General, $"VideoFormatsAllowed:\n{text}");
 
             text = string.Empty;
             foreach (string disksToSkip in DisksToSkipOnRestore)
             {
                 text += $"{disksToSkip}\n";
             }
-            Utils.LogWithPushover(PushoverUserKey, PushoverAppToken, logFile, BackupAction.General, $"DisksToSkipOnRestore:\n{text}");
+            Utils.LogWithPushover(BackupAction.General, $"DisksToSkipOnRestore:\n{text}");
 
-            Utils.LogWithPushover(PushoverUserKey, PushoverAppToken, logFile, BackupAction.General,
+            Utils.LogWithPushover(BackupAction.General,
                $"StartScheduledBackup : {StartScheduledBackup}");
 
-            Utils.LogWithPushover(PushoverUserKey, PushoverAppToken, logFile, BackupAction.General,
+            Utils.LogWithPushover(BackupAction.General,
                 $"ScheduledBackupStartTime : {ScheduledBackupStartTime}");
 
-            Utils.LogWithPushover(PushoverUserKey, PushoverAppToken, logFile, BackupAction.General,
+            Utils.LogWithPushover(BackupAction.General,
                 $"DifferenceInFileCountAllowedPercentage : {DifferenceInFileCountAllowedPercentage}");
 
-            Utils.LogWithPushover(PushoverUserKey, PushoverAppToken, logFile, BackupAction.General,
+            Utils.LogWithPushover(BackupAction.General,
                 $"PushoverAppToken : {PushoverAppToken}");
 
-            Utils.LogWithPushover(PushoverUserKey, PushoverAppToken, logFile, BackupAction.General,
+            Utils.LogWithPushover(BackupAction.General,
                 $"PushoverUserKey : {PushoverUserKey}");
 
-            Utils.LogWithPushover(PushoverUserKey, PushoverAppToken, logFile, BackupAction.General,
+            Utils.LogWithPushover(BackupAction.General,
                 $"MinimumCriticalMasterFolderSpace : {MinimumCriticalMasterFolderSpace}");
 
-            Utils.LogWithPushover(PushoverUserKey, PushoverAppToken, logFile, BackupAction.General,
+            Utils.LogWithPushover(BackupAction.General,
                 $"MinimumCriticalBackupDiskSpace : {MinimumCriticalBackupDiskSpace}");
 
-            Utils.LogWithPushover(PushoverUserKey, PushoverAppToken, logFile, BackupAction.General,
+            Utils.LogWithPushover(BackupAction.General,
                 $"MinimumFreeSpaceToLeaveOnBackupDisk : {MinimumFreeSpaceToLeaveOnBackupDisk}");
 
-            Utils.LogWithPushover(PushoverUserKey, PushoverAppToken, logFile, BackupAction.General,
+            Utils.LogWithPushover(BackupAction.General,
                 $"MinimumMasterFolderReadSpeed : {MinimumMasterFolderReadSpeed}");
 
-            Utils.LogWithPushover(PushoverUserKey, PushoverAppToken, logFile, BackupAction.General,
+            Utils.LogWithPushover(BackupAction.General,
                 $"MinimumMasterFolderWriteSpeed : {MinimumMasterFolderWriteSpeed}");
 
-            Utils.LogWithPushover(PushoverUserKey, PushoverAppToken, logFile, BackupAction.General,
+            Utils.LogWithPushover(BackupAction.General,
                 $"DaysToReportOldBackupDisks : {DaysToReportOldBackupDisks}");
 
-            Utils.LogWithPushover(PushoverUserKey, PushoverAppToken, logFile, BackupAction.General,
+            Utils.LogWithPushover(BackupAction.General,
                $"MonitorInterval : {MonitorInterval}");
         }
     }
