@@ -22,8 +22,6 @@ namespace BackupManager
     using System.Diagnostics;
     using System.Net.Sockets;
     using System.ServiceProcess;
-    using static System.Net.Mime.MediaTypeNames;
-    using System.Windows.Forms;
 
     /// <summary>
     /// Common Utilty fuctions in a static class
@@ -115,7 +113,10 @@ namespace BackupManager
         private static readonly string LogFile = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager.log");
 #endif
-
+        /// <summary>
+        /// We use this to track when we sent the messages. This allows us to delay for at least 1000ms between messages
+        /// </summary>
+        private static DateTime timeLastPushoverMessageSent = DateTime.UtcNow;
         #endregion
 
         #region Public Methods and Operators
@@ -665,14 +666,13 @@ namespace BackupManager
 
                 using (var client = new WebClient())
                 {
+                    // ensures there's a 1s gap between messages
+                    while (DateTime.UtcNow < timeLastPushoverMessageSent.AddSeconds(1))
+                    {
+                        System.Threading.Thread.Sleep(100);
+                    }
                     client.UploadValues(PushoverAddress, parameters);
-
-                    // ensures there's a gap between messages
-#if DEBUG
-                    System.Threading.Thread.Sleep(500);
-#else
-                    System.Threading.Thread.Sleep(500);
-#endif
+                    timeLastPushoverMessageSent = DateTime.UtcNow;
                 }
             }
             catch (Exception ex)
