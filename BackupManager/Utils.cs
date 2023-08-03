@@ -782,7 +782,7 @@ namespace BackupManager
 
         internal static void Log(BackupAction action, string message)
         {
-            string actionText = Enum.GetName(typeof(BackupAction), action)+": ";
+            string actionText = Enum.GetName(typeof(BackupAction), action) + ": ";
 
             if (LengthOfLargestBackupActionEnumNames == 0)
             {

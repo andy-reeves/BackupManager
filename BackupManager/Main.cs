@@ -394,7 +394,7 @@ namespace BackupManager
 
                     if (File.Exists(destinationFileName))
                     {
-                        Utils.Log($"[{fileCounter}/{totalFileCount}] Skipping copy as it exists. Checking hashes instead.");
+                        Utils.Log(BackupAction.BackupFiles, $"[{fileCounter}/{totalFileCount}] Skipping copy as it exists. Checking hashes instead.");
 
                         // it could be that the source file hash changed after we read it (we read the hash, updated the master file and then copied it)
                         // in which case check the source hash again and then check the copied file 
@@ -1089,19 +1089,19 @@ namespace BackupManager
 
             if (files.Count() == 0)
             {
-                Utils.Log($"All files checked in last {mediaBackup.DaysToReportOldBackupDisks} days");
+                Utils.Log(BackupAction.General, $"All files checked in last {mediaBackup.DaysToReportOldBackupDisks} days");
 
             }
             else
             {
-                Utils.Log($"Listing files not checked in {mediaBackup.DaysToReportOldBackupDisks} days");
+                Utils.Log(BackupAction.General, $"Listing files not checked in {mediaBackup.DaysToReportOldBackupDisks} days");
             }
 
             foreach (BackupFile file in files)
             {
                 int days = DateTime.Today.Subtract(DateTime.Parse(file.DiskChecked)).Days;
 
-                Utils.Log($"{file.FullPath} - not checked in {days} day(s) on disk {file.Disk}");
+                Utils.Log(BackupAction.General, $"{file.FullPath} - not checked in {days} day(s) on disk {file.Disk}");
             }
 
             Utils.Trace("CheckForOldBackupDisks exit");
@@ -1145,8 +1145,8 @@ namespace BackupManager
 
                 IEnumerable<BackupFile> files = mediaBackup.GetBackupFilesInMasterFolder(masterFolder).Where(p => p.Disk.HasValue());
 
-                Utils.Log($"Restoring files from master folder {masterFolder}");
-                Utils.Log($"Restoring files to target master folder {targetMasterFolder}");
+                Utils.Log(BackupAction.Restore, $"Restoring files from master folder {masterFolder}");
+                Utils.Log(BackupAction.Restore, $"Restoring files to target master folder {targetMasterFolder}");
 
                 string backupShare = backupDiskTextBox.Text;
 
