@@ -23,6 +23,7 @@ namespace BackupManager
     using System.Net.Sockets;
     using System.ServiceProcess;
     using static System.Net.Mime.MediaTypeNames;
+    using System.Windows.Forms;
 
     /// <summary>
     /// Common Utilty fuctions in a static class
@@ -631,8 +632,8 @@ namespace BackupManager
             try
             {
                 NameValueCollection parameters = new NameValueCollection {
-                { "token", Utils.PushoverAppToken},
-                { "user", Utils.PushoverUserKey },
+                { "token", PushoverAppToken},
+                { "user", PushoverUserKey },
                 { "priority", Convert.ChangeType(priority, priority.GetTypeCode()).ToString() },
                 { "message", message },
                 { "title", title } ,
@@ -666,8 +667,11 @@ namespace BackupManager
                 {
                     client.UploadValues(PushoverAddress, parameters);
 
-#if !DEBUG
-                    System.Threading.Thread.Sleep(500); // ensures there's at least a 500ms gap between messages
+                    // ensures there's a gap between messages
+#if DEBUG
+                    System.Threading.Thread.Sleep(500);
+#else
+                    System.Threading.Thread.Sleep(500);
 #endif
                 }
             }
@@ -782,11 +786,10 @@ namespace BackupManager
 
         internal static void Log(BackupAction action, string message)
         {
-            string actionText = Enum.GetName(typeof(BackupAction), action) + ": ";
+            string actionText = Enum.GetName(typeof(BackupAction), action) + " ";
 
             if (LengthOfLargestBackupActionEnumNames == 0)
-            {
-                
+            {   
                 foreach (string enumName in Enum.GetNames(typeof(BackupAction)))
                 {
                     if (enumName.Length > LengthOfLargestBackupActionEnumNames)
@@ -796,7 +799,15 @@ namespace BackupManager
                 }
             }
 
-            Log(actionText.PadRight(LengthOfLargestBackupActionEnumNames + 2) + message);
+            string[] textArrayToWrite = message.Split('\n');
+
+            foreach (var line in textArrayToWrite)
+            {
+                if (line.HasValue())
+                {
+                    Log(actionText.PadRight(LengthOfLargestBackupActionEnumNames + 1) + line);
+                }
+            }
         }
 
         /// <summary>
@@ -805,17 +816,24 @@ namespace BackupManager
         /// <param name="text"></param>
         public static void Log(string text)
         {
-            string textForLogFile = text.Replace('\n', ' ');
-            string textToWrite = $"{DateTime.Now:dd-MM-yy HH:mm:ss}: {textForLogFile}";
+            string[] textArrayToWrite = text.Split('\n');
 
-            Console.WriteLine(textToWrite);
-            if (LogFile.HasValue())
+            foreach (string line in textArrayToWrite)
             {
-                EnsureDirectories(LogFile);
-                File.AppendAllLines(LogFile, new[] { textToWrite });
-            }
+                if (line.HasValue())
+                {
+                    string textToWrite = $"{DateTime.Now:dd-MM-yy HH:mm:ss} {line}";
 
-            Trace(textForLogFile);
+                    Console.WriteLine(textToWrite);
+                    if (LogFile.HasValue())
+                    {
+                        EnsureDirectories(LogFile);
+                        File.AppendAllLines(LogFile, new[] { textToWrite });
+                    }
+
+                    Trace(text);
+                }
+            }
         }
         /// <summary>
         /// Logs the text to the LogFile and sends a Pushover message
@@ -1432,8 +1450,15 @@ namespace BackupManager
 
         internal static void Trace(string value)
         {
-            string textToWrite = $"{DateTime.Now.ToString("dd-MM-yy HH:mm:ss.ff")} : {value.Replace('\n', ' ')}";
-            System.Diagnostics.Trace.WriteLine(textToWrite);  
+            string[] textArrayToWrite = value.Split('\n');
+
+            foreach (string line in textArrayToWrite)
+            {
+                if (line.HasValue())
+                {
+                    System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {line}");
+                }
+            }
         }
 
         /// <summary>

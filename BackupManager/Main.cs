@@ -30,13 +30,6 @@ namespace BackupManager
         // When the serice monitoring has been enabled this is True
         private bool serviceMonitoringRunning;
 
-#if DEBUG
-        private string logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                                              "BackupManagerDebug.log");
-#else 
-        private string logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                                              "BackupManager.log");
-#endif
         #region Constructors and Destructors
 
         public Main()
@@ -63,7 +56,7 @@ namespace BackupManager
             Utils.PushoverAppToken = mediaBackup.PushoverAppToken;
 
             // Log the parameters after setting the Pushover keys in the Utils class
-            mediaBackup.LogParameters(logFile);
+            mediaBackup.LogParameters();
 
             // Populate the MasterFolders combo boxes
             string[] masterFoldersArray = mediaBackup.MasterFolders.ToArray();
@@ -277,7 +270,7 @@ namespace BackupManager
             Utils.Trace("CheckConnectedDisk exit");
         }
 
-        private bool EnsureConnectedBackupDisk(string backupDisk, string logFile)
+        private bool EnsureConnectedBackupDisk(string backupDisk)
         {
             Utils.Trace("EnsureConnectedBackupDisk enter");
 
@@ -1159,7 +1152,7 @@ namespace BackupManager
                     if (!mediaBackup.DisksToSkipOnRestore.Contains(file.Disk, StringComparer.CurrentCultureIgnoreCase))
                     {
                         //we need to check the correct disk is connected and prompt if not
-                        if (!EnsureConnectedBackupDisk(file.Disk, logFile))
+                        if (!EnsureConnectedBackupDisk(file.Disk))
                         {
                             MessageBox.Show("Cannot connect to the backup drive required", "Restore backup files", MessageBoxButtons.OK);
                             return;
