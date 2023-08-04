@@ -77,18 +77,22 @@ namespace BackupManager
 
             if (mediaBackup.StartMonitoring)
             {
+#if !DEBUG
                 monitoringButton_Click(null, null);
+#endif
             }
 
             if (mediaBackup.StartScheduledBackup)
             {
+#if !DEBUG
                 timerButton_Click(null, null);
+#endif
             }
 
             Utils.Trace("Main exit");
         }
 
-        #endregion
+#endregion
 
         #region Methods
 
@@ -737,7 +741,7 @@ namespace BackupManager
                                         bool found = false;
                                         foreach (string s in mediaBackup.EditionsAllowed)
                                         {
-                                            if (file.Contains("{edition-" + s, StringComparison.OrdinalIgnoreCase))
+                                            if (file.Contains("{edition-" + s + "}", StringComparison.OrdinalIgnoreCase))
                                             {
                                                 found = true;
                                                 break;
