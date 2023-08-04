@@ -222,6 +222,43 @@ namespace BackupManager
                         }
                     }
                 }
+                else
+                {
+                    // The file on the backup disk isn't found in the masterfolder anymore
+                    // it could be that we've renamed it in the master folder
+                    // We could just let it get deleted off the backup disk and copied again next time
+                    // Alternatively, find it by the contents hashcode as thats (alost guaranteed unique)
+                    // and then rename it 
+                    var hashToCheck = Utils.GetShortMd5HashFromFile(backupFileFullPath);
+
+                    var file = mediaBackup.GetBackupFileFromContentsHashcode(hashToCheck);
+
+                    if (file != null && file.Length != 0 && file.BackupDiskNumber == 0)
+                    {
+                        string destFileName = file.BackupDiskFullPath(disk.BackupPath);
+                        Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, $"Renaming {backupFileFullPath} to {destFileName}");                                     
+                        File.Move(backupFileFullPath, destFileName);
+
+                        // This forces a hash check on the source and backup disk files
+                        Utils.Trace($"Checking hash for {file.Hash}");
+                        bool returnValue = file.CheckContentHashes(disk);
+
+                        if (returnValue == false)
+                        {
+                            // There was an error with the hashcodes of the source file anf the file on the backup disk
+                            Utils.LogWithPushover(BackupAction.CheckBackupDisk,
+                                                  PushoverPriority.High,
+                                                  $"There was an error with the hashcodes on the source and backup disk. It's likely the sourcefile has changed since the last backup of {file.FullPath}. It could be that the source file or destination file are corrupted though.");
+
+                            diskInfoMessageWasTheLastSent = false;
+                            continue;
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+                }
 
                 // Extra file on a backup disk
                 if (deleteExtraFiles)

@@ -205,6 +205,38 @@
         }
 
         /// <summary>
+        /// Gets a BackupFile representing the file from the contents Hashcode provided
+        /// </summary>
+        /// <param name="value">The contents Hashcode of the file to find.</param>
+        /// <param name="masterFolder"></param>
+        /// <param name="indexFolder"></param>
+        /// <returns>Null if it wasn't found or null if more thsn 1</returns>
+        public BackupFile GetBackupFileFromContentsHashcode(string value)
+        {
+            Utils.Trace("GetBackupFileFromContentsHashcode enter");
+
+            int count = this.BackupFiles.Where(a => a.ContentsHash == value).Count();
+
+            if (count == 0)
+            {
+                Utils.Trace("GetBackupFileFromContentsHashcode exit1");
+                return null;
+            }
+
+            if (count > 1)
+            {
+                Utils.Trace($"More than 1 file with same ContentsHashcode {value}");
+                Utils.Trace("GetBackupFileFromContentsHashcode exit2");
+                return null;
+            }
+
+            BackupFile file = this.BackupFiles.Where(q => q.ContentsHash == value).First();
+
+            Utils.Trace("GetBackupFileFromContentsHashcode exit");
+            return file;
+        }
+
+        /// <summary>
         /// Gets a BackupFile representing the file at fullPath
         /// </summary>
         /// <param name="fullPath">The fullPath to the file.</param>

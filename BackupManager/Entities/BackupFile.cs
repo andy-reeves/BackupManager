@@ -81,6 +81,7 @@
         /// <summary>
         /// The full path to the backup file on the backup disk.
         /// </summary>
+        /// <param name="backupPath">The path to the current backup disk.</param>
         public string BackupDiskFullPath(string backupPath)
         {
             // always calculate path in case the MasterFolder, IndexFolder or RelativePath properties have been changed.
