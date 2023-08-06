@@ -237,7 +237,7 @@ namespace BackupManager
                     {
                         string destFileName = file.BackupDiskFullPath(disk.BackupPath);
                         Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, $"Renaming {backupFileFullPath} to {destFileName}");                                     
-                        File.Move(backupFileFullPath, destFileName);
+                        Utils.FileMove(backupFileFullPath, destFileName);
 
                         // This forces a hash check on the source and backup disk files
                         Utils.Trace($"Checking hash for {file.Hash}");
@@ -456,14 +456,12 @@ namespace BackupManager
                                 Utils.LogWithPushover(BackupAction.BackupFiles,
                                                       $"[{fileCounter}/{totalFileCount}] {Utils.FormatSize(availableSpace)} free.\nCopying {sourceFileName} at {sourceFileSize}");
 
-                                Directory.CreateDirectory(Path.GetDirectoryName(destinationFileName));
-
                                 Utils.DeleteFile(destinationFileNameTemp);
 
                                 DateTime startTime = DateTime.UtcNow;
-                                File.Copy(sourceFileName, destinationFileNameTemp);
+                                Utils.FileCopy(sourceFileName, destinationFileNameTemp);
                                 DateTime endTime = DateTime.UtcNow;
-                                File.Move(destinationFileNameTemp, destinationFileName);
+                                Utils.FileMove(destinationFileNameTemp, destinationFileName);
 
                                 double timeTaken = (endTime - startTime).TotalSeconds;
                                 Utils.Trace($"timeTaken {timeTaken}");
@@ -1233,8 +1231,7 @@ namespace BackupManager
                             {
                                 Utils.LogWithPushover(BackupAction.Restore,
                                                       $"[{fileCounter}/{countOfFiles}] Copying {sourceFileFullPath} as {targetFilePath}");
-                                Utils.EnsureDirectories(targetFilePath);
-                                File.Copy(sourceFileFullPath, targetFilePath);
+                                Utils.FileCopy(sourceFileFullPath, targetFilePath);
                             }
                             else
                             {

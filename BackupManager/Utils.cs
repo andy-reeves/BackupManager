@@ -22,6 +22,7 @@ namespace BackupManager
     using System.Diagnostics;
     using System.Net.Sockets;
     using System.ServiceProcess;
+    using System.Security;
 
     /// <summary>
     /// Common Utilty fuctions in a static class
@@ -120,6 +121,28 @@ namespace BackupManager
         #endregion
 
         #region Public Methods and Operators
+
+        /// <summary>
+        /// Moves a specified file to a new location, providing the option to specify a new file name. Ensures the destination folder exists too.
+        /// </summary>
+        /// <param name="sourceFileName">The name of the file to move. Can include a relative or absolute path.</param>
+        /// <param name="destFileName">The new path and name for the file.</param>
+        public static void FileMove(string sourceFileName, string destFileName)
+        {
+            EnsureDirectories(destFileName);
+            File.Move(sourceFileName, destFileName);
+        }
+
+        /// <summary>
+        /// Copies an existing file to a new file. Overwriting a file of the same name is not allowed. Ensures the destination folder exists too.
+        /// </summary>
+        /// <param name="sourceFileName">The file to copy.</param>
+        /// <param name="destFileName">The name of the destination file. This cannot be a directory or an existing file.</param>
+        public static void FileCopy(string sourceFileName, string destFileName)
+        {
+            EnsureDirectories(destFileName);
+            File.Copy(sourceFileName, destFileName);
+        }
 
         /// <summary>
         /// Covertss a MB value to a size in Bytes
