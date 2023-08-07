@@ -129,8 +129,12 @@ namespace BackupManager
         /// <param name="destFileName">The new path and name for the file.</param>
         public static void FileMove(string sourceFileName, string destFileName)
         {
+            Trace("FileMove enter");
+            Trace($"Params: sourceFileName={sourceFileName}, destFileName={destFileName}");
+
             EnsureDirectories(destFileName);
             File.Move(sourceFileName, destFileName);
+            Trace("FileMove exit");
         }
 
         /// <summary>
@@ -140,8 +144,12 @@ namespace BackupManager
         /// <param name="destFileName">The name of the destination file. This cannot be a directory or an existing file.</param>
         public static void FileCopy(string sourceFileName, string destFileName)
         {
+            Trace("FileCopy enter");
+            Trace($"Params: sourceFileName={sourceFileName}, destFileName={destFileName}");
+
             EnsureDirectories(destFileName);
             File.Copy(sourceFileName, destFileName);
+            Trace("FileCopy exit");
         }
 
         /// <summary>
