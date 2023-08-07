@@ -113,6 +113,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="BackupManager.ico" />
+    <Content Include="BackupManager.png" />
     <Content Include="MediaBackup.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
