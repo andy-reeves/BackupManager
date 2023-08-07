@@ -817,8 +817,6 @@ namespace BackupManager
 
         internal static void Log(BackupAction action, string message)
         {
-            string actionText = Enum.GetName(typeof(BackupAction), action) + " ";
-
             if (LengthOfLargestBackupActionEnumNames == 0)
             {   
                 foreach (string enumName in Enum.GetNames(typeof(BackupAction)))
@@ -830,6 +828,7 @@ namespace BackupManager
                 }
             }
 
+            string actionText = Enum.GetName(typeof(BackupAction), action) + " ";
             string[] textArrayToWrite = message.Split('\n');
 
             foreach (var line in textArrayToWrite)
