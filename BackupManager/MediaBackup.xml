@@ -14,8 +14,8 @@
   <MinimumCriticalBackupDiskSpace>1</MinimumCriticalBackupDiskSpace>
   <!-- After this many days the backup warns to check the disks again -->
   <DaysToReportOldBackupDisks>90</DaysToReportOldBackupDisks>
-  <!-- MinimumFreeSpaceToLeaveOnBackupDrive in MB -->
-  <MinimumFreeSpaceToLeaveOnBackupDrive>10</MinimumFreeSpaceToLeaveOnBackupDrive>
+  <!-- MinimumFreeSpaceToLeaveOnBackupDisk in MB -->
+  <MinimumFreeSpaceToLeaveOnBackupDisk>10</MinimumFreeSpaceToLeaveOnBackupDisk>
   <!-- Minimum read speed in MB/s -->
   <MinimumMasterFolderReadSpeed>30</MinimumMasterFolderReadSpeed>
   <!-- Minimum write speed in MB/s -->

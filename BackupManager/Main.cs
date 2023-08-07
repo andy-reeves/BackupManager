@@ -92,7 +92,7 @@ namespace BackupManager
             Utils.Trace("Main exit");
         }
 
-#endregion
+        #endregion
 
         #region Methods
 
@@ -132,28 +132,7 @@ namespace BackupManager
 
             Utils.LogWithPushover(BackupAction.CheckBackupDisk, "Started");
 
-            string backupShare = backupDiskTextBox.Text;
-
-            // check the backupDisks has an entry for this disk
-            BackupDisk disk = mediaBackup.GetBackupDisk(backupShare);
-            if (disk == null)
-            {
-                Utils.LogWithPushover(BackupAction.CheckBackupDisk,
-                                      PushoverPriority.Emergency,
-                                      $"Error updating info for backup share {backupShare}");
-                return;
-            }
-
-            var result = disk.Update(mediaBackup.BackupFiles);
-
-            if (!result)
-            {   // In this shared folder there should be another folder that starts with 'Backup' like 'Backup 18'
-                // if not thats a problem
-                Utils.LogWithPushover(BackupAction.CheckBackupDisk,
-                                      PushoverPriority.Emergency,
-                                      $"Error updating info for backup disk {disk.Name}");
-                return;
-            }
+            BackupDisk disk = SetupBackupDisk();
 
             string folderToCheck = disk.BackupPath;
 
@@ -171,7 +150,7 @@ namespace BackupManager
             disk.LastReadSpeed = Utils.FormatSpeed(readSpeed);
             disk.LastWriteSpeed = Utils.FormatSpeed(writeSpeed);
 
-            if (disk.Free < mediaBackup.MinimumCriticalBackupDiskSpace * Utils.BytesInOneGigabyte)
+            if (disk.Free < Utils.ConvertMBtoBytes(mediaBackup.MinimumCriticalBackupDiskSpace))
             {
                 Utils.LogWithPushover(BackupAction.CheckBackupDisk,
                                       PushoverPriority.High,
@@ -185,11 +164,7 @@ namespace BackupManager
                 file.ClearDiskChecked();
             }
 
-            string[] backupDiskFiles = Utils.GetFiles(
-                folderToCheck,
-                "*",
-                SearchOption.AllDirectories,
-                FileAttributes.Hidden);
+            string[] backupDiskFiles = Utils.GetFiles(folderToCheck, "*", SearchOption.AllDirectories, FileAttributes.Hidden);
 
             foreach (string backupFileFullPath in backupDiskFiles)
             {
@@ -214,12 +189,9 @@ namespace BackupManager
                                                   $"There was an error with the hashcodes on the source and backup disk. It's likely the sourcefile has changed since the last backup of {backupFile.FullPath}. It could be that the source file or destination file are corrupted though.");
 
                             diskInfoMessageWasTheLastSent = false;
-                            continue;
+
                         }
-                        else
-                        {
-                            continue;
-                        }
+                        continue;
                     }
                 }
                 else
@@ -236,7 +208,7 @@ namespace BackupManager
                     if (file != null && file.Length != 0 && file.BackupDiskNumber == 0)
                     {
                         string destFileName = file.BackupDiskFullPath(disk.BackupPath);
-                        Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, $"Renaming {backupFileFullPath} to {destFileName}");                                     
+                        Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, $"Renaming {backupFileFullPath} to {destFileName}");
                         Utils.FileMove(backupFileFullPath, destFileName);
 
                         // This forces a hash check on the source and backup disk files
@@ -251,12 +223,8 @@ namespace BackupManager
                                                   $"There was an error with the hashcodes on the source and backup disk. It's likely the sourcefile has changed since the last backup of {file.FullPath}. It could be that the source file or destination file are corrupted though.");
 
                             diskInfoMessageWasTheLastSent = false;
-                            continue;
                         }
-                        else
-                        {
-                            continue;
-                        }
+                        continue;
                     }
                 }
 
@@ -265,9 +233,7 @@ namespace BackupManager
                 {
                     Utils.LogWithPushover(BackupAction.CheckBackupDisk,
                                           $"Extra file {backupFileFullPath} on backup disk {disk.Name} now deleted");
-
-                    Utils.ClearFileAttribute(backupFileFullPath, FileAttributes.ReadOnly);
-                    File.Delete(backupFileFullPath);
+                    Utils.FileDelete(backupFileFullPath);
                     diskInfoMessageWasTheLastSent = false;
                 }
                 else
@@ -276,7 +242,6 @@ namespace BackupManager
                                           $"Extra file {backupFileFullPath} on backup disk {disk.Name}");
                     diskInfoMessageWasTheLastSent = false;
                 }
-
             }
 
             string[] directoriesDeleted = Utils.DeleteEmptyDirectories(folderToCheck);
@@ -288,7 +253,7 @@ namespace BackupManager
 
             disk.UpdateDiskChecked();
 
-            result = disk.Update(mediaBackup.BackupFiles);
+            bool result = disk.Update(mediaBackup.BackupFiles);
             if (!result)
             {
                 Utils.LogWithPushover(BackupAction.BackupFiles,
@@ -361,32 +326,38 @@ namespace BackupManager
             Utils.Trace("CopyFilesToBackupDiskButton_Click exit");
         }
 
-        private void CopyFiles()
+        private BackupDisk SetupBackupDisk()
         {
-            Utils.Trace("CopyFiles enter");
-
-            string backupShare = backupDiskTextBox.Text;
-
             // check the backupDisks has an entry for this disk
-            BackupDisk disk = mediaBackup.GetBackupDisk(backupShare);
+            BackupDisk disk = mediaBackup.GetBackupDisk(backupDiskTextBox.Text);
             if (disk == null)
             {
                 Utils.LogWithPushover(BackupAction.CheckBackupDisk,
                                       PushoverPriority.Emergency,
-                                      $"Error updating info for backup share {backupShare}"
+                                      $"Error updating info for backup share {backupDiskTextBox.Text}"
                                       );
-                return;
+                return null;
             }
 
-            var result = disk.Update(mediaBackup.BackupFiles);
-            if (!result)
+            if (disk.Update(mediaBackup.BackupFiles))
+            {
+                return disk;
+            }
+            else
             {
                 Utils.LogWithPushover(BackupAction.BackupFiles,
-                                      PushoverPriority.Emergency,
-                                      $"Error updating info for backup {disk.Name}"
-                                      );
-                return;
+                                          PushoverPriority.Emergency,
+                                          $"Error updating info for backup {disk.Name}"
+                                          );
+                return null;
             }
+        }
+
+        private void CopyFiles()
+        {
+            Utils.Trace("CopyFiles enter");
+
+            BackupDisk disk = SetupBackupDisk();
 
             Utils.LogWithPushover(BackupAction.BackupFiles, "Started");
 
@@ -401,6 +372,7 @@ namespace BackupManager
                                  );
 
             bool outOfDiskSpaceMessageSent = false;
+            bool result = false;
 
             int fileCounter = 0;
 
@@ -446,9 +418,9 @@ namespace BackupManager
                     {
                         long availableSpace;
                         long totalBytes;
-                        result = Utils.GetDiskInfo(backupShare, out availableSpace, out totalBytes);
+                        result = Utils.GetDiskInfo(backupDiskTextBox.Text, out availableSpace, out totalBytes);
 
-                        if (availableSpace > (mediaBackup.MinimumFreeSpaceToLeaveOnBackupDisk * Utils.BytesInOneMegabyte))
+                        if (availableSpace > Utils.ConvertMBtoBytes(mediaBackup.MinimumFreeSpaceToLeaveOnBackupDisk))
                         {
                             if (availableSpace > sourceFileInfo.Length)
                             {
@@ -456,7 +428,7 @@ namespace BackupManager
                                 Utils.LogWithPushover(BackupAction.BackupFiles,
                                                       $"[{fileCounter}/{totalFileCount}] {Utils.FormatSize(availableSpace)} free.\nCopying {sourceFileName} at {sourceFileSize}");
 
-                                Utils.DeleteFile(destinationFileNameTemp);
+                                Utils.FileDelete(destinationFileNameTemp);
 
                                 DateTime startTime = DateTime.UtcNow;
                                 Utils.FileCopy(sourceFileName, destinationFileNameTemp);
@@ -469,7 +441,7 @@ namespace BackupManager
 
                                 string copySpeed = timeTaken > 0 ?
                                     Utils.FormatSpeed(Convert.ToInt64(sourceFileInfo.Length / timeTaken)) : "a very fast speed";
-                                
+
                                 Utils.Trace($"Copy complete at {copySpeed}");
 
                                 // Make sure its not readonly

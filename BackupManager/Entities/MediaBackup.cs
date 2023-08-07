@@ -67,12 +67,12 @@
         public string PushoverUserKey;
 
         /// <summary>
-        /// Minimum space before we throw a critical Disk space message in GB for MasterFolders
+        /// Minimum space before we throw a critical Disk space message in MB for MasterFolders
         /// </summary>
         public long MinimumCriticalMasterFolderSpace;
 
         /// <summary>
-        /// Minimum space before we throw a critical Disk space message in GB for backup disks
+        /// Minimum space before we throw a critical Disk space message in MB for backup disks
         /// </summary>
         public long MinimumCriticalBackupDiskSpace;
 

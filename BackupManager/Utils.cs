@@ -153,7 +153,7 @@ namespace BackupManager
         }
 
         /// <summary>
-        /// Covertss a MB value to a size in Bytes
+        /// Converts a MB value to a size in bytes
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -508,7 +508,7 @@ namespace BackupManager
             {
                 var byteArray = new byte[sum];
                 Buffer.BlockCopy(buffer, 0, byteArray, 0, sum);
-                
+
                 Trace("GetRemoteFileByteArray exit");
                 return byteArray;
             }
@@ -564,7 +564,7 @@ namespace BackupManager
                 startBlock = GetLocalFileByteArray(stream, 0, size);
             }
 
-            string value =  CreateHashForByteArray(startBlock, middleBlock, endBlock);
+            string value = CreateHashForByteArray(startBlock, middleBlock, endBlock);
 
             Trace("GetShortMd5HashFromFile exit");
             return value;
@@ -743,7 +743,7 @@ namespace BackupManager
             {
                 return false;
             }
-  
+
             Trace("KillProcesses exit");
             return true;
         }
@@ -818,7 +818,7 @@ namespace BackupManager
         internal static void Log(BackupAction action, string message)
         {
             if (LengthOfLargestBackupActionEnumNames == 0)
-            {   
+            {
                 foreach (string enumName in Enum.GetNames(typeof(BackupAction)))
                 {
                     if (enumName.Length > LengthOfLargestBackupActionEnumNames)
@@ -1385,7 +1385,7 @@ namespace BackupManager
             Trace("RestartService enter");
 
             ServiceController service = new ServiceController(serviceName);
-            
+
             try
             {
                 int millisec1 = Environment.TickCount;
@@ -1472,7 +1472,7 @@ namespace BackupManager
                 totalPerf += testFileSize / interval.TotalSeconds;
             }
 
-            long returnValue =  Convert.ToInt64(totalPerf / testIterations);
+            long returnValue = Convert.ToInt64(totalPerf / testIterations);
 
             Trace("DiskSpeedTest exit");
             return returnValue;
@@ -1495,7 +1495,7 @@ namespace BackupManager
         /// Deletes the file specified if it exists even if it was readonly.
         /// </summary>
         /// <param name="path"></param>
-        internal static void DeleteFile(string path)
+        internal static void FileDelete(string path)
         {
             if (File.Exists(path))
             {
@@ -1555,6 +1555,16 @@ namespace BackupManager
 
             Trace("DeleteEmptyDirectories exit");
             return listOfDirectoriesDeleted.ToArray();
+        }
+
+        /// <summary>
+        /// Converts a GB value to a size in bytes
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        internal static long ConvertGBtoBytes(long value)
+        {
+            return Convert.ToInt64(value * BytesInOneGigabyte);
         }
     }
 }
