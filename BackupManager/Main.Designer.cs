@@ -48,7 +48,6 @@
             this.monitoringButton = new System.Windows.Forms.Button();
             this.timerButton = new System.Windows.Forms.Button();
             this.listFilesOnBackupDiskButton = new System.Windows.Forms.Button();
-            this.listFilesTextBox = new System.Windows.Forms.TextBox();
             this.listFilesInMasterFolderButton = new System.Windows.Forms.Button();
             this.masterFoldersComboBox = new System.Windows.Forms.ComboBox();
             this.listFilesNotCheckedInXXButton = new System.Windows.Forms.Button();
@@ -67,13 +66,16 @@
             this.monitoringTimer = new System.Windows.Forms.Timer(this.components);
             this.killProcessesButton = new System.Windows.Forms.Button();
             this.listMasterFoldersComboBox = new System.Windows.Forms.ComboBox();
-            this.label6 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.testPushoverLowButton = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.stopProcessButton = new System.Windows.Forms.Button();
+            this.processesComboBox = new System.Windows.Forms.ComboBox();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.listFilesComboBox = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.hoursNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minutesNumericUpDown)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -81,6 +83,7 @@
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox5.SuspendLayout();
+            this.groupBox6.SuspendLayout();
             this.SuspendLayout();
             // 
             // updateMasterFilesButton
@@ -97,7 +100,7 @@
             // 
             // checkConnectedBackupDiskButton
             // 
-            this.checkConnectedBackupDiskButton.Location = new System.Drawing.Point(10, 359);
+            this.checkConnectedBackupDiskButton.Location = new System.Drawing.Point(10, 329);
             this.checkConnectedBackupDiskButton.Name = "checkConnectedBackupDiskButton";
             this.checkConnectedBackupDiskButton.Size = new System.Drawing.Size(217, 39);
             this.checkConnectedBackupDiskButton.TabIndex = 1;
@@ -173,7 +176,7 @@
             // 
             // checkDiskAndDeleteButton
             // 
-            this.checkDiskAndDeleteButton.Location = new System.Drawing.Point(10, 404);
+            this.checkDiskAndDeleteButton.Location = new System.Drawing.Point(10, 374);
             this.checkDiskAndDeleteButton.Name = "checkDiskAndDeleteButton";
             this.checkDiskAndDeleteButton.Size = new System.Drawing.Size(217, 39);
             this.checkDiskAndDeleteButton.TabIndex = 19;
@@ -198,7 +201,7 @@
             // 
             // checkBackupDeleteAndCopyButton
             // 
-            this.checkBackupDeleteAndCopyButton.Location = new System.Drawing.Point(10, 450);
+            this.checkBackupDeleteAndCopyButton.Location = new System.Drawing.Point(10, 421);
             this.checkBackupDeleteAndCopyButton.Name = "checkBackupDeleteAndCopyButton";
             this.checkBackupDeleteAndCopyButton.Size = new System.Drawing.Size(217, 39);
             this.checkBackupDeleteAndCopyButton.TabIndex = 36;
@@ -254,9 +257,9 @@
             // 
             // timerButton
             // 
-            this.timerButton.Location = new System.Drawing.Point(89, 55);
+            this.timerButton.Location = new System.Drawing.Point(125, 55);
             this.timerButton.Name = "timerButton";
-            this.timerButton.Size = new System.Drawing.Size(105, 23);
+            this.timerButton.Size = new System.Drawing.Size(69, 23);
             this.timerButton.TabIndex = 21;
             this.timerButton.Text = "Start";
             this.timerButton.UseVisualStyleBackColor = true;
@@ -264,35 +267,28 @@
             // 
             // listFilesOnBackupDiskButton
             // 
-            this.listFilesOnBackupDiskButton.Location = new System.Drawing.Point(89, 24);
+            this.listFilesOnBackupDiskButton.Location = new System.Drawing.Point(125, 24);
             this.listFilesOnBackupDiskButton.Name = "listFilesOnBackupDiskButton";
-            this.listFilesOnBackupDiskButton.Size = new System.Drawing.Size(105, 23);
+            this.listFilesOnBackupDiskButton.Size = new System.Drawing.Size(69, 23);
             this.listFilesOnBackupDiskButton.TabIndex = 24;
-            this.listFilesOnBackupDiskButton.Text = "List files";
+            this.listFilesOnBackupDiskButton.Text = "List";
             this.listFilesOnBackupDiskButton.UseVisualStyleBackColor = true;
             this.listFilesOnBackupDiskButton.Click += new System.EventHandler(this.listFilesOnBackupDiskButton_Click);
             // 
-            // listFilesTextBox
-            // 
-            this.listFilesTextBox.Location = new System.Drawing.Point(6, 24);
-            this.listFilesTextBox.Name = "listFilesTextBox";
-            this.listFilesTextBox.Size = new System.Drawing.Size(77, 20);
-            this.listFilesTextBox.TabIndex = 25;
-            this.listFilesTextBox.Text = "backup 1";
-            // 
             // listFilesInMasterFolderButton
             // 
-            this.listFilesInMasterFolderButton.Location = new System.Drawing.Point(89, 54);
+            this.listFilesInMasterFolderButton.Location = new System.Drawing.Point(125, 19);
             this.listFilesInMasterFolderButton.Name = "listFilesInMasterFolderButton";
-            this.listFilesInMasterFolderButton.Size = new System.Drawing.Size(105, 23);
+            this.listFilesInMasterFolderButton.Size = new System.Drawing.Size(69, 23);
             this.listFilesInMasterFolderButton.TabIndex = 26;
-            this.listFilesInMasterFolderButton.Text = "List files";
+            this.listFilesInMasterFolderButton.Text = "List";
             this.listFilesInMasterFolderButton.UseVisualStyleBackColor = true;
             this.listFilesInMasterFolderButton.Click += new System.EventHandler(this.listFilesInMasterFolderButton_Click);
             // 
             // masterFoldersComboBox
             // 
             this.masterFoldersComboBox.BackColor = System.Drawing.SystemColors.Window;
+            this.masterFoldersComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.masterFoldersComboBox.FormattingEnabled = true;
             this.masterFoldersComboBox.Location = new System.Drawing.Point(89, 20);
             this.masterFoldersComboBox.Name = "masterFoldersComboBox";
@@ -311,9 +307,9 @@
             // 
             // restoreFilesToMasterFolderButton
             // 
-            this.restoreFilesToMasterFolderButton.Location = new System.Drawing.Point(89, 73);
+            this.restoreFilesToMasterFolderButton.Location = new System.Drawing.Point(125, 73);
             this.restoreFilesToMasterFolderButton.Name = "restoreFilesToMasterFolderButton";
-            this.restoreFilesToMasterFolderButton.Size = new System.Drawing.Size(105, 23);
+            this.restoreFilesToMasterFolderButton.Size = new System.Drawing.Size(69, 23);
             this.restoreFilesToMasterFolderButton.TabIndex = 31;
             this.restoreFilesToMasterFolderButton.Text = "Restore";
             this.restoreFilesToMasterFolderButton.UseVisualStyleBackColor = true;
@@ -322,6 +318,7 @@
             // restoreMasterFolderComboBox
             // 
             this.restoreMasterFolderComboBox.BackColor = System.Drawing.SystemColors.Window;
+            this.restoreMasterFolderComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.restoreMasterFolderComboBox.FormattingEnabled = true;
             this.restoreMasterFolderComboBox.Location = new System.Drawing.Point(89, 46);
             this.restoreMasterFolderComboBox.Name = "restoreMasterFolderComboBox";
@@ -465,32 +462,23 @@
             // 
             // killProcessesButton
             // 
-            this.killProcessesButton.Location = new System.Drawing.Point(10, 330);
+            this.killProcessesButton.Location = new System.Drawing.Point(6, 56);
             this.killProcessesButton.Name = "killProcessesButton";
-            this.killProcessesButton.Size = new System.Drawing.Size(217, 23);
+            this.killProcessesButton.Size = new System.Drawing.Size(188, 23);
             this.killProcessesButton.TabIndex = 51;
-            this.killProcessesButton.Text = "Kill processes / stop services";
+            this.killProcessesButton.Text = "Stop all processes";
             this.killProcessesButton.UseVisualStyleBackColor = true;
             this.killProcessesButton.Click += new System.EventHandler(this.killProcessesButton_Click);
             // 
             // listMasterFoldersComboBox
             // 
             this.listMasterFoldersComboBox.BackColor = System.Drawing.SystemColors.Window;
+            this.listMasterFoldersComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.listMasterFoldersComboBox.FormattingEnabled = true;
-            this.listMasterFoldersComboBox.Location = new System.Drawing.Point(86, 22);
+            this.listMasterFoldersComboBox.Location = new System.Drawing.Point(6, 19);
             this.listMasterFoldersComboBox.Name = "listMasterFoldersComboBox";
             this.listMasterFoldersComboBox.Size = new System.Drawing.Size(108, 21);
             this.listMasterFoldersComboBox.TabIndex = 52;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(13, 27);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(67, 13);
-            this.label6.TabIndex = 53;
-            this.label6.Text = "master folder";
-            this.label6.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // groupBox1
             // 
@@ -498,7 +486,7 @@
             this.groupBox1.Controls.Add(this.testPushoverNormalButton);
             this.groupBox1.Controls.Add(this.testPushoverHighButton);
             this.groupBox1.Controls.Add(this.testPushoverEmergencyButton);
-            this.groupBox1.Location = new System.Drawing.Point(252, 432);
+            this.groupBox1.Location = new System.Drawing.Point(252, 373);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(207, 78);
             this.groupBox1.TabIndex = 54;
@@ -522,7 +510,7 @@
             this.groupBox2.Controls.Add(this.restoreMasterFolderComboBox);
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.label4);
-            this.groupBox2.Location = new System.Drawing.Point(252, 218);
+            this.groupBox2.Location = new System.Drawing.Point(252, 172);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(207, 109);
             this.groupBox2.TabIndex = 55;
@@ -533,19 +521,18 @@
             // 
             this.groupBox3.Controls.Add(this.listFilesInMasterFolderButton);
             this.groupBox3.Controls.Add(this.listMasterFoldersComboBox);
-            this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Location = new System.Drawing.Point(252, 62);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(207, 86);
+            this.groupBox3.Size = new System.Drawing.Size(207, 49);
             this.groupBox3.TabIndex = 56;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "List files in master folder";
             // 
             // groupBox4
             // 
-            this.groupBox4.Controls.Add(this.listFilesTextBox);
+            this.groupBox4.Controls.Add(this.listFilesComboBox);
             this.groupBox4.Controls.Add(this.listFilesOnBackupDiskButton);
-            this.groupBox4.Location = new System.Drawing.Point(252, 152);
+            this.groupBox4.Location = new System.Drawing.Point(252, 115);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(207, 54);
             this.groupBox4.TabIndex = 57;
@@ -560,24 +547,66 @@
             this.groupBox5.Controls.Add(this.label2);
             this.groupBox5.Controls.Add(this.label5);
             this.groupBox5.Controls.Add(this.runOnTimerStartCheckBox);
-            this.groupBox5.Location = new System.Drawing.Point(252, 338);
+            this.groupBox5.Location = new System.Drawing.Point(252, 284);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(207, 88);
             this.groupBox5.TabIndex = 58;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Scheduled Backup";
             // 
+            // stopProcessButton
+            // 
+            this.stopProcessButton.Location = new System.Drawing.Point(125, 25);
+            this.stopProcessButton.Name = "stopProcessButton";
+            this.stopProcessButton.Size = new System.Drawing.Size(69, 23);
+            this.stopProcessButton.TabIndex = 59;
+            this.stopProcessButton.Text = "Stop";
+            this.stopProcessButton.UseVisualStyleBackColor = true;
+            this.stopProcessButton.Click += new System.EventHandler(this.stopProcessButton_Click);
+            // 
+            // processesComboBox
+            // 
+            this.processesComboBox.BackColor = System.Drawing.SystemColors.Window;
+            this.processesComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.processesComboBox.FormattingEnabled = true;
+            this.processesComboBox.Location = new System.Drawing.Point(6, 25);
+            this.processesComboBox.Name = "processesComboBox";
+            this.processesComboBox.Size = new System.Drawing.Size(108, 21);
+            this.processesComboBox.TabIndex = 54;
+            // 
+            // groupBox6
+            // 
+            this.groupBox6.Controls.Add(this.killProcessesButton);
+            this.groupBox6.Controls.Add(this.stopProcessButton);
+            this.groupBox6.Controls.Add(this.processesComboBox);
+            this.groupBox6.Location = new System.Drawing.Point(252, 452);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(207, 90);
+            this.groupBox6.TabIndex = 60;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "Processes/Services";
+            // 
+            // listFilesComboBox
+            // 
+            this.listFilesComboBox.BackColor = System.Drawing.SystemColors.Window;
+            this.listFilesComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.listFilesComboBox.FormattingEnabled = true;
+            this.listFilesComboBox.Location = new System.Drawing.Point(6, 24);
+            this.listFilesComboBox.Name = "listFilesComboBox";
+            this.listFilesComboBox.Size = new System.Drawing.Size(108, 21);
+            this.listFilesComboBox.TabIndex = 54;
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(469, 515);
+            this.ClientSize = new System.Drawing.Size(469, 548);
+            this.Controls.Add(this.groupBox6);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.killProcessesButton);
             this.Controls.Add(this.monitoringButton);
             this.Controls.Add(this.speedTestButton);
             this.Controls.Add(this.reportBackupDiskStatusButton);
@@ -607,11 +636,10 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
             this.groupBox4.ResumeLayout(false);
-            this.groupBox4.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
+            this.groupBox6.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -632,7 +660,6 @@
         private System.Windows.Forms.Button clearBackupDiskForFilesWithoutBackupDiskCheckedButton;
         private System.Windows.Forms.Button timerButton;
         private System.Windows.Forms.Button listFilesOnBackupDiskButton;
-        private System.Windows.Forms.TextBox listFilesTextBox;
         private System.Windows.Forms.Button listFilesInMasterFolderButton;
         private System.Windows.Forms.ComboBox masterFoldersComboBox;
         private System.Windows.Forms.Button listFilesNotCheckedInXXButton;
@@ -656,13 +683,16 @@
         private System.Windows.Forms.Timer monitoringTimer;
         private System.Windows.Forms.Button killProcessesButton;
         private System.Windows.Forms.ComboBox listMasterFoldersComboBox;
-        private System.Windows.Forms.Label label6;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.Button testPushoverLowButton;
+        private System.Windows.Forms.Button stopProcessButton;
+        private System.Windows.Forms.ComboBox processesComboBox;
+        private System.Windows.Forms.GroupBox groupBox6;
+        private System.Windows.Forms.ComboBox listFilesComboBox;
     }
 }
 

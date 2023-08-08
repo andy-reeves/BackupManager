@@ -65,6 +65,16 @@ namespace BackupManager
             masterFoldersComboBox.Items.AddRange(masterFoldersArray);
             restoreMasterFolderComboBox.Items.AddRange(masterFoldersArray);
 
+            foreach (var disk in mediaBackup.BackupDisks)
+            {
+                listFilesComboBox.Items.Add(disk.Name);
+            }
+
+            foreach(var monitor in mediaBackup.Monitors)
+            {
+                processesComboBox.Items.Add(monitor.Name);
+            }
+
             scheduledBackupAction = () => { ScheduledBackup(); };
 
             monitoringAction = () => { MonitorServices(); };
@@ -1026,15 +1036,19 @@ namespace BackupManager
         {
             Utils.Trace("listFilesOnBackupDiskButton_Click enter");
 
-            IEnumerable<BackupFile> files = mediaBackup.GetBackupFilesOnBackupDisk(listFilesTextBox.Text);
-
-            Utils.Log($"Listing files on backup disk {listFilesTextBox.Text}");
-
-            foreach (BackupFile file in files)
+            if (listFilesComboBox.SelectedItem != null)
             {
-                Utils.Log($"{file.FullPath}");
-            }
+                string selectedItemText = listFilesComboBox.SelectedItem.ToString();
 
+                IEnumerable<BackupFile> files = mediaBackup.GetBackupFilesOnBackupDisk(selectedItemText);
+
+                Utils.Log($"Listing files on backup disk {selectedItemText}");
+
+                foreach (BackupFile file in files)
+                {
+                    Utils.Log($"{file.FullPath}");
+                }
+            }
             Utils.Trace("listFilesOnBackupDiskButton_Click exit");
         }
 
@@ -1587,6 +1601,43 @@ namespace BackupManager
                                   "BackupManager stopped");
 
             Utils.Trace("Main_FormClosed exit");
+        }
+
+        private void stopProcessButton_Click(object sender, EventArgs e)
+        {
+            Utils.Trace("stopProcessButton_Click enter");
+
+            if (processesComboBox.SelectedItem != null)
+            {
+                string monitorName = processesComboBox.SelectedItem.ToString();
+
+                Monitor monitor = mediaBackup.Monitors.Where(m => m.Name == monitorName).First();
+
+                if (monitor.ProcessToKill.HasValue())
+                {
+                    Utils.LogWithPushover(BackupAction.Monitoring,
+                                          PushoverPriority.Normal,
+                                          $"Stopping all '{monitor.ProcessToKill}' processes that match");
+
+                    Utils.KillProcesses(monitor.ProcessToKill);
+                }
+
+                if (monitor.ServiceToRestart.HasValue())
+                {
+                    Utils.LogWithPushover(BackupAction.Monitoring,
+                                          PushoverPriority.Normal,
+                                          $"Stopping '{monitor.ServiceToRestart}'");
+
+                    if (!Utils.StopService(monitor.ServiceToRestart, 5000))
+                    {
+                        Utils.LogWithPushover(BackupAction.Monitoring,
+                                              PushoverPriority.High,
+                                              $"Failed to stop the service '{monitor.Name}'");
+                    }
+                }
+            }
+
+            Utils.Trace("stopProcessButton_Click exit");
         }
     }
 }
