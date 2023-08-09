@@ -4,6 +4,8 @@
   <PushoverAppToken>InsertYourPushoverAppTokenHere</PushoverAppToken>
   <!-- When true a backup scan will run when the app starts -->
   <StartScheduledBackup>false</StartScheduledBackup>
+  <!-- When true the service monitoring starts when the app starts -->
+  <StartMonitoring>true</StartMonitoring>
   <!-- A bigger percentage difference than this and the backup stops -->
   <DifferenceInFileCountAllowedPercentage>2</DifferenceInFileCountAllowedPercentage>
   <!--  ScheduledBackupStartTime as hh:mm -->
@@ -22,6 +24,8 @@
   <MinimumMasterFolderWriteSpeed>50</MinimumMasterFolderWriteSpeed>
   <!-- Monitor interval in seconds -->
   <MonitorInterval>60</MonitorInterval>
+  <!-- IF True we test the speed of the disks -->
+  <DiskSpeedTests>false</DiskSpeedTests>
   <Monitors>
     <Monitor>
       <Name>Plex</Name>
@@ -30,7 +34,6 @@
       <ProcessToKill>plex media server</ProcessToKill>
       <ApplicationToStart>"%ProgramFiles(x86)%\Plex\Plex Media Server\Plex Media Server.exe"</ApplicationToStart>
     </Monitor>
-
   </Monitors>
   <MasterFolders>
     <!-- List each UNC path that you want to scan for files to backup here -->
@@ -73,17 +76,11 @@
   <Filters>
     <!-- RegEx's of file to ignore when executing a scan -->
     <FilterRegEx>!*.bup</FilterRegEx>
-    <FilterRegEx>!*.db</FilterRegEx>
-    <FilterRegEx>!*.dna</FilterRegEx>
-    <FilterRegEx>!*.ds_store</FilterRegEx>
-    <FilterRegEx>!*.ifo</FilterRegEx>
-    <FilterRegEx>!*.ign</FilterRegEx>
-    <FilterRegEx>!*.ini</FilterRegEx>
-    <FilterRegEx>!*.plexignore</FilterRegEx>
-    <FilterRegEx>!*.txt</FilterRegEx>
-    <FilterRegEx>!*.vob</FilterRegEx>
-    <FilterRegEx>!*.xml</FilterRegEx>
   </Filters>
+  <FilesToDelete>
+    <FilesToDeleteRegEx>._.DS_Store</FilesToDeleteRegEx>
+    <FilesToDeleteRegEx>.DS_Store</FilesToDeleteRegEx>
+  </FilesToDelete>
   <VideoFoldersFormatsAllowed>
     <VideoFormat>.mkv</VideoFormat>
     <VideoFormat>.mp4</VideoFormat>

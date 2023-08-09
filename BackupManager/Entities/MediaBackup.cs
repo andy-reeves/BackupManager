@@ -21,7 +21,10 @@
         [XmlArrayItem("FilterRegEx")]
         public Collection<string> Filters;
 
-        //If the file name contains an edition like '{edition-EXTENDED EDITION}' then check its one of these
+        [XmlArrayItem("FilesToDeleteRegEx")]
+        public Collection<string> FilesToDelete;
+
+        //If the file name contains an edition like '{edition-EXTENDED}' then check its one of these
         [XmlArrayItem("Edition")]
         public Collection<string> EditionsAllowed;
 
@@ -95,6 +98,11 @@
         /// MinimumMasterFolderWriteSpeed in MB/s
         /// </summary>
         public int MinimumMasterFolderWriteSpeed;
+
+        /// <summary>
+        /// True to exexcute disk speed tests
+        /// </summary>
+        public bool DiskSpeedTests;
 
         // We need to a hash of the index folder and relative path
         // we do this so we can look up files quickly by 
@@ -533,6 +541,13 @@
             parameterText += $"Filters:\n{text}";
 
             text = string.Empty;
+            foreach (string filesToDelete in FilesToDelete)
+            {
+                text += $"{filesToDelete}\n";
+            }
+            parameterText += $"FilesToDelete:\n{text}";
+
+            text = string.Empty;
             foreach (string edition in EditionsAllowed)
             {
                 text += $"{edition}\n";
@@ -570,6 +585,7 @@
             text += $"MinimumMasterFolderReadSpeed : {MinimumMasterFolderReadSpeed}\n";
             text += $"MinimumMasterFolderWriteSpeed : {MinimumMasterFolderWriteSpeed}\n";
             text += $"DaysToReportOldBackupDisks : {DaysToReportOldBackupDisks}\n";
+            text += $"DiskSpeedTests : {DiskSpeedTests}\n";
 
             parameterText += text;
             Utils.LogWithPushover(BackupAction.General, parameterText);

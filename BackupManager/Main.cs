@@ -9,6 +9,8 @@ namespace BackupManager
     using System.Configuration;
     using BackupManager.Entities;
     using System.Diagnostics;
+    using System.Text.RegularExpressions;
+    using static System.Net.WebRequestMethods;
 
     public partial class Main : Form
     {
@@ -50,7 +52,7 @@ namespace BackupManager
 
             string localMediaXml = Path.Combine(Application.StartupPath, "MediaBackup.xml");
 
-            mediaBackup = MediaBackup.Load(File.Exists(localMediaXml) ? localMediaXml : mediaBackupXml);
+            mediaBackup = MediaBackup.Load(System.IO.File.Exists(localMediaXml) ? localMediaXml : mediaBackupXml);
 
             Utils.PushoverUserKey = mediaBackup.PushoverUserKey;
             Utils.PushoverAppToken = mediaBackup.PushoverAppToken;
@@ -146,9 +148,11 @@ namespace BackupManager
 
             string folderToCheck = disk.BackupPath;
 
-            long readSpeed, writeSpeed;
-
-            Utils.DiskSpeedTest(folderToCheck, DiskSpeedTestFileSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
+            long readSpeed = 0, writeSpeed = 0;
+            if (mediaBackup.DiskSpeedTests)
+            {
+                Utils.DiskSpeedTest(folderToCheck, DiskSpeedTestFileSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
+            }
 
             string text = $"Name: {disk.Name}\nTotal: {disk.CapacityFormatted}\nFree: {disk.FreeFormatted}\nRead: {Utils.FormatSpeed(readSpeed)}\nWrite: {Utils.FormatSpeed(writeSpeed)}";
 
@@ -169,9 +173,9 @@ namespace BackupManager
 
             IEnumerable<BackupFile> filesToReset = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name);
 
-            foreach (BackupFile file in filesToReset)
+            foreach (BackupFile fileName in filesToReset)
             {
-                file.ClearDiskChecked();
+                fileName.ClearDiskChecked();
             }
 
             string[] backupDiskFiles = Utils.GetFiles(folderToCheck, "*", SearchOption.AllDirectories, FileAttributes.Hidden);
@@ -185,7 +189,7 @@ namespace BackupManager
                     BackupFile backupFile = mediaBackup.GetBackupFile(backupFileIndexFolderRelativePath);
 
                     // This happens when the file we have on the backup disk is no longer in the masterFolder
-                    if (File.Exists(backupFile.FullPath))
+                    if (System.IO.File.Exists(backupFile.FullPath))
                     {
                         // This forces a hash check on the source and backup disk files
                         Utils.Trace($"Checking hash for {backupFile.Hash}");
@@ -408,7 +412,7 @@ namespace BackupManager
                     FileInfo sourceFileInfo = new FileInfo(sourceFileName);
                     string sourceFileSize = Utils.FormatSize(sourceFileInfo.Length);
 
-                    if (File.Exists(destinationFileName))
+                    if (System.IO.File.Exists(destinationFileName))
                     {
                         Utils.Log(BackupAction.BackupFiles, $"[{fileCounter}/{totalFileCount}] Skipping copy as it exists. Checking hashes instead.");
 
@@ -595,6 +599,34 @@ namespace BackupManager
 
             Utils.Trace("UpdateMasterFilesButtonClick exit");
         }
+        /// <summary>
+        /// Returns True if the file was deleted
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        private bool CheckForFilesToDelete(string filePath)
+        {
+            IEnumerable<string> filters = from filter in mediaBackup.FilesToDelete
+                                          let replace =
+                                              filter.Replace("!", string.Empty)
+                                              .Replace(".", @"\.")
+                                              .Replace("*", ".*")
+                                              .Replace("?", ".")
+                                          select $"^{replace}$";
+
+            string fileName = new FileInfo(filePath).Name;
+
+            if (filters.Any(pattern => Regex.IsMatch(fileName, pattern)))
+            {
+                Utils.LogWithPushover(BackupAction.ScanFolders,
+                                         PushoverPriority.Normal,
+                                         $"File matches RegEx and so will be deleted {filePath}");
+                Utils.FileDelete(filePath);
+                return true;
+            }
+
+            return false;
+        }
 
         private void ScanFolders()
         {
@@ -602,7 +634,7 @@ namespace BackupManager
 
             string filters = string.Join(",", mediaBackup.Filters.ToArray());
 
-            long readSpeed, writeSpeed;
+            long readSpeed =0, writeSpeed = 0;
 
             mediaBackup.ClearFlags();
 
@@ -629,8 +661,11 @@ namespace BackupManager
                     long freeSpaceOnCurrentMasterFolder;
                     long totalBytesOnMasterFolderDisk;
                     Utils.GetDiskInfo(masterFolder, out freeSpaceOnCurrentMasterFolder, out totalBytesOnMasterFolderDisk);
-                    Utils.DiskSpeedTest(masterFolder, DiskSpeedTestFileSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
 
+                    if (mediaBackup.DiskSpeedTests)
+                    {
+                        Utils.DiskSpeedTest(masterFolder, DiskSpeedTestFileSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
+                    }
                     string totalBytesOnMasterFolderDiskFormatted = Utils.FormatSize(totalBytesOnMasterFolderDisk);
                     string freeSpaceOnCurrentMasterFolderFormatted = Utils.FormatSize(freeSpaceOnCurrentMasterFolder);
                     string readSpeedFormatted = Utils.FormatSpeed(readSpeed);
@@ -640,20 +675,22 @@ namespace BackupManager
 
                     Utils.LogWithPushover(BackupAction.ScanFolders, text);
 
-                    if (readSpeed < Utils.ConvertMBtoBytes(mediaBackup.MinimumMasterFolderReadSpeed))
+                    if (mediaBackup.DiskSpeedTests)
                     {
-                        Utils.LogWithPushover(BackupAction.ScanFolders,
-                                              PushoverPriority.High,
-                                              $"Read speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.MinimumMasterFolderReadSpeed))}");
-                    }
+                        if (readSpeed < Utils.ConvertMBtoBytes(mediaBackup.MinimumMasterFolderReadSpeed))
+                        {
+                            Utils.LogWithPushover(BackupAction.ScanFolders,
+                                                  PushoverPriority.High,
+                                                  $"Read speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.MinimumMasterFolderReadSpeed))}");
+                        }
 
-                    if (writeSpeed < Utils.ConvertMBtoBytes(mediaBackup.MinimumMasterFolderWriteSpeed))
-                    {
-                        Utils.LogWithPushover(BackupAction.ScanFolders,
-                                              PushoverPriority.High,
-                                              $"Write speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.MinimumMasterFolderWriteSpeed))}");
+                        if (writeSpeed < Utils.ConvertMBtoBytes(mediaBackup.MinimumMasterFolderWriteSpeed))
+                        {
+                            Utils.LogWithPushover(BackupAction.ScanFolders,
+                                                  PushoverPriority.High,
+                                                  $"Write speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.MinimumMasterFolderWriteSpeed))}");
+                        }
                     }
-
                     if (freeSpaceOnCurrentMasterFolder < Utils.ConvertMBtoBytes(mediaBackup.MinimumCriticalMasterFolderSpace))
                     {
                         Utils.LogWithPushover(BackupAction.ScanFolders,
@@ -674,6 +711,12 @@ namespace BackupManager
                             foreach (string file in files)
                             {
                                 Utils.Trace($"Checking {file}");
+
+                                // Check for files to delete
+                                if (CheckForFilesToDelete(file))
+                                {
+                                    continue;
+                                }
 
                                 // Checks for TV only
                                 if (file.Contains("_TV"))
@@ -1062,9 +1105,12 @@ namespace BackupManager
 
             Utils.Log($"Listing files in master folder {masterFolder}");
 
-            long readSpeed, writeSpeed;
+            long readSpeed = 0, writeSpeed = 0;
+            if (mediaBackup.DiskSpeedTests)
+            {
+                Utils.DiskSpeedTest(masterFolder, DiskSpeedTestFileSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
+            }
 
-            Utils.DiskSpeedTest(masterFolder, DiskSpeedTestFileSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
             Utils.Log($"testing {masterFolder}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
 
             foreach (BackupFile file in files)
@@ -1206,14 +1252,14 @@ namespace BackupManager
 
                         string targetFilePath = Path.Combine(targetMasterFolder, file.IndexFolder, file.RelativePath);
 
-                        if (File.Exists(targetFilePath))
+                        if (System.IO.File.Exists(targetFilePath))
                         {
                             Utils.LogWithPushover(BackupAction.Restore,
                                                   $"[{fileCounter}/{countOfFiles}] {targetFilePath} Already exists");
                         }
                         else
                         {
-                            if (File.Exists(sourceFileFullPath))
+                            if (System.IO.File.Exists(sourceFileFullPath))
                             {
                                 Utils.LogWithPushover(BackupAction.Restore,
                                                       $"[{fileCounter}/{countOfFiles}] Copying {sourceFileFullPath} as {targetFilePath}");
@@ -1227,7 +1273,7 @@ namespace BackupManager
                             }
                         }
 
-                        if (File.Exists(targetFilePath))
+                        if (System.IO.File.Exists(targetFilePath))
                         {
                             if (file.ContentsHash == Utils.GetShortMd5HashFromFile(targetFilePath))
                             {
@@ -1360,15 +1406,14 @@ namespace BackupManager
         private void speedTestButton_Click(object sender, EventArgs e)
         {
             Utils.Trace("speedTestButton_Click enter");
-
-            long readSpeed, writeSpeed;
-
             Utils.Log("Speed testing all master folders");
 
             foreach (string masterFolder in mediaBackup.MasterFolders)
             {
                 if (Utils.IsFolderWritable(masterFolder))
                 {
+                    long readSpeed;
+                    long writeSpeed;
                     Utils.DiskSpeedTest(masterFolder, DiskSpeedTestFileSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
                     Utils.Log($"testing {masterFolder}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
                 }
@@ -1494,7 +1539,7 @@ namespace BackupManager
 
                         string processToStart = Environment.ExpandEnvironmentVariables(monitor.ApplicationToStart);
 
-                        if (File.Exists(processToStart))
+                        if (System.IO.File.Exists(processToStart))
                         {
                             var newProcess = Process.Start(processToStart, monitor.ApplicationToStartArguments);
 
