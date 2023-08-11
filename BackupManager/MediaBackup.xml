@@ -81,53 +81,78 @@
     <FilesToDeleteRegEx>._.DS_Store</FilesToDeleteRegEx>
     <FilesToDeleteRegEx>.DS_Store</FilesToDeleteRegEx>
   </FilesToDelete>
-  <VideoFoldersFormatsAllowed>
-    <VideoFormat>.mkv</VideoFormat>
-    <VideoFormat>.mp4</VideoFormat>
-    <VideoFormat>.mpg</VideoFormat>
-    <VideoFormat>.mpeg</VideoFormat>
-    <VideoFormat>.ts</VideoFormat>
-    <VideoFormat>.srt</VideoFormat>
-    <VideoFormat>.avi</VideoFormat>
-  </VideoFoldersFormatsAllowed>
-  <EditionsAllowed>
-    <Edition>10th Anniversary Edition</Edition>
-    <Edition>20th Anniversary Edition</Edition>
-    <Edition>25th Anniversary Edition</Edition>
-    <Edition>30th Anniversary Edition</Edition>
-    <Edition>40th Anniversary Edition</Edition>
-    <Edition>50th Anniversary Edition</Edition>
-    <Edition>60th Anniversary Edition</Edition>
-    <Edition>70th Anniversary Edition</Edition>
-    <Edition>4K Edition</Edition>
-    <Edition>Bluray Edition</Edition>
-    <Edition>Chronological Edition</Edition>
-    <Edition>Collectors Edition</Edition>
-    <Edition>Criterion Collection</Edition>
-    <Edition>Diamond Edition</Edition>
-    <Edition>Directors Cut</Edition>
-    <Edition>DVD Edition</Edition>
-    <Edition>Extended Edition</Edition>
-    <Edition>IMAX Edition</Edition>
-    <Edition>Redux Edition</Edition>
-    <Edition>Remastered Edition</Edition>
-    <Edition>Restored Edition</Edition>
-    <Edition>Special Edition</Edition>
-    <Edition>The Complete Extended Edition</Edition>
-    <Edition>The Final Cut</Edition>
-    <Edition>The Godfather Coda</Edition>
-    <Edition>The Richard Donner Cut</Edition>
-    <Edition>Theatrical Edition</Edition>
-    <Edition>Ultimate Edition</Edition>
-    <Edition>Uncut Edition</Edition>
-    <Edition>Unrated Edition</Edition>
-  </EditionsAllowed>
   <DisksToSkipOnRestore>
     <DiskToSkip>Backup 1</DiskToSkip>
     <DiskToSkip>Backup 2</DiskToSkip>
     <DiskToSkip>Backup 3</DiskToSkip>
     <DiskToSkip>Backup 4</DiskToSkip>
   </DisksToSkipOnRestore>
+   <FilesToDelete>
+    <FilesToDeleteRegEx>._.DS_Store</FilesToDeleteRegEx>
+    <FilesToDeleteRegEx>.DS_Store</FilesToDeleteRegEx>
+  </FilesToDelete>
+  <FileRules>
+    <FileRule>
+      <FileToMatchRegEx>*\_TV\*|*\_TestTV\*</FileToMatchRegEx>
+      <FileRuleRegEx>*{tvdb-*|*{tmdb-*</FileRuleRegEx>
+      <Message>TV files must contain {tvdb- or {tmdb- in the file name</Message>
+    </FileRule>
+    <FileRule>
+      <FileToMatchRegEx>*\_TV\*|*\_TestTV\*</FileToMatchRegEx>
+      <FileRuleRegEx>^((?! TBA ).)*$</FileRuleRegEx>
+      <Message>TV files must not contain TBA in the file name</Message>
+    </FileRule>
+    <FileRule>
+      <FileToMatchRegEx>*\_TV\*|*\_TestTV\*</FileToMatchRegEx>
+      <FileRuleRegEx>^(?&gt;.*\\_TV\\(.*){.*\\(?&gt;Season|Specials).*\\(\1.*)|.*-featurette\..*|.*-other\..*|.*-interview\..*|.*-scene\..*|.*-short\..*|.*-deleted\..*|.*-behindthescenes\..*|.*-trailer\..*)$</FileRuleRegEx>
+      <Message>TV files must either be a special feature or start with the TV show name followed by a Season/Specials folder and then the file name</Message>
+    </FileRule>
+    <FileRule>
+      <FileToMatchRegEx>*\_Movies\*|*\_Concerts\*|*\_Comedy\*|*\_TestMovies\*</FileToMatchRegEx>
+      <FileRuleRegEx>^.*\\(?&gt;(?:_Movies|_Comedy|_Concerts|_TestMovies)\\(.*)\\(\1) {tmdb-.*|.*-featurette\..*|.*-other\..*|.*-interview\..*|.*-scene\..*|.*-short\..*|.*-deleted\..*|.*-behindthescenes\..*|.*-trailer\..*)$</FileRuleRegEx>
+      <Message>Movie files must either be a special feature or start with the folder name in the file name</Message>
+    </FileRule>
+    <FileRule>
+      <FileToMatchRegEx>*\_Movies\*|*\_Concerts\*|*\_Comedy\*|*\_TestMovies\*</FileToMatchRegEx>
+      <FileRuleRegEx>*-featurette.*|*-other.*|*-interview.*|*-scene.*|*-short.*|*-deleted.*|*-behindthescenes.*|*-trailer.*|*{tmdb-*</FileRuleRegEx>
+      <Message>Movies, Comedy and Concerts files must be a special feature or have {tmdb- in the file name</Message>
+    </FileRule>
+    <FileRule>
+      <FileToMatchRegEx>*\_Movies\*|*\_Concerts\*|*\_Comedy\*|*\_TV\*|*\_TestMovies\*|*\_TestTV\*</FileToMatchRegEx>
+      <FileRuleRegEx>^((?!subtitles).)*$</FileRuleRegEx>
+      <Message>Movies, Comedy, Concerts and TV files must not contain subtitles in the file name</Message>
+    </FileRule>
+    <FileRule>
+      <FileToMatchRegEx>*\_Movies\*|*\_Concerts\*|*\_Comedy\*|*\_TV\*|*\_TestMovies\*|*\_TestTV\*</FileToMatchRegEx>
+      <FileRuleRegEx>^((?!\(\)).)*$</FileRuleRegEx>
+      <Message>Movies, Comedy, Concerts and TV files must not contain () in the file name</Message>
+    </FileRule>
+    <FileRule>
+      <FileToMatchRegEx>*\_Movies\*|*\_Concerts\*|*\_Comedy\*|*\_TV\*|*\_TestMovies\*|*\_TestTV\*</FileToMatchRegEx>
+      <FileRuleRegEx>^((?!\(0\)).)*$</FileRuleRegEx>
+      <Message>Movies, Comedy, Concerts and TV files must not contain (0) in the file name</Message>
+    </FileRule>
+    <FileRule>
+      <FileToMatchRegEx>*\_Movies\*|*\_Concerts\*|*\_Comedy\*|*\_TV\*|*\_TestMovies\*|*\_TestTV\*</FileToMatchRegEx>
+      <FileRuleRegEx>^((?! Proper\]).)*$</FileRuleRegEx>
+      <Message>Movies, Comedy, Concerts and TV files must not contain Proper] in the name</Message>
+    </FileRule>
+    <FileRule>
+      <FileToMatchRegEx>*\_Movies\*|*\_Concerts\*|*\_Comedy\*|*\_TV\*|*\_TestMovies\*|*\_TestTV\*</FileToMatchRegEx>
+      <FileRuleRegEx>^((?! REAL\]).)*$</FileRuleRegEx>
+      <Message>Movies, Comedy, Concerts and TV files must not contain REAL] in the file name</Message>
+    </FileRule>
+    <FileRule>
+      <FileToMatchRegEx>*\_Movies\*|*\_Concerts\*|*\_Comedy\*|*\_TV\*|*\_TestMovies\*|*\_TestTV\*</FileToMatchRegEx>
+      <FileRuleRegEx>^.*\.(?:mkv|mp4|mpg|mpeg|ts|srt|avi)$</FileRuleRegEx>
+      <Message>Movies, Comedy, Concerts and TV files must end with a valid file extension in the file name</Message>
+    </FileRule>
+    <FileRule>
+      <FileToMatchRegEx>^.*\\(?:_Movies|_Concerts|_Comedy|_TestMovies)\\(.*)\\.* {edition-.*$</FileToMatchRegEx>
+      <FileRuleRegEx>^.* {edition-(?:(?:(?:10|20|25|30|35|40|50|60|70)TH\sANNIVERSARY)|4K|BLURAY|CHRONOLOGICAL|COLLECTORS|(?:CRITERION|KL\sSTUDIO) COLLECTION|DIAMOND|DVD|EXTENDED|IMAX|REDUX|REMASTERED|RESTORED|SPECIAL|THE\sCOMPLETE\sEXTENDED|THE\sGODFATHER\sCODA|(?:THE\sRICHARD\sDONNER|DIRECTORS|FINAL) CUT|THEATRICAL|ULTIMATE|UNCUT|UNRATED)}.*$</FileRuleRegEx>
+      <Message>Movies, Comedy and Concerts files that have {edition-} specified must have a valid value in the file name</Message>
+    </FileRule>
+  </FileRules>
   <BackupFiles>
     <!-- Sample BackupFile entries -->
     <BackupFile>
