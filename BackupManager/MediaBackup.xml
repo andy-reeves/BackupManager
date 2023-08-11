@@ -24,7 +24,7 @@
   <MinimumMasterFolderWriteSpeed>50</MinimumMasterFolderWriteSpeed>
   <!-- Monitor interval in seconds -->
   <MonitorInterval>60</MonitorInterval>
-  <!-- IF True we test the speed of the disks -->
+  <!-- If True we test the speed of the disks -->
   <DiskSpeedTests>false</DiskSpeedTests>
   <Monitors>
     <Monitor>
