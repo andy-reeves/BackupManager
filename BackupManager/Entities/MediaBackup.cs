@@ -27,8 +27,6 @@
         [XmlArrayItem("FileRule")]
         public Collection<FileRule> FileRules;
 
-       
-
         [XmlArrayItem("DiskToSkip")]
         public Collection<string> DisksToSkipOnRestore;
 
@@ -544,16 +542,43 @@
                 text += $"{filesToDelete}\n";
             }
             parameterText += $"FilesToDelete:\n{text}";
-            Utils.LogWithPushover(BackupAction.General, parameterText);
-
+           
             text = string.Empty;
             foreach (string disksToSkip in DisksToSkipOnRestore)
             {
                 text += $"{disksToSkip}\n";
             }
-            parameterText = $"DisksToSkipOnRestore:\n{text}";
+            parameterText += $"DisksToSkipOnRestore:\n{text}";
+            Utils.LogWithPushover(BackupAction.General, parameterText);
+
+            text = string.Empty;
+            foreach (Monitor monitor in Monitors)
+            {
+                text += $"Monitor.Name: {monitor.Name}\n";
+                text += $"Monitor.ProcessToKill: {monitor.ProcessToKill}\n";
+                text += $"Monitor.Url: {monitor.Url}\n";
+                text += $"Monitor.ApplicationToStart: {monitor.ApplicationToStart}\n";
+                text += $"Monitor.ApplicationToStartArguments: {monitor.ApplicationToStartArguments}\n";
+                text += $"Monitor.Port: {monitor.Port}\n";
+                text += $"Monitor.ServiceToRestart: {monitor.ServiceToRestart}\n";
+                text += $"Monitor.Timeout: {monitor.Timeout}\n";  
+            }
+            parameterText = $"Monitors:\n{text}";
+            Utils.LogWithPushover(BackupAction.General, parameterText);
+
+            // FileRules
+            text = string.Empty;
+            foreach (FileRule rule in FileRules)
+            {
+                text += $"FileRule.FileToMatchRegEx: {rule.FileToMatchRegEx}\n";
+                text += $"FileRule.FileRuleRegEx: {rule.FileRuleRegEx}\n";
+                text += $"FileRule.Message: {rule.Message}\n";
+            }
+            parameterText = $"FileRules:\n{text}";
+            Utils.LogWithPushover(BackupAction.General, parameterText);
 
             text = $"StartMonitoring : {StartMonitoring}\n";
+            text += $"StartScheduledBackup : {StartScheduledBackup}\n";
             text += $"MonitorInterval : {MonitorInterval}\n";
             text += $"StartScheduledBackup : {StartScheduledBackup}\n";
             text += $"ScheduledBackupStartTime : {ScheduledBackupStartTime}\n";
@@ -568,7 +593,7 @@
             text += $"DaysToReportOldBackupDisks : {DaysToReportOldBackupDisks}\n";
             text += $"DiskSpeedTests : {DiskSpeedTests}\n";
 
-            parameterText += text;
+            parameterText = text;
             Utils.LogWithPushover(BackupAction.General, parameterText);
         }
     }
