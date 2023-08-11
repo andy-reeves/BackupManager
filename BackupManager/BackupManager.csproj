@@ -69,6 +69,7 @@
     <Compile Include="DailyTrigger.cs" />
     <Compile Include="Entities\BackupDisk.cs" />
     <Compile Include="Entities\BackupFile.cs" />
+    <Compile Include="Entities\FileRule.cs" />
     <Compile Include="Entities\Monitor.cs" />
     <Compile Include="Extensions\IntegerExtensions.cs" />
     <Compile Include="Main.cs">

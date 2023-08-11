@@ -327,7 +327,7 @@ namespace BackupManager
         }
 
         /// <summary>
-        /// The get files.
+        /// Returns an array of full path names of files in the folder specified.
         /// </summary>
         /// <param name="path">
         /// The path.

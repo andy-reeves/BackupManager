@@ -608,8 +608,7 @@ namespace BackupManager
         {
             IEnumerable<string> filters = from filter in mediaBackup.FilesToDelete
                                           let replace =
-                                              filter.Replace("!", string.Empty)
-                                              .Replace(".", @"\.")
+                                              filter.Replace(".", @"\.")
                                               .Replace("*", ".*")
                                               .Replace("?", ".")
                                           select $"^{replace}$";
@@ -634,7 +633,7 @@ namespace BackupManager
 
             string filters = string.Join(",", mediaBackup.Filters.ToArray());
 
-            long readSpeed =0, writeSpeed = 0;
+            long readSpeed = 0, writeSpeed = 0;
 
             mediaBackup.ClearFlags();
 
@@ -666,6 +665,7 @@ namespace BackupManager
                     {
                         Utils.DiskSpeedTest(masterFolder, DiskSpeedTestFileSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
                     }
+
                     string totalBytesOnMasterFolderDiskFormatted = Utils.FormatSize(totalBytesOnMasterFolderDisk);
                     string freeSpaceOnCurrentMasterFolderFormatted = Utils.FormatSize(freeSpaceOnCurrentMasterFolder);
                     string readSpeedFormatted = Utils.FormatSpeed(readSpeed);
@@ -691,11 +691,26 @@ namespace BackupManager
                                                   $"Write speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.MinimumMasterFolderWriteSpeed))}");
                         }
                     }
+
                     if (freeSpaceOnCurrentMasterFolder < Utils.ConvertMBtoBytes(mediaBackup.MinimumCriticalMasterFolderSpace))
                     {
                         Utils.LogWithPushover(BackupAction.ScanFolders,
                                               PushoverPriority.High,
                                               $"Free space on {masterFolder} is too low");
+                    }
+
+                    // Check for files in the root of the master folder alongside te indexfolders
+                    string[] filesInRootOfMasterFolder = Utils.GetFiles(masterFolder, filters, SearchOption.TopDirectoryOnly);
+
+                    foreach (string file in filesInRootOfMasterFolder)
+                    {
+                        Utils.Trace($"Checking {file}");
+
+                        // Check for files to delete
+                        if (CheckForFilesToDelete(file))
+                        {
+                            continue;
+                        }
                     }
 
                     foreach (string indexFolder in mediaBackup.IndexFolders)
@@ -718,191 +733,33 @@ namespace BackupManager
                                     continue;
                                 }
 
-                                // Checks for TV only
-                                if (file.Contains("_TV"))
+                                // RegEx file name rules
+                                foreach (FileRule rule in mediaBackup.FileRules)
                                 {
-                                    if (!file.Contains("tvdb") && !file.Contains("tmdb"))
-                                    {
-                                        Utils.LogWithPushover(BackupAction.ScanFolders,
-                                                              PushoverPriority.High,
-                                                              $"TV Series has missing tvdb-/tmdb- in the filepath {file}"
-                                                              );
-                                    }
+                                    string mediaToMatchRegEx = rule.FileToMatchRegEx;
+                                    string mediaRuleRegEx = rule.FileRuleRegEx;
 
-                                    // check that tv files only have directories in the parents parent and no files
-                                    FileInfo fileInfo = new FileInfo(file);
+                                    string escapedFileToMatchRegEx = mediaToMatchRegEx.StartsWith("^") ?
+                                                                                mediaToMatchRegEx : "^(" + mediaToMatchRegEx.Replace(@"\", @"\\")
+                                                                                .Replace(".", @"\.")
+                                                                                .Replace("*", ".*")
+                                                                                .Replace("?", ".") + ")$";
 
-                                    FileInfo[] grandparentFiles = fileInfo.Directory.Parent.GetFiles();
-                                    if (grandparentFiles != null && grandparentFiles.Count() > 0)
+                                    string escapedFileRuleRegEx = mediaRuleRegEx.StartsWith("^") ?
+                                                                                mediaRuleRegEx : "^(" + mediaRuleRegEx.Replace(@"\", @"\\")
+                                                                                .Replace(".", @"\.")
+                                                                                .Replace("*", ".*")
+                                                                                .Replace("?", ".") + ")$";
+
+                                    if (Regex.IsMatch(file, escapedFileToMatchRegEx))
                                     {
-                                        // files are allowed here as long as they end with a special feature name suffix
-                                        foreach (FileInfo grandparentFile in grandparentFiles)
+                                        // if it does then the second regex must be true
+                                        if (!Regex.IsMatch(file, escapedFileRuleRegEx))
                                         {
-                                            string fName = grandparentFile.Name;
-                                            if (!(fName.Contains("-featurette.") ||
-                                               fName.Contains("-other.") ||
-                                               fName.Contains("-interview.") ||
-                                               fName.Contains("-scene.") ||
-                                               fName.Contains("-short.") ||
-                                               fName.Contains("-deleted.") ||
-                                               fName.Contains("-behindthescenes.") ||
-                                               fName.Contains("-trailer.")))
-                                            {
-                                                Utils.LogWithPushover(BackupAction.ScanFolders,
-                                                                      PushoverPriority.High,
-                                                                      $"TV File {file} has files in the grandparent folder which aren't special features"
-                                                                      );
-                                            }
+                                            Utils.Trace($"File {file} matched by {mediaToMatchRegEx} but doesn't match {mediaRuleRegEx}");
+                                            Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High, $"{file} - {rule.Message}");
                                         }
                                     }
-
-                                    // check the filename doesn't have TBA in it
-                                    if (file.Contains("TBA"))
-                                    {
-                                        Utils.LogWithPushover(BackupAction.ScanFolders,
-                                                              PushoverPriority.High,
-                                                              $"TV File {file} has TBA in the filename");
-                                    }
-                                }
-
-                                // Checks for Movies, Comedy, Concerts only (main Video folders)
-                                if (file.Contains("_Movies") ||
-                                    file.Contains("_Concerts") ||
-                                    file.Contains("_Comedy"))
-                                {
-                                    if (!(file.Contains("-featurette.") ||
-                                            file.Contains("-other.") ||
-                                            file.Contains("-interview.") ||
-                                            file.Contains("-scene.") ||
-                                            file.Contains("-short.") ||
-                                            file.Contains("-deleted.") ||
-                                            file.Contains("-behindthescenes.") ||
-                                            file.Contains("-trailer.")))
-                                    {
-                                        if (!file.Contains("tmdb"))
-                                        {
-                                            Utils.LogWithPushover(BackupAction.ScanFolders,
-                                                                  PushoverPriority.High,
-                                                                  $"Movie has missing tmdb- in the filename {file}");
-                                        }
-
-                                        FileInfo movieFileInfo = new FileInfo(file);
-                                        if (!movieFileInfo.Name.StartsWith(movieFileInfo.Directory.Name))
-                                        {
-                                            Utils.LogWithPushover(BackupAction.ScanFolders,
-                                                                  PushoverPriority.High,
-                                                                  $"Movie filename doesn't start with the folder name in the filename {file}");
-                                        }
-                                    }
-
-                                    //Edition checks '{edition-EXTENDED EDITION}'
-                                    if (file.Contains("{edition-"))
-                                    {
-                                        bool found = false;
-                                        foreach (string s in mediaBackup.EditionsAllowed)
-                                        {
-                                            if (file.Contains("{edition-" + s + "}", StringComparison.OrdinalIgnoreCase))
-                                            {
-                                                found = true;
-                                                break;
-                                            }
-                                        }
-                                        if (!found)
-                                        {
-                                            Utils.LogWithPushover(BackupAction.ScanFolders,
-                                                                  PushoverPriority.High,
-                                                                  $"File has 'edition-' in the filename {file} but no valid edition specification");
-                                        }
-                                    }
-
-                                    // check that movies only have files in the directories and no subfolders
-                                    FileInfo fileInfo = new FileInfo(file);
-
-                                    DirectoryInfo[] siblingDirectories = fileInfo.Directory.GetDirectories();
-                                    if (siblingDirectories != null && siblingDirectories.Count() > 0)
-                                    {
-                                        Utils.LogWithPushover(BackupAction.ScanFolders,
-                                                              PushoverPriority.High,
-                                                              $"File {file} has folders alongside it");
-                                    }
-                                }
-
-                                // Checks for Movies, TV, Comedy or Concerts (All Video files)
-                                if (file.Contains("_TV") ||
-                                    file.Contains("_Movies") ||
-                                    file.Contains("_Concerts") ||
-                                    file.Contains("_Comedy"))
-                                {
-                                    if (file.Contains("subtitles"))
-                                    {
-                                        Utils.LogWithPushover(BackupAction.ScanFolders,
-                                                              PushoverPriority.High,
-                                                              $"Video has 'subtitles' in the filename {file}"
-                                                              );
-                                    }
-
-                                    if (file.Contains(" ()"))
-                                    {
-                                        Utils.LogWithPushover(BackupAction.ScanFolders,
-                                                              PushoverPriority.High,
-                                                              $"Video has a missing year in the filename {file}"
-                                                              );
-                                    }
-
-                                    if (file.Contains(" (0)"))
-                                    {
-                                        Utils.LogWithPushover(
-                                                              BackupAction.ScanFolders,
-                                                              PushoverPriority.High,
-                                                              $"Video has a '0' year in the filename {file}"
-                                                              );
-                                    }
-
-                                    if (file.Contains(" Proper]"))
-                                    {
-                                        Utils.LogWithPushover(BackupAction.ScanFolders,
-                                                              PushoverPriority.High,
-                                                              $"Video has ' Proper]' in the filename {file}"
-                                                              );
-                                    }
-
-                                    if (file.Contains(" Proper REAL]"))
-                                    {
-                                        Utils.LogWithPushover(BackupAction.ScanFolders,
-                                                              PushoverPriority.High,
-                                                              $"Video has ' Proper REAL]' in the filename {file}"
-                                                              );
-                                    }
-
-                                    if (file.Contains(" REAL]"))
-                                    {
-                                        Utils.LogWithPushover(BackupAction.ScanFolders,
-                                                              PushoverPriority.High,
-                                                              $"Video has ' REAL]' in the filename {file}"
-                                                              );
-                                    }
-
-                                    bool found = false;
-                                    foreach (string s in mediaBackup.VideoFoldersFormatsAllowed)
-                                    {
-                                        if (file.EndsWith(s, StringComparison.OrdinalIgnoreCase))
-                                        {
-                                            found = true;
-                                            break;
-                                        }
-                                    }
-                                    if (!found)
-                                    {
-                                        Utils.LogWithPushover(BackupAction.ScanFolders,
-                                                              PushoverPriority.High,
-                                                              $"Video has an invalid file extension in the filename {file}");
-                                    }
-                                }
-
-                                // All files except Backup
-                                if (!file.Contains("_Backup"))
-                                {
-                                    // Placeholder for file scans
                                 }
 
                                 mediaBackup.EnsureFile(file, masterFolder, indexFolder);

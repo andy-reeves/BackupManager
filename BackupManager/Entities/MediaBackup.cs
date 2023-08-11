@@ -24,12 +24,10 @@
         [XmlArrayItem("FilesToDeleteRegEx")]
         public Collection<string> FilesToDelete;
 
-        //If the file name contains an edition like '{edition-EXTENDED}' then check its one of these
-        [XmlArrayItem("Edition")]
-        public Collection<string> EditionsAllowed;
+        [XmlArrayItem("FileRule")]
+        public Collection<FileRule> FileRules;
 
-        [XmlArrayItem("VideoFormat")]
-        public Collection<string> VideoFoldersFormatsAllowed;
+       
 
         [XmlArrayItem("DiskToSkip")]
         public Collection<string> DisksToSkipOnRestore;
@@ -546,31 +544,14 @@
                 text += $"{filesToDelete}\n";
             }
             parameterText += $"FilesToDelete:\n{text}";
-
-            text = string.Empty;
-            foreach (string edition in EditionsAllowed)
-            {
-                text += $"{edition}\n";
-            }
-            parameterText += $"Editions:\n{text}";
             Utils.LogWithPushover(BackupAction.General, parameterText);
-
-
-            text = string.Empty;
-            foreach (string videoFormatsAllowed in VideoFoldersFormatsAllowed)
-            {
-                text += $"{videoFormatsAllowed}\n";
-            }
-
-            // reset to alow for big messages
-            parameterText = $"VideoFormatsAllowed:\n{text}";
 
             text = string.Empty;
             foreach (string disksToSkip in DisksToSkipOnRestore)
             {
                 text += $"{disksToSkip}\n";
             }
-            parameterText += $"DisksToSkipOnRestore:\n{text}";
+            parameterText = $"DisksToSkipOnRestore:\n{text}";
 
             text = $"StartMonitoring : {StartMonitoring}\n";
             text += $"MonitorInterval : {MonitorInterval}\n";
