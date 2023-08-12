@@ -549,7 +549,7 @@
                 text += $"{disksToSkip}\n";
             }
             parameterText += $"DisksToSkipOnRestore:\n{text}";
-            Utils.LogWithPushover(BackupAction.General, parameterText);
+            Utils.Log(BackupAction.General, parameterText);
 
             text = string.Empty;
             foreach (Monitor monitor in Monitors)
@@ -564,9 +564,8 @@
                 text += $"Monitor.Timeout: {monitor.Timeout}\n";  
             }
             parameterText = $"Monitors:\n{text}";
-            Utils.LogWithPushover(BackupAction.General, parameterText);
+            Utils.Log(BackupAction.General, parameterText);
 
-            // FileRules
             text = string.Empty;
             foreach (FileRule rule in FileRules)
             {
@@ -575,7 +574,7 @@
                 text += $"FileRule.Message: {rule.Message}\n";
             }
             parameterText = $"FileRules:\n{text}";
-            Utils.LogWithPushover(BackupAction.General, parameterText);
+            Utils.Log(BackupAction.General, parameterText);
 
             text = $"StartMonitoring : {StartMonitoring}\n";
             text += $"StartScheduledBackup : {StartScheduledBackup}\n";
@@ -594,7 +593,7 @@
             text += $"DiskSpeedTests : {DiskSpeedTests}\n";
 
             parameterText = text;
-            Utils.LogWithPushover(BackupAction.General, parameterText);
+            Utils.Log(BackupAction.General, parameterText);
         }
     }
 }
