@@ -93,64 +93,69 @@
   </FilesToDelete>
   <FileRules>
     <FileRule>
-      <FileToMatchRegEx>*\_TV\*|*\_TestTV\*</FileToMatchRegEx>
+      <FileToMatchRegEx>^.*\\_TV(?:\s\(non-tvdb\))?\\.*$</FileToMatchRegEx>
       <FileRuleRegEx>*{tvdb-*|*{tmdb-*</FileRuleRegEx>
       <Message>TV files must contain {tvdb- or {tmdb- in the file name</Message>
     </FileRule>
     <FileRule>
-      <FileToMatchRegEx>*\_TV\*|*\_TestTV\*</FileToMatchRegEx>
-      <FileRuleRegEx>^((?! TBA ).)*$</FileRuleRegEx>
+      <FileToMatchRegEx>^.*\\_TV(?:\s\(non-tvdb\))?\\.*$</FileToMatchRegEx>
+      <FileRuleRegEx>^((?!\sTBA\s).)*$</FileRuleRegEx>
       <Message>TV files must not contain TBA in the file name</Message>
     </FileRule>
     <FileRule>
-      <FileToMatchRegEx>*\_TV\*|*\_TestTV\*</FileToMatchRegEx>
-      <FileRuleRegEx>^(?&gt;.*\\_TV\\(.*){.*\\(?&gt;Season|Specials).*\\(\1.*)|.*-featurette\..*|.*-other\..*|.*-interview\..*|.*-scene\..*|.*-short\..*|.*-deleted\..*|.*-behindthescenes\..*|.*-trailer\..*)$</FileRuleRegEx>
+      <FileToMatchRegEx>^.*\\_TV(?:\s\(non-tvdb\))?\\.*$</FileToMatchRegEx>
+      <FileRuleRegEx>^(?:.*\ss\d{2}e\d{2}\s.*|.*-featurette\..*|.*-other\..*|.*-interview\..*|.*-scene\..*|.*-short\..*|.*-deleted\..*|.*-behindthescenes\..*|.*-trailer\..*)$</FileRuleRegEx>
+      <Message>TV files must either be a special feature or have s00e00 in the file name</Message>
+    </FileRule>
+    <FileRule>
+      <FileToMatchRegEx>^.*\\_TV(?:\s\(non-tvdb\))?\\.*$</FileToMatchRegEx>
+      <FileRuleRegEx>^(?:.*\\_TV(?:\s\(non-tvdb\))?\\(.*){tvdb-\d{1,7}?}\\(Season\s\d+|Specials).*\\(\1.*)|.*-featurette\..*|.*-other\..*|.*-interview\..*|.*-scene\..*|.*-short\..*|.*-deleted\..*|.*-behindthescenes\..*|.*-trailer\..*)$</FileRuleRegEx>
       <Message>TV files must either be a special feature or start with the TV show name followed by a Season/Specials folder and then the file name</Message>
     </FileRule>
     <FileRule>
-      <FileToMatchRegEx>*\_Movies\*|*\_Concerts\*|*\_Comedy\*|*\_TestMovies\*</FileToMatchRegEx>
-      <FileRuleRegEx>^.*\\(?&gt;(?:_Movies|_Comedy|_Concerts|_TestMovies)\\(.*)\\(\1) {tmdb-.*|.*-featurette\..*|.*-other\..*|.*-interview\..*|.*-scene\..*|.*-short\..*|.*-deleted\..*|.*-behindthescenes\..*|.*-trailer\..*)$</FileRuleRegEx>
-      <Message>Movie files must either be a special feature or start with the folder name in the file name</Message>
-    </FileRule>
-    <FileRule>
-      <FileToMatchRegEx>*\_Movies\*|*\_Concerts\*|*\_Comedy\*|*\_TestMovies\*</FileToMatchRegEx>
+      <FileToMatchRegEx>^.*\\_(?:Movies|Comedy|Concerts)\\.*$</FileToMatchRegEx>
       <FileRuleRegEx>*-featurette.*|*-other.*|*-interview.*|*-scene.*|*-short.*|*-deleted.*|*-behindthescenes.*|*-trailer.*|*{tmdb-*</FileRuleRegEx>
       <Message>Movies, Comedy and Concerts files must be a special feature or have {tmdb- in the file name</Message>
     </FileRule>
     <FileRule>
-      <FileToMatchRegEx>*\_Movies\*|*\_Concerts\*|*\_Comedy\*|*\_TV\*|*\_TestMovies\*|*\_TestTV\*</FileToMatchRegEx>
+      <FileToMatchRegEx>^.*\\_(?:Movies|Comedy|Concerts)(?:\s\(non-tmdb\))?\\.*$</FileToMatchRegEx>
+      <FileRuleRegEx>^(?:.*\\_(?:Movies|Comedy|Concerts)(?:\s\(non-tmdb\))?\\(.*)\\(\1)(?:\s{tmdb-\d{1,7}?})?.*|.*-featurette\..*|.*-other\..*|.*-interview\..*|.*-scene\..*|.*-short\..*|.*-deleted\..*|.*-behindthescenes\..*|.*-trailer\..*)$</FileRuleRegEx>
+      <Message>Movies, Comedy and Concerts files must either be a special feature or start with the folder name in the file name</Message>
+    </FileRule>
+    <FileRule>
+      <FileToMatchRegEx>^.*\\_(?:Movies|Comedy|Concerts)(?:\s\(non-tmdb\))?\\(.*)\\.* {edition-.*$</FileToMatchRegEx>
+      <FileRuleRegEx>^.*\s{edition-(?:(?:(?:10|20|25|30|35|40|50|60|70)TH\sANNIVERSARY)|4K|BLURAY|CHRONOLOGICAL|COLLECTORS|(?:CRITERION|KL\sSTUDIO)\sCOLLECTION|DIAMOND|DVD|EXTENDED|IMAX|REDUX|REMASTERED|RESTORED|SPECIAL|THE\sCOMPLETE\sEXTENDED|THE\sGODFATHER\sCODA|(?:THE\sRICHARD\sDONNER|DIRECTORS|FINAL)\sCUT|THEATRICAL|ULTIMATE|UNCUT|UNRATED)}\s.*$</FileRuleRegEx>
+      <Message>Movies, Comedy and Concerts files that have {edition-} specified must have a valid value in the file name</Message>
+    </FileRule>
+    <FileRule>
+      <FileToMatchRegEx>^.*\\_(?:Movies|Comedy|Concerts|TV)(?:\s\(non-t(m|v)db\))?\\.*$</FileToMatchRegEx>
       <FileRuleRegEx>^((?!subtitles).)*$</FileRuleRegEx>
       <Message>Movies, Comedy, Concerts and TV files must not contain subtitles in the file name</Message>
     </FileRule>
     <FileRule>
-      <FileToMatchRegEx>*\_Movies\*|*\_Concerts\*|*\_Comedy\*|*\_TV\*|*\_TestMovies\*|*\_TestTV\*</FileToMatchRegEx>
+      <FileToMatchRegEx>^.*\\_(?:Movies|Comedy|Concerts|TV)(?:\s\(non-t(m|v)db\))?\\.*$</FileToMatchRegEx>
       <FileRuleRegEx>^((?!\(\)).)*$</FileRuleRegEx>
       <Message>Movies, Comedy, Concerts and TV files must not contain () in the file name</Message>
     </FileRule>
     <FileRule>
-      <FileToMatchRegEx>*\_Movies\*|*\_Concerts\*|*\_Comedy\*|*\_TV\*|*\_TestMovies\*|*\_TestTV\*</FileToMatchRegEx>
+      <FileToMatchRegEx>^.*\\_(?:Movies|Comedy|Concerts|TV)(?:\s\(non-t(m|v)db\))?\\.*$</FileToMatchRegEx>
       <FileRuleRegEx>^((?!\(0\)).)*$</FileRuleRegEx>
       <Message>Movies, Comedy, Concerts and TV files must not contain (0) in the file name</Message>
     </FileRule>
     <FileRule>
-      <FileToMatchRegEx>*\_Movies\*|*\_Concerts\*|*\_Comedy\*|*\_TV\*|*\_TestMovies\*|*\_TestTV\*</FileToMatchRegEx>
+      <FileToMatchRegEx>^.*\\_(?:Movies|Comedy|Concerts|TV)(?:\s\(non-t(m|v)db\))?\\.*$</FileToMatchRegEx>
       <FileRuleRegEx>^((?! Proper\]).)*$</FileRuleRegEx>
       <Message>Movies, Comedy, Concerts and TV files must not contain Proper] in the name</Message>
     </FileRule>
     <FileRule>
-      <FileToMatchRegEx>*\_Movies\*|*\_Concerts\*|*\_Comedy\*|*\_TV\*|*\_TestMovies\*|*\_TestTV\*</FileToMatchRegEx>
+      <FileToMatchRegEx>^.*\\_(?:Movies|Comedy|Concerts|TV)(?:\s\(non-t(m|v)db\))?\\.*$</FileToMatchRegEx>
       <FileRuleRegEx>^((?! REAL\]).)*$</FileRuleRegEx>
       <Message>Movies, Comedy, Concerts and TV files must not contain REAL] in the file name</Message>
     </FileRule>
     <FileRule>
-      <FileToMatchRegEx>*\_Movies\*|*\_Concerts\*|*\_Comedy\*|*\_TV\*|*\_TestMovies\*|*\_TestTV\*</FileToMatchRegEx>
-      <FileRuleRegEx>^.*\.(?:mkv|mp4|mpg|mpeg|ts|srt|avi)$</FileRuleRegEx>
+      <FileToMatchRegEx>^.*\\_(?:Movies|Comedy|Concerts|TV)(?:\s\(non-t(m|v)db\))?\\.*$</FileToMatchRegEx>
+      <FileRuleRegEx>^.*\.(mkv|mp4|mpg|mpeg|ts|srt|avi)$</FileRuleRegEx>
       <Message>Movies, Comedy, Concerts and TV files must end with a valid file extension in the file name</Message>
-    </FileRule>
-    <FileRule>
-      <FileToMatchRegEx>^.*\\(?:_Movies|_Concerts|_Comedy|_TestMovies)\\(.*)\\.* {edition-.*$</FileToMatchRegEx>
-      <FileRuleRegEx>^.* {edition-(?:(?:(?:10|20|25|30|35|40|50|60|70)TH\sANNIVERSARY)|4K|BLURAY|CHRONOLOGICAL|COLLECTORS|(?:CRITERION|KL\sSTUDIO) COLLECTION|DIAMOND|DVD|EXTENDED|IMAX|REDUX|REMASTERED|RESTORED|SPECIAL|THE\sCOMPLETE\sEXTENDED|THE\sGODFATHER\sCODA|(?:THE\sRICHARD\sDONNER|DIRECTORS|FINAL) CUT|THEATRICAL|ULTIMATE|UNCUT|UNRATED)}.*$</FileRuleRegEx>
-      <Message>Movies, Comedy and Concerts files that have {edition-} specified must have a valid value in the file name</Message>
     </FileRule>
   </FileRules>
   <BackupFiles>
