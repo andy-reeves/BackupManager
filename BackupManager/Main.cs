@@ -10,7 +10,6 @@ namespace BackupManager
     using BackupManager.Entities;
     using System.Diagnostics;
     using System.Text.RegularExpressions;
-    using static System.Net.WebRequestMethods;
 
     public partial class Main : Form
     {

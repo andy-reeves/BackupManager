@@ -16,5 +16,10 @@
         /// The message to display if the rule is not matched
         /// </summary>
         public string Message;
+
+        /// <summary>
+        /// The name of the rule
+        /// </summary>
+        public string Name;
     }
 }
