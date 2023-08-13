@@ -742,12 +742,16 @@ namespace BackupManager
                                     string escapedFileToMatchRegEx = mediaToMatchRegEx.StartsWith("^") ?
                                                                                 mediaToMatchRegEx : "^(" + mediaToMatchRegEx.Replace(@"\", @"\\")
                                                                                 .Replace(".", @"\.")
+                                                                                .Replace("(", @"\(")
+                                                                                .Replace(")", @"\)")
                                                                                 .Replace("*", ".*")
                                                                                 .Replace("?", ".") + ")$";
 
                                     string escapedFileRuleRegEx = mediaRuleRegEx.StartsWith("^") ?
                                                                                 mediaRuleRegEx : "^(" + mediaRuleRegEx.Replace(@"\", @"\\")
                                                                                 .Replace(".", @"\.")
+                                                                                .Replace("(", @"\(")
+                                                                                .Replace(")", @"\)")
                                                                                 .Replace("*", ".*")
                                                                                 .Replace("?", ".") + ")$";
 
