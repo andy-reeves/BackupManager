@@ -736,31 +736,12 @@ namespace BackupManager
                                 // RegEx file name rules
                                 foreach (FileRule rule in mediaBackup.FileRules)
                                 {
-                                    string mediaToMatchRegEx = rule.FileToMatchRegEx;
-                                    string mediaRuleRegEx = rule.FileRuleRegEx;
-
-                                    string escapedFileToMatchRegEx = mediaToMatchRegEx.StartsWith("^") ?
-                                                                                mediaToMatchRegEx : "^(" + mediaToMatchRegEx.Replace(@"\", @"\\")
-                                                                                .Replace(".", @"\.")
-                                                                                .Replace("(", @"\(")
-                                                                                .Replace(")", @"\)")
-                                                                                .Replace("*", ".*")
-                                                                                .Replace("?", ".") + ")$";
-
-                                    string escapedFileRuleRegEx = mediaRuleRegEx.StartsWith("^") ?
-                                                                                mediaRuleRegEx : "^(" + mediaRuleRegEx.Replace(@"\", @"\\")
-                                                                                .Replace(".", @"\.")
-                                                                                .Replace("(", @"\(")
-                                                                                .Replace(")", @"\)")
-                                                                                .Replace("*", ".*")
-                                                                                .Replace("?", ".") + ")$";
-
-                                    if (Regex.IsMatch(file, escapedFileToMatchRegEx))
+                                    if (Regex.IsMatch(file, rule.FileToMatchRegEx))
                                     {
                                         // if it does then the second regex must be true
-                                        if (!Regex.IsMatch(file, escapedFileRuleRegEx))
+                                        if (!Regex.IsMatch(file, rule.FileRuleRegEx))
                                         {
-                                            Utils.Trace($"File {file} matched by {mediaToMatchRegEx} but doesn't match {mediaRuleRegEx}");
+                                            Utils.Trace($"File {file} matched by {rule.FileToMatchRegEx} but doesn't match {rule.FileRuleRegEx}");
                                             Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High, $"{file} - {rule.Message}");
                                         }
                                     }
