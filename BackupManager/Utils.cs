@@ -22,7 +22,6 @@ namespace BackupManager
     using System.Diagnostics;
     using System.Net.Sockets;
     using System.ServiceProcess;
-    using System.Security;
 
     /// <summary>
     /// Common Utilty fuctions in a static class
