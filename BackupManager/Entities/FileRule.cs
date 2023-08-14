@@ -1,4 +1,6 @@
-﻿namespace BackupManager.Entities
+﻿using System.Xml.Serialization;
+
+namespace BackupManager.Entities
 {
     public class FileRule
     {
@@ -21,5 +23,8 @@
         /// The name of the rule
         /// </summary>
         public string Name;
+
+        [XmlIgnore]
+        public bool Matched;
     }
 }

@@ -163,6 +163,12 @@ namespace BackupManager.TestProject
             Assert.True(rule != null, "Rule is missing");
 
             string filePath = "X:\\_Movies\\12 Angry Men (1957)\\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv";
+            Assert.True(filePath.IsMatch(rule.FileToMatchRegEx), rule.Message);
+
+            filePath = "X:\\_Movies\\12 Angry Men (1957)\\12 Angry Men [Remux-1080p][DTS-HD MA 1.0][h264].mkv";
+            Assert.False(filePath.IsMatch(rule.FileToMatchRegEx), rule.Message);
+
+            filePath = "X:\\_Movies\\12 Angry Men (1957)\\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv";
             Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
 
             filePath = "X:\\_Movies\\12 Angry Men (1957)\\12 Angry Men {edition-MYFAVOURITE} [Remux-1080p][DTS-HD MA 1.0][h264].mkv";
@@ -274,11 +280,85 @@ namespace BackupManager.TestProject
             var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 14").SingleOrDefault();
             Assert.True(rule != null, "Rule is missing");
 
-            string filePath = "X:\\_TV\\Game of Thrones {tvdb-121361}\\Reunion Special-featurette.mkv";
+            string filePath = "X:\\_TV\\Chernobyl {tdb-360893}\\Season 1\\Chernobyl s01e01 12345 [Bluray-2160p Remux]-other.mkv";
+            Assert.True(filePath.IsMatch(rule.FileToMatchRegEx), rule.Message);
+
+            filePath = "X:\\_TV\\Chernobyl {tdb-360893}\\Chernobyl s01e01 12345 [Bluray-2160p Remux]-other.mkv";
+            Assert.True(filePath.IsMatch(rule.FileToMatchRegEx), rule.Message);
+
+            filePath = "X:\\_TV\\Chernobyl {tdb-360893}\\Season 1\\Chernobyl s01e01 12345 [Bluray-2160p Remux]-bobby.mkv";
+            Assert.True(filePath.IsMatch(rule.FileToMatchRegEx), rule.Message);
+
+            filePath = "X:\\_TV\\Chernobyl {tdb-360893}\\Chernobyl s01e01 12345 [Bluray-2160p Remux]-bobby.mkv";
+            Assert.True(filePath.IsMatch(rule.FileToMatchRegEx), rule.Message);
+
+            filePath = "K:\\_TV\\American Horror Story {tvdb-250487}\\Season 1\\American Horror Story s01e01 Pilot [HDTV-720p].mkv";
+            Assert.False(filePath.IsMatch(rule.FileToMatchRegEx), rule.Message);
+
+            filePath = "Z:\\_TV\\MasterChef Australia {tvdb-92091}\\Season 7\\MasterChef Australia s07e34 Off-site Challenge Tokyo Tina vs. Saigon Sally [SDTV].mp4";
+            Assert.False(filePath.IsMatch(rule.FileToMatchRegEx), rule.Message);
+
+            filePath = "Z:\\_TV\\MasterChef Australia {tvdb-92091}\\Season 7\\MasterChef Australia s07e34 Off-site Challenge Tokyo Tina vs. Saigon Sally [SDTV]-other.mp4";
+            Assert.True(filePath.IsMatch(rule.FileToMatchRegEx), rule.Message);
+
+            filePath = "K:\\_TV\\Westworld {tvdb-296762}\\Season 2\\Westworld s02e50 - An Evocative Location.mkv";
+            Assert.False(filePath.IsMatch(rule.FileToMatchRegEx), rule.Message);
+
+
+            filePath = "X:\\_TV\\Game of Thrones {tvdb-121361}\\Reunion Special-featurette.mkv";
             Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
 
             filePath = "X:\\_TV\\Game of Thrones {tvdb-121361}\\Season 1\\Reunion Special-featurette.mkv";
             Assert.False(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
+
+            filePath = "Z:\\_TV\\MasterChef Australia {tvdb-92091}\\Season 7\\MasterChef Australia s07e34 Off-site Challenge Tokyo Tina vs. Saigon Sally [SDTV].mp4";
+            Assert.False(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
+
+            filePath = "Z:\\_TV\\MasterChef Australia {tvdb-92091}\\Season 7\\MasterChef Australia s07e34 Off-site Challenge Tokyo Tina vs. Saigon Sally [SDTV]-other.mp4";
+            Assert.False(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
+        }
+
+        /// <summary>
+        /// Movies, Comedy, and Concerts files special features must be in the root folder of the movie with a correct suffix
+        /// </summary>
+        [Fact]
+        public void Rule15Tests()
+        {
+            var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 15").SingleOrDefault();
+            Assert.True(rule != null, "Rule is missing");
+
+            string filePath = "X:\\_Movies\\12 Angry Men (1957)\\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-other.mkv";
+            Assert.True(filePath.IsMatch(rule.FileToMatchRegEx), rule.Message);
+
+            filePath = "X:\\_Concerts\\12 Angry Men (1957)\\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-bobby.mkv";
+            Assert.True(filePath.IsMatch(rule.FileToMatchRegEx), rule.Message);
+
+            filePath = "X:\\_Movies\\12 Angry Men (1957)\\Other\\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-other.mkv";
+            Assert.True(filePath.IsMatch(rule.FileToMatchRegEx), rule.Message);
+
+            filePath = "X:\\_Movies\\12 Angry Men (1957)\\Other\\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-bobby.mkv";
+            Assert.True(filePath.IsMatch(rule.FileToMatchRegEx), rule.Message);
+
+            filePath = "X:\\_Movies\\12 Angry Men (1957)\\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-featurette.mkv";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
+
+            filePath = "X:\\_Movies (non-tmdb)\\The Lord of the Rings (2003)\\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][h265]-other.mkv";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
+
+            filePath = "X:\\_Movies\\12 Angry Men (1957)\\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-feature.mkv";
+            Assert.False(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
+
+            filePath = "X:\\_Movies\\12 Angry Men (1957)\\Special Features\\12 Angry Men Making Of-featurette.mkv";
+            Assert.False(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
+
+            filePath = "X:\\_Movies (non-tmdb)\\The Lord of the Rings (2003)\\Other\\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][h265]-featurette.mkv";
+            Assert.False(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
+
+            filePath = "X:\\_Movies\\12 Angry Men (1957)\\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-other.mkv";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
+
+            filePath = "Q:\\_Comedy\\Rhod Gilbert and the Award-Winning Mince Pie (2009)\\The Audience-short.mkv";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
         }
     }
 }

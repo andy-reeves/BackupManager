@@ -737,6 +737,12 @@ namespace BackupManager
                                 {
                                     if (Regex.IsMatch(file, rule.FileToMatchRegEx))
                                     {
+                                        if (!rule.Matched)
+                                        {
+                                            Utils.Trace($"{rule.Name} matched file {file}");
+                                            rule.Matched = true;
+                                        }
+
                                         // if it does then the second regex must be true
                                         if (!Regex.IsMatch(file, rule.FileRuleRegEx))
                                         {
@@ -756,6 +762,16 @@ namespace BackupManager
                     Utils.LogWithPushover(BackupAction.ScanFolders,
                                           PushoverPriority.High,
                                           $"{masterFolder} doesn't exist");
+                }
+            }
+
+            foreach (FileRule rule in mediaBackup.FileRules)
+            {
+                if (!rule.Matched)
+                {
+                    Utils.LogWithPushover(BackupAction.ScanFolders,
+                                         PushoverPriority.High,
+                                         $"{rule.Name} didn't match any files");
                 }
             }
 
