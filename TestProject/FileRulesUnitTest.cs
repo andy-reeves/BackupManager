@@ -10,7 +10,7 @@ namespace BackupManager.TestProject
         static FileRulesUnitTest()
         {
             string localMediaXml = "..\\BackupManager\\MediaBackup.xml";
-            mediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)),localMediaXml));
+            mediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)), localMediaXml));
         }
 
         /// <summary>
@@ -19,7 +19,9 @@ namespace BackupManager.TestProject
         [Fact]
         public void Rule01Tests()
         {
-            var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 1").Single();
+            var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 1").SingleOrDefault();
+            Assert.True(rule != null, "Rule is missing");
+
             string filePath = "X:\\_TV\\Chernobyl {tvdb-360893}\\Season 1\\Chernobyl s01e01 12345 [Bluray-2160p Remux].mkv";
             Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
 
@@ -33,7 +35,9 @@ namespace BackupManager.TestProject
         [Fact]
         public void Rule02Tests()
         {
-            var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 2").Single();
+            var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 2").SingleOrDefault();
+            Assert.True(rule != null, "Rule is missing");
+
             string filePath = "X:\\_TV\\Chernobyl {tvdb-360893}\\Season 1\\Chernobyl s01e01 12345 [Bluray-2160p Remux].mkv";
             Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
 
@@ -47,7 +51,9 @@ namespace BackupManager.TestProject
         [Fact]
         public void Rule03Tests()
         {
-            var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 3").Single();
+            var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 3").SingleOrDefault();
+            Assert.True(rule != null, "Rule is missing");
+
             string filePath = "X:\\_TV\\Cheers {tvdb-77623}\\Season 11\\Cheers s11e26-e28 One for the Road [SDTV].avi";
             Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
 
@@ -70,7 +76,9 @@ namespace BackupManager.TestProject
         [Fact]
         public void Rule04Tests()
         {
-            var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 4").Single();
+            var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 4").SingleOrDefault();
+            Assert.True(rule != null, "Rule is missing");
+
             string filePath = "X:\\_TV\\Chernobyl {tvdb-360893}\\Season 1\\Chernobyl s01e01 12345 [Bluray-2160p Remux].mkv";
             Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
 
@@ -90,10 +98,12 @@ namespace BackupManager.TestProject
         [Fact]
         public void Rule05Tests()
         {
-            var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 5").Single();
+            var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 5").SingleOrDefault();
+            Assert.True(rule != null, "Rule is missing");
+
             string filePath = "X:\\_Movies\\12 Angry Men (1957)\\12 Angry Men (1957) {tmdb-389} {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv";
             Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
-            
+
             filePath = "X:\\_Movies (non-tmdb)\\Blood Brothers (1989)\\Example 1-scene.mkv";
             Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
 
@@ -107,11 +117,27 @@ namespace BackupManager.TestProject
         [Fact]
         public void Rule06Tests()
         {
-            var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 6").Single();
+            var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 6").SingleOrDefault();
+            Assert.True(rule != null, "Rule is missing");
+
             string filePath = "X:\\_Movies (non-tmdb)\\Blood Brothers (1989)\\Blood Brothers (1989).mkv";
             Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
 
+            filePath = "X:\\_Movies (non-tmdb)\\Blood Brothers (1989)\\Example 1-featurette.mkv";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
             filePath = "X:\\_Movies (non-tmdb)\\Blood Brothers (1989)\\Example 1-other.mkv";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
+            filePath = "X:\\_Movies (non-tmdb)\\Blood Brothers (1989)\\Example 1-interview.mkv";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
+            filePath = "X:\\_Movies (non-tmdb)\\Blood Brothers (1989)\\Example 1-scene.mkv";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
+            filePath = "X:\\_Movies (non-tmdb)\\Blood Brothers (1989)\\Example 1-short.mkv";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
+            filePath = "X:\\_Movies (non-tmdb)\\Blood Brothers (1989)\\Example 1-deleted.mkv";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
+            filePath = "X:\\_Movies (non-tmdb)\\Blood Brothers (1989)\\Example 1-behindthescenes.mkv";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
+            filePath = "X:\\_Movies (non-tmdb)\\Blood Brothers (1989)\\Example 1-trailer.mkv";
             Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
 
             filePath = "X:\\_Movies (non-tmdb)\\The Lord of the Rings (2003)\\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][h265].mkv";
@@ -119,6 +145,12 @@ namespace BackupManager.TestProject
 
             filePath = "X:\\_Movies\\12 Angry Men (1957)\\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv";
             Assert.False(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
+
+            filePath = "X:\\_Movies (non-tmdb)\\Blood Brothers (1989)\\Example 1-behindscenes.mkv";
+            Assert.False(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
+            filePath = "X:\\_Movies (non-tmdb)\\Blood Brothers (1989)\\Example 1-trailertest.mkv";
+            Assert.False(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
+
         }
 
         /// <summary>
@@ -127,7 +159,8 @@ namespace BackupManager.TestProject
         [Fact]
         public void Rule07Tests()
         {
-            var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 7").Single();
+            var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 7").SingleOrDefault();
+            Assert.True(rule != null, "Rule is missing");
 
             string filePath = "X:\\_Movies\\12 Angry Men (1957)\\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv";
             Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
@@ -142,7 +175,8 @@ namespace BackupManager.TestProject
         [Fact]
         public void Rule08Tests()
         {
-            var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 8").Single();
+            var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 8").SingleOrDefault();
+            Assert.True(rule != null, "Rule is missing");
 
             string filePath = "X:\\_Concerts\\12 Angry Men (1957)\\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv";
             Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
@@ -157,7 +191,8 @@ namespace BackupManager.TestProject
         [Fact]
         public void Rule09Tests()
         {
-            var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 9").Single();
+            var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 9").SingleOrDefault();
+            Assert.True(rule != null, "Rule is missing");
 
             string filePath = "X:\\_Concerts\\12 Angry Men (1957)\\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv";
             Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
@@ -172,7 +207,8 @@ namespace BackupManager.TestProject
         [Fact]
         public void Rule10Tests()
         {
-            var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 10").Single();
+            var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 10").SingleOrDefault();
+            Assert.True(rule != null, "Rule is missing");
 
             string filePath = "X:\\_Concerts\\12 Angry Men (1957)\\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv";
             Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
@@ -187,7 +223,8 @@ namespace BackupManager.TestProject
         [Fact]
         public void Rule11Tests()
         {
-            var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 11").Single();
+            var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 11").SingleOrDefault();
+            Assert.True(rule != null, "Rule is missing");
 
             string filePath = "X:\\_Concerts\\12 Angry Men (1957)\\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv";
             Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
@@ -202,7 +239,8 @@ namespace BackupManager.TestProject
         [Fact]
         public void Rule12Tests()
         {
-            var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 12").Single();
+            var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 12").SingleOrDefault();
+            Assert.True(rule != null, "Rule is missing");
 
             string filePath = "X:\\_Concerts\\12 Angry Men (1957)\\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv";
             Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
@@ -217,12 +255,29 @@ namespace BackupManager.TestProject
         [Fact]
         public void Rule13Tests()
         {
-            var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 13").Single();
+            var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 13").SingleOrDefault();
+            Assert.True(rule != null, "Rule is missing");
 
             string filePath = "X:\\_Concerts\\12 Angry Men (1957)\\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv";
             Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
 
             filePath = "X:\\_Movies\\12 Angry Men (0)\\12 Angry Men [Remux-1080p].bob";
+            Assert.False(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
+        }
+
+        /// <summary>
+        /// TV extra features must be in the root of the show folder
+        /// </summary>
+        [Fact]
+        public void Rule14Tests()
+        {
+            var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 14").SingleOrDefault();
+            Assert.True(rule != null, "Rule is missing");
+
+            string filePath = "X:\\_TV\\Game of Thrones {tvdb-121361}\\Reunion Special-featurette.mkv";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
+
+            filePath = "X:\\_TV\\Game of Thrones {tvdb-121361}\\Season 1\\Reunion Special-featurette.mkv";
             Assert.False(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
         }
     }

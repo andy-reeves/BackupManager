@@ -107,25 +107,25 @@
     <FileRule>
       <Name>Rule 3</Name>
       <FileToMatchRegEx>^.*\\_TV(\s\(non-tvdb\))?\\.*$</FileToMatchRegEx>
-      <FileRuleRegEx>^(.*\ss\d{2}e\d{2}.*|.*\s\d{4}-\d\d-\d\d.*|.*-featurette\..*|.*-other\..*|.*-interview\..*|.*-scene\..*|.*-short\..*|.*-deleted\..*|.*-behindthescenes\..*|.*-trailer\..*)$</FileRuleRegEx>
+      <FileRuleRegEx>^(.*\ss\d{2}e\d{2}.*|.*\s\d{4}-\d\d-\d\d.*|.*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer)\..*)$</FileRuleRegEx>
       <Message>TV files must either be a special feature or have s00e00 or yyyy-mm-dd in the file name</Message>
     </FileRule>
     <FileRule>
       <Name>Rule 4</Name>
       <FileToMatchRegEx>^.*\\_TV(\s\(non-tvdb\))?\\.*$</FileToMatchRegEx>
-      <FileRuleRegEx>^(?:.*\\_TV(?:\s\(non-tvdb\))?\\(.*){t(m|v)db-\d{1,7}?}\\(Season\s\d+|Specials).*\\(\1.*)|.*-featurette\..*|.*-other\..*|.*-interview\..*|.*-scene\..*|.*-short\..*|.*-deleted\..*|.*-behindthescenes\..*|.*-trailer\..*)$</FileRuleRegEx>
+      <FileRuleRegEx>^(?:.*\\_TV(?:\s\(non-tvdb\))?\\(.*){t(m|v)db-\d{1,7}?}\\(Season\s\d+|Specials).*\\(\1.*)|.*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer)\..*)$</FileRuleRegEx>
       <Message>TV files must either be a special feature or start with the TV show name followed by a Season/Specials folder and then the file name</Message>
     </FileRule>
     <FileRule>
       <Name>Rule 5</Name>
       <FileToMatchRegEx>^.*\\_(Movies|Comedy|Concerts)\\.*$</FileToMatchRegEx>
-      <FileRuleRegEx>^(?:.*\\_(Movies|Comedy|Concerts)\\.*\\.*\s{tmdb-\d{1,7}?}.*|.*-featurette\..*|.*-other\..*|.*-interview\..*|.*-scene\..*|.*-short\..*|.*-deleted\..*|.*-behindthescenes\..*|.*-trailer\..*)$</FileRuleRegEx>
+      <FileRuleRegEx>^(?:.*\\_(Movies|Comedy|Concerts)\\.*\\.*\s{tmdb-\d{1,7}?}.*|.*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer)\..*)$</FileRuleRegEx>
       <Message>Movies, Comedy and Concerts files must be a special feature or have {tmdb- in the file name</Message>
     </FileRule>
     <FileRule>
       <Name>Rule 6</Name>
       <FileToMatchRegEx>^.*\\_(Movies|Comedy|Concerts)(?:\s\(non-tmdb\))?\\.*$</FileToMatchRegEx>
-      <FileRuleRegEx>^(?:.*\\_(?:Movies|Comedy|Concerts)(?:\s\(non-tmdb\))?\\(.*)\\(\1)(?:\s{tmdb-\d{1,7}?})?.*|.*-featurette\..*|.*-other\..*|.*-interview\..*|.*-scene\..*|.*-short\..*|.*-deleted\..*|.*-behindthescenes\..*|.*-trailer\..*)$</FileRuleRegEx>
+      <FileRuleRegEx>^(?:.*\\_(?:Movies|Comedy|Concerts)(?:\s\(non-tmdb\))?\\(.*)\\(\1)(?:\s{tmdb-\d{1,7}?})?.*|.*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer)\..*)$</FileRuleRegEx>
       <Message>Movies, Comedy and Concerts files must either be a special feature or start with the folder name in the file name</Message>
     </FileRule>
     <FileRule>
@@ -169,6 +169,12 @@
       <FileToMatchRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t(m|v)db\))?\\.*$</FileToMatchRegEx>
       <FileRuleRegEx>^.*\.(mkv|mp4|mpg|mpeg|ts|srt|avi)$</FileRuleRegEx>
       <Message>Movies, Comedy, Concerts and TV files must end with a valid file extension in the file name</Message>
+    </FileRule>
+    <FileRule>
+      <Name>Rule 14</Name>
+      <FileToMatchRegEx>^.*\\_TV(\s\(non-tvdb\))?\\\\.*-[\S\s]*\..*$</FileToMatchRegEx>
+      <FileRuleRegEx>^.*\\_TV(?:\s\(non-tvdb\))?\\.*{t(m|v)db-\d{1,7}?}\\[^\\]*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer)\..*$</FileRuleRegEx>
+      <Message>TV files special features must be in the root folder of the show with a correct suffix</Message>
     </FileRule>
   </FileRules>
   <BackupFiles>
