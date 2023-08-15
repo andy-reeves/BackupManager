@@ -80,6 +80,15 @@ namespace BackupManager.TestProject
 
             filePath = "Z:\\_TV\\Tom and Jerry {tvdb-72860}\\Season 1940\\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv";
             Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
+
+            filePath = "X:\\_TV\\Cheers {tvdb-77623}\\Season 11\\Long Way Round s01e08.mkv";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), "Test 10 - " + rule.Message);
+
+            filePath = "X:\\_TV\\Cheers {tvdb-77623}\\Season 11\\Long Way Round s01e108e109.mkv";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), "Test 11 - " + rule.Message);
+
+            filePath = "X:\\_TV\\Cheers {tvdb-77623}\\Season 11\\Long Way Round s01e08-e12.mkv";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), "Test 12 - " + rule.Message);
         }
 
         /// <summary>
