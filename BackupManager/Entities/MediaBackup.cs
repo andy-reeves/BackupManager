@@ -451,7 +451,7 @@
         }
 
         /// <summary>
-        /// Sets the Flag to False on on BackupFiles
+        /// Sets the Flag to False on all BackupFiles
         /// </summary>
         public void ClearFlags()
         {

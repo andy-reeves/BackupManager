@@ -55,43 +55,49 @@ namespace BackupManager.TestProject
             Assert.True(rule != null, "Rule is missing");
 
             string filePath = "Z:\\_TV\\Tom and Jerry {tvdb-72860}\\Season 1940\\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv";
-            Assert.True(filePath.IsMatch(rule.FileToMatchRegEx), rule.Message);
-
-            filePath = "X:\\_TV\\Cheers {tvdb-77623}\\Season 11\\Cheers s11e26-e28 One for the Road [SDTV].avi";
-            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
-
-            filePath = "X:\\_TV\\Cheers {tvdb-77623}\\Season 11\\Cheers s11e26e27 One for the Road [SDTV].avi";
-            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
-
-            filePath = "X:\\_TV\\Cheers {tvdb-77623}\\Season 11\\Cheers s11.e26-e28 One for the Road [SDTV].avi";
-            Assert.False(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
-
-            filePath = "X:\\_TV\\Cheers {tvdb-77623}\\Season 11\\Cheers s11e26f27 One for the Road [SDTV].avi";
-            Assert.False(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
-
-            filePath = "X:\\_TV\\The Late Late Show with James Corden {tvdb-292421}\\Season 1\\The Late Late Show with James Corden 2015-03-23 [HDTV-720p].mkv";
-            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
-
-            filePath = "X:\\_Movies (non-tmdb)\\Blood Brothers (1989)\\Example 1-behindthescenes.mkv";
-            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
-
-            filePath = "X:\\_TV\\The Late Late Show with James Corden {tvdb-292421}\\Season 1\\The Late Late Show with James Corden 20150323 [HDTV-720p].mkv";
-            Assert.False(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
-
-            filePath = "Z:\\_TV\\Tom and Jerry {tvdb-72860}\\Season 1940\\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv";
-            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
-
-            filePath = "X:\\_TV\\Cheers {tvdb-77623}\\Season 11\\Long Way Round s01e08.mkv";
-            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), "Test 10 - " + rule.Message);
-
-            filePath = "X:\\_TV\\Cheers {tvdb-77623}\\Season 11\\Long Way Round s01e108e109.mkv";
-            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), "Test 11 - " + rule.Message);
-
-            filePath = "X:\\_TV\\Cheers {tvdb-77623}\\Season 11\\Long Way Round s01e08-e12.mkv";
-            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), "Test 12 - " + rule.Message);
+            Assert.True(filePath.IsMatch(rule.FileToMatchRegEx), "Test 1 - " + rule.Message);
 
             filePath = "\\Z:\\_TV\\The Queen's Christmas Broadcast {tvdb-359422}\\Season 1\\The Queen's Christmas Broadcast s01e2015 2015 [HDTV-720p].mp4";
+            Assert.True(filePath.IsMatch(rule.FileToMatchRegEx), "Test 2 - " + rule.Message);
+
+            filePath = "X:\\_TV\\Cheers {tvdb-77623}\\Season 11\\Cheers s11e26-e28 One for the Road [SDTV].avi";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), "Test 3 - " + rule.Message);
+
+            filePath = "X:\\_TV\\Cheers {tvdb-77623}\\Season 11\\Cheers s11e26e27 One for the Road [SDTV].avi";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), "Test 4 - " + rule.Message);
+
+            filePath = "X:\\_TV\\Cheers {tvdb-77623}\\Season 11\\Cheers s11.e26-e28 One for the Road [SDTV].avi";
+            Assert.False(filePath.IsMatch(rule.FileRuleRegEx), "Test 5 - " + rule.Message);
+
+            filePath = "X:\\_TV\\Cheers {tvdb-77623}\\Season 11\\Cheers s11e26f27 One for the Road [SDTV].avi";
+            Assert.False(filePath.IsMatch(rule.FileRuleRegEx), "Test 6 - " + rule.Message);
+
+            filePath = "X:\\_TV\\The Late Late Show with James Corden {tvdb-292421}\\Season 1\\The Late Late Show with James Corden 2015-03-23 [HDTV-720p].mkv";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), "Test 7 - " + rule.Message);
+
+            filePath = "X:\\_Movies (non-tmdb)\\Blood Brothers (1989)\\Example 1-behindthescenes.mkv";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), "Test 8 - " + rule.Message);
+
+            filePath = "X:\\_TV\\The Late Late Show with James Corden {tvdb-292421}\\Season 1\\The Late Late Show with James Corden 20150323 [HDTV-720p].mkv";
+            Assert.False(filePath.IsMatch(rule.FileRuleRegEx), "Test 9 - " + rule.Message);
+
+            filePath = "Z:\\_TV\\Tom and Jerry {tvdb-72860}\\Season 1940\\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), "Test 10 - " + rule.Message);
+
+            filePath = "X:\\_TV\\Cheers {tvdb-77623}\\Season 11\\Long Way Round s01e08.mkv";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), "Test 11 - " + rule.Message);
+
+            filePath = "X:\\_TV\\Cheers {tvdb-77623}\\Season 11\\Long Way Round s01e108e109.mkv";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), "Test 12 - " + rule.Message);
+
+            filePath = "X:\\_TV\\Cheers {tvdb-77623}\\Season 11\\Long Way Round s01e08-e12.mkv";
             Assert.True(filePath.IsMatch(rule.FileRuleRegEx), "Test 13 - " + rule.Message);
+
+            filePath = "\\Z:\\_TV\\The Queen's Christmas Broadcast {tvdb-359422}\\Season 1\\The Queen's Christmas Broadcast s01e2015 2015 [HDTV-720p].mp4";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), "Test 14 - " + rule.Message);
+
+             filePath = "Z:\\_TV\\Tom and Jerry {tvdb-72860}\\Season 1940\\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), "Test 15 - " + rule.Message);
         }
 
         /// <summary>
