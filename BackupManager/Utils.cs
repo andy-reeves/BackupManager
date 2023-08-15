@@ -1533,7 +1533,7 @@ namespace BackupManager
             }
         }
 
-        private static void DeleteEmptyDirectories(string directory, List<string> list)
+        private static void DeleteEmptyDirectories(string directory, List<string> list, string rootDirectory)
         {
             Trace("DeleteEmptyDirectories enter");
 
@@ -1541,7 +1541,7 @@ namespace BackupManager
             {
                 foreach (var subDirectory in Directory.EnumerateDirectories(directory))
                 {
-                    DeleteEmptyDirectories(subDirectory, list);
+                    DeleteEmptyDirectories(subDirectory, list, rootDirectory);
                 }
 
                 var entries = Directory.EnumerateFileSystemEntries(directory);
@@ -1549,10 +1549,12 @@ namespace BackupManager
                 if (!entries.Any())
                 {
                     try
-                    {
-                        Trace($"Deleting empty folder {directory}");
-                        list.Add(directory);
-                        Directory.Delete(directory);
+                    { if (directory != rootDirectory)
+                        {
+                            Trace($"Deleting empty folder {directory}");
+                            list.Add(directory);
+                            Directory.Delete(directory);
+                        }
                     }
                     catch (UnauthorizedAccessException) { }
                     catch (DirectoryNotFoundException) { }
@@ -1580,7 +1582,7 @@ namespace BackupManager
 
             List<string> listOfDirectoriesDeleted = new List<string>();
 
-            DeleteEmptyDirectories(directory, listOfDirectoriesDeleted);
+            DeleteEmptyDirectories(directory, listOfDirectoriesDeleted, directory);
 
             Trace("DeleteEmptyDirectories exit");
             return listOfDirectoriesDeleted.ToArray();

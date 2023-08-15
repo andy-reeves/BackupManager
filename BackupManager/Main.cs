@@ -42,7 +42,7 @@ namespace BackupManager
                          Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManagerTrace.log"),
                          "myListener"));
 
-            backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "BackupMgrTest");
+            backupDiskTextBox.Text = "\\\\nas1\\assets1\\_Test\\BackupDisks\\backup 1 parent";
 #else
             backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
 #endif
@@ -163,8 +163,14 @@ namespace BackupManager
             Utils.LogWithPushover(BackupAction.CheckBackupDisk, text);
 
             // put the latest speed tests into the BackupDisk xml
-            disk.LastReadSpeed = Utils.FormatSpeed(readSpeed);
-            disk.LastWriteSpeed = Utils.FormatSpeed(writeSpeed);
+            if (readSpeed > 0)
+            {
+                disk.LastReadSpeed = Utils.FormatSpeed(readSpeed);
+            }
+            if (writeSpeed > 0)
+            {
+                disk.LastWriteSpeed = Utils.FormatSpeed(writeSpeed);
+            }
 
             if (disk.Free < Utils.ConvertMBtoBytes(mediaBackup.MinimumCriticalBackupDiskSpace))
             {
@@ -750,7 +756,7 @@ namespace BackupManager
                                         if (!Regex.IsMatch(file, rule.FileRuleRegEx))
                                         {
                                             Utils.Trace($"File {file} matched by {rule.FileToMatchRegEx} but doesn't match {rule.FileRuleRegEx}");
-                                            Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High, $"{file} - {rule.Message}");
+                                            Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High, $"{rule.Name} {rule.Message} {file}");
                                         }
                                     }
                                 }

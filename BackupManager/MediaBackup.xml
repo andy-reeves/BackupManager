@@ -28,35 +28,17 @@
   <DiskSpeedTests>false</DiskSpeedTests>
   <Monitors>
     <Monitor>
-      <Name>Plex</Name>
-      <Url></Url>
+      <Url />
       <Timeout>30</Timeout>
       <ProcessToKill>plex media server</ProcessToKill>
       <ApplicationToStart>"%ProgramFiles(x86)%\Plex\Plex Media Server\Plex Media Server.exe"</ApplicationToStart>
+      <Name>Plex</Name>
+      <Port>0</Port>
     </Monitor>
   </Monitors>
   <MasterFolders>
     <!-- List each UNC path that you want to scan for files to backup here -->
-    <MasterFolder>\\nas1\assets1</MasterFolder>
-    <MasterFolder>\\nas1\assets2</MasterFolder>
-    <MasterFolder>\\nas1\assets3</MasterFolder>
-    <MasterFolder>\\nas1\assets4</MasterFolder>
-    <MasterFolder>\\nas2\assets1</MasterFolder>
-    <MasterFolder>\\nas2\assets2</MasterFolder>
-    <MasterFolder>\\nas2\assets3</MasterFolder>
-    <MasterFolder>\\nas2\assets4</MasterFolder>
-    <MasterFolder>\\nas3\assets1</MasterFolder>
-    <MasterFolder>\\nas3\assets2</MasterFolder>
-    <MasterFolder>\\nas3\assets3</MasterFolder>
-    <MasterFolder>\\nas3\assets4</MasterFolder>
-    <MasterFolder>\\nas4\assets1</MasterFolder>
-    <MasterFolder>\\nas4\assets2</MasterFolder>
-    <MasterFolder>\\nas4\assets3</MasterFolder>
-    <MasterFolder>\\nas4\assets4</MasterFolder>
-    <MasterFolder>\\nas5\assets1</MasterFolder>
-    <MasterFolder>\\nas5\assets2</MasterFolder>
-    <MasterFolder>\\nas5\assets3</MasterFolder>
-    <MasterFolder>\\nas5\assets4</MasterFolder>
+    <MasterFolder>\\nas1\assets1\_Test</MasterFolder>
   </MasterFolders>
   <IndexFolders>
     <!-- These are the subfolders that will be searched in the shares above -->
@@ -83,14 +65,7 @@
   </FilesToDelete>
   <DisksToSkipOnRestore>
     <DiskToSkip>Backup 1</DiskToSkip>
-    <DiskToSkip>Backup 2</DiskToSkip>
-    <DiskToSkip>Backup 3</DiskToSkip>
-    <DiskToSkip>Backup 4</DiskToSkip>
   </DisksToSkipOnRestore>
-   <FilesToDelete>
-    <FilesToDeleteRegEx>._.DS_Store</FilesToDeleteRegEx>
-    <FilesToDeleteRegEx>.DS_Store</FilesToDeleteRegEx>
-  </FilesToDelete>
   <FileRules>
     <FileRule>
       <FileToMatchRegEx>^.*\\_TV(\s\(non-tvdb\))?\\.*$</FileToMatchRegEx>
@@ -183,23 +158,33 @@
       <Name>Rule 15</Name>
     </FileRule>
   </FileRules>
+  <DisksToSkipOnRestore />
   <BackupFiles>
-    <!-- Sample BackupFile entries -->
     <BackupFile>
-      <Path>The Unit\The Unit Season 1\The Unit s01.e01.mkv</Path>
-      <MasterFolder>\\reevesandyc6cc\testdata</MasterFolder>
-      <IndexFolder>_TV Series</IndexFolder>
-      <LastWriteTime>2016-08-31T20:23:12.4340183+01:00</LastWriteTime>
-      <Length>27</Length>
-      <Hash>736386c78791fe1c4decd71b63150163</Hash>
-    </BackupFile>
-    <BackupFile>
-      <Path>The Unit\The Unit Season 1\The Unit s01.e02.mkv</Path>
-      <MasterFolder>\\reevesandyc6cc\testdata</MasterFolder>
-      <IndexFolder>_TV Series</IndexFolder>
-      <LastWriteTime>2016-08-31T20:23:12.4340183+01:00</LastWriteTime>
-      <Length>27</Length>
-      <Hash>736386c78791fe1c4decd71b63150163</Hash>
+      <Path>a (2023)\b (2023).txt</Path>
+      <MasterFolder>\\nas1\assets1\_Test</MasterFolder>
+      <IndexFolder>_Movies</IndexFolder>
+      <LastWriteTime>2023-08-15T10:01:11.658726+01:00</LastWriteTime>
+      <Length>14</Length>
+      <Hash>7d3435a2f9faa4649ca3064d505facbc</Hash>
+      <DiskChecked>2023-08-15</DiskChecked>
+      <Disk>backup 2</Disk>
     </BackupFile>
   </BackupFiles>
+  <BackupDisks>
+    <BackupDisk>
+      <Name>backup 1</Name>
+      <Checked>2023-08-15</Checked>
+      <Capacity>11995171454976</Capacity>
+      <TotalFiles>0</TotalFiles>
+      <Free>318751838208</Free>
+    </BackupDisk>
+    <BackupDisk>
+      <Name>backup 2</Name>
+      <Checked>2023-08-15</Checked>
+      <Capacity>11995171454976</Capacity>
+      <TotalFiles>1</TotalFiles>
+      <Free>318751838208</Free>
+    </BackupDisk>
+  </BackupDisks>
 </MediaBackup>
