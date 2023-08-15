@@ -1550,5 +1550,41 @@ namespace BackupManager
 
             Utils.Trace("stopProcessButton_Click exit");
         }
+
+        private void listFilesWithDuplicateContentHashcodesButton_Click(object sender, EventArgs e)
+        {
+            Utils.Log("Checking for files with Duplicate ContentsHash");
+
+            mediaBackup.ClearFlags();
+
+            foreach (BackupFile f in mediaBackup.BackupFiles)
+            {
+                string fullPath = f.FullPath;
+
+                if (fullPath.StartsWith("\\\\nas2\\assets3\\_Backup") ||
+                    fullPath.StartsWith("\\\\nas2\\assets3\\_Other") ||
+                    fullPath.StartsWith("\\\\nas2\\assets3\\_From Mum") ||
+                    fullPath.StartsWith("\\\\nas2\\assets3\\_Software") ||
+                    fullPath.EndsWith(".srt"))
+                {
+                    f.Flag = true;
+                }
+            }
+
+            for (int i = 0; i < mediaBackup.BackupFiles.Count; i++)
+            {
+                BackupFile a = mediaBackup.BackupFiles[i];
+                
+                for (int j = i+1; j < mediaBackup.BackupFiles.Count; j++)
+                {
+                    BackupFile b = mediaBackup.BackupFiles[j];
+                    if (!a.Flag && !b.Flag && a.Length != 0 && (b.ContentsHash == a.ContentsHash) && (b.FullPath != a.FullPath))
+                    {
+                        Utils.Log($"[{i+1}/{mediaBackup.BackupFiles.Count}] {a.FullPath} has copy at {b.FullPath}");
+                        b.Flag = true;
+                    }
+                }
+            }
+        }
     }
 }

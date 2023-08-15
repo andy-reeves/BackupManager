@@ -71,11 +71,12 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.listFilesComboBox = new System.Windows.Forms.ComboBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.stopProcessButton = new System.Windows.Forms.Button();
             this.processesComboBox = new System.Windows.Forms.ComboBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.listFilesComboBox = new System.Windows.Forms.ComboBox();
+            this.listFilesWithDuplicateContentHashcodesButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.hoursNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minutesNumericUpDown)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -539,6 +540,16 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "List files on Backup disk";
             // 
+            // listFilesComboBox
+            // 
+            this.listFilesComboBox.BackColor = System.Drawing.SystemColors.Window;
+            this.listFilesComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.listFilesComboBox.FormattingEnabled = true;
+            this.listFilesComboBox.Location = new System.Drawing.Point(6, 24);
+            this.listFilesComboBox.Name = "listFilesComboBox";
+            this.listFilesComboBox.Size = new System.Drawing.Size(108, 21);
+            this.listFilesComboBox.TabIndex = 54;
+            // 
             // groupBox5
             // 
             this.groupBox5.Controls.Add(this.timerButton);
@@ -586,21 +597,23 @@
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Processes/Services";
             // 
-            // listFilesComboBox
+            // listFilesWithDuplicateContentHashcodesButton
             // 
-            this.listFilesComboBox.BackColor = System.Drawing.SystemColors.Window;
-            this.listFilesComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.listFilesComboBox.FormattingEnabled = true;
-            this.listFilesComboBox.Location = new System.Drawing.Point(6, 24);
-            this.listFilesComboBox.Name = "listFilesComboBox";
-            this.listFilesComboBox.Size = new System.Drawing.Size(108, 21);
-            this.listFilesComboBox.TabIndex = 54;
+            this.listFilesWithDuplicateContentHashcodesButton.Location = new System.Drawing.Point(10, 466);
+            this.listFilesWithDuplicateContentHashcodesButton.Name = "listFilesWithDuplicateContentHashcodesButton";
+            this.listFilesWithDuplicateContentHashcodesButton.Size = new System.Drawing.Size(217, 23);
+            this.listFilesWithDuplicateContentHashcodesButton.TabIndex = 61;
+            this.listFilesWithDuplicateContentHashcodesButton.Text = "List files with duplicate content hashcodes";
+            this.toolTip.SetToolTip(this.listFilesWithDuplicateContentHashcodesButton, "List files with duplicate content hashcodes");
+            this.listFilesWithDuplicateContentHashcodesButton.UseVisualStyleBackColor = true;
+            this.listFilesWithDuplicateContentHashcodesButton.Click += new System.EventHandler(this.listFilesWithDuplicateContentHashcodesButton_Click);
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(469, 548);
+            this.Controls.Add(this.listFilesWithDuplicateContentHashcodesButton);
             this.Controls.Add(this.groupBox6);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox4);
@@ -693,6 +706,7 @@
         private System.Windows.Forms.ComboBox processesComboBox;
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.ComboBox listFilesComboBox;
+        private System.Windows.Forms.Button listFilesWithDuplicateContentHashcodesButton;
     }
 }
 

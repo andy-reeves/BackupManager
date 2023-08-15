@@ -81,7 +81,7 @@
     </FileRule>
     <FileRule>
       <FileToMatchRegEx>^.*\\_TV(\s\(non-tvdb\))?\\.*$</FileToMatchRegEx>
-      <FileRuleRegEx>^(.*\ss\d{1,4}e\d{2,3}((\s|\.)|-?e\d{2,3}(\s|\.)).*|.*\s\d{4}-\d\d-\d\d.*|.*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer)\..*)$</FileRuleRegEx>
+      <FileRuleRegEx>^(.*\ss\d{1,4}e\d{2,4}((\s|\.)|-?e\d{2,4}(\s|\.)).*|.*\s\d{4}-\d\d-\d\d.*|.*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer)\..*)$</FileRuleRegEx>
       <Message>TV files must either be a special feature or have s00e00 or yyyy-mm-dd in the file name</Message>
       <Name>Rule 3</Name>
     </FileRule>

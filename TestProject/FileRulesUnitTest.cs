@@ -89,6 +89,9 @@ namespace BackupManager.TestProject
 
             filePath = "X:\\_TV\\Cheers {tvdb-77623}\\Season 11\\Long Way Round s01e08-e12.mkv";
             Assert.True(filePath.IsMatch(rule.FileRuleRegEx), "Test 12 - " + rule.Message);
+
+            filePath = "\\Z:\\_TV\\The Queen's Christmas Broadcast {tvdb-359422}\\Season 1\\The Queen's Christmas Broadcast s01e2015 2015 [HDTV-720p].mp4";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), "Test 13 - " + rule.Message);
         }
 
         /// <summary>

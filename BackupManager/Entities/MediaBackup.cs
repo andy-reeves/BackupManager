@@ -450,6 +450,9 @@
             return indexFolderAndRelativePath.Contains(path);
         }
 
+        /// <summary>
+        /// Sets the Flag to False on on BackupFiles
+        /// </summary>
         public void ClearFlags()
         {
             foreach (BackupFile backupFile in BackupFiles)
