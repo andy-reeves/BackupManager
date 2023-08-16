@@ -745,7 +745,7 @@ namespace BackupManager
                                 // RegEx file name rules
                                 foreach (FileRule rule in mediaBackup.FileRules)
                                 {
-                                    if (Regex.IsMatch(file, rule.FileToMatchRegEx))
+                                    if (Regex.IsMatch(file, rule.FileDiscoveryRegEx))
                                     {
                                         if (!rule.Matched)
                                         {
@@ -754,9 +754,9 @@ namespace BackupManager
                                         }
 
                                         // if it does then the second regex must be true
-                                        if (!Regex.IsMatch(file, rule.FileRuleRegEx))
+                                        if (!Regex.IsMatch(file, rule.FileTestRegEx))
                                         {
-                                            Utils.Trace($"File {file} matched by {rule.FileToMatchRegEx} but doesn't match {rule.FileRuleRegEx}");
+                                            Utils.Trace($"File {file} matched by {rule.FileDiscoveryRegEx} but doesn't match {rule.FileTestRegEx}");
                                             Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High, $"{rule.Name} {rule.Message} {file}");
                                         }
                                     }

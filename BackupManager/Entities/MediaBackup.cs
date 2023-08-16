@@ -580,9 +580,10 @@
             text = string.Empty;
             foreach (FileRule rule in FileRules)
             {
+                text += $"FileRule.Name: {rule.Number}\n";
                 text += $"FileRule.Name: {rule.Name}\n";
-                text += $"FileRule.FileToMatchRegEx: {rule.FileToMatchRegEx}\n";
-                text += $"FileRule.FileRuleRegEx: {rule.FileRuleRegEx}\n";
+                text += $"FileRule.FileDiscoveryRegEx: {rule.FileDiscoveryRegEx}\n";
+                text += $"FileRule.FileTestRegEx: {rule.FileTestRegEx}\n";
                 text += $"FileRule.Message: {rule.Message}\n";
             }
             parameterText = $"FileRules:\n{text}";

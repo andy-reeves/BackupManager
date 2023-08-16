@@ -35,7 +35,6 @@ namespace BackupManager.TestProject
                     string[]a = ruleNumberTestNumber.Split(".");
                     
                     Assert.True(a.Length == 2);
-                    
 
                     string ruleNumber = a[0];
                     string testNumber = a[1];
@@ -47,7 +46,7 @@ namespace BackupManager.TestProject
                     FileRule? rule = mediaBackup.FileRules.SingleOrDefault(p => p.Number == ruleNumber);
                     Assert.NotNull(rule);
 
-                    string regEx = testOrDiscovery.StartsWith("T") ? rule.FileRuleRegEx : rule.FileToMatchRegEx;
+                    string regEx = testOrDiscovery.StartsWith("T") ? rule.FileTestRegEx : rule.FileDiscoveryRegEx;
 
                     if (expectedResult)
                     {

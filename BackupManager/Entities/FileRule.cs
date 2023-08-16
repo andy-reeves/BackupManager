@@ -5,14 +5,14 @@ namespace BackupManager.Entities
     public class FileRule
     {
         /// <summary>
-        /// If the file path matches this then it must match FileRuleRegEx
+        /// If the file path matches this then it must match FileTestRegEx
         /// </summary>
-        public string FileToMatchRegEx;
+        public string FileDiscoveryRegEx;
 
         /// <summary>
-        /// If the file path matches FileToMatchRegEx then it must match this
+        /// If the file path matches FileDiscoveryRegEx then it must match this
         /// </summary>
-        public string FileRuleRegEx;
+        public string FileTestRegEx;
 
         /// <summary>
         /// The message to display if the rule is not matched
