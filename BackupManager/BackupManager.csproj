@@ -71,6 +71,7 @@
     <Compile Include="Entities\BackupFile.cs" />
     <Compile Include="Entities\FileRule.cs" />
     <Compile Include="Entities\Monitor.cs" />
+    <Compile Include="Entities\Rules.cs" />
     <Compile Include="Extensions\IntegerExtensions.cs" />
     <Compile Include="Main.cs">
       <SubType>Form</SubType>
@@ -120,6 +121,7 @@
   <ItemGroup>
     <Content Include="BackupManager.ico" />
     <Content Include="BackupManager.png" />
+    <Content Include="Rules.xml" />
     <Content Include="MediaBackup.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

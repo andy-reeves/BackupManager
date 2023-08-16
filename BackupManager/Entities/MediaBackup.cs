@@ -24,7 +24,7 @@
         [XmlArrayItem("FilesToDeleteRegEx")]
         public Collection<string> FilesToDelete;
 
-        [XmlArrayItem("FileRule")]
+        [XmlIgnore()]
         public Collection<FileRule> FileRules;
 
         [XmlArrayItem("DiskToSkip")]
@@ -185,6 +185,14 @@
                 mediaBackup.RemoveFilesWithFlag(true, false);
                 mediaBackup.Save();
                 mediaBackup.ClearFlags();
+            }
+
+            // Attempt to load Rules.xml
+            Rules rules = Rules.Load(Path.Combine(new FileInfo(path).DirectoryName, "Rules.xml"));
+
+            if (rules != null)
+            {
+                mediaBackup.FileRules = rules.FileRules;
             }
 
             return mediaBackup;
@@ -572,6 +580,7 @@
             text = string.Empty;
             foreach (FileRule rule in FileRules)
             {
+                text += $"FileRule.Name: {rule.Name}\n";
                 text += $"FileRule.FileToMatchRegEx: {rule.FileToMatchRegEx}\n";
                 text += $"FileRule.FileRuleRegEx: {rule.FileRuleRegEx}\n";
                 text += $"FileRule.Message: {rule.Message}\n";
