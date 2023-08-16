@@ -93,7 +93,7 @@
     </FileRule>
     <FileRule>
       <FileToMatchRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t(m|v)db\))?\\.*$</FileToMatchRegEx>
-      <FileRuleRegEx>(?&lt;!\.)\.(m(kv|p(4|e?g))|ts|avi)$</FileRuleRegEx>
+      <FileRuleRegEx>(?&lt;!\.)\.(m(kv|p(4|e?g))|ts|avi|srt)$</FileRuleRegEx>
       <Message>Movies, Comedy, Concerts and TV files must not have double '.' before the extension</Message>
       <Name>Rule 16</Name>
     </FileRule>

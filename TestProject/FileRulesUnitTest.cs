@@ -437,6 +437,10 @@ namespace BackupManager.TestProject
 
             filePath = "\\\\nas1\\assets1\\_TV\\Mr Benn {tvdb-72516}\\As If By Magic...The Story Behind Mr Benn-featurette.mkv";
             Assert.True(filePath.IsMatch(rule.FileRuleRegEx), "Test 9 - " + rule.Message);
+
+            filePath = "X:\\_Movies\\Beck 12 The Loner (2002)\\Beck 12 The Loner (2002) {tmdb-263120} [WEBRip-1080p][AAC 2.0][h264].es.srt";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), "Test 10 - " + rule.Message);
+
         }
     }
 }
