@@ -96,8 +96,11 @@ namespace BackupManager.TestProject
             filePath = "\\Z:\\_TV\\The Queen's Christmas Broadcast {tvdb-359422}\\Season 1\\The Queen's Christmas Broadcast s01e2015 2015 [HDTV-720p].mp4";
             Assert.True(filePath.IsMatch(rule.FileRuleRegEx), "Test 14 - " + rule.Message);
 
-             filePath = "Z:\\_TV\\Tom and Jerry {tvdb-72860}\\Season 1940\\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv";
+            filePath = "Z:\\_TV\\Tom and Jerry {tvdb-72860}\\Season 1940\\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv";
             Assert.True(filePath.IsMatch(rule.FileRuleRegEx), "Test 15 - " + rule.Message);
+
+            filePath = "Z:\\_TV\\Tom and Jerry {tvdb-72860}\\Season 1940\\Tom and Jerry s1940e2015 Puss Gets The Boot [SDTV].mkv";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), "Test 16 - " + rule.Message);
         }
 
         /// <summary>
@@ -395,6 +398,9 @@ namespace BackupManager.TestProject
 
             filePath = "Q:\\_Comedy\\Rhod Gilbert and the Award-Winning Mince Pie (2009)\\The Audience-short.mkv";
             Assert.True(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
+
+            filePath = "Q:\\_Comedy\\Rhod Gilbert and the Award-Winning Mince Pie (2009)\\The Audience-short..mkv";
+            Assert.False(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
         }
     }
 }

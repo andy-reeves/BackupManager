@@ -10,6 +10,7 @@ namespace BackupManager
     using BackupManager.Entities;
     using System.Diagnostics;
     using System.Text.RegularExpressions;
+    using System.Text;
 
     public partial class Main : Form
     {
@@ -1571,20 +1572,82 @@ namespace BackupManager
                 }
             }
 
+            BackupFile backupFileToDelete;
+            long length = 0;
+
+            StringBuilder sb = new StringBuilder();
+
             for (int i = 0; i < mediaBackup.BackupFiles.Count; i++)
             {
                 BackupFile a = mediaBackup.BackupFiles[i];
-                
-                for (int j = i+1; j < mediaBackup.BackupFiles.Count; j++)
+
+                for (int j = i + 1; j < mediaBackup.BackupFiles.Count; j++)
                 {
                     BackupFile b = mediaBackup.BackupFiles[j];
+                    backupFileToDelete = null;
+
                     if (!a.Flag && !b.Flag && a.Length != 0 && (b.ContentsHash == a.ContentsHash) && (b.FullPath != a.FullPath))
                     {
-                        Utils.Log($"[{i+1}/{mediaBackup.BackupFiles.Count}] {a.FullPath} has copy at {b.FullPath}");
+                        Utils.Log($"[{i + 1}/{mediaBackup.BackupFiles.Count}] {a.FullPath} has copy at {b.FullPath}");
                         b.Flag = true;
+
+                        if (a.FullPath.Contains("\\_Pictures"))
+                        {
+                            if (a.FileName.Contains("IMG_") && !b.FileName.Contains("IMG_"))
+                            {
+                                backupFileToDelete = a;
+                            }
+                            else if (!a.FileName.Contains("IMG_") && b.FileName.Contains("IMG_"))
+                            {
+
+                                backupFileToDelete = b;
+                            }
+
+                            else if (a.FileName.Contains("SAM_") && !b.FileName.Contains("SAM_"))
+                            {
+                                backupFileToDelete = a;
+                            }
+                            else if (!a.FileName.Contains("SAM_") && b.FileName.Contains("SAM_"))
+                            {
+
+                                backupFileToDelete = b;
+                            }
+                            else if (a.FileName.Contains("(") && !b.FileName.Contains("("))
+                            {
+                                backupFileToDelete = a;
+                            }
+                            else if (!a.FileName.Contains("(") && b.FileName.Contains("("))
+                            {
+                                backupFileToDelete = b;
+                            }
+                            else if (a.FileName.Contains("Copy") && !b.FileName.Contains("Copy"))
+                            {
+                                backupFileToDelete = a;
+                            }
+                            else if (!a.FileName.Contains("Copy") && b.FileName.Contains("Copy"))
+                            {
+                                backupFileToDelete = b;
+                            }
+
+                            else if (a.FileName.Length <= b.FileName.Length)
+                            {
+                                backupFileToDelete = b;
+                            }
+                            if (backupFileToDelete != null)
+                            {
+                                Utils.Log($"delete {backupFileToDelete.FullPath}");
+                                sb.AppendLine($"DEL /P \"{backupFileToDelete.FullPath}\"");
+                                length += backupFileToDelete.Length;
+                            }
+                        }
                     }
                 }
             }
+
+            Utils.Log($"Total size of files to delete is {Utils.FormatSize(length)}");
+            Utils.Log(sb.ToString());
+
+            Utils.Log("Finshed checking for files with Duplicate ContentsHash");
         }
     }
 }
