@@ -13,6 +13,14 @@ namespace BackupManager.TestProject
             mediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)), localMediaXml));
         }
 
+
+        [Fact]
+        public void FileRuleTests()
+        {
+
+
+        }
+
         /// <summary>
         /// Path must contain tvdb or tmdb
         /// </summary>

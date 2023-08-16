@@ -1,0 +1,10 @@
+﻿# TestNumber, RuleNumber, DiscoveryRule/TestRule, True/False, Path
+1,1,TestRule,True, "X:\\_TV\\Chernobyl {tvdb-360893}\\Season 1\\Chernobyl s01e01 12345 [Bluray-2160p Remux].mkv"
+2,1,TestRule,False,"X:\\_TV\\Chernobyl {tdb-360893}\\Season 1\\Chernobyl s01e01 12345 [Bluray-2160p Remux].mkv"
+3,2,TestRule,True, "X:\\_TV\\Chernobyl {tvdb-360893}\\Season 1\\Chernobyl s01e01 12345 [Bluray-2160p Remux].mkv"
+
+
+
+
+
+
