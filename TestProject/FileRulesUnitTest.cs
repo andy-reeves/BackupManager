@@ -28,13 +28,21 @@ namespace BackupManager.TestProject
                     cols[i] = cols[i].TrimStart(new char[] { ' ', '"' }).TrimEnd(new char[] { ' ', '"', '\r', '\n' });
                 }
 
-                if (!cols[0].StartsWith("#") && cols.Length == 5)
+                if (!cols[0].StartsWith("#") && cols.Length == 4)
                 {
-                    string testNumber = cols[0];
-                    string ruleNumber = cols[1];
-                    string testOrDiscovery = cols[2];
-                    bool expectedResult = Convert.ToBoolean(cols[3]);
-                    string testPath = cols[4];
+                    string ruleNumberTestNumber = cols[0];
+                    
+                    string[]a = ruleNumberTestNumber.Split(".");
+                    
+                    Assert.True(a.Length == 2);
+                    
+
+                    string ruleNumber = a[0];
+                    string testNumber = a[1];
+
+                    string testOrDiscovery = cols[1];
+                    bool expectedResult = Convert.ToBoolean(cols[2]);
+                    string testPath = cols[3];
 
                     FileRule? rule = mediaBackup.FileRules.SingleOrDefault(p => p.Number == ruleNumber);
                     Assert.NotNull(rule);

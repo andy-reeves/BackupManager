@@ -1,116 +1,195 @@
-﻿# TestNumber | RuleNumber | DiscoveryRule/TestRule| True/False | Path
- 1.1  |  1 | T | True  | "X:\_TV\Chernobyl {tvdb-360893}\Season 1\Chernobyl s01e01 12345 [Bluray-2160p Remux].mkv"
- 1.2  |  1 | T | False | "X:\_TV\Chernobyl {tdb-360893}\Season 1\Chernobyl s01e01 12345 [Bluray-2160p Remux].mkv"
+﻿# RuleNumber.TestNumber | DiscoveryRule/TestRule | True/False | Path
 
- 2.1  |  2 | T | True  | "X:\_TV\Chernobyl {tvdb-360893}\Season 1\Chernobyl s01e01 12345 [Bluray-2160p Remux].mkv"
- 2.2  |  2 | T | False | "X:\_TV\Chernobyl {tvdb-360893}\Season 1\Chernobyl s01e01 TBA [Bluray-2160p Remux].mkv"
-              
- 3.1  |  3 | D | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv"
- 3.2  |  3 | D | True  | "Z:\_TV\The Queen's Christmas Broadcast {tvdb-359422}\Season 1\The Queen's Christmas Broadcast s01e2015 2015 [HDTV-720p].mp4"
- 3.3  |  3 | T | True  | "X:\_TV\Cheers {tvdb-77623}\Season 11\Cheers s11e26-e28 One for the Road [SDTV].avi"          
- 3.4  |  3 | T | True  | "X:\_TV\Cheers {tvdb-77623}\Season 11\Cheers s11e26e27 One for the Road [SDTV].avi"        
- 3.5  |  3 | T | False | "X:\_TV\Cheers {tvdb-77623}\Season 11\Cheers s11.e26-e28 One for the Road [SDTV].avi"
- 3.6  |  3 | T | False | "X:\_TV\Cheers {tvdb-77623}\Season 11\Cheers s11e26f27 One for the Road [SDTV].avi"
- 3.7  |  3 | T | True  | "X:\_TV\The Late Late Show with James Corden {tvdb-292421}\Season 1\The Late Late Show with James Corden 2015-03-23 [HDTV-720p].mkv"
- 3.8  |  3 | T | True  | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-behindthescenes.mkv"
- 3.9  |  3 | T | False | "X:\_TV\The Late Late Show with James Corden {tvdb-292421}\Season 1\The Late Late Show with James Corden 20150323 [HDTV-720p].mkv"
- 3.10 |  3 | T | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv"
- 3.11 |  3 | T | True  | "X:\_TV\Cheers {tvdb-77623}\Season 11\Long Way Round s01e08.mkv"
- 3.12 |  3 | T | True  | "X:\_TV\Cheers {tvdb-77623}\Season 11\Long Way Round s01e108e109.mkv"
- 3.13 |  3 | T | True  | "X:\_TV\Cheers {tvdb-77623}\Season 11\Long Way Round s01e08-e12.mkv"
- 3.14 |  3 | T | True  | "Z:\_TV\The Queen's Christmas Broadcast {tvdb-359422}\Season 1\The Queen's Christmas Broadcast s01e2015 2015 [HDTV-720p].mp4"
- 3.15 |  3 | T | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv"
- 3.16 |  3 | T | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e2015 Puss Gets The Boot [SDTV].mkv"
-           
- 4.1  |  4 | D | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv"
- 4.2  |  4 | T | True  | "X:\_TV\Chernobyl {tvdb-360893}\Season 1\Chernobyl s01e01 12345 [Bluray-2160p Remux].mkv"
- 4.3  |  4 | T | True  | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-featurette.mkv"           
- 4.4  |  4 | T | True  | "X\_TV (non-tvdb)\Das Boot (1985) {tmdb-156249}\Season 1\Das Boot (1985) s01e01 [Bluray-1080p Remux].mkv"
- 4.5  |  4 | T | False | "X:\_TV\Chernobyl {tvdb-360893}\Chernobyl s01e01 12345 [Bluray-2160p Remux].mkv"
- 4.6  |  4 | T | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv"
-           
- 5.1  |  5 | T | True  | "X:\_Movies\12 Angry Men (1957)\12 Angry Men (1957) {tmdb-389} {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
- 5.2  |  5 | T | True  | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-scene.mkv"
- 5.3  |  5 | T | False | "X:\_Movies\12 Angry Men (1957)\12 Angry Men (1957) {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
+# TV files must contain {tvdb-xxxxxxx} or {tmdb-xxxxxxx} in the file name
+     
+ 1.1  | T | True  | "X:\_TV\Chernobyl {tvdb-360893}\Season 1\Chernobyl s01e01 12345 [Bluray-2160p Remux].mkv"
+ 1.2  | T | False | "X:\_TV\Chernobyl {tdb-360893}\Season 1\Chernobyl s01e01 12345 [Bluray-2160p Remux].mkv"
+ 1.3  | D | False | "X:\_TV (tmdb-123456})\Chernobyl {tdb-360893}\Season 1\Chernobyl s01e01 12345 [Bluray-2160p Remux].mkv"
+ 1.4  | D | True  | "X:\_TV\Chernobyl {tdb-360893}\Season 1\Chernobyl s01e01 12345 [Bluray-2160p Remux].mkv"
 
- 6.1  |  6 | T | True  | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Blood Brothers (1989).mkv"
- 6.2  |  6 | T | True  | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-featurette.mkv"
- 6.3  |  6 | T | True  | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-other.mkv"
- 6.4  |  6 | T | True  | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-interview.mkv"
- 6.5  |  6 | T | True  | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-scene.mkv"
- 6.6  |  6 | T | True  | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-short.mkv"
- 6.7  |  6 | T | True  | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-deleted.mkv"
- 6.8  |  6 | T | True  | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-behindthescenes.mkv"
- 6.9  |  6 | T | True  | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-trailer.mkv"
- 6.10 |  6 | T | True  | "X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][h265].mkv"
- 6.11 |  6 | T | False | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
- 6.12 |  6 | T | False | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-behindscenes.mkv"
- 6.13 |  6 | T | False | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-trailertest.mkv"
-          
- 7.1  |  7 | D | True  | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
- 7.2  |  7 | D | False | "X:\_Movies\12 Angry Men (1957)\12 Angry Men [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
- 7.3  |  7 | T | True  | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
- 7.4  |  7 | T | False | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-MYFAVOURITE} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
-           
- 8.1  |  8 | T | True  | "X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"          
- 8.2  |  8 | T | False | "X:\_Movies\12 Angry Men (1957)\12 Angry Men.subtitles.srt"
 
- 9.1  |  9 | T | True  | "X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
- 9.2  |  9 | T | False | "X:\_Movies\12 Angry Men ()\12 Angry Men.mkv"
+# TV files must not contain TBA in the file name
+     
+ 2.1  | T | True  | "X:\_TV\Chernobyl {tvdb-360893}\Season 1\Chernobyl s01e01 12345 [Bluray-2160p Remux].mkv"
+ 2.2  | T | False | "X:\_TV\Chernobyl {tvdb-360893}\Season 1\Chernobyl s01e01 TBA [Bluray-2160p Remux].mkv"
+ 2.3  | D | True  | "X:\_TV (non-tvdb)\Chernobyl {tvdb-360893}\Season 1\Chernobyl s01e01 TBA [Bluray-2160p Remux].mkv" 
+ 2.4  | D | False | "X:\_Movies\Chernobyl {tvdb-360893}\Season 1\Chernobyl s01e01 TBA [Bluray-2160p Remux].mkv" 
+ 
+	
+# TV files must either be a special feature or have s00e00 or yyyy-mm-dd in the file name
+     
+ 3.1  | D | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv"
+ 3.2  | D | True  | "Z:\_TV\The Queen's Christmas Broadcast {tvdb-359422}\Season 1\The Queen's Christmas Broadcast s01e2015 2015 [HDTV-720p].mp4"
+ 3.3  | T | True  | "X:\_TV\Cheers {tvdb-77623}\Season 11\Cheers s11e26-e28 One for the Road [SDTV].avi"          
+ 3.4  | T | True  | "X:\_TV\Cheers {tvdb-77623}\Season 11\Cheers s11e26e27 One for the Road [SDTV].avi"        
+ 3.5  | T | False | "X:\_TV\Cheers {tvdb-77623}\Season 11\Cheers s11.e26-e28 One for the Road [SDTV].avi"
+ 3.6  | T | False | "X:\_TV\Cheers {tvdb-77623}\Season 11\Cheers s11e26f27 One for the Road [SDTV].avi"
+ 3.7  | T | True  | "X:\_TV\The Late Late Show with James Corden {tvdb-292421}\Season 1\The Late Late Show with James Corden 2015-03-23 [HDTV-720p].mkv"
+ 3.8  | T | True  | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-behindthescenes.mkv"
+ 3.9  | T | False | "X:\_TV\The Late Late Show with James Corden {tvdb-292421}\Season 1\The Late Late Show with James Corden 20150323 [HDTV-720p].mkv"
+ 3.10 | T | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv"
+ 3.11 | T | True  | "X:\_TV\Cheers {tvdb-77623}\Season 11\Long Way Round s01e08.mkv"
+ 3.12 | T | True  | "X:\_TV\Cheers {tvdb-77623}\Season 11\Long Way Round s01e108e109.mkv"
+ 3.13 | T | True  | "X:\_TV\Cheers {tvdb-77623}\Season 11\Long Way Round s01e08-e12.mkv"
+ 3.14 | T | True  | "Z:\_TV\The Queen's Christmas Broadcast {tvdb-359422}\Season 1\The Queen's Christmas Broadcast s01e2015 2015 [HDTV-720p].mp4"
+ 3.15 | T | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv"
+ 3.16 | T | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e2015 Puss Gets The Boot [SDTV].mkv"
+ 3.17 | D | False | "X:\_Movies\Chernobyl {tvdb-360893}\Season 1\Chernobyl s01e01 TBA [Bluray-2160p Remux].mkv" 
+ 
+ 
+# TV files must either be a special feature or start with the TV show name followed by a Season/Specials folder and then the file name</Message>
+     
+ 4.1  | D | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv"
+ 4.2  | T | True  | "X:\_TV\Chernobyl {tvdb-360893}\Season 1\Chernobyl s01e01 12345 [Bluray-2160p Remux].mkv"
+ 4.3  | T | True  | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-featurette.mkv"           
+ 4.4  | T | True  | "X\_TV (non-tvdb)\Das Boot (1985) {tmdb-156249}\Season 1\Das Boot (1985) s01e01 [Bluray-1080p Remux].mkv"
+ 4.5  | T | False | "X:\_TV\Chernobyl {tvdb-360893}\Chernobyl s01e01 12345 [Bluray-2160p Remux].mkv"
+ 4.6  | T | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv"
+ 4.7  | D | False | "X:\_Movies\Chernobyl {tvdb-360893}\Season 1\Chernobyl s01e01 TBA [Bluray-2160p Remux].mkv" 
+ 
+ 
+# Movies, Comedy and Concerts files must be a special feature or have {tmdb- in the file name
+     
+ 5.1  | T | True  | "X:\_Movies\12 Angry Men (1957)\12 Angry Men (1957) {tmdb-389} {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
+ 5.2  | T | True  | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-scene.mkv"
+ 5.3  | T | False | "X:\_Movies\12 Angry Men (1957)\12 Angry Men (1957) {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
+ 5.4  | D | False | "X:\_TV\Chernobyl {tvdb-360893}\Chernobyl s01e01 12345 [Bluray-2160p Remux].mkv"
+ 5.5  | D | False | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv"
+ 5.6  | D | True  | "X:\_Movies\12 Angry Men (1957)\12 Angry Men (1957) {tmdb-389} {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
+ 5.7  | D | False | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-scene.mkv"
+ 
 
-10.1  | 10 | T | True  | "X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
-10.2  | 10 | T | False | "X:\_Movies\12 Angry Men (0)\12 Angry Men.mkv"
+# Movies, Comedy and Concerts files must either be a special feature or start with the folder name in the file name
+     
+ 6.1  | T | True  | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Blood Brothers (1989).mkv"
+ 6.2  | T | True  | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-featurette.mkv"
+ 6.3  | T | True  | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-other.mkv"
+ 6.4  | T | True  | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-interview.mkv"
+ 6.5  | T | True  | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-scene.mkv"
+ 6.6  | T | True  | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-short.mkv"
+ 6.7  | T | True  | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-deleted.mkv"
+ 6.8  | T | True  | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-behindthescenes.mkv"
+ 6.9  | T | True  | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-trailer.mkv"
+ 6.10 | T | True  | "X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][h265].mkv"
+ 6.11 | T | False | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
+ 6.12 | T | False | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-behindscenes.mkv"
+ 6.13 | T | False | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-trailertest.mkv"
+ 6.14 | D | False | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv"
+ 6.15 | D | True  | "X:\_Movies\12 Angry Men (1957)\12 Angry Men (1957) {tmdb-389} {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
+ 6.16 | D | True  | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-scene.mkv"
+ 
+	
+# Movies, Comedy and Concerts files that have {edition-} specified must have a valid value in the file name
 
-11.1  | 11 | T | True  | "X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
-11.2  | 11 | T | False | "X:\_Movies\12 Angry Men (0)\12 Angry Men [Remux-1080p Proper].mkv"
+ 7.1  | D | True  | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
+ 7.2  | D | False | "X:\_Movies\12 Angry Men (1957)\12 Angry Men [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
+ 7.3  | T | True  | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
+ 7.4  | T | False | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-MYFAVOURITE} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
+ 7.5  | D | True  | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-MYFAVOURITE} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
+   
+   
+# Movies, Comedy, Concerts and TV files must not contain subtitles in the file name
+            
+ 8.1  | T | True  | "X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"          
+ 8.2  | T | False | "X:\_Movies\12 Angry Men (1957)\12 Angry Men.subtitles.srt"
+ 8.3  | D | True  | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
+ 8.4  | D | True  | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-behindscenes.mkv"
 
-12.1  | 12 | T | True  | "X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
-12.2  | 12 | T | False | "X:\_Movies\12 Angry Men (0)\12 Angry Men [Remux-1080p Proper REAL].mkv"
-          
-13.1  | 13 | T | True  | "X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
-13.2  | 13 | T | False | "X:\_Movies\12 Angry Men (0)\12 Angry Men [Remux-1080p].bob"
 
-14.1  | 14 | D | True  | "X:\_TV\Chernobyl {tdb-360893}\Season 1\Chernobyl s01e01 12345 [Bluray-2160p Remux]-other.mkv"
-14.2  | 14 | D | True  | "X:\_TV\Chernobyl {tdb-360893}\Chernobyl s01e01 12345 [Bluray-2160p Remux]-other.mkv"
-14.3  | 14 | D | True  | "X:\_TV\Chernobyl {tdb-360893}\Season 1\Chernobyl s01e01 12345 [Bluray-2160p Remux]-bobby.mkv"
-14.4  | 14 | D | True  | "X:\_TV\Chernobyl {tdb-360893}\Chernobyl s01e01 12345 [Bluray-2160p Remux]-bobby.mkv"
-14.5  | 14 | D | False | "K:\_TV\American Horror Story {tvdb-250487}\Season 1\American Horror Story s01e01 Pilot [HDTV-720p].mkv"
-14.6  | 14 | D | False | "Z:\_TV\MasterChef Australia {tvdb-92091}\Season 7\MasterChef Australia s07e34 Off-site Challenge Tokyo Tina vs. Saigon Sally [SDTV].mp4"
-14.7  | 14 | D | True  | "Z:\_TV\MasterChef Australia {tvdb-92091}\Season 7\MasterChef Australia s07e34 Off-site Challenge Tokyo Tina vs. Saigon Sally [SDTV]-other.mp4"
-14.8  | 14 | D | False | "K:\_TV\Westworld {tvdb-296762}\Season 2\Westworld s02e50 - An Evocative Location.mkv"
-14.9  | 14 | T | True  | "X:\_TV\Game of Thrones {tvdb-121361}\Reunion Special-featurette.mkv"
-14.10 | 14 | T | False | "X:\_TV\Game of Thrones {tvdb-121361}\Season 1\Reunion Special-featurette.mkv"
-14.11 | 14 | T | False | "Z:\_TV\MasterChef Australia {tvdb-92091}\Season 7\MasterChef Australia s07e34 Off-site Challenge Tokyo Tina vs. Saigon Sally [SDTV].mp4"
-14.12 | 14 | T | False | "Z:\_TV\MasterChef Australia {tvdb-92091}\Season 7\MasterChef Australia s07e34 Off-site Challenge Tokyo Tina vs. Saigon Sally [SDTV]-other.mp4"
+# Movies, Comedy, Concerts and TV files must not contain () in the file name
+      
+ 9.1  | T | True  | "X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
+ 9.2  | T | False | "X:\_Movies\12 Angry Men ()\12 Angry Men.mkv"
+ 9.3  | D | True  | "X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
+ 9.4  | D | True  | "X:\_TV (non-tvdb)\Blood Brothers (1989)\Example 1-behindscenes.mkv"
+ 9.5  | D | False | "X:\_Music\Blood Brothers (1989)\Example 1-behindscenes.mkv"
+
+
+# Movies, Comedy, Concerts and TV files must not contain (0) in the file name
+      
+10.1  | T | True  | "X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
+10.2  | T | False | "X:\_Movies\12 Angry Men (0)\12 Angry Men.mkv"
+10.3  | D | True  | "X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
+10.4  | D | True  | "X:\_TV (non-tvdb)\Blood Brothers (1989)\Example 1-behindscenes.mkv"
+10.5  | D | False | "X:\_Music\Blood Brothers (1989)\Example 1-behindscenes.mkv"
+
+
+# Movies, Comedy, Concerts and TV files must not contain Proper] in the name
+     
+11.1  | T | True  | "X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
+11.2  | T | False | "X:\_Movies\12 Angry Men (0)\12 Angry Men [Remux-1080p Proper].mkv"
+11.3  | D | True  | "X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
+11.4  | D | True  | "X:\_TV (non-tvdb)\Blood Brothers (1989)\Example 1-behindscenes.mkv"
+11.5  | D | False | "X:\_Music\Blood Brothers (1989)\Example 1-behindscenes.mkv"
+
+
+# Movies, Comedy, Concerts and TV files must not contain REAL] in the file name
+     
+12.1  | T | True  | "X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
+12.2  | T | False | "X:\_Movies\12 Angry Men (0)\12 Angry Men [Remux-1080p Proper REAL].mkv"
+12.3  | D | True  | "X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
+12.4  | D | True  | "X:\_TV (non-tvdb)\Blood Brothers (1989)\Example 1-behindscenes.mkv"
+12.5  | D | False | "X:\_Music\Blood Brothers (1989)\Example 1-behindscenes.mkv"
+
+ 
+# Movies, Comedy, Concerts and TV files must end with a valid file extension in the file name 
+
+13.1  | T | True  | "X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
+13.2  | T | False | "X:\_Movies\12 Angry Men (0)\12 Angry Men [Remux-1080p].bob"
+13.3  | D | True  | "X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
+13.4  | D | True  | "X:\_TV (non-tvdb)\Blood Brothers (1989)\Example 1-behindscenes.mkv"
+13.5  | D | False | "X:\_Music\Blood Brothers (1989)\Example 1-behindscenes.mkv"
+
+
+# TV files special features must be in the root folder of the show with a correct suffix
+      
+14.1  | D | True  | "X:\_TV\Chernobyl {tdb-360893}\Season 1\Chernobyl s01e01 12345 [Bluray-2160p Remux]-other.mkv"
+14.2  | D | True  | "X:\_TV\Chernobyl {tdb-360893}\Chernobyl s01e01 12345 [Bluray-2160p Remux]-other.mkv"
+14.3  | D | True  | "X:\_TV\Chernobyl {tdb-360893}\Season 1\Chernobyl s01e01 12345 [Bluray-2160p Remux]-bobby.mkv"
+14.4  | D | True  | "X:\_TV\Chernobyl {tdb-360893}\Chernobyl s01e01 12345 [Bluray-2160p Remux]-bobby.mkv"
+14.5  | D | False | "K:\_TV\American Horror Story {tvdb-250487}\Season 1\American Horror Story s01e01 Pilot [HDTV-720p].mkv"
+14.6  | D | False | "Z:\_TV\MasterChef Australia {tvdb-92091}\Season 7\MasterChef Australia s07e34 Off-site Challenge Tokyo Tina vs. Saigon Sally [SDTV].mp4"
+14.7  | D | True  | "Z:\_TV\MasterChef Australia {tvdb-92091}\Season 7\MasterChef Australia s07e34 Off-site Challenge Tokyo Tina vs. Saigon Sally [SDTV]-other.mp4"
+14.8  | D | False | "K:\_TV\Westworld {tvdb-296762}\Season 2\Westworld s02e50 - An Evocative Location.mkv"
+14.9  | T | True  | "X:\_TV\Game of Thrones {tvdb-121361}\Reunion Special-featurette.mkv"
+14.10 | T | False | "X:\_TV\Game of Thrones {tvdb-121361}\Season 1\Reunion Special-featurette.mkv"
+14.11 | T | False | "Z:\_TV\MasterChef Australia {tvdb-92091}\Season 7\MasterChef Australia s07e34 Off-site Challenge Tokyo Tina vs. Saigon Sally [SDTV].mp4"
+14.12 | T | False | "Z:\_TV\MasterChef Australia {tvdb-92091}\Season 7\MasterChef Australia s07e34 Off-site Challenge Tokyo Tina vs. Saigon Sally [SDTV]-other.mp4"
+14.13 | D | False | "X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
+14.14 | D | True  | "X:\_TV (non-tvdb)\Blood Brothers (1989)\Example 1-behindscenes.mkv"
+14.15 | D | False | "X:\_Music\Blood Brothers (1989)\Example 1-behindscenes.mkv"
 
 
 # Movies, Comedy, and Concerts files special features must be in the root folder of the movie with a correct suffix    
 
-15.1  | 15 | D | True  | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-other.mkv"
-15.2  | 15 | D | True  | "X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-bobby.mkv"
-15.3  | 15 | D | True  | "X:\_Movies\12 Angry Men (1957)\Other\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-other.mkv"
-15.4  | 15 | D | True  | "X:\_Movies\12 Angry Men (1957)\Other\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-bobby.mkv"
-15.5  | 15 | T | True  | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-featurette.mkv"
-15.6  | 15 | T | True  | "X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][h265]-other.mkv"
-15.7  | 15 | T | False | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-feature.mkv"
-15.8  | 15 | T | False | "X:\_Movies\12 Angry Men (1957)\Special Features\12 Angry Men Making Of-featurette.mkv"
-15.9  | 15 | T | False | "X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\Other\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][h265]-featurette.mkv"
-15.10 | 15 | T | True  | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-other.mkv"
-15.11 | 15 | T | True  | "Q:\_Comedy\Rhod Gilbert and the Award-Winning Mince Pie (2009)\The Audience-short.mkv"
-15.12 | 15 | T | False | "Q:\_Comedy\Rhod Gilbert and the Award-Winning Mince Pie (2009)\The Audience-short..mkv"
-        
+15.1  | D | True  | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-other.mkv"
+15.2  | D | True  | "X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-bobby.mkv"
+15.3  | D | True  | "X:\_Movies\12 Angry Men (1957)\Other\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-other.mkv"
+15.4  | D | True  | "X:\_Movies\12 Angry Men (1957)\Other\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-bobby.mkv"
+15.5  | T | True  | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-featurette.mkv"
+15.6  | T | True  | "X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][h265]-other.mkv"
+15.7  | T | False | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-feature.mkv"
+15.8  | T | False | "X:\_Movies\12 Angry Men (1957)\Special Features\12 Angry Men Making Of-featurette.mkv"
+15.9  | T | False | "X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\Other\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][h265]-featurette.mkv"
+15.10 | T | True  | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-other.mkv"
+15.11 | T | True  | "Q:\_Comedy\Rhod Gilbert and the Award-Winning Mince Pie (2009)\The Audience-short.mkv"
+15.12 | T | False | "Q:\_Comedy\Rhod Gilbert and the Award-Winning Mince Pie (2009)\The Audience-short..mkv"
+15.13 | D | False | "X:\_TV (non-tvdb)\Blood Brothers (1989)\Example 1-behindscenes.mkv"
+15.14 | D | False | "X:\_Music\Blood Brothers (1989)\Example 1-behindscenes.mkv"
+    
 
 # Movies, Comedy, Concerts and TV files must not have double '.' before the extension
 
-16.1  | 16 | T | False | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]..mkv"
-16.2  | 16 | T | False | "X:\_Movies\12 Angry Men (1957)\12 Angry Men [Remux-1080p]..mkv"
-16.3  | 16 | T | False | "X:\_Movies\12 Angry Men (1957)\12 Angry Men [Remux-1080p]-other..mkv"
-16.4  | 16 | T | True  | "X:\_Movies\12 Angry Men (1957)\12 Angry Men [Remux-1080p]-other.mkv"
-16.5  | 16 | T | True  | "X:\_Movies\12 Angry Men (1957)\12 Angry Men [Remux-1080p].mkv"
-16.6  | 16 | T | False | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]..mkv"
-16.7  | 16 | T | False | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].."
-16.8  | 16 | T | True  | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1..0][h264].mkv"
-16.9  | 16 | T | True  | "\\nas1\assets1\_TV\Mr Benn {tvdb-72516}\As If By Magic...The Story Behind Mr Benn-featurette.mkv"
-16.10 | 16 | T | True  | "X:\_Movies\Beck 12 The Loner (2002)\Beck 12 The Loner (2002) {tmdb-263120} [WEBRip-1080p][AAC 2.0][h264].es.srt"
-
-
+16.1  | T | False | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]..mkv"
+16.2  | T | False | "X:\_Movies\12 Angry Men (1957)\12 Angry Men [Remux-1080p]..mkv"
+16.3  | T | False | "X:\_Movies\12 Angry Men (1957)\12 Angry Men [Remux-1080p]-other..mkv"
+16.4  | T | True  | "X:\_Movies\12 Angry Men (1957)\12 Angry Men [Remux-1080p]-other.mkv"
+16.5  | T | True  | "X:\_Movies\12 Angry Men (1957)\12 Angry Men [Remux-1080p].mkv"
+16.6  | T | False | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]..mkv"
+16.7  | T | False | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].."
+16.8  | T | True  | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1..0][h264].mkv"
+16.9  | T | True  | "\\nas1\assets1\_TV\Mr Benn {tvdb-72516}\As If By Magic...The Story Behind Mr Benn-featurette.mkv"
+16.10 | T | True  | "X:\_Movies\Beck 12 The Loner (2002)\Beck 12 The Loner (2002) {tmdb-263120} [WEBRip-1080p][AAC 2.0][h264].es.srt"
+16.11 | D | True  | "X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
+16.12 | D | True  | "X:\_TV (non-tvdb)\Blood Brothers (1989)\Example 1-behindscenes.mkv"
+16.13 | D | False | "X:\_Music\Blood Brothers (1989)\Example 1-behindscenes.mkv"
