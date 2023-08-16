@@ -403,7 +403,7 @@ namespace BackupManager.TestProject
             Assert.False(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
         }
         /// <summary>
-        /// File name must not have double '.'
+        /// File name must not have double '.' before extension
         /// </summary>
         [Fact]
         public void Rule16Tests()
@@ -433,7 +433,10 @@ namespace BackupManager.TestProject
             Assert.False(filePath.IsMatch(rule.FileRuleRegEx), "Test 7 - " + rule.Message);
 
             filePath = "X:\\_Movies\\12 Angry Men (1957)\\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1..0][h264].mkv";
-            Assert.False(filePath.IsMatch(rule.FileRuleRegEx), "Test 8 - " + rule.Message);
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), "Test 8 - " + rule.Message);
+
+            filePath = "\\\\nas1\\assets1\\_TV\\Mr Benn {tvdb-72516}\\As If By Magic...The Story Behind Mr Benn-featurette.mkv";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), "Test 9 - " + rule.Message);
         }
     }
 }
