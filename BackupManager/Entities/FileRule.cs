@@ -24,6 +24,11 @@ namespace BackupManager.Entities
         /// </summary>
         public string Name;
 
+        /// <summary>
+        /// The number of the rule. Must be unique
+        /// </summary>
+        public string Number;
+
         [XmlIgnore]
         public bool Matched;
     }
