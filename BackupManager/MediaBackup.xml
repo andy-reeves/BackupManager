@@ -157,6 +157,12 @@
       <Message>Movies, Comedy, and Concerts files special features must be in the root folder of the movie with a correct suffix</Message>
       <Name>Rule 15</Name>
     </FileRule>
+    <FileRule>
+      <FileToMatchRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t(m|v)db\))?\\.*$</FileToMatchRegEx>
+      <FileRuleRegEx>^(?!.*\.\.)</FileRuleRegEx>
+      <Message>Movies, Comedy, Concerts and TV files must not havee double '.' in the name</Message>
+      <Name>Rule 16</Name>
+    </FileRule>
   </FileRules>
   <DisksToSkipOnRestore />
   <BackupFiles>

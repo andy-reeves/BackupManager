@@ -402,5 +402,38 @@ namespace BackupManager.TestProject
             filePath = "Q:\\_Comedy\\Rhod Gilbert and the Award-Winning Mince Pie (2009)\\The Audience-short..mkv";
             Assert.False(filePath.IsMatch(rule.FileRuleRegEx), rule.Message);
         }
+        /// <summary>
+        /// File name must not have double '.'
+        /// </summary>
+        [Fact]
+        public void Rule16Tests()
+        {
+            var rule = mediaBackup.FileRules.Where(p => p.Name == "Rule 16").SingleOrDefault();
+            Assert.True(rule != null, "Rule is missing");
+
+            string filePath = "X:\\_Movies\\12 Angry Men (1957)\\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]..mkv";
+            Assert.False(filePath.IsMatch(rule.FileRuleRegEx), "Test 1 - " + rule.Message);
+
+            filePath = "X:\\_Movies\\12 Angry Men (1957)\\12 Angry Men [Remux-1080p]..mkv";
+            Assert.False(filePath.IsMatch(rule.FileRuleRegEx), "Test 2 - " + rule.Message);
+
+            filePath = "X:\\_Movies\\12 Angry Men (1957)\\12 Angry Men [Remux-1080p]-other..mkv";
+            Assert.False(filePath.IsMatch(rule.FileRuleRegEx), "Test 3 - " + rule.Message);
+
+            filePath = "X:\\_Movies\\12 Angry Men (1957)\\12 Angry Men [Remux-1080p]-other.mkv";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), "Test 4 - " + rule.Message);
+
+            filePath = "X:\\_Movies\\12 Angry Men (1957)\\12 Angry Men [Remux-1080p].mkv";
+            Assert.True(filePath.IsMatch(rule.FileRuleRegEx), "Test 5 - " + rule.Message);
+
+            filePath = "X:\\_Movies\\12 Angry Men (1957)\\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]..mkv";
+            Assert.False(filePath.IsMatch(rule.FileRuleRegEx), "Test 6 - " + rule.Message);
+
+            filePath = "X:\\_Movies\\12 Angry Men (1957)\\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]..";
+            Assert.False(filePath.IsMatch(rule.FileRuleRegEx), "Test 7 - " + rule.Message);
+
+            filePath = "X:\\_Movies\\12 Angry Men (1957)\\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1..0][h264].mkv";
+            Assert.False(filePath.IsMatch(rule.FileRuleRegEx), "Test 8 - " + rule.Message);
+        }
     }
 }
