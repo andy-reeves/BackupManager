@@ -224,6 +224,7 @@ namespace BackupManager
                     // We could just let it get deleted off the backup disk and copied again next time
                     // Alternatively, find it by the contents hashcode as thats (alost guaranteed unique)
                     // and then rename it 
+                    // if we try to rename and it exists at the destination already then we delete the file instead
                     var hashToCheck = Utils.GetShortMd5HashFromFile(backupFileFullPath);
 
                     var file = mediaBackup.GetBackupFileFromContentsHashcode(hashToCheck);
@@ -232,7 +233,17 @@ namespace BackupManager
                     {
                         string destFileName = file.BackupDiskFullPath(disk.BackupPath);
                         Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal, $"Renaming {backupFileFullPath} to {destFileName}");
-                        Utils.FileMove(backupFileFullPath, destFileName);
+
+                        if (File.Exists(destFileName))
+                        {
+                            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal, $"File exists already so deleting {backupFileFullPath} instead");
+
+                            Utils.FileDelete(backupFileFullPath);
+                        }
+                        else
+                        {
+                            Utils.FileMove(backupFileFullPath, destFileName);
+                        }
 
                         // This forces a hash check on the source and backup disk files
                         Utils.Trace($"Checking hash for {file.Hash}");
