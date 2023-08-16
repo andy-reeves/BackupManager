@@ -231,7 +231,7 @@ namespace BackupManager
                     if (file != null && file.Length != 0 && file.BackupDiskNumber == 0)
                     {
                         string destFileName = file.BackupDiskFullPath(disk.BackupPath);
-                        Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, $"Renaming {backupFileFullPath} to {destFileName}");
+                        Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal, $"Renaming {backupFileFullPath} to {destFileName}");
                         Utils.FileMove(backupFileFullPath, destFileName);
 
                         // This forces a hash check on the source and backup disk files
