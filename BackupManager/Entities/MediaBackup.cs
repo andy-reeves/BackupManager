@@ -580,7 +580,7 @@
             text = string.Empty;
             foreach (FileRule rule in FileRules)
             {
-                text += $"FileRule.Name: {rule.Number}\n";
+                text += $"FileRule.Number: {rule.Number}\n";
                 text += $"FileRule.Name: {rule.Name}\n";
                 text += $"FileRule.FileDiscoveryRegEx: {rule.FileDiscoveryRegEx}\n";
                 text += $"FileRule.FileTestRegEx: {rule.FileTestRegEx}\n";
