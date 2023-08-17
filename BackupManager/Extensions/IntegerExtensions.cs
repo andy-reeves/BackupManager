@@ -11,13 +11,13 @@
         {
             string numberString = number.ToString();
 
-            if (number < 1) return numberString;
-            if (numberString.EndsWith("11") || numberString.EndsWith("12") || numberString.EndsWith("13")) return numberString + "th";
-            if (numberString.EndsWith("1")) return numberString + "st";
-            if (numberString.EndsWith("2")) return numberString + "nd";
-            if (numberString.EndsWith("3")) return numberString + "rd";
-
-            return numberString + "th";
+            return number < 1
+                ? numberString
+                : numberString.EndsWith("11") || numberString.EndsWith("12") || numberString.EndsWith("13")
+                ? numberString + "th"
+                : numberString.EndsWith("1")
+                ? numberString + "st"
+                : numberString.EndsWith("2") ? numberString + "nd" : numberString.EndsWith("3") ? numberString + "rd" : numberString + "th";
         }
     }
 }

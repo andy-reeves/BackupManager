@@ -1,5 +1,6 @@
-namespace BackupManager.TestProject
+namespace TestProject
 {
+    using BackupManager;
     using BackupManager.Entities;
 
     public class FileRulesUnitTest

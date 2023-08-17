@@ -241,7 +241,7 @@
                 return null;
             }
 
-            BackupFile file = this.BackupFiles.Where(q => q.ContentsHash == value).First();
+            BackupFile file = BackupFiles.Where(q => q.ContentsHash == value).First();
 
             Utils.Trace("GetBackupFileFromContentsHashcode exit");
             return file;
@@ -305,7 +305,7 @@
                 else
                 {
                     // check the timestamp against what we have
-                    var lastWriteTimeFromMasterFile = Utils.GetFileLastWriteTime(fullPath);
+                    DateTime lastWriteTimeFromMasterFile = Utils.GetFileLastWriteTime(fullPath);
 
                     // if the file on disk is different then check the hash 
                     if (backupFile.LastWriteTime != lastWriteTimeFromMasterFile)
@@ -472,7 +472,7 @@
         /// Removes any files that have a matching flag value as the one provided.
         public void RemoveFilesWithFlag(bool flag, bool clearHashes)
         {
-            var filesToRemove = new Collection<BackupFile>();
+            Collection<BackupFile> filesToRemove = new Collection<BackupFile>();
 
             foreach (BackupFile backupFile in BackupFiles.Where(backupFile => backupFile.Flag == flag))
             {
@@ -491,7 +491,7 @@
 
                 if (BackupFiles.Contains(backupFile))
                 {
-                    BackupFiles.Remove(backupFile);
+                    _ = BackupFiles.Remove(backupFile);
                 }
             }
         }
@@ -505,7 +505,7 @@
             DateTime oldestFileDate = DateTime.Today;
             BackupFile oldestFile = null;
 
-            foreach (var backupFile in BackupFiles)
+            foreach (BackupFile backupFile in BackupFiles)
             {
                 if (backupFile.DiskChecked.HasValue())
                 {

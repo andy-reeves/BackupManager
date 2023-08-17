@@ -66,12 +66,12 @@
             masterFoldersComboBox.Items.AddRange(masterFoldersArray);
             restoreMasterFolderComboBox.Items.AddRange(masterFoldersArray);
 
-            foreach (var disk in mediaBackup.BackupDisks)
+            foreach (BackupDisk disk in mediaBackup.BackupDisks)
             {
                 listFilesComboBox.Items.Add(disk.Name);
             }
 
-            foreach (var monitor in mediaBackup.Monitors)
+            foreach (Monitor monitor in mediaBackup.Monitors)
             {
                 processesComboBox.Items.Add(monitor.Name);
             }
@@ -153,7 +153,7 @@
 
             if (mediaBackup.DiskSpeedTests)
             {
-                Utils.DiskSpeedTest(folderToCheck, diskTestSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
+                _ = Utils.DiskSpeedTest(folderToCheck, diskTestSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
             }
 
             string text = $"Name: {disk.Name}\nTotal: {disk.CapacityFormatted}\nFree: {disk.FreeFormatted}\nRead: {Utils.FormatSpeed(readSpeed)}\nWrite: {Utils.FormatSpeed(writeSpeed)}";
@@ -224,9 +224,9 @@
                     // Alternatively, find it by the contents hashcode as thats (alost guaranteed unique)
                     // and then rename it 
                     // if we try to rename and it exists at the destination already then we delete the file instead
-                    var hashToCheck = Utils.GetShortMd5HashFromFile(backupFileFullPath);
+                    string hashToCheck = Utils.GetShortMd5HashFromFile(backupFileFullPath);
 
-                    var file = mediaBackup.GetBackupFileFromContentsHashcode(hashToCheck);
+                    BackupFile file = mediaBackup.GetBackupFileFromContentsHashcode(hashToCheck);
 
                     if (file != null && file.Length != 0 && file.BackupDiskNumber == 0)
                     {
@@ -677,11 +677,11 @@
                                               $"{masterFolder} is not writeable");
                     }
 
-                    Utils.GetDiskInfo(masterFolder, out long freeSpaceOnCurrentMasterFolder, out long totalBytesOnMasterFolderDisk);
+                    _ = Utils.GetDiskInfo(masterFolder, out long freeSpaceOnCurrentMasterFolder, out long totalBytesOnMasterFolderDisk);
 
                     if (mediaBackup.DiskSpeedTests)
                     {
-                        Utils.DiskSpeedTest(masterFolder, DiskSpeedTestFileSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
+                        _ = Utils.DiskSpeedTest(masterFolder, DiskSpeedTestFileSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
                     }
 
                     string totalBytesOnMasterFolderDiskFormatted = Utils.FormatSize(totalBytesOnMasterFolderDisk);
@@ -874,7 +874,7 @@
                 // Fire once if CheckBox is ticked
                 if (runOnTimerStartCheckBox.Checked)
                 {
-                    scheduledBackupAction.BeginInvoke(scheduledBackupAction.EndInvoke, null);
+                    _ = scheduledBackupAction.BeginInvoke(scheduledBackupAction.EndInvoke, null);
                 }
 
                 trigger = new DailyTrigger(Convert.ToInt32(hoursNumericUpDown.Value), Convert.ToInt32(minutesNumericUpDown.Value));
@@ -984,7 +984,7 @@
             long readSpeed = 0, writeSpeed = 0;
             if (mediaBackup.DiskSpeedTests)
             {
-                Utils.DiskSpeedTest(masterFolder, DiskSpeedTestFileSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
+                _ = Utils.DiskSpeedTest(masterFolder, DiskSpeedTestFileSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
             }
 
             Utils.Log($"testing {masterFolder}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
@@ -1065,7 +1065,7 @@
             {
                 if (masterFoldersComboBox.SelectedItem == null)
                 {
-                    MessageBox.Show("You must select a master folder that you'd files the files from backup disks restored for. This is typically the drive that is now failing",
+                    _ = MessageBox.Show("You must select a master folder that you'd files the files from backup disks restored for. This is typically the drive that is now failing",
                                     "Restore backup files",
                                     MessageBoxButtons.OK);
                     return;
@@ -1075,7 +1075,7 @@
 
                 if (restoreMasterFolderComboBox.SelectedItem == null)
                 {
-                    MessageBox.Show("You must select a master folder that you'd files the files from backup copied to. This is typically a new drive that will replace the failing drive",
+                    _ = MessageBox.Show("You must select a master folder that you'd files the files from backup copied to. This is typically a new drive that will replace the failing drive",
                                     "Restore backup files",
                                     MessageBoxButtons.OK);
                     return;
@@ -1101,7 +1101,7 @@
                         //we need to check the correct disk is connected and prompt if not
                         if (!EnsureConnectedBackupDisk(file.Disk))
                         {
-                            MessageBox.Show("Cannot connect to the backup drive required", "Restore backup files", MessageBoxButtons.OK);
+                            _ = MessageBox.Show("Cannot connect to the backup drive required", "Restore backup files", MessageBoxButtons.OK);
                             return;
                         }
 
@@ -1288,7 +1288,7 @@
             {
                 if (Utils.IsFolderWritable(masterFolder))
                 {
-                    Utils.DiskSpeedTest(masterFolder, DiskSpeedTestFileSize, DiskSpeedTestIterations, out long readSpeed, out long writeSpeed);
+                    _ = Utils.DiskSpeedTest(masterFolder, DiskSpeedTestFileSize, DiskSpeedTestIterations, out long readSpeed, out long writeSpeed);
                     Utils.Log($"testing {masterFolder}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
                 }
             }
@@ -1364,7 +1364,7 @@
 
         private void MonitoringTimer_Tick(object sender, EventArgs e)
         {
-            monitoringAction.BeginInvoke(monitoringAction.EndInvoke, null);
+            _ = monitoringAction.BeginInvoke(monitoringAction.EndInvoke, null);
         }
 
         private void MonitorServices()
@@ -1392,7 +1392,7 @@
                                               PushoverPriority.Normal,
                                               text);
 
-                        Utils.KillProcesses(monitor.ProcessToKill);
+                        _ = Utils.KillProcesses(monitor.ProcessToKill);
                     }
 
                     if (monitor.ApplicationToStart.HasValue())
@@ -1407,7 +1407,7 @@
 
                         if (System.IO.File.Exists(processToStart))
                         {
-                            var newProcess = Process.Start(processToStart, monitor.ApplicationToStartArguments);
+                            Process newProcess = Process.Start(processToStart, monitor.ApplicationToStartArguments);
 
                             if (newProcess == null)
                             {
@@ -1471,7 +1471,7 @@
                                           PushoverPriority.Normal,
                                           $"Stopping all '{monitor.ProcessToKill}' processes that match");
 
-                    Utils.KillProcesses(monitor.ProcessToKill);
+                    _ = Utils.KillProcesses(monitor.ProcessToKill);
                 }
 
                 if (monitor.ServiceToRestart.HasValue())
@@ -1532,7 +1532,7 @@
                                           PushoverPriority.Normal,
                                           $"Stopping all '{monitor.ProcessToKill}' processes that match");
 
-                    Utils.KillProcesses(monitor.ProcessToKill);
+                    _ = Utils.KillProcesses(monitor.ProcessToKill);
                 }
 
                 if (monitor.ServiceToRestart.HasValue())
@@ -1637,7 +1637,7 @@
                             if (backupFileToDelete != null)
                             {
                                 Utils.Log($"delete {backupFileToDelete.FullPath}");
-                                sb.AppendLine($"DEL /P \"{backupFileToDelete.FullPath}\"");
+                                _ = sb.AppendLine($"DEL /P \"{backupFileToDelete.FullPath}\"");
                                 length += backupFileToDelete.Length;
                             }
                         }

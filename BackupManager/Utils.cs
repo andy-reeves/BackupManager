@@ -280,7 +280,7 @@ namespace BackupManager
         /// </param>
         internal static void EnsureDirectories(string filePath)
         {
-            Directory.CreateDirectory(new FileInfo(filePath).DirectoryName);
+            _ = Directory.CreateDirectory(new FileInfo(filePath).DirectoryName);
         }
 
         /// <summary>
@@ -396,7 +396,7 @@ namespace BackupManager
                 return new string[] { };
             }
 
-            var directoryInfo = new DirectoryInfo(path);
+            DirectoryInfo directoryInfo = new DirectoryInfo(path);
 
             if (directoryInfo.Parent != null && AnyFlagSet(directoryInfo.Attributes, directoryAttributesToIgnore))
             {
@@ -425,10 +425,10 @@ namespace BackupManager
                                                      .Replace("?", ".")
                                                  select $"^{replace}$";
 
-            var excludeRegex = new Regex(string.Join("|", excludeFilters.ToArray()), RegexOptions.IgnoreCase);
+            Regex excludeRegex = new Regex(string.Join("|", excludeFilters.ToArray()), RegexOptions.IgnoreCase);
 
-            var pathsToSearch = new Queue<string>();
-            var foundFiles = new List<string>();
+            Queue<string> pathsToSearch = new Queue<string>();
+            List<string> foundFiles = new List<string>();
 
             pathsToSearch.Enqueue(path);
 
@@ -518,7 +518,7 @@ namespace BackupManager
 
             if (sum < byteCountToReturn)
             {
-                var byteArray = new byte[sum];
+                byte[] byteArray = new byte[sum];
                 Buffer.BlockCopy(buffer, 0, byteArray, 0, sum);
 
                 Trace("GetRemoteFileByteArray exit");
@@ -704,7 +704,7 @@ namespace BackupManager
                     parameters.Add("expire", Convert.ChangeType(expires, expires.GetTypeCode()).ToString());
                 }
 
-                using (var client = new WebClient())
+                using (WebClient client = new WebClient())
                 {
                     // ensures there's a 1s gap between messages
                     while (DateTime.UtcNow < timeLastPushoverMessageSent.AddMilliseconds(TimeDelayOnPushoverMessages))
@@ -712,7 +712,7 @@ namespace BackupManager
                         System.Threading.Thread.Sleep(TimeDelayOnPushoverMessages / 3);
                     }
 
-                    client.UploadValues(PushoverAddress, parameters);
+                    _ = client.UploadValues(PushoverAddress, parameters);
                     timeLastPushoverMessageSent = DateTime.UtcNow;
                 }
             }
@@ -743,7 +743,7 @@ namespace BackupManager
 
             try
             {
-                foreach (var process in processes)
+                foreach (Process process in processes)
                 {
                     process.Kill();
                 }
@@ -841,7 +841,7 @@ namespace BackupManager
             string actionText = Enum.GetName(typeof(BackupAction), action) + " ";
             string[] textArrayToWrite = message.Split('\n');
 
-            foreach (var line in textArrayToWrite)
+            foreach (string line in textArrayToWrite)
             {
                 if (line.HasValue())
                 {
@@ -999,7 +999,7 @@ namespace BackupManager
             }
 
             int length1 = length * 2;
-            var chArray = new char[length1];
+            char[] chArray = new char[length1];
             int num1 = startIndex;
             int index = 0;
             while (index < length1)
@@ -1071,9 +1071,9 @@ namespace BackupManager
         /// </returns>
         private static byte[] GetLocalFileByteArray(FileStream fileStream, long offset, long byteCountToReturn)
         {
-            fileStream.Seek(offset, SeekOrigin.Begin);
+            _ = fileStream.Seek(offset, SeekOrigin.Begin);
 
-            var buffer = new byte[byteCountToReturn];
+            byte[] buffer = new byte[byteCountToReturn];
 
             int count;
             int sum = 0;
@@ -1085,7 +1085,7 @@ namespace BackupManager
 
             if (sum < byteCountToReturn)
             {
-                var byteArray = new byte[sum];
+                byte[] byteArray = new byte[sum];
                 Buffer.BlockCopy(buffer, 0, byteArray, 0, sum);
                 return byteArray;
             }
@@ -1111,8 +1111,8 @@ namespace BackupManager
         private static byte[] GetLocalFileByteArray(string fileName, long offset, long byteCountToReturn)
         {
             byte[] buffer;
-            var fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-            fileStream.Seek(offset, SeekOrigin.Begin);
+            FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+            _ = fileStream.Seek(offset, SeekOrigin.Begin);
             int sum = 0;
             try
             {
@@ -1132,7 +1132,7 @@ namespace BackupManager
 
             if (sum < byteCountToReturn)
             {
-                var byteArray = new byte[sum];
+                byte[] byteArray = new byte[sum];
                 Buffer.BlockCopy(buffer, 0, byteArray, 0, sum);
                 return byteArray;
             }
@@ -1190,18 +1190,18 @@ namespace BackupManager
         /// <returns></returns>
         public static string GetProjectPath(Type startupClass)
         {
-            var assembly = startupClass.GetTypeInfo().Assembly;
-            var projectName = assembly.GetName().Name;
-            var applicationBasePath = AppContext.BaseDirectory;
-            var directoryInfo = new DirectoryInfo(applicationBasePath);
+            Assembly assembly = startupClass.GetTypeInfo().Assembly;
+            string projectName = assembly.GetName().Name;
+            string applicationBasePath = AppContext.BaseDirectory;
+            DirectoryInfo directoryInfo = new DirectoryInfo(applicationBasePath);
             do
             {
                 directoryInfo = directoryInfo.Parent;
 
-                var projectDirectoryInfo = new DirectoryInfo(directoryInfo.FullName);
+                DirectoryInfo projectDirectoryInfo = new DirectoryInfo(directoryInfo.FullName);
                 if (projectDirectoryInfo.Exists)
                 {
-                    var projectFileInfo = new FileInfo(Path.Combine(projectDirectoryInfo.FullName, projectName, $"{projectName}.csproj"));
+                    FileInfo projectFileInfo = new FileInfo(Path.Combine(projectDirectoryInfo.FullName, projectName, $"{projectName}.csproj"));
                     if (projectFileInfo.Exists)
                     {
                         return Path.Combine(projectDirectoryInfo.FullName, projectName);
@@ -1247,7 +1247,7 @@ namespace BackupManager
             for (long i = 0; i < size; i++)
             {
                 ch = Convert.ToChar(Convert.ToInt32(Math.Floor((26 * random.NextDouble()) + 65)));
-                builder.Append(ch);
+                _ = builder.Append(ch);
             }
 
             string returnValue = builder.ToString();
@@ -1495,12 +1495,12 @@ namespace BackupManager
 
             try
             {
-                foreach (var subDirectory in Directory.EnumerateDirectories(directory))
+                foreach (string subDirectory in Directory.EnumerateDirectories(directory))
                 {
                     DeleteEmptyDirectories(subDirectory, list, rootDirectory);
                 }
 
-                var entries = Directory.EnumerateFileSystemEntries(directory);
+                IEnumerable<string> entries = Directory.EnumerateFileSystemEntries(directory);
 
                 if (!entries.Any())
                 {

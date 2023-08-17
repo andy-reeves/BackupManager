@@ -38,7 +38,7 @@
             {
                 while (true)
                 {
-                    var triggerTime = DateTime.Today + TriggerHour - DateTime.Now;
+                    TimeSpan triggerTime = DateTime.Today + TriggerHour - DateTime.Now;
                     if (triggerTime < TimeSpan.Zero)
                     {
                         triggerTime = triggerTime.Add(new TimeSpan(24, 0, 0));

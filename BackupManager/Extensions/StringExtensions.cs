@@ -59,7 +59,7 @@ namespace System
                 return string.Empty;
             }
 
-            var chars = s.ToCharArray();
+            char[] chars = s.ToCharArray();
             chars[0] = char.ToUpperInvariant(chars[0]);
             return new string(chars);
         }
@@ -210,7 +210,7 @@ namespace System
         {
             if (string.IsNullOrEmpty(s)) { return string.Empty; }
 
-            var index = s.IndexOf(c);
+            int index = s.IndexOf(c);
             return index == -1 ? s : index < s.Length - 1 ? s.Substring(index + 1) : string.Empty;
         }
 
@@ -236,7 +236,7 @@ namespace System
         /// </returns>
         public static string SubstringAfter(this string s, string value, StringComparison comparisonType)
         {
-            var index = s.IndexOf(value, comparisonType);
+            int index = s.IndexOf(value, comparisonType);
             return index == -1 ? s : index < s.Length - 1 ? s.Substring(index + value.Length) : string.Empty;
         }
 
@@ -254,7 +254,7 @@ namespace System
         /// </returns>
         public static string SubstringAfterLast(this string s, char c)
         {
-            var index = s.LastIndexOf(c);
+            int index = s.LastIndexOf(c);
             return index == -1 ? s : index < s.Length - 1 ? s.Substring(index + 1) : string.Empty;
         }
 
@@ -272,7 +272,7 @@ namespace System
         /// </returns>
         public static string SubstringBefore(this string s, char c)
         {
-            var index = s.IndexOf(c);
+            int index = s.IndexOf(c);
             return index != -1 ? s.Substring(0, index) : s;
         }
 
@@ -293,7 +293,7 @@ namespace System
         /// </returns>
         public static string SubstringBefore(this string s, string value, StringComparison comparisonType)
         {
-            var index = s.IndexOf(value, comparisonType);
+            int index = s.IndexOf(value, comparisonType);
             return index != -1 ? s.Substring(0, index) : s;
         }
 
@@ -311,7 +311,7 @@ namespace System
         /// </returns>
         public static string SubstringBeforeLast(this string s, char c)
         {
-            var index = s.LastIndexOf(c);
+            int index = s.LastIndexOf(c);
             return index != -1 ? s.Substring(0, index) : s;
         }
 
@@ -332,7 +332,7 @@ namespace System
         /// </returns>
         public static string SubstringBeforeLast(this string s, string value, StringComparison comparisonType)
         {
-            var index = s.LastIndexOf(value, comparisonType);
+            int index = s.LastIndexOf(value, comparisonType);
             return index != -1 ? s.Substring(0, index) : s;
         }
 

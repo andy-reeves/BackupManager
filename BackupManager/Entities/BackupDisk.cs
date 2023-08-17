@@ -77,7 +77,7 @@
             Name = diskName;
             BackupShare = backupShare;
 
-            CheckForValidBackupShare(BackupShare);
+            _ = CheckForValidBackupShare(BackupShare);
         }
 
         /// <summary>
@@ -100,13 +100,13 @@
         /// <returns></returns>
         public bool Update(Collection<BackupFile> backupFiles)
         {
-            if (!CheckForValidBackupShare(this.BackupShare))
+            if (!CheckForValidBackupShare(BackupShare))
             {
                 return false;
             }
 
             // Now scan disk for info;
-            var result = Utils.GetDiskInfo(BackupShare, out long availableSpace, out long totalBytes);
+            bool result = Utils.GetDiskInfo(BackupShare, out long availableSpace, out long totalBytes);
 
             if (!result)
             {
