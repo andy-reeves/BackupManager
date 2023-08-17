@@ -40,7 +40,7 @@ namespace BackupManager
 
 #if DEBUG
             Trace.Listeners.Add(new TextWriterTraceListener(
-                         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManagerTrace.log"),
+                         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"),
                          "myListener"));
 
             backupDiskTextBox.Text = "\\\\nas1\\assets1\\_Test\\BackupDisks\\backup 1 parent";
@@ -1527,6 +1527,8 @@ namespace BackupManager
                                   "BackupManager stopped");
 
             Utils.Trace("Main_FormClosed exit");
+
+            Utils.BackupLogFile();
         }
 
         private void stopProcessButton_Click(object sender, EventArgs e)

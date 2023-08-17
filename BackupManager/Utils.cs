@@ -109,7 +109,7 @@ namespace BackupManager
 
 #if DEBUG
         private static readonly string LogFile = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManagerDebug.log");
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Debug.log");
 #else
         private static readonly string LogFile = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager.log");
@@ -117,6 +117,29 @@ namespace BackupManager
         #endregion
 
         #region Public Methods and Operators
+
+        public static void BackupLogFile()
+        {
+            //LogFile
+
+            // and Trace
+            string timeLog = DateTime.Now.ToString("yy-MM-dd-HH-mm-ss");
+            string suffix = string.Empty;
+
+#if DEBUG
+            suffix = "_Debug";
+#endif
+
+            string destLogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups", $"BackupManager{suffix}_{timeLog}.log");
+            FileMove(LogFile, destLogFile);
+
+            string sourceTraceFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log");
+            if (File.Exists(sourceTraceFile)) {
+                string destTraceFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups", $"BackupManager_Trace_{timeLog}.log");
+
+                FileCopy(sourceTraceFile, destTraceFile);
+            }
+        }
 
         /// <summary>
         /// Moves a specified file to a new location, providing the option to specify a new file name. Ensures the destination folder exists too.
