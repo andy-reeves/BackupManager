@@ -22,9 +22,9 @@ namespace BackupManager
     using System.Text.RegularExpressions;
 
     /// <summary>
-    /// Common Utilty fuctions in a static class
+    /// Common Utilty functions in a static class
     /// </summary>
-    public class Utils
+    public static class Utils
     {
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]

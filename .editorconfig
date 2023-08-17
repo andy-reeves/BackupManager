@@ -238,6 +238,9 @@ dotnet_diagnostic.IDE0055.severity = warning
 # IDE0059: Unnecessary assignment of a value
 dotnet_diagnostic.IDE0059.severity = warning
 
+# IDE0073: Must have file header
+dotnet_diagnostic.IDE0073.severity = warning
+
 [*.{cs,vb}]
 dotnet_style_operator_placement_when_wrapping = beginning_of_line
 tab_width = 4
