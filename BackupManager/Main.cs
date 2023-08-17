@@ -28,7 +28,6 @@
 
         private readonly Action monitoringAction;
 
-        // When the serice monitoring has been enabled this is True
         private bool serviceMonitoringRunning;
 
         #region Constructors and Destructors
@@ -51,7 +50,7 @@
 
             string localMediaXml = Path.Combine(Application.StartupPath, "MediaBackup.xml");
 
-            mediaBackup = MediaBackup.Load(System.IO.File.Exists(localMediaXml) ? localMediaXml : mediaBackupXml);
+            mediaBackup = MediaBackup.Load(File.Exists(localMediaXml) ? localMediaXml : mediaBackupXml);
 
             Utils.PushoverUserKey = mediaBackup.PushoverUserKey;
             Utils.PushoverAppToken = mediaBackup.PushoverAppToken;
