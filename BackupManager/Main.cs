@@ -202,7 +202,7 @@
                         Utils.Trace($"Checking hash for {backupFile.Hash}");
                         bool returnValue = backupFile.CheckContentHashes(disk);
 
-                        if (returnValue == false)
+                        if (!returnValue)
                         {
                             // There was an error with the hashcodes of the source file anf the file on the backup disk
                             Utils.LogWithPushover(BackupAction.CheckBackupDisk,
