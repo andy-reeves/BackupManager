@@ -79,9 +79,9 @@ namespace BackupManager
         private const string PushoverAddress = "https://api.pushover.net/1/messages.json";
         
         /// <summary>
-        /// Delay between Pushover messages
+        /// Delay between Pushover messages in milliseconds
         /// </summary>
-        private const int TimeDelayOnPushoverMessagesInSeconds = 2;
+        private const int TimeDelayOnPushoverMessages = 1000;
 
         #endregion
 
@@ -120,9 +120,9 @@ namespace BackupManager
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager.log");
 #endif
         /// <summary>
-        /// We use this to track when we sent the messages. This allows us to delay for at least 1000ms between messages
+        /// We use this to track when we sent the messages. This allows us to delay between messages
         /// </summary>
-        private static DateTime timeLastPushoverMessageSent = DateTime.UtcNow;
+        private static DateTime timeLastPushoverMessageSent = DateTime.UtcNow.AddSeconds(-60);
 
         #endregion
 
@@ -696,8 +696,8 @@ namespace BackupManager
                 { "user", PushoverUserKey },
                 { "priority", Convert.ChangeType(priority, priority.GetTypeCode()).ToString() },
                 { "message", message },
-                { "title", title } ,
-                { "timestamp", timeStamp }
+                { "title", title }// ,
+               // { "timestamp", timeStamp }
                 };
 
                 if (priority == PushoverPriority.Emergency)
@@ -726,9 +726,9 @@ namespace BackupManager
                 using (var client = new WebClient())
                 {
                     // ensures there's a 1s gap between messages
-                    while (DateTime.UtcNow < timeLastPushoverMessageSent.AddSeconds(TimeDelayOnPushoverMessagesInSeconds))
+                    while (DateTime.UtcNow < timeLastPushoverMessageSent.AddMilliseconds(TimeDelayOnPushoverMessages))
                     {
-                        System.Threading.Thread.Sleep(1000);
+                        System.Threading.Thread.Sleep(TimeDelayOnPushoverMessages / 3);
                     }
 
                     client.UploadValues(PushoverAddress, parameters);
