@@ -236,9 +236,12 @@ namespace BackupManager
 
                         if (File.Exists(destFileName))
                         {
-                            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal, $"File exists already so deleting {backupFileFullPath} instead");
-
-                            Utils.FileDelete(backupFileFullPath);
+                            // check the hash of the destination file to check its the same as what we would've renamed too
+                            if (Utils.GetShortMd5HashFromFile(destFileName) == hashToCheck)
+                            {
+                                Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal, $"File exists already so deleting {backupFileFullPath} instead");
+                                Utils.FileDelete(backupFileFullPath);
+                            }
                         }
                         else
                         {

@@ -46,6 +46,7 @@
             this.reportBackupDiskStatusButton = new System.Windows.Forms.Button();
             this.speedTestButton = new System.Windows.Forms.Button();
             this.monitoringButton = new System.Windows.Forms.Button();
+            this.listFilesWithDuplicateContentHashcodesButton = new System.Windows.Forms.Button();
             this.timerButton = new System.Windows.Forms.Button();
             this.listFilesOnBackupDiskButton = new System.Windows.Forms.Button();
             this.listFilesInMasterFolderButton = new System.Windows.Forms.Button();
@@ -76,7 +77,6 @@
             this.stopProcessButton = new System.Windows.Forms.Button();
             this.processesComboBox = new System.Windows.Forms.ComboBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.listFilesWithDuplicateContentHashcodesButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.hoursNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minutesNumericUpDown)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -101,7 +101,7 @@
             // 
             // checkConnectedBackupDiskButton
             // 
-            this.checkConnectedBackupDiskButton.Location = new System.Drawing.Point(10, 329);
+            this.checkConnectedBackupDiskButton.Location = new System.Drawing.Point(10, 387);
             this.checkConnectedBackupDiskButton.Name = "checkConnectedBackupDiskButton";
             this.checkConnectedBackupDiskButton.Size = new System.Drawing.Size(217, 39);
             this.checkConnectedBackupDiskButton.TabIndex = 1;
@@ -177,7 +177,7 @@
             // 
             // checkDiskAndDeleteButton
             // 
-            this.checkDiskAndDeleteButton.Location = new System.Drawing.Point(10, 374);
+            this.checkDiskAndDeleteButton.Location = new System.Drawing.Point(10, 431);
             this.checkDiskAndDeleteButton.Name = "checkDiskAndDeleteButton";
             this.checkDiskAndDeleteButton.Size = new System.Drawing.Size(217, 39);
             this.checkDiskAndDeleteButton.TabIndex = 19;
@@ -202,7 +202,7 @@
             // 
             // checkBackupDeleteAndCopyButton
             // 
-            this.checkBackupDeleteAndCopyButton.Location = new System.Drawing.Point(10, 421);
+            this.checkBackupDeleteAndCopyButton.Location = new System.Drawing.Point(10, 475);
             this.checkBackupDeleteAndCopyButton.Name = "checkBackupDeleteAndCopyButton";
             this.checkBackupDeleteAndCopyButton.Size = new System.Drawing.Size(217, 39);
             this.checkBackupDeleteAndCopyButton.TabIndex = 36;
@@ -247,14 +247,25 @@
             // 
             // monitoringButton
             // 
-            this.monitoringButton.Location = new System.Drawing.Point(252, 33);
+            this.monitoringButton.Location = new System.Drawing.Point(10, 358);
             this.monitoringButton.Name = "monitoringButton";
-            this.monitoringButton.Size = new System.Drawing.Size(207, 23);
+            this.monitoringButton.Size = new System.Drawing.Size(217, 23);
             this.monitoringButton.TabIndex = 50;
             this.monitoringButton.Text = "Start monitoring";
             this.toolTip.SetToolTip(this.monitoringButton, "Starts the service monitoring");
             this.monitoringButton.UseVisualStyleBackColor = true;
             this.monitoringButton.Click += new System.EventHandler(this.monitoringButton_Click);
+            // 
+            // listFilesWithDuplicateContentHashcodesButton
+            // 
+            this.listFilesWithDuplicateContentHashcodesButton.Location = new System.Drawing.Point(10, 330);
+            this.listFilesWithDuplicateContentHashcodesButton.Name = "listFilesWithDuplicateContentHashcodesButton";
+            this.listFilesWithDuplicateContentHashcodesButton.Size = new System.Drawing.Size(217, 23);
+            this.listFilesWithDuplicateContentHashcodesButton.TabIndex = 61;
+            this.listFilesWithDuplicateContentHashcodesButton.Text = "List files with duplicate content hashcodes";
+            this.toolTip.SetToolTip(this.listFilesWithDuplicateContentHashcodesButton, "List files with duplicate content hashcodes");
+            this.listFilesWithDuplicateContentHashcodesButton.UseVisualStyleBackColor = true;
+            this.listFilesWithDuplicateContentHashcodesButton.Click += new System.EventHandler(this.listFilesWithDuplicateContentHashcodesButton_Click);
             // 
             // timerButton
             // 
@@ -463,7 +474,7 @@
             // 
             // killProcessesButton
             // 
-            this.killProcessesButton.Location = new System.Drawing.Point(6, 56);
+            this.killProcessesButton.Location = new System.Drawing.Point(6, 57);
             this.killProcessesButton.Name = "killProcessesButton";
             this.killProcessesButton.Size = new System.Drawing.Size(188, 23);
             this.killProcessesButton.TabIndex = 51;
@@ -487,7 +498,7 @@
             this.groupBox1.Controls.Add(this.testPushoverNormalButton);
             this.groupBox1.Controls.Add(this.testPushoverHighButton);
             this.groupBox1.Controls.Add(this.testPushoverEmergencyButton);
-            this.groupBox1.Location = new System.Drawing.Point(252, 373);
+            this.groupBox1.Location = new System.Drawing.Point(252, 337);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(207, 78);
             this.groupBox1.TabIndex = 54;
@@ -511,7 +522,7 @@
             this.groupBox2.Controls.Add(this.restoreMasterFolderComboBox);
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.label4);
-            this.groupBox2.Location = new System.Drawing.Point(252, 172);
+            this.groupBox2.Location = new System.Drawing.Point(252, 125);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(207, 109);
             this.groupBox2.TabIndex = 55;
@@ -522,7 +533,7 @@
             // 
             this.groupBox3.Controls.Add(this.listFilesInMasterFolderButton);
             this.groupBox3.Controls.Add(this.listMasterFoldersComboBox);
-            this.groupBox3.Location = new System.Drawing.Point(252, 62);
+            this.groupBox3.Location = new System.Drawing.Point(252, 15);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(207, 49);
             this.groupBox3.TabIndex = 56;
@@ -533,7 +544,7 @@
             // 
             this.groupBox4.Controls.Add(this.listFilesComboBox);
             this.groupBox4.Controls.Add(this.listFilesOnBackupDiskButton);
-            this.groupBox4.Location = new System.Drawing.Point(252, 115);
+            this.groupBox4.Location = new System.Drawing.Point(252, 68);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(207, 54);
             this.groupBox4.TabIndex = 57;
@@ -558,7 +569,7 @@
             this.groupBox5.Controls.Add(this.label2);
             this.groupBox5.Controls.Add(this.label5);
             this.groupBox5.Controls.Add(this.runOnTimerStartCheckBox);
-            this.groupBox5.Location = new System.Drawing.Point(252, 284);
+            this.groupBox5.Location = new System.Drawing.Point(252, 245);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(207, 88);
             this.groupBox5.TabIndex = 58;
@@ -590,29 +601,18 @@
             this.groupBox6.Controls.Add(this.killProcessesButton);
             this.groupBox6.Controls.Add(this.stopProcessButton);
             this.groupBox6.Controls.Add(this.processesComboBox);
-            this.groupBox6.Location = new System.Drawing.Point(252, 452);
+            this.groupBox6.Location = new System.Drawing.Point(252, 425);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(207, 90);
             this.groupBox6.TabIndex = 60;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Processes/Services";
             // 
-            // listFilesWithDuplicateContentHashcodesButton
-            // 
-            this.listFilesWithDuplicateContentHashcodesButton.Location = new System.Drawing.Point(10, 466);
-            this.listFilesWithDuplicateContentHashcodesButton.Name = "listFilesWithDuplicateContentHashcodesButton";
-            this.listFilesWithDuplicateContentHashcodesButton.Size = new System.Drawing.Size(217, 23);
-            this.listFilesWithDuplicateContentHashcodesButton.TabIndex = 61;
-            this.listFilesWithDuplicateContentHashcodesButton.Text = "List files with duplicate content hashcodes";
-            this.toolTip.SetToolTip(this.listFilesWithDuplicateContentHashcodesButton, "List files with duplicate content hashcodes");
-            this.listFilesWithDuplicateContentHashcodesButton.UseVisualStyleBackColor = true;
-            this.listFilesWithDuplicateContentHashcodesButton.Click += new System.EventHandler(this.listFilesWithDuplicateContentHashcodesButton_Click);
-            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(469, 548);
+            this.ClientSize = new System.Drawing.Size(469, 519);
             this.Controls.Add(this.listFilesWithDuplicateContentHashcodesButton);
             this.Controls.Add(this.groupBox6);
             this.Controls.Add(this.groupBox5);
