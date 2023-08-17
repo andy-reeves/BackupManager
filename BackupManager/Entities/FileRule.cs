@@ -1,4 +1,10 @@
-﻿namespace BackupManager.Entities
+﻿// --------------------------------------------------------------------------------------------------------------------
+//  <copyright file="FileRule.cs" company="Andy Reeves">
+//
+//  </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+namespace BackupManager.Entities
 {
     using System.Xml.Serialization;
 

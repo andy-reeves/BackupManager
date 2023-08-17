@@ -1,4 +1,10 @@
-﻿namespace BackupManager
+﻿// --------------------------------------------------------------------------------------------------------------------
+//  <copyright file="DailyTrigger.cs" company="Andy Reeves">
+//
+//  </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+namespace BackupManager
 {
     using System;
     using System.Threading;

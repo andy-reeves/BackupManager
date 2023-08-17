@@ -1,4 +1,10 @@
-﻿namespace BackupManager
+﻿// --------------------------------------------------------------------------------------------------------------------
+//  <copyright file="IntegerExtensions.cs" company="Andy Reeves">
+//
+//  </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+namespace BackupManager
 {
     public static class IntegerExtensions
     {

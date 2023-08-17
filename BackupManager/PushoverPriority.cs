@@ -1,4 +1,10 @@
-﻿namespace BackupManager
+﻿// --------------------------------------------------------------------------------------------------------------------
+//  <copyright file="PushoverPriority.cs" company="Andy Reeves">
+//
+//  </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+namespace BackupManager
 {
     public enum PushoverPriority
     {

@@ -1,4 +1,10 @@
-﻿namespace BackupManager.Entities
+﻿// --------------------------------------------------------------------------------------------------------------------
+//  <copyright file="Monitor.cs" company="Andy Reeves">
+//
+//  </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+namespace BackupManager.Entities
 {
     public class Monitor
     {

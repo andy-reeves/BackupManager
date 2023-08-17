@@ -1,4 +1,10 @@
-﻿namespace BackupManager
+﻿// --------------------------------------------------------------------------------------------------------------------
+//  <copyright file="PushoverExpires.cs" company="Andy Reeves">
+//
+//  </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+namespace BackupManager
 {
     public enum PushoverExpires
     {

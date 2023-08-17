@@ -1,4 +1,10 @@
-﻿namespace BackupManager.Entities
+﻿// --------------------------------------------------------------------------------------------------------------------
+//  <copyright file="MediaBackup.cs" company="Andy Reeves">
+//
+//  </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+namespace BackupManager.Entities
 {
     using System;
     using System.Collections;
