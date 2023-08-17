@@ -204,7 +204,7 @@ namespace BackupManager
         internal static bool AnyFlagSet(FileAttributes value, FileAttributes flagsToCheckFor)
         {
             return flagsToCheckFor != 0
-&& Enum.GetValues(typeof(FileAttributes)).Cast<Enum>().Where(flagsToCheckFor.HasFlag).Any(value.HasFlag);
+                   && Enum.GetValues(typeof(FileAttributes)).Cast<Enum>().Where(flagsToCheckFor.HasFlag).Any(value.HasFlag);
         }
 
         /// <summary>
@@ -1357,7 +1357,6 @@ namespace BackupManager
             Trace("StopService exit");
             return true;
         }
-
 
         /// <summary>
         /// Restarts the Windows Service specified

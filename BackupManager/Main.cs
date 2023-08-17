@@ -1360,7 +1360,6 @@
             Utils.Trace("monitoringButton_Click exit");
         }
 
-
         private void MonitoringTimer_Tick(object sender, EventArgs e)
         {
             _ = monitoringAction.BeginInvoke(monitoringAction.EndInvoke, null);

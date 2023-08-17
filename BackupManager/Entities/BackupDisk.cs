@@ -44,19 +44,37 @@
         /// The full path to the main backup folder. Typically like '\\media\backup\backup23'
         /// </summary>
         [XmlIgnore]
-        public string BackupPath => Path.Combine(BackupShare, Name);
+        public string BackupPath
+        {
+            get
+            {
+                return Path.Combine(BackupShare, Name);
+            }
+        }
 
         /// <summary>
         /// The capacilty of the disk formatted for display like '12.6TB'
         /// </summary>
         [XmlIgnore]
-        public string CapacityFormatted => Utils.FormatSize(Capacity);
+        public string CapacityFormatted
+        {
+            get
+            {
+                return Utils.FormatSize(Capacity);
+            }
+        }
 
         /// <summary>
         /// Thge free space of the disk formatted for display like '1.2GB'
         /// </summary>
         [XmlIgnore]
-        public string FreeFormatted => Utils.FormatSize(Free);
+        public string FreeFormatted
+        {
+            get
+            {
+                return Utils.FormatSize(Free);
+            }
+        }
 
         /// <summary>
         /// The last read speed of this disk as a formatted string

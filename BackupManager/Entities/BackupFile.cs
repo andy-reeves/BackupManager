@@ -69,9 +69,14 @@
         /// The full path to the backup file on the source disk.
         /// </summary>
         [XmlIgnore()]
-        public string FullPath =>
+        public string FullPath
+        {
+            get
+            {
                 // always calculate the FullPath in case the MasterFolder, IndexFolder or RelativePath properties have been changed.
-                Path.Combine(MasterFolder, IndexFolder, RelativePath);
+                return Path.Combine(MasterFolder, IndexFolder, RelativePath);
+            }
+        }
 
         /// <summary>
         /// The full path to the backup file on the backup disk.
@@ -102,14 +107,23 @@
         /// This is a combination key of index folder and relative path.
         /// </summary>
         [XmlIgnore()]
-        public string Hash => Path.Combine(IndexFolder, RelativePath);
+        public string Hash
+        {
+            get
+            {
+                return Path.Combine(IndexFolder, RelativePath);
+            }
+        }
 
         /// <summary>
         /// A date/time this file was last checked. If this is cleared then the Disk is automatically set to null also. Returns string.Empty if no value
         /// </summary>
         public string DiskChecked
         {
-            get => string.IsNullOrEmpty(diskChecked) ? string.Empty : diskChecked;
+            get
+            {
+                return string.IsNullOrEmpty(diskChecked) ? string.Empty : diskChecked;
+            }
 
             set
             {
@@ -128,7 +142,10 @@
         /// </summary>
         public string Disk
         {
-            get => string.IsNullOrEmpty(disk) ? string.Empty : disk;
+            get
+            {
+                return string.IsNullOrEmpty(disk) ? string.Empty : disk;
+            }
 
             set
             {
