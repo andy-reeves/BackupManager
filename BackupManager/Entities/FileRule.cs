@@ -1,7 +1,7 @@
-﻿using System.Xml.Serialization;
-
-namespace BackupManager.Entities
+﻿namespace BackupManager.Entities
 {
+    using System.Xml.Serialization;
+
     public class FileRule
     {
         /// <summary>

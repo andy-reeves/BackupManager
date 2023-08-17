@@ -226,7 +226,7 @@
         {
             Utils.Trace("GetBackupFileFromContentsHashcode enter");
 
-            int count = this.BackupFiles.Where(a => a.ContentsHash == value).Count();
+            int count = BackupFiles.Where(a => a.ContentsHash == value).Count();
 
             if (count == 0)
             {

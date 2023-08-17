@@ -44,19 +44,19 @@
         /// The full path to the main backup folder. Typically like '\\media\backup\backup23'
         /// </summary>
         [XmlIgnore]
-        public string BackupPath { get => Path.Combine(BackupShare, Name); }
+        public string BackupPath => Path.Combine(BackupShare, Name);
 
         /// <summary>
         /// The capacilty of the disk formatted for display like '12.6TB'
         /// </summary>
         [XmlIgnore]
-        public string CapacityFormatted { get => Utils.FormatSize(Capacity); }
+        public string CapacityFormatted => Utils.FormatSize(Capacity);
 
         /// <summary>
         /// Thge free space of the disk formatted for display like '1.2GB'
         /// </summary>
         [XmlIgnore]
-        public string FreeFormatted { get => Utils.FormatSize(Free); }
+        public string FreeFormatted => Utils.FormatSize(Free);
 
         /// <summary>
         /// The last read speed of this disk as a formatted string
@@ -89,9 +89,7 @@
             get
             {
                 string diskNumberString = Name.SubstringAfter(' ');
-                if (string.IsNullOrEmpty(diskNumberString)) { return 0; }
-
-                return int.Parse(diskNumberString);
+                return string.IsNullOrEmpty(diskNumberString) ? 0 : int.Parse(diskNumberString);
             }
         }
 
@@ -132,7 +130,10 @@
         /// <returns>The backup folder name or null if it couldn't be determined.</returns>
         public static string GetBackupFolderName(string sharePath)
         {
-            if (string.IsNullOrEmpty(sharePath)) return null;
+            if (string.IsNullOrEmpty(sharePath))
+            {
+                return null;
+            }
 
             DirectoryInfo sharePathDirectoryInfo = new DirectoryInfo(sharePath);
 
@@ -154,12 +155,7 @@
 
             DirectoryInfo firstDirectory = directoriesInRootFolder.Single();
 
-            if (!firstDirectory.Name.StartsWith("backup ", StringComparison.CurrentCultureIgnoreCase))
-            {
-                return null;
-            }
-
-            return firstDirectory.Name;
+            return !firstDirectory.Name.StartsWith("backup ", StringComparison.CurrentCultureIgnoreCase) ? null : firstDirectory.Name;
         }
 
         /// <summary>

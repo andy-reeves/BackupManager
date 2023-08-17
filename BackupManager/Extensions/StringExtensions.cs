@@ -211,12 +211,7 @@ namespace System
             if (string.IsNullOrEmpty(s)) { return string.Empty; }
 
             var index = s.IndexOf(c);
-            if (index == -1)
-            {
-                return s;
-            }
-
-            return index < s.Length - 1 ? s.Substring(index + 1) : string.Empty;
+            return index == -1 ? s : index < s.Length - 1 ? s.Substring(index + 1) : string.Empty;
         }
 
         public static bool StartsWith(this string s, IEnumerable<string> values)
@@ -242,12 +237,7 @@ namespace System
         public static string SubstringAfter(this string s, string value, StringComparison comparisonType)
         {
             var index = s.IndexOf(value, comparisonType);
-            if (index == -1)
-            {
-                return s;
-            }
-
-            return index < s.Length - 1 ? s.Substring(index + value.Length) : string.Empty;
+            return index == -1 ? s : index < s.Length - 1 ? s.Substring(index + value.Length) : string.Empty;
         }
 
         /// <summary>
@@ -265,12 +255,7 @@ namespace System
         public static string SubstringAfterLast(this string s, char c)
         {
             var index = s.LastIndexOf(c);
-            if (index == -1)
-            {
-                return s;
-            }
-
-            return index < s.Length - 1 ? s.Substring(index + 1) : string.Empty;
+            return index == -1 ? s : index < s.Length - 1 ? s.Substring(index + 1) : string.Empty;
         }
 
         /// <summary>

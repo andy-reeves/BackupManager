@@ -1,5 +1,4 @@
-﻿
-namespace BackupManager
+﻿namespace BackupManager
 {
     using BackupManager.Entities;
     using System;
@@ -1374,15 +1373,7 @@ namespace BackupManager
 
             foreach (Monitor monitor in mediaBackup.Monitors)
             {
-                bool result;
-                if (monitor.Port > 0)
-                {
-                    result = Utils.ConnectionExists(monitor.Url, monitor.Port);
-                }
-                else
-                {
-                    result = Utils.UrlExists(monitor.Url, monitor.Timeout * 1000);
-                }
+                bool result = monitor.Port > 0 ? Utils.ConnectionExists(monitor.Url, monitor.Port) : Utils.UrlExists(monitor.Url, monitor.Timeout * 1000);
 
                 // The monitor is down
                 if (!result)

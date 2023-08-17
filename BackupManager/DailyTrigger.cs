@@ -4,7 +4,6 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-
     /// <summary>
     /// Utility class for triggering an event every 24 hours at a specified time of day
     /// </summary>
@@ -13,17 +12,17 @@
         /// <summary>
         /// Time of day (from 00:00:00) to trigger
         /// </summary>
-        TimeSpan TriggerHour { get; }
+        private TimeSpan TriggerHour { get; }
 
         /// <summary>
         /// Task cancellation token source to cancel delayed task on disposal
         /// </summary>
-        CancellationTokenSource CancellationToken { get; set; }
+        private CancellationTokenSource CancellationToken { get; set; }
 
         /// <summary>
         /// Reference to the running task
         /// </summary>
-        Task RunningTask { get; set; }
+        private Task RunningTask { get; set; }
 
         /// <summary>
         /// Initiator
@@ -41,7 +40,10 @@
                 {
                     var triggerTime = DateTime.Today + TriggerHour - DateTime.Now;
                     if (triggerTime < TimeSpan.Zero)
+                    {
                         triggerTime = triggerTime.Add(new TimeSpan(24, 0, 0));
+                    }
+
                     await Task.Delay(triggerTime, CancellationToken.Token);
                     OnTimeTriggered?.Invoke();
                 }

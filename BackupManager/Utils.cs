@@ -203,12 +203,8 @@ namespace BackupManager
         /// </returns>
         internal static bool AnyFlagSet(FileAttributes value, FileAttributes flagsToCheckFor)
         {
-            if (flagsToCheckFor == 0)
-            {
-                return false;
-            }
-
-            return Enum.GetValues(typeof(FileAttributes)).Cast<Enum>().Where(flagsToCheckFor.HasFlag).Any(value.HasFlag);
+            return flagsToCheckFor != 0
+&& Enum.GetValues(typeof(FileAttributes)).Cast<Enum>().Where(flagsToCheckFor.HasFlag).Any(value.HasFlag);
         }
 
         /// <summary>
@@ -252,21 +248,11 @@ namespace BackupManager
             byte[] secondByteArray,
             byte[] thirdByteArray)
         {
-            byte[] byteArrayToHash;
-
-            if (secondByteArray == null && thirdByteArray == null)
-            {
-                byteArrayToHash = new byte[firstByteArray.Length];
-            }
-            else if (thirdByteArray == null)
-            {
-                byteArrayToHash = new byte[firstByteArray.Length + secondByteArray.Length];
-            }
-            else
-            {
-                byteArrayToHash = new byte[firstByteArray.Length + secondByteArray.Length + thirdByteArray.Length];
-            }
-
+            byte[] byteArrayToHash = secondByteArray == null && thirdByteArray == null
+                ? (new byte[firstByteArray.Length])
+                : thirdByteArray == null
+                    ? (new byte[firstByteArray.Length + secondByteArray.Length])
+                    : (new byte[firstByteArray.Length + secondByteArray.Length + thirdByteArray.Length]);
             Buffer.BlockCopy(firstByteArray, 0, byteArrayToHash, 0, firstByteArray.Length);
 
             if (secondByteArray != null)
@@ -456,7 +442,7 @@ namespace BackupManager
                         Directory.GetDirectories(dir)
                             .Where(
                                 subDir =>
-                                (!AnyFlagSet(new DirectoryInfo(subDir).Attributes, directoryAttributesToIgnore))))
+                                !AnyFlagSet(new DirectoryInfo(subDir).Attributes, directoryAttributesToIgnore)))
                     {
                         pathsToSearch.Enqueue(subDir);
                     }
@@ -471,7 +457,7 @@ namespace BackupManager
                                                          : allfiles;
 
                     foundFiles.AddRange(
-                        collection.Where(p => (!AnyFlagSet(new FileInfo(p).Attributes, fileAttributesToIgnore))));
+                        collection.Where(p => !AnyFlagSet(new FileInfo(p).Attributes, fileAttributesToIgnore)));
                 }
             }
 
@@ -956,12 +942,7 @@ namespace BackupManager
         /// </exception>
         private static string ByteArrayToString(byte[] value)
         {
-            if (value == null)
-            {
-                throw new ArgumentNullException("value");
-            }
-
-            return ByteArrayToString(value, 0, value.Length);
+            return value == null ? throw new ArgumentNullException("value") : ByteArrayToString(value, 0, value.Length);
         }
 
         /// <summary>
@@ -992,7 +973,7 @@ namespace BackupManager
                 throw new ArgumentNullException("value");
             }
 
-            if (startIndex < 0 || startIndex >= value.Length && startIndex > 0)
+            if (startIndex < 0 || (startIndex >= value.Length && startIndex > 0))
             {
                 throw new ArgumentOutOfRangeException("startIndex");
             }
@@ -1070,12 +1051,7 @@ namespace BackupManager
         /// </returns>
         internal static string EnsurePathHasATerminatingSeparator(string path)
         {
-            if (path.EndsWith(Path.DirectorySeparatorChar.ToString()))
-            {
-                return path;
-            }
-
-            return path + Path.DirectorySeparatorChar;
+            return path.EndsWith(Path.DirectorySeparatorChar.ToString()) ? path : path + Path.DirectorySeparatorChar;
         }
 
         /// <summary>
@@ -1175,12 +1151,7 @@ namespace BackupManager
         /// </returns>
         private static char GetLowercaseHexValue(int i)
         {
-            if (i < 10)
-            {
-                return (char)(i + 48);
-            }
-
-            return (char)(i - 10 + 65 + 32);
+            return i < 10 ? (char)(i + 48) : (char)(i - 10 + 65 + 32);
         }
 
         #endregion
@@ -1248,37 +1219,17 @@ namespace BackupManager
         /// <returns>a string like x.yTB, xGB, xMB or xKB depending on the size</returns>
         internal static string FormatSize(long value)
         {
-            if (value > BytesInOneTerabyte)
-            {
-                return $"{(decimal)value / BytesInOneTerabyte:0.#}TB";
-            }
-
-            if (value > 25 * (long)BytesInOneGigabyte)
-            {
-                return $"{value / BytesInOneGigabyte:n0}GB";
-            }
-
-            if (value > BytesInOneGigabyte)
-            {
-                return $"{(decimal)value / BytesInOneGigabyte:0.#}GB";
-            }
-
-            if (value > (25 * BytesInOneMegabyte))
-            {
-                return $"{value / BytesInOneMegabyte:n0}MB";
-            }
-
-            if (value > BytesInOneMegabyte)
-            {
-                return $"{(decimal)value / BytesInOneMegabyte:0.#}MB";
-            }
-
-            if (value > BytesInOneKilobyte)
-            {
-                return $"{value / BytesInOneKilobyte:n0}KB";
-            }
-
-            return $"{value:n0}bytes";
+            return value > BytesInOneTerabyte
+                ? $"{(decimal)value / BytesInOneTerabyte:0.#}TB"
+                : value > 25 * (long)BytesInOneGigabyte
+                ? $"{value / BytesInOneGigabyte:n0}GB"
+                : value > BytesInOneGigabyte
+                ? $"{(decimal)value / BytesInOneGigabyte:0.#}GB"
+                : value > (25 * BytesInOneMegabyte)
+                ? $"{value / BytesInOneMegabyte:n0}MB"
+                : value > BytesInOneMegabyte
+                ? $"{(decimal)value / BytesInOneMegabyte:0.#}MB"
+                : value > BytesInOneKilobyte ? $"{value / BytesInOneKilobyte:n0}KB" : $"{value:n0}bytes";
         }
 
         /// <summary>
@@ -1295,7 +1246,7 @@ namespace BackupManager
             char ch;
             for (long i = 0; i < size; i++)
             {
-                ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
+                ch = Convert.ToChar(Convert.ToInt32(Math.Floor((26 * random.NextDouble()) + 65)));
                 builder.Append(ch);
             }
 
@@ -1342,37 +1293,17 @@ namespace BackupManager
             // if disk speed greater than 1KB/s return xKB/s
             // else return bytes/s
 
-            if (value > BytesInOneTerabyte)
-            {
-                return $"{(decimal)value / BytesInOneTerabyte:0.#}TB/s";
-            }
-
-            if (value > (25 * (long)BytesInOneGigabyte))
-            {
-                return $"{value / BytesInOneGigabyte:n0}GB/s";
-            }
-
-            if (value > BytesInOneGigabyte)
-            {
-                return $"{(decimal)value / BytesInOneGigabyte:0.#}GB/s";
-            }
-
-            if (value > (25 * BytesInOneMegabyte))
-            {
-                return $"{value / BytesInOneMegabyte:n0}MB/s";
-            }
-
-            if (value > BytesInOneMegabyte)
-            {
-                return $"{(decimal)value / BytesInOneMegabyte:0.#}MB/s";
-            }
-
-            if (value > BytesInOneKilobyte)
-            {
-                return $"{value / BytesInOneKilobyte:n0}KB/s";
-            }
-
-            return $"{value:n0}bytes/s";
+            return value > BytesInOneTerabyte
+                ? $"{(decimal)value / BytesInOneTerabyte:0.#}TB/s"
+                : value > (25 * (long)BytesInOneGigabyte)
+                ? $"{value / BytesInOneGigabyte:n0}GB/s"
+                : value > BytesInOneGigabyte
+                ? $"{(decimal)value / BytesInOneGigabyte:0.#}GB/s"
+                : value > (25 * BytesInOneMegabyte)
+                ? $"{value / BytesInOneMegabyte:n0}MB/s"
+                : value > BytesInOneMegabyte
+                ? $"{(decimal)value / BytesInOneMegabyte:0.#}MB/s"
+                : value > BytesInOneKilobyte ? $"{value / BytesInOneKilobyte:n0}KB/s" : $"{value:n0}bytes/s";
         }
 
         /// <summary>

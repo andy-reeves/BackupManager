@@ -69,14 +69,9 @@
         /// The full path to the backup file on the source disk.
         /// </summary>
         [XmlIgnore()]
-        public string FullPath
-        {
-            get
-            {
+        public string FullPath =>
                 // always calculate the FullPath in case the MasterFolder, IndexFolder or RelativePath properties have been changed.
-                return Path.Combine(MasterFolder, IndexFolder, RelativePath);
-            }
-        }
+                Path.Combine(MasterFolder, IndexFolder, RelativePath);
 
         /// <summary>
         /// The full path to the backup file on the backup disk.
@@ -99,9 +94,7 @@
                 if (string.IsNullOrEmpty(Disk)) { return 0; }
 
                 string diskNumberString = Disk.SubstringAfter(' ');
-                if (string.IsNullOrEmpty(diskNumberString)) { return 0; }
-
-                return int.Parse(diskNumberString);
+                return string.IsNullOrEmpty(diskNumberString) ? 0 : int.Parse(diskNumberString);
             }
         }
 
@@ -109,23 +102,14 @@
         /// This is a combination key of index folder and relative path.
         /// </summary>
         [XmlIgnore()]
-        public string Hash
-        {
-            get
-            {
-                return Path.Combine(IndexFolder, RelativePath);
-            }
-        }
+        public string Hash => Path.Combine(IndexFolder, RelativePath);
 
         /// <summary>
         /// A date/time this file was last checked. If this is cleared then the Disk is automatically set to null also. Returns string.Empty if no value
         /// </summary>
         public string DiskChecked
         {
-            get
-            {
-                return string.IsNullOrEmpty(diskChecked) ? string.Empty : diskChecked;
-            }
+            get => string.IsNullOrEmpty(diskChecked) ? string.Empty : diskChecked;
 
             set
             {
@@ -144,10 +128,7 @@
         /// </summary>
         public string Disk
         {
-            get
-            {
-                return string.IsNullOrEmpty(disk) ? string.Empty : disk;
-            }
+            get => string.IsNullOrEmpty(disk) ? string.Empty : disk;
 
             set
             {
@@ -222,12 +203,9 @@
         {
             string combinedPath = Path.Combine(masterFolder, indexFolder);
 
-            if (!fullPath.StartsWith(combinedPath))
-            {
-                throw new ArgumentException();
-            }
-
-            return fullPath.SubstringAfter(combinedPath, StringComparison.CurrentCultureIgnoreCase).TrimStart(new[] { '\\' });
+            return !fullPath.StartsWith(combinedPath)
+                ? throw new ArgumentException()
+                : fullPath.SubstringAfter(combinedPath, StringComparison.CurrentCultureIgnoreCase).TrimStart(new[] { '\\' });
         }
 
         /// <summary>
