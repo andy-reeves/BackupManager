@@ -77,6 +77,11 @@ namespace BackupManager
         /// The URL of the Pushover messaging service.
         /// </summary>
         private const string PushoverAddress = "https://api.pushover.net/1/messages.json";
+        
+        /// <summary>
+        /// Delay between Pushover messages
+        /// </summary>
+        private const int TimeDelayOnPushoverMessagesInSeconds = 2;
 
         #endregion
 
@@ -114,6 +119,11 @@ namespace BackupManager
         private static readonly string LogFile = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager.log");
 #endif
+        /// <summary>
+        /// We use this to track when we sent the messages. This allows us to delay for at least 1000ms between messages
+        /// </summary>
+        private static DateTime timeLastPushoverMessageSent = DateTime.UtcNow;
+
         #endregion
 
         #region Public Methods and Operators
@@ -129,7 +139,6 @@ namespace BackupManager
 #if DEBUG
             suffix = "_Debug";
 #endif
-
             string destLogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups", $"BackupManager{suffix}_{timeLog}.log");
             FileMove(LogFile, destLogFile);
 
@@ -716,7 +725,14 @@ namespace BackupManager
 
                 using (var client = new WebClient())
                 {
+                    // ensures there's a 1s gap between messages
+                    while (DateTime.UtcNow < timeLastPushoverMessageSent.AddSeconds(TimeDelayOnPushoverMessagesInSeconds))
+                    {
+                        System.Threading.Thread.Sleep(1000);
+                    }
+
                     client.UploadValues(PushoverAddress, parameters);
+                    timeLastPushoverMessageSent = DateTime.UtcNow;
                 }
             }
             catch (Exception ex)
