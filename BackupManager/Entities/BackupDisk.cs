@@ -108,9 +108,7 @@
             }
 
             // Now scan disk for info;
-            long availableSpace;
-            long totalBytes;
-            var result = Utils.GetDiskInfo(BackupShare, out availableSpace, out totalBytes);
+            var result = Utils.GetDiskInfo(BackupShare, out long availableSpace, out long totalBytes);
 
             if (!result)
             {

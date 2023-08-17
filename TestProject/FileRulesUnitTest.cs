@@ -4,7 +4,7 @@ namespace BackupManager.TestProject
 
     public class FileRulesUnitTest
     {
-        static MediaBackup mediaBackup;
+        private static readonly MediaBackup mediaBackup;
 
         static FileRulesUnitTest()
         {

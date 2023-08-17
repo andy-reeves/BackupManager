@@ -160,7 +160,7 @@
             this.toolTip.SetToolTip(this.recalculateAllHashesButton, "Recalculates all the Hashcodes from the Master Files. Only use this is the hash a" +
         "lgorithm has been changed.");
             this.recalculateAllHashesButton.UseVisualStyleBackColor = true;
-            this.recalculateAllHashesButton.Click += new System.EventHandler(this.recalculateAllHashesButton_Click);
+            this.recalculateAllHashesButton.Click += new System.EventHandler(this.RecalculateAllHashesButton_Click);
             // 
             // listFilesWithoutBackupDiskCheckedButton
             // 
@@ -185,7 +185,7 @@
             this.toolTip.SetToolTip(this.checkDiskAndDeleteButton, "Checks a connected backup disk.\r\nSets the BackupDisk and the BackupDiskChecked (i" +
         "f the HashCode is correct). DELETES FILES.");
             this.checkDiskAndDeleteButton.UseVisualStyleBackColor = true;
-            this.checkDiskAndDeleteButton.Click += new System.EventHandler(this.checkDiskAndDeleteButton_Click);
+            this.checkDiskAndDeleteButton.Click += new System.EventHandler(this.CheckDiskAndDeleteButton_Click);
             // 
             // clearBackupDiskForFilesWithoutBackupDiskCheckedButton
             // 
@@ -198,7 +198,7 @@
         " to a backup disk but the Hashcode is now different. We\'ve probably updated the " +
         "master file.");
             this.clearBackupDiskForFilesWithoutBackupDiskCheckedButton.UseVisualStyleBackColor = true;
-            this.clearBackupDiskForFilesWithoutBackupDiskCheckedButton.Click += new System.EventHandler(this.clearBackupDiskForFilesWithoutBackupDiskCheckedButton_Click);
+            this.clearBackupDiskForFilesWithoutBackupDiskCheckedButton.Click += new System.EventHandler(this.ClearBackupDiskForFilesWithoutBackupDiskCheckedButton_Click);
             // 
             // checkBackupDeleteAndCopyButton
             // 
@@ -210,7 +210,7 @@
             this.toolTip.SetToolTip(this.checkBackupDeleteAndCopyButton, "Checks a connected backup disk.\r\nSets the BackupDisk and the BackupDiskChecked (i" +
         "f the HashCode is correct). DELETES FILES.");
             this.checkBackupDeleteAndCopyButton.UseVisualStyleBackColor = true;
-            this.checkBackupDeleteAndCopyButton.Click += new System.EventHandler(this.checkBackupDeleteAndCopyButton_Click);
+            this.checkBackupDeleteAndCopyButton.Click += new System.EventHandler(this.CheckBackupDeleteAndCopyButton_Click);
             // 
             // listMoviesWithMultipleFilesButton
             // 
@@ -221,7 +221,7 @@
             this.listMoviesWithMultipleFilesButton.Text = "List movies with multiple movie files";
             this.toolTip.SetToolTip(this.listMoviesWithMultipleFilesButton, "Lists any movies that have multiple video files in the same folder");
             this.listMoviesWithMultipleFilesButton.UseVisualStyleBackColor = true;
-            this.listMoviesWithMultipleFilesButton.Click += new System.EventHandler(this.listMoviesWithMultipleFilesButton_Click);
+            this.listMoviesWithMultipleFilesButton.Click += new System.EventHandler(this.ListMoviesWithMultipleFilesButton_Click);
             // 
             // reportBackupDiskStatusButton
             // 
@@ -232,7 +232,7 @@
             this.reportBackupDiskStatusButton.Text = "Report backup disk status";
             this.toolTip.SetToolTip(this.reportBackupDiskStatusButton, "Reports the status of each backup disk");
             this.reportBackupDiskStatusButton.UseVisualStyleBackColor = true;
-            this.reportBackupDiskStatusButton.Click += new System.EventHandler(this.reportBackupDiskStatusButton_Click);
+            this.reportBackupDiskStatusButton.Click += new System.EventHandler(this.ReportBackupDiskStatusButton_Click);
             // 
             // speedTestButton
             // 
@@ -243,7 +243,7 @@
             this.speedTestButton.Text = "Speed test all master folders";
             this.toolTip.SetToolTip(this.speedTestButton, "Runs the speed test on all master folders");
             this.speedTestButton.UseVisualStyleBackColor = true;
-            this.speedTestButton.Click += new System.EventHandler(this.speedTestButton_Click);
+            this.speedTestButton.Click += new System.EventHandler(this.SpeedTestButton_Click);
             // 
             // monitoringButton
             // 
@@ -254,7 +254,7 @@
             this.monitoringButton.Text = "Start monitoring";
             this.toolTip.SetToolTip(this.monitoringButton, "Starts the service monitoring");
             this.monitoringButton.UseVisualStyleBackColor = true;
-            this.monitoringButton.Click += new System.EventHandler(this.monitoringButton_Click);
+            this.monitoringButton.Click += new System.EventHandler(this.MonitoringButton_Click);
             // 
             // listFilesWithDuplicateContentHashcodesButton
             // 
@@ -265,7 +265,7 @@
             this.listFilesWithDuplicateContentHashcodesButton.Text = "List files with duplicate content hashcodes";
             this.toolTip.SetToolTip(this.listFilesWithDuplicateContentHashcodesButton, "List files with duplicate content hashcodes");
             this.listFilesWithDuplicateContentHashcodesButton.UseVisualStyleBackColor = true;
-            this.listFilesWithDuplicateContentHashcodesButton.Click += new System.EventHandler(this.listFilesWithDuplicateContentHashcodesButton_Click);
+            this.listFilesWithDuplicateContentHashcodesButton.Click += new System.EventHandler(this.ListFilesWithDuplicateContentHashcodesButton_Click);
             // 
             // timerButton
             // 
@@ -275,7 +275,7 @@
             this.timerButton.TabIndex = 21;
             this.timerButton.Text = "Start";
             this.timerButton.UseVisualStyleBackColor = true;
-            this.timerButton.Click += new System.EventHandler(this.timerButton_Click);
+            this.timerButton.Click += new System.EventHandler(this.TimerButton_Click);
             // 
             // listFilesOnBackupDiskButton
             // 
@@ -285,7 +285,7 @@
             this.listFilesOnBackupDiskButton.TabIndex = 24;
             this.listFilesOnBackupDiskButton.Text = "List";
             this.listFilesOnBackupDiskButton.UseVisualStyleBackColor = true;
-            this.listFilesOnBackupDiskButton.Click += new System.EventHandler(this.listFilesOnBackupDiskButton_Click);
+            this.listFilesOnBackupDiskButton.Click += new System.EventHandler(this.ListFilesOnBackupDiskButton_Click);
             // 
             // listFilesInMasterFolderButton
             // 
@@ -295,7 +295,7 @@
             this.listFilesInMasterFolderButton.TabIndex = 26;
             this.listFilesInMasterFolderButton.Text = "List";
             this.listFilesInMasterFolderButton.UseVisualStyleBackColor = true;
-            this.listFilesInMasterFolderButton.Click += new System.EventHandler(this.listFilesInMasterFolderButton_Click);
+            this.listFilesInMasterFolderButton.Click += new System.EventHandler(this.ListFilesInMasterFolderButton_Click);
             // 
             // masterFoldersComboBox
             // 
@@ -325,7 +325,7 @@
             this.restoreFilesToMasterFolderButton.TabIndex = 31;
             this.restoreFilesToMasterFolderButton.Text = "Restore";
             this.restoreFilesToMasterFolderButton.UseVisualStyleBackColor = true;
-            this.restoreFilesToMasterFolderButton.Click += new System.EventHandler(this.restoreFilesButton_Click);
+            this.restoreFilesToMasterFolderButton.Click += new System.EventHandler(this.RestoreFilesButton_Click);
             // 
             // restoreMasterFolderComboBox
             // 
@@ -345,7 +345,7 @@
             this.testPushoverHighButton.TabIndex = 38;
             this.testPushoverHighButton.Text = "High";
             this.testPushoverHighButton.UseVisualStyleBackColor = true;
-            this.testPushoverHighButton.Click += new System.EventHandler(this.testPushoverHighButton_Click);
+            this.testPushoverHighButton.Click += new System.EventHandler(this.TestPushoverHighButton_Click);
             // 
             // testPushoverNormalButton
             // 
@@ -355,7 +355,7 @@
             this.testPushoverNormalButton.TabIndex = 39;
             this.testPushoverNormalButton.Text = "Normal";
             this.testPushoverNormalButton.UseVisualStyleBackColor = true;
-            this.testPushoverNormalButton.Click += new System.EventHandler(this.testPushoverNormalButton_Click);
+            this.testPushoverNormalButton.Click += new System.EventHandler(this.TestPushoverNormalButton_Click);
             // 
             // label3
             // 
@@ -385,7 +385,7 @@
             this.testPushoverEmergencyButton.TabIndex = 42;
             this.testPushoverEmergencyButton.Text = "Emergency";
             this.testPushoverEmergencyButton.UseVisualStyleBackColor = true;
-            this.testPushoverEmergencyButton.Click += new System.EventHandler(this.testPushoverEmergencyButton_Click);
+            this.testPushoverEmergencyButton.Click += new System.EventHandler(this.TestPushoverEmergencyButton_Click);
             // 
             // hoursNumericUpDown
             // 
@@ -409,7 +409,7 @@
             0,
             0,
             0});
-            this.hoursNumericUpDown.ValueChanged += new System.EventHandler(this.hoursNumericUpDown_ValueChanged);
+            this.hoursNumericUpDown.ValueChanged += new System.EventHandler(this.HoursNumericUpDown_ValueChanged);
             // 
             // minutesNumericUpDown
             // 
@@ -433,7 +433,7 @@
             0,
             0,
             0});
-            this.minutesNumericUpDown.ValueChanged += new System.EventHandler(this.minutesNumericUpDown_ValueChanged);
+            this.minutesNumericUpDown.ValueChanged += new System.EventHandler(this.MinutesNumericUpDown_ValueChanged);
             // 
             // label2
             // 
@@ -470,7 +470,7 @@
             // monitoringTimer
             // 
             this.monitoringTimer.Interval = 60000;
-            this.monitoringTimer.Tick += new System.EventHandler(this.monitoringTimer_Tick);
+            this.monitoringTimer.Tick += new System.EventHandler(this.MonitoringTimer_Tick);
             // 
             // killProcessesButton
             // 
@@ -480,7 +480,7 @@
             this.killProcessesButton.TabIndex = 51;
             this.killProcessesButton.Text = "Stop all processes";
             this.killProcessesButton.UseVisualStyleBackColor = true;
-            this.killProcessesButton.Click += new System.EventHandler(this.killProcessesButton_Click);
+            this.killProcessesButton.Click += new System.EventHandler(this.KillProcessesButton_Click);
             // 
             // listMasterFoldersComboBox
             // 
@@ -513,7 +513,7 @@
             this.testPushoverLowButton.TabIndex = 43;
             this.testPushoverLowButton.Text = "Low";
             this.testPushoverLowButton.UseVisualStyleBackColor = true;
-            this.testPushoverLowButton.Click += new System.EventHandler(this.testPushoverLowButton_Click);
+            this.testPushoverLowButton.Click += new System.EventHandler(this.TestPushoverLowButton_Click);
             // 
             // groupBox2
             // 
@@ -584,7 +584,7 @@
             this.stopProcessButton.TabIndex = 59;
             this.stopProcessButton.Text = "Stop";
             this.stopProcessButton.UseVisualStyleBackColor = true;
-            this.stopProcessButton.Click += new System.EventHandler(this.stopProcessButton_Click);
+            this.stopProcessButton.Click += new System.EventHandler(this.StopProcessButton_Click);
             // 
             // processesComboBox
             // 

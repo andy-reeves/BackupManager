@@ -31,7 +31,7 @@ namespace BackupManager
     {
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool GetDiskFreeSpaceEx(string lpDirectoryName,
+        internal static extern bool GetDiskFreeSpaceEx(string lpDirectoryName,
         out long lpFreeBytesAvailable,
         out long lpTotalNumberOfBytes,
         out long lpTotalNumberOfFreeBytes);
@@ -126,9 +126,9 @@ namespace BackupManager
 
         #endregion
 
-        #region Public Methods and Operators
+        #region internal Methods and Operators
 
-        public static void BackupLogFile()
+        internal static void BackupLogFile()
         {
             //LogFile
 
@@ -155,7 +155,7 @@ namespace BackupManager
         /// </summary>
         /// <param name="sourceFileName">The name of the file to move. Can include a relative or absolute path.</param>
         /// <param name="destFileName">The new path and name for the file.</param>
-        public static void FileMove(string sourceFileName, string destFileName)
+        internal static void FileMove(string sourceFileName, string destFileName)
         {
             Trace("FileMove enter");
             Trace($"Params: sourceFileName={sourceFileName}, destFileName={destFileName}");
@@ -170,7 +170,7 @@ namespace BackupManager
         /// </summary>
         /// <param name="sourceFileName">The file to copy.</param>
         /// <param name="destFileName">The name of the destination file. This cannot be a directory or an existing file.</param>
-        public static void FileCopy(string sourceFileName, string destFileName)
+        internal static void FileCopy(string sourceFileName, string destFileName)
         {
             Trace("FileCopy enter");
             Trace($"Params: sourceFileName={sourceFileName}, destFileName={destFileName}");
@@ -185,7 +185,7 @@ namespace BackupManager
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static long ConvertMBtoBytes(long value)
+        internal static long ConvertMBtoBytes(long value)
         {
             return Convert.ToInt64(value * BytesInOneMegabyte);
         }
@@ -200,7 +200,7 @@ namespace BackupManager
         /// <returns>
         /// The <see cref="bool"/>.
         /// </returns>
-        public static bool AnyFlagSet(FileAttributes value, FileAttributes flagsToCheckFor)
+        internal static bool AnyFlagSet(FileAttributes value, FileAttributes flagsToCheckFor)
         {
             if (flagsToCheckFor == 0)
             {
@@ -215,7 +215,7 @@ namespace BackupManager
         /// </summary>
         /// <param name="path"></param>
         /// <param name="attributeToRemove"></param>
-        public static void ClearFileAttribute(string path, FileAttributes attributeToRemove)
+        internal static void ClearFileAttribute(string path, FileAttributes attributeToRemove)
         {
             FileAttributes attributes = File.GetAttributes(path);
 
@@ -246,7 +246,7 @@ namespace BackupManager
         /// <returns>
         /// A String of the hash.
         /// </returns>
-        public static string CreateHashForByteArray(
+        internal static string CreateHashForByteArray(
             byte[] firstByteArray,
             byte[] secondByteArray,
             byte[] thirdByteArray)
@@ -291,7 +291,7 @@ namespace BackupManager
         /// </summary>
         /// <param name="filePath">
         /// </param>
-        public static void EnsureDirectories(string filePath)
+        internal static void EnsureDirectories(string filePath)
         {
             Directory.CreateDirectory(new FileInfo(filePath).DirectoryName);
         }
@@ -305,7 +305,7 @@ namespace BackupManager
         /// <returns>
         /// The <see cref="string[]"/>.
         /// </returns>
-        public static string[] GetFiles(string path)
+        internal static string[] GetFiles(string path)
         {
             return GetFiles(path, "*", SearchOption.AllDirectories, 0, 0);
         }
@@ -322,7 +322,7 @@ namespace BackupManager
         /// <returns>
         /// The <see cref="string[]"/>.
         /// </returns>
-        public static string[] GetFiles(string path, string filters)
+        internal static string[] GetFiles(string path, string filters)
         {
             return GetFiles(path, filters, SearchOption.AllDirectories, 0, 0);
         }
@@ -345,7 +345,7 @@ namespace BackupManager
         /// <returns>
         /// The <see cref="string[]"/>.
         /// </returns>
-        public static string[] GetFiles(
+        internal static string[] GetFiles(
             string path,
             string filters,
             SearchOption searchOption,
@@ -369,7 +369,7 @@ namespace BackupManager
         /// <returns>
         /// The <see cref="string[]"/>.
         /// </returns>
-        public static string[] GetFiles(string path, string filters, SearchOption searchOption)
+        internal static string[] GetFiles(string path, string filters, SearchOption searchOption)
         {
             return GetFiles(path, filters, searchOption, 0, 0);
         }
@@ -395,7 +395,7 @@ namespace BackupManager
         /// <returns>
         /// The <see cref="string[]"/>.
         /// </returns>
-        public static string[] GetFiles(
+        internal static string[] GetFiles(
             string path,
             string filters,
             SearchOption searchOption,
@@ -490,7 +490,7 @@ namespace BackupManager
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
-        public static string GetHashFromFile(string fileName, HashAlgorithm algorithm)
+        internal static string GetHashFromFile(string fileName, HashAlgorithm algorithm)
         {
             Trace("GetHashFromFile enter");
 
@@ -509,16 +509,13 @@ namespace BackupManager
         /// <param name="fileStream">
         /// The file stream.
         /// </param>
-        /// <param name="offset">
-        /// The offset.
-        /// </param>
         /// <param name="byteCountToReturn">
         /// The byte count to return.
         /// </param>
         /// <returns>
         /// The <see cref="byte[]"/>.
         /// </returns>
-        public static byte[] GetRemoteFileByteArray(Stream fileStream, long offset, long byteCountToReturn)
+        internal static byte[] GetRemoteFileByteArray(Stream fileStream, long byteCountToReturn)
         {
             Trace("GetRemoteFileByteArray enter");
 
@@ -557,7 +554,7 @@ namespace BackupManager
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
-        public static string GetShortMd5HashFromFile(FileStream stream, long size)
+        internal static string GetShortMd5HashFromFile(FileStream stream, long size)
         {
             Trace("GetShortMd5HashFromFile enter");
 
@@ -598,12 +595,12 @@ namespace BackupManager
             return value;
         }
 
-        public static long GetFileLength(string fileName)
+        internal static long GetFileLength(string fileName)
         {
             return new FileInfo(fileName).Length;
         }
 
-        public static DateTime GetFileLastWriteTime(string fileName)
+        internal static DateTime GetFileLastWriteTime(string fileName)
         {
             FileInfo fileInfo = new FileInfo(fileName);
 
@@ -633,7 +630,7 @@ namespace BackupManager
         /// <returns>
         /// An MD5 hash of the file or null if File doesn't exist or string.Empty if it has no size.
         /// </returns>
-        public static string GetShortMd5HashFromFile(string path)
+        internal static string GetShortMd5HashFromFile(string path)
         {
             Trace("GetShortMd5HashFromFile enter");
             Trace($"Params: path={path}");
@@ -678,16 +675,14 @@ namespace BackupManager
             return value;
         }
 
-        public static void SendPushoverMessage(string title, PushoverPriority priority, string message)
+        internal static void SendPushoverMessage(string title, PushoverPriority priority, string message)
         {
             SendPushoverMessage(title, priority, PushoverRetry.None, PushoverExpires.Immediately, message);
         }
 
-        public static void SendPushoverMessage(string title, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires, string message)
+        internal static void SendPushoverMessage(string title, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires, string message)
         {
             Trace("SendPushoverMessage enter");
-
-            string timeStamp = new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds().ToString();
 
             try
             {
@@ -696,8 +691,7 @@ namespace BackupManager
                 { "user", PushoverUserKey },
                 { "priority", Convert.ChangeType(priority, priority.GetTypeCode()).ToString() },
                 { "message", message },
-                { "title", title }// ,
-               // { "timestamp", timeStamp }
+                { "title", title }
                 };
 
                 if (priority == PushoverPriority.Emergency)
@@ -752,7 +746,7 @@ namespace BackupManager
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         /// <exception cref="ArgumentException"></exception>
-        public static bool KillProcesses(string processName)
+        internal static bool KillProcesses(string processName)
         {
             Trace("KillProcesses enter");
 
@@ -783,7 +777,7 @@ namespace BackupManager
         /// <param name="url">The url to check</param>
         /// <param name="timeout">Timeout in seconds</param>
         /// <returns>True if success code returned</returns>
-        public static bool UrlExists(string url)
+        internal static bool UrlExists(string url)
         {
             return UrlExists(url, 30 * 1000);
         }
@@ -794,7 +788,7 @@ namespace BackupManager
         /// <param name="url">The url to check</param>
         /// <param name="timeout">Timeout in milliseconds</param>
         /// <returns>True if success code returned</returns>
-        public static bool UrlExists(string url, int timeout)
+        internal static bool UrlExists(string url, int timeout)
         {
             Trace("UrlExists enter");
             bool returnValue;
@@ -823,7 +817,7 @@ namespace BackupManager
         /// <param name="host">The host to check</param>
         /// <param name="port">The port to connect on</param>
         /// <returns>True if the connection is made</returns>
-        public static bool ConnectionExists(string host, int port)
+        internal static bool ConnectionExists(string host, int port)
         {
             Trace("ConnectionExists enter");
 
@@ -873,7 +867,7 @@ namespace BackupManager
         /// Writes the text to the logfile
         /// </summary>
         /// <param name="text"></param>
-        public static void Log(string text)
+        internal static void Log(string text)
         {
             string[] textArrayToWrite = text.Split('\n');
 
@@ -894,12 +888,13 @@ namespace BackupManager
                 }
             }
         }
+
         /// <summary>
         /// Logs the text to the LogFile and sends a Pushover message
         /// </summary>
         /// <param name="backupAction"></param>
         /// <param name="text"></param>
-        public static void LogWithPushover(BackupAction backupAction, string text)
+        internal static void LogWithPushover(BackupAction backupAction, string text)
         {
             LogWithPushover(backupAction, PushoverPriority.Normal, text);
         }
@@ -910,7 +905,7 @@ namespace BackupManager
         /// <param name="backupAction"></param>
         /// <param name="priority"></param>
         /// <param name="text"></param>
-        public static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, string text)
+        internal static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, string text)
         {
             Log(backupAction, text);
 
@@ -930,7 +925,7 @@ namespace BackupManager
         /// <param name="retry"></param>
         /// <param name="expires"></param>
         /// <param name="text"></param>
-        public static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires, string text)
+        internal static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires, string text)
         {
             Log(backupAction, text);
 
@@ -1048,7 +1043,7 @@ namespace BackupManager
         /// <returns>
         /// A String of the hash.
         /// </returns>
-        private static string CreateHashForByteArray(byte[] firstByteArray, byte[] endByteArray)
+        internal static string CreateHashForByteArray(byte[] firstByteArray, byte[] endByteArray)
         {
             byte[] byteArrayToHash = endByteArray == null
                                          ? new byte[firstByteArray.Length]
@@ -1072,7 +1067,7 @@ namespace BackupManager
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
-        private static string EnsurePathHasATerminatingSeparator(string path)
+        internal static string EnsurePathHasATerminatingSeparator(string path)
         {
             if (path.EndsWith(Path.DirectorySeparatorChar.ToString()))
             {
@@ -1196,7 +1191,7 @@ namespace BackupManager
         /// <param name="totalBytes">in bytes</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public static bool GetDiskInfo(string folderName, out long freespace, out long totalBytes)
+        internal static bool GetDiskInfo(string folderName, out long freespace, out long totalBytes)
         {
             Trace("GetDiskInfo enter");
 
@@ -1217,7 +1212,7 @@ namespace BackupManager
         }
 
         /// <summary>
-        /// Returns the path to the folder containing the executing type
+        /// Returns the path to the folder containing the executing <see langword="type"/>
         /// </summary>
         /// <param name="startupClass"></param>
         /// <returns></returns>
@@ -1250,7 +1245,7 @@ namespace BackupManager
         /// </summary>
         /// <param name="value">Size in bytes</param>
         /// <returns>a string like x.yTB, xGB, xMB or xKB depending on the size</returns>
-        public static string FormatSize(long value)
+        internal static string FormatSize(long value)
         {
             if (value > BytesInOneTerabyte)
             {
@@ -1290,7 +1285,7 @@ namespace BackupManager
         /// </summary>
         /// <param name="size"></param>
         /// <returns></returns>
-        public static string RandomString(long size)
+        internal static string RandomString(long size)
         {
             Trace("RandomString enter");
 
@@ -1314,7 +1309,7 @@ namespace BackupManager
         /// </summary>
         /// <param name="folderPath"></param>
         /// <returns>True if writeable else False</returns>
-        public static bool IsFolderWritable(string folderPath)
+        internal static bool IsFolderWritable(string folderPath)
         {
             try
             {
@@ -1336,7 +1331,7 @@ namespace BackupManager
         /// </summary>
         /// <param name="value">in bytes per second</param>
         /// <returns>a string like x.yTB/s, xGB/s, xMB/s or xKB/s or bytes/s depending on speed</returns>
-        public static string FormatSpeed(long value)
+        internal static string FormatSpeed(long value)
         {
             // if disk speed greater than 1TB/s return x.yTB/s
             // if disk speed greater than 25GB/s return xGB/s
@@ -1386,7 +1381,7 @@ namespace BackupManager
         /// <param name="readSpeed">in bytes per second</param>
         /// <param name="writeSpeed">in bytes per second</param>
         /// <returns></returns>
-        public static bool DiskSpeedTest(string pathToDiskToTest, long testFileSize, int testIterations, out long readSpeed, out long writeSpeed)
+        internal static bool DiskSpeedTest(string pathToDiskToTest, long testFileSize, int testIterations, out long readSpeed, out long writeSpeed)
         {
             Trace("DiskSpeedTest enter");
 
@@ -1405,7 +1400,7 @@ namespace BackupManager
         /// <param name="serviceName"></param>
         /// <param name="timeoutMilliseconds"></param>
         /// <returns>True if the service stopped successfully or it was stopped already</returns>
-        public static bool StopService(string serviceName, int timeoutMilliseconds)
+        internal static bool StopService(string serviceName, int timeoutMilliseconds)
         {
             Trace("StopService enter");
 
@@ -1438,7 +1433,7 @@ namespace BackupManager
         /// <param name="serviceName"></param>
         /// <param name="timeoutMilliseconds"></param>
         /// <returns>True if the service restarted successfully</returns>
-        public static bool RestartService(string serviceName, int timeoutMilliseconds)
+        internal static bool RestartService(string serviceName, int timeoutMilliseconds)
         {
             Trace("RestartService enter");
 
@@ -1479,7 +1474,7 @@ namespace BackupManager
             Trace("RestartService exit");
             return true;
         }
-        public static long DiskSpeedTest(string sourcePath, string destinationPath, long testFileSize, int testIterations)
+        internal static long DiskSpeedTest(string sourcePath, string destinationPath, long testFileSize, int testIterations)
         {
             Trace("DiskSpeedTest enter");
 

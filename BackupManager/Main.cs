@@ -25,9 +25,9 @@ namespace BackupManager
 
         private DailyTrigger trigger;
 
-        private Action scheduledBackupAction;
+        private readonly Action scheduledBackupAction;
 
-        private Action monitoringAction;
+        private readonly Action monitoringAction;
 
         // When the serice monitoring has been enabled this is True
         private bool serviceMonitoringRunning;
@@ -90,14 +90,14 @@ namespace BackupManager
             if (mediaBackup.StartMonitoring)
             {
 #if !DEBUG
-                monitoringButton_Click(null, null);
+                MonitoringButton_Click(null, null);
 #endif
             }
 
             if (mediaBackup.StartScheduledBackup)
             {
 #if !DEBUG
-                timerButton_Click(null, null);
+                TimerButton_Click(null, null);
 #endif
             }
 
@@ -453,9 +453,7 @@ namespace BackupManager
                     }
                     else
                     {
-                        long availableSpace;
-                        long totalBytes;
-                        result = Utils.GetDiskInfo(backupDiskTextBox.Text, out availableSpace, out totalBytes);
+                        result = Utils.GetDiskInfo(backupDiskTextBox.Text, out long availableSpace, out long totalBytes);
 
                         if (availableSpace > Utils.ConvertMBtoBytes(mediaBackup.MinimumFreeSpaceToLeaveOnBackupDisk))
                         {
@@ -584,7 +582,7 @@ namespace BackupManager
             Utils.Trace("ListFilesNotOnBackupDiskButton_Click exit");
         }
 
-        private void recalculateAllHashesButton_Click(object sender, EventArgs e)
+        private void RecalculateAllHashesButton_Click(object sender, EventArgs e)
         {
             Utils.Trace("recalculateAllHashesButton_Click enter");
 
@@ -680,9 +678,7 @@ namespace BackupManager
                                               $"{masterFolder} is not writeable");
                     }
 
-                    long freeSpaceOnCurrentMasterFolder;
-                    long totalBytesOnMasterFolderDisk;
-                    Utils.GetDiskInfo(masterFolder, out freeSpaceOnCurrentMasterFolder, out totalBytesOnMasterFolderDisk);
+                    Utils.GetDiskInfo(masterFolder, out long freeSpaceOnCurrentMasterFolder, out long totalBytesOnMasterFolderDisk);
 
                     if (mediaBackup.DiskSpeedTests)
                     {
@@ -833,7 +829,7 @@ namespace BackupManager
 
         #endregion
 
-        private void checkDiskAndDeleteButton_Click(object sender, EventArgs e)
+        private void CheckDiskAndDeleteButton_Click(object sender, EventArgs e)
         {
             Utils.Trace("checkDiskAndDeleteButton_Click enter");
 
@@ -849,7 +845,7 @@ namespace BackupManager
             Utils.Trace("checkDiskAndDeleteButton_Click exit");
         }
 
-        private void clearBackupDiskForFilesWithoutBackupDiskCheckedButton_Click(object sender, EventArgs e)
+        private void ClearBackupDiskForFilesWithoutBackupDiskCheckedButton_Click(object sender, EventArgs e)
         {
             Utils.Trace("clearBackupDiskForFilesWithoutBackupDiskCheckedButton_Click enter");
 
@@ -868,7 +864,7 @@ namespace BackupManager
             Utils.Trace("clearBackupDiskForFilesWithoutBackupDiskCheckedButton_Click exit");
         }
 
-        private void timerButton_Click(object sender, EventArgs e)
+        private void TimerButton_Click(object sender, EventArgs e)
         {
             Utils.Trace("timerButton_Click enter");
 
@@ -956,7 +952,7 @@ namespace BackupManager
             Utils.Trace("ScheduledBackup exit");
         }
 
-        private void listFilesOnBackupDiskButton_Click(object sender, EventArgs e)
+        private void ListFilesOnBackupDiskButton_Click(object sender, EventArgs e)
         {
             Utils.Trace("listFilesOnBackupDiskButton_Click enter");
 
@@ -976,7 +972,7 @@ namespace BackupManager
             Utils.Trace("listFilesOnBackupDiskButton_Click exit");
         }
 
-        private void listFilesInMasterFolderButton_Click(object sender, EventArgs e)
+        private void ListFilesInMasterFolderButton_Click(object sender, EventArgs e)
         {
             Utils.Trace("listFilesInMasterFolderButton_Click enter");
 
@@ -1052,7 +1048,7 @@ namespace BackupManager
             Utils.Trace("CheckForOldBackupDisks exit");
         }
 
-        private void restoreFilesButton_Click(object sender, EventArgs e)
+        private void RestoreFilesButton_Click(object sender, EventArgs e)
         {
             Utils.Trace("restoreFilesButton_Click enter");
 
@@ -1178,7 +1174,7 @@ namespace BackupManager
             Utils.Trace("restoreFilesButton_Click exit");
         }
 
-        private void checkBackupDeleteAndCopyButton_Click(object sender, EventArgs e)
+        private void CheckBackupDeleteAndCopyButton_Click(object sender, EventArgs e)
         {
             Utils.Trace("checkBackupDeleteAndCopyButton_Click enter");
 
@@ -1195,7 +1191,7 @@ namespace BackupManager
             Utils.Trace("checkBackupDeleteAndCopyButton_Click exit");
         }
 
-        private void listMoviesWithMultipleFilesButton_Click(object sender, EventArgs e)
+        private void ListMoviesWithMultipleFilesButton_Click(object sender, EventArgs e)
         {
             Utils.Trace("listMoviesWithMultipleFilesButton_Click enter");
 
@@ -1227,7 +1223,7 @@ namespace BackupManager
             Utils.Trace("listMoviesWithMultipleFilesButton_Click exit");
         }
 
-        private void testPushoverHighButton_Click(object sender, EventArgs e)
+        private void TestPushoverHighButton_Click(object sender, EventArgs e)
         {
             Utils.Trace("testPushoverHighButton_Click enter");
 
@@ -1238,7 +1234,7 @@ namespace BackupManager
             Utils.Trace("testPushoverHighButton_Click exit");
         }
 
-        private void testPushoverNormalButton_Click(object sender, EventArgs e)
+        private void TestPushoverNormalButton_Click(object sender, EventArgs e)
         {
             Utils.Trace("testPushoverNormalButton_Click enter");
 
@@ -1249,7 +1245,7 @@ namespace BackupManager
             Utils.Trace("testPushoverNormalButton_Click exit");
         }
 
-        private void testPushoverEmergencyButton_Click(object sender, EventArgs e)
+        private void TestPushoverEmergencyButton_Click(object sender, EventArgs e)
         {
             Utils.Trace("testPushoverEmergencyButton_Click enter");
 
@@ -1262,7 +1258,7 @@ namespace BackupManager
             Utils.Trace("testPushoverEmergencyButton_Click exit");
         }
 
-        private void reportBackupDiskStatusButton_Click(object sender, EventArgs e)
+        private void ReportBackupDiskStatusButton_Click(object sender, EventArgs e)
         {
             Utils.Trace("reportBackupDiskStatusButton_Click enter");
 
@@ -1284,7 +1280,7 @@ namespace BackupManager
             Utils.Trace("reportBackupDiskStatusButton_Click exit");
         }
 
-        private void speedTestButton_Click(object sender, EventArgs e)
+        private void SpeedTestButton_Click(object sender, EventArgs e)
         {
             Utils.Trace("speedTestButton_Click enter");
             Utils.Log("Speed testing all master folders");
@@ -1293,9 +1289,7 @@ namespace BackupManager
             {
                 if (Utils.IsFolderWritable(masterFolder))
                 {
-                    long readSpeed;
-                    long writeSpeed;
-                    Utils.DiskSpeedTest(masterFolder, DiskSpeedTestFileSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
+                    Utils.DiskSpeedTest(masterFolder, DiskSpeedTestFileSize, DiskSpeedTestIterations, out long readSpeed, out long writeSpeed);
                     Utils.Log($"testing {masterFolder}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
                 }
             }
@@ -1303,7 +1297,7 @@ namespace BackupManager
             Utils.Trace("speedTestButton_Click exit");
         }
 
-        private void minutesNumericUpDown_ValueChanged(object sender, EventArgs e)
+        private void MinutesNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             Utils.Trace("minutesNumericUpDown_ValueChanged enter");
 
@@ -1322,7 +1316,7 @@ namespace BackupManager
             Utils.Trace("minutesNumericUpDown_ValueChanged exit");
         }
 
-        private void hoursNumericUpDown_ValueChanged(object sender, EventArgs e)
+        private void HoursNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             Utils.Trace("hoursNumericUpDown_ValueChanged enter");
 
@@ -1341,7 +1335,7 @@ namespace BackupManager
             Utils.Trace("hoursNumericUpDown_ValueChanged exit");
         }
 
-        private void monitoringButton_Click(object sender, EventArgs e)
+        private void MonitoringButton_Click(object sender, EventArgs e)
         {
             Utils.Trace("monitoringButton_Click enter");
 
@@ -1357,7 +1351,7 @@ namespace BackupManager
             {
                 Utils.LogWithPushover(BackupAction.Monitoring, "Started");
 
-                monitoringTimer_Tick(null, null);
+                MonitoringTimer_Tick(null, null);
 
                 monitoringTimer.Interval = mediaBackup.MonitorInterval * 1000;
                 monitoringTimer.Start();
@@ -1369,7 +1363,7 @@ namespace BackupManager
         }
 
 
-        private void monitoringTimer_Tick(object sender, EventArgs e)
+        private void MonitoringTimer_Tick(object sender, EventArgs e)
         {
             monitoringAction.BeginInvoke(monitoringAction.EndInvoke, null);
         }
@@ -1474,7 +1468,7 @@ namespace BackupManager
             Utils.Trace("MonitorServices exit");
         }
 
-        private void killProcessesButton_Click(object sender, EventArgs e)
+        private void KillProcessesButton_Click(object sender, EventArgs e)
         {
             Utils.Trace("killProcessesButton_Click enter");
 
@@ -1507,7 +1501,7 @@ namespace BackupManager
             Utils.Trace("killProcessesButton_Click exit");
         }
 
-        private void testPushoverLowButton_Click(object sender, EventArgs e)
+        private void TestPushoverLowButton_Click(object sender, EventArgs e)
         {
             Utils.Trace("testPushoverLowButton_Click enter");
 
@@ -1531,7 +1525,7 @@ namespace BackupManager
             Utils.BackupLogFile();
         }
 
-        private void stopProcessButton_Click(object sender, EventArgs e)
+        private void StopProcessButton_Click(object sender, EventArgs e)
         {
             Utils.Trace("stopProcessButton_Click enter");
 
@@ -1568,7 +1562,7 @@ namespace BackupManager
             Utils.Trace("stopProcessButton_Click exit");
         }
 
-        private void listFilesWithDuplicateContentHashcodesButton_Click(object sender, EventArgs e)
+        private void ListFilesWithDuplicateContentHashcodesButton_Click(object sender, EventArgs e)
         {
             Utils.Log("Checking for files with Duplicate ContentsHash");
 
