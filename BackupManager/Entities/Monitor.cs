@@ -12,7 +12,7 @@
         /// The name of any processes to kill if the monitor is detected down. Wildcards allowed.
         /// </summary>
         public string ProcessToKill;
-        
+
         /// <summary>
         /// Full path to application to start if the monitor is detected down. Environment variables are expanded.
         /// </summary>
@@ -26,12 +26,12 @@
         /// The display name of this monitor.
         /// </summary>
         public string Name;
-        
+
         /// <summary>
         /// If the port specified is greater than 0 then the connection is checked. Otherwise its assumed to be a URL.
         /// </summary>
         public int Port;
-        
+
         /// <summary>
         /// Any servie names to restart if this monitor is detected down.
         /// </summary>

@@ -1,16 +1,16 @@
 ﻿
 namespace BackupManager
 {
+    using BackupManager.Entities;
     using System;
     using System.Collections.Generic;
+    using System.Configuration;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
-    using System.Windows.Forms;
-    using System.Configuration;
-    using BackupManager.Entities;
-    using System.Diagnostics;
-    using System.Text.RegularExpressions;
     using System.Text;
+    using System.Text.RegularExpressions;
+    using System.Windows.Forms;
 
     public partial class Main : Form
     {
@@ -72,7 +72,7 @@ namespace BackupManager
                 listFilesComboBox.Items.Add(disk.Name);
             }
 
-            foreach(var monitor in mediaBackup.Monitors)
+            foreach (var monitor in mediaBackup.Monitors)
             {
                 processesComboBox.Items.Add(monitor.Name);
             }
@@ -151,12 +151,12 @@ namespace BackupManager
             long readSpeed = 0, writeSpeed = 0;
 
             int diskTestSize = disk.Free > DiskSpeedTestFileSize ? DiskSpeedTestFileSize : (int)disk.Free - Utils.BytesInOneKilobyte;
-            
+
             if (mediaBackup.DiskSpeedTests)
             {
                 Utils.DiskSpeedTest(folderToCheck, diskTestSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
             }
-            
+
             string text = $"Name: {disk.Name}\nTotal: {disk.CapacityFormatted}\nFree: {disk.FreeFormatted}\nRead: {Utils.FormatSpeed(readSpeed)}\nWrite: {Utils.FormatSpeed(writeSpeed)}";
 
             bool diskInfoMessageWasTheLastSent = true;

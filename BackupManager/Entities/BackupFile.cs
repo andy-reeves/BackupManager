@@ -87,7 +87,7 @@
             // always calculate path in case the MasterFolder, IndexFolder or RelativePath properties have been changed.
             return Path.Combine(backupPath, IndexFolder, RelativePath);
         }
-       
+
         /// <summary>
         /// Gets the number only of this disk this file is on. 0 if not backed up
         /// </summary>
@@ -296,11 +296,11 @@
         {
             if (!File.Exists(FullPath))
             {
-                return false;   
+                return false;
             }
 
             string pathToBackupDiskFile = Path.Combine(disk.BackupPath, IndexFolder, RelativePath);
-            
+
             if (!File.Exists(pathToBackupDiskFile))
             {
                 return false;

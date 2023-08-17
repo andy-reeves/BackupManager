@@ -1,11 +1,11 @@
 ﻿namespace BackupManager.Entities
 {
     using System;
-    using System.Xml.Serialization;
-    using System.IO;
-    using System.Linq;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.IO;
+    using System.Linq;
+    using System.Xml.Serialization;
 
     public class BackupDisk
     {
@@ -142,9 +142,9 @@
             }
 
             IEnumerable<DirectoryInfo> directoriesInRootFolder = from file in sharePathDirectoryInfo.GetDirectories()
-                                           where
-                                               ((file.Attributes & FileAttributes.Hidden) == 0) & ((file.Attributes & FileAttributes.System) == 0)
-                                           select file;
+                                                                 where
+                                                                     ((file.Attributes & FileAttributes.Hidden) == 0) & ((file.Attributes & FileAttributes.System) == 0)
+                                                                 select file;
 
             // In here there should be 1 directory starting with 'backup '
             if (directoriesInRootFolder.Count() != 1)

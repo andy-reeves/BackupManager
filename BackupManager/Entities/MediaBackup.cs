@@ -130,7 +130,7 @@
         {
             // take a copy of the xml file
             string destinationFileName = "MediaBackup-" + DateTime.Now.ToString("yy-MM-dd-HH-mm-ss.ff") + ".xml";
-            string destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups", destinationFileName); 
+            string destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups", destinationFileName);
             Utils.FileCopy(mediaBackupPath, destinationPath);
         }
 
@@ -553,7 +553,7 @@
                 text += $"{filesToDelete}\n";
             }
             parameterText += $"FilesToDelete:\n{text}";
-           
+
             text = string.Empty;
             foreach (string disksToSkip in DisksToSkipOnRestore)
             {
@@ -572,7 +572,7 @@
                 text += $"Monitor.ApplicationToStartArguments: {monitor.ApplicationToStartArguments}\n";
                 text += $"Monitor.Port: {monitor.Port}\n";
                 text += $"Monitor.ServiceToRestart: {monitor.ServiceToRestart}\n";
-                text += $"Monitor.Timeout: {monitor.Timeout}\n";  
+                text += $"Monitor.Timeout: {monitor.Timeout}\n";
             }
             parameterText = $"Monitors:\n{text}";
             Utils.Log(BackupAction.General, parameterText);

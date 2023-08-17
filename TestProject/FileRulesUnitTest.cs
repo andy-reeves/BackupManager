@@ -31,9 +31,9 @@ namespace BackupManager.TestProject
                 if (!cols[0].StartsWith("#") && cols.Length == 4)
                 {
                     string ruleNumberTestNumber = cols[0];
-                    
-                    string[]a = ruleNumberTestNumber.Split(".");
-                    
+
+                    string[] a = ruleNumberTestNumber.Split(".");
+
                     Assert.True(a.Length == 2);
 
                     string ruleNumber = a[0];

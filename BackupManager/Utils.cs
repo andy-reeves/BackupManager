@@ -11,18 +11,18 @@ namespace BackupManager
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Specialized;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
-    using System.Security.Cryptography;
-    using System.Text.RegularExpressions;
-    using System.Runtime.InteropServices;
-    using System.Collections.Specialized;
     using System.Net;
-    using System.Text;
-    using System.Diagnostics;
     using System.Net.Sockets;
-    using System.ServiceProcess;
     using System.Reflection;
+    using System.Runtime.InteropServices;
+    using System.Security.Cryptography;
+    using System.ServiceProcess;
+    using System.Text;
+    using System.Text.RegularExpressions;
 
     /// <summary>
     /// Common Utilty fuctions in a static class
@@ -77,7 +77,7 @@ namespace BackupManager
         /// The URL of the Pushover messaging service.
         /// </summary>
         private const string PushoverAddress = "https://api.pushover.net/1/messages.json";
-        
+
         /// <summary>
         /// Delay between Pushover messages in milliseconds
         /// </summary>
@@ -143,7 +143,8 @@ namespace BackupManager
             FileMove(LogFile, destLogFile);
 
             string sourceTraceFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log");
-            if (File.Exists(sourceTraceFile)) {
+            if (File.Exists(sourceTraceFile))
+            {
                 string destTraceFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups", $"BackupManager_Trace_{timeLog}.log");
 
                 FileCopy(sourceTraceFile, destTraceFile);
@@ -1573,7 +1574,8 @@ namespace BackupManager
                 if (!entries.Any())
                 {
                     try
-                    { if (directory != rootDirectory)
+                    {
+                        if (directory != rootDirectory)
                         {
                             Trace($"Deleting empty folder {directory}");
                             list.Add(directory);

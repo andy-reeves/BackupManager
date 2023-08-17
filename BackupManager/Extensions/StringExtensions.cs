@@ -208,7 +208,7 @@ namespace System
         /// </returns>
         public static string SubstringAfter(this string s, char c)
         {
-            if (string.IsNullOrEmpty(s)) {  return string.Empty; }
+            if (string.IsNullOrEmpty(s)) { return string.Empty; }
 
             var index = s.IndexOf(c);
             if (index == -1)
