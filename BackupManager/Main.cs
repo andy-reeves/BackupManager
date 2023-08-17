@@ -150,13 +150,13 @@ namespace BackupManager
 
             long readSpeed = 0, writeSpeed = 0;
 
-            if (disk.Free > DiskSpeedTestFileSize)
+            int diskTestSize = disk.Free > DiskSpeedTestFileSize ? DiskSpeedTestFileSize : (int)disk.Free - Utils.BytesInOneKilobyte;
+            
+            if (mediaBackup.DiskSpeedTests)
             {
-                if (mediaBackup.DiskSpeedTests)
-                {
-                    Utils.DiskSpeedTest(folderToCheck, DiskSpeedTestFileSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
-                }
+                Utils.DiskSpeedTest(folderToCheck, diskTestSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
             }
+            
             string text = $"Name: {disk.Name}\nTotal: {disk.CapacityFormatted}\nFree: {disk.FreeFormatted}\nRead: {Utils.FormatSpeed(readSpeed)}\nWrite: {Utils.FormatSpeed(writeSpeed)}";
 
             bool diskInfoMessageWasTheLastSent = true;
