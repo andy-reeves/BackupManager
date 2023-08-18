@@ -184,6 +184,11 @@ namespace BackupManager.Entities
                     backupFile.Flag = true;
                     toSave = true;
                 }
+
+                if (!backupFile.DiskChecked.HasValue())
+                {
+                    backupFile.ClearDiskChecked();
+                }
             }
 
             if (toSave)

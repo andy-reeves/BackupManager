@@ -112,19 +112,6 @@ namespace BackupManager
 
         #region Methods
 
-        private void ListFilesWithoutBackupDiskCheckedButton_Click(object sender, EventArgs e)
-        {
-            Utils.Trace("ListFilesWithoutBackupDiskCheckedButton_Click enter");
-
-            Utils.Log("Listing files without DiskChecked");
-
-            foreach (BackupFile file in mediaBackup.GetBackupFilesWithDiskCheckedEmpty())
-            {
-                Utils.Log($"{file.FullPath} does not have DiskChecked set on disk {file.Disk}");
-            }
-            Utils.Trace("ListFilesWithoutBackupDiskCheckedButton_Click exit");
-        }
-
         private void CheckConnectedBackupDiskButton_Click(object sender, EventArgs e)
         {
             Utils.Trace("CheckConnectedBackupDriveButton_Click enter");
@@ -441,7 +428,7 @@ namespace BackupManager
 
                     if (File.Exists(destinationFileName))
                     {
-                        Utils.Log(BackupAction.BackupFiles, $"[{fileCounter}/{totalFileCount}] Skipping copy as it exists. Checking hashes instead.");
+                        Utils.LogWithPushover(BackupAction.BackupFiles, $"[{fileCounter}/{totalFileCount}]\nSkipping copy of {sourceFileName} as it exists already.");
 
                         // it could be that the source file hash changed after we read it (we read the hash, updated the master file and then copied it)
                         // in which case check the source hash again and then check the copied file 
@@ -501,7 +488,7 @@ namespace BackupManager
                             if (!outOfDiskSpaceMessageSent)
                             {
                                 Utils.LogWithPushover(BackupAction.BackupFiles,
-                                                      $"[{fileCounter}/{totalFileCount}] {Utils.FormatSize(availableSpace)} free. Skipping {sourceFileName} as not enough free space"
+                                                      $"[{fileCounter}/{totalFileCount}] {Utils.FormatSize(availableSpace)} free.\nSkipping {sourceFileName} as not enough free space"
                                                       );
                                 outOfDiskSpaceMessageSent = true;
                             }
@@ -538,28 +525,18 @@ namespace BackupManager
 
             IEnumerable<BackupFile> filesStillNotOnBackupDisk = mediaBackup.GetBackupFilesWithDiskEmpty();
 
+            string text = string.Empty;
+
             if (filesStillNotOnBackupDisk.Count() > 0)
             {
                 sizeOfFiles = filesStillNotOnBackupDisk.Sum(p => p.Length);
 
-                Utils.LogWithPushover(BackupAction.BackupFiles,
-                                      $"{filesStillNotOnBackupDisk.Count():n0} files still to backup at {Utils.FormatSize(sizeOfFiles)}");
+                text = $"{filesStillNotOnBackupDisk.Count():n0} files still to backup at {Utils.FormatSize(sizeOfFiles)}.\n";
             }
 
-            IEnumerable<BackupFile> filesWithoutDiskChecked = mediaBackup.GetBackupFilesWithDiskCheckedEmpty();
+            Utils.LogWithPushover(BackupAction.BackupFiles, text + $"{disk.FreeFormatted} free on backup disk");
 
-            if (filesWithoutDiskChecked.Count() > 0)
-            {
-                Utils.LogWithPushover(BackupAction.BackupFiles,
-                                      $"{filesWithoutDiskChecked.Count():n0} files still without DiskChecked set");
-            }
-
-            Utils.LogWithPushover(BackupAction.BackupFiles,
-                                  $"{disk.FreeFormatted} free on backup disk");
-
-            Utils.LogWithPushover(BackupAction.BackupFiles,
-                                  PushoverPriority.High,
-                                  "Completed");
+            Utils.LogWithPushover(BackupAction.BackupFiles, PushoverPriority.High, "Completed");
 
             Utils.Trace("CopyFiles exit");
         }
@@ -840,25 +817,6 @@ namespace BackupManager
             }
 
             Utils.Trace("checkDiskAndDeleteButton_Click exit");
-        }
-
-        private void ClearBackupDiskForFilesWithoutBackupDiskCheckedButton_Click(object sender, EventArgs e)
-        {
-            Utils.Trace("clearBackupDiskForFilesWithoutBackupDiskCheckedButton_Click enter");
-
-            IEnumerable<BackupFile> files = mediaBackup.GetBackupFilesWithDiskCheckedEmpty();
-
-            Utils.Log("Clearing Disk for files without DiskChecked");
-
-            foreach (BackupFile file in files)
-            {
-                Utils.Log($"{file.FullPath} does not have DiskChecked set on backup disk {file.Disk} so clearing the BackupDisk");
-                file.Disk = null;
-            }
-
-            mediaBackup.Save();
-
-            Utils.Trace("clearBackupDiskForFilesWithoutBackupDiskCheckedButton_Click exit");
         }
 
         private void TimerButton_Click(object sender, EventArgs e)
