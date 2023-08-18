@@ -232,6 +232,9 @@ dotnet_diagnostic.CA1070.severity = warning
 dotnet_diagnostic.xUnit2001.severity = warning
 dotnet_diagnostic.CA1001.severity = warning
 
+# IDE0047: Paranthesis can be removed
+dotnet_diagnostic.IDE0047.severity = warning
+
 # IDE0055: Fix formatting
 dotnet_diagnostic.IDE0055.severity = warning
 
@@ -240,6 +243,9 @@ dotnet_diagnostic.IDE0059.severity = warning
 
 # IDE0073: Must have file header
 dotnet_diagnostic.IDE0073.severity = warning
+
+# IDE0002: Simplify Member Access
+dotnet_diagnostic.IDE0002.severity = warning
 
 [*.{cs,vb}]
 dotnet_style_operator_placement_when_wrapping = beginning_of_line

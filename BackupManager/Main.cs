@@ -202,7 +202,7 @@ namespace BackupManager
                     BackupFile backupFile = mediaBackup.GetBackupFile(backupFileIndexFolderRelativePath);
 
                     // This happens when the file we have on the backup disk is no longer in the masterFolder
-                    if (System.IO.File.Exists(backupFile.FullPath))
+                    if (File.Exists(backupFile.FullPath))
                     {
                         // This forces a hash check on the source and backup disk files
                         Utils.Trace($"Checking hash for {backupFile.Hash}");
@@ -439,7 +439,7 @@ namespace BackupManager
                     FileInfo sourceFileInfo = new FileInfo(sourceFileName);
                     string sourceFileSize = Utils.FormatSize(sourceFileInfo.Length);
 
-                    if (System.IO.File.Exists(destinationFileName))
+                    if (File.Exists(destinationFileName))
                     {
                         Utils.Log(BackupAction.BackupFiles, $"[{fileCounter}/{totalFileCount}] Skipping copy as it exists. Checking hashes instead.");
 
@@ -459,7 +459,7 @@ namespace BackupManager
                     {
                         result = Utils.GetDiskInfo(backupDiskTextBox.Text, out long availableSpace, out long totalBytes);
 
-                        if (availableSpace > Utils.ConvertMBtoBytes(mediaBackup.MinimumFreeSpaceToLeaveOnBackupDisk + sourceFileInfo.Length))
+                        if (availableSpace > Utils.ConvertMBtoBytes(mediaBackup.MinimumFreeSpaceToLeaveOnBackupDisk) + sourceFileInfo.Length)
                         {
                             outOfDiskSpaceMessageSent = false;
                             Utils.LogWithPushover(BackupAction.BackupFiles,
@@ -1126,14 +1126,14 @@ namespace BackupManager
 
                         string targetFilePath = Path.Combine(targetMasterFolder, file.IndexFolder, file.RelativePath);
 
-                        if (System.IO.File.Exists(targetFilePath))
+                        if (File.Exists(targetFilePath))
                         {
                             Utils.LogWithPushover(BackupAction.Restore,
                                                   $"[{fileCounter}/{countOfFiles}] {targetFilePath} Already exists");
                         }
                         else
                         {
-                            if (System.IO.File.Exists(sourceFileFullPath))
+                            if (File.Exists(sourceFileFullPath))
                             {
                                 Utils.LogWithPushover(BackupAction.Restore,
                                                       $"[{fileCounter}/{countOfFiles}] Copying {sourceFileFullPath} as {targetFilePath}");
@@ -1147,7 +1147,7 @@ namespace BackupManager
                             }
                         }
 
-                        if (System.IO.File.Exists(targetFilePath))
+                        if (File.Exists(targetFilePath))
                         {
                             if (file.ContentsHash == Utils.GetShortMd5HashFromFile(targetFilePath))
                             {
@@ -1402,7 +1402,7 @@ namespace BackupManager
 
                         string processToStart = Environment.ExpandEnvironmentVariables(monitor.ApplicationToStart);
 
-                        if (System.IO.File.Exists(processToStart))
+                        if (File.Exists(processToStart))
                         {
                             Process newProcess = Process.Start(processToStart, monitor.ApplicationToStartArguments);
 
