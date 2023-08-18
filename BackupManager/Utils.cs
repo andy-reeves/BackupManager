@@ -127,9 +127,6 @@ namespace BackupManager
 
         internal static void BackupLogFile()
         {
-            //LogFile
-
-            // and Trace
             string timeLog = DateTime.Now.ToString("yy-MM-dd-HH-mm-ss");
             string suffix = string.Empty;
 
