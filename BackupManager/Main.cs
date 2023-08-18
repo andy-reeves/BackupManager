@@ -1479,7 +1479,7 @@ namespace BackupManager
             {
                 string monitorName = processesComboBox.SelectedItem.ToString();
 
-                Monitor monitor = mediaBackup.Monitors.Where(m => m.Name == monitorName).First();
+                Monitor monitor = mediaBackup.Monitors.First(m => m.Name == monitorName);
 
                 if (monitor.ProcessToKill.HasValue())
                 {

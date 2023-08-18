@@ -252,7 +252,7 @@ namespace BackupManager.Entities
                 return null;
             }
 
-            BackupFile file = BackupFiles.Where(q => q.ContentsHash == value).First();
+            BackupFile file = BackupFiles.First(q => q.ContentsHash == value);
 
             Utils.Trace("GetBackupFileFromContentsHashcode exit");
             return file;
