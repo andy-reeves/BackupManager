@@ -459,59 +459,52 @@ namespace BackupManager
                     {
                         result = Utils.GetDiskInfo(backupDiskTextBox.Text, out long availableSpace, out long totalBytes);
 
-                        if (availableSpace > Utils.ConvertMBtoBytes(mediaBackup.MinimumFreeSpaceToLeaveOnBackupDisk))
+                        if (availableSpace > Utils.ConvertMBtoBytes(mediaBackup.MinimumFreeSpaceToLeaveOnBackupDisk + sourceFileInfo.Length))
                         {
-                            if (availableSpace > sourceFileInfo.Length)
+                            outOfDiskSpaceMessageSent = false;
+                            Utils.LogWithPushover(BackupAction.BackupFiles,
+                                                  $"[{fileCounter}/{totalFileCount}] {Utils.FormatSize(availableSpace)} free.\nCopying {sourceFileName} at {sourceFileSize}");
+
+                            Utils.FileDelete(destinationFileNameTemp);
+
+                            DateTime startTime = DateTime.UtcNow;
+                            Utils.FileCopy(sourceFileName, destinationFileNameTemp);
+                            DateTime endTime = DateTime.UtcNow;
+                            Utils.FileMove(destinationFileNameTemp, destinationFileName);
+
+                            double timeTaken = (endTime - startTime).TotalSeconds;
+                            Utils.Trace($"timeTaken {timeTaken}");
+                            Utils.Trace($"sourceFileInfo.Length {sourceFileInfo.Length}");
+
+                            string copySpeed = timeTaken > 0 ?
+                                Utils.FormatSpeed(Convert.ToInt64(sourceFileInfo.Length / timeTaken)) : "a very fast speed";
+
+                            Utils.Trace($"Copy complete at {copySpeed}");
+
+                            // Make sure its not readonly
+                            Utils.ClearFileAttribute(destinationFileName, FileAttributes.ReadOnly);
+
+                            // it could be that the source file hash changed after we read it (we read the hash, updated the master file and then copied it)
+                            // in which case check the source hash again and then check the copied file 
+                            bool returnValue = backupFile.CheckContentHashes(disk);
+
+                            if (returnValue == false)
                             {
-                                outOfDiskSpaceMessageSent = false;
+                                // There was an error with the hashcodes of the source file anf the file on the backup disk
                                 Utils.LogWithPushover(BackupAction.BackupFiles,
-                                                      $"[{fileCounter}/{totalFileCount}] {Utils.FormatSize(availableSpace)} free.\nCopying {sourceFileName} at {sourceFileSize}");
-
-                                Utils.FileDelete(destinationFileNameTemp);
-
-                                DateTime startTime = DateTime.UtcNow;
-                                Utils.FileCopy(sourceFileName, destinationFileNameTemp);
-                                DateTime endTime = DateTime.UtcNow;
-                                Utils.FileMove(destinationFileNameTemp, destinationFileName);
-
-                                double timeTaken = (endTime - startTime).TotalSeconds;
-                                Utils.Trace($"timeTaken {timeTaken}");
-                                Utils.Trace($"sourceFileInfo.Length {sourceFileInfo.Length}");
-
-                                string copySpeed = timeTaken > 0 ?
-                                    Utils.FormatSpeed(Convert.ToInt64(sourceFileInfo.Length / timeTaken)) : "a very fast speed";
-
-                                Utils.Trace($"Copy complete at {copySpeed}");
-
-                                // Make sure its not readonly
-                                Utils.ClearFileAttribute(destinationFileName, FileAttributes.ReadOnly);
-
-                                // it could be that the source file hash changed after we read it (we read the hash, updated the master file and then copied it)
-                                // in which case check the source hash again and then check the copied file 
-                                bool returnValue = backupFile.CheckContentHashes(disk);
-
-                                if (returnValue == false)
-                                {
-                                    // There was an error with the hashcodes of the source file anf the file on the backup disk
-                                    Utils.LogWithPushover(BackupAction.BackupFiles,
-                                                          PushoverPriority.High,
-                                                          $"There was an error with the hashcodes on the source and backup disk. Its likely the sourcefile has changed since the last backup of {backupFile.FullPath} to {destinationFileName}");
-                                }
-                            }
-                            else
-                            {
-                                if (!outOfDiskSpaceMessageSent)
-                                {
-                                    Utils.LogWithPushover(BackupAction.BackupFiles,
-                                                          $"[{fileCounter}/{totalFileCount}] {Utils.FormatSize(availableSpace)} free. Skipping {sourceFileName} as not enough free space for {sourceFileSize}"
-                                                          );
-                                    outOfDiskSpaceMessageSent = true;
-                                }
+                                                      PushoverPriority.High,
+                                                      $"There was an error with the hashcodes on the source and backup disk. Its likely the sourcefile has changed since the last backup of {backupFile.FullPath} to {destinationFileName}");
                             }
                         }
                         else
                         {
-                            break;
+                            if (!outOfDiskSpaceMessageSent)
+                            {
+                                Utils.LogWithPushover(BackupAction.BackupFiles,
+                                                      $"[{fileCounter}/{totalFileCount}] {Utils.FormatSize(availableSpace)} free. Skipping {sourceFileName} as not enough free space"
+                                                      );
+                                outOfDiskSpaceMessageSent = true;
+                            }
                         }
                     }
                 }
