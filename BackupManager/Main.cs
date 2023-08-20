@@ -156,6 +156,7 @@ namespace BackupManager
 
             if (mediaBackup.DiskSpeedTests)
             {
+                UpdateStatusLabel($"Speed testing {folderToCheck}...");
                 _ = Utils.DiskSpeedTest(folderToCheck, diskTestSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
             }
 
@@ -868,7 +869,7 @@ namespace BackupManager
 
                     if (mediaBackup.DiskSpeedTests)
                     {
-                        UpdateStatusLabel($"Speed testing {masterFolder}");
+                        UpdateStatusLabel($"Speed testing {masterFolder}...");
                         _ = Utils.DiskSpeedTest(masterFolder, DiskSpeedTestFileSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
                     }
 

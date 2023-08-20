@@ -78,7 +78,7 @@ namespace BackupManager
         /// <summary>
         /// Delay between Pushover messages in milliseconds
         /// </summary>
-        private const int TimeDelayOnPushoverMessages = 1000;
+        private const int TimeDelayOnPushoverMessages = 100;
 
         #endregion
 
@@ -1314,6 +1314,8 @@ namespace BackupManager
         internal static bool DiskSpeedTest(string pathToDiskToTest, long testFileSize, int testIterations, out long readSpeed, out long writeSpeed)
         {
             Trace("DiskSpeedTest enter");
+            Trace($"Params: pathToDiskToTest={pathToDiskToTest}, testFileSize={testFileSize}, testIterations={testIterations}");
+
 
             string tempPath = Path.GetTempPath();
 
@@ -1441,10 +1443,14 @@ namespace BackupManager
                     }
                 }
 
+                Trace($"{firstPathFilename} created");
+
                 testFileSize = GetFileLength(firstPathFilename);
 
                 startTime = DateTime.Now;
                 File.Copy(firstPathFilename, secondPathFilename);
+                Trace($"{firstPathFilename} copied as {secondPathFilename}");
+
                 stopTime = DateTime.Now;
 
                 File.Delete(firstPathFilename);
@@ -1453,10 +1459,11 @@ namespace BackupManager
                 TimeSpan interval = stopTime - startTime;
                 totalPerf += testFileSize / interval.TotalSeconds;
             }
+            Trace($"Iterations complete");
 
             long returnValue = Convert.ToInt64(totalPerf / testIterations);
 
-            Trace("DiskSpeedTest exit");
+            Trace($"DiskSpeedTest exit with {returnValue}");
             return returnValue;
         }
 
