@@ -842,6 +842,7 @@ namespace BackupManager
 
             Utils.LogWithPushover(BackupAction.ScanFolders, "Started");
             UpdateStatusLabel("Started");
+            UpdateProgressBar(1);
 
             foreach (string masterFolder in mediaBackup.MasterFolders)
             {
