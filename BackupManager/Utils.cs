@@ -78,7 +78,7 @@ namespace BackupManager
         /// <summary>
         /// Delay between Pushover messages in milliseconds
         /// </summary>
-        private const int TimeDelayOnPushoverMessages = 100;
+        private const int TimeDelayOnPushoverMessages = 1000;
 
         #endregion
 
@@ -1315,7 +1315,6 @@ namespace BackupManager
         {
             Trace("DiskSpeedTest enter");
             Trace($"Params: pathToDiskToTest={pathToDiskToTest}, testFileSize={testFileSize}, testIterations={testIterations}");
-
 
             string tempPath = Path.GetTempPath();
 

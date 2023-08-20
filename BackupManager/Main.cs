@@ -87,7 +87,7 @@ namespace BackupManager
                 processesComboBox.Items.Add(monitor.Name);
             }
 
-            scheduledBackupAction = () => { ScheduledBackupTaskWrapper(); };
+            scheduledBackupAction = () => { TaskWrapper(ScheduledBackupAsync); };
 
             monitoringAction = () => { MonitorServices(); };
 
@@ -122,7 +122,7 @@ namespace BackupManager
         {
             Utils.Trace("CheckConnectedBackupDriveButton_Click enter");
 
-            CheckConnectedDiskAndCopyFilesTaskWrapper(false, false);
+            TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, false, false);
 
             Utils.Trace("CheckConnectedBackupDriveButton_Click exit");
         }
@@ -655,14 +655,14 @@ namespace BackupManager
             ResetAllControls();
         }
 
-        private void CheckConnectedDiskAndCopyFilesRepeaterAsync(bool deleteExtraFiles)
+        private void CheckConnectedDiskAndCopyFilesRepeaterAsync()
         {
             SetupControlsForMasterFolderScan();
             string nextDiskMessage = "Please insert the next backup disk now";
 
             while (true)
             {
-                BackupDisk lastBackupDiskChecked = CheckConnectedDisk(deleteExtraFiles);
+                BackupDisk lastBackupDiskChecked = CheckConnectedDisk(true);
 
                 if (lastBackupDiskChecked == null)
                 {
@@ -698,24 +698,30 @@ namespace BackupManager
             ResetAllControls();
         }
 
-        public void ScanFoldersTaskWrapper()
+        public delegate void NoParamsDelegate();
+
+        public void TaskWrapper(NoParamsDelegate methodName)
         {
+            if (methodName is null)
+            {
+                throw new ArgumentNullException(nameof(methodName));
+            }
+
             tokenSource = new CancellationTokenSource();
             ct = tokenSource.Token;
-            Task t = Task.Run(() => ScanFolderAsync(), ct);
-        }
-        public void CheckConnectedDiskAndCopyFilesRepeaterTaskWrapper(bool deleteExtraFiles)
-        {
-            tokenSource = new CancellationTokenSource();
-            ct = tokenSource.Token;
-            Task t = Task.Run(() => CheckConnectedDiskAndCopyFilesRepeaterAsync(deleteExtraFiles), ct);
+            Task t = Task.Run(() => methodName(), ct);
         }
 
-        public void CheckConnectedDiskAndCopyFilesTaskWrapper(bool deleteExtraFiles, bool copyFiles)
+        public void TaskWrapper(Action<bool, bool> methodName, bool param1, bool param2)
         {
+            if (methodName is null)
+            {
+                throw new ArgumentNullException(nameof(methodName));
+            }
+
             tokenSource = new CancellationTokenSource();
             ct = tokenSource.Token;
-            Task t = Task.Run(() => CheckConnectedDiskAndCopyFilesAsync(deleteExtraFiles, copyFiles), ct);
+            Task t = Task.Run(() => methodName(param1, param2), ct);
         }
 
         private void SetupControlsForMasterFolderScan()
@@ -789,7 +795,7 @@ namespace BackupManager
 
             if (answer == DialogResult.Yes)
             {
-                ScanFoldersTaskWrapper();
+                TaskWrapper(ScanFolderAsync);
             }
 
             Utils.Trace("UpdateMasterFilesButton_Click exit");
@@ -1071,7 +1077,7 @@ namespace BackupManager
 
             if (answer == DialogResult.Yes)
             {
-                CheckConnectedDiskAndCopyFilesTaskWrapper(true, false);
+                TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, true, false);
             }
 
             Utils.Trace("checkDiskAndDeleteButton_Click exit");
@@ -1102,13 +1108,6 @@ namespace BackupManager
             }
 
             Utils.Trace("timerButton_Click exit");
-        }
-
-        public void ScheduledBackupTaskWrapper()
-        {
-            tokenSource = new CancellationTokenSource();
-            ct = tokenSource.Token;
-            Task t = Task.Run(() => ScheduledBackupAsync(), ct);
         }
 
         private void ScheduledBackupAsync()
@@ -1419,7 +1418,7 @@ namespace BackupManager
 
             if (answer == DialogResult.Yes)
             {
-                CheckConnectedDiskAndCopyFilesTaskWrapper(true, true);
+                TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, true, true);
             }
 
             Utils.Trace("checkBackupDeleteAndCopyButton_Click exit");
@@ -1898,7 +1897,7 @@ namespace BackupManager
 
             if (answer == DialogResult.Yes)
             {
-                CheckConnectedDiskAndCopyFilesRepeaterTaskWrapper(true);
+                TaskWrapper(CheckConnectedDiskAndCopyFilesRepeaterAsync);
             }
 
             Utils.Trace("checkBackupDeleteAndCopyButton_Click exit");
