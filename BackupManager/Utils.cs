@@ -134,7 +134,11 @@ namespace BackupManager
             suffix = "_Debug";
 #endif
             string destLogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups", $"BackupManager{suffix}_{timeLog}.log");
-            FileMove(LogFile, destLogFile);
+
+            if (File.Exists(LogFile))
+            {
+                FileMove(LogFile, destLogFile);
+            }
 
             string sourceTraceFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log");
             if (File.Exists(sourceTraceFile))

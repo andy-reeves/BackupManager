@@ -40,7 +40,7 @@ namespace BackupManager.Entities
         public Collection<BackupFile> BackupFiles;
 
         [XmlArrayItem("Monitor")]
-        public Collection<Monitor> Monitors;
+        public Collection<ProcessServiceMonitor> Monitors;
 
         [XmlArrayItem("BackupDisk")]
         public Collection<BackupDisk> BackupDisks;
@@ -385,7 +385,7 @@ namespace BackupManager.Entities
         /// Get a BackupDisk for the current backupShare
         /// </summary>
         /// <param name="backupShare"></param>
-        /// <returns></returns>
+        /// <returns>Null if disk is not connected</returns>
         public BackupDisk GetBackupDisk(string backupShare)
         {
             Utils.Trace("GetBackupDisk enter");
@@ -425,11 +425,6 @@ namespace BackupManager.Entities
             return indexFolderAndRelativePath.Contains(path) ? (BackupFile)indexFolderAndRelativePath[path] : null;
         }
 
-        public IEnumerable<BackupFile> GetBackupFilesWithDiskCheckedEmpty()
-        {
-            return BackupFiles.Where(p => string.IsNullOrEmpty(p.DiskChecked));
-        }
-
         /// <summary>
         /// Get BackupFiles on the diskName provided.
         /// </summary>
@@ -451,7 +446,7 @@ namespace BackupManager.Entities
         }
 
         /// <summary>
-        /// Get BackupFiles where Disk is not null or Empty
+        /// Get BackupFiles where Disk is null or Empty
         /// </summary>
         /// <returns></returns>
         public IEnumerable<BackupFile> GetBackupFilesWithDiskEmpty()
@@ -574,7 +569,7 @@ namespace BackupManager.Entities
             Utils.Log(BackupAction.General, parameterText);
 
             text = string.Empty;
-            foreach (Monitor monitor in Monitors)
+            foreach (ProcessServiceMonitor monitor in Monitors)
             {
                 text += $"Monitor.Name: {monitor.Name}\n";
                 text += $"Monitor.ProcessToKill: {monitor.ProcessToKill}\n";

@@ -45,6 +45,7 @@
             this.speedTestButton = new System.Windows.Forms.Button();
             this.monitoringButton = new System.Windows.Forms.Button();
             this.listFilesWithDuplicateContentHashcodesButton = new System.Windows.Forms.Button();
+            this.checkAllBackupDisksButton = new System.Windows.Forms.Button();
             this.timerButton = new System.Windows.Forms.Button();
             this.listFilesOnBackupDiskButton = new System.Windows.Forms.Button();
             this.listFilesInMasterFolderButton = new System.Windows.Forms.Button();
@@ -75,6 +76,10 @@
             this.stopProcessButton = new System.Windows.Forms.Button();
             this.processesComboBox = new System.Windows.Forms.ComboBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.statusStrip = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripProgressBar = new System.Windows.Forms.ToolStripProgressBar();
+            this.cancelButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.hoursNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minutesNumericUpDown)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -83,6 +88,7 @@
             this.groupBox4.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.groupBox6.SuspendLayout();
+            this.statusStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // updateMasterFilesButton
@@ -95,11 +101,11 @@
             this.toolTip.SetToolTip(this.updateMasterFilesButton, "Resets the entire collection of backup files. Extra entries are removed if no lon" +
         "ger there.");
             this.updateMasterFilesButton.UseVisualStyleBackColor = true;
-            this.updateMasterFilesButton.Click += new System.EventHandler(this.UpdateMasterFilesButtonClick);
+            this.updateMasterFilesButton.Click += new System.EventHandler(this.UpdateMasterFilesButton_Click);
             // 
             // checkConnectedBackupDiskButton
             // 
-            this.checkConnectedBackupDiskButton.Location = new System.Drawing.Point(10, 387);
+            this.checkConnectedBackupDiskButton.Location = new System.Drawing.Point(10, 337);
             this.checkConnectedBackupDiskButton.Name = "checkConnectedBackupDiskButton";
             this.checkConnectedBackupDiskButton.Size = new System.Drawing.Size(217, 39);
             this.checkConnectedBackupDiskButton.TabIndex = 1;
@@ -139,7 +145,7 @@
             // 
             // listFilesNotOnBackupDiskButton
             // 
-            this.listFilesNotOnBackupDiskButton.Location = new System.Drawing.Point(10, 60);
+            this.listFilesNotOnBackupDiskButton.Location = new System.Drawing.Point(10, 141);
             this.listFilesNotOnBackupDiskButton.Name = "listFilesNotOnBackupDiskButton";
             this.listFilesNotOnBackupDiskButton.Size = new System.Drawing.Size(217, 23);
             this.listFilesNotOnBackupDiskButton.TabIndex = 11;
@@ -150,7 +156,7 @@
             // 
             // recalculateAllHashesButton
             // 
-            this.recalculateAllHashesButton.Location = new System.Drawing.Point(10, 141);
+            this.recalculateAllHashesButton.Location = new System.Drawing.Point(10, 61);
             this.recalculateAllHashesButton.Name = "recalculateAllHashesButton";
             this.recalculateAllHashesButton.Size = new System.Drawing.Size(217, 23);
             this.recalculateAllHashesButton.TabIndex = 16;
@@ -162,7 +168,7 @@
             // 
             // checkDiskAndDeleteButton
             // 
-            this.checkDiskAndDeleteButton.Location = new System.Drawing.Point(10, 431);
+            this.checkDiskAndDeleteButton.Location = new System.Drawing.Point(10, 381);
             this.checkDiskAndDeleteButton.Name = "checkDiskAndDeleteButton";
             this.checkDiskAndDeleteButton.Size = new System.Drawing.Size(217, 39);
             this.checkDiskAndDeleteButton.TabIndex = 19;
@@ -174,19 +180,19 @@
             // 
             // checkBackupDeleteAndCopyButton
             // 
-            this.checkBackupDeleteAndCopyButton.Location = new System.Drawing.Point(10, 475);
+            this.checkBackupDeleteAndCopyButton.Location = new System.Drawing.Point(10, 425);
             this.checkBackupDeleteAndCopyButton.Name = "checkBackupDeleteAndCopyButton";
             this.checkBackupDeleteAndCopyButton.Size = new System.Drawing.Size(217, 39);
             this.checkBackupDeleteAndCopyButton.TabIndex = 36;
             this.checkBackupDeleteAndCopyButton.Text = "Check backup disk, delete files and then copy files";
-            this.toolTip.SetToolTip(this.checkBackupDeleteAndCopyButton, "Checks a connected backup disk.\r\nSets the BackupDisk and the BackupDiskChecked (i" +
-        "f the HashCode is correct). DELETES FILES.");
+            this.toolTip.SetToolTip(this.checkBackupDeleteAndCopyButton, "Checks a connected backup disk and then copies files.\r\nSets the BackupDisk and th" +
+        "e BackupDiskChecked (if the HashCode is correct). DELETES FILES.");
             this.checkBackupDeleteAndCopyButton.UseVisualStyleBackColor = true;
             this.checkBackupDeleteAndCopyButton.Click += new System.EventHandler(this.CheckBackupDeleteAndCopyButton_Click);
             // 
             // listMoviesWithMultipleFilesButton
             // 
-            this.listMoviesWithMultipleFilesButton.Location = new System.Drawing.Point(10, 198);
+            this.listMoviesWithMultipleFilesButton.Location = new System.Drawing.Point(10, 197);
             this.listMoviesWithMultipleFilesButton.Name = "listMoviesWithMultipleFilesButton";
             this.listMoviesWithMultipleFilesButton.Size = new System.Drawing.Size(217, 23);
             this.listMoviesWithMultipleFilesButton.TabIndex = 37;
@@ -201,14 +207,14 @@
             this.reportBackupDiskStatusButton.Name = "reportBackupDiskStatusButton";
             this.reportBackupDiskStatusButton.Size = new System.Drawing.Size(217, 23);
             this.reportBackupDiskStatusButton.TabIndex = 43;
-            this.reportBackupDiskStatusButton.Text = "Report backup disk status";
+            this.reportBackupDiskStatusButton.Text = "List backup disk status";
             this.toolTip.SetToolTip(this.reportBackupDiskStatusButton, "Reports the status of each backup disk");
             this.reportBackupDiskStatusButton.UseVisualStyleBackColor = true;
             this.reportBackupDiskStatusButton.Click += new System.EventHandler(this.ReportBackupDiskStatusButton_Click);
             // 
             // speedTestButton
             // 
-            this.speedTestButton.Location = new System.Drawing.Point(10, 283);
+            this.speedTestButton.Location = new System.Drawing.Point(10, 282);
             this.speedTestButton.Name = "speedTestButton";
             this.speedTestButton.Size = new System.Drawing.Size(217, 23);
             this.speedTestButton.TabIndex = 44;
@@ -219,7 +225,7 @@
             // 
             // monitoringButton
             // 
-            this.monitoringButton.Location = new System.Drawing.Point(10, 332);
+            this.monitoringButton.Location = new System.Drawing.Point(10, 309);
             this.monitoringButton.Name = "monitoringButton";
             this.monitoringButton.Size = new System.Drawing.Size(217, 23);
             this.monitoringButton.TabIndex = 50;
@@ -230,7 +236,7 @@
             // 
             // listFilesWithDuplicateContentHashcodesButton
             // 
-            this.listFilesWithDuplicateContentHashcodesButton.Location = new System.Drawing.Point(10, 227);
+            this.listFilesWithDuplicateContentHashcodesButton.Location = new System.Drawing.Point(10, 226);
             this.listFilesWithDuplicateContentHashcodesButton.Name = "listFilesWithDuplicateContentHashcodesButton";
             this.listFilesWithDuplicateContentHashcodesButton.Size = new System.Drawing.Size(217, 23);
             this.listFilesWithDuplicateContentHashcodesButton.TabIndex = 61;
@@ -238,6 +244,19 @@
             this.toolTip.SetToolTip(this.listFilesWithDuplicateContentHashcodesButton, "List files with duplicate content hashcodes");
             this.listFilesWithDuplicateContentHashcodesButton.UseVisualStyleBackColor = true;
             this.listFilesWithDuplicateContentHashcodesButton.Click += new System.EventHandler(this.ListFilesWithDuplicateContentHashcodesButton_Click);
+            // 
+            // checkAllBackupDisksButton
+            // 
+            this.checkAllBackupDisksButton.Location = new System.Drawing.Point(10, 521);
+            this.checkAllBackupDisksButton.Name = "checkAllBackupDisksButton";
+            this.checkAllBackupDisksButton.Size = new System.Drawing.Size(217, 23);
+            this.checkAllBackupDisksButton.TabIndex = 63;
+            this.checkAllBackupDisksButton.Text = "Check all backup disks";
+            this.toolTip.SetToolTip(this.checkAllBackupDisksButton, "Checks a connected backup disk and copies files. Then waits for the next disk to " +
+        "be connected. \r\nSets the BackupDisk and the BackupDiskChecked (if the HashCode i" +
+        "s correct). DELETES FILES.");
+            this.checkAllBackupDisksButton.UseVisualStyleBackColor = true;
+            this.checkAllBackupDisksButton.Click += new System.EventHandler(this.CheckAllBackupDisksButton_Click);
             // 
             // timerButton
             // 
@@ -580,11 +599,49 @@
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Processes/Services";
             // 
+            // statusStrip
+            // 
+            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel,
+            this.toolStripProgressBar});
+            this.statusStrip.Location = new System.Drawing.Point(0, 549);
+            this.statusStrip.Name = "statusStrip";
+            this.statusStrip.Size = new System.Drawing.Size(469, 22);
+            this.statusStrip.TabIndex = 62;
+            this.statusStrip.Text = "statusStrip1";
+            // 
+            // toolStripStatusLabel
+            // 
+            this.toolStripStatusLabel.Name = "toolStripStatusLabel";
+            this.toolStripStatusLabel.Size = new System.Drawing.Size(454, 17);
+            this.toolStripStatusLabel.Spring = true;
+            this.toolStripStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // toolStripProgressBar
+            // 
+            this.toolStripProgressBar.Name = "toolStripProgressBar";
+            this.toolStripProgressBar.Size = new System.Drawing.Size(100, 16);
+            this.toolStripProgressBar.Visible = false;
+            // 
+            // cancelButton
+            // 
+            this.cancelButton.Enabled = false;
+            this.cancelButton.Location = new System.Drawing.Point(252, 521);
+            this.cancelButton.Name = "cancelButton";
+            this.cancelButton.Size = new System.Drawing.Size(207, 23);
+            this.cancelButton.TabIndex = 64;
+            this.cancelButton.Text = "Cancel";
+            this.cancelButton.UseVisualStyleBackColor = true;
+            this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(469, 519);
+            this.ClientSize = new System.Drawing.Size(469, 571);
+            this.Controls.Add(this.cancelButton);
+            this.Controls.Add(this.checkAllBackupDisksButton);
+            this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.listFilesWithDuplicateContentHashcodesButton);
             this.Controls.Add(this.groupBox6);
             this.Controls.Add(this.groupBox5);
@@ -623,6 +680,8 @@
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             this.groupBox6.ResumeLayout(false);
+            this.statusStrip.ResumeLayout(false);
+            this.statusStrip.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -675,6 +734,11 @@
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.ComboBox listFilesComboBox;
         private System.Windows.Forms.Button listFilesWithDuplicateContentHashcodesButton;
+        private System.Windows.Forms.StatusStrip statusStrip;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
+        private System.Windows.Forms.Button checkAllBackupDisksButton;
+        private System.Windows.Forms.Button cancelButton;
+        private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar;
     }
 }
 

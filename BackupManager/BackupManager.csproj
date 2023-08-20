@@ -70,8 +70,9 @@
     <Compile Include="Entities\BackupDisk.cs" />
     <Compile Include="Entities\BackupFile.cs" />
     <Compile Include="Entities\FileRule.cs" />
-    <Compile Include="Entities\Monitor.cs" />
+    <Compile Include="Entities\ProcessServiceMonitor.cs" />
     <Compile Include="Entities\Rules.cs" />
+    <Compile Include="Extensions\ControlExtensions.cs" />
     <Compile Include="Extensions\IntegerExtensions.cs" />
     <Compile Include="Main.cs">
       <SubType>Form</SubType>
