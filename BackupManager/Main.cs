@@ -377,14 +377,26 @@ namespace BackupManager
         }
 
         /// <summary>
-        /// Returns null if no disk connected
+        /// Waits for a valid backup disk to be inserted
         /// </summary>
         /// <returns></returns>
         private BackupDisk SetupBackupDisk()
         {
-            // check the backupDisks has an entry for this disk
-            BackupDisk disk = mediaBackup.GetBackupDisk(backupDiskTextBox.Text);
-            return disk == null ? null : disk.Update(mediaBackup.BackupFiles) ? disk : null;
+            string nextDiskMessage = "Please insert the next backup disk now";
+
+            BackupDisk disk;
+            do
+            {
+                // check the backupDisks has an entry for this disk
+                disk = mediaBackup.GetBackupDisk(backupDiskTextBox.Text);
+                if (disk != null)
+                {
+                    return disk.Update(mediaBackup.BackupFiles) ? disk : null;
+                }
+                WaitForNewDisk(nextDiskMessage);
+            } while (disk == null);
+
+            return disk;
         }
 
         private void CopyFiles(bool showCompletedMessage)
@@ -599,10 +611,13 @@ namespace BackupManager
             IEnumerable<BackupFile> filesNotOnBackupDisk = mediaBackup.GetBackupFilesWithDiskEmpty().OrderByDescending(p => p.Length);
 
             Utils.Log("Listing files not on a backup disk");
+
             foreach (BackupFile file in filesNotOnBackupDisk)
             {
                 Utils.Log($"{file.FullPath} at {Utils.FormatSize(file.Length)}");
             }
+
+            Utils.Log($"{filesNotOnBackupDisk.Count()} files at {Utils.FormatSize(filesNotOnBackupDisk.Sum(p => p.Length))}");
 
             Utils.Trace("ListFilesNotOnBackupDiskButton_Click exit");
         }
@@ -643,6 +658,7 @@ namespace BackupManager
         private void CheckConnectedDiskAndCopyFilesRepeaterAsync(bool deleteExtraFiles)
         {
             SetupControlsForMasterFolderScan();
+            string nextDiskMessage = "Please insert the next backup disk now";
 
             while (true)
             {
@@ -657,22 +673,19 @@ namespace BackupManager
 
                 CopyFiles(false);
 
-                string message = "Please insert the next disk now";
-
                 // send pushover high to change disk
                 Utils.LogWithPushover(BackupAction.General,
                              PushoverPriority.High,
                              $"Backup disk {lastBackupDiskChecked.Name} checked and files copied. Please insert the next disk now");
 
-                UpdateStatusLabel(message);
+                UpdateStatusLabel(nextDiskMessage);
                 UpdateProgressBar(1);
 
                 BackupDisk newDisk;
                 do
                 {
                     newDisk = SetupBackupDisk();
-                    WaitForNewDisk(message);
-                } while (newDisk == null || newDisk.Name == lastBackupDiskChecked.Name);
+                } while (newDisk.Name == lastBackupDiskChecked.Name);
             }
         }
 
@@ -723,6 +736,21 @@ namespace BackupManager
             _ = Invoke((MethodInvoker)(() =>
             {
                 cancelButton.Enabled = true;
+                testPushoverEmergencyButton.Enabled = true;
+                testPushoverHighButton.Enabled = true;
+                testPushoverNormalButton.Enabled = true;
+                testPushoverLowButton.Enabled = true;
+                listFilesInMasterFolderButton.Enabled = true;
+                listFilesNotCheckedInXXButton.Enabled = true;
+                listFilesNotOnBackupDiskButton.Enabled = true;
+                listFilesOnBackupDiskButton.Enabled = true;
+                listFilesWithDuplicateContentHashcodesButton.Enabled = true;
+                listMoviesWithMultipleFilesButton.Enabled = true;
+                processesGroupBox.Enabled = true;
+                monitoringButton.Enabled = true;
+                reportBackupDiskStatusButton.Enabled = true;
+                listFilesGroupBox.Enabled = true;
+                listFilesOnBackupDiskGroupBox.Enabled = true;
             }));
 
             if (ct.IsCancellationRequested) { ct.ThrowIfCancellationRequested(); }
@@ -1015,8 +1043,12 @@ namespace BackupManager
             {
                 DateTime oldestFileDate = DateTime.Parse(oldestFile.DiskChecked);
 
+                int days = DateTime.Today.Subtract(oldestFileDate).Days;
+
+                string daysText = days == 1 ? string.Empty : "(s)";
+
                 Utils.LogWithPushover(BackupAction.ScanFolders,
-                                      $"Oldest backup date is {DateTime.Today.Subtract(oldestFileDate).Days:n0} day(s) ago on {oldestFileDate.ToShortDateString()} on {oldestFile.Disk}");
+                                      $"Oldest backup date is {days:n0} day{daysText} ago on {oldestFileDate.ToShortDateString()} on {oldestFile.Disk}");
             }
 
             Utils.LogWithPushover(BackupAction.ScanFolders,
@@ -1875,7 +1907,7 @@ namespace BackupManager
         private void WaitForNewDisk(string message)
         {
             UpdateStatusLabel(message);
-            Thread.Sleep(1000);
+            Thread.Sleep(2000);
         }
 
         private void CancelButton_Click(object sender, EventArgs e)

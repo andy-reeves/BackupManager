@@ -69,13 +69,13 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.testPushoverLowButton = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.listFilesGroupBox = new System.Windows.Forms.GroupBox();
+            this.listFilesOnBackupDiskGroupBox = new System.Windows.Forms.GroupBox();
             this.listFilesComboBox = new System.Windows.Forms.ComboBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.stopProcessButton = new System.Windows.Forms.Button();
             this.processesComboBox = new System.Windows.Forms.ComboBox();
-            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.processesGroupBox = new System.Windows.Forms.GroupBox();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripProgressBar = new System.Windows.Forms.ToolStripProgressBar();
@@ -84,10 +84,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.minutesNumericUpDown)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            this.groupBox3.SuspendLayout();
-            this.groupBox4.SuspendLayout();
+            this.listFilesGroupBox.SuspendLayout();
+            this.listFilesOnBackupDiskGroupBox.SuspendLayout();
             this.groupBox5.SuspendLayout();
-            this.groupBox6.SuspendLayout();
+            this.processesGroupBox.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -520,27 +520,27 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Restore from Backup";
             // 
-            // groupBox3
+            // listFilesGroupBox
             // 
-            this.groupBox3.Controls.Add(this.listFilesInMasterFolderButton);
-            this.groupBox3.Controls.Add(this.listMasterFoldersComboBox);
-            this.groupBox3.Location = new System.Drawing.Point(252, 15);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(207, 49);
-            this.groupBox3.TabIndex = 56;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "List files in master folder";
+            this.listFilesGroupBox.Controls.Add(this.listFilesInMasterFolderButton);
+            this.listFilesGroupBox.Controls.Add(this.listMasterFoldersComboBox);
+            this.listFilesGroupBox.Location = new System.Drawing.Point(252, 15);
+            this.listFilesGroupBox.Name = "listFilesGroupBox";
+            this.listFilesGroupBox.Size = new System.Drawing.Size(207, 49);
+            this.listFilesGroupBox.TabIndex = 56;
+            this.listFilesGroupBox.TabStop = false;
+            this.listFilesGroupBox.Text = "List files in master folder";
             // 
-            // groupBox4
+            // listFilesOnBackupDiskGroupBox
             // 
-            this.groupBox4.Controls.Add(this.listFilesComboBox);
-            this.groupBox4.Controls.Add(this.listFilesOnBackupDiskButton);
-            this.groupBox4.Location = new System.Drawing.Point(252, 68);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(207, 54);
-            this.groupBox4.TabIndex = 57;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "List files on Backup disk";
+            this.listFilesOnBackupDiskGroupBox.Controls.Add(this.listFilesComboBox);
+            this.listFilesOnBackupDiskGroupBox.Controls.Add(this.listFilesOnBackupDiskButton);
+            this.listFilesOnBackupDiskGroupBox.Location = new System.Drawing.Point(252, 68);
+            this.listFilesOnBackupDiskGroupBox.Name = "listFilesOnBackupDiskGroupBox";
+            this.listFilesOnBackupDiskGroupBox.Size = new System.Drawing.Size(207, 54);
+            this.listFilesOnBackupDiskGroupBox.TabIndex = 57;
+            this.listFilesOnBackupDiskGroupBox.TabStop = false;
+            this.listFilesOnBackupDiskGroupBox.Text = "List files on Backup disk";
             // 
             // listFilesComboBox
             // 
@@ -587,17 +587,17 @@
             this.processesComboBox.Size = new System.Drawing.Size(108, 21);
             this.processesComboBox.TabIndex = 54;
             // 
-            // groupBox6
+            // processesGroupBox
             // 
-            this.groupBox6.Controls.Add(this.killProcessesButton);
-            this.groupBox6.Controls.Add(this.stopProcessButton);
-            this.groupBox6.Controls.Add(this.processesComboBox);
-            this.groupBox6.Location = new System.Drawing.Point(252, 425);
-            this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(207, 90);
-            this.groupBox6.TabIndex = 60;
-            this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "Processes/Services";
+            this.processesGroupBox.Controls.Add(this.killProcessesButton);
+            this.processesGroupBox.Controls.Add(this.stopProcessButton);
+            this.processesGroupBox.Controls.Add(this.processesComboBox);
+            this.processesGroupBox.Location = new System.Drawing.Point(252, 425);
+            this.processesGroupBox.Name = "processesGroupBox";
+            this.processesGroupBox.Size = new System.Drawing.Size(207, 90);
+            this.processesGroupBox.TabIndex = 60;
+            this.processesGroupBox.TabStop = false;
+            this.processesGroupBox.Text = "Processes/Services";
             // 
             // statusStrip
             // 
@@ -613,7 +613,7 @@
             // toolStripStatusLabel
             // 
             this.toolStripStatusLabel.Name = "toolStripStatusLabel";
-            this.toolStripStatusLabel.Size = new System.Drawing.Size(321, 17);
+            this.toolStripStatusLabel.Size = new System.Drawing.Size(454, 17);
             this.toolStripStatusLabel.Spring = true;
             this.toolStripStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -643,10 +643,10 @@
             this.Controls.Add(this.checkAllBackupDisksButton);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.listFilesWithDuplicateContentHashcodesButton);
-            this.Controls.Add(this.groupBox6);
+            this.Controls.Add(this.processesGroupBox);
             this.Controls.Add(this.groupBox5);
-            this.Controls.Add(this.groupBox4);
-            this.Controls.Add(this.groupBox3);
+            this.Controls.Add(this.listFilesOnBackupDiskGroupBox);
+            this.Controls.Add(this.listFilesGroupBox);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.monitoringButton);
@@ -675,11 +675,11 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox4.ResumeLayout(false);
+            this.listFilesGroupBox.ResumeLayout(false);
+            this.listFilesOnBackupDiskGroupBox.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
-            this.groupBox6.ResumeLayout(false);
+            this.processesGroupBox.ResumeLayout(false);
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.ResumeLayout(false);
@@ -725,13 +725,13 @@
         private System.Windows.Forms.ComboBox listMasterFoldersComboBox;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.GroupBox listFilesGroupBox;
+        private System.Windows.Forms.GroupBox listFilesOnBackupDiskGroupBox;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.Button testPushoverLowButton;
         private System.Windows.Forms.Button stopProcessButton;
         private System.Windows.Forms.ComboBox processesComboBox;
-        private System.Windows.Forms.GroupBox groupBox6;
+        private System.Windows.Forms.GroupBox processesGroupBox;
         private System.Windows.Forms.ComboBox listFilesComboBox;
         private System.Windows.Forms.Button listFilesWithDuplicateContentHashcodesButton;
         private System.Windows.Forms.StatusStrip statusStrip;
