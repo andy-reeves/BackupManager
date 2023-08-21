@@ -53,7 +53,7 @@ namespace BackupManager
                          Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"),
                          "myListener"));
 
-            // backupDiskTextBox.Text = "\\\\nas1\\assets1\\_Test\\BackupDisks\\backup 1 parent";
+            backupDiskTextBox.Text = "\\\\nas1\\assets1\\_Test\\BackupDisks\\backup 1001 parent";
 #else
             backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
 #endif

@@ -67,14 +67,14 @@
   <BackupFiles />
   <BackupDisks>
     <BackupDisk>
-      <Name>backup 1</Name>
+      <Name>backup 1001</Name>
       <Checked>2023-08-15</Checked>
       <Capacity>11995171454976</Capacity>
       <TotalFiles>0</TotalFiles>
       <Free>318751838208</Free>
     </BackupDisk>
     <BackupDisk>
-      <Name>backup 2</Name>
+      <Name>backup 1002</Name>
       <Checked>2023-08-15</Checked>
       <Capacity>11995171454976</Capacity>
       <TotalFiles>1</TotalFiles>
