@@ -686,6 +686,7 @@ namespace BackupManager
                 BackupDisk newDisk;
                 do
                 {
+                    WaitForNewDisk(nextDiskMessage);
                     newDisk = SetupBackupDisk();
                 } while (newDisk.Name == lastBackupDiskChecked.Name);
             }
@@ -1931,8 +1932,12 @@ namespace BackupManager
 
         private void WaitForNewDisk(string message)
         {
+            Utils.Trace("WaitForNewDisk enter");
+
             UpdateStatusLabel(message);
-            Thread.Sleep(2000);
+            Thread.Sleep(5000);
+
+            Utils.Trace("WaitForNewDisk exit");
         }
 
         private void CancelButton_Click(object sender, EventArgs e)

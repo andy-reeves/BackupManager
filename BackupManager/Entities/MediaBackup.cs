@@ -396,6 +396,7 @@ namespace BackupManager.Entities
 
             if (string.IsNullOrEmpty(diskName))
             {
+                Utils.Trace($"GetBackupDisk exit with null");
                 return null;
             }
 
@@ -404,6 +405,7 @@ namespace BackupManager.Entities
                 if (backupDisk.Name.Equals(diskName, StringComparison.CurrentCultureIgnoreCase))
                 {
                     backupDisk.BackupShare = backupShare;
+                    Utils.Trace($"GetBackupDisk exit with {backupDisk.Name}");
                     return backupDisk;
                 }
             }
@@ -411,7 +413,7 @@ namespace BackupManager.Entities
             BackupDisk disk = new BackupDisk(diskName, backupShare);
             BackupDisks.Add(disk);
 
-            Utils.Trace("GetBackupDisk exit");
+            Utils.Trace("GetBackupDisk exit new disk");
             return disk;
         }
 
