@@ -428,7 +428,7 @@ namespace BackupManager
             long lastCopySpeed = 0;
             long remainingSizeOfFilesToCopy = sizeOfFiles;
 
-            EnableProgressBar(1, filesToBackup.Count() + 1);
+            EnableProgressBar(1, filesToBackup.Count());
 
             foreach (BackupFile backupFile in filesToBackup)
             {
@@ -884,10 +884,13 @@ namespace BackupManager
 
         private void EnableProgressBar(int minimum, int maximum)
         {
-            statusStrip.Invoke(x => toolStripProgressBar.Minimum = minimum);
-            statusStrip.Invoke(x => toolStripProgressBar.Maximum = maximum);
-            statusStrip.Invoke(x => toolStripProgressBar.Visible = true);
-            statusStrip.Invoke(x => toolStripProgressBar.Value = minimum);
+            if (maximum >= minimum)
+            {
+                statusStrip.Invoke(x => toolStripProgressBar.Minimum = minimum);
+                statusStrip.Invoke(x => toolStripProgressBar.Maximum = maximum);
+                statusStrip.Invoke(x => toolStripProgressBar.Visible = true);
+                statusStrip.Invoke(x => toolStripProgressBar.Value = minimum);
+            }
         }
 
         private void UpdateProgressBar(int value)

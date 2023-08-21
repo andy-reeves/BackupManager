@@ -1406,6 +1406,15 @@ namespace BackupManager
             Trace("RestartService exit");
             return true;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sourcePath"></param>
+        /// <param name="destinationPath"></param>
+        /// <param name="testFileSize"></param>
+        /// <param name="testIterations"></param>
+        /// <returns>The bytes read/written in 1s</returns>
         internal static long DiskSpeedTest(string sourcePath, string destinationPath, long testFileSize, int testIterations)
         {
             Trace("DiskSpeedTest enter");
@@ -1462,6 +1471,8 @@ namespace BackupManager
                 totalPerf += testFileSize / interval.TotalSeconds;
             }
 
+            // maybe interval.TotalSeconds is so small sometimes that we get an error
+            // may need to check for TotalSeconds <0.0.17 and exit accordingly without the division attempt
             Trace($"Iterations complete");
             Trace($"totalPerf: {totalPerf}, testIterations: {testIterations}");
             long returnValue = Convert.ToInt64(totalPerf / testIterations);
