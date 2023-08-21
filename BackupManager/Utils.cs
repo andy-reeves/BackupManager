@@ -1310,8 +1310,7 @@ namespace BackupManager
         /// <param name="pathToDiskToTest">The path to test.</param>
         /// <param name="readSpeed">in bytes per second</param>
         /// <param name="writeSpeed">in bytes per second</param>
-        /// <returns></returns>
-        internal static bool DiskSpeedTest(string pathToDiskToTest, long testFileSize, int testIterations, out long readSpeed, out long writeSpeed)
+        internal static void DiskSpeedTest(string pathToDiskToTest, long testFileSize, int testIterations, out long readSpeed, out long writeSpeed)
         {
             Trace("DiskSpeedTest enter");
             Trace($"Params: pathToDiskToTest={pathToDiskToTest}, testFileSize={testFileSize}, testIterations={testIterations}");
@@ -1324,7 +1323,6 @@ namespace BackupManager
             writeSpeed = DiskSpeedTest(tempPath, pathToDiskToTest, testFileSize, testIterations);
 
             Trace("DiskSpeedTest exit");
-            return true;
         }
 
         /// <summary>
