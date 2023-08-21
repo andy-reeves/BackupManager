@@ -45,6 +45,7 @@
             this.speedTestButton = new System.Windows.Forms.Button();
             this.monitoringButton = new System.Windows.Forms.Button();
             this.listFilesWithDuplicateContentHashcodesButton = new System.Windows.Forms.Button();
+            this.checkDeleteAndCopyAllBackupDisksButton = new System.Windows.Forms.Button();
             this.checkAllBackupDisksButton = new System.Windows.Forms.Button();
             this.timerButton = new System.Windows.Forms.Button();
             this.listFilesOnBackupDiskButton = new System.Windows.Forms.Button();
@@ -245,16 +246,29 @@
             this.listFilesWithDuplicateContentHashcodesButton.UseVisualStyleBackColor = true;
             this.listFilesWithDuplicateContentHashcodesButton.Click += new System.EventHandler(this.ListFilesWithDuplicateContentHashcodesButton_Click);
             // 
-            // checkAllBackupDisksButton
+            // checkDeleteAndCopyAllBackupDisksButton
             // 
-            this.checkAllBackupDisksButton.Location = new System.Drawing.Point(10, 521);
-            this.checkAllBackupDisksButton.Name = "checkAllBackupDisksButton";
-            this.checkAllBackupDisksButton.Size = new System.Drawing.Size(217, 23);
-            this.checkAllBackupDisksButton.TabIndex = 63;
-            this.checkAllBackupDisksButton.Text = "Check all backup disks";
-            this.toolTip.SetToolTip(this.checkAllBackupDisksButton, "Checks a connected backup disk and copies files. Then waits for the next disk to " +
+            this.checkDeleteAndCopyAllBackupDisksButton.Location = new System.Drawing.Point(10, 521);
+            this.checkDeleteAndCopyAllBackupDisksButton.Name = "checkDeleteAndCopyAllBackupDisksButton";
+            this.checkDeleteAndCopyAllBackupDisksButton.Size = new System.Drawing.Size(217, 23);
+            this.checkDeleteAndCopyAllBackupDisksButton.TabIndex = 63;
+            this.checkDeleteAndCopyAllBackupDisksButton.Text = "Check/delete/copy all backup disks";
+            this.toolTip.SetToolTip(this.checkDeleteAndCopyAllBackupDisksButton, "Checks a connected backup disk and copies files. Then waits for the next disk to " +
         "be connected. \r\nSets the BackupDisk and the BackupDiskChecked (if the HashCode i" +
         "s correct). DELETES FILES.");
+            this.checkDeleteAndCopyAllBackupDisksButton.UseVisualStyleBackColor = true;
+            this.checkDeleteAndCopyAllBackupDisksButton.Click += new System.EventHandler(this.CheckDeleteAndCopyAllBackupDisksButton_Click);
+            // 
+            // checkAllBackupDisksButton
+            // 
+            this.checkAllBackupDisksButton.Location = new System.Drawing.Point(10, 493);
+            this.checkAllBackupDisksButton.Name = "checkAllBackupDisksButton";
+            this.checkAllBackupDisksButton.Size = new System.Drawing.Size(217, 23);
+            this.checkAllBackupDisksButton.TabIndex = 65;
+            this.checkAllBackupDisksButton.Text = "Check/delete all backup disks";
+            this.toolTip.SetToolTip(this.checkAllBackupDisksButton, "Checks a connected backup disk. Then waits for the next disk to be connected. \r\nS" +
+        "ets the BackupDisk and the BackupDiskChecked (if the HashCode is correct). DELET" +
+        "ES FILES.");
             this.checkAllBackupDisksButton.UseVisualStyleBackColor = true;
             this.checkAllBackupDisksButton.Click += new System.EventHandler(this.CheckAllBackupDisksButton_Click);
             // 
@@ -639,8 +653,9 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(469, 571);
-            this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.checkAllBackupDisksButton);
+            this.Controls.Add(this.cancelButton);
+            this.Controls.Add(this.checkDeleteAndCopyAllBackupDisksButton);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.listFilesWithDuplicateContentHashcodesButton);
             this.Controls.Add(this.processesGroupBox);
@@ -736,9 +751,10 @@
         private System.Windows.Forms.Button listFilesWithDuplicateContentHashcodesButton;
         private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
-        private System.Windows.Forms.Button checkAllBackupDisksButton;
+        private System.Windows.Forms.Button checkDeleteAndCopyAllBackupDisksButton;
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar;
+        private System.Windows.Forms.Button checkAllBackupDisksButton;
     }
 }
 

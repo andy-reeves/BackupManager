@@ -53,7 +53,7 @@ namespace BackupManager
                          Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"),
                          "myListener"));
 
-            backupDiskTextBox.Text = "\\\\nas1\\assets1\\_Test\\BackupDisks\\backup 1 parent";
+            // backupDiskTextBox.Text = "\\\\nas1\\assets1\\_Test\\BackupDisks\\backup 1 parent";
 #else
             backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
 #endif
@@ -291,11 +291,13 @@ namespace BackupManager
                 }
             }
 
+            UpdateStatusLabel($"Deleting {folderToCheck} empty folders...");
+
             string[] directoriesDeleted = Utils.DeleteEmptyDirectories(folderToCheck);
 
             foreach (string directory in directoriesDeleted)
             {
-                Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Deleted empty folder {directory}");
+                Utils.Log(BackupAction.CheckBackupDisk, $"Deleted empty folder {directory}");
             }
 
             disk.UpdateDiskChecked();
@@ -655,7 +657,7 @@ namespace BackupManager
             ResetAllControls();
         }
 
-        private void CheckConnectedDiskAndCopyFilesRepeaterAsync()
+        private void CheckConnectedDiskAndCopyFilesRepeaterAsync(bool copyFiles)
         {
             SetupControlsForMasterFolderScan();
             string nextDiskMessage = "Please insert the next backup disk now";
@@ -671,12 +673,12 @@ namespace BackupManager
                     continue;
                 }
 
-                CopyFiles(false);
+                if (copyFiles) { CopyFiles(false); }
 
                 // send pushover high to change disk
                 Utils.LogWithPushover(BackupAction.General,
                              PushoverPriority.High,
-                             $"Backup disk {lastBackupDiskChecked.Name} checked and files copied. Please insert the next disk now");
+                             $"Backup disk {lastBackupDiskChecked.Name} checked. Please insert the next disk now");
 
                 UpdateStatusLabel(nextDiskMessage);
                 UpdateProgressBar(1);
@@ -698,9 +700,7 @@ namespace BackupManager
             ResetAllControls();
         }
 
-        public delegate void NoParamsDelegate();
-
-        public void TaskWrapper(NoParamsDelegate methodName)
+        public void TaskWrapper(Action methodName)
         {
             if (methodName is null)
             {
@@ -710,6 +710,18 @@ namespace BackupManager
             tokenSource = new CancellationTokenSource();
             ct = tokenSource.Token;
             Task t = Task.Run(() => methodName(), ct);
+        }
+
+        public void TaskWrapper(Action<bool> methodName, bool param1)
+        {
+            if (methodName is null)
+            {
+                throw new ArgumentNullException(nameof(methodName));
+            }
+
+            tokenSource = new CancellationTokenSource();
+            ct = tokenSource.Token;
+            Task t = Task.Run(() => methodName(param1), ct);
         }
 
         public void TaskWrapper(Action<bool, bool> methodName, bool param1, bool param2)
@@ -836,8 +848,8 @@ namespace BackupManager
             if (value > 0)
             {
                 progressPercentageText = $"{value * 100 / toolStripProgressBar.Maximum}%";
-                UpdateProgressBar(value);
             }
+            UpdateProgressBar(value);
 
             _ = Invoke((MethodInvoker)(() => toolStripStatusLabel.Text = text + progressPercentageText));
         }
@@ -854,6 +866,7 @@ namespace BackupManager
                 toolStripProgressBar.Minimum = minimum;
                 toolStripProgressBar.Maximum = maximum;
                 toolStripProgressBar.Visible = true;
+                toolStripProgressBar.Value = minimum;
             }));
         }
 
@@ -861,7 +874,15 @@ namespace BackupManager
         {
             _ = Invoke((MethodInvoker)(() =>
             {
-                toolStripProgressBar.Value = value;
+                if (value > 0)
+                {
+                    toolStripProgressBar.Value = value;
+                }
+                else
+                {
+                    toolStripProgressBar.Value = toolStripProgressBar.Minimum;
+                    toolStripProgressBar.Visible = false;
+                }
             }));
         }
 
@@ -1499,16 +1520,21 @@ namespace BackupManager
 
             Utils.Log("Listing backup disk statuses");
 
+            long actualUsuableSpace = 0;
             foreach (BackupDisk disk in disks)
             {
                 DateTime d = DateTime.Parse(disk.Checked);
                 Utils.Log($"{disk.Name} at {disk.CapacityFormatted} with {disk.FreeFormatted} free. Last check: {d:dd-MMM-yy}");
+                if (disk.Free > mediaBackup.MinimumFreeSpaceToLeaveOnBackupDisk * Utils.BytesInOneMegabyte)
+                {
+                    actualUsuableSpace += disk.Free - (mediaBackup.MinimumFreeSpaceToLeaveOnBackupDisk * Utils.BytesInOneMegabyte);
+                }
             }
 
             string totalSizeFormatted = Utils.FormatSize(mediaBackup.BackupDisks.Sum(p => p.Capacity));
             string totalFreespaceFormatted = Utils.FormatSize(mediaBackup.BackupDisks.Sum(p => p.Free));
 
-            Utils.Log($"Total available storage is {totalSizeFormatted} with {totalFreespaceFormatted} free");
+            Utils.Log($"Total available storage is {totalSizeFormatted} with {totalFreespaceFormatted} free and {Utils.FormatSize(actualUsuableSpace)} available");
 
             Utils.Trace("reportBackupDiskStatusButton_Click exit");
         }
@@ -1884,12 +1910,12 @@ namespace BackupManager
             Utils.Log("Finshed checking for files with Duplicate ContentsHash");
         }
 
-        private void CheckAllBackupDisksButton_Click(object sender, EventArgs e)
+        private void CheckDeleteAndCopyAllBackupDisksButton_Click(object sender, EventArgs e)
         {
             // Check the current backup disk connected
             // when its finished prompt for another disk and wait
 
-            Utils.Trace("checkBackupDeleteAndCopyButton_Click enter");
+            Utils.Trace("CheckDeleteAndCopyAllBackupDisksButton_Click enter");
 
             DialogResult answer = MessageBox.Show("Are you sure you want delete any extra files on the backup disk not in our list?",
                                                   "Delete extra files",
@@ -1897,10 +1923,10 @@ namespace BackupManager
 
             if (answer == DialogResult.Yes)
             {
-                TaskWrapper(CheckConnectedDiskAndCopyFilesRepeaterAsync);
+                TaskWrapper(CheckConnectedDiskAndCopyFilesRepeaterAsync, true);
             }
 
-            Utils.Trace("checkBackupDeleteAndCopyButton_Click exit");
+            Utils.Trace("CheckDeleteAndCopyAllBackupDisksButton_Click exit");
         }
 
         private void WaitForNewDisk(string message)
@@ -1917,6 +1943,25 @@ namespace BackupManager
             cancelButton.Enabled = false;
             ResetAllControls();
             toolStripStatusLabel.Text = string.Empty;
+        }
+
+        private void CheckAllBackupDisksButton_Click(object sender, EventArgs e)
+        {
+            // Check the current backup disk connected
+            // when its finished prompt for another disk and wait
+
+            Utils.Trace("CheckAllBackupDisksButton_Click enter");
+
+            DialogResult answer = MessageBox.Show("Are you sure you want delete any extra files on the backup disk not in our list?",
+                                                  "Delete extra files",
+                                                  MessageBoxButtons.YesNo);
+
+            if (answer == DialogResult.Yes)
+            {
+                TaskWrapper(CheckConnectedDiskAndCopyFilesRepeaterAsync, false);
+            }
+
+            Utils.Trace("CheckAllBackupDisksButton_Click exit");
         }
     }
 }
