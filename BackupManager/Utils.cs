@@ -1318,7 +1318,9 @@ namespace BackupManager
 
             string tempPath = Path.GetTempPath();
 
+            Trace("Starting read test");
             readSpeed = DiskSpeedTest(pathToDiskToTest, tempPath, testFileSize, testIterations);
+            Trace("Starting write test");
             writeSpeed = DiskSpeedTest(tempPath, pathToDiskToTest, testFileSize, testIterations);
 
             Trace("DiskSpeedTest exit");
@@ -1456,12 +1458,14 @@ namespace BackupManager
                 File.Delete(secondPathFilename);
 
                 TimeSpan interval = stopTime - startTime;
+                Trace($"testFileSize: {testFileSize}, interval.TotalSeconds: {interval.TotalSeconds}");
                 totalPerf += testFileSize / interval.TotalSeconds;
             }
+
             Trace($"Iterations complete");
-
+            Trace($"totalPerf: {totalPerf}, testIterations: {testIterations}");
             long returnValue = Convert.ToInt64(totalPerf / testIterations);
-
+            Trace($"Speed Calculation complete");
             Trace($"DiskSpeedTest exit with {returnValue}");
             return returnValue;
         }

@@ -710,7 +710,18 @@ namespace BackupManager
 
             tokenSource = new CancellationTokenSource();
             ct = tokenSource.Token;
-            Task t = Task.Run(() => methodName(), ct);
+            Task t = Task.Run(() => methodName(), ct).ContinueWith(u =>
+            {
+                if (u.Exception != null)
+                {
+                    Utils.Log($"Exception occured. Cancelling operation.");
+                    _ = MessageBox.Show($"Exception occured. Cancelling operation. {u.Exception}");
+
+                    CancelButton_Click(null, null);
+                }
+            }, default
+                , TaskContinuationOptions.OnlyOnFaulted
+                , TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         public void TaskWrapper(Action<bool> methodName, bool param1)
@@ -722,11 +733,23 @@ namespace BackupManager
 
             tokenSource = new CancellationTokenSource();
             ct = tokenSource.Token;
-            Task t = Task.Run(() => methodName(param1), ct);
+            Task t = Task.Run(() => methodName(param1), ct).ContinueWith(u =>
+            {
+                if (u.Exception != null)
+                {
+                    Utils.Log($"Exception occured. Cancelling operation.");
+                    _ = MessageBox.Show($"Exception occured. Cancelling operation. {u.Exception}");
+
+                    CancelButton_Click(null, null);
+                }
+            }, default
+                , TaskContinuationOptions.OnlyOnFaulted
+                , TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         public void TaskWrapper(Action<bool, bool> methodName, bool param1, bool param2)
         {
+
             if (methodName is null)
             {
                 throw new ArgumentNullException(nameof(methodName));
@@ -734,7 +757,18 @@ namespace BackupManager
 
             tokenSource = new CancellationTokenSource();
             ct = tokenSource.Token;
-            Task t = Task.Run(() => methodName(param1, param2), ct);
+            Task t = Task.Run(() => methodName(param1, param2), ct).ContinueWith(u =>
+            {
+                if (u.Exception != null)
+                {
+                    Utils.Log($"Exception occured. Cancelling operation.");
+                    _ = MessageBox.Show($"Exception occured. Cancelling operation. {u.Exception}");
+
+                    CancelButton_Click(null, null);
+                }
+            }, default
+                , TaskContinuationOptions.OnlyOnFaulted
+                , TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         private void SetupControlsForMasterFolderScan()
@@ -745,32 +779,26 @@ namespace BackupManager
             {
                 if (!(c is StatusStrip))
                 {
-                    _ = Invoke((MethodInvoker)(() =>
-                    {
-                        c.Enabled = false;
-                    }));
+                    c.Invoke(x => x.Enabled = false);
                 }
             }
 
-            _ = Invoke((MethodInvoker)(() =>
-            {
-                cancelButton.Enabled = true;
-                testPushoverEmergencyButton.Enabled = true;
-                testPushoverHighButton.Enabled = true;
-                testPushoverNormalButton.Enabled = true;
-                testPushoverLowButton.Enabled = true;
-                listFilesInMasterFolderButton.Enabled = true;
-                listFilesNotCheckedInXXButton.Enabled = true;
-                listFilesNotOnBackupDiskButton.Enabled = true;
-                listFilesOnBackupDiskButton.Enabled = true;
-                listFilesWithDuplicateContentHashcodesButton.Enabled = true;
-                listMoviesWithMultipleFilesButton.Enabled = true;
-                processesGroupBox.Enabled = true;
-                monitoringButton.Enabled = true;
-                reportBackupDiskStatusButton.Enabled = true;
-                listFilesGroupBox.Enabled = true;
-                listFilesOnBackupDiskGroupBox.Enabled = true;
-            }));
+            cancelButton.Invoke(x => x.Enabled = true);
+            testPushoverEmergencyButton.Invoke(x => x.Enabled = true);
+            testPushoverHighButton.Invoke(x => x.Enabled = true);
+            testPushoverNormalButton.Invoke(x => x.Enabled = true);
+            testPushoverLowButton.Invoke(x => x.Enabled = true);
+            listFilesInMasterFolderButton.Invoke(x => x.Enabled = true);
+            listFilesNotCheckedInXXButton.Invoke(x => x.Enabled = true);
+            listFilesNotOnBackupDiskButton.Invoke(x => x.Enabled = true);
+            listFilesOnBackupDiskButton.Invoke(x => x.Enabled = true);
+            listFilesWithDuplicateContentHashcodesButton.Invoke(x => x.Enabled = true);
+            listMoviesWithMultipleFilesButton.Invoke(x => x.Enabled = true);
+            processesGroupBox.Invoke(x => x.Enabled = true);
+            monitoringButton.Invoke(x => x.Enabled = true);
+            reportBackupDiskStatusButton.Invoke(x => x.Enabled = true);
+            listFilesGroupBox.Invoke(x => x.Enabled = true);
+            listFilesOnBackupDiskGroupBox.Invoke(x => x.Enabled = true);
 
             if (ct.IsCancellationRequested) { ct.ThrowIfCancellationRequested(); }
         }
@@ -784,18 +812,12 @@ namespace BackupManager
 
             foreach (Control c in Controls)
             {
-                _ = Invoke((MethodInvoker)(() =>
-                {
-                    c.Enabled = true;
-                }));
+                c.Invoke(x => x.Enabled = true);
             }
 
-            _ = Invoke((MethodInvoker)(() =>
-            {
-                cancelButton.Enabled = false;
-                toolStripProgressBar.Visible = false;
-                toolStripStatusLabel.Text = string.Empty;
-            }));
+            cancelButton.Invoke(x => x.Enabled = false);
+            statusStrip.Invoke(x => toolStripProgressBar.Visible = false);
+            statusStrip.Invoke(x => toolStripStatusLabel.Text = string.Empty);
         }
 
         private void UpdateMasterFilesButton_Click(object sender, EventArgs e)
@@ -852,7 +874,7 @@ namespace BackupManager
             }
             UpdateProgressBar(value);
 
-            _ = Invoke((MethodInvoker)(() => toolStripStatusLabel.Text = text + progressPercentageText));
+            statusStrip.Invoke(x => toolStripStatusLabel.Text = text + progressPercentageText);
         }
 
         private void UpdateStatusLabel(string text)
@@ -862,29 +884,23 @@ namespace BackupManager
 
         private void EnableProgressBar(int minimum, int maximum)
         {
-            _ = Invoke((MethodInvoker)(() =>
-            {
-                toolStripProgressBar.Minimum = minimum;
-                toolStripProgressBar.Maximum = maximum;
-                toolStripProgressBar.Visible = true;
-                toolStripProgressBar.Value = minimum;
-            }));
+            statusStrip.Invoke(x => toolStripProgressBar.Minimum = minimum);
+            statusStrip.Invoke(x => toolStripProgressBar.Maximum = maximum);
+            statusStrip.Invoke(x => toolStripProgressBar.Visible = true);
+            statusStrip.Invoke(x => toolStripProgressBar.Value = minimum);
         }
 
         private void UpdateProgressBar(int value)
         {
-            _ = Invoke((MethodInvoker)(() =>
+            if (value > 0)
             {
-                if (value > 0)
-                {
-                    toolStripProgressBar.Value = value;
-                }
-                else
-                {
-                    toolStripProgressBar.Value = toolStripProgressBar.Minimum;
-                    toolStripProgressBar.Visible = false;
-                }
-            }));
+                statusStrip.Invoke(x => toolStripProgressBar.Value = value);
+            }
+            else
+            {
+                statusStrip.Invoke(x => toolStripProgressBar.Value = toolStripProgressBar.Minimum);
+                statusStrip.Invoke(x => toolStripProgressBar.Visible = false);
+            }
         }
 
         private void ScanFolders()

@@ -11,15 +11,15 @@ namespace BackupManager
 
     public static class ControlExtensions
     {
-        public static void ThreadSafeCall(this Control control, Action method)
+        public static void Invoke<T>(this T c, Action<T> action) where T : Control
         {
-            if (control.InvokeRequired)
+            if (c.InvokeRequired)
             {
-                _ = control.Invoke(method);
+                _ = c.Invoke(new Action<T, Action<T>>(Invoke), new object[] { c, action });
             }
             else
             {
-                method();
+                action(c);
             }
         }
     }
