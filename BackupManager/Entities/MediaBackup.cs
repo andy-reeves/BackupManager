@@ -63,6 +63,16 @@ namespace BackupManager.Entities
         public int DifferenceInFileCountAllowedPercentage;
 
         /// <summary>
+        /// Number of disk speed test iterations to execute
+        /// </summary>
+        public int SpeedTestIterations;
+
+        /// <summary>
+        /// Size of test file for disk speed tests in MB
+        /// </summary>
+        public int SpeedTestFileSize;
+
+        /// <summary>
         /// Interval in seconds
         /// </summary>
         public int MonitorInterval;
@@ -612,6 +622,8 @@ namespace BackupManager.Entities
             text += $"MinimumMasterFolderWriteSpeed : {MinimumMasterFolderWriteSpeed}\n";
             text += $"DaysToReportOldBackupDisks : {DaysToReportOldBackupDisks}\n";
             text += $"DiskSpeedTests : {DiskSpeedTests}\n";
+            text += $"SpeedTestFileSize : {SpeedTestFileSize}\n";
+            text += $"SpeedTestIterations : {SpeedTestIterations}\n";
 
             parameterText = text;
             Utils.Log(BackupAction.General, parameterText);

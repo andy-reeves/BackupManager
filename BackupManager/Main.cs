@@ -29,8 +29,8 @@ namespace BackupManager
 
         private readonly MediaBackup mediaBackup;
 
-        private const int DiskSpeedTestFileSize = 200 * Utils.BytesInOneMegabyte;
-        private const int DiskSpeedTestIterations = 1;
+        //private const int DiskSpeedTestFileSize = 200 * Utils.BytesInOneMegabyte;
+        //private const int DiskSpeedTestIterations = 1;
 
         #endregion
 
@@ -152,12 +152,12 @@ namespace BackupManager
 
             long readSpeed = 0, writeSpeed = 0;
 
-            int diskTestSize = disk.Free > DiskSpeedTestFileSize ? DiskSpeedTestFileSize : (int)disk.Free - Utils.BytesInOneKilobyte;
-
             if (mediaBackup.DiskSpeedTests)
             {
+                int diskTestSize = disk.Free > (mediaBackup.SpeedTestFileSize * Utils.BytesInOneMegabyte) ? (mediaBackup.SpeedTestFileSize * Utils.BytesInOneMegabyte) : (int)disk.Free - Utils.BytesInOneKilobyte;
+
                 UpdateStatusLabel($"Speed testing {folderToCheck}...");
-                _ = Utils.DiskSpeedTest(folderToCheck, diskTestSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
+                _ = Utils.DiskSpeedTest(folderToCheck, diskTestSize, mediaBackup.SpeedTestIterations, out readSpeed, out writeSpeed);
             }
 
             string text = $"Name: {disk.Name}\nTotal: {disk.CapacityFormatted}\nFree: {disk.FreeFormatted}\nRead: {Utils.FormatSpeed(readSpeed)}\nWrite: {Utils.FormatSpeed(writeSpeed)}";
@@ -942,7 +942,7 @@ namespace BackupManager
                     if (mediaBackup.DiskSpeedTests)
                     {
                         UpdateStatusLabel($"Speed testing {masterFolder}...");
-                        _ = Utils.DiskSpeedTest(masterFolder, DiskSpeedTestFileSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
+                        _ = Utils.DiskSpeedTest(masterFolder, mediaBackup.SpeedTestFileSize * Utils.BytesInOneMegabyte, mediaBackup.SpeedTestIterations, out readSpeed, out writeSpeed);
                     }
 
                     string totalBytesOnMasterFolderDiskFormatted = Utils.FormatSize(totalBytesOnMasterFolderDisk);
@@ -1257,7 +1257,7 @@ namespace BackupManager
             long readSpeed = 0, writeSpeed = 0;
             if (mediaBackup.DiskSpeedTests)
             {
-                _ = Utils.DiskSpeedTest(masterFolder, DiskSpeedTestFileSize, DiskSpeedTestIterations, out readSpeed, out writeSpeed);
+                _ = Utils.DiskSpeedTest(masterFolder, mediaBackup.SpeedTestFileSize * Utils.BytesInOneMegabyte, mediaBackup.SpeedTestIterations, out readSpeed, out writeSpeed);
             }
 
             Utils.Log($"testing {masterFolder}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
@@ -1565,7 +1565,7 @@ namespace BackupManager
             {
                 if (Utils.IsFolderWritable(masterFolder))
                 {
-                    _ = Utils.DiskSpeedTest(masterFolder, DiskSpeedTestFileSize, DiskSpeedTestIterations, out long readSpeed, out long writeSpeed);
+                    _ = Utils.DiskSpeedTest(masterFolder, mediaBackup.SpeedTestFileSize * Utils.BytesInOneMegabyte, mediaBackup.SpeedTestIterations, out long readSpeed, out long writeSpeed);
                     Utils.Log($"testing {masterFolder}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
                 }
             }

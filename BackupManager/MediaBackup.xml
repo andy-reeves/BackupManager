@@ -26,6 +26,10 @@
   <MonitorInterval>60</MonitorInterval>
   <!-- If True we test the speed of the disks -->
   <DiskSpeedTests>false</DiskSpeedTests>
+  <!-- Number of disk speed test iterations to run -->
+  <SpeedTestIterations>2</SpeedTestIterations>
+  <!-- Size of disk speed test file in MB -->
+  <SpeedTestFileSize>200</SpeedTestFileSize>
   <Monitors>
     <Monitor>
       <Url />
