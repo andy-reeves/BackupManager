@@ -20,6 +20,7 @@ namespace BackupManager
     using System.ServiceProcess;
     using System.Text;
     using System.Text.RegularExpressions;
+    using System.Threading;
 
     /// <summary>
     /// Common Utilty functions in a static class
@@ -177,6 +178,30 @@ namespace BackupManager
             EnsureDirectories(destFileName);
             File.Copy(sourceFileName, destFileName);
             Trace("FileCopy exit");
+        }
+
+        /// <summary>
+        /// Copies an existing file to a new file asynchronously. Overwriting a file of the same name is not allowed. Ensures the destination folder exists too.
+        /// </summary>
+        /// <param name="sourceFileName">The file to copy.</param>
+        /// <param name="destFileName">The name of the destination file. This cannot be a directory or an existing file.</param>
+
+        internal static void FileCopyAsync(string sourceFileName, string destFileName, CancellationToken ct)
+        {
+            Trace("FileCopyAsync enter");
+            Trace($"Params: sourceFileName={sourceFileName}, destFileName={destFileName}");
+
+            int bufferSize = 20 * BytesInOneMegabyte;
+            EnsureDirectories(destFileName);
+
+            if (ct != null && ct.IsCancellationRequested) { ct.ThrowIfCancellationRequested(); }
+
+            using (FileStream srcStream = new FileStream(sourceFileName, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize, true))
+            using (FileStream dstStream = new FileStream(destFileName, FileMode.Create, FileAccess.Write, FileShare.Write, bufferSize, true))
+            {
+                srcStream.CopyToAsync(dstStream, bufferSize, ct).GetAwaiter().GetResult();
+            }
+            Trace("FileCopyAsync exit");
         }
 
         /// <summary>
@@ -707,7 +732,7 @@ namespace BackupManager
                     // ensures there's a 1s gap between messages
                     while (DateTime.UtcNow < timeLastPushoverMessageSent.AddMilliseconds(TimeDelayOnPushoverMessages))
                     {
-                        System.Threading.Thread.Sleep(TimeDelayOnPushoverMessages / 3);
+                        Thread.Sleep(TimeDelayOnPushoverMessages / 3);
                     }
 
                     _ = client.UploadValues(PushoverAddress, parameters);

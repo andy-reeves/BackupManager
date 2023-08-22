@@ -41,10 +41,54 @@ namespace BackupManager
 
         #region Constructors and Destructors
 
+        public void FileCopyNew()
+        {
+            DisableControlsForAsyncTasks();
+
+            string src = @"src.dat";
+            string dst = @"dst.dat";
+
+            //byte[] buffer = new byte[6 * 1024 * 1024];
+            //new Random().NextBytes(buffer);
+            //using (FileStream f = File.OpenWrite(src))
+            //{
+            //    for (int i = 0; i < 1024; i++)
+            //    {
+            //        f.Write(buffer, 0, buffer.Length);
+            //    }
+            //}
+
+            Stopwatch sw = new Stopwatch();
+
+            File.Delete(dst);
+
+            Console.WriteLine("Starting sync");
+            sw.Restart();
+            File.Copy(src, dst);
+            sw.Stop();
+            Console.WriteLine("File.Copy: " + sw.Elapsed.TotalSeconds);
+
+            File.Delete(dst);
+
+            Console.WriteLine("Starting async");
+
+            sw.Restart();
+            Utils.FileCopyAsync(src, dst, ct);
+            sw.Stop();
+            Console.WriteLine("FileCopyAsync: " + sw.Elapsed.TotalSeconds);
+
+            ResetAllControls();
+
+        }
+
+        public void FileCopyWrapper()
+        {
+            TaskWrapper(FileCopyNew);
+        }
+
         public Main()
         {
             InitializeComponent();
-
 #if DEBUG
             Trace.Listeners.Add(new TextWriterTraceListener(
                          Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"),
@@ -523,7 +567,8 @@ namespace BackupManager
                             Utils.FileDelete(destinationFileNameTemp);
 
                             DateTime startTime = DateTime.UtcNow;
-                            Utils.FileCopy(sourceFileName, destinationFileNameTemp);
+                            Utils.FileCopyAsync(sourceFileName, destinationFileNameTemp, ct);
+
                             DateTime endTime = DateTime.UtcNow;
                             Utils.FileMove(destinationFileNameTemp, destinationFileName);
 
@@ -2064,6 +2109,12 @@ namespace BackupManager
 
                 Utils.Log($"Disk {disk.Name} with {disk.CapacityFormatted} capacity has {Utils.FormatSize(sizeFromDiskAnalysis)} used. Sum of files has {Utils.FormatSize(totalSizeOfFilesFromSumOfFiles)}. Diff is {Utils.FormatSize(difference)}. {percentageDiff}%");
             }
+        }
+
+        private void Button1_Click(object sender, EventArgs e)
+        {
+            FileCopyWrapper();
+
         }
     }
 }
