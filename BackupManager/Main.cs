@@ -210,24 +210,36 @@ namespace BackupManager
                 {
                     BackupFile backupFile = mediaBackup.GetBackupFile(backupFileIndexFolderRelativePath);
 
-                    // This happens when the file we have on the backup disk is no longer in the masterFolder
                     if (File.Exists(backupFile.FullPath))
                     {
-                        // This forces a hash check on the source and backup disk files
-                        Utils.Trace($"Checking hash for {backupFile.Hash}");
-                        bool returnValue = backupFile.CheckContentHashes(disk);
+                        // sometimes we get the same file on multiple backup disks
+                        // calling CheckContentHashes will switch it from one disk to another and they'll keep doing it
+                        // so if it was last seen on another disk delete it from this one
 
-                        if (!returnValue)
+                        if (disk.Name != backupFile.Disk && backupFile.Disk.HasValue())
                         {
-                            // There was an error with the hashcodes of the source file anf the file on the backup disk
-                            Utils.LogWithPushover(BackupAction.CheckBackupDisk,
-                                                  PushoverPriority.High,
-                                                  $"There was an error with the hashcodes on the source and backup disk. It's likely the sourcefile has changed since the last backup of {backupFile.FullPath}. It could be that the source file or destination file are corrupted though.");
-
-                            diskInfoMessageWasTheLastSent = false;
-
+                            Utils.Log($"{backupFile.FullPath} was on {backupFile.Disk} but now found on {disk.Name}");
+                            // we will fall through from here to the delete further down and remove the file
                         }
-                        continue;
+
+                        else
+                        {
+                            // This forces a hash check on the source and backup disk files
+                            Utils.Trace($"Checking hash for {backupFile.Hash}");
+                            bool returnValue = backupFile.CheckContentHashes(disk);
+
+                            if (!returnValue)
+                            {
+                                // There was an error with the hashcodes of the source file anf the file on the backup disk
+                                Utils.LogWithPushover(BackupAction.CheckBackupDisk,
+                                                      PushoverPriority.High,
+                                                      $"There was an error with the hashcodes on the source and backup disk. It's likely the sourcefile has changed since the last backup of {backupFile.FullPath}. It could be that the source file or destination file are corrupted though.");
+
+                                diskInfoMessageWasTheLastSent = false;
+
+                            }
+                            continue;
+                        }
                     }
                 }
                 else
