@@ -2059,7 +2059,7 @@ namespace BackupManager
             Utils.Trace("WaitForNewDisk enter");
 
             UpdateStatusLabel(message);
-            Thread.Sleep(5000);
+            Task.Delay(5000).Wait();
 
             Utils.Trace("WaitForNewDisk exit");
         }

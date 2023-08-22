@@ -21,6 +21,7 @@ namespace BackupManager
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Common Utilty functions in a static class
@@ -732,9 +733,8 @@ namespace BackupManager
                     // ensures there's a 1s gap between messages
                     while (DateTime.UtcNow < timeLastPushoverMessageSent.AddMilliseconds(TimeDelayOnPushoverMessages))
                     {
-                        Thread.Sleep(TimeDelayOnPushoverMessages / 3);
+                        Task.Delay(TimeDelayOnPushoverMessages / 2).Wait();
                     }
-
                     _ = client.UploadValues(PushoverAddress, parameters);
                     timeLastPushoverMessageSent = DateTime.UtcNow;
                 }
