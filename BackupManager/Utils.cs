@@ -53,17 +53,17 @@ namespace BackupManager
         /// <summary>
         /// The number of bytes in one Terabyte. 2^40 bytes.
         /// </summary>
-        internal const long BytesInOneTerabyte = 1_099_511_627_776;
+        private const long BytesInOneTerabyte = 1_099_511_627_776;
 
         /// <summary>
         /// The number of bytes in one Gigabyte. 2^30 bytes.
         /// </summary>
-        internal const int BytesInOneGigabyte = 1_073_741_824;
+        private const int BytesInOneGigabyte = 1_073_741_824;
 
         /// <summary>
         /// The number of bytes in one Megabyte. 2^20 bytes.
         /// </summary>
-        internal const int BytesInOneMegabyte = 1_048_576;
+        private const int BytesInOneMegabyte = 1_048_576;
 
         /// <summary>
         /// The number of bytes in one Kilobyte. 2^10 bytes.

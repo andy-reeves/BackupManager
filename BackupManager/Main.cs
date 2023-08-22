@@ -29,9 +29,6 @@ namespace BackupManager
 
         private readonly MediaBackup mediaBackup;
 
-        //private const int DiskSpeedTestFileSize = 200 * Utils.BytesInOneMegabyte;
-        //private const int DiskSpeedTestIterations = 1;
-
         #endregion
 
         private DailyTrigger trigger;
@@ -154,9 +151,9 @@ namespace BackupManager
 
             if (mediaBackup.DiskSpeedTests)
             {
-                int diskTestSize = disk.Free > (mediaBackup.SpeedTestFileSize * Utils.BytesInOneMegabyte)
-                                   ? mediaBackup.SpeedTestFileSize * Utils.BytesInOneMegabyte
-                                   : (int)disk.Free - Utils.BytesInOneKilobyte;
+                long diskTestSize = disk.Free > Utils.ConvertMBtoBytes(mediaBackup.SpeedTestFileSize)
+                                   ? Utils.ConvertMBtoBytes(mediaBackup.SpeedTestFileSize)
+                                   : disk.Free - Utils.BytesInOneKilobyte;
 
                 UpdateStatusLabel($"Speed testing {folderToCheck}");
                 Utils.DiskSpeedTest(folderToCheck, diskTestSize, mediaBackup.SpeedTestIterations, out readSpeed, out writeSpeed);
@@ -988,7 +985,7 @@ namespace BackupManager
                     if (mediaBackup.DiskSpeedTests)
                     {
                         UpdateStatusLabel($"Speed testing {masterFolder}");
-                        Utils.DiskSpeedTest(masterFolder, mediaBackup.SpeedTestFileSize * Utils.BytesInOneMegabyte, mediaBackup.SpeedTestIterations, out readSpeed, out writeSpeed);
+                        Utils.DiskSpeedTest(masterFolder, Utils.ConvertMBtoBytes(mediaBackup.SpeedTestFileSize), mediaBackup.SpeedTestIterations, out readSpeed, out writeSpeed);
                     }
 
                     string totalBytesOnMasterFolderDiskFormatted = Utils.FormatSize(totalBytesOnMasterFolderDisk);
@@ -1303,7 +1300,7 @@ namespace BackupManager
             long readSpeed = 0, writeSpeed = 0;
             if (mediaBackup.DiskSpeedTests)
             {
-                Utils.DiskSpeedTest(masterFolder, mediaBackup.SpeedTestFileSize * Utils.BytesInOneMegabyte, mediaBackup.SpeedTestIterations, out readSpeed, out writeSpeed);
+                Utils.DiskSpeedTest(masterFolder, Utils.ConvertMBtoBytes(mediaBackup.SpeedTestFileSize), mediaBackup.SpeedTestIterations, out readSpeed, out writeSpeed);
             }
 
             Utils.Log($"testing {masterFolder}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
@@ -1588,9 +1585,9 @@ namespace BackupManager
             {
                 DateTime d = DateTime.Parse(disk.Checked);
                 Utils.Log($"{disk.Name} at {disk.CapacityFormatted} with {disk.FreeFormatted} free. Last check: {d:dd-MMM-yy}");
-                if (disk.Free > mediaBackup.MinimumFreeSpaceToLeaveOnBackupDisk * Utils.BytesInOneMegabyte)
+                if (disk.Free > Utils.ConvertMBtoBytes(mediaBackup.MinimumFreeSpaceToLeaveOnBackupDisk))
                 {
-                    actualUsuableSpace += disk.Free - (mediaBackup.MinimumFreeSpaceToLeaveOnBackupDisk * Utils.BytesInOneMegabyte);
+                    actualUsuableSpace += disk.Free - Utils.ConvertMBtoBytes(mediaBackup.MinimumFreeSpaceToLeaveOnBackupDisk);
                 }
             }
 
@@ -1628,7 +1625,7 @@ namespace BackupManager
                 if (Utils.IsFolderWritable(masterFolder))
                 {
                     Utils.DiskSpeedTest(masterFolder,
-                                        mediaBackup.SpeedTestFileSize * Utils.BytesInOneMegabyte,
+                                        Utils.ConvertMBtoBytes(mediaBackup.SpeedTestFileSize),
                                         mediaBackup.SpeedTestIterations,
                                         out long readSpeed,
                                         out long writeSpeed);
@@ -2065,7 +2062,7 @@ namespace BackupManager
 
                 double percentageDiff = difference * 100 / sizeFromDiskAnalysis;
 
-                Utils.Log($"Disk {disk.Name} with {disk.CapacityFormatted} capacity has {Utils.FormatSize(sizeFromDiskAnalysis)} used. Sum of files has {Utils.FormatSize(totalSizeOfFilesFromSumOfFiles)}. Diff is {difference}. {percentageDiff}%");
+                Utils.Log($"Disk {disk.Name} with {disk.CapacityFormatted} capacity has {Utils.FormatSize(sizeFromDiskAnalysis)} used. Sum of files has {Utils.FormatSize(totalSizeOfFilesFromSumOfFiles)}. Diff is {Utils.FormatSize(difference)}. {percentageDiff}%");
             }
         }
     }
