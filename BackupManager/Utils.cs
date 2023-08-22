@@ -1447,6 +1447,8 @@ namespace BackupManager
 
             string randomText = RandomString(randomStringSize);
             double totalPerf;
+            DateTime startTime;
+            DateTime stopTime;
             long appendIterations = testFileSize / randomStringSize;
 
             totalPerf = 0;
@@ -1478,18 +1480,18 @@ namespace BackupManager
 
                 testFileSize = GetFileLength(firstPathFilename);
 
-                Stopwatch sw = Stopwatch.StartNew();
+                startTime = DateTime.Now;
                 File.Copy(firstPathFilename, secondPathFilename);
-                sw.Stop();
-
                 Trace($"{firstPathFilename} copied as {secondPathFilename}");
+
+                stopTime = DateTime.Now;
 
                 File.Delete(firstPathFilename);
                 File.Delete(secondPathFilename);
 
-                double timeTaken = sw.Elapsed.TotalSeconds;
-                Trace($"testFileSize: {testFileSize}, interval.TotalSeconds: {timeTaken}");
-                totalPerf += testFileSize / timeTaken;
+                TimeSpan interval = stopTime - startTime;
+                Trace($"testFileSize: {testFileSize}, interval.TotalSeconds: {interval.TotalSeconds}");
+                totalPerf += testFileSize / interval.TotalSeconds;
             }
 
             // maybe interval.TotalSeconds is so small sometimes that we get an error
