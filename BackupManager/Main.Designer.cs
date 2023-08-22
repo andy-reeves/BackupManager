@@ -47,6 +47,7 @@
             this.listFilesWithDuplicateContentHashcodesButton = new System.Windows.Forms.Button();
             this.checkDeleteAndCopyAllBackupDisksButton = new System.Windows.Forms.Button();
             this.checkAllBackupDisksButton = new System.Windows.Forms.Button();
+            this.listDiskSpaceComparedToSumOfFilesOnDiskButton = new System.Windows.Forms.Button();
             this.timerButton = new System.Windows.Forms.Button();
             this.listFilesOnBackupDiskButton = new System.Windows.Forms.Button();
             this.listFilesInMasterFolderButton = new System.Windows.Forms.Button();
@@ -67,7 +68,7 @@
             this.monitoringTimer = new System.Windows.Forms.Timer(this.components);
             this.killProcessesButton = new System.Windows.Forms.Button();
             this.listMasterFoldersComboBox = new System.Windows.Forms.ComboBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.pushoverGroupBox = new System.Windows.Forms.GroupBox();
             this.testPushoverLowButton = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.listFilesGroupBox = new System.Windows.Forms.GroupBox();
@@ -81,15 +82,19 @@
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripProgressBar = new System.Windows.Forms.ToolStripProgressBar();
             this.cancelButton = new System.Windows.Forms.Button();
+            this.AllBackupDisksGroupBox = new System.Windows.Forms.GroupBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.hoursNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minutesNumericUpDown)).BeginInit();
-            this.groupBox1.SuspendLayout();
+            this.pushoverGroupBox.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.listFilesGroupBox.SuspendLayout();
             this.listFilesOnBackupDiskGroupBox.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.processesGroupBox.SuspendLayout();
             this.statusStrip.SuspendLayout();
+            this.AllBackupDisksGroupBox.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // updateMasterFilesButton
@@ -106,11 +111,11 @@
             // 
             // checkConnectedBackupDiskButton
             // 
-            this.checkConnectedBackupDiskButton.Location = new System.Drawing.Point(10, 337);
+            this.checkConnectedBackupDiskButton.Location = new System.Drawing.Point(6, 22);
             this.checkConnectedBackupDiskButton.Name = "checkConnectedBackupDiskButton";
-            this.checkConnectedBackupDiskButton.Size = new System.Drawing.Size(217, 39);
+            this.checkConnectedBackupDiskButton.Size = new System.Drawing.Size(201, 23);
             this.checkConnectedBackupDiskButton.TabIndex = 1;
-            this.checkConnectedBackupDiskButton.Text = "Check connected backup disk";
+            this.checkConnectedBackupDiskButton.Text = "Check (don\'t remove extra files)";
             this.toolTip.SetToolTip(this.checkConnectedBackupDiskButton, "Checks a connected backup disk.\r\nSets the BackupDisk and the BackupDiskChecked (i" +
         "f the HashCode is correct). Doesn\'t delete any files.");
             this.checkConnectedBackupDiskButton.UseVisualStyleBackColor = true;
@@ -146,7 +151,7 @@
             // 
             // listFilesNotOnBackupDiskButton
             // 
-            this.listFilesNotOnBackupDiskButton.Location = new System.Drawing.Point(10, 141);
+            this.listFilesNotOnBackupDiskButton.Location = new System.Drawing.Point(10, 144);
             this.listFilesNotOnBackupDiskButton.Name = "listFilesNotOnBackupDiskButton";
             this.listFilesNotOnBackupDiskButton.Size = new System.Drawing.Size(217, 23);
             this.listFilesNotOnBackupDiskButton.TabIndex = 11;
@@ -169,11 +174,11 @@
             // 
             // checkDiskAndDeleteButton
             // 
-            this.checkDiskAndDeleteButton.Location = new System.Drawing.Point(10, 381);
+            this.checkDiskAndDeleteButton.Location = new System.Drawing.Point(6, 50);
             this.checkDiskAndDeleteButton.Name = "checkDiskAndDeleteButton";
-            this.checkDiskAndDeleteButton.Size = new System.Drawing.Size(217, 39);
+            this.checkDiskAndDeleteButton.Size = new System.Drawing.Size(201, 23);
             this.checkDiskAndDeleteButton.TabIndex = 19;
-            this.checkDiskAndDeleteButton.Text = "Check connected backup disk (and remove extra files)";
+            this.checkDiskAndDeleteButton.Text = "Check (and remove extra files)";
             this.toolTip.SetToolTip(this.checkDiskAndDeleteButton, "Checks a connected backup disk.\r\nSets the BackupDisk and the BackupDiskChecked (i" +
         "f the HashCode is correct). DELETES FILES.");
             this.checkDiskAndDeleteButton.UseVisualStyleBackColor = true;
@@ -181,11 +186,11 @@
             // 
             // checkBackupDeleteAndCopyButton
             // 
-            this.checkBackupDeleteAndCopyButton.Location = new System.Drawing.Point(10, 425);
+            this.checkBackupDeleteAndCopyButton.Location = new System.Drawing.Point(6, 79);
             this.checkBackupDeleteAndCopyButton.Name = "checkBackupDeleteAndCopyButton";
-            this.checkBackupDeleteAndCopyButton.Size = new System.Drawing.Size(217, 39);
+            this.checkBackupDeleteAndCopyButton.Size = new System.Drawing.Size(201, 23);
             this.checkBackupDeleteAndCopyButton.TabIndex = 36;
-            this.checkBackupDeleteAndCopyButton.Text = "Check backup disk, delete files and then copy files";
+            this.checkBackupDeleteAndCopyButton.Text = "Check, remove extra files and copy";
             this.toolTip.SetToolTip(this.checkBackupDeleteAndCopyButton, "Checks a connected backup disk and then copies files.\r\nSets the BackupDisk and th" +
         "e BackupDiskChecked (if the HashCode is correct). DELETES FILES.");
             this.checkBackupDeleteAndCopyButton.UseVisualStyleBackColor = true;
@@ -193,7 +198,7 @@
             // 
             // listMoviesWithMultipleFilesButton
             // 
-            this.listMoviesWithMultipleFilesButton.Location = new System.Drawing.Point(10, 197);
+            this.listMoviesWithMultipleFilesButton.Location = new System.Drawing.Point(10, 200);
             this.listMoviesWithMultipleFilesButton.Name = "listMoviesWithMultipleFilesButton";
             this.listMoviesWithMultipleFilesButton.Size = new System.Drawing.Size(217, 23);
             this.listMoviesWithMultipleFilesButton.TabIndex = 37;
@@ -204,7 +209,7 @@
             // 
             // reportBackupDiskStatusButton
             // 
-            this.reportBackupDiskStatusButton.Location = new System.Drawing.Point(10, 254);
+            this.reportBackupDiskStatusButton.Location = new System.Drawing.Point(10, 283);
             this.reportBackupDiskStatusButton.Name = "reportBackupDiskStatusButton";
             this.reportBackupDiskStatusButton.Size = new System.Drawing.Size(217, 23);
             this.reportBackupDiskStatusButton.TabIndex = 43;
@@ -215,7 +220,7 @@
             // 
             // speedTestButton
             // 
-            this.speedTestButton.Location = new System.Drawing.Point(10, 282);
+            this.speedTestButton.Location = new System.Drawing.Point(10, 337);
             this.speedTestButton.Name = "speedTestButton";
             this.speedTestButton.Size = new System.Drawing.Size(217, 23);
             this.speedTestButton.TabIndex = 44;
@@ -226,7 +231,7 @@
             // 
             // monitoringButton
             // 
-            this.monitoringButton.Location = new System.Drawing.Point(10, 309);
+            this.monitoringButton.Location = new System.Drawing.Point(10, 386);
             this.monitoringButton.Name = "monitoringButton";
             this.monitoringButton.Size = new System.Drawing.Size(217, 23);
             this.monitoringButton.TabIndex = 50;
@@ -237,7 +242,7 @@
             // 
             // listFilesWithDuplicateContentHashcodesButton
             // 
-            this.listFilesWithDuplicateContentHashcodesButton.Location = new System.Drawing.Point(10, 226);
+            this.listFilesWithDuplicateContentHashcodesButton.Location = new System.Drawing.Point(10, 228);
             this.listFilesWithDuplicateContentHashcodesButton.Name = "listFilesWithDuplicateContentHashcodesButton";
             this.listFilesWithDuplicateContentHashcodesButton.Size = new System.Drawing.Size(217, 23);
             this.listFilesWithDuplicateContentHashcodesButton.TabIndex = 61;
@@ -248,11 +253,11 @@
             // 
             // checkDeleteAndCopyAllBackupDisksButton
             // 
-            this.checkDeleteAndCopyAllBackupDisksButton.Location = new System.Drawing.Point(10, 521);
+            this.checkDeleteAndCopyAllBackupDisksButton.Location = new System.Drawing.Point(6, 49);
             this.checkDeleteAndCopyAllBackupDisksButton.Name = "checkDeleteAndCopyAllBackupDisksButton";
-            this.checkDeleteAndCopyAllBackupDisksButton.Size = new System.Drawing.Size(217, 23);
+            this.checkDeleteAndCopyAllBackupDisksButton.Size = new System.Drawing.Size(201, 23);
             this.checkDeleteAndCopyAllBackupDisksButton.TabIndex = 63;
-            this.checkDeleteAndCopyAllBackupDisksButton.Text = "Check/delete/copy all backup disks";
+            this.checkDeleteAndCopyAllBackupDisksButton.Text = "Check, remove extra files and copy";
             this.toolTip.SetToolTip(this.checkDeleteAndCopyAllBackupDisksButton, "Checks a connected backup disk and copies files. Then waits for the next disk to " +
         "be connected. \r\nSets the BackupDisk and the BackupDiskChecked (if the HashCode i" +
         "s correct). DELETES FILES.");
@@ -261,16 +266,27 @@
             // 
             // checkAllBackupDisksButton
             // 
-            this.checkAllBackupDisksButton.Location = new System.Drawing.Point(10, 493);
+            this.checkAllBackupDisksButton.Location = new System.Drawing.Point(6, 19);
             this.checkAllBackupDisksButton.Name = "checkAllBackupDisksButton";
-            this.checkAllBackupDisksButton.Size = new System.Drawing.Size(217, 23);
+            this.checkAllBackupDisksButton.Size = new System.Drawing.Size(201, 23);
             this.checkAllBackupDisksButton.TabIndex = 65;
-            this.checkAllBackupDisksButton.Text = "Check/delete all backup disks";
+            this.checkAllBackupDisksButton.Text = "Check (and remove extra files)";
             this.toolTip.SetToolTip(this.checkAllBackupDisksButton, "Checks a connected backup disk. Then waits for the next disk to be connected. \r\nS" +
         "ets the BackupDisk and the BackupDiskChecked (if the HashCode is correct). DELET" +
         "ES FILES.");
             this.checkAllBackupDisksButton.UseVisualStyleBackColor = true;
             this.checkAllBackupDisksButton.Click += new System.EventHandler(this.CheckAllBackupDisksButton_Click);
+            // 
+            // listDiskSpaceComparedToSumOfFilesOnDiskButton
+            // 
+            this.listDiskSpaceComparedToSumOfFilesOnDiskButton.Location = new System.Drawing.Point(10, 256);
+            this.listDiskSpaceComparedToSumOfFilesOnDiskButton.Name = "listDiskSpaceComparedToSumOfFilesOnDiskButton";
+            this.listDiskSpaceComparedToSumOfFilesOnDiskButton.Size = new System.Drawing.Size(217, 23);
+            this.listDiskSpaceComparedToSumOfFilesOnDiskButton.TabIndex = 66;
+            this.listDiskSpaceComparedToSumOfFilesOnDiskButton.Text = "List comparison of files on disks to disk space";
+            this.toolTip.SetToolTip(this.listDiskSpaceComparedToSumOfFilesOnDiskButton, "Reports the sum of files on each disk against the free space on each disk");
+            this.listDiskSpaceComparedToSumOfFilesOnDiskButton.UseVisualStyleBackColor = true;
+            this.listDiskSpaceComparedToSumOfFilesOnDiskButton.Click += new System.EventHandler(this.ListDiskSpaceComparedToSumOfFilesOnDiskButton_Click);
             // 
             // timerButton
             // 
@@ -284,7 +300,7 @@
             // 
             // listFilesOnBackupDiskButton
             // 
-            this.listFilesOnBackupDiskButton.Location = new System.Drawing.Point(125, 24);
+            this.listFilesOnBackupDiskButton.Location = new System.Drawing.Point(138, 24);
             this.listFilesOnBackupDiskButton.Name = "listFilesOnBackupDiskButton";
             this.listFilesOnBackupDiskButton.Size = new System.Drawing.Size(69, 23);
             this.listFilesOnBackupDiskButton.TabIndex = 24;
@@ -294,7 +310,7 @@
             // 
             // listFilesInMasterFolderButton
             // 
-            this.listFilesInMasterFolderButton.Location = new System.Drawing.Point(125, 19);
+            this.listFilesInMasterFolderButton.Location = new System.Drawing.Point(138, 19);
             this.listFilesInMasterFolderButton.Name = "listFilesInMasterFolderButton";
             this.listFilesInMasterFolderButton.Size = new System.Drawing.Size(69, 23);
             this.listFilesInMasterFolderButton.TabIndex = 26;
@@ -307,14 +323,14 @@
             this.masterFoldersComboBox.BackColor = System.Drawing.SystemColors.Window;
             this.masterFoldersComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.masterFoldersComboBox.FormattingEnabled = true;
-            this.masterFoldersComboBox.Location = new System.Drawing.Point(89, 20);
+            this.masterFoldersComboBox.Location = new System.Drawing.Point(102, 20);
             this.masterFoldersComboBox.Name = "masterFoldersComboBox";
             this.masterFoldersComboBox.Size = new System.Drawing.Size(105, 21);
             this.masterFoldersComboBox.TabIndex = 29;
             // 
             // listFilesNotCheckedInXXButton
             // 
-            this.listFilesNotCheckedInXXButton.Location = new System.Drawing.Point(10, 169);
+            this.listFilesNotCheckedInXXButton.Location = new System.Drawing.Point(10, 172);
             this.listFilesNotCheckedInXXButton.Name = "listFilesNotCheckedInXXButton";
             this.listFilesNotCheckedInXXButton.Size = new System.Drawing.Size(217, 23);
             this.listFilesNotCheckedInXXButton.TabIndex = 30;
@@ -324,7 +340,7 @@
             // 
             // restoreFilesToMasterFolderButton
             // 
-            this.restoreFilesToMasterFolderButton.Location = new System.Drawing.Point(125, 73);
+            this.restoreFilesToMasterFolderButton.Location = new System.Drawing.Point(138, 73);
             this.restoreFilesToMasterFolderButton.Name = "restoreFilesToMasterFolderButton";
             this.restoreFilesToMasterFolderButton.Size = new System.Drawing.Size(69, 23);
             this.restoreFilesToMasterFolderButton.TabIndex = 31;
@@ -337,7 +353,7 @@
             this.restoreMasterFolderComboBox.BackColor = System.Drawing.SystemColors.Window;
             this.restoreMasterFolderComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.restoreMasterFolderComboBox.FormattingEnabled = true;
-            this.restoreMasterFolderComboBox.Location = new System.Drawing.Point(89, 46);
+            this.restoreMasterFolderComboBox.Location = new System.Drawing.Point(102, 46);
             this.restoreMasterFolderComboBox.Name = "restoreMasterFolderComboBox";
             this.restoreMasterFolderComboBox.Size = new System.Drawing.Size(105, 21);
             this.restoreMasterFolderComboBox.TabIndex = 32;
@@ -481,7 +497,7 @@
             // 
             this.killProcessesButton.Location = new System.Drawing.Point(6, 57);
             this.killProcessesButton.Name = "killProcessesButton";
-            this.killProcessesButton.Size = new System.Drawing.Size(188, 23);
+            this.killProcessesButton.Size = new System.Drawing.Size(199, 23);
             this.killProcessesButton.TabIndex = 51;
             this.killProcessesButton.Text = "Stop all processes";
             this.killProcessesButton.UseVisualStyleBackColor = true;
@@ -494,21 +510,21 @@
             this.listMasterFoldersComboBox.FormattingEnabled = true;
             this.listMasterFoldersComboBox.Location = new System.Drawing.Point(6, 19);
             this.listMasterFoldersComboBox.Name = "listMasterFoldersComboBox";
-            this.listMasterFoldersComboBox.Size = new System.Drawing.Size(108, 21);
+            this.listMasterFoldersComboBox.Size = new System.Drawing.Size(126, 21);
             this.listMasterFoldersComboBox.TabIndex = 52;
             // 
-            // groupBox1
+            // pushoverGroupBox
             // 
-            this.groupBox1.Controls.Add(this.testPushoverLowButton);
-            this.groupBox1.Controls.Add(this.testPushoverNormalButton);
-            this.groupBox1.Controls.Add(this.testPushoverHighButton);
-            this.groupBox1.Controls.Add(this.testPushoverEmergencyButton);
-            this.groupBox1.Location = new System.Drawing.Point(252, 337);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(207, 78);
-            this.groupBox1.TabIndex = 54;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Pushover tests";
+            this.pushoverGroupBox.Controls.Add(this.testPushoverLowButton);
+            this.pushoverGroupBox.Controls.Add(this.testPushoverNormalButton);
+            this.pushoverGroupBox.Controls.Add(this.testPushoverHighButton);
+            this.pushoverGroupBox.Controls.Add(this.testPushoverEmergencyButton);
+            this.pushoverGroupBox.Location = new System.Drawing.Point(518, 12);
+            this.pushoverGroupBox.Name = "pushoverGroupBox";
+            this.pushoverGroupBox.Size = new System.Drawing.Size(217, 78);
+            this.pushoverGroupBox.TabIndex = 54;
+            this.pushoverGroupBox.TabStop = false;
+            this.pushoverGroupBox.Text = "Pushover tests";
             // 
             // testPushoverLowButton
             // 
@@ -527,9 +543,9 @@
             this.groupBox2.Controls.Add(this.restoreMasterFolderComboBox);
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.label4);
-            this.groupBox2.Location = new System.Drawing.Point(252, 125);
+            this.groupBox2.Location = new System.Drawing.Point(264, 135);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(207, 109);
+            this.groupBox2.Size = new System.Drawing.Size(217, 109);
             this.groupBox2.TabIndex = 55;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Restore from Backup";
@@ -538,9 +554,9 @@
             // 
             this.listFilesGroupBox.Controls.Add(this.listFilesInMasterFolderButton);
             this.listFilesGroupBox.Controls.Add(this.listMasterFoldersComboBox);
-            this.listFilesGroupBox.Location = new System.Drawing.Point(252, 15);
+            this.listFilesGroupBox.Location = new System.Drawing.Point(264, 9);
             this.listFilesGroupBox.Name = "listFilesGroupBox";
-            this.listFilesGroupBox.Size = new System.Drawing.Size(207, 49);
+            this.listFilesGroupBox.Size = new System.Drawing.Size(217, 49);
             this.listFilesGroupBox.TabIndex = 56;
             this.listFilesGroupBox.TabStop = false;
             this.listFilesGroupBox.Text = "List files in master folder";
@@ -549,9 +565,9 @@
             // 
             this.listFilesOnBackupDiskGroupBox.Controls.Add(this.listFilesComboBox);
             this.listFilesOnBackupDiskGroupBox.Controls.Add(this.listFilesOnBackupDiskButton);
-            this.listFilesOnBackupDiskGroupBox.Location = new System.Drawing.Point(252, 68);
+            this.listFilesOnBackupDiskGroupBox.Location = new System.Drawing.Point(264, 70);
             this.listFilesOnBackupDiskGroupBox.Name = "listFilesOnBackupDiskGroupBox";
-            this.listFilesOnBackupDiskGroupBox.Size = new System.Drawing.Size(207, 54);
+            this.listFilesOnBackupDiskGroupBox.Size = new System.Drawing.Size(217, 54);
             this.listFilesOnBackupDiskGroupBox.TabIndex = 57;
             this.listFilesOnBackupDiskGroupBox.TabStop = false;
             this.listFilesOnBackupDiskGroupBox.Text = "List files on Backup disk";
@@ -563,7 +579,7 @@
             this.listFilesComboBox.FormattingEnabled = true;
             this.listFilesComboBox.Location = new System.Drawing.Point(6, 24);
             this.listFilesComboBox.Name = "listFilesComboBox";
-            this.listFilesComboBox.Size = new System.Drawing.Size(108, 21);
+            this.listFilesComboBox.Size = new System.Drawing.Size(126, 21);
             this.listFilesComboBox.TabIndex = 54;
             // 
             // groupBox5
@@ -574,16 +590,16 @@
             this.groupBox5.Controls.Add(this.label2);
             this.groupBox5.Controls.Add(this.label5);
             this.groupBox5.Controls.Add(this.runOnTimerStartCheckBox);
-            this.groupBox5.Location = new System.Drawing.Point(252, 245);
+            this.groupBox5.Location = new System.Drawing.Point(518, 107);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(207, 88);
+            this.groupBox5.Size = new System.Drawing.Size(217, 88);
             this.groupBox5.TabIndex = 58;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Scheduled Backup";
             // 
             // stopProcessButton
             // 
-            this.stopProcessButton.Location = new System.Drawing.Point(125, 25);
+            this.stopProcessButton.Location = new System.Drawing.Point(136, 25);
             this.stopProcessButton.Name = "stopProcessButton";
             this.stopProcessButton.Size = new System.Drawing.Size(69, 23);
             this.stopProcessButton.TabIndex = 59;
@@ -606,9 +622,9 @@
             this.processesGroupBox.Controls.Add(this.killProcessesButton);
             this.processesGroupBox.Controls.Add(this.stopProcessButton);
             this.processesGroupBox.Controls.Add(this.processesComboBox);
-            this.processesGroupBox.Location = new System.Drawing.Point(252, 425);
+            this.processesGroupBox.Location = new System.Drawing.Point(518, 218);
             this.processesGroupBox.Name = "processesGroupBox";
-            this.processesGroupBox.Size = new System.Drawing.Size(207, 90);
+            this.processesGroupBox.Size = new System.Drawing.Size(217, 90);
             this.processesGroupBox.TabIndex = 60;
             this.processesGroupBox.TabStop = false;
             this.processesGroupBox.Text = "Processes/Services";
@@ -618,16 +634,16 @@
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel,
             this.toolStripProgressBar});
-            this.statusStrip.Location = new System.Drawing.Point(0, 549);
+            this.statusStrip.Location = new System.Drawing.Point(0, 456);
             this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(469, 22);
+            this.statusStrip.Size = new System.Drawing.Size(747, 22);
             this.statusStrip.TabIndex = 62;
             this.statusStrip.Text = "statusStrip1";
             // 
             // toolStripStatusLabel
             // 
             this.toolStripStatusLabel.Name = "toolStripStatusLabel";
-            this.toolStripStatusLabel.Size = new System.Drawing.Size(454, 17);
+            this.toolStripStatusLabel.Size = new System.Drawing.Size(732, 17);
             this.toolStripStatusLabel.Spring = true;
             this.toolStripStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -640,22 +656,46 @@
             // cancelButton
             // 
             this.cancelButton.Enabled = false;
-            this.cancelButton.Location = new System.Drawing.Point(252, 521);
+            this.cancelButton.Location = new System.Drawing.Point(518, 400);
             this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(207, 23);
+            this.cancelButton.Size = new System.Drawing.Size(217, 23);
             this.cancelButton.TabIndex = 64;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
             this.cancelButton.Click += new System.EventHandler(this.CancelButton_Click);
             // 
+            // AllBackupDisksGroupBox
+            // 
+            this.AllBackupDisksGroupBox.Controls.Add(this.checkAllBackupDisksButton);
+            this.AllBackupDisksGroupBox.Controls.Add(this.checkDeleteAndCopyAllBackupDisksButton);
+            this.AllBackupDisksGroupBox.Location = new System.Drawing.Point(264, 368);
+            this.AllBackupDisksGroupBox.Name = "AllBackupDisksGroupBox";
+            this.AllBackupDisksGroupBox.Size = new System.Drawing.Size(217, 81);
+            this.AllBackupDisksGroupBox.TabIndex = 67;
+            this.AllBackupDisksGroupBox.TabStop = false;
+            this.AllBackupDisksGroupBox.Text = "All Backup disks";
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.checkConnectedBackupDiskButton);
+            this.groupBox1.Controls.Add(this.checkDiskAndDeleteButton);
+            this.groupBox1.Controls.Add(this.checkBackupDeleteAndCopyButton);
+            this.groupBox1.Location = new System.Drawing.Point(264, 250);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(217, 112);
+            this.groupBox1.TabIndex = 68;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Connected Backup disk";
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(469, 571);
-            this.Controls.Add(this.checkAllBackupDisksButton);
+            this.ClientSize = new System.Drawing.Size(747, 478);
+            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.AllBackupDisksGroupBox);
+            this.Controls.Add(this.listDiskSpaceComparedToSumOfFilesOnDiskButton);
             this.Controls.Add(this.cancelButton);
-            this.Controls.Add(this.checkDeleteAndCopyAllBackupDisksButton);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.listFilesWithDuplicateContentHashcodesButton);
             this.Controls.Add(this.processesGroupBox);
@@ -663,20 +703,17 @@
             this.Controls.Add(this.listFilesOnBackupDiskGroupBox);
             this.Controls.Add(this.listFilesGroupBox);
             this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.pushoverGroupBox);
             this.Controls.Add(this.monitoringButton);
             this.Controls.Add(this.speedTestButton);
             this.Controls.Add(this.reportBackupDiskStatusButton);
             this.Controls.Add(this.listMoviesWithMultipleFilesButton);
-            this.Controls.Add(this.checkBackupDeleteAndCopyButton);
             this.Controls.Add(this.listFilesNotCheckedInXXButton);
-            this.Controls.Add(this.checkDiskAndDeleteButton);
             this.Controls.Add(this.recalculateAllHashesButton);
             this.Controls.Add(this.listFilesNotOnBackupDiskButton);
             this.Controls.Add(this.backupDiskTextBox);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.copyFilesToBackupDiskButton);
-            this.Controls.Add(this.checkConnectedBackupDiskButton);
             this.Controls.Add(this.updateMasterFilesButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -687,7 +724,7 @@
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Main_FormClosed);
             ((System.ComponentModel.ISupportInitialize)(this.hoursNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.minutesNumericUpDown)).EndInit();
-            this.groupBox1.ResumeLayout(false);
+            this.pushoverGroupBox.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.listFilesGroupBox.ResumeLayout(false);
@@ -697,6 +734,8 @@
             this.processesGroupBox.ResumeLayout(false);
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
+            this.AllBackupDisksGroupBox.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -738,7 +777,7 @@
         private System.Windows.Forms.Timer monitoringTimer;
         private System.Windows.Forms.Button killProcessesButton;
         private System.Windows.Forms.ComboBox listMasterFoldersComboBox;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox pushoverGroupBox;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox listFilesGroupBox;
         private System.Windows.Forms.GroupBox listFilesOnBackupDiskGroupBox;
@@ -755,6 +794,9 @@
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar;
         private System.Windows.Forms.Button checkAllBackupDisksButton;
+        private System.Windows.Forms.Button listDiskSpaceComparedToSumOfFilesOnDiskButton;
+        private System.Windows.Forms.GroupBox AllBackupDisksGroupBox;
+        private System.Windows.Forms.GroupBox groupBox1;
     }
 }
 

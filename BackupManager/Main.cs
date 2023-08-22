@@ -158,7 +158,7 @@ namespace BackupManager
                                    ? mediaBackup.SpeedTestFileSize * Utils.BytesInOneMegabyte
                                    : (int)disk.Free - Utils.BytesInOneKilobyte;
 
-                UpdateStatusLabel($"Speed testing {folderToCheck}...");
+                UpdateStatusLabel($"Speed testing {folderToCheck}");
                 Utils.DiskSpeedTest(folderToCheck, diskTestSize, mediaBackup.SpeedTestIterations, out readSpeed, out writeSpeed);
             }
 
@@ -197,14 +197,14 @@ namespace BackupManager
 
             string[] backupDiskFiles = Utils.GetFiles(folderToCheck, "*", SearchOption.AllDirectories, FileAttributes.Hidden);
 
-            EnableProgressBar(1, backupDiskFiles.Length);
+            EnableProgressBar(0, backupDiskFiles.Length);
 
             for (int i = 0; i < backupDiskFiles.Length; i++)
             {
                 string backupFileFullPath = backupDiskFiles[i];
                 string backupFileIndexFolderRelativePath = backupFileFullPath.Substring(folderToCheck.Length + 1);
 
-                UpdateStatusLabel($"Scanning {folderToCheck}...  ", i + 1);
+                UpdateStatusLabel($"Scanning {folderToCheck}", i + 1);
 
                 if (mediaBackup.Contains(backupFileIndexFolderRelativePath))
                 {
@@ -294,7 +294,7 @@ namespace BackupManager
                 }
             }
 
-            UpdateStatusLabel($"Deleting {folderToCheck} empty folders...");
+            UpdateStatusLabel($"Deleting {folderToCheck} empty folders");
 
             string[] directoriesDeleted = Utils.DeleteEmptyDirectories(folderToCheck);
 
@@ -316,7 +316,7 @@ namespace BackupManager
             }
 
             mediaBackup.Save();
-            UpdateStatusLabel($"Saved");
+            UpdateStatusLabel($"Saved.");
 
             if (!diskInfoMessageWasTheLastSent)
             {
@@ -376,7 +376,7 @@ namespace BackupManager
         {
             Utils.Trace("CopyFilesToBackupDiskButton_Click enter");
 
-            CopyFiles(true);
+            TaskWrapper(CopyFilesAsync, true);
 
             Utils.Trace("CopyFilesToBackupDiskButton_Click exit");
         }
@@ -412,7 +412,7 @@ namespace BackupManager
 
             Utils.LogWithPushover(BackupAction.BackupFiles, "Started");
 
-            UpdateStatusLabel("Copying... ");
+            UpdateStatusLabel("Copying");
 
             IEnumerable<BackupFile> filesToBackup = mediaBackup.GetBackupFilesWithDiskEmpty().OrderByDescending(q => q.Length);
 
@@ -431,14 +431,14 @@ namespace BackupManager
             long lastCopySpeed = 0;
             long remainingSizeOfFilesToCopy = sizeOfFiles;
 
-            EnableProgressBar(1, filesToBackup.Count());
+            EnableProgressBar(0, filesToBackup.Count());
 
             foreach (BackupFile backupFile in filesToBackup)
             {
                 try
                 {
                     fileCounter++;
-                    UpdateStatusLabel("Copying... ", fileCounter);
+                    UpdateStatusLabel("Copying", fileCounter);
 
                     if (string.IsNullOrEmpty(backupFile.IndexFolder))
                     {
@@ -471,11 +471,11 @@ namespace BackupManager
                                                   PushoverPriority.High,
                                                   $"There was an error with the hashcodes on the source master folder and the backup disk. Its likely the sourcefile has changed since the last backup of {backupFile.FullPath} to {destinationFileName}");
                         }
-
-                        remainingSizeOfFilesToCopy -= backupFile.Length;
                     }
                     else
                     {
+                        UpdateStatusLabel($"Copying {Path.GetFileName(sourceFileName)}", fileCounter);
+
                         result = Utils.GetDiskInfo(backupDiskTextBox.Text, out long availableSpace, out long totalBytes);
 
                         if (availableSpace > Utils.ConvertMBtoBytes(mediaBackup.MinimumFreeSpaceToLeaveOnBackupDisk) + sourceFileInfo.Length)
@@ -512,8 +512,6 @@ namespace BackupManager
                                                   $"[{fileCounter}/{totalFileCount}] {Utils.FormatSize(availableSpace)} free.\nCopying {sourceFileName} at {sourceFileSize}{formattedEndDateTime}");
 
                             Utils.FileDelete(destinationFileNameTemp);
-
-                            UpdateStatusLabel($"Copying {sourceFileName}");
 
                             DateTime startTime = DateTime.UtcNow;
                             Utils.FileCopy(sourceFileName, destinationFileNameTemp);
@@ -586,7 +584,7 @@ namespace BackupManager
             }
 
             mediaBackup.Save();
-            UpdateStatusLabel("Saved");
+            UpdateStatusLabel("Saved.");
 
             IEnumerable<BackupFile> filesStillNotOnBackupDisk = mediaBackup.GetBackupFilesWithDiskEmpty();
 
@@ -650,9 +648,18 @@ namespace BackupManager
             Utils.Trace("recalculateAllHashesButton_Click exit");
         }
 
+        private void CopyFilesAsync(bool showCompletedMessage)
+        {
+            DisableControlsForAsyncTasks();
+
+            CopyFiles(showCompletedMessage);
+
+            ResetAllControls();
+        }
+
         private void CheckConnectedDiskAndCopyFilesAsync(bool deleteExtraFiles, bool copyFiles)
         {
-            SetupControlsForMasterFolderScan();
+            DisableControlsForAsyncTasks();
 
             _ = CheckConnectedDisk(deleteExtraFiles);
             if (copyFiles) { CopyFiles(true); }
@@ -662,7 +669,7 @@ namespace BackupManager
 
         private void CheckConnectedDiskAndCopyFilesRepeaterAsync(bool copyFiles)
         {
-            SetupControlsForMasterFolderScan();
+            DisableControlsForAsyncTasks();
             string nextDiskMessage = "Please insert the next backup disk now";
 
             while (true)
@@ -684,7 +691,6 @@ namespace BackupManager
                              $"Backup disk {lastBackupDiskChecked.Name} checked. Please insert the next disk now");
 
                 UpdateStatusLabel(nextDiskMessage);
-                UpdateProgressBar(1);
 
                 BackupDisk newDisk;
                 do
@@ -697,7 +703,7 @@ namespace BackupManager
 
         private void ScanFolderAsync()
         {
-            SetupControlsForMasterFolderScan();
+            DisableControlsForAsyncTasks();
 
             ScanFolders();
 
@@ -774,7 +780,7 @@ namespace BackupManager
                 , TaskScheduler.FromCurrentSynchronizationContext());
         }
 
-        private void SetupControlsForMasterFolderScan()
+        private void DisableControlsForAsyncTasks()
         {
             if (ct.IsCancellationRequested) { ct.ThrowIfCancellationRequested(); }
 
@@ -798,10 +804,12 @@ namespace BackupManager
             listFilesWithDuplicateContentHashcodesButton.Invoke(x => x.Enabled = true);
             listMoviesWithMultipleFilesButton.Invoke(x => x.Enabled = true);
             processesGroupBox.Invoke(x => x.Enabled = true);
+            pushoverGroupBox.Invoke(x => x.Enabled = true);
             monitoringButton.Invoke(x => x.Enabled = true);
             reportBackupDiskStatusButton.Invoke(x => x.Enabled = true);
             listFilesGroupBox.Invoke(x => x.Enabled = true);
             listFilesOnBackupDiskGroupBox.Invoke(x => x.Enabled = true);
+            listDiskSpaceComparedToSumOfFilesOnDiskButton.Invoke(x => x.Enabled = true);
 
             if (ct.IsCancellationRequested) { ct.ThrowIfCancellationRequested(); }
         }
@@ -870,14 +878,33 @@ namespace BackupManager
         {
             if (ct.IsCancellationRequested) { ct.ThrowIfCancellationRequested(); }
 
-            string progressPercentageText = string.Empty;
+            string textToUse = string.Empty;
+
             if (value > 0)
             {
-                progressPercentageText = $"{value * 100 / toolStripProgressBar.Maximum}%";
+                int progress = value * 100 / toolStripProgressBar.Maximum;
+                if (progress == 0) { progress = 1; }
+                else
+                if (progress == 100) { progress = 99; }
+
+                textToUse = $"{text}     {progress}%";
             }
+            else
+            {
+                if (!text.EndsWith("...") && !text.EndsWith("."))
+                {
+                    textToUse = text + "...";
+                }
+            }
+
             UpdateProgressBar(value);
 
-            statusStrip.Invoke(x => toolStripStatusLabel.Text = text + progressPercentageText);
+            statusStrip.Invoke(x => toolStripStatusLabel.Text = textToUse);
+
+#if DEBUG
+            // Thread.Sleep(5000);
+#endif
+            if (ct.IsCancellationRequested) { ct.ThrowIfCancellationRequested(); }
         }
 
         private void UpdateStatusLabel(string text)
@@ -900,6 +927,7 @@ namespace BackupManager
         {
             if (value > 0)
             {
+                statusStrip.Invoke(x => toolStripProgressBar.Visible = true);
                 statusStrip.Invoke(x => toolStripProgressBar.Value = value);
             }
             else
@@ -947,7 +975,7 @@ namespace BackupManager
 
                     if (mediaBackup.DiskSpeedTests)
                     {
-                        UpdateStatusLabel($"Speed testing {masterFolder}...");
+                        UpdateStatusLabel($"Speed testing {masterFolder}");
                         Utils.DiskSpeedTest(masterFolder, mediaBackup.SpeedTestFileSize * Utils.BytesInOneMegabyte, mediaBackup.SpeedTestIterations, out readSpeed, out writeSpeed);
                     }
 
@@ -1007,18 +1035,18 @@ namespace BackupManager
                         if (Directory.Exists(folderToCheck))
                         {
                             Utils.LogWithPushover(BackupAction.ScanFolders, $"{folderToCheck}");
-                            UpdateStatusLabel($"Scanning {folderToCheck}...");
+                            UpdateStatusLabel($"Scanning {folderToCheck}");
 
                             string[] files = Utils.GetFiles(folderToCheck, filters, SearchOption.AllDirectories);
 
-                            EnableProgressBar(1, files.Length);
+                            EnableProgressBar(0, files.Length);
 
                             for (int i = 0; i < files.Length; i++)
                             {
                                 string file = files[i];
                                 Utils.Trace($"Checking {file}");
 
-                                UpdateStatusLabel($"Scanning {folderToCheck}...  ", i + 1);
+                                UpdateStatusLabel($"Scanning {folderToCheck}", i + 1);
 
                                 // Check for files to delete
                                 if (CheckForFilesToDelete(file))
@@ -1059,7 +1087,7 @@ namespace BackupManager
                 }
             }
 
-            UpdateStatusLabel($"Scanning completed");
+            UpdateStatusLabel($"Scanning completed.");
 
             foreach (FileRule rule in mediaBackup.FileRules)
             {
@@ -1074,7 +1102,7 @@ namespace BackupManager
             mediaBackup.RemoveFilesWithFlag(false, true);
             mediaBackup.Save();
 
-            UpdateStatusLabel($"Saved");
+            UpdateStatusLabel($"Saved.");
 
             int totalFiles = mediaBackup.BackupFiles.Count();
 
@@ -1156,7 +1184,7 @@ namespace BackupManager
 
         private void ScheduledBackupAsync()
         {
-            SetupControlsForMasterFolderScan();
+            DisableControlsForAsyncTasks();
 
             ScheduledBackup();
 
@@ -1565,10 +1593,26 @@ namespace BackupManager
         private void SpeedTestButton_Click(object sender, EventArgs e)
         {
             Utils.Trace("speedTestButton_Click enter");
+
+            TaskWrapper(SpeedTestAllMasterFoldersAsync);
+
+            Utils.Trace("speedTestButton_Click exit");
+        }
+
+        private void SpeedTestAllMasterFoldersAsync()
+        {
+            DisableControlsForAsyncTasks();
+
             Utils.Log("Speed testing all master folders");
 
-            foreach (string masterFolder in mediaBackup.MasterFolders)
+            EnableProgressBar(0, mediaBackup.MasterFolders.Count);
+
+            for (int i = 0; i < mediaBackup.MasterFolders.Count; i++)
             {
+                string masterFolder = mediaBackup.MasterFolders[i];
+
+                UpdateStatusLabel($"Speed testing {masterFolder}", i + 1);
+
                 if (Utils.IsFolderWritable(masterFolder))
                 {
                     Utils.DiskSpeedTest(masterFolder,
@@ -1580,7 +1624,7 @@ namespace BackupManager
                 }
             }
 
-            Utils.Trace("speedTestButton_Click exit");
+            ResetAllControls();
         }
 
         private void MinutesNumericUpDown_ValueChanged(object sender, EventArgs e)
@@ -1993,6 +2037,24 @@ namespace BackupManager
             }
 
             Utils.Trace("CheckAllBackupDisksButton_Click exit");
+        }
+
+        private void ListDiskSpaceComparedToSumOfFilesOnDiskButton_Click(object sender, EventArgs e)
+        {
+            foreach (BackupDisk disk in mediaBackup.BackupDisks)
+            {
+
+                IEnumerable<BackupFile> backupDisk = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name);
+                long totalSizeOfFilesFromSumOfFiles = backupDisk.Sum(p => p.Length);
+
+                long sizeFromDiskAnalysis = disk.Capacity - disk.Free;
+
+                long difference = sizeFromDiskAnalysis - totalSizeOfFilesFromSumOfFiles;
+
+                double percentageDiff = difference * 100 / sizeFromDiskAnalysis;
+
+                Utils.Log($"Disk {disk.Name} with {disk.CapacityFormatted} capacity has {Utils.FormatSize(sizeFromDiskAnalysis)} used. Sum of files has {Utils.FormatSize(totalSizeOfFilesFromSumOfFiles)}. Diff is {difference}. {percentageDiff}%");
+            }
         }
     }
 }
