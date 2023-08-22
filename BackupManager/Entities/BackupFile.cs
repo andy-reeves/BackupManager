@@ -185,6 +185,10 @@ namespace BackupManager.Entities
         /// <param name="backupDisk">The disk this file ewas checked on.</param>
         public void UpdateDiskChecked(string backupDisk)
         {
+            if (backupDisk != Disk && Disk.HasValue())
+            {
+                Utils.Log($"{FullPath} was on {Disk} but now on {backupDisk}");
+            }
             disk = backupDisk;
             diskChecked = DateTime.Now.ToString("yyyy-MM-dd");
         }
