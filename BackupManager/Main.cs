@@ -41,55 +41,6 @@ namespace BackupManager
 
         #region Constructors and Destructors
 
-        public void FileCopyNew()
-        {
-            DisableControlsForAsyncTasks();
-            string src = @"C:\Users\RemoteUser011071\source\repos\andy-reeves\BackupManager\BackupManager\bin\Debug\src.dat";
-
-            string dst = @"C:\Users\RemoteUser011071\source\repos\andy-reeves\BackupManager\BackupManager\bin\Debug\dst.dat";
-
-            //byte[] buffer = new byte[12 * 1024 * 1024];
-            //new Random().NextBytes(buffer);
-            //using (FileStream f = File.OpenWrite(src))
-            //{
-            //    for (int i = 0; i < 1024; i++)
-            //    {
-            //        f.Write(buffer, 0, buffer.Length);
-            //    }
-            //}
-
-            Stopwatch sw = new Stopwatch();
-
-            File.Delete(dst);
-
-            //Console.WriteLine("Starting sync");
-            //sw.Restart();
-            //File.Copy(src, dst);
-            //sw.Stop();
-            //Console.WriteLine("File.Copy: " + sw.Elapsed.TotalSeconds);
-            //File.Delete(dst);
-
-            //Console.WriteLine("Starting async");
-            //sw.Restart();
-            //Utils.FileCopyAsync(src, dst, ct);
-            //sw.Stop();
-            //Console.WriteLine("FileCopyAsync: " + sw.Elapsed.TotalSeconds);
-            //File.Delete(dst);
-
-            Console.WriteLine("Starting NewProc");
-            sw.Restart();
-            _ = Utils.FileCopyNewProcess(src, dst);
-            sw.Stop();
-            Console.WriteLine("FileCopyNewProcess: " + sw.Elapsed.TotalSeconds);
-        }
-
-        public void FileCopyWrapper()
-        {
-            DisableControlsForAsyncTasks();
-            TaskWrapper(FileCopyNew);
-            ResetAllControls();
-        }
-
         public Main()
         {
             InitializeComponent();
@@ -875,6 +826,9 @@ namespace BackupManager
             if (ct.IsCancellationRequested) { ct.ThrowIfCancellationRequested(); }
         }
 
+        /// <summary>
+        /// Re-enables all the form controls (typically after Cancel was clicked or we've finished)
+        /// </summary>
         private void ResetAllControls()
         {
             if (!IsHandleCreated || IsDisposed)
@@ -2108,7 +2062,6 @@ namespace BackupManager
         {
             foreach (BackupDisk disk in mediaBackup.BackupDisks)
             {
-
                 IEnumerable<BackupFile> backupDisk = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name);
                 long totalSizeOfFilesFromSumOfFiles = backupDisk.Sum(p => p.Length);
 
@@ -2120,11 +2073,6 @@ namespace BackupManager
 
                 Utils.Log($"Disk {disk.Name} with {disk.CapacityFormatted} capacity has {Utils.FormatSize(sizeFromDiskAnalysis)} used. Sum of files has {Utils.FormatSize(totalSizeOfFilesFromSumOfFiles)}. Diff is {Utils.FormatSize(difference)}. {percentageDiff}%");
             }
-        }
-
-        private void Button1_Click(object sender, EventArgs e)
-        {
-            FileCopyWrapper();
         }
     }
 }
