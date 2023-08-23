@@ -170,8 +170,6 @@ namespace BackupManager
         /// <param name="destFileName">The name of the destination file. This cannot be a directory or an existing file.</param>
         internal static void FileCopy(string sourceFileName, string destFileName)
         {
-            Console.WriteLine($"Current Thread ID in FileCopy: {Thread.CurrentThread.ManagedThreadId}");
-
             Trace("FileCopy enter");
             Trace($"Params: sourceFileName={sourceFileName}, destFileName={destFileName}");
 
@@ -188,8 +186,6 @@ namespace BackupManager
 
         internal static void FileCopyAsync(string sourceFileName, string destFileName, CancellationToken ct)
         {
-            Console.WriteLine($"Current Thread ID in FileCopyAsync: {Thread.CurrentThread.ManagedThreadId}");
-
             Trace("FileCopyAsync enter");
             Trace($"Params: sourceFileName={sourceFileName}, destFileName={destFileName}");
 
