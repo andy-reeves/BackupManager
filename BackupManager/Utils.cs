@@ -107,6 +107,11 @@ namespace BackupManager
         private static int LengthOfLargestBackupActionEnumNames;
 
         /// <summary>
+        /// We start a new Process to Copy the files. Thne we can safely Kill the process when cancelling is needed
+        /// </summary>
+        internal static Process CopyProcess;
+
+        /// <summary>
         /// The MD5 Crypto Provider
         /// </summary>
         private static readonly MD5CryptoServiceProvider Md5 = new MD5CryptoServiceProvider();
@@ -141,14 +146,6 @@ namespace BackupManager
             {
                 FileMove(LogFile, destLogFile);
             }
-
-            string sourceTraceFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log");
-            if (File.Exists(sourceTraceFile))
-            {
-                string destTraceFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups", $"BackupManager_Trace_{timeLog}.log");
-
-                FileCopy(sourceTraceFile, destTraceFile);
-            }
         }
 
         /// <summary>
@@ -173,6 +170,8 @@ namespace BackupManager
         /// <param name="destFileName">The name of the destination file. This cannot be a directory or an existing file.</param>
         internal static void FileCopy(string sourceFileName, string destFileName)
         {
+            Console.WriteLine($"Current Thread ID in FileCopy: {Thread.CurrentThread.ManagedThreadId}");
+
             Trace("FileCopy enter");
             Trace($"Params: sourceFileName={sourceFileName}, destFileName={destFileName}");
 
@@ -189,6 +188,8 @@ namespace BackupManager
 
         internal static void FileCopyAsync(string sourceFileName, string destFileName, CancellationToken ct)
         {
+            Console.WriteLine($"Current Thread ID in FileCopyAsync: {Thread.CurrentThread.ManagedThreadId}");
+
             Trace("FileCopyAsync enter");
             Trace($"Params: sourceFileName={sourceFileName}, destFileName={destFileName}");
 
@@ -203,6 +204,46 @@ namespace BackupManager
                 srcStream.CopyToAsync(dstStream, bufferSize, ct).GetAwaiter().GetResult();
             }
             Trace("FileCopyAsync exit");
+        }
+
+        /// <summary>
+        /// Copies an existing file to a new file asynchronously. Overwriting a file of the same name is not allowed. Ensures the destination folder exists too.
+        /// </summary>
+        /// <param name="sourceFileName">The file to copy.</param>
+        /// <param name="destFileName">The name of the destination file. This cannot be a directory or an existing file.</param>
+        /// <returns>True if copy was successful or False</returns>
+        internal static bool FileCopyNewProcess(string sourceFileName, string destFileName)
+        {
+            Trace("FileCopyNewProcess enter");
+            Trace($"Params: sourceFileName={sourceFileName}, destFileName={destFileName}");
+
+            EnsureDirectories(destFileName);
+
+            CopyProcess = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    FileName = "cmd.exe",
+                    Arguments = $"/C COPY \"{sourceFileName}\" \"{destFileName}\""
+                }
+            };
+
+            bool returnValue = CopyProcess.Start();
+
+            if (returnValue)
+            {
+                // We wait because otherwise lots of copy processes will start at once
+                CopyProcess.WaitForExit();
+            }
+            else
+            {
+                Trace("FileCopyNewProcess exit with FALSE");
+                return false;
+            }
+
+            Trace($"FileCopyNewProcess exit with {CopyProcess.ExitCode}");
+            return CopyProcess.ExitCode == 0;
         }
 
         /// <summary>

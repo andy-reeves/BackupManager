@@ -44,11 +44,11 @@ namespace BackupManager
         public void FileCopyNew()
         {
             DisableControlsForAsyncTasks();
+            string src = @"C:\Users\RemoteUser011071\source\repos\andy-reeves\BackupManager\BackupManager\bin\Debug\src.dat";
 
-            string src = @"src.dat";
-            string dst = @"dst.dat";
+            string dst = @"C:\Users\RemoteUser011071\source\repos\andy-reeves\BackupManager\BackupManager\bin\Debug\dst.dat";
 
-            //byte[] buffer = new byte[6 * 1024 * 1024];
+            //byte[] buffer = new byte[12 * 1024 * 1024];
             //new Random().NextBytes(buffer);
             //using (FileStream f = File.OpenWrite(src))
             //{
@@ -62,28 +62,32 @@ namespace BackupManager
 
             File.Delete(dst);
 
-            Console.WriteLine("Starting sync");
+            //Console.WriteLine("Starting sync");
+            //sw.Restart();
+            //File.Copy(src, dst);
+            //sw.Stop();
+            //Console.WriteLine("File.Copy: " + sw.Elapsed.TotalSeconds);
+            //File.Delete(dst);
+
+            //Console.WriteLine("Starting async");
+            //sw.Restart();
+            //Utils.FileCopyAsync(src, dst, ct);
+            //sw.Stop();
+            //Console.WriteLine("FileCopyAsync: " + sw.Elapsed.TotalSeconds);
+            //File.Delete(dst);
+
+            Console.WriteLine("Starting NewProc");
             sw.Restart();
-            File.Copy(src, dst);
+            _ = Utils.FileCopyNewProcess(src, dst);
             sw.Stop();
-            Console.WriteLine("File.Copy: " + sw.Elapsed.TotalSeconds);
-
-            File.Delete(dst);
-
-            Console.WriteLine("Starting async");
-
-            sw.Restart();
-            Utils.FileCopyAsync(src, dst, ct);
-            sw.Stop();
-            Console.WriteLine("FileCopyAsync: " + sw.Elapsed.TotalSeconds);
-
-            ResetAllControls();
-
+            Console.WriteLine("FileCopyNewProcess: " + sw.Elapsed.TotalSeconds);
         }
 
         public void FileCopyWrapper()
         {
+            DisableControlsForAsyncTasks();
             TaskWrapper(FileCopyNew);
+            ResetAllControls();
         }
 
         public Main()
@@ -94,7 +98,7 @@ namespace BackupManager
                          Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"),
                          "myListener"));
 
-            backupDiskTextBox.Text = "\\\\nas1\\assets1\\_Test\\BackupDisks\\backup 1001 parent";
+            // backupDiskTextBox.Text = "\\\\nas1\\assets1\\_Test\\BackupDisks\\backup 1001 parent";
 #else
             backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
 #endif
@@ -567,9 +571,12 @@ namespace BackupManager
                             Utils.FileDelete(destinationFileNameTemp);
 
                             DateTime startTime = DateTime.UtcNow;
-                            Utils.FileCopyAsync(sourceFileName, destinationFileNameTemp, ct);
-
+                            Utils.FileCopyNewProcess(sourceFileName, destinationFileNameTemp);
                             DateTime endTime = DateTime.UtcNow;
+
+                            // We need to check this here in case Cancel was clicked during the copy of the file
+                            if (ct.IsCancellationRequested) { ct.ThrowIfCancellationRequested(); }
+
                             Utils.FileMove(destinationFileNameTemp, destinationFileName);
 
                             double timeTaken = (endTime - startTime).TotalSeconds;
@@ -955,9 +962,6 @@ namespace BackupManager
 
             statusStrip.Invoke(x => toolStripStatusLabel.Text = textToUse);
 
-#if DEBUG
-            // Thread.Sleep(5000);
-#endif
             if (ct.IsCancellationRequested) { ct.ThrowIfCancellationRequested(); }
         }
 
@@ -2067,10 +2071,17 @@ namespace BackupManager
         private void CancelButton_Click(object sender, EventArgs e)
         {
             tokenSource.Cancel();
-            Console.WriteLine("Task cancellation requested.");
+
             toolStripStatusLabel.Text = "Cancelling ...";
+
+            if (Utils.CopyProcess != null && !Utils.CopyProcess.HasExited)
+            {
+                Utils.CopyProcess?.Kill();
+            }
+
             cancelButton.Enabled = false;
             ResetAllControls();
+
             toolStripStatusLabel.Text = string.Empty;
         }
 
@@ -2114,7 +2125,6 @@ namespace BackupManager
         private void Button1_Click(object sender, EventArgs e)
         {
             FileCopyWrapper();
-
         }
     }
 }
