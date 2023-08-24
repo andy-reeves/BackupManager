@@ -259,7 +259,9 @@
 17.59 | T | False | "\\nas4\assets1\_Movies\A (2022)\A (2022) {tmdb-1} [DVD][AAC2 2.0][VP9].mkv"
 17.60 | T | False | "\\nas4\assets1\_Movies\A (2022)\A (2022) {tmdb-1} [DVD][TrueHD2 2.0][VP9].mkv"
 17.61 | T | False | "\\nas4\assets1\_Movies\A (2022)\A (2022) {tmdb-1} [DVD][AVC6 2.0][VP9].mkv"
-17.62 | T | False | "\\nas4\assets1\_Movies\A (2022)\A (2022) {tmdb-1} [DVD][Opus9 2.0][VP9].mkv
+17.62 | T | False | "\\nas4\assets1\_Movies\A (2022)\A (2022) {tmdb-1} [DVD][Opus9 2.0][VP9].mkv"
+17.63 | T | False | "\\nas4\assets1\_Movies\A (2023)\A (2022) {tmdb-1} [DVD][EAC3 6.0][VP9].mkv"
+
 
 
 # Movies files must either be a special feature or have a valid quality specified
