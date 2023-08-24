@@ -522,7 +522,7 @@ namespace BackupManager
                             Utils.FileDelete(destinationFileNameTemp);
 
                             DateTime startTime = DateTime.UtcNow;
-                            Utils.FileCopyNewProcess(sourceFileName, destinationFileNameTemp);
+                            _ = Utils.FileCopyNewProcess(sourceFileName, destinationFileNameTemp);
                             DateTime endTime = DateTime.UtcNow;
 
                             // We need to check this here in case Cancel was clicked during the copy of the file
@@ -821,7 +821,6 @@ namespace BackupManager
             reportBackupDiskStatusButton.Invoke(x => x.Enabled = true);
             listFilesGroupBox.Invoke(x => x.Enabled = true);
             listFilesOnBackupDiskGroupBox.Invoke(x => x.Enabled = true);
-            listDiskSpaceComparedToSumOfFilesOnDiskButton.Invoke(x => x.Enabled = true);
 
             if (ct.IsCancellationRequested) { ct.ThrowIfCancellationRequested(); }
         }
@@ -1587,7 +1586,16 @@ namespace BackupManager
             foreach (BackupDisk disk in disks)
             {
                 DateTime d = DateTime.Parse(disk.Checked);
-                Utils.Log($"{disk.Name} at {disk.CapacityFormatted} with {disk.FreeFormatted} free. Last check: {d:dd-MMM-yy}");
+
+                long totalSizeOfFilesFromSumOfFiles = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name).Sum(p => p.Length);
+
+                long sizeFromDiskAnalysis = disk.Capacity - disk.Free;
+
+                long difference = totalSizeOfFilesFromSumOfFiles > sizeFromDiskAnalysis ? 0 : sizeFromDiskAnalysis - totalSizeOfFilesFromSumOfFiles;
+                double percentageDiff = difference * 100 / sizeFromDiskAnalysis;
+
+                Utils.Log($"{disk.Name,-10}   Last check: {d:dd-MMM-yy}   Capacity: {disk.CapacityFormatted,-7}   Used: {Utils.FormatSize(sizeFromDiskAnalysis),-8}   Free: {disk.FreeFormatted,-7}   Sum of files: {Utils.FormatSize(totalSizeOfFilesFromSumOfFiles),-7}   Diff: {Utils.FormatSize(difference),-6} {percentageDiff}%");
+
                 if (disk.Free > Utils.ConvertMBtoBytes(mediaBackup.MinimumFreeSpaceToLeaveOnBackupDisk))
                 {
                     actualUsuableSpace += disk.Free - Utils.ConvertMBtoBytes(mediaBackup.MinimumFreeSpaceToLeaveOnBackupDisk);
@@ -1597,7 +1605,7 @@ namespace BackupManager
             string totalSizeFormatted = Utils.FormatSize(mediaBackup.BackupDisks.Sum(p => p.Capacity));
             string totalFreespaceFormatted = Utils.FormatSize(mediaBackup.BackupDisks.Sum(p => p.Free));
 
-            Utils.Log($"Total available storage is {totalSizeFormatted} with {totalFreespaceFormatted} free and {Utils.FormatSize(actualUsuableSpace)} available");
+            Utils.Log($"Total Capacity: {totalSizeFormatted} Free: {totalFreespaceFormatted}  UsuableSpace: {Utils.FormatSize(actualUsuableSpace)} Sum of files: {Utils.FormatSize(mediaBackup.BackupFiles.Sum(p => p.Length))}");
 
             Utils.Trace("reportBackupDiskStatusButton_Click exit");
         }
@@ -2056,23 +2064,6 @@ namespace BackupManager
             }
 
             Utils.Trace("CheckAllBackupDisksButton_Click exit");
-        }
-
-        private void ListDiskSpaceComparedToSumOfFilesOnDiskButton_Click(object sender, EventArgs e)
-        {
-            foreach (BackupDisk disk in mediaBackup.BackupDisks)
-            {
-                IEnumerable<BackupFile> backupDisk = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name);
-                long totalSizeOfFilesFromSumOfFiles = backupDisk.Sum(p => p.Length);
-
-                long sizeFromDiskAnalysis = disk.Capacity - disk.Free;
-
-                long difference = sizeFromDiskAnalysis - totalSizeOfFilesFromSumOfFiles;
-
-                double percentageDiff = difference * 100 / sizeFromDiskAnalysis;
-
-                Utils.Log($"Disk {disk.Name} with {disk.CapacityFormatted} capacity has {Utils.FormatSize(sizeFromDiskAnalysis)} used. Sum of files has {Utils.FormatSize(totalSizeOfFilesFromSumOfFiles)}. Diff is {Utils.FormatSize(difference)}. {percentageDiff}%");
-            }
         }
     }
 }
