@@ -86,6 +86,8 @@
  7.3  | T | True  | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
  7.4  | T | False | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-MYFAVOURITE} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
  7.5  | D | True  | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-MYFAVOURITE} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
+ 7.6  | T | False | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-36TH ANNIVERSARY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
+ 7.7  | T | True  | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-75TH ANNIVERSARY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
    
    
 # Movies, Comedy, Concerts and TV files must not contain subtitles in the file name
@@ -205,7 +207,7 @@
 17.6  | D | True  | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-scene.mkv"
 17.7  | T | True  | "X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][h265].mkv"
 17.8  | T | False | "X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][bob].mkv"
-17.9  | T | True  | "X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][DV HDR10][FLAC 1.0][VC1].mkv"
+17.9  | T | True  | "X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-30TH ANNIVERSARY} [Remux-2160p][DV HDR10][FLAC 1.0][VC1].mkv"
 17.10 | T | True  | "X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][EAC3 Atmos 7.1][VC1].mkv"
 17.11 | T | True  | "\\nas3\assets4\_Movies (non-tmdb)\Blood Brothers (1989)\Blood Brothers (1989) [Remux-1080p][FLAC 1.0][x264].en.hi.srt"
 17.12 | T | True  | "\\nas1\assets4\_Movies\Aliens (1986)\Aliens (1986) {tmdb-679} [Remux-2160p][HDR10][AC3 5.1][h265].mkv"
