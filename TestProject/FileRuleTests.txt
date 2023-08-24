@@ -261,6 +261,8 @@
 17.61 | T | False | "\\nas4\assets1\_Movies\A (2022)\A (2022) {tmdb-1} [DVD][AVC6 2.0][VP9].mkv"
 17.62 | T | False | "\\nas4\assets1\_Movies\A (2022)\A (2022) {tmdb-1} [DVD][Opus9 2.0][VP9].mkv"
 17.63 | T | False | "\\nas4\assets1\_Movies\A (2023)\A (2022) {tmdb-1} [DVD][EAC3 6.0][VP9].mkv"
+17.64 | T | True  | "\\nas4\assets1\_Movies\Blood Brothers (1989)\Blood Brothers (1989) [SDTV][AAC 2.0][h264].mp4"
+17.20 | T | True  | "\\nas2\assets2\_Movies\A Murder of Crows (1999)\A Murder of Crows (1999) {tmdb-17263} [HDTV-1080p][MP3 2.0][MPEG4].avi"
 
 
 
