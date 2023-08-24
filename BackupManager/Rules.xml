@@ -37,56 +37,56 @@
       <Number>5</Number>
     </FileRule>
     <FileRule>
-      <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts)(?:\s\(non-tmdb\))?\\.*$</FileDiscoveryRegEx>
+      <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts)(\s\(non-tmdb\))?\\.*$</FileDiscoveryRegEx>
       <FileTestRegEx>^(?:.*\\_(?:Movies|Comedy|Concerts)(?:\s\(non-tmdb\))?\\(.*)\\(\1)(?:\s{tmdb-\d{1,7}?})?.*|.*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer)\..*)$</FileTestRegEx>
       <Message>Movies, Comedy and Concerts files must either be a special feature or start with the folder name in the file name</Message>
       <Name>Rule 6</Name>
       <Number>6</Number>
     </FileRule>
     <FileRule>
-      <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts)(?:\s\(non-tmdb\))?\\(.*)\\.* {edition-.*$</FileDiscoveryRegEx>
+      <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts)(\s\(non-tmdb\))?\\(.*)\\.* {edition-.*$</FileDiscoveryRegEx>
       <FileTestRegEx>^.*\s{edition-(((10|20|25|30|35|40|50|60|70)TH\sANNIVERSARY)|4K|BLURAY|CHRONOLOGICAL|COLLECTORS|(CRITERION|KL\sSTUDIO)\sCOLLECTION|DIAMOND|DVD|IMAX|REDUX|REMASTERED|RESTORED|SPECIAL|(THE\sCOMPLETE\s)?EXTENDED|THE\sGODFATHER\sCODA|(THE\sRICHARD\sDONNER|DIRECTORS|FINAL)\sCUT|THEATRICAL|ULTIMATE|UNCUT|UNRATED)}\s.*$</FileTestRegEx>
       <Message>Movies, Comedy and Concerts files that have {edition-} specified must have a valid value in the file name</Message>
       <Name>Rule 7</Name>
       <Number>7</Number>
     </FileRule>
     <FileRule>
-      <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t(m|v)db\))?\\.*$</FileDiscoveryRegEx>
+      <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$</FileDiscoveryRegEx>
       <FileTestRegEx>^((?!subtitles).)*$</FileTestRegEx>
       <Message>Movies, Comedy, Concerts and TV files must not contain subtitles in the file name</Message>
       <Name>Rule 8</Name>
       <Number>8</Number>
     </FileRule>
     <FileRule>
-      <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t(m|v)db\))?\\.*$</FileDiscoveryRegEx>
+      <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$</FileDiscoveryRegEx>
       <FileTestRegEx>^((?!\(\)).)*$</FileTestRegEx>
       <Message>Movies, Comedy, Concerts and TV files must not contain () in the file name</Message>
       <Name>Rule 9</Name>
       <Number>9</Number>
     </FileRule>
     <FileRule>
-      <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t(m|v)db\))?\\.*$</FileDiscoveryRegEx>
+      <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$</FileDiscoveryRegEx>
       <FileTestRegEx>^((?!\(0\)).)*$</FileTestRegEx>
       <Message>Movies, Comedy, Concerts and TV files must not contain (0) in the file name</Message>
       <Name>Rule 10</Name>
       <Number>10</Number>
     </FileRule>
     <FileRule>
-      <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t(m|v)db\))?\\.*$</FileDiscoveryRegEx>
+      <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$</FileDiscoveryRegEx>
       <FileTestRegEx>^((?! Proper\]).)*$</FileTestRegEx>
       <Message>Movies, Comedy, Concerts and TV files must not contain Proper] in the name</Message>
       <Name>Rule 11</Name>
       <Number>11</Number>
     </FileRule>
     <FileRule>
-      <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t(m|v)db\))?\\.*$</FileDiscoveryRegEx>
+      <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$</FileDiscoveryRegEx>
       <FileTestRegEx>^((?! REAL\]).)*$</FileTestRegEx>
       <Message>Movies, Comedy, Concerts and TV files must not contain REAL] in the file name</Message>
       <Name>Rule 12</Name>
       <Number>12</Number>
     </FileRule>
     <FileRule>
-      <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t(m|v)db\))?\\.*$</FileDiscoveryRegEx>
+      <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$</FileDiscoveryRegEx>
       <FileTestRegEx>^.*\.(m(kv|p(4|e?g))|ts|avi|srt)$</FileTestRegEx>
       <Message>Movies, Comedy, Concerts and TV files must end with a valid file extension in the file name</Message>
       <Name>Rule 13</Name>
@@ -100,30 +100,31 @@
       <Number>14</Number>
     </FileRule>
     <FileRule>
-      <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts)(\s\(non-t(m|v)db\))?\\.*-[a-zA-Z]*\.(m(kv|p(4|e?g))|ts|avi)$</FileDiscoveryRegEx>
+      <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts)(\s\(non-t[mv]db\))?\\.*-[a-zA-Z]*\.(m(kv|p(4|e?g))|ts|avi)$</FileDiscoveryRegEx>
       <FileTestRegEx>^.*\\_(Movies|Comedy|Concerts)(?:\s\(non-t(m|v)db\))?\\[a-zA-Z0-9\(\)\s-']*\\[a-zA-Z\(\)0-9\s]*[^\\]*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer)\.(m(kv|p(4|e?g))|ts|avi)$</FileTestRegEx>
       <Message>Movies, Comedy, and Concerts files special features must be in the root folder of the movie with a correct suffix</Message>
       <Name>Rule 15</Name>
       <Number>15</Number>
     </FileRule>
     <FileRule>
-      <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t(m|v)db\))?\\.*$</FileDiscoveryRegEx>
+      <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$</FileDiscoveryRegEx>
       <FileTestRegEx>(?&lt;!\.)\.(m(kv|p(4|e?g))|ts|avi|srt)$</FileTestRegEx>
       <Message>Movies, Comedy, Concerts and TV files must not have double '.' before the extension</Message>
       <Name>Rule 16</Name>
       <Number>16</Number>
     </FileRule>
     <FileRule>
-      <FileDiscoveryRegEx>^.*\\_Movies(?:\s\(non-tmdb\))?\\.*$</FileDiscoveryRegEx>
-      <FileTestRegEx>^(?:.*\\_Movies(?:\s\(non-tmdb\))?\\(.*)\\(\1)(?:\s{tmdb-\d{1,7}?})?\s({edition-(((10|20|25|30|35|40|50|60|70)TH\sANNIVERSARY)|4K|BLURAY|CHRONOLOGICAL|COLLECTORS|(CRITERION|KL\sSTUDIO)\sCOLLECTION|DIAMOND|DVD|IMAX|REDUX|REMASTERED|RESTORED|SPECIAL|(THE\sCOMPLETE\s)?EXTENDED|THE\sGODFATHER\sCODA|(THE\sRICHARD\sDONNER|DIRECTORS|FINAL)\sCUT|THEATRICAL|ULTIMATE|UNCUT|UNRATED)}\s)?\[(DVD|SDTV|(WEB(Rip|DL)|Bluray|HDTV|Remux)-(480|720|1080|2160)p)\](\[((DV)?((\s)?HDR10(Plus)?)?|PQ|3D)\])?\[(DTS|DTS\sHD|DTS-HD\sMA|TrueHD\sAtmos||AC3|DTS-X|FLAC|PCM|MP3|EAC3|EAC3\sAtmos|AAC|TrueHD|Opus|DTS-HD HRA|AVC|DTS\-ES)\s(1.0|2.0|3.0|3.1|4.0|5.0|5.1|6.0|6.1|7.1|8.0)\]\[(h264|h265|MPEG2|AVC|x264|x265|HEVC|XviD|VC1|AVC|VP9)\]|.*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(kv|p(4|e?g))|ts|avi|(e(n|s)(\.hi)?\.)srt)$</FileTestRegEx>
+      <FileDiscoveryRegEx>^.*\\_Movies(\s\(non-tmdb\))?\\.*$</FileDiscoveryRegEx>
+      <FileTestRegEx>^(?:.*\\_Movies(?:\s\(non-tmdb\))?\\(.*)\\(\1)(?:\s{tmdb-\d{1,7}?})?\s({edition-(((10|20|25|30|35|40|50|60|70)TH\sANNIVERSARY)|4K|BLURAY|CHRONOLOGICAL|COLLECTORS|(CRITERION|KL\sSTUDIO)\sCOLLECTION|DIAMOND|DVD|IMAX|REDUX|REMASTERED|RESTORED|SPECIAL|(THE\sCOMPLETE\s)?EXTENDED|THE\sGODFATHER\sCODA|(THE\sRICHARD\sDONNER|DIRECTORS|FINAL)\sCUT|THEATRICAL|ULTIMATE|UNCUT|UNRATED)}\s)?\[(DVD|SDTV|(WEB(Rip|DL)|Bluray|HDTV|Remux)-(480|720|1080|2160)p)\](\[((DV)?((\s)?HDR10(Plus)?)?|PQ|3D)\])?\[(DTS(\sHD|-(X|ES|HD\s(M|HR)A))?|(TrueHD|EAC3)(\sAtmos)?|AC3|FLAC|PCM|MP3|A[AV]C|Opus)\s([1-8]\.[01])\]\[([hx]26[45]|MPEG2|HEVC|XviD|V(C1|P9)|AVC)\]|.*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(kv|p(4|e?g))|ts|avi|(e(n|s)(\.hi)?\.)srt)$</FileTestRegEx>
       <Message>Movies files must either be a special feature or named correctly</Message>
       <Name>Rule 17</Name>
       <Number>17</Number>
     </FileRule>
     <FileRule>
-      <FileDiscoveryRegEx>^.*\\_Movies(?:\s\(non-tmdb\))?\\.*$</FileDiscoveryRegEx>
+      <FileDiscoveryRegEx>^.*\\_Movies(\s\(non-tmdb\))?\\.*$</FileDiscoveryRegEx>
+      <!-- <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$</FileDiscoveryRegEx> -->
       <FileTestRegEx>^(?:.*\\_Movies(?:\s\(non-tmdb\))?\\.*\\.*\[(DVD|SDTV|(WEB(Rip|DL)|Bluray|HDTV|Remux)-(480|720|1080|2160)p)\].*$|.*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer)\..*)$</FileTestRegEx>
-      <Message>Movies files must either be a special feature or have a valid Quality specified</Message>
+      <Message>Movies , Comedy, Concerts and TV files must either be a special feature or have a valid Quality specified</Message>
       <Name>Rule 18</Name>
       <Number>18</Number>
     </FileRule>
