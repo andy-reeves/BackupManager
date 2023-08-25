@@ -215,20 +215,13 @@ namespace BackupManager
 
             EnsureDirectories(destFileName);
 
-            bool isHidden = File.GetAttributes(sourceFileName).HasFlag(FileAttributes.Hidden);
-
-            if (isHidden)
-            {
-                ClearFileAttribute(sourceFileName, FileAttributes.Hidden);
-            }
-
             CopyProcess = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
                     WindowStyle = ProcessWindowStyle.Hidden,
                     FileName = "cmd.exe",
-                    Arguments = $"/C COPY \"{sourceFileName}\" \"{destFileName}\""
+                    Arguments = $"/C echo F| xcopy /F /H /J \"{sourceFileName}\" \"{destFileName}\""
                 }
             };
 
@@ -243,11 +236,6 @@ namespace BackupManager
             {
                 Trace("FileCopyNewProcess exit with FALSE");
                 return false;
-            }
-
-            if (isHidden)
-            {
-                File.SetAttributes(sourceFileName, FileAttributes.Hidden);
             }
 
             Trace($"FileCopyNewProcess exit with {CopyProcess.ExitCode}");
