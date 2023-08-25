@@ -215,6 +215,13 @@ namespace BackupManager
 
             EnsureDirectories(destFileName);
 
+            bool isHidden = File.GetAttributes(sourceFileName).HasFlag(FileAttributes.Hidden);
+
+            if (isHidden)
+            {
+                ClearFileAttribute(sourceFileName, FileAttributes.Hidden);
+            }
+
             CopyProcess = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -236,6 +243,11 @@ namespace BackupManager
             {
                 Trace("FileCopyNewProcess exit with FALSE");
                 return false;
+            }
+
+            if (isHidden)
+            {
+                File.SetAttributes(sourceFileName, FileAttributes.Hidden);
             }
 
             Trace($"FileCopyNewProcess exit with {CopyProcess.ExitCode}");
@@ -275,6 +287,9 @@ namespace BackupManager
         /// <param name="attributeToRemove"></param>
         internal static void ClearFileAttribute(string path, FileAttributes attributeToRemove)
         {
+            Trace("ClearFileAttribute enter");
+            Trace($"Params: path={path}, attributeToRemove={attributeToRemove}");
+
             FileAttributes attributes = File.GetAttributes(path);
 
             if ((attributes & attributeToRemove) == attributeToRemove)
@@ -282,6 +297,8 @@ namespace BackupManager
                 attributes = RemoveAttribute(attributes, attributeToRemove);
                 File.SetAttributes(path, attributes);
             }
+
+            Trace("ClearFileAttribute exit");
         }
 
         private static FileAttributes RemoveAttribute(FileAttributes attributes, FileAttributes attributesToRemove)
