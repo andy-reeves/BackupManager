@@ -842,7 +842,7 @@ namespace BackupManager
         /// <returns>True if success code returned</returns>
         internal static bool UrlExists(string url, int timeout)
         {
-            Trace("UrlExists enter");
+            //Trace("UrlExists enter");
             bool returnValue;
             try
             {
@@ -860,7 +860,7 @@ namespace BackupManager
                 return false;
             }
 
-            Trace("UrlExists exit");
+            //Trace("UrlExists exit");
             return returnValue;
         }
 
@@ -871,7 +871,7 @@ namespace BackupManager
         /// <returns>True if the connection is made</returns>
         internal static bool ConnectionExists(string host, int port)
         {
-            Trace("ConnectionExists enter");
+            //Trace("ConnectionExists enter");
 
             try
             {
@@ -886,7 +886,7 @@ namespace BackupManager
                 return false;
             }
 
-            Trace("ConnectionExists exit");
+            //Trace("ConnectionExists exit");
             return true;
         }
 

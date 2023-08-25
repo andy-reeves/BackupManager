@@ -1719,7 +1719,7 @@ namespace BackupManager
 
         private void MonitorServices()
         {
-            Utils.Trace("MonitorServices enter");
+            //Utils.Trace("MonitorServices enter");
 
             foreach (ProcessServiceMonitor monitor in mediaBackup.Monitors)
             {
@@ -1806,7 +1806,7 @@ namespace BackupManager
                 }
             }
 
-            Utils.Trace("MonitorServices exit");
+            //Utils.Trace("MonitorServices exit");
         }
 
         private void KillProcessesButton_Click(object sender, EventArgs e)
