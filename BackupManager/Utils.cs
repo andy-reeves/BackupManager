@@ -221,7 +221,7 @@ namespace BackupManager
                 {
                     WindowStyle = ProcessWindowStyle.Hidden,
                     FileName = "cmd.exe",
-                    Arguments = $"/C echo F| xcopy /F /H /J \"{sourceFileName}\" \"{destFileName}\""
+                    Arguments = $"/C echo F| xcopy /F /H \"{sourceFileName}\" \"{destFileName}\""
                 }
             };
 
