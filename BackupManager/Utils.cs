@@ -213,15 +213,23 @@ namespace BackupManager
             Trace("FileCopyNewProcess enter");
             Trace($"Params: sourceFileName={sourceFileName}, destFileName={destFileName}");
 
+            if (File.Exists(destFileName))
+            {
+                throw new NotSupportedException("Destination file already exists");
+            }
+
             EnsureDirectories(destFileName);
+
+            // we create the destination file so xcopy knows its a file and can copy over it
+            File.WriteAllText(destFileName, "Temp file");
 
             CopyProcess = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
                     WindowStyle = ProcessWindowStyle.Hidden,
-                    FileName = "cmd.exe",
-                    Arguments = $"/C echo F| xcopy /F /H \"{sourceFileName}\" \"{destFileName}\""
+                    FileName = "xcopy",
+                    Arguments = $"/H /Y \"{sourceFileName}\" \"{destFileName}\""
                 }
             };
 
