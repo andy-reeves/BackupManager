@@ -68,6 +68,7 @@
             this.killProcessesButton = new System.Windows.Forms.Button();
             this.listMasterFoldersComboBox = new System.Windows.Forms.ComboBox();
             this.pushoverGroupBox = new System.Windows.Forms.GroupBox();
+            this.pushoverOnOffButton = new System.Windows.Forms.Button();
             this.testPushoverLowButton = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.listFilesGroupBox = new System.Windows.Forms.GroupBox();
@@ -503,6 +504,7 @@
             // 
             // pushoverGroupBox
             // 
+            this.pushoverGroupBox.Controls.Add(this.pushoverOnOffButton);
             this.pushoverGroupBox.Controls.Add(this.testPushoverLowButton);
             this.pushoverGroupBox.Controls.Add(this.testPushoverNormalButton);
             this.pushoverGroupBox.Controls.Add(this.testPushoverHighButton);
@@ -513,6 +515,16 @@
             this.pushoverGroupBox.TabIndex = 54;
             this.pushoverGroupBox.TabStop = false;
             this.pushoverGroupBox.Text = "Pushover tests";
+            // 
+            // pushoverOnOffButton
+            // 
+            this.pushoverOnOffButton.Location = new System.Drawing.Point(125, 34);
+            this.pushoverOnOffButton.Name = "pushoverOnOffButton";
+            this.pushoverOnOffButton.Size = new System.Drawing.Size(86, 23);
+            this.pushoverOnOffButton.TabIndex = 44;
+            this.pushoverOnOffButton.Text = "Start sending";
+            this.pushoverOnOffButton.UseVisualStyleBackColor = true;
+            this.pushoverOnOffButton.Click += new System.EventHandler(this.PushoverOnOffButton_Click);
             // 
             // testPushoverLowButton
             // 
@@ -783,6 +795,7 @@
         private System.Windows.Forms.Button checkAllBackupDisksButton;
         private System.Windows.Forms.GroupBox AllBackupDisksGroupBox;
         private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button pushoverOnOffButton;
     }
 }
 

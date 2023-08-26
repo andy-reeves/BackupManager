@@ -56,6 +56,11 @@ namespace BackupManager.Entities
         public bool StartMonitoring;
 
         /// <summary>
+        /// If True Pushover messages are sent
+        /// </summary>
+        public bool StartSendingPushoverMessages;
+
+        /// <summary>
         /// The start time for the scheduled backup
         /// </summary>
         public string ScheduledBackupStartTime;

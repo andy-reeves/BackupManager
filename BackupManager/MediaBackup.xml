@@ -30,6 +30,8 @@
   <SpeedTestIterations>2</SpeedTestIterations>
   <!-- Size of disk speed test file in MB -->
   <SpeedTestFileSize>200</SpeedTestFileSize>
+  <!-- True to enable sending Pushover messages -->
+  <StartSendingPushoverMessages>false</StartSendingPushoverMessages>
   <Monitors>
     <Monitor>
       <Url />

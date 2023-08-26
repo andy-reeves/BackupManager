@@ -39,6 +39,8 @@ namespace BackupManager
 
         private bool serviceMonitoringRunning;
 
+        private bool scheduledBackupRunning;
+
         #region Constructors and Destructors
 
         public Main()
@@ -62,6 +64,7 @@ namespace BackupManager
 
             Utils.PushoverUserKey = mediaBackup.PushoverUserKey;
             Utils.PushoverAppToken = mediaBackup.PushoverAppToken;
+            Utils.MediaBackup = mediaBackup;
 
             // Log the parameters after setting the Pushover keys in the Utils class
             mediaBackup.LogParameters();
@@ -92,6 +95,8 @@ namespace BackupManager
             hoursNumericUpDown.Value = startTime.Hour;
 
             minutesNumericUpDown.Value = startTime.Minute;
+
+            UpdateSendingPushoverButton();
 
             if (mediaBackup.StartMonitoring)
             {
@@ -2064,6 +2069,27 @@ namespace BackupManager
             }
 
             Utils.Trace("CheckAllBackupDisksButton_Click exit");
+        }
+
+        private void PushoverOnOffButton_Click(object sender, EventArgs e)
+        {
+            mediaBackup.StartSendingPushoverMessages = !mediaBackup.StartSendingPushoverMessages;
+            UpdateSendingPushoverButton();
+
+        }
+
+        private void UpdateSendingPushoverButton()
+        {
+            pushoverOnOffButton.Text = mediaBackup.StartSendingPushoverMessages ? "Sending = ON" : "Sending = OFF";
+        }
+        private void UpdateMonitoringButton()
+        {
+            monitoringButton.Text = serviceMonitoringRunning == true ? "Monitoring = ON" : "Monitoring = OFF";
+        }
+
+        private void UpdateScheduledBackupButton()
+        {
+            timerButton.Text = scheduledBackupRunning == true ? "Backup = ON" : "Backup = OFF";
         }
     }
 }

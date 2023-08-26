@@ -6,6 +6,7 @@
 
 namespace BackupManager
 {
+    using BackupManager.Entities;
     using System;
     using System.Collections.Generic;
     using System.Collections.Specialized;
@@ -127,6 +128,11 @@ namespace BackupManager
         /// We use this to track when we sent the messages. This allows us to delay between messages
         /// </summary>
         private static DateTime timeLastPushoverMessageSent = DateTime.UtcNow.AddSeconds(-60);
+
+        /// <summary>
+        /// So we can get config values
+        /// </summary>
+        internal static  MediaBackup MediaBackup;
 
         #endregion
 
@@ -744,10 +750,11 @@ namespace BackupManager
         internal static void SendPushoverMessage(string title, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires, string message)
         {
             Trace("SendPushoverMessage enter");
-
-            try
+            if (MediaBackup.StartSendingPushoverMessages)
             {
-                NameValueCollection parameters = new NameValueCollection {
+                try
+                {
+                    NameValueCollection parameters = new NameValueCollection {
                 { "token", PushoverAppToken},
                 { "user", PushoverUserKey },
                 { "priority", Convert.ChangeType(priority, priority.GetTypeCode()).ToString() },
@@ -755,46 +762,46 @@ namespace BackupManager
                 { "title", title }
                 };
 
-                if (priority == PushoverPriority.Emergency)
-                {
-                    if (retry == PushoverRetry.None)
+                    if (priority == PushoverPriority.Emergency)
                     {
-                        retry = PushoverRetry.ThirtySeconds;
+                        if (retry == PushoverRetry.None)
+                        {
+                            retry = PushoverRetry.ThirtySeconds;
+                        }
+
+                        if (expires == PushoverExpires.Immediately)
+                        {
+                            expires = PushoverExpires.FiveMinutes;
+                        }
                     }
 
-                    if (expires == PushoverExpires.Immediately)
+                    if (retry != PushoverRetry.None)
                     {
-                        expires = PushoverExpires.FiveMinutes;
+                        parameters.Add("retry", Convert.ChangeType(retry, retry.GetTypeCode()).ToString());
+                    }
+
+                    if (expires != PushoverExpires.Immediately)
+                    {
+                        parameters.Add("expire", Convert.ChangeType(expires, expires.GetTypeCode()).ToString());
+                    }
+
+                    using (WebClient client = new WebClient())
+                    {
+                        // ensures there's a 1s gap between messages
+                        while (DateTime.UtcNow < timeLastPushoverMessageSent.AddMilliseconds(TimeDelayOnPushoverMessages))
+                        {
+                            Task.Delay(TimeDelayOnPushoverMessages / 2).Wait();
+                        }
+                        _ = client.UploadValues(PushoverAddress, parameters);
+                        timeLastPushoverMessageSent = DateTime.UtcNow;
                     }
                 }
-
-                if (retry != PushoverRetry.None)
+                catch (Exception ex)
                 {
-                    parameters.Add("retry", Convert.ChangeType(retry, retry.GetTypeCode()).ToString());
-                }
-
-                if (expires != PushoverExpires.Immediately)
-                {
-                    parameters.Add("expire", Convert.ChangeType(expires, expires.GetTypeCode()).ToString());
-                }
-
-                using (WebClient client = new WebClient())
-                {
-                    // ensures there's a 1s gap between messages
-                    while (DateTime.UtcNow < timeLastPushoverMessageSent.AddMilliseconds(TimeDelayOnPushoverMessages))
-                    {
-                        Task.Delay(TimeDelayOnPushoverMessages / 2).Wait();
-                    }
-                    _ = client.UploadValues(PushoverAddress, parameters);
-                    timeLastPushoverMessageSent = DateTime.UtcNow;
+                    // we ignore any push problems
+                    Log($"Exception sending Pushover message {ex}");
                 }
             }
-            catch (Exception ex)
-            {
-                // we ignore any push problems
-                Log($"Exception sending Pushover message {ex}");
-            }
-
             Trace("SendPushoverMessage exit");
         }
 
