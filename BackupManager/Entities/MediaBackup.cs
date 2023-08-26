@@ -629,6 +629,7 @@ namespace BackupManager.Entities
             text += $"DiskSpeedTests : {DiskSpeedTests}\n";
             text += $"SpeedTestFileSize : {SpeedTestFileSize}\n";
             text += $"SpeedTestIterations : {SpeedTestIterations}\n";
+            text += $"StartSendingPushoverMessages : {StartSendingPushoverMessages}\n";
 
             parameterText = text;
             Utils.Log(BackupAction.General, parameterText);

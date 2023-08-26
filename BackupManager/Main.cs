@@ -442,14 +442,22 @@ namespace BackupManager
             long lastCopySpeed = 0;
             long remainingSizeOfFilesToCopy = sizeOfFiles;
 
-            EnableProgressBar(0, filesToBackup.Count());
+            long copiedSoFar = 0;
+
+            _ = Utils.GetDiskInfo(backupDiskTextBox.Text, out long availableSpace, out long totalBytes);
+
+            long remainingDiskSpace = availableSpace - Utils.ConvertMBtoBytes(mediaBackup.MinimumFreeSpaceToLeaveOnBackupDisk);
+            long sizeOfCopy = remainingDiskSpace < sizeOfFiles ? remainingDiskSpace : sizeOfFiles;
+
+            /// We use 100 as the max because the actual number of bytes could be far too large 
+            EnableProgressBar(0, 100);
 
             foreach (BackupFile backupFile in filesToBackup)
             {
                 try
                 {
                     fileCounter++;
-                    UpdateStatusLabel("Copying", fileCounter);
+                    UpdateStatusLabel("Copying", Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
 
                     if (string.IsNullOrEmpty(backupFile.IndexFolder))
                     {
@@ -470,6 +478,7 @@ namespace BackupManager
                     if (File.Exists(destinationFileName))
                     {
                         Utils.LogWithPushover(BackupAction.BackupFiles, $"[{fileCounter}/{totalFileCount}]\nSkipping copy of {sourceFileName} as it exists already.");
+                        UpdateStatusLabel($"Skipping {Path.GetFileName(sourceFileName)}", Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
 
                         // it could be that the source file hash changed after we read it (we read the hash, updated the master file and then copied it)
                         // in which case check the source hash again and then check the copied file 
@@ -485,9 +494,9 @@ namespace BackupManager
                     }
                     else
                     {
-                        UpdateStatusLabel($"Copying {Path.GetFileName(sourceFileName)}", fileCounter);
+                        UpdateStatusLabel($"Copying {Path.GetFileName(sourceFileName)}", Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
 
-                        result = Utils.GetDiskInfo(backupDiskTextBox.Text, out long availableSpace, out long totalBytes);
+                        result = Utils.GetDiskInfo(backupDiskTextBox.Text, out availableSpace, out totalBytes);
 
                         if (availableSpace > Utils.ConvertMBtoBytes(mediaBackup.MinimumFreeSpaceToLeaveOnBackupDisk) + sourceFileInfo.Length)
                         {
@@ -501,10 +510,9 @@ namespace BackupManager
                                 // remaining size is the smallest of remaining disk size-crital space to leave free OR
                                 // size of remaining files to copy
 
-                                long remainingDiskSpace = availableSpace - Utils.ConvertMBtoBytes(mediaBackup.MinimumFreeSpaceToLeaveOnBackupDisk);
+                                remainingDiskSpace = availableSpace - Utils.ConvertMBtoBytes(mediaBackup.MinimumFreeSpaceToLeaveOnBackupDisk);
 
                                 long sizeOfCopyRemaining = remainingDiskSpace < remainingSizeOfFilesToCopy ? remainingDiskSpace : remainingSizeOfFilesToCopy;
-
                                 double numberOfSecondsOfCopyRemaining = sizeOfCopyRemaining / lastCopySpeed;
 
                                 DateTime rightNow = DateTime.Now;
@@ -571,6 +579,7 @@ namespace BackupManager
                     }
 
                     remainingSizeOfFilesToCopy -= backupFile.Length;
+                    copiedSoFar += backupFile.Length;
                 }
 
                 catch (FileNotFoundException)

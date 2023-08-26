@@ -224,6 +224,10 @@ namespace BackupManager
                 throw new NotSupportedException("Destination file already exists");
             }
 
+#if DEBUG
+            Task.Delay(5000).Wait();
+#endif
+
             EnsureDirectories(destFileName);
 
             // we create the destination file so xcopy knows its a file and can copy over it
