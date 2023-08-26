@@ -280,3 +280,24 @@
 # {Movie CleanTitle} {(Release Year)} {tmdb-{TmdbId}} {edition-{EDITION TAGS}} {[Quality Full]}{[MediaInfo 3D]}{[MediaInfo VideoDynamicRangeType]}{[Mediainfo AudioCodec}{ Mediainfo AudioChannels}][{Mediainfo VideoCodec}].extension
 
 
+# TV files must either be a special feature or be named correctly
+
+19.1  | D | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv"
+19.2  | D | True  | "Z:\_TV (non-tvdb)\The Queen's Christmas Broadcast\Season 1\The Queen's Christmas Broadcast s01e2015 2015 [HDTV-720p].mp4"
+19.3  | T | True  | "X:\_TV\Cheers {tvdb-77623}\Season 11\Cheers s11e26-e28 One for the Road [SDTV].avi"          
+19.4  | T | True  | "X:\_TV\Cheers {tvdb-77623}\Season 11\Cheers s11e26e27 One for the Road [SDTV].avi"        
+19.5  | T | False | "X:\_TV\Cheers {tvdb-77623}\Season 11\Cheers s11.e26-e28 One for the Road [SDTV].avi"
+19.6  | T | False | "X:\_TV\Cheers {tvdb-77623}\Season 11\Cheers s11e26f27 One for the Road [SDTV].avi"
+19.7  | T | True  | "X:\_TV\The Late Late Show with James Corden {tvdb-292421}\Season 1\The Late Late Show with James Corden 2015-03-23 [HDTV-720p].mkv"
+19.8  | T | True  | "X:\_TV (non-tmdb)\Blood Brothers\Example 1-behindthescenes.mkv"
+19.9  | T | False | "X:\_TV\The Late Late Show with James Corden {tvdb-292421}\Season 1\The Late Late Show with James Corden 20150323 [HDTV-720p].mkv"
+19.10 | T | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv"
+19.11 | T | True  | "X:\_TV\Long Way Round {tvdb-77623}\Season 11\Long Way Round s01e08.mkv"
+19.12 | T | True  | "X:\_TV\Long Way Round {tvdb-77623}\Season 11\Long Way Round s01e108e109.mkv"
+19.13 | T | True  | "X:\_TV\Long Way Round {tvdb-77623}\Season 11\Long Way Round s01e08-e12.mkv"
+19.14 | T | True  | "Z:\_TV\The Queen's Christmas Broadcast {tvdb-359422}\Season 1\The Queen's Christmas Broadcast s01e2015 2015 [HDTV-720p].mp4"
+19.15 | T | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv"
+19.16 | T | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e2015 Puss Gets The Boot [SDTV].mkv"
+19.17 | D | False | "X:\_Movies\Chernobyl {tvdb-360893}\Season 1\Chernobyl s01e01 TBA [Bluray-2160p Remux].mkv"
+
+

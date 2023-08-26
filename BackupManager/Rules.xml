@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Rules xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">  
+<Rules xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <FileRules>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_TV(\s\(non-tvdb\))?\\.*$</FileDiscoveryRegEx>
@@ -127,6 +127,13 @@
       <Message>Movies , Comedy, Concerts and TV files must either be a special feature or have a valid Quality specified</Message>
       <Name>Rule 18</Name>
       <Number>18</Number>
+    </FileRule>
+    <FileRule>
+      <FileDiscoveryRegEx>^.*\\_TV(\s\(non-tvdb\))?\\.*$</FileDiscoveryRegEx>
+      <FileTestRegEx>^(?:.*\\_TV(?:\s\(non-tvdb\))?\\(.*)\s{t(m|v)db-\d{1,7}?}\\(Season\s\d+|Specials)\\(\1)\s(s\d{1,4}e\d{2,4}-?(e\d{2,4})?|\d{4}-\d\d-\d\d)(\s.*\[(DVD|SDTV|(WEB(Rip|DL)|Bluray|HDTV|Remux)-(48|72|108|216)0p)\])?|.*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(kv|p(4|e?g))|ts|avi)$</FileTestRegEx>
+      <Message>TV files must either be a special feature or be named correctly</Message>
+      <Name>Rule 19</Name>
+      <Number>19</Number>
     </FileRule>
   </FileRules>
 </Rules>
