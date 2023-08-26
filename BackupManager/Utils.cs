@@ -134,6 +134,8 @@ namespace BackupManager
         /// </summary>
         internal static MediaBackup MediaBackup;
 
+        private static bool AlreadySendingPushoverMessage;
+
         #endregion
 
         #region internal Methods and Operators
@@ -768,6 +770,7 @@ namespace BackupManager
         internal static void SendPushoverMessage(string title, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires, string message)
         {
             Trace("SendPushoverMessage enter");
+
             if (MediaBackup.StartSendingPushoverMessages)
             {
                 try
@@ -810,7 +813,23 @@ namespace BackupManager
                         {
                             Task.Delay(TimeDelayOnPushoverMessages / 2).Wait();
                         }
+
                         _ = client.UploadValues(PushoverAddress, parameters);
+
+                        int applicationLimitRemaining = Convert.ToInt32(client.ResponseHeaders["X-Limit-App-Remaining"]);
+
+                        Log($"Pushover messages remaining: {applicationLimitRemaining}");
+
+                        if (applicationLimitRemaining < 250)
+                        {
+                            if (!AlreadySendingPushoverMessage)
+                            {
+                                AlreadySendingPushoverMessage = true;
+                                SendPushoverMessage("Message Limit Warning", PushoverPriority.High, $"Application Limit Remaining is: {applicationLimitRemaining}");
+                                AlreadySendingPushoverMessage = false;
+                            }
+                        }
+
                         timeLastPushoverMessageSent = DateTime.UtcNow;
                     }
                 }
