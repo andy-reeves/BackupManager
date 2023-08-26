@@ -932,9 +932,15 @@ namespace BackupManager
             if (value > 0)
             {
                 int progress = value * 100 / toolStripProgressBar.Maximum;
-                if (progress == 0) { progress = 1; }
+                if (progress == 0)
+                {
+                    progress = 1;
+                }
                 else
-                if (progress == 100) { progress = 99; }
+                if (progress > 99)
+                {
+                    progress = 99;
+                }
 
                 textToUse = $"{text}     {progress}%";
             }
@@ -973,8 +979,14 @@ namespace BackupManager
         {
             if (value > 0)
             {
+                if (value >= toolStripProgressBar.Maximum)
+                {
+                    value = toolStripProgressBar.Maximum - 1;
+                }
                 statusStrip.Invoke(x => toolStripProgressBar.Visible = true);
+
                 statusStrip.Invoke(x => toolStripProgressBar.Value = value);
+
             }
             else
             {
