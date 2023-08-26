@@ -36,7 +36,7 @@
     <Monitor>
       <Url />
       <Timeout>30</Timeout>
-      <ProcessToKill>plex media server</ProcessToKill>
+      <ProcessToKill>plex media server,ffmpeg</ProcessToKill>
       <ApplicationToStart>"%ProgramFiles(x86)%\Plex\Plex Media Server\Plex Media Server.exe"</ApplicationToStart>
       <Name>Plex</Name>
       <Port>0</Port>

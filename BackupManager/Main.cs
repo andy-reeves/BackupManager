@@ -1879,11 +1879,16 @@ namespace BackupManager
 
                 if (monitor.ProcessToKill.HasValue())
                 {
-                    Utils.LogWithPushover(BackupAction.Monitoring,
-                                          PushoverPriority.Normal,
-                                          $"Stopping all '{monitor.ProcessToKill}' processes that match");
+                    string[] processesToKill = monitor.ProcessToKill.Split(',');
 
-                    _ = Utils.KillProcesses(monitor.ProcessToKill);
+                    foreach (string toKill in processesToKill)
+                    {
+                        Utils.LogWithPushover(BackupAction.Monitoring,
+                                              PushoverPriority.Normal,
+                                              $"Stopping all '{toKill}' processes that match");
+
+                        _ = Utils.KillProcesses(toKill);
+                    }
                 }
 
                 if (monitor.ServiceToRestart.HasValue())
