@@ -5,11 +5,11 @@
   <!-- When true a backup scan will run when the app starts -->
   <StartScheduledBackup>false</StartScheduledBackup>
   <!-- When true the service monitoring starts when the app starts -->
-  <StartMonitoring>true</StartMonitoring>
+  <StartMonitoring>false</StartMonitoring>
   <!-- A bigger percentage difference than this and the backup stops -->
   <DifferenceInFileCountAllowedPercentage>2</DifferenceInFileCountAllowedPercentage>
   <!--  ScheduledBackupStartTime as hh:mm -->
-  <ScheduledBackupStartTime>11:00</ScheduledBackupStartTime>
+  <ScheduledBackupStartTime>11:30</ScheduledBackupStartTime>
   <!-- MinimumCriticalMasterFolderSpace in MB -->
   <MinimumCriticalMasterFolderSpace>200</MinimumCriticalMasterFolderSpace>
   <!-- MinimumCriticalBackupDiskSpace in MB -->

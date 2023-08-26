@@ -37,6 +37,11 @@ namespace BackupManager
 
         private readonly Action monitoringAction;
 
+        /// <summary>
+        /// Any long-running action ets this to TRUE to stop the others from being able to start
+        /// </summary>
+        private bool longRunningActionExecutingRightNow;
+
         #region Constructors and Destructors
 
         public Main()
@@ -98,6 +103,8 @@ namespace BackupManager
 
             if (mediaBackup.StartMonitoring)
             {
+                // we swtich it off and force the button to be clicked to tuen it on again
+                mediaBackup.StartMonitoring = false;
 #if !DEBUG
                 MonitoringButton_Click(null, null);
 #endif
@@ -106,6 +113,8 @@ namespace BackupManager
             if (mediaBackup.StartScheduledBackup)
             {
 #if !DEBUG
+                // we swtich it off and force the button to be clicked to tuen it on again
+                mediaBackup.StartScheduledBackup = false;
                 BackupTimerButton_Click(null, null);
 #endif
             }
@@ -674,25 +683,33 @@ namespace BackupManager
 
         private void CopyFilesAsync(bool showCompletedMessage)
         {
+            longRunningActionExecutingRightNow = true;
             DisableControlsForAsyncTasks();
 
             CopyFiles(showCompletedMessage);
 
             ResetAllControls();
+            longRunningActionExecutingRightNow = false;
         }
 
         private void CheckConnectedDiskAndCopyFilesAsync(bool deleteExtraFiles, bool copyFiles)
         {
+            longRunningActionExecutingRightNow = true;
+
             DisableControlsForAsyncTasks();
 
             _ = CheckConnectedDisk(deleteExtraFiles);
             if (copyFiles) { CopyFiles(true); }
 
             ResetAllControls();
+            longRunningActionExecutingRightNow = false;
+
         }
 
         private void CheckConnectedDiskAndCopyFilesRepeaterAsync(bool copyFiles)
         {
+            longRunningActionExecutingRightNow = true;
+
             DisableControlsForAsyncTasks();
             string nextDiskMessage = "Please insert the next backup disk now";
 
@@ -727,11 +744,15 @@ namespace BackupManager
 
         private void ScanFolderAsync()
         {
+            longRunningActionExecutingRightNow = true;
+
             DisableControlsForAsyncTasks();
 
             ScanFolders();
 
             ResetAllControls();
+
+            longRunningActionExecutingRightNow = false;
         }
 
         public void TaskWrapper(Action methodName)
@@ -861,15 +882,17 @@ namespace BackupManager
         {
             Utils.Trace("UpdateMasterFilesButton_Click enter");
 
-            DialogResult answer = MessageBox.Show("Are you sure you want to rebuild the master list?",
-                                                  "Rebuild master list",
-                                                  MessageBoxButtons.YesNo);
-
-            if (answer == DialogResult.Yes)
+            if (!longRunningActionExecutingRightNow)
             {
-                TaskWrapper(ScanFolderAsync);
-            }
+                DialogResult answer = MessageBox.Show("Are you sure you want to rebuild the master list?",
+                                                      "Rebuild master list",
+                                                      MessageBoxButtons.YesNo);
 
+                if (answer == DialogResult.Yes)
+                {
+                    TaskWrapper(ScanFolderAsync);
+                }
+            }
             Utils.Trace("UpdateMasterFilesButton_Click exit");
         }
 
@@ -1185,7 +1208,14 @@ namespace BackupManager
             if (mediaBackup.StartScheduledBackup)
             {
                 mediaBackup.StartScheduledBackup = false;
-                trigger.OnTimeTriggered -= scheduledBackupAction;
+                try
+                {
+                    if (trigger != null)
+                    {
+                        trigger.OnTimeTriggered -= scheduledBackupAction;
+                    }
+                }
+                catch { }
             }
             else
             {
@@ -1206,11 +1236,16 @@ namespace BackupManager
 
         private void ScheduledBackupAsync()
         {
-            DisableControlsForAsyncTasks();
+            if (!longRunningActionExecutingRightNow)
+            {
+                longRunningActionExecutingRightNow = true;
+                DisableControlsForAsyncTasks();
 
-            ScheduledBackup();
+                ScheduledBackup();
 
-            ResetAllControls();
+                ResetAllControls();
+                longRunningActionExecutingRightNow = false;
+            }
         }
 
         private void ScheduledBackup()
@@ -2057,7 +2092,10 @@ namespace BackupManager
             }
 
             cancelButton.Enabled = false;
+            longRunningActionExecutingRightNow = false;
+
             ResetAllControls();
+            tokenSource = null;
         }
 
         private void CheckAllBackupDisksButton_Click(object sender, EventArgs e)
