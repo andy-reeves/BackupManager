@@ -47,7 +47,7 @@
             this.listFilesWithDuplicateContentHashcodesButton = new System.Windows.Forms.Button();
             this.checkDeleteAndCopyAllBackupDisksButton = new System.Windows.Forms.Button();
             this.checkAllBackupDisksButton = new System.Windows.Forms.Button();
-            this.timerButton = new System.Windows.Forms.Button();
+            this.scheduledBackupTimerButton = new System.Windows.Forms.Button();
             this.listFilesOnBackupDiskButton = new System.Windows.Forms.Button();
             this.listFilesInMasterFolderButton = new System.Windows.Forms.Button();
             this.masterFoldersComboBox = new System.Windows.Forms.ComboBox();
@@ -220,7 +220,7 @@
             // 
             // speedTestButton
             // 
-            this.speedTestButton.Location = new System.Drawing.Point(39, 329);
+            this.speedTestButton.Location = new System.Drawing.Point(39, 313);
             this.speedTestButton.Name = "speedTestButton";
             this.speedTestButton.Size = new System.Drawing.Size(217, 23);
             this.speedTestButton.TabIndex = 44;
@@ -231,11 +231,11 @@
             // 
             // monitoringButton
             // 
-            this.monitoringButton.Location = new System.Drawing.Point(39, 387);
+            this.monitoringButton.Location = new System.Drawing.Point(107, 86);
             this.monitoringButton.Name = "monitoringButton";
-            this.monitoringButton.Size = new System.Drawing.Size(217, 23);
+            this.monitoringButton.Size = new System.Drawing.Size(98, 23);
             this.monitoringButton.TabIndex = 50;
-            this.monitoringButton.Text = "Start monitoring";
+            this.monitoringButton.Text = "Monitoring = OFF";
             this.toolTip.SetToolTip(this.monitoringButton, "Starts the service monitoring");
             this.monitoringButton.UseVisualStyleBackColor = true;
             this.monitoringButton.Click += new System.EventHandler(this.MonitoringButton_Click);
@@ -277,15 +277,15 @@
             this.checkAllBackupDisksButton.UseVisualStyleBackColor = true;
             this.checkAllBackupDisksButton.Click += new System.EventHandler(this.CheckAllBackupDisksButton_Click);
             // 
-            // timerButton
+            // scheduledBackupTimerButton
             // 
-            this.timerButton.Location = new System.Drawing.Point(125, 55);
-            this.timerButton.Name = "timerButton";
-            this.timerButton.Size = new System.Drawing.Size(69, 23);
-            this.timerButton.TabIndex = 21;
-            this.timerButton.Text = "Start";
-            this.timerButton.UseVisualStyleBackColor = true;
-            this.timerButton.Click += new System.EventHandler(this.TimerButton_Click);
+            this.scheduledBackupTimerButton.Location = new System.Drawing.Point(107, 55);
+            this.scheduledBackupTimerButton.Name = "scheduledBackupTimerButton";
+            this.scheduledBackupTimerButton.Size = new System.Drawing.Size(98, 23);
+            this.scheduledBackupTimerButton.TabIndex = 21;
+            this.scheduledBackupTimerButton.Text = "Backup = OFF";
+            this.scheduledBackupTimerButton.UseVisualStyleBackColor = true;
+            this.scheduledBackupTimerButton.Click += new System.EventHandler(this.BackupTimerButton_Click);
             // 
             // listFilesOnBackupDiskButton
             // 
@@ -511,18 +511,18 @@
             this.pushoverGroupBox.Controls.Add(this.testPushoverEmergencyButton);
             this.pushoverGroupBox.Location = new System.Drawing.Point(561, 12);
             this.pushoverGroupBox.Name = "pushoverGroupBox";
-            this.pushoverGroupBox.Size = new System.Drawing.Size(217, 78);
+            this.pushoverGroupBox.Size = new System.Drawing.Size(217, 112);
             this.pushoverGroupBox.TabIndex = 54;
             this.pushoverGroupBox.TabStop = false;
             this.pushoverGroupBox.Text = "Pushover tests";
             // 
             // pushoverOnOffButton
             // 
-            this.pushoverOnOffButton.Location = new System.Drawing.Point(125, 34);
+            this.pushoverOnOffButton.Location = new System.Drawing.Point(107, 80);
             this.pushoverOnOffButton.Name = "pushoverOnOffButton";
-            this.pushoverOnOffButton.Size = new System.Drawing.Size(86, 23);
+            this.pushoverOnOffButton.Size = new System.Drawing.Size(98, 23);
             this.pushoverOnOffButton.TabIndex = 44;
-            this.pushoverOnOffButton.Text = "Start sending";
+            this.pushoverOnOffButton.Text = "Sending = OFF";
             this.pushoverOnOffButton.UseVisualStyleBackColor = true;
             this.pushoverOnOffButton.Click += new System.EventHandler(this.PushoverOnOffButton_Click);
             // 
@@ -584,13 +584,13 @@
             // 
             // groupBox5
             // 
-            this.groupBox5.Controls.Add(this.timerButton);
+            this.groupBox5.Controls.Add(this.scheduledBackupTimerButton);
             this.groupBox5.Controls.Add(this.hoursNumericUpDown);
             this.groupBox5.Controls.Add(this.minutesNumericUpDown);
             this.groupBox5.Controls.Add(this.label2);
             this.groupBox5.Controls.Add(this.label5);
             this.groupBox5.Controls.Add(this.runOnTimerStartCheckBox);
-            this.groupBox5.Location = new System.Drawing.Point(561, 107);
+            this.groupBox5.Location = new System.Drawing.Point(561, 132);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(217, 88);
             this.groupBox5.TabIndex = 58;
@@ -622,9 +622,10 @@
             this.processesGroupBox.Controls.Add(this.killProcessesButton);
             this.processesGroupBox.Controls.Add(this.stopProcessButton);
             this.processesGroupBox.Controls.Add(this.processesComboBox);
-            this.processesGroupBox.Location = new System.Drawing.Point(561, 218);
+            this.processesGroupBox.Controls.Add(this.monitoringButton);
+            this.processesGroupBox.Location = new System.Drawing.Point(561, 243);
             this.processesGroupBox.Name = "processesGroupBox";
-            this.processesGroupBox.Size = new System.Drawing.Size(217, 90);
+            this.processesGroupBox.Size = new System.Drawing.Size(217, 119);
             this.processesGroupBox.TabIndex = 60;
             this.processesGroupBox.TabStop = false;
             this.processesGroupBox.Text = "Processes/Services";
@@ -703,7 +704,6 @@
             this.Controls.Add(this.listFilesGroupBox);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.pushoverGroupBox);
-            this.Controls.Add(this.monitoringButton);
             this.Controls.Add(this.speedTestButton);
             this.Controls.Add(this.reportBackupDiskStatusButton);
             this.Controls.Add(this.listMoviesWithMultipleFilesButton);
@@ -751,7 +751,7 @@
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.Button recalculateAllHashesButton;
         private System.Windows.Forms.Button checkDiskAndDeleteButton;
-        private System.Windows.Forms.Button timerButton;
+        private System.Windows.Forms.Button scheduledBackupTimerButton;
         private System.Windows.Forms.Button listFilesOnBackupDiskButton;
         private System.Windows.Forms.Button listFilesInMasterFolderButton;
         private System.Windows.Forms.ComboBox masterFoldersComboBox;

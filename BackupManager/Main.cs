@@ -37,10 +37,6 @@ namespace BackupManager
 
         private readonly Action monitoringAction;
 
-        private bool serviceMonitoringRunning;
-
-        private bool scheduledBackupRunning;
-
         #region Constructors and Destructors
 
         public Main()
@@ -51,7 +47,7 @@ namespace BackupManager
                          Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"),
                          "myListener"));
 
-            // backupDiskTextBox.Text = "\\\\nas1\\assets1\\_Test\\BackupDisks\\backup 1001 parent";
+            backupDiskTextBox.Text = "\\\\nas1\\assets1\\_Test\\BackupDisks\\backup 1001 parent";
 #else
             backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
 #endif
@@ -97,6 +93,8 @@ namespace BackupManager
             minutesNumericUpDown.Value = startTime.Minute;
 
             UpdateSendingPushoverButton();
+            UpdateMonitoringButton();
+            UpdateScheduledBackupButton();
 
             if (mediaBackup.StartMonitoring)
             {
@@ -1171,30 +1169,29 @@ namespace BackupManager
             Utils.Trace("checkDiskAndDeleteButton_Click exit");
         }
 
-        private void TimerButton_Click(object sender, EventArgs e)
+        private void BackupTimerButton_Click(object sender, EventArgs e)
         {
             Utils.Trace("timerButton_Click enter");
 
-            if (timerButton.Text == "Start")
+            if (mediaBackup.StartScheduledBackup)
             {
-                timerButton.Text = "Stop";
-
-                // Fire once if CheckBox is ticked
-                if (runOnTimerStartCheckBox.Checked)
-                {
-                    _ = scheduledBackupAction.BeginInvoke(scheduledBackupAction.EndInvoke, null);
-                }
-
-                trigger = new DailyTrigger(Convert.ToInt32(hoursNumericUpDown.Value), Convert.ToInt32(minutesNumericUpDown.Value));
-
-                trigger.OnTimeTriggered += scheduledBackupAction;
+                mediaBackup.StartScheduledBackup = false;
+                trigger.OnTimeTriggered -= scheduledBackupAction;
             }
             else
             {
-                timerButton.Text = "Start";
-                trigger.OnTimeTriggered -= scheduledBackupAction;
+                mediaBackup.StartScheduledBackup = true;
+                // Fire once if CheckBox is ticked
+                if (runOnTimerStartCheckBox.Checked)
+                {
+                    TaskWrapper(ScheduledBackupAsync);
+                }
+
+                trigger = new DailyTrigger(Convert.ToInt32(hoursNumericUpDown.Value), Convert.ToInt32(minutesNumericUpDown.Value));
+                trigger.OnTimeTriggered += scheduledBackupAction;
             }
 
+            UpdateScheduledBackupButton();
             Utils.Trace("timerButton_Click exit");
         }
 
@@ -1220,7 +1217,7 @@ namespace BackupManager
                 // This happens if the server running the backup cannot connect to the nas devices sometimes
                 // It'll then delete everything off the connected backup disk as it doesn't think they're needed so this will prevent that
 
-                if (serviceMonitoringRunning)
+                if (mediaBackup.StartMonitoring)
                 {
                     Utils.LogWithPushover(BackupAction.General,
                                           $"Service monitoring is running every {mediaBackup.MonitorInterval} seconds");
@@ -1235,7 +1232,6 @@ namespace BackupManager
                 long oldFileCount = mediaBackup.BackupFiles.Count();
 
                 // Update the master file
-
                 ScanFolders();
 
                 if (mediaBackup.DifferenceInFileCountAllowedPercentage != 0)
@@ -1261,7 +1257,6 @@ namespace BackupManager
             }
             catch (OperationCanceledException)
             {
-                toolStripStatusLabel.Text = string.Empty;
             }
 
             catch (Exception ex)
@@ -1694,13 +1689,13 @@ namespace BackupManager
         {
             Utils.Trace("monitoringButton_Click enter");
 
-            if (serviceMonitoringRunning)
+            if (mediaBackup.StartMonitoring)
             {
                 monitoringTimer.Stop();
                 Utils.LogWithPushover(BackupAction.Monitoring, "Stopped");
 
-                monitoringButton.Text = "Start monitoring";
-                serviceMonitoringRunning = false;
+                mediaBackup.StartMonitoring = false;
+                UpdateMonitoringButton();
             }
             else
             {
@@ -1710,8 +1705,9 @@ namespace BackupManager
 
                 monitoringTimer.Interval = mediaBackup.MonitorInterval * 1000;
                 monitoringTimer.Start();
-                monitoringButton.Text = "Stop monitoring";
-                serviceMonitoringRunning = true;
+
+                mediaBackup.StartMonitoring = true;
+                UpdateMonitoringButton();
             }
 
             Utils.Trace("monitoringButton_Click exit");
@@ -2048,8 +2044,6 @@ namespace BackupManager
 
             cancelButton.Enabled = false;
             ResetAllControls();
-
-            toolStripStatusLabel.Text = string.Empty;
         }
 
         private void CheckAllBackupDisksButton_Click(object sender, EventArgs e)
@@ -2084,12 +2078,12 @@ namespace BackupManager
         }
         private void UpdateMonitoringButton()
         {
-            monitoringButton.Text = serviceMonitoringRunning == true ? "Monitoring = ON" : "Monitoring = OFF";
+            monitoringButton.Text = mediaBackup.StartMonitoring == true ? "Monitoring = ON" : "Monitoring = OFF";
         }
 
         private void UpdateScheduledBackupButton()
         {
-            timerButton.Text = scheduledBackupRunning == true ? "Backup = ON" : "Backup = OFF";
+            scheduledBackupTimerButton.Text = mediaBackup.StartScheduledBackup == true ? "Backup = ON" : "Backup = OFF";
         }
     }
 }

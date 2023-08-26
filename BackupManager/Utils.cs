@@ -132,7 +132,7 @@ namespace BackupManager
         /// <summary>
         /// So we can get config values
         /// </summary>
-        internal static  MediaBackup MediaBackup;
+        internal static MediaBackup MediaBackup;
 
         #endregion
 
