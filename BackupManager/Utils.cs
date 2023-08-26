@@ -152,6 +152,20 @@ namespace BackupManager
             {
                 FileMove(LogFile, destLogFile);
             }
+
+            string[] traceFiles = GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "*BackupManager_Trace.log",SearchOption.TopDirectoryOnly);
+            foreach (string file in traceFiles)
+            {
+                string destfile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups", $"{new FileInfo(file).Name}_{timeLog}.log");
+                try
+                {
+                    FileMove(file, destfile);
+                }
+                catch(IOException)
+                {
+                    continue;
+                }
+            }
         }
 
         /// <summary>
