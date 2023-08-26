@@ -106,7 +106,7 @@ namespace BackupManager
             if (mediaBackup.StartScheduledBackup)
             {
 #if !DEBUG
-                TimerButton_Click(null, null);
+                BackupTimerButton_Click(null, null);
 #endif
             }
 
