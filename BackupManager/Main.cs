@@ -82,6 +82,11 @@ namespace BackupManager
                 listFilesComboBox.Items.Add(disk.Name);
             }
 
+            pushoverLowCheckBox.Checked = mediaBackup.Config.PushoverSendLowMessages;
+            pushoverNormalCheckBox.Checked = mediaBackup.Config.PushoverSendNormalMessages;
+            pushoverHighCheckBox.Checked = mediaBackup.Config.PushoverSendHighMessages;
+            pushoverEmergencyCheckBox.Checked = mediaBackup.Config.PushoverSendEmergencyMessages;
+
             foreach (ProcessServiceMonitor monitor in mediaBackup.Config.Monitors)
             {
                 processesComboBox.Items.Add(monitor.Name);
@@ -2133,7 +2138,6 @@ namespace BackupManager
         {
             mediaBackup.Config.StartSendingPushoverMessages = !mediaBackup.Config.StartSendingPushoverMessages;
             UpdateSendingPushoverButton();
-
         }
 
         private void UpdateSendingPushoverButton()
@@ -2148,6 +2152,26 @@ namespace BackupManager
         private void UpdateScheduledBackupButton()
         {
             scheduledBackupTimerButton.Text = mediaBackup.Config.StartScheduledBackup == true ? "Backup = ON" : "Backup = OFF";
+        }
+
+        private void PushoverLowCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            mediaBackup.Config.PushoverSendLowMessages = pushoverLowCheckBox.Checked;
+        }
+
+        private void PushoverNormalCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            mediaBackup.Config.PushoverSendNormalMessages = pushoverNormalCheckBox.Checked;
+        }
+
+        private void PushoverHighCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            mediaBackup.Config.PushoverSendHighMessages = pushoverHighCheckBox.Checked;
+        }
+
+        private void PushoverEmergencyCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            mediaBackup.Config.PushoverSendEmergencyMessages = pushoverEmergencyCheckBox.Checked;
         }
     }
 }

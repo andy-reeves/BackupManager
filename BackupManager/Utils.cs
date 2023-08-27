@@ -761,7 +761,11 @@ namespace BackupManager
         {
             Trace("SendPushoverMessage enter");
 
-            if (Config.StartSendingPushoverMessages)
+            if (Config.StartSendingPushoverMessages &&
+                (((priority == PushoverPriority.Low || priority == PushoverPriority.Lowest) && Config.PushoverSendLowMessages) ||
+                  (priority == PushoverPriority.Normal && Config.PushoverSendNormalMessages) ||
+                  (priority == PushoverPriority.High && Config.PushoverSendHighMessages) ||
+                  (priority == PushoverPriority.Emergency && Config.PushoverSendEmergencyMessages)))
             {
                 try
                 {

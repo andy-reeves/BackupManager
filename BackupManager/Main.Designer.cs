@@ -68,6 +68,10 @@
             this.killProcessesButton = new System.Windows.Forms.Button();
             this.listMasterFoldersComboBox = new System.Windows.Forms.ComboBox();
             this.pushoverGroupBox = new System.Windows.Forms.GroupBox();
+            this.pushoverEmergencyCheckBox = new System.Windows.Forms.CheckBox();
+            this.pushoverHighCheckBox = new System.Windows.Forms.CheckBox();
+            this.pushoverNormalCheckBox = new System.Windows.Forms.CheckBox();
+            this.pushoverLowCheckBox = new System.Windows.Forms.CheckBox();
             this.pushoverOnOffButton = new System.Windows.Forms.Button();
             this.testPushoverLowButton = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -279,7 +283,7 @@
             // 
             // scheduledBackupTimerButton
             // 
-            this.scheduledBackupTimerButton.Location = new System.Drawing.Point(107, 55);
+            this.scheduledBackupTimerButton.Location = new System.Drawing.Point(112, 55);
             this.scheduledBackupTimerButton.Name = "scheduledBackupTimerButton";
             this.scheduledBackupTimerButton.Size = new System.Drawing.Size(98, 23);
             this.scheduledBackupTimerButton.TabIndex = 21;
@@ -349,7 +353,7 @@
             // 
             // testPushoverHighButton
             // 
-            this.testPushoverHighButton.Location = new System.Drawing.Point(18, 72);
+            this.testPushoverHighButton.Location = new System.Drawing.Point(9, 72);
             this.testPushoverHighButton.Name = "testPushoverHighButton";
             this.testPushoverHighButton.Size = new System.Drawing.Size(69, 23);
             this.testPushoverHighButton.TabIndex = 38;
@@ -359,7 +363,7 @@
             // 
             // testPushoverNormalButton
             // 
-            this.testPushoverNormalButton.Location = new System.Drawing.Point(18, 45);
+            this.testPushoverNormalButton.Location = new System.Drawing.Point(9, 45);
             this.testPushoverNormalButton.Name = "testPushoverNormalButton";
             this.testPushoverNormalButton.Size = new System.Drawing.Size(69, 23);
             this.testPushoverNormalButton.TabIndex = 39;
@@ -389,7 +393,7 @@
             // 
             // testPushoverEmergencyButton
             // 
-            this.testPushoverEmergencyButton.Location = new System.Drawing.Point(18, 100);
+            this.testPushoverEmergencyButton.Location = new System.Drawing.Point(9, 100);
             this.testPushoverEmergencyButton.Name = "testPushoverEmergencyButton";
             this.testPushoverEmergencyButton.Size = new System.Drawing.Size(69, 23);
             this.testPushoverEmergencyButton.TabIndex = 42;
@@ -504,6 +508,10 @@
             // 
             // pushoverGroupBox
             // 
+            this.pushoverGroupBox.Controls.Add(this.pushoverEmergencyCheckBox);
+            this.pushoverGroupBox.Controls.Add(this.pushoverHighCheckBox);
+            this.pushoverGroupBox.Controls.Add(this.pushoverNormalCheckBox);
+            this.pushoverGroupBox.Controls.Add(this.pushoverLowCheckBox);
             this.pushoverGroupBox.Controls.Add(this.pushoverOnOffButton);
             this.pushoverGroupBox.Controls.Add(this.testPushoverLowButton);
             this.pushoverGroupBox.Controls.Add(this.testPushoverNormalButton);
@@ -516,9 +524,49 @@
             this.pushoverGroupBox.TabStop = false;
             this.pushoverGroupBox.Text = "Pushover";
             // 
+            // pushoverEmergencyCheckBox
+            // 
+            this.pushoverEmergencyCheckBox.AutoSize = true;
+            this.pushoverEmergencyCheckBox.Location = new System.Drawing.Point(83, 105);
+            this.pushoverEmergencyCheckBox.Name = "pushoverEmergencyCheckBox";
+            this.pushoverEmergencyCheckBox.Size = new System.Drawing.Size(15, 14);
+            this.pushoverEmergencyCheckBox.TabIndex = 72;
+            this.pushoverEmergencyCheckBox.UseVisualStyleBackColor = true;
+            this.pushoverEmergencyCheckBox.CheckedChanged += new System.EventHandler(this.PushoverEmergencyCheckBox_CheckedChanged);
+            // 
+            // pushoverHighCheckBox
+            // 
+            this.pushoverHighCheckBox.AutoSize = true;
+            this.pushoverHighCheckBox.Location = new System.Drawing.Point(83, 77);
+            this.pushoverHighCheckBox.Name = "pushoverHighCheckBox";
+            this.pushoverHighCheckBox.Size = new System.Drawing.Size(15, 14);
+            this.pushoverHighCheckBox.TabIndex = 71;
+            this.pushoverHighCheckBox.UseVisualStyleBackColor = true;
+            this.pushoverHighCheckBox.CheckedChanged += new System.EventHandler(this.PushoverHighCheckBox_CheckedChanged);
+            // 
+            // pushoverNormalCheckBox
+            // 
+            this.pushoverNormalCheckBox.AutoSize = true;
+            this.pushoverNormalCheckBox.Location = new System.Drawing.Point(83, 50);
+            this.pushoverNormalCheckBox.Name = "pushoverNormalCheckBox";
+            this.pushoverNormalCheckBox.Size = new System.Drawing.Size(15, 14);
+            this.pushoverNormalCheckBox.TabIndex = 70;
+            this.pushoverNormalCheckBox.UseVisualStyleBackColor = true;
+            this.pushoverNormalCheckBox.CheckedChanged += new System.EventHandler(this.PushoverNormalCheckBox_CheckedChanged);
+            // 
+            // pushoverLowCheckBox
+            // 
+            this.pushoverLowCheckBox.AutoSize = true;
+            this.pushoverLowCheckBox.Location = new System.Drawing.Point(83, 22);
+            this.pushoverLowCheckBox.Name = "pushoverLowCheckBox";
+            this.pushoverLowCheckBox.Size = new System.Drawing.Size(15, 14);
+            this.pushoverLowCheckBox.TabIndex = 69;
+            this.pushoverLowCheckBox.UseVisualStyleBackColor = true;
+            this.pushoverLowCheckBox.CheckedChanged += new System.EventHandler(this.PushoverLowCheckBox_CheckedChanged);
+            // 
             // pushoverOnOffButton
             // 
-            this.pushoverOnOffButton.Location = new System.Drawing.Point(107, 58);
+            this.pushoverOnOffButton.Location = new System.Drawing.Point(112, 58);
             this.pushoverOnOffButton.Name = "pushoverOnOffButton";
             this.pushoverOnOffButton.Size = new System.Drawing.Size(98, 23);
             this.pushoverOnOffButton.TabIndex = 44;
@@ -528,7 +576,7 @@
             // 
             // testPushoverLowButton
             // 
-            this.testPushoverLowButton.Location = new System.Drawing.Point(18, 18);
+            this.testPushoverLowButton.Location = new System.Drawing.Point(9, 18);
             this.testPushoverLowButton.Name = "testPushoverLowButton";
             this.testPushoverLowButton.Size = new System.Drawing.Size(69, 23);
             this.testPushoverLowButton.TabIndex = 43;
@@ -724,6 +772,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.hoursNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.minutesNumericUpDown)).EndInit();
             this.pushoverGroupBox.ResumeLayout(false);
+            this.pushoverGroupBox.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.listFilesGroupBox.ResumeLayout(false);
@@ -796,6 +845,10 @@
         private System.Windows.Forms.GroupBox AllBackupDisksGroupBox;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button pushoverOnOffButton;
+        private System.Windows.Forms.CheckBox pushoverEmergencyCheckBox;
+        private System.Windows.Forms.CheckBox pushoverHighCheckBox;
+        private System.Windows.Forms.CheckBox pushoverNormalCheckBox;
+        private System.Windows.Forms.CheckBox pushoverLowCheckBox;
     }
 }
 

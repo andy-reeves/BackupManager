@@ -74,6 +74,14 @@ namespace BackupManager.Entities
 
         public string PushoverUserKey;
 
+        public bool PushoverSendLowMessages;
+
+        public bool PushoverSendNormalMessages;
+
+        public bool PushoverSendHighMessages;
+
+        public bool PushoverSendEmergencyMessages;
+
         /// <summary>
         /// Sends a high priority message once this limit is passed
         /// </summary>
