@@ -134,12 +134,12 @@
 12.5  | D | False | "X:\_Music\Blood Brothers (1989)\Example 1-behindscenes.mkv"
 
  
-# Movies, Comedy, Concerts and TV files must end with a valid file extension in the file name 
+# Movies, Comedy and Concerts files must end with a valid file extension in the file name 
 
 13.1  | T | True  | "X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
 13.2  | T | False | "X:\_Movies\12 Angry Men (0)\12 Angry Men [Remux-1080p].bob"
 13.3  | D | True  | "X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
-13.4  | D | True  | "X:\_TV (non-tvdb)\Blood Brothers (1989)\Example 1-behindscenes.mkv"
+13.4  | D | True  | "X:\_Movies (non-tvdb)\Blood Brothers (1989)\Example 1-behindscenes.mkv"
 13.5  | D | False | "X:\_Music\Blood Brothers (1989)\Example 1-behindscenes.mkv"
 
 
@@ -292,11 +292,15 @@
 19.8  | T | True  | "X:\_TV (non-tmdb)\Blood Brothers\Example 1-behindthescenes.mkv"
 19.9  | T | False | "X:\_TV\The Late Late Show with James Corden {tvdb-292421}\Season 1\The Late Late Show with James Corden 20150323 [HDTV-720p].mkv"
 19.10 | T | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv"
-19.11 | T | True  | "X:\_TV\Long Way Round {tvdb-77623}\Season 11\Long Way Round s01e08.mkv"
-19.12 | T | True  | "X:\_TV\Long Way Round {tvdb-77623}\Season 11\Long Way Round s01e108e109.mkv"
-19.13 | T | True  | "X:\_TV\Long Way Round {tvdb-77623}\Season 11\Long Way Round s01e08-e12.mkv"
+19.11 | T | True  | "X:\_TV\Long Way Round {tvdb-77623}\Season 11\Long Way Round s01e08 [DVD].mkv"
+19.12 | T | True  | "X:\_TV\Long Way Round {tvdb-77623}\Season 11\Long Way Round s01e108e109 [DVD].mkv"
+19.13 | T | True  | "X:\_TV\Long Way Round {tvdb-77623}\Season 11\Long Way Round s01e08-e12 [DVD].mkv"
 19.14 | T | True  | "Z:\_TV\The Queen's Christmas Broadcast {tvdb-359422}\Season 1\The Queen's Christmas Broadcast s01e2015 2015 [HDTV-720p].mp4"
 19.15 | T | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv"
 19.16 | T | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e2015 Puss Gets The Boot [SDTV].mkv"
 19.17 | D | False | "X:\_Movies\Chernobyl {tvdb-360893}\Season 1\Chernobyl s01e01 TBA [Bluray-2160p Remux].mkv"
 19.18 | T | True  | "\\nas1\assets1\_TV\Charlie's Angels {tvdb-77170}\Season 5\Charlie's Angels s05e12 Chorus Line Angels [Bluray-1080p Remux].mkv"
+19.19 | T | True  | "\\nas5\assets4\_TV\3rd Rock from the Sun {tvdb-72389}\Specials\3rd Rock from the Sun s00e02 Behind the Scenes [DVD].avi"
+19.20 | T | False | "\\nas2\assets4\_TV\Episodes {tvdb-123581}\Season 3\Episodes s03e08 Episode 308 [Raw-HD].ts"
+19.21 | T | False | "\\nas2\assets1\_TV\The Grand Tour {tvdb-314087}\Season 5\The Grand Tour (2016) s05e01 A Scandi Flick [WEBDL-720p].mkv"
+19.22 | T | False | "\\nas5\assets4\_TV\3rd Rock from the Sun {tvdb-72389}\Specials\3rd Rock from the Sun s00e02 Behind the Scenes [DVD].ts"

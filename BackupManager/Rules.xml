@@ -86,15 +86,15 @@
       <Number>12</Number>
     </FileRule>
     <FileRule>
-      <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$</FileDiscoveryRegEx>
+      <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts)(\s\(non-t[mv]db\))?\\.*$</FileDiscoveryRegEx>
       <FileTestRegEx>^.*\.(m(kv|p(4|e?g))|ts|avi|srt)$</FileTestRegEx>
-      <Message>Movies, Comedy, Concerts and TV files must end with a valid file extension in the file name</Message>
+      <Message>Movies, Comedy and Concerts files must end with a valid file extension in the file name</Message>
       <Name>Rule 13</Name>
       <Number>13</Number>
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_TV(\s\(non-tvdb\))?\\.*-[a-zA-Z]*\.(m(kv|p(4|e?g))|ts|avi)$</FileDiscoveryRegEx>
-      <FileTestRegEx>^.*\\_TV(?:\s\(non-tvdb\))?\\.*\s{t(m|v)db-\d{1,7}?}\\[^\\]*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer)\.(m(kv|p(4|e?g))|ts|avi)$</FileTestRegEx>
+      <FileTestRegEx>^.*\\_TV(?:\s\(non-tvdb\))?\\.*\s{t(m|v)db-\d{1,7}?}\\[^\\]*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer)\.(m(kv|p(4|e?g))|avi)$</FileTestRegEx>
       <Message>TV files special features must be in the root folder of the show with a correct suffix</Message>
       <Name>Rule 14</Name>
       <Number>14</Number>
@@ -130,7 +130,7 @@
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_TV(\s\(non-tvdb\))?\\.*$</FileDiscoveryRegEx>
-      <FileTestRegEx>^(?:.*\\_TV(?:\s\(non-tvdb\))?\\(.*)\s{t(m|v)db-\d{1,7}?}\\(Season\s\d+|Specials)\\(\1)\s(s\d{1,4}e\d{2,4}-?(e\d{2,4})?|\d{4}-\d\d-\d\d)(\s.*\[(DVD|SDTV|(WEB(Rip|DL)|Bluray|HDTV)-(48|72|108|216)0p(\sRemux)?)\])?|.*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(kv|p(4|e?g))|ts|avi)$</FileTestRegEx>
+      <FileTestRegEx>^(?:.*\\_TV(?:\s\(non-tvdb\))?\\(.*)\s{t(m|v)db-\d{1,7}?}\\(Season\s\d+|Specials)\\(\1)\s(s\d{1,4}e\d{2,4}-?(e\d{2,4})?|\d{4}-\d\d-\d\d)(\s.*)?(\[(DVD|SDTV|(WEB(Rip|DL)|Bluray|HDTV)-(48|72|108|216)0p(\sRemux)?)\])|.*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(kv|p(4|e?g))|avi)$</FileTestRegEx>
       <Message>TV files must either be a special feature or be named correctly</Message>
       <Name>Rule 19</Name>
       <Number>19</Number>
