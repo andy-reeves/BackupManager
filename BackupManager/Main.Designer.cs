@@ -151,7 +151,7 @@
             // 
             // listFilesNotOnBackupDiskButton
             // 
-            this.listFilesNotOnBackupDiskButton.Location = new System.Drawing.Point(39, 144);
+            this.listFilesNotOnBackupDiskButton.Location = new System.Drawing.Point(39, 129);
             this.listFilesNotOnBackupDiskButton.Name = "listFilesNotOnBackupDiskButton";
             this.listFilesNotOnBackupDiskButton.Size = new System.Drawing.Size(217, 23);
             this.listFilesNotOnBackupDiskButton.TabIndex = 11;
@@ -198,7 +198,7 @@
             // 
             // listMoviesWithMultipleFilesButton
             // 
-            this.listMoviesWithMultipleFilesButton.Location = new System.Drawing.Point(39, 200);
+            this.listMoviesWithMultipleFilesButton.Location = new System.Drawing.Point(39, 185);
             this.listMoviesWithMultipleFilesButton.Name = "listMoviesWithMultipleFilesButton";
             this.listMoviesWithMultipleFilesButton.Size = new System.Drawing.Size(217, 23);
             this.listMoviesWithMultipleFilesButton.TabIndex = 37;
@@ -209,7 +209,7 @@
             // 
             // reportBackupDiskStatusButton
             // 
-            this.reportBackupDiskStatusButton.Location = new System.Drawing.Point(39, 257);
+            this.reportBackupDiskStatusButton.Location = new System.Drawing.Point(39, 242);
             this.reportBackupDiskStatusButton.Name = "reportBackupDiskStatusButton";
             this.reportBackupDiskStatusButton.Size = new System.Drawing.Size(217, 23);
             this.reportBackupDiskStatusButton.TabIndex = 43;
@@ -220,7 +220,7 @@
             // 
             // speedTestButton
             // 
-            this.speedTestButton.Location = new System.Drawing.Point(39, 313);
+            this.speedTestButton.Location = new System.Drawing.Point(39, 281);
             this.speedTestButton.Name = "speedTestButton";
             this.speedTestButton.Size = new System.Drawing.Size(217, 23);
             this.speedTestButton.TabIndex = 44;
@@ -242,7 +242,7 @@
             // 
             // listFilesWithDuplicateContentHashcodesButton
             // 
-            this.listFilesWithDuplicateContentHashcodesButton.Location = new System.Drawing.Point(39, 228);
+            this.listFilesWithDuplicateContentHashcodesButton.Location = new System.Drawing.Point(39, 213);
             this.listFilesWithDuplicateContentHashcodesButton.Name = "listFilesWithDuplicateContentHashcodesButton";
             this.listFilesWithDuplicateContentHashcodesButton.Size = new System.Drawing.Size(217, 23);
             this.listFilesWithDuplicateContentHashcodesButton.TabIndex = 61;
@@ -319,7 +319,7 @@
             // 
             // listFilesNotCheckedInXXButton
             // 
-            this.listFilesNotCheckedInXXButton.Location = new System.Drawing.Point(39, 172);
+            this.listFilesNotCheckedInXXButton.Location = new System.Drawing.Point(39, 157);
             this.listFilesNotCheckedInXXButton.Name = "listFilesNotCheckedInXXButton";
             this.listFilesNotCheckedInXXButton.Size = new System.Drawing.Size(217, 23);
             this.listFilesNotCheckedInXXButton.TabIndex = 30;
@@ -509,7 +509,7 @@
             this.pushoverGroupBox.Controls.Add(this.testPushoverNormalButton);
             this.pushoverGroupBox.Controls.Add(this.testPushoverHighButton);
             this.pushoverGroupBox.Controls.Add(this.testPushoverEmergencyButton);
-            this.pushoverGroupBox.Location = new System.Drawing.Point(561, 12);
+            this.pushoverGroupBox.Location = new System.Drawing.Point(1066, 9);
             this.pushoverGroupBox.Name = "pushoverGroupBox";
             this.pushoverGroupBox.Size = new System.Drawing.Size(217, 131);
             this.pushoverGroupBox.TabIndex = 54;
@@ -590,7 +590,7 @@
             this.groupBox5.Controls.Add(this.label2);
             this.groupBox5.Controls.Add(this.label5);
             this.groupBox5.Controls.Add(this.runOnTimerStartCheckBox);
-            this.groupBox5.Location = new System.Drawing.Point(561, 155);
+            this.groupBox5.Location = new System.Drawing.Point(1066, 155);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(217, 88);
             this.groupBox5.TabIndex = 58;
@@ -623,7 +623,7 @@
             this.processesGroupBox.Controls.Add(this.stopProcessButton);
             this.processesGroupBox.Controls.Add(this.processesComboBox);
             this.processesGroupBox.Controls.Add(this.monitoringButton);
-            this.processesGroupBox.Location = new System.Drawing.Point(561, 250);
+            this.processesGroupBox.Location = new System.Drawing.Point(813, 9);
             this.processesGroupBox.Name = "processesGroupBox";
             this.processesGroupBox.Size = new System.Drawing.Size(217, 119);
             this.processesGroupBox.TabIndex = 60;
@@ -635,16 +635,16 @@
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel,
             this.toolStripProgressBar});
-            this.statusStrip.Location = new System.Drawing.Point(0, 456);
+            this.statusStrip.Location = new System.Drawing.Point(0, 314);
             this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(816, 22);
+            this.statusStrip.Size = new System.Drawing.Size(1309, 22);
             this.statusStrip.TabIndex = 62;
             this.statusStrip.Text = "statusStrip1";
             // 
             // toolStripStatusLabel
             // 
             this.toolStripStatusLabel.Name = "toolStripStatusLabel";
-            this.toolStripStatusLabel.Size = new System.Drawing.Size(801, 17);
+            this.toolStripStatusLabel.Size = new System.Drawing.Size(1294, 17);
             this.toolStripStatusLabel.Spring = true;
             this.toolStripStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -657,7 +657,7 @@
             // cancelButton
             // 
             this.cancelButton.Enabled = false;
-            this.cancelButton.Location = new System.Drawing.Point(561, 417);
+            this.cancelButton.Location = new System.Drawing.Point(1066, 281);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(217, 23);
             this.cancelButton.TabIndex = 64;
@@ -669,7 +669,7 @@
             // 
             this.AllBackupDisksGroupBox.Controls.Add(this.checkAllBackupDisksButton);
             this.AllBackupDisksGroupBox.Controls.Add(this.checkDeleteAndCopyAllBackupDisksButton);
-            this.AllBackupDisksGroupBox.Location = new System.Drawing.Point(301, 368);
+            this.AllBackupDisksGroupBox.Location = new System.Drawing.Point(557, 135);
             this.AllBackupDisksGroupBox.Name = "AllBackupDisksGroupBox";
             this.AllBackupDisksGroupBox.Size = new System.Drawing.Size(217, 81);
             this.AllBackupDisksGroupBox.TabIndex = 67;
@@ -681,7 +681,7 @@
             this.groupBox1.Controls.Add(this.checkConnectedBackupDiskButton);
             this.groupBox1.Controls.Add(this.checkDiskAndDeleteButton);
             this.groupBox1.Controls.Add(this.checkBackupDeleteAndCopyButton);
-            this.groupBox1.Location = new System.Drawing.Point(301, 250);
+            this.groupBox1.Location = new System.Drawing.Point(557, 9);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(217, 112);
             this.groupBox1.TabIndex = 68;
@@ -692,7 +692,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(816, 478);
+            this.ClientSize = new System.Drawing.Size(1309, 336);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.AllBackupDisksGroupBox);
             this.Controls.Add(this.cancelButton);
