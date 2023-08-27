@@ -93,16 +93,6 @@ namespace BackupManager
         internal static readonly string ZeroByteHash = "f4f35d60b3cc18aaa6d8d92f0cd3708a";
 
         /// <summary>
-        /// The Pushover UserKey used for all logging.
-        /// </summary>
-        internal static string PushoverUserKey;
-
-        /// <summary>
-        /// The Pushover AppToken used for all logging.
-        /// </summary>
-        internal static string PushoverAppToken;
-
-        /// <summary>
         /// We use this to pad our logging messages
         /// </summary>
         private static int LengthOfLargestBackupActionEnumNames;
@@ -132,7 +122,7 @@ namespace BackupManager
         /// <summary>
         /// So we can get config values
         /// </summary>
-        internal static MediaBackup MediaBackup;
+        internal static Config Config;
 
         private static bool AlreadySendingPushoverMessage;
 
@@ -155,7 +145,7 @@ namespace BackupManager
                 FileMove(LogFile, destLogFile);
             }
 
-            string[] traceFiles = GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "*BackupManager_Trace.log",SearchOption.TopDirectoryOnly);
+            string[] traceFiles = GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "*BackupManager_Trace.log", SearchOption.TopDirectoryOnly);
             foreach (string file in traceFiles)
             {
                 string destfile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups", $"{new FileInfo(file).Name}_{timeLog}.log");
@@ -163,7 +153,7 @@ namespace BackupManager
                 {
                     FileMove(file, destfile);
                 }
-                catch(IOException)
+                catch (IOException)
                 {
                     continue;
                 }
@@ -771,13 +761,13 @@ namespace BackupManager
         {
             Trace("SendPushoverMessage enter");
 
-            if (MediaBackup.StartSendingPushoverMessages)
+            if (Config.StartSendingPushoverMessages)
             {
                 try
                 {
                     NameValueCollection parameters = new NameValueCollection {
-                { "token", PushoverAppToken},
-                { "user", PushoverUserKey },
+                { "token", Config.PushoverAppToken},
+                { "user", Config.PushoverUserKey },
                 { "priority", Convert.ChangeType(priority, priority.GetTypeCode()).ToString() },
                 { "message", message },
                 { "title", title }
@@ -1013,7 +1003,7 @@ namespace BackupManager
         {
             Log(backupAction, text);
 
-            if (PushoverAppToken.HasValue() && PushoverAppToken != "InsertYourPushoverAppTokenHere")
+            if (Config.PushoverAppToken.HasValue() && Config.PushoverAppToken != "InsertYourPushoverAppTokenHere")
             {
                 SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction),
                                     priority,
@@ -1033,7 +1023,7 @@ namespace BackupManager
         {
             Log(backupAction, text);
 
-            if (PushoverAppToken.HasValue())
+            if (Config.PushoverAppToken.HasValue())
             {
                 SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction),
                                     priority,

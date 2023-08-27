@@ -71,6 +71,7 @@
     <Compile Include="DailyTrigger.cs" />
     <Compile Include="Entities\BackupDisk.cs" />
     <Compile Include="Entities\BackupFile.cs" />
+    <Compile Include="Entities\Config.cs" />
     <Compile Include="Entities\FileRule.cs" />
     <Compile Include="Entities\ProcessServiceMonitor.cs" />
     <Compile Include="Entities\Rules.cs" />
@@ -124,6 +125,7 @@
   <ItemGroup>
     <Content Include="BackupManager.ico" />
     <Content Include="BackupManager.png" />
+    <Content Include="Config.xml" />
     <Content Include="Rules.xml" />
     <Content Include="MediaBackup.xml" />
   </ItemGroup>
@@ -133,5 +135,6 @@
   <Target Name="BeforeBuild" />
   <Target Name="AfterBuild">
     <Copy SourceFiles="Rules.xml" DestinationFolder="$(OutputPath)" />
+    <Copy SourceFiles="Config.xml" DestinationFolder="$(OutputPath)" />
   </Target>
 </Project>

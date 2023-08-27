@@ -63,15 +63,15 @@ namespace BackupManager
 
             mediaBackup = MediaBackup.Load(File.Exists(localMediaXml) ? localMediaXml : mediaBackupXml);
 
-            Utils.PushoverUserKey = mediaBackup.PushoverUserKey;
-            Utils.PushoverAppToken = mediaBackup.PushoverAppToken;
-            Utils.MediaBackup = mediaBackup;
+            Utils.Config = mediaBackup.Config;
+
+            Utils.LogWithPushover(BackupAction.General, $"BackupManager started");
 
             // Log the parameters after setting the Pushover keys in the Utils class
-            mediaBackup.LogParameters();
+            mediaBackup.Config.LogParameters();
 
-            // Populate the MasterFolders combo boxes
-            string[] masterFoldersArray = mediaBackup.MasterFolders.ToArray();
+            // Populate the  Config.MasterFolders combo boxes
+            string[] masterFoldersArray = mediaBackup.Config.MasterFolders.ToArray();
 
             listMasterFoldersComboBox.Items.AddRange(masterFoldersArray);
             masterFoldersComboBox.Items.AddRange(masterFoldersArray);
@@ -82,7 +82,7 @@ namespace BackupManager
                 listFilesComboBox.Items.Add(disk.Name);
             }
 
-            foreach (ProcessServiceMonitor monitor in mediaBackup.Monitors)
+            foreach (ProcessServiceMonitor monitor in mediaBackup.Config.Monitors)
             {
                 processesComboBox.Items.Add(monitor.Name);
             }
@@ -91,7 +91,7 @@ namespace BackupManager
 
             monitoringAction = () => { MonitorServices(); };
 
-            DateTime startTime = DateTime.Parse(mediaBackup.ScheduledBackupStartTime);
+            DateTime startTime = DateTime.Parse(mediaBackup.Config.ScheduledBackupStartTime);
 
             hoursNumericUpDown.Value = startTime.Hour;
 
@@ -101,20 +101,20 @@ namespace BackupManager
             UpdateMonitoringButton();
             UpdateScheduledBackupButton();
 
-            if (mediaBackup.StartMonitoring)
+            if (mediaBackup.Config.StartMonitoring)
             {
                 // we swtich it off and force the button to be clicked to tuen it on again
-                mediaBackup.StartMonitoring = false;
+                mediaBackup.Config.StartMonitoring = false;
 #if !DEBUG
                 MonitoringButton_Click(null, null);
 #endif
             }
 
-            if (mediaBackup.StartScheduledBackup)
+            if (mediaBackup.Config.StartScheduledBackup)
             {
 #if !DEBUG
                 // we swtich it off and force the button to be clicked to tuen it on again
-                mediaBackup.StartScheduledBackup = false;
+                mediaBackup.Config.StartScheduledBackup = false;
                 BackupTimerButton_Click(null, null);
 #endif
             }
@@ -160,14 +160,14 @@ namespace BackupManager
 
             long readSpeed = 0, writeSpeed = 0;
 
-            if (mediaBackup.DiskSpeedTests)
+            if (mediaBackup.Config.DiskSpeedTests)
             {
-                long diskTestSize = disk.Free > Utils.ConvertMBtoBytes(mediaBackup.SpeedTestFileSize)
-                                   ? Utils.ConvertMBtoBytes(mediaBackup.SpeedTestFileSize)
+                long diskTestSize = disk.Free > Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize)
+                                   ? Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize)
                                    : disk.Free - Utils.BytesInOneKilobyte;
 
                 UpdateStatusLabel($"Speed testing {folderToCheck}");
-                Utils.DiskSpeedTest(folderToCheck, diskTestSize, mediaBackup.SpeedTestIterations, out readSpeed, out writeSpeed);
+                Utils.DiskSpeedTest(folderToCheck, diskTestSize, mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed);
             }
 
             string text = $"Name: {disk.Name}\nTotal: {disk.CapacityFormatted}\nFree: {disk.FreeFormatted}\n" +
@@ -187,7 +187,7 @@ namespace BackupManager
                 disk.LastWriteSpeed = Utils.FormatSpeed(writeSpeed);
             }
 
-            if (disk.Free < Utils.ConvertMBtoBytes(mediaBackup.MinimumCriticalBackupDiskSpace))
+            if (disk.Free < Utils.ConvertMBtoBytes(mediaBackup.Config.MinimumCriticalBackupDiskSpace))
             {
                 Utils.LogWithPushover(BackupAction.CheckBackupDisk,
                                       PushoverPriority.High,
@@ -455,7 +455,7 @@ namespace BackupManager
 
             _ = Utils.GetDiskInfo(backupDiskTextBox.Text, out long availableSpace, out long totalBytes);
 
-            long remainingDiskSpace = availableSpace - Utils.ConvertMBtoBytes(mediaBackup.MinimumFreeSpaceToLeaveOnBackupDisk);
+            long remainingDiskSpace = availableSpace - Utils.ConvertMBtoBytes(mediaBackup.Config.MinimumFreeSpaceToLeaveOnBackupDisk);
             long sizeOfCopy = remainingDiskSpace < sizeOfFiles ? remainingDiskSpace : sizeOfFiles;
 
             /// We use 100 as the max because the actual number of bytes could be far too large 
@@ -507,7 +507,7 @@ namespace BackupManager
 
                         result = Utils.GetDiskInfo(backupDiskTextBox.Text, out availableSpace, out totalBytes);
 
-                        if (availableSpace > Utils.ConvertMBtoBytes(mediaBackup.MinimumFreeSpaceToLeaveOnBackupDisk) + sourceFileInfo.Length)
+                        if (availableSpace > Utils.ConvertMBtoBytes(mediaBackup.Config.MinimumFreeSpaceToLeaveOnBackupDisk) + sourceFileInfo.Length)
                         {
                             outOfDiskSpaceMessageSent = false;
 
@@ -519,7 +519,7 @@ namespace BackupManager
                                 // remaining size is the smallest of remaining disk size-crital space to leave free OR
                                 // size of remaining files to copy
 
-                                remainingDiskSpace = availableSpace - Utils.ConvertMBtoBytes(mediaBackup.MinimumFreeSpaceToLeaveOnBackupDisk);
+                                remainingDiskSpace = availableSpace - Utils.ConvertMBtoBytes(mediaBackup.Config.MinimumFreeSpaceToLeaveOnBackupDisk);
 
                                 long sizeOfCopyRemaining = remainingDiskSpace < remainingSizeOfFilesToCopy ? remainingDiskSpace : remainingSizeOfFilesToCopy;
                                 double numberOfSecondsOfCopyRemaining = sizeOfCopyRemaining / lastCopySpeed;
@@ -903,7 +903,7 @@ namespace BackupManager
         /// <returns></returns>
         private bool CheckForFilesToDelete(string filePath)
         {
-            IEnumerable<string> filters = from filter in mediaBackup.FilesToDelete
+            IEnumerable<string> filters = from filter in mediaBackup.Config.FilesToDelete
                                           let replace =
                                               filter.Replace(".", @"\.")
                                               .Replace("*", ".*")
@@ -999,7 +999,7 @@ namespace BackupManager
         {
             Utils.Trace("ScanFolders enter");
 
-            string filters = string.Join(",", mediaBackup.Filters.ToArray());
+            string filters = string.Join(",", mediaBackup.Config.Filters.ToArray());
 
             long readSpeed = 0, writeSpeed = 0;
 
@@ -1009,7 +1009,7 @@ namespace BackupManager
             UpdateStatusLabel("Started");
             UpdateProgressBar(1);
 
-            foreach (string masterFolder in mediaBackup.MasterFolders)
+            foreach (string masterFolder in mediaBackup.Config.MasterFolders)
             {
                 UpdateStatusLabel($"Scanning {masterFolder}");
 
@@ -1031,10 +1031,10 @@ namespace BackupManager
 
                     _ = Utils.GetDiskInfo(masterFolder, out long freeSpaceOnCurrentMasterFolder, out long totalBytesOnMasterFolderDisk);
 
-                    if (mediaBackup.DiskSpeedTests)
+                    if (mediaBackup.Config.DiskSpeedTests)
                     {
                         UpdateStatusLabel($"Speed testing {masterFolder}");
-                        Utils.DiskSpeedTest(masterFolder, Utils.ConvertMBtoBytes(mediaBackup.SpeedTestFileSize), mediaBackup.SpeedTestIterations, out readSpeed, out writeSpeed);
+                        Utils.DiskSpeedTest(masterFolder, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed);
                     }
 
                     string totalBytesOnMasterFolderDiskFormatted = Utils.FormatSize(totalBytesOnMasterFolderDisk);
@@ -1046,24 +1046,24 @@ namespace BackupManager
 
                     Utils.LogWithPushover(BackupAction.ScanFolders, text);
 
-                    if (mediaBackup.DiskSpeedTests)
+                    if (mediaBackup.Config.DiskSpeedTests)
                     {
-                        if (readSpeed < Utils.ConvertMBtoBytes(mediaBackup.MinimumMasterFolderReadSpeed))
+                        if (readSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.MinimumMasterFolderReadSpeed))
                         {
                             Utils.LogWithPushover(BackupAction.ScanFolders,
                                                   PushoverPriority.High,
-                                                  $"Read speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.MinimumMasterFolderReadSpeed))}");
+                                                  $"Read speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.MinimumMasterFolderReadSpeed))}");
                         }
 
-                        if (writeSpeed < Utils.ConvertMBtoBytes(mediaBackup.MinimumMasterFolderWriteSpeed))
+                        if (writeSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.MinimumMasterFolderWriteSpeed))
                         {
                             Utils.LogWithPushover(BackupAction.ScanFolders,
                                                   PushoverPriority.High,
-                                                  $"Write speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.MinimumMasterFolderWriteSpeed))}");
+                                                  $"Write speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.MinimumMasterFolderWriteSpeed))}");
                         }
                     }
 
-                    if (freeSpaceOnCurrentMasterFolder < Utils.ConvertMBtoBytes(mediaBackup.MinimumCriticalMasterFolderSpace))
+                    if (freeSpaceOnCurrentMasterFolder < Utils.ConvertMBtoBytes(mediaBackup.Config.MinimumCriticalMasterFolderSpace))
                     {
                         Utils.LogWithPushover(BackupAction.ScanFolders,
                                               PushoverPriority.High,
@@ -1086,7 +1086,7 @@ namespace BackupManager
                         }
                     }
 
-                    foreach (string indexFolder in mediaBackup.IndexFolders)
+                    foreach (string indexFolder in mediaBackup.Config.IndexFolders)
                     {
                         string folderToCheck = Path.Combine(masterFolder, indexFolder);
 
@@ -1113,7 +1113,7 @@ namespace BackupManager
                                 }
 
                                 // RegEx file name rules
-                                foreach (FileRule rule in mediaBackup.FileRules)
+                                foreach (FileRule rule in mediaBackup.Config.FileRules)
                                 {
                                     if (Regex.IsMatch(file, rule.FileDiscoveryRegEx))
                                     {
@@ -1147,7 +1147,7 @@ namespace BackupManager
 
             UpdateStatusLabel($"Scanning completed.");
 
-            foreach (FileRule rule in mediaBackup.FileRules)
+            foreach (FileRule rule in mediaBackup.Config.FileRules)
             {
                 if (!rule.Matched)
                 {
@@ -1217,9 +1217,9 @@ namespace BackupManager
         {
             Utils.Trace("timerButton_Click enter");
 
-            if (mediaBackup.StartScheduledBackup)
+            if (mediaBackup.Config.StartScheduledBackup)
             {
-                mediaBackup.StartScheduledBackup = false;
+                mediaBackup.Config.StartScheduledBackup = false;
                 try
                 {
                     if (trigger != null)
@@ -1231,7 +1231,7 @@ namespace BackupManager
             }
             else
             {
-                mediaBackup.StartScheduledBackup = true;
+                mediaBackup.Config.StartScheduledBackup = true;
                 // Fire once if CheckBox is ticked
                 if (runOnTimerStartCheckBox.Checked)
                 {
@@ -1273,10 +1273,10 @@ namespace BackupManager
                 // This happens if the server running the backup cannot connect to the nas devices sometimes
                 // It'll then delete everything off the connected backup disk as it doesn't think they're needed so this will prevent that
 
-                if (mediaBackup.StartMonitoring)
+                if (mediaBackup.Config.StartMonitoring)
                 {
                     Utils.LogWithPushover(BackupAction.General,
-                                          $"Service monitoring is running every {mediaBackup.MonitorInterval} seconds");
+                                          $"Service monitoring is running every {mediaBackup.Config.MonitorInterval} seconds");
                 }
                 else
                 {
@@ -1290,9 +1290,9 @@ namespace BackupManager
                 // Update the master file
                 ScanFolders();
 
-                if (mediaBackup.DifferenceInFileCountAllowedPercentage != 0)
+                if (mediaBackup.Config.DifferenceInFileCountAllowedPercentage != 0)
                 {
-                    long minimumFileCountAllowed = oldFileCount - (oldFileCount * mediaBackup.DifferenceInFileCountAllowedPercentage / 100);
+                    long minimumFileCountAllowed = oldFileCount - (oldFileCount * mediaBackup.Config.DifferenceInFileCountAllowedPercentage / 100);
 
                     long newFileCount = mediaBackup.BackupFiles.Count();
 
@@ -1356,9 +1356,9 @@ namespace BackupManager
             Utils.Log($"Listing files in master folder {masterFolder}");
 
             long readSpeed = 0, writeSpeed = 0;
-            if (mediaBackup.DiskSpeedTests)
+            if (mediaBackup.Config.DiskSpeedTests)
             {
-                Utils.DiskSpeedTest(masterFolder, Utils.ConvertMBtoBytes(mediaBackup.SpeedTestFileSize), mediaBackup.SpeedTestIterations, out readSpeed, out writeSpeed);
+                Utils.DiskSpeedTest(masterFolder, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed);
             }
 
             Utils.Log($"testing {masterFolder}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
@@ -1388,7 +1388,7 @@ namespace BackupManager
         {
             Utils.Trace("CheckForOldBackupDisks enter");
 
-            int numberOfDays = mediaBackup.DaysToReportOldBackupDisks;
+            int numberOfDays = mediaBackup.Config.DaysToReportOldBackupDisks;
 
             IEnumerable<BackupFile> files = mediaBackup.BackupFiles.Where(p => p.DiskChecked.HasValue() &&
                                             DateTime.Parse(p.DiskChecked).AddDays(numberOfDays) < DateTime.Today);
@@ -1403,12 +1403,12 @@ namespace BackupManager
 
             if (files.Count() == 0)
             {
-                Utils.Log(BackupAction.General, $"All files checked in last {mediaBackup.DaysToReportOldBackupDisks} days");
+                Utils.Log(BackupAction.General, $"All files checked in last {mediaBackup.Config.DaysToReportOldBackupDisks} days");
 
             }
             else
             {
-                Utils.Log(BackupAction.General, $"Listing files not checked in {mediaBackup.DaysToReportOldBackupDisks} days");
+                Utils.Log(BackupAction.General, $"Listing files not checked in {mediaBackup.Config.DaysToReportOldBackupDisks} days");
             }
 
             foreach (BackupFile file in files)
@@ -1470,7 +1470,7 @@ namespace BackupManager
 
                 foreach (BackupFile file in files)
                 {
-                    if (!mediaBackup.DisksToSkipOnRestore.Contains(file.Disk, StringComparer.CurrentCultureIgnoreCase))
+                    if (!mediaBackup.Config.DisksToSkipOnRestore.Contains(file.Disk, StringComparer.CurrentCultureIgnoreCase))
                     {
                         //we need to check the correct disk is connected and prompt if not
                         if (!EnsureConnectedBackupDisk(file.Disk))
@@ -1481,9 +1481,9 @@ namespace BackupManager
 
                         if (file.Disk != lastBackupDisk)
                         {
-                            if (!mediaBackup.DisksToSkipOnRestore.Contains(lastBackupDisk, StringComparer.CurrentCultureIgnoreCase) && lastBackupDisk.HasValue())
+                            if (!mediaBackup.Config.DisksToSkipOnRestore.Contains(lastBackupDisk, StringComparer.CurrentCultureIgnoreCase) && lastBackupDisk.HasValue())
                             {
-                                mediaBackup.DisksToSkipOnRestore.Add(lastBackupDisk);
+                                mediaBackup.Config.DisksToSkipOnRestore.Add(lastBackupDisk);
 
                                 // This is to save the backup disks we've completed so far
                                 mediaBackup.Save();
@@ -1652,9 +1652,9 @@ namespace BackupManager
 
                 Utils.Log($"{disk.Name,-10}   Last check: {d:dd-MMM-yy}   Capacity: {disk.CapacityFormatted,-7}   Used: {Utils.FormatSize(sizeFromDiskAnalysis),-8}   Free: {disk.FreeFormatted,-7}   Sum of files: {Utils.FormatSize(totalSizeOfFilesFromSumOfFiles),-7}   Diff: {Utils.FormatSize(difference),-6} {percentageDiff}%");
 
-                if (disk.Free > Utils.ConvertMBtoBytes(mediaBackup.MinimumFreeSpaceToLeaveOnBackupDisk))
+                if (disk.Free > Utils.ConvertMBtoBytes(mediaBackup.Config.MinimumFreeSpaceToLeaveOnBackupDisk))
                 {
-                    actualUsuableSpace += disk.Free - Utils.ConvertMBtoBytes(mediaBackup.MinimumFreeSpaceToLeaveOnBackupDisk);
+                    actualUsuableSpace += disk.Free - Utils.ConvertMBtoBytes(mediaBackup.Config.MinimumFreeSpaceToLeaveOnBackupDisk);
                 }
             }
 
@@ -1681,19 +1681,19 @@ namespace BackupManager
 
             Utils.Log("Speed testing all master folders");
 
-            EnableProgressBar(0, mediaBackup.MasterFolders.Count);
+            EnableProgressBar(0, mediaBackup.Config.MasterFolders.Count);
 
-            for (int i = 0; i < mediaBackup.MasterFolders.Count; i++)
+            for (int i = 0; i < mediaBackup.Config.MasterFolders.Count; i++)
             {
-                string masterFolder = mediaBackup.MasterFolders[i];
+                string masterFolder = mediaBackup.Config.MasterFolders[i];
 
                 UpdateStatusLabel($"Speed testing {masterFolder}", i + 1);
 
                 if (Utils.IsFolderWritable(masterFolder))
                 {
                     Utils.DiskSpeedTest(masterFolder,
-                                        Utils.ConvertMBtoBytes(mediaBackup.SpeedTestFileSize),
-                                        mediaBackup.SpeedTestIterations,
+                                        Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize),
+                                        mediaBackup.Config.SpeedTestIterations,
                                         out long readSpeed,
                                         out long writeSpeed);
                     Utils.Log($"testing {masterFolder}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
@@ -1717,7 +1717,7 @@ namespace BackupManager
                 minutesNumericUpDown.Value = 59;
             }
 
-            mediaBackup.ScheduledBackupStartTime = $"{hoursNumericUpDown.Value}:{minutesNumericUpDown.Value}";
+            mediaBackup.Config.ScheduledBackupStartTime = $"{hoursNumericUpDown.Value}:{minutesNumericUpDown.Value}";
 
             Utils.Trace("minutesNumericUpDown_ValueChanged exit");
         }
@@ -1736,7 +1736,7 @@ namespace BackupManager
                 hoursNumericUpDown.Value = 23;
             }
 
-            mediaBackup.ScheduledBackupStartTime = $"{hoursNumericUpDown.Value}:{minutesNumericUpDown.Value}";
+            mediaBackup.Config.ScheduledBackupStartTime = $"{hoursNumericUpDown.Value}:{minutesNumericUpDown.Value}";
 
             Utils.Trace("hoursNumericUpDown_ValueChanged exit");
         }
@@ -1745,12 +1745,12 @@ namespace BackupManager
         {
             Utils.Trace("monitoringButton_Click enter");
 
-            if (mediaBackup.StartMonitoring)
+            if (mediaBackup.Config.StartMonitoring)
             {
                 monitoringTimer.Stop();
                 Utils.LogWithPushover(BackupAction.Monitoring, "Stopped");
 
-                mediaBackup.StartMonitoring = false;
+                mediaBackup.Config.StartMonitoring = false;
                 UpdateMonitoringButton();
             }
             else
@@ -1759,10 +1759,10 @@ namespace BackupManager
 
                 MonitoringTimer_Tick(null, null);
 
-                monitoringTimer.Interval = mediaBackup.MonitorInterval * 1000;
+                monitoringTimer.Interval = mediaBackup.Config.MonitorInterval * 1000;
                 monitoringTimer.Start();
 
-                mediaBackup.StartMonitoring = true;
+                mediaBackup.Config.StartMonitoring = true;
                 UpdateMonitoringButton();
             }
 
@@ -1778,7 +1778,7 @@ namespace BackupManager
         {
             //Utils.Trace("MonitorServices enter");
 
-            foreach (ProcessServiceMonitor monitor in mediaBackup.Monitors)
+            foreach (ProcessServiceMonitor monitor in mediaBackup.Config.Monitors)
             {
                 bool result = monitor.Port > 0 ? Utils.ConnectionExists(monitor.Url, monitor.Port) : Utils.UrlExists(monitor.Url, monitor.Timeout * 1000);
 
@@ -1870,7 +1870,7 @@ namespace BackupManager
         {
             Utils.Trace("killProcessesButton_Click enter");
 
-            foreach (ProcessServiceMonitor monitor in mediaBackup.Monitors)
+            foreach (ProcessServiceMonitor monitor in mediaBackup.Config.Monitors)
             {
                 if (monitor.ProcessToKill.HasValue())
                 {
@@ -1931,7 +1931,7 @@ namespace BackupManager
             {
                 string monitorName = processesComboBox.SelectedItem.ToString();
 
-                ProcessServiceMonitor monitor = mediaBackup.Monitors.First(m => m.Name == monitorName);
+                ProcessServiceMonitor monitor = mediaBackup.Config.Monitors.First(m => m.Name == monitorName);
 
                 if (monitor.ProcessToKill.HasValue())
                 {
@@ -2131,23 +2131,23 @@ namespace BackupManager
 
         private void PushoverOnOffButton_Click(object sender, EventArgs e)
         {
-            mediaBackup.StartSendingPushoverMessages = !mediaBackup.StartSendingPushoverMessages;
+            mediaBackup.Config.StartSendingPushoverMessages = !mediaBackup.Config.StartSendingPushoverMessages;
             UpdateSendingPushoverButton();
 
         }
 
         private void UpdateSendingPushoverButton()
         {
-            pushoverOnOffButton.Text = mediaBackup.StartSendingPushoverMessages ? "Sending = ON" : "Sending = OFF";
+            pushoverOnOffButton.Text = mediaBackup.Config.StartSendingPushoverMessages ? "Sending = ON" : "Sending = OFF";
         }
         private void UpdateMonitoringButton()
         {
-            monitoringButton.Text = mediaBackup.StartMonitoring == true ? "Monitoring = ON" : "Monitoring = OFF";
+            monitoringButton.Text = mediaBackup.Config.StartMonitoring == true ? "Monitoring = ON" : "Monitoring = OFF";
         }
 
         private void UpdateScheduledBackupButton()
         {
-            scheduledBackupTimerButton.Text = mediaBackup.StartScheduledBackup == true ? "Backup = ON" : "Backup = OFF";
+            scheduledBackupTimerButton.Text = mediaBackup.Config.StartScheduledBackup == true ? "Backup = ON" : "Backup = OFF";
         }
     }
 }

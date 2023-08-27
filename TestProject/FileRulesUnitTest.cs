@@ -50,7 +50,7 @@ namespace TestProject
                     bool expectedResult = Convert.ToBoolean(cols[2]);
                     string testPath = cols[3];
 
-                    FileRule? rule = mediaBackup.FileRules.SingleOrDefault(p => p.Number == ruleNumber);
+                    FileRule? rule = mediaBackup.Config.FileRules.SingleOrDefault(p => p.Number == ruleNumber);
                     Assert.NotNull(rule);
 
                     string regEx = testOrDiscovery.StartsWith("T") ? rule.FileTestRegEx : rule.FileDiscoveryRegEx;
