@@ -349,7 +349,7 @@
             // 
             // testPushoverHighButton
             // 
-            this.testPushoverHighButton.Location = new System.Drawing.Point(32, 47);
+            this.testPushoverHighButton.Location = new System.Drawing.Point(18, 72);
             this.testPushoverHighButton.Name = "testPushoverHighButton";
             this.testPushoverHighButton.Size = new System.Drawing.Size(69, 23);
             this.testPushoverHighButton.TabIndex = 38;
@@ -359,7 +359,7 @@
             // 
             // testPushoverNormalButton
             // 
-            this.testPushoverNormalButton.Location = new System.Drawing.Point(107, 18);
+            this.testPushoverNormalButton.Location = new System.Drawing.Point(18, 45);
             this.testPushoverNormalButton.Name = "testPushoverNormalButton";
             this.testPushoverNormalButton.Size = new System.Drawing.Size(69, 23);
             this.testPushoverNormalButton.TabIndex = 39;
@@ -389,7 +389,7 @@
             // 
             // testPushoverEmergencyButton
             // 
-            this.testPushoverEmergencyButton.Location = new System.Drawing.Point(107, 47);
+            this.testPushoverEmergencyButton.Location = new System.Drawing.Point(18, 100);
             this.testPushoverEmergencyButton.Name = "testPushoverEmergencyButton";
             this.testPushoverEmergencyButton.Size = new System.Drawing.Size(69, 23);
             this.testPushoverEmergencyButton.TabIndex = 42;
@@ -511,14 +511,14 @@
             this.pushoverGroupBox.Controls.Add(this.testPushoverEmergencyButton);
             this.pushoverGroupBox.Location = new System.Drawing.Point(561, 12);
             this.pushoverGroupBox.Name = "pushoverGroupBox";
-            this.pushoverGroupBox.Size = new System.Drawing.Size(217, 112);
+            this.pushoverGroupBox.Size = new System.Drawing.Size(217, 131);
             this.pushoverGroupBox.TabIndex = 54;
             this.pushoverGroupBox.TabStop = false;
-            this.pushoverGroupBox.Text = "Pushover tests";
+            this.pushoverGroupBox.Text = "Pushover";
             // 
             // pushoverOnOffButton
             // 
-            this.pushoverOnOffButton.Location = new System.Drawing.Point(107, 80);
+            this.pushoverOnOffButton.Location = new System.Drawing.Point(107, 58);
             this.pushoverOnOffButton.Name = "pushoverOnOffButton";
             this.pushoverOnOffButton.Size = new System.Drawing.Size(98, 23);
             this.pushoverOnOffButton.TabIndex = 44;
@@ -528,7 +528,7 @@
             // 
             // testPushoverLowButton
             // 
-            this.testPushoverLowButton.Location = new System.Drawing.Point(32, 18);
+            this.testPushoverLowButton.Location = new System.Drawing.Point(18, 18);
             this.testPushoverLowButton.Name = "testPushoverLowButton";
             this.testPushoverLowButton.Size = new System.Drawing.Size(69, 23);
             this.testPushoverLowButton.TabIndex = 43;
@@ -590,7 +590,7 @@
             this.groupBox5.Controls.Add(this.label2);
             this.groupBox5.Controls.Add(this.label5);
             this.groupBox5.Controls.Add(this.runOnTimerStartCheckBox);
-            this.groupBox5.Location = new System.Drawing.Point(561, 132);
+            this.groupBox5.Location = new System.Drawing.Point(561, 155);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(217, 88);
             this.groupBox5.TabIndex = 58;
@@ -623,7 +623,7 @@
             this.processesGroupBox.Controls.Add(this.stopProcessButton);
             this.processesGroupBox.Controls.Add(this.processesComboBox);
             this.processesGroupBox.Controls.Add(this.monitoringButton);
-            this.processesGroupBox.Location = new System.Drawing.Point(561, 243);
+            this.processesGroupBox.Location = new System.Drawing.Point(561, 250);
             this.processesGroupBox.Name = "processesGroupBox";
             this.processesGroupBox.Size = new System.Drawing.Size(217, 119);
             this.processesGroupBox.TabIndex = 60;
