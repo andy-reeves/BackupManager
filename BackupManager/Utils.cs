@@ -810,7 +810,7 @@ namespace BackupManager
 
                         Log($"Pushover messages remaining: {applicationLimitRemaining}");
 
-                        if (applicationLimitRemaining < 250)
+                        if (applicationLimitRemaining < Config.PushoverWarningMessagesRemaining)
                         {
                             if (!AlreadySendingPushoverMessage)
                             {

@@ -75,6 +75,11 @@ namespace BackupManager.Entities
         public string PushoverUserKey;
 
         /// <summary>
+        /// Sends a high priority message once this limit is passed
+        /// </summary>
+        public int PushoverWarningMessagesRemaining;
+
+        /// <summary>
         /// Minimum space before we throw a critical Disk space message in MB for  Config.MasterFolders
         /// </summary>
         public long MinimumCriticalMasterFolderSpace;
