@@ -1655,7 +1655,9 @@ namespace BackupManager
                 long difference = totalSizeOfFilesFromSumOfFiles > sizeFromDiskAnalysis ? 0 : sizeFromDiskAnalysis - totalSizeOfFilesFromSumOfFiles;
                 double percentageDiff = difference * 100 / sizeFromDiskAnalysis;
 
-                Utils.Log($"{disk.Name,-10}   Last check: {d:dd-MMM-yy}   Capacity: {disk.CapacityFormatted,-7}   Used: {Utils.FormatSize(sizeFromDiskAnalysis),-8}   Free: {disk.FreeFormatted,-7}   Sum of files: {Utils.FormatSize(totalSizeOfFilesFromSumOfFiles),-7}   Diff: {Utils.FormatSize(difference),-6} {percentageDiff}%");
+                string percentString = percentageDiff < 1 && percentageDiff > -1 ? "-" : $"{percentageDiff}%";
+
+                Utils.Log($"{disk.Name,-10}   Last check: {d:dd-MMM-yy}   Capacity: {disk.CapacityFormatted,-7}   Used: {Utils.FormatSize(sizeFromDiskAnalysis),-8}   Free: {disk.FreeFormatted,-7}   Sum of files: {Utils.FormatSize(totalSizeOfFilesFromSumOfFiles),-7}   Diff: {Utils.FormatSize(difference),-6} {percentString}");
 
                 if (disk.Free > Utils.ConvertMBtoBytes(mediaBackup.Config.MinimumFreeSpaceToLeaveOnBackupDisk))
                 {
