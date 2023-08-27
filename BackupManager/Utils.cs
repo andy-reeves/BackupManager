@@ -808,7 +808,7 @@ namespace BackupManager
 
                         int applicationLimitRemaining = Convert.ToInt32(client.ResponseHeaders["X-Limit-App-Remaining"]);
 
-                        Log($"Pushover messages remaining: {applicationLimitRemaining}");
+                        Trace($"Pushover messages remaining: {applicationLimitRemaining}");
 
                         if (applicationLimitRemaining < Config.PushoverWarningMessagesRemaining)
                         {
