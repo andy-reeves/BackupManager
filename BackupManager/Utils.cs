@@ -805,7 +805,7 @@ namespace BackupManager
                         // ensures there's a 1s gap between messages
                         while (DateTime.UtcNow < timeLastPushoverMessageSent.AddMilliseconds(TimeDelayOnPushoverMessages))
                         {
-                            Task.Delay(TimeDelayOnPushoverMessages / 2).Wait();
+                            Task.Delay(TimeDelayOnPushoverMessages / 10).Wait();
                         }
 
                         _ = client.UploadValues(PushoverAddress, parameters);

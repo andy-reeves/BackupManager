@@ -34,63 +34,19 @@ namespace BackupManager.Entities
         public Collection<FileRule> FileRules;
 
         /// <summary>
-        /// If True the scheduled backup will start when the application starts
+        /// Days To Report Old Backup Disks
         /// </summary>
-        public bool StartScheduledBackup;
+        public int DaysToReportOldBackupDisks;
 
         /// <summary>
-        /// If True the service monitoring will start when the application starts
+        /// If the new file count is more than this perencentage different we throw an eror
         /// </summary>
-        public bool StartMonitoring;
-
-        /// <summary>
-        /// If True Pushover messages are sent
-        /// </summary>
-        public bool StartSendingPushoverMessages;
-
-        /// <summary>
-        /// The start time for the scheduled backup
-        /// </summary>
-        public string ScheduledBackupStartTime;
-
         public int DifferenceInFileCountAllowedPercentage;
 
         /// <summary>
-        /// Number of disk speed test iterations to execute
+        /// True to exexcute disk speed tests
         /// </summary>
-        public int SpeedTestIterations;
-
-        /// <summary>
-        /// Size of test file for disk speed tests in MB
-        /// </summary>
-        public int SpeedTestFileSize;
-
-        /// <summary>
-        /// Interval in seconds
-        /// </summary>
-        public int MonitorInterval;
-
-        public string PushoverAppToken;
-
-        public string PushoverUserKey;
-
-        public bool PushoverSendLowMessages;
-
-        public bool PushoverSendNormalMessages;
-
-        public bool PushoverSendHighMessages;
-
-        public bool PushoverSendEmergencyMessages;
-
-        /// <summary>
-        /// Sends a high priority message once this limit is passed
-        /// </summary>
-        public int PushoverWarningMessagesRemaining;
-
-        /// <summary>
-        /// Minimum space before we throw a critical Disk space message in MB for  Config.MasterFolders
-        /// </summary>
-        public long MinimumCriticalMasterFolderSpace;
+        public bool DiskSpeedTests;
 
         /// <summary>
         /// Minimum space before we throw a critical Disk space message in MB for backup disks
@@ -98,14 +54,14 @@ namespace BackupManager.Entities
         public long MinimumCriticalBackupDiskSpace;
 
         /// <summary>
+        /// Minimum space before we throw a critical Disk space message in MB for  Config.MasterFolders
+        /// </summary>
+        public long MinimumCriticalMasterFolderSpace;
+
+        /// <summary>
         /// Minimum space on a backup disk in MB for backup disks
         /// </summary>
         public long MinimumFreeSpaceToLeaveOnBackupDisk;
-
-        /// <summary>
-        /// Days To Report Old Backup Disks
-        /// </summary>
-        public int DaysToReportOldBackupDisks;
 
         /// <summary>
         /// Config.MinimumMasterFolderReadSpeed in MB/s
@@ -118,9 +74,68 @@ namespace BackupManager.Entities
         public int MinimumMasterFolderWriteSpeed;
 
         /// <summary>
-        /// True to exexcute disk speed tests
+        /// Interval in seconds
         /// </summary>
-        public bool DiskSpeedTests;
+        public int MonitorInterval;
+
+        public string PushoverAppToken;
+
+        /// <summary>
+        /// Sends a high priority message once this limit is passed
+        /// </summary>
+        public int PushoverWarningMessagesRemaining;
+
+        /// <summary>
+        /// If TRUE Pushover Low/Lowest priority messages will be sent when required
+        /// </summary>
+        public bool PushoverSendLowMessages;
+
+        /// <summary>
+        /// If TRUE Pushover Normal priority messages will be sent when required
+        /// </summary>
+        public bool PushoverSendNormalMessages;
+
+        /// <summary>
+        /// If TRUE Pushover High priority messages will be sent when required
+        /// </summary>
+        public bool PushoverSendHighMessages;
+
+        /// <summary>
+        /// If TRUE Pushover Emergency priority messages will be sent when required
+        /// </summary>
+        public bool PushoverSendEmergencyMessages;
+
+        public string PushoverUserKey;
+
+        /// <summary>
+        /// The start time for the scheduled backup
+        /// </summary>
+        public string ScheduledBackupStartTime;
+
+        /// <summary>
+        /// Size of test file for disk speed tests in MB
+        /// </summary>
+        public int SpeedTestFileSize;
+
+        /// <summary>
+        /// Number of disk speed test iterations to execute
+        /// </summary>
+        public int SpeedTestIterations;
+
+        /// <summary>
+        /// If True the service monitoring will start when the application starts
+        /// </summary>
+        public bool StartMonitoring;
+
+        /// <summary>
+        /// If True the scheduled backup will start when the application starts
+        /// </summary>
+        public bool StartScheduledBackup;
+
+        /// <summary>
+        /// If True Pushover messages are sent
+        /// </summary>
+        public bool StartSendingPushoverMessages;
 
         public Config()
         {
@@ -215,22 +230,27 @@ namespace BackupManager.Entities
             parameterText = $"FileRules:\n{text}";
             Utils.Log(BackupAction.General, parameterText);
 
-            text = $"StartMonitoring : {StartMonitoring}\n";
-            text += $"StartScheduledBackup : {StartScheduledBackup}\n";
-            text += $"MonitorInterval : {MonitorInterval}\n";
-            text += $"ScheduledBackupStartTime : {ScheduledBackupStartTime}\n";
+            text = $"DaysToReportOldBackupDisks : {DaysToReportOldBackupDisks}\n";
             text += $"DifferenceInFileCountAllowedPercentage : {DifferenceInFileCountAllowedPercentage}\n";
-            text += $"PushoverAppToken : {PushoverAppToken}\n";
-            text += $"PushoverUserKey : {PushoverUserKey}\n";
+            text += $"DiskSpeedTests : {DiskSpeedTests}\n";
             text += $"MinimumCriticalMasterFolderSpace : {MinimumCriticalMasterFolderSpace}\n";
             text += $"MinimumCriticalBackupDiskSpace : {MinimumCriticalBackupDiskSpace}\n";
             text += $"MinimumFreeSpaceToLeaveOnBackupDisk : {MinimumFreeSpaceToLeaveOnBackupDisk}\n";
             text += $"MinimumMasterFolderReadSpeed : {MinimumMasterFolderReadSpeed}\n";
             text += $"MinimumMasterFolderWriteSpeed : {MinimumMasterFolderWriteSpeed}\n";
-            text += $"DaysToReportOldBackupDisks : {DaysToReportOldBackupDisks}\n";
-            text += $"DiskSpeedTests : {DiskSpeedTests}\n";
+            text += $"MonitorInterval : {MonitorInterval}\n";
+            text += $"PushoverAppToken : {PushoverAppToken}\n";
+            text += $"PushoverSendLowMessages : {PushoverSendLowMessages}\n";
+            text += $"PushoverSendNormalMessages : {PushoverSendNormalMessages}\n";
+            text += $"PushoverSendHighMessages : {PushoverSendHighMessages}\n";
+            text += $"PushoverSendEmergencyMessages : {PushoverSendEmergencyMessages}\n";
+            text += $"PushoverWarningMessagesRemaining : {PushoverWarningMessagesRemaining}\n";
+            text += $"PushoverUserKey : {PushoverUserKey}\n";
+            text += $"ScheduledBackupStartTime : {ScheduledBackupStartTime}\n";
             text += $"SpeedTestFileSize : {SpeedTestFileSize}\n";
             text += $"SpeedTestIterations : {SpeedTestIterations}\n";
+            text += $"StartMonitoring : {StartMonitoring}\n";
+            text += $"StartScheduledBackup : {StartScheduledBackup}\n";
             text += $"StartSendingPushoverMessages : {StartSendingPushoverMessages}\n";
 
             parameterText = text;

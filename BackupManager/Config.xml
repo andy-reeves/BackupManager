@@ -28,8 +28,6 @@
   <!-- Monitor interval in seconds -->
   <MonitorInterval>30</MonitorInterval>
 
-  
-
   <PushoverAppToken>InsertYourPushoverAppTokenHere</PushoverAppToken>
 
   <PushoverSendLowMessages>true</PushoverSendLowMessages>
