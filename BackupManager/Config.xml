@@ -29,6 +29,7 @@
   <MonitorInterval>30</MonitorInterval>
 
   <PushoverAppToken>InsertYourPushoverAppTokenHere</PushoverAppToken>
+  <PushoverAppToken>InsertYourPushoverAppTokenHere</PushoverAppToken> -->
 
   <PushoverUserKey>InsertYourPushoverUserKeyHere</PushoverUserKey>
 
