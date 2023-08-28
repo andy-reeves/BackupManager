@@ -118,7 +118,7 @@ namespace BackupManager.Entities
         }
 
         /// <summary>
-        /// Updates the file count on this disk and the total and free space.
+        /// Updates the file count on this disk and the total and free space. It uses backupFiles to get the count of the fiels on this disk
         /// </summary>
         /// <param name="backupFiles"></param>
         /// <returns></returns>
@@ -198,6 +198,23 @@ namespace BackupManager.Entities
         public void UpdateDiskChecked()
         {
             Checked = DateTime.Now.ToString("yyyy-MM-dd");
+        }
+
+        /// <summary>
+        /// Update the disk speeds if > 0
+        /// </summary>
+        /// <param name="readSpeed"></param>
+        /// <param name="writeSpeed"></param>
+        internal void UpdateSpeeds(long readSpeed, long writeSpeed)
+        {
+            if (readSpeed > 0)
+            {
+                LastReadSpeed = Utils.FormatSpeed(readSpeed);
+            }
+            if (writeSpeed > 0)
+            {
+                LastWriteSpeed = Utils.FormatSpeed(writeSpeed);
+            }
         }
     }
 }

@@ -20,15 +20,11 @@ namespace BackupManager
 
     public partial class Main : Form
     {
-        #region Fields
-
         private CancellationTokenSource tokenSource = new CancellationTokenSource();
 
         private CancellationToken ct;
 
         private readonly MediaBackup mediaBackup;
-
-        #endregion
 
         private DailyTrigger trigger;
 
@@ -37,7 +33,7 @@ namespace BackupManager
         private readonly Action monitoringAction;
 
         /// <summary>
-        /// Any long-running action ets this to TRUE to stop the others from being able to start
+        /// Any long-running action sets this to TRUE to stop the scheduledBackup timer from being able to start
         /// </summary>
         private bool longRunningActionExecutingRightNow;
 
@@ -46,6 +42,7 @@ namespace BackupManager
         public Main()
         {
             InitializeComponent();
+
 #if DEBUG
             Trace.Listeners.Add(new TextWriterTraceListener(
                          Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"),
@@ -171,6 +168,8 @@ namespace BackupManager
 
                 UpdateStatusLabel($"Speed testing {folderToCheck}");
                 Utils.DiskSpeedTest(folderToCheck, diskTestSize, mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed);
+
+                disk.UpdateSpeeds(readSpeed, writeSpeed);
             }
 
             string text = $"Name: {disk.Name}\nTotal: {disk.CapacityFormatted}\nFree: {disk.FreeFormatted}\n" +
@@ -179,16 +178,6 @@ namespace BackupManager
             bool diskInfoMessageWasTheLastSent = true;
 
             Utils.LogWithPushover(BackupAction.CheckBackupDisk, text);
-
-            // put the latest speed tests into the BackupDisk xml
-            if (readSpeed > 0)
-            {
-                disk.LastReadSpeed = Utils.FormatSpeed(readSpeed);
-            }
-            if (writeSpeed > 0)
-            {
-                disk.LastWriteSpeed = Utils.FormatSpeed(writeSpeed);
-            }
 
             if (disk.Free < Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumCriticalSpace))
             {
@@ -451,9 +440,13 @@ namespace BackupManager
             bool result = false;
 
             int fileCounter = 0;
-            long lastCopySpeed = 0;
+
+            // Start with a 30MB/s copy speed as a guess
+            long lastCopySpeed = Utils.ConvertMBtoBytes(30);
+
             long remainingSizeOfFilesToCopy = sizeOfFiles;
 
+            // number of bytes copied so far so we can track the percentage complete
             long copiedSoFar = 0;
 
             _ = Utils.GetDiskInfo(backupDiskTextBox.Text, out long availableSpace, out long totalBytes);
@@ -544,16 +537,18 @@ namespace BackupManager
 
                             Utils.FileDelete(destinationFileNameTemp);
 
-                            DateTime startTime = DateTime.UtcNow;
+                            //DateTime startTime = DateTime.UtcNow;
+
+                            Stopwatch sw = Stopwatch.StartNew();
                             _ = Utils.FileCopyNewProcess(sourceFileName, destinationFileNameTemp);
-                            DateTime endTime = DateTime.UtcNow;
+                            sw.Stop();
+                            double timeTaken = sw.Elapsed.TotalSeconds;
 
                             // We need to check this here in case Cancel was clicked during the copy of the file
                             if (ct.IsCancellationRequested) { ct.ThrowIfCancellationRequested(); }
 
                             Utils.FileMove(destinationFileNameTemp, destinationFileName);
 
-                            double timeTaken = (endTime - startTime).TotalSeconds;
                             Utils.Trace($"timeTaken {timeTaken}");
                             Utils.Trace($"sourceFileInfo.Length {sourceFileInfo.Length}");
 
@@ -698,7 +693,6 @@ namespace BackupManager
         private void CheckConnectedDiskAndCopyFilesAsync(bool deleteExtraFiles, bool copyFiles)
         {
             longRunningActionExecutingRightNow = true;
-
             DisableControlsForAsyncTasks();
 
             _ = CheckConnectedDisk(deleteExtraFiles);
@@ -706,14 +700,13 @@ namespace BackupManager
 
             ResetAllControls();
             longRunningActionExecutingRightNow = false;
-
         }
 
         private void CheckConnectedDiskAndCopyFilesRepeaterAsync(bool copyFiles)
         {
             longRunningActionExecutingRightNow = true;
-
             DisableControlsForAsyncTasks();
+
             string nextDiskMessage = "Please insert the next backup disk now";
 
             while (true)
@@ -748,13 +741,11 @@ namespace BackupManager
         private void ScanFolderAsync()
         {
             longRunningActionExecutingRightNow = true;
-
             DisableControlsForAsyncTasks();
 
             ScanFolders();
 
             ResetAllControls();
-
             longRunningActionExecutingRightNow = false;
         }
 
@@ -939,8 +930,7 @@ namespace BackupManager
                 {
                     progress = 1;
                 }
-                else
-                if (progress > 99)
+                else if (progress > 99)
                 {
                     progress = 99;
                 }
@@ -987,7 +977,6 @@ namespace BackupManager
                     value = toolStripProgressBar.Maximum - 1;
                 }
                 statusStrip.Invoke(x => toolStripProgressBar.Visible = true);
-
                 statusStrip.Invoke(x => toolStripProgressBar.Value = value);
 
             }
@@ -1247,6 +1236,7 @@ namespace BackupManager
 
         private void ScheduledBackupAsync()
         {
+            // This is so if the timer goes off to start and we're doing something else it's skipped
             if (!longRunningActionExecutingRightNow)
             {
                 longRunningActionExecutingRightNow = true;
@@ -1353,14 +1343,11 @@ namespace BackupManager
             IEnumerable<BackupFile> files = mediaBackup.GetBackupFilesInMasterFolder(masterFolder);
 
             Utils.Log($"Listing files in master folder {masterFolder}");
-
-            long readSpeed = 0, writeSpeed = 0;
             if (mediaBackup.Config.SpeedTestONOFF)
             {
-                Utils.DiskSpeedTest(masterFolder, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed);
+                Utils.DiskSpeedTest(masterFolder, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations, out long readSpeed, out long writeSpeed);
+                Utils.Log($"Testing {masterFolder}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
             }
-
-            Utils.Log($"testing {masterFolder}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
 
             foreach (BackupFile file in files)
             {
@@ -1695,6 +1682,7 @@ namespace BackupManager
 
         private void SpeedTestAllMasterFoldersAsync()
         {
+            longRunningActionExecutingRightNow = true;
             DisableControlsForAsyncTasks();
 
             Utils.Log("Speed testing all master folders");
@@ -1719,6 +1707,7 @@ namespace BackupManager
             }
 
             ResetAllControls();
+            longRunningActionExecutingRightNow = false;
         }
 
         private void MinutesNumericUpDown_ValueChanged(object sender, EventArgs e)
@@ -1985,7 +1974,7 @@ namespace BackupManager
 
         private void ListFilesWithDuplicateContentHashcodesButton_Click(object sender, EventArgs e)
         {
-            Utils.Log("Checking for files with Duplicate ContentsHash");
+            Utils.Log("Checking for files with Duplicate ContentsHash in _Movies and _TV");
 
             Dictionary<string, BackupFile> allFilesUniqueContentsHash = new Dictionary<string, BackupFile>();
             List<BackupFile> backupFilesWithDuplicates = new List<BackupFile>();
@@ -2060,8 +2049,8 @@ namespace BackupManager
 
             cancelButton.Enabled = false;
             longRunningActionExecutingRightNow = false;
-
             ResetAllControls();
+
             tokenSource = null;
         }
 
