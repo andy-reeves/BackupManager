@@ -13,7 +13,6 @@ namespace BackupManager
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
-    using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading;
     using System.Threading.Tasks;
@@ -1572,29 +1571,44 @@ namespace BackupManager
         {
             Utils.Trace("listMoviesWithMultipleFilesButton_Click enter");
 
-            // listing movies with multiple files
             Utils.Log("Listing movies with multiple files in folder");
+
+            Dictionary<string, BackupFile> allMovies = new Dictionary<string, BackupFile>();
+
+            List<BackupFile> backupFilesWithDuplicates = new List<BackupFile>();
 
             foreach (BackupFile file in mediaBackup.BackupFiles)
             {
-                if (file.IndexFolder == "_Movies")
+                string pattern = @"^(?:.*\\_Movies(?:\s\(non-tmdb\))?\\(.*)\s({tmdb-\d{1,7}?})\s(?:{edition-(?:(?:[1-7][05]TH\sANNIVERSARY)|4K|BLURAY|CHRONOLOGICAL|COLLECTORS|(?:CRITERION|KL\sSTUDIO)\sCOLLECTION|DIAMOND|DVD|IMAX|REDUX|REMASTERED|RESTORED|SPECIAL|(?:THE\sCOMPLETE\s)?EXTENDED|THE\sGODFATHER\sCODA|(?:THE\sRICHARD\sDONNER|DIRECTORS|FINAL)\sCUT|THEATRICAL|ULTIMATE|UNCUT|UNRATED)}\s)?\[(?:DVD|SDTV|(?:WEB(?:Rip|DL)|Bluray|HDTV|Remux)-(?:48|72|108|216)0p)\](?:\[(?:(?:DV)?(?:(?:\s)?HDR10(?:Plus)?)?|PQ|3D)\])?\[(?:DTS(?:\sHD|-(?:X|ES|HD\s(?:M|HR)A))?|(?:TrueHD|EAC3)(?:\sAtmos)?|AC3|FLAC|PCM|MP3|A[AV]C|Opus)\s(?:[1-8]\.[01])\]\[(?:[hx]26[45]|MPEG[24]|HEVC|XviD|V(?:C1|P9)|AVC)\])\.(m(?:kv|p(?:4|e?g))|ts|avi)$";
+
+                Match m = Regex.Match(file.FullPath, pattern);
+                if (m.Success)
                 {
-                    string movieFolderName = file.RelativePath.Substring(0, file.RelativePath.IndexOf("\\"));
+                    string movieId = m.Groups[2].Value;
 
-                    string movieFilename = file.RelativePath.Substring(file.RelativePath.IndexOf("\\") + 1);
-
-                    if (movieFilename.StartsWith(movieFolderName) && movieFilename.Contains("{tmdb-") && movieFilename.EndsWith(".mkv"))
+                    if (allMovies.ContainsKey(movieId))
                     {
-                        IEnumerable<BackupFile> otherFiles = mediaBackup.BackupFiles.Where(p => p.RelativePath.StartsWith(movieFolderName + "\\" + movieFolderName)
-                        && p.RelativePath != file.RelativePath
-                        && p.RelativePath.EndsWith(".mkv"));
-
-                        foreach (BackupFile additionalFile in otherFiles)
+                        if (!backupFilesWithDuplicates.Contains(file))
                         {
-                            Utils.Log($"{additionalFile.FullPath}");
+                            backupFilesWithDuplicates.Add(file);
+                        }
+
+                        BackupFile firstDuplicate = allMovies[movieId];
+                        if (!backupFilesWithDuplicates.Contains(firstDuplicate))
+                        {
+                            backupFilesWithDuplicates.Add(firstDuplicate);
                         }
                     }
+                    else
+                    {
+                        allMovies.Add(movieId, file);
+                    }
                 }
+            }
+
+            foreach (BackupFile backupMovieDuplicate in backupFilesWithDuplicates)
+            {
+                Utils.Log($"{backupMovieDuplicate.FullPath}");
             }
 
             Utils.Trace("listMoviesWithMultipleFilesButton_Click exit");
@@ -1976,98 +1990,35 @@ namespace BackupManager
         {
             Utils.Log("Checking for files with Duplicate ContentsHash");
 
-            mediaBackup.ClearFlags();
+            Dictionary<string, BackupFile> allFilesUniqueContentsHash = new Dictionary<string, BackupFile>();
+            List<BackupFile> backupFilesWithDuplicates = new List<BackupFile>();
 
             foreach (BackupFile f in mediaBackup.BackupFiles)
             {
-                string fullPath = f.FullPath;
-
-                if (fullPath.StartsWith("\\\\nas2\\assets3\\_Backup") ||
-                    fullPath.StartsWith("\\\\nas2\\assets3\\_Other") ||
-                    fullPath.StartsWith("\\\\nas2\\assets3\\_From Mum") ||
-                    fullPath.StartsWith("\\\\nas2\\assets3\\_Software") ||
-                    fullPath.EndsWith(".srt"))
+                if (f.FullPath.Contains("_Movies") || f.FullPath.Contains("_TV"))
                 {
-                    f.Flag = true;
-                }
-            }
-
-            BackupFile backupFileToDelete;
-            long length = 0;
-
-            StringBuilder sb = new StringBuilder();
-
-            for (int i = 0; i < mediaBackup.BackupFiles.Count; i++)
-            {
-                BackupFile a = mediaBackup.BackupFiles[i];
-
-                for (int j = i + 1; j < mediaBackup.BackupFiles.Count; j++)
-                {
-                    BackupFile b = mediaBackup.BackupFiles[j];
-                    backupFileToDelete = null;
-
-                    if (!a.Flag && !b.Flag && a.Length != 0 && (b.ContentsHash == a.ContentsHash) && (b.FullPath != a.FullPath))
+                    if (allFilesUniqueContentsHash.ContainsKey(f.ContentsHash))
                     {
-                        Utils.Log($"[{i + 1}/{mediaBackup.BackupFiles.Count}] {a.FullPath} has copy at {b.FullPath}");
-                        b.Flag = true;
+                        backupFilesWithDuplicates.Add(f);
 
-                        if (a.FullPath.Contains("\\_Pictures"))
+                        BackupFile orginalFile = allFilesUniqueContentsHash[f.ContentsHash];
+
+                        if (!backupFilesWithDuplicates.Contains(orginalFile))
                         {
-                            if (a.FileName.Contains("IMG_") && !b.FileName.Contains("IMG_"))
-                            {
-                                backupFileToDelete = a;
-                            }
-                            else if (!a.FileName.Contains("IMG_") && b.FileName.Contains("IMG_"))
-                            {
-
-                                backupFileToDelete = b;
-                            }
-
-                            else if (a.FileName.Contains("SAM_") && !b.FileName.Contains("SAM_"))
-                            {
-                                backupFileToDelete = a;
-                            }
-                            else if (!a.FileName.Contains("SAM_") && b.FileName.Contains("SAM_"))
-                            {
-
-                                backupFileToDelete = b;
-                            }
-                            else if (a.FileName.Contains("(") && !b.FileName.Contains("("))
-                            {
-                                backupFileToDelete = a;
-                            }
-                            else if (!a.FileName.Contains("(") && b.FileName.Contains("("))
-                            {
-                                backupFileToDelete = b;
-                            }
-                            else if (a.FileName.Contains("Copy") && !b.FileName.Contains("Copy"))
-                            {
-                                backupFileToDelete = a;
-                            }
-                            else if (!a.FileName.Contains("Copy") && b.FileName.Contains("Copy"))
-                            {
-                                backupFileToDelete = b;
-                            }
-
-                            else if (a.FileName.Length <= b.FileName.Length)
-                            {
-                                backupFileToDelete = b;
-                            }
-                            if (backupFileToDelete != null)
-                            {
-                                Utils.Log($"delete {backupFileToDelete.FullPath}");
-                                _ = sb.AppendLine($"DEL /P \"{backupFileToDelete.FullPath}\"");
-                                length += backupFileToDelete.Length;
-                            }
+                            backupFilesWithDuplicates.Add(orginalFile);
                         }
+                    }
+                    else
+                    {
+                        allFilesUniqueContentsHash.Add(f.ContentsHash, f);
                     }
                 }
             }
 
-            Utils.Log($"Total size of files to delete is {Utils.FormatSize(length)}");
-            Utils.Log(sb.ToString());
-
-            Utils.Log("Finshed checking for files with Duplicate ContentsHash");
+            foreach (BackupFile f in backupFilesWithDuplicates)
+            {
+                Utils.Log($"{f.FullPath} has a duplicate");
+            }
         }
 
         private void CheckDeleteAndCopyAllBackupDisksButton_Click(object sender, EventArgs e)
