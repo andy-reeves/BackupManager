@@ -124,7 +124,7 @@
       <FileDiscoveryRegEx>^.*\\_Movies(\s\(non-tmdb\))?\\.*$</FileDiscoveryRegEx>
       <!-- <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$</FileDiscoveryRegEx> -->
       <FileTestRegEx>^(?:.*\\_Movies(?:\s\(non-tmdb\))?\\.*\\.*\[(DVD|SDTV|(WEB(Rip|DL)|Bluray|HDTV|Remux)-(48|72|108|216)0p)\].*$|.*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer)\..*)$</FileTestRegEx>
-      <Message>Movies , Comedy, Concerts and TV files must either be a special feature or have a valid Quality specified</Message>
+      <Message>Movies, Comedy, Concerts and TV files must either be a special feature or have a valid Quality specified</Message>
       <Name>Rule 18</Name>
       <Number>18</Number>
     </FileRule>

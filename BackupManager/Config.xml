@@ -2,46 +2,55 @@
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
  
   <!-- After this many days the backup warns to check the disks again -->
-  <DaysToReportOldBackupDisks>90</DaysToReportOldBackupDisks>
+  <BackupDiskDaysToReportSinceFilesChecked>90</BackupDiskDaysToReportSinceFilesChecked>
 
   <!-- A bigger percentage difference than this and the backup stops -->
-  <DifferenceInFileCountAllowedPercentage>1</DifferenceInFileCountAllowedPercentage>
-
-  <!-- If True we test the speed of the disks -->
-  <DiskSpeedTests>false</DiskSpeedTests>
-
+  <BackupDiskDifferenceInFileCountAllowedPercentage>1</BackupDiskDifferenceInFileCountAllowedPercentage>
+  
   <!-- MinimumCriticalBackupDiskSpace in MB -->
-  <MinimumCriticalBackupDiskSpace>250</MinimumCriticalBackupDiskSpace>
-
-  <!-- MinimumCriticalMasterFolderSpace in MB -->
-  <MinimumCriticalMasterFolderSpace>200000</MinimumCriticalMasterFolderSpace>
+  <BackupDiskMinimumCriticalSpace>250</BackupDiskMinimumCriticalSpace>
 
   <!-- MinimumFreeSpaceToLeaveOnBackupDisk in MB -->
-  <MinimumFreeSpaceToLeaveOnBackupDisk>210</MinimumFreeSpaceToLeaveOnBackupDisk>
+  <BackupDiskMinimumFreeSpaceToLeave>210</BackupDiskMinimumFreeSpaceToLeave>
+
+  <!-- MinimumCriticalMasterFolderSpace in MB -->
+  <MasterFolderMinimumCriticalSpace>200000</MasterFolderMinimumCriticalSpace>
 
   <!-- Minimum read speed in MB/s -->
-  <MinimumMasterFolderReadSpeed>30</MinimumMasterFolderReadSpeed>
+  <MasterFolderMinimumReadSpeed>30</MasterFolderMinimumReadSpeed>
 
   <!-- Minimum write speed in MB/s -->
-  <MinimumMasterFolderWriteSpeed>30</MinimumMasterFolderWriteSpeed>
+  <MasterFolderMinimumWriteSpeed>30</MasterFolderMinimumWriteSpeed>
 
   <!-- Monitor interval in seconds -->
-  <MonitorInterval>30</MonitorInterval>
+  <MonitoringInterval>30</MonitoringInterval>
+
+  <!-- When true the service monitoring starts when the app starts -->
+  <MonitoringONOFF>false</MonitoringONOFF>
 
   <PushoverAppToken>InsertYourPushoverAppTokenHere</PushoverAppToken>
 
-  <PushoverSendLowMessages>true</PushoverSendLowMessages>
+  <!-- True to enable sending Pushover messages -->
+  <PushoverONOFF>true</PushoverONOFF>
+  
+  <PushoverSendLowONOFF>true</PushoverSendLowONOFF>
 
-  <PushoverSendNormalMessages>true</PushoverSendNormalMessages>
+  <PushoverSendNormalONOFF>true</PushoverSendNormalONOFF>
 
-  <PushoverSendHighMessages>true</PushoverSendHighMessages>
+  <PushoverSendHighONOFF>true</PushoverSendHighONOFF>
 
-  <PushoverSendEmergencyMessages>true</PushoverSendEmergencyMessages>
+  <PushoverSendEmergencyONOFF>true</PushoverSendEmergencyONOFF>
 
   <PushoverUserKey>InsertYourPushoverUserKeyHere</PushoverUserKey>
 
   <!-- Sends a high priority message once this limit is passed -->
   <PushoverWarningMessagesRemaining>500</PushoverWarningMessagesRemaining>
+ 
+  <!-- When true a backup scan will run when scheduled -->
+  <ScheduledBackupONOFF>true</ScheduledBackupONOFF>
+  
+  <!-- When true a backup scan will run when the app starts -->
+  <ScheduledBackupRunOnStartup>false</ScheduledBackupRunOnStartup>
 
   <!--  ScheduledBackupStartTime as hh:mm -->
   <ScheduledBackupStartTime>11:30</ScheduledBackupStartTime>
@@ -51,16 +60,10 @@
 
   <!-- Number of disk speed test iterations to run -->
   <SpeedTestIterations>1</SpeedTestIterations>
+
+  <!-- If True we test the speed of the disks -->
+  <SpeedTestONOFF>false</SpeedTestONOFF>
  
-  <!-- When true the service monitoring starts when the app starts -->
-  <StartMonitoring>false</StartMonitoring>
-
-   <!-- When true a backup scan will run when the app starts -->
-  <StartScheduledBackup>false</StartScheduledBackup>
-
-  <!-- True to enable sending Pushover messages -->
-  <StartSendingPushoverMessages>true</StartSendingPushoverMessages>
-
   <Monitors>
     <Monitor>
       <Url />

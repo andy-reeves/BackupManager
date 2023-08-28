@@ -81,10 +81,10 @@ namespace BackupManager
                 listFilesComboBox.Items.Add(disk.Name);
             }
 
-            pushoverLowCheckBox.Checked = mediaBackup.Config.PushoverSendLowMessages;
-            pushoverNormalCheckBox.Checked = mediaBackup.Config.PushoverSendNormalMessages;
-            pushoverHighCheckBox.Checked = mediaBackup.Config.PushoverSendHighMessages;
-            pushoverEmergencyCheckBox.Checked = mediaBackup.Config.PushoverSendEmergencyMessages;
+            pushoverLowCheckBox.Checked = mediaBackup.Config.PushoverSendLowONOFF;
+            pushoverNormalCheckBox.Checked = mediaBackup.Config.PushoverSendNormalONOFF;
+            pushoverHighCheckBox.Checked = mediaBackup.Config.PushoverSendHighONOFF;
+            pushoverEmergencyCheckBox.Checked = mediaBackup.Config.PushoverSendEmergencyONOFF;
 
             foreach (ProcessServiceMonitor monitor in mediaBackup.Config.Monitors)
             {
@@ -105,20 +105,18 @@ namespace BackupManager
             UpdateMonitoringButton();
             UpdateScheduledBackupButton();
 
-            if (mediaBackup.Config.StartMonitoring)
+            if (mediaBackup.Config.MonitoringONOFF)
             {
                 // we swtich it off and force the button to be clicked to tuen it on again
-                mediaBackup.Config.StartMonitoring = false;
+                mediaBackup.Config.MonitoringONOFF = false;
 #if !DEBUG
                 MonitoringButton_Click(null, null);
 #endif
             }
 
-            if (mediaBackup.Config.StartScheduledBackup)
+            if (mediaBackup.Config.ScheduledBackupRunOnStartup)
             {
-#if !DEBUG
-                // we swtich it off and force the button to be clicked to tuen it on again
-                mediaBackup.Config.StartScheduledBackup = false;
+#if !DEBUG   
                 BackupTimerButton_Click(null, null);
 #endif
             }
@@ -164,7 +162,7 @@ namespace BackupManager
 
             long readSpeed = 0, writeSpeed = 0;
 
-            if (mediaBackup.Config.DiskSpeedTests)
+            if (mediaBackup.Config.SpeedTestONOFF)
             {
                 long diskTestSize = disk.Free > Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize)
                                    ? Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize)
@@ -191,7 +189,7 @@ namespace BackupManager
                 disk.LastWriteSpeed = Utils.FormatSpeed(writeSpeed);
             }
 
-            if (disk.Free < Utils.ConvertMBtoBytes(mediaBackup.Config.MinimumCriticalBackupDiskSpace))
+            if (disk.Free < Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumCriticalSpace))
             {
                 Utils.LogWithPushover(BackupAction.CheckBackupDisk,
                                       PushoverPriority.High,
@@ -459,7 +457,7 @@ namespace BackupManager
 
             _ = Utils.GetDiskInfo(backupDiskTextBox.Text, out long availableSpace, out long totalBytes);
 
-            long remainingDiskSpace = availableSpace - Utils.ConvertMBtoBytes(mediaBackup.Config.MinimumFreeSpaceToLeaveOnBackupDisk);
+            long remainingDiskSpace = availableSpace - Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave);
             long sizeOfCopy = remainingDiskSpace < sizeOfFiles ? remainingDiskSpace : sizeOfFiles;
 
             /// We use 100 as the max because the actual number of bytes could be far too large 
@@ -511,7 +509,7 @@ namespace BackupManager
 
                         result = Utils.GetDiskInfo(backupDiskTextBox.Text, out availableSpace, out totalBytes);
 
-                        if (availableSpace > Utils.ConvertMBtoBytes(mediaBackup.Config.MinimumFreeSpaceToLeaveOnBackupDisk) + sourceFileInfo.Length)
+                        if (availableSpace > Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave) + sourceFileInfo.Length)
                         {
                             outOfDiskSpaceMessageSent = false;
 
@@ -523,7 +521,7 @@ namespace BackupManager
                                 // remaining size is the smallest of remaining disk size-crital space to leave free OR
                                 // size of remaining files to copy
 
-                                remainingDiskSpace = availableSpace - Utils.ConvertMBtoBytes(mediaBackup.Config.MinimumFreeSpaceToLeaveOnBackupDisk);
+                                remainingDiskSpace = availableSpace - Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave);
 
                                 long sizeOfCopyRemaining = remainingDiskSpace < remainingSizeOfFilesToCopy ? remainingDiskSpace : remainingSizeOfFilesToCopy;
                                 double numberOfSecondsOfCopyRemaining = sizeOfCopyRemaining / lastCopySpeed;
@@ -1035,7 +1033,7 @@ namespace BackupManager
 
                     _ = Utils.GetDiskInfo(masterFolder, out long freeSpaceOnCurrentMasterFolder, out long totalBytesOnMasterFolderDisk);
 
-                    if (mediaBackup.Config.DiskSpeedTests)
+                    if (mediaBackup.Config.SpeedTestONOFF)
                     {
                         UpdateStatusLabel($"Speed testing {masterFolder}");
                         Utils.DiskSpeedTest(masterFolder, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed);
@@ -1050,24 +1048,24 @@ namespace BackupManager
 
                     Utils.LogWithPushover(BackupAction.ScanFolders, text);
 
-                    if (mediaBackup.Config.DiskSpeedTests)
+                    if (mediaBackup.Config.SpeedTestONOFF)
                     {
-                        if (readSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.MinimumMasterFolderReadSpeed))
+                        if (readSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumReadSpeed))
                         {
                             Utils.LogWithPushover(BackupAction.ScanFolders,
                                                   PushoverPriority.High,
-                                                  $"Read speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.MinimumMasterFolderReadSpeed))}");
+                                                  $"Read speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumReadSpeed))}");
                         }
 
-                        if (writeSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.MinimumMasterFolderWriteSpeed))
+                        if (writeSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumWriteSpeed))
                         {
                             Utils.LogWithPushover(BackupAction.ScanFolders,
                                                   PushoverPriority.High,
-                                                  $"Write speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.MinimumMasterFolderWriteSpeed))}");
+                                                  $"Write speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumWriteSpeed))}");
                         }
                     }
 
-                    if (freeSpaceOnCurrentMasterFolder < Utils.ConvertMBtoBytes(mediaBackup.Config.MinimumCriticalMasterFolderSpace))
+                    if (freeSpaceOnCurrentMasterFolder < Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumCriticalSpace))
                     {
                         Utils.LogWithPushover(BackupAction.ScanFolders,
                                               PushoverPriority.High,
@@ -1221,21 +1219,17 @@ namespace BackupManager
         {
             Utils.Trace("timerButton_Click enter");
 
-            if (mediaBackup.Config.StartScheduledBackup)
+            if (mediaBackup.Config.ScheduledBackupONOFF)
             {
-                mediaBackup.Config.StartScheduledBackup = false;
-                try
+                mediaBackup.Config.ScheduledBackupONOFF = false;
+                if (trigger != null)
                 {
-                    if (trigger != null)
-                    {
-                        trigger.OnTimeTriggered -= scheduledBackupAction;
-                    }
+                    trigger.OnTimeTriggered -= scheduledBackupAction;
                 }
-                catch { }
             }
             else
             {
-                mediaBackup.Config.StartScheduledBackup = true;
+                mediaBackup.Config.ScheduledBackupONOFF = true;
                 // Fire once if CheckBox is ticked
                 if (runOnTimerStartCheckBox.Checked)
                 {
@@ -1277,10 +1271,10 @@ namespace BackupManager
                 // This happens if the server running the backup cannot connect to the nas devices sometimes
                 // It'll then delete everything off the connected backup disk as it doesn't think they're needed so this will prevent that
 
-                if (mediaBackup.Config.StartMonitoring)
+                if (mediaBackup.Config.MonitoringONOFF)
                 {
                     Utils.LogWithPushover(BackupAction.General,
-                                          $"Service monitoring is running every {mediaBackup.Config.MonitorInterval} seconds");
+                                          $"Service monitoring is running every {mediaBackup.Config.MonitoringInterval} seconds");
                 }
                 else
                 {
@@ -1294,9 +1288,9 @@ namespace BackupManager
                 // Update the master file
                 ScanFolders();
 
-                if (mediaBackup.Config.DifferenceInFileCountAllowedPercentage != 0)
+                if (mediaBackup.Config.BackupDiskDifferenceInFileCountAllowedPercentage != 0)
                 {
-                    long minimumFileCountAllowed = oldFileCount - (oldFileCount * mediaBackup.Config.DifferenceInFileCountAllowedPercentage / 100);
+                    long minimumFileCountAllowed = oldFileCount - (oldFileCount * mediaBackup.Config.BackupDiskDifferenceInFileCountAllowedPercentage / 100);
 
                     long newFileCount = mediaBackup.BackupFiles.Count();
 
@@ -1360,7 +1354,7 @@ namespace BackupManager
             Utils.Log($"Listing files in master folder {masterFolder}");
 
             long readSpeed = 0, writeSpeed = 0;
-            if (mediaBackup.Config.DiskSpeedTests)
+            if (mediaBackup.Config.SpeedTestONOFF)
             {
                 Utils.DiskSpeedTest(masterFolder, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed);
             }
@@ -1392,7 +1386,7 @@ namespace BackupManager
         {
             Utils.Trace("CheckForOldBackupDisks enter");
 
-            int numberOfDays = mediaBackup.Config.DaysToReportOldBackupDisks;
+            int numberOfDays = mediaBackup.Config.BackupDiskDaysToReportSinceFilesChecked;
 
             IEnumerable<BackupFile> files = mediaBackup.BackupFiles.Where(p => p.DiskChecked.HasValue() &&
                                             DateTime.Parse(p.DiskChecked).AddDays(numberOfDays) < DateTime.Today);
@@ -1407,12 +1401,12 @@ namespace BackupManager
 
             if (files.Count() == 0)
             {
-                Utils.Log(BackupAction.General, $"All files checked in last {mediaBackup.Config.DaysToReportOldBackupDisks} days");
+                Utils.Log(BackupAction.General, $"All files checked in last {mediaBackup.Config.BackupDiskDaysToReportSinceFilesChecked} days");
 
             }
             else
             {
-                Utils.Log(BackupAction.General, $"Listing files not checked in {mediaBackup.Config.DaysToReportOldBackupDisks} days");
+                Utils.Log(BackupAction.General, $"Listing files not checked in {mediaBackup.Config.BackupDiskDaysToReportSinceFilesChecked} days");
             }
 
             foreach (BackupFile file in files)
@@ -1673,9 +1667,9 @@ namespace BackupManager
 
                 Utils.Log($"{disk.Name,-10}   Last check: {d:dd-MMM-yy}   Capacity: {disk.CapacityFormatted,-7}   Used: {Utils.FormatSize(sizeFromDiskAnalysis),-8}   Free: {disk.FreeFormatted,-7}   Sum of files: {Utils.FormatSize(totalSizeOfFilesFromSumOfFiles),-7}   Diff: {Utils.FormatSize(difference),-6} {percentString}");
 
-                if (disk.Free > Utils.ConvertMBtoBytes(mediaBackup.Config.MinimumFreeSpaceToLeaveOnBackupDisk))
+                if (disk.Free > Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave))
                 {
-                    actualUsuableSpace += disk.Free - Utils.ConvertMBtoBytes(mediaBackup.Config.MinimumFreeSpaceToLeaveOnBackupDisk);
+                    actualUsuableSpace += disk.Free - Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave);
                 }
             }
 
@@ -1766,12 +1760,12 @@ namespace BackupManager
         {
             Utils.Trace("monitoringButton_Click enter");
 
-            if (mediaBackup.Config.StartMonitoring)
+            if (mediaBackup.Config.MonitoringONOFF)
             {
                 monitoringTimer.Stop();
                 Utils.LogWithPushover(BackupAction.Monitoring, "Stopped");
 
-                mediaBackup.Config.StartMonitoring = false;
+                mediaBackup.Config.MonitoringONOFF = false;
                 UpdateMonitoringButton();
             }
             else
@@ -1780,10 +1774,10 @@ namespace BackupManager
 
                 MonitoringTimer_Tick(null, null);
 
-                monitoringTimer.Interval = mediaBackup.Config.MonitorInterval * 1000;
+                monitoringTimer.Interval = mediaBackup.Config.MonitoringInterval * 1000;
                 monitoringTimer.Start();
 
-                mediaBackup.Config.StartMonitoring = true;
+                mediaBackup.Config.MonitoringONOFF = true;
                 UpdateMonitoringButton();
             }
 
@@ -2089,42 +2083,42 @@ namespace BackupManager
 
         private void PushoverOnOffButton_Click(object sender, EventArgs e)
         {
-            mediaBackup.Config.StartSendingPushoverMessages = !mediaBackup.Config.StartSendingPushoverMessages;
+            mediaBackup.Config.PushoverONOFF = !mediaBackup.Config.PushoverONOFF;
             UpdateSendingPushoverButton();
         }
 
         private void UpdateSendingPushoverButton()
         {
-            pushoverOnOffButton.Text = mediaBackup.Config.StartSendingPushoverMessages ? "Sending = ON" : "Sending = OFF";
+            pushoverOnOffButton.Text = mediaBackup.Config.PushoverONOFF ? "Sending = ON" : "Sending = OFF";
         }
         private void UpdateMonitoringButton()
         {
-            monitoringButton.Text = mediaBackup.Config.StartMonitoring == true ? "Monitoring = ON" : "Monitoring = OFF";
+            monitoringButton.Text = mediaBackup.Config.MonitoringONOFF == true ? "Monitoring = ON" : "Monitoring = OFF";
         }
 
         private void UpdateScheduledBackupButton()
         {
-            scheduledBackupTimerButton.Text = mediaBackup.Config.StartScheduledBackup == true ? "Backup = ON" : "Backup = OFF";
+            scheduledBackupTimerButton.Text = mediaBackup.Config.ScheduledBackupONOFF == true ? "Backup = ON" : "Backup = OFF";
         }
 
         private void PushoverLowCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            mediaBackup.Config.PushoverSendLowMessages = pushoverLowCheckBox.Checked;
+            mediaBackup.Config.PushoverSendLowONOFF = pushoverLowCheckBox.Checked;
         }
 
         private void PushoverNormalCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            mediaBackup.Config.PushoverSendNormalMessages = pushoverNormalCheckBox.Checked;
+            mediaBackup.Config.PushoverSendNormalONOFF = pushoverNormalCheckBox.Checked;
         }
 
         private void PushoverHighCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            mediaBackup.Config.PushoverSendHighMessages = pushoverHighCheckBox.Checked;
+            mediaBackup.Config.PushoverSendHighONOFF = pushoverHighCheckBox.Checked;
         }
 
         private void PushoverEmergencyCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            mediaBackup.Config.PushoverSendEmergencyMessages = pushoverEmergencyCheckBox.Checked;
+            mediaBackup.Config.PushoverSendEmergencyONOFF = pushoverEmergencyCheckBox.Checked;
         }
     }
 }
