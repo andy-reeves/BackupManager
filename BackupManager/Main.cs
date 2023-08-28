@@ -1601,7 +1601,9 @@ namespace BackupManager
                 }
             }
 
-            foreach (BackupFile backupMovieDuplicate in backupFilesWithDuplicates)
+            List<BackupFile> sortedList = backupFilesWithDuplicates.OrderBy(o => o.FileName).ToList();
+
+            foreach (BackupFile backupMovieDuplicate in sortedList)
             {
                 Utils.Log($"{backupMovieDuplicate.FullPath}");
             }

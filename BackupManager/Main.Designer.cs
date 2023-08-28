@@ -47,6 +47,7 @@
             this.listFilesWithDuplicateContentHashcodesButton = new System.Windows.Forms.Button();
             this.checkDeleteAndCopyAllBackupDisksButton = new System.Windows.Forms.Button();
             this.checkAllBackupDisksButton = new System.Windows.Forms.Button();
+            this.speedTestDisksButton = new System.Windows.Forms.Button();
             this.scheduledBackupTimerButton = new System.Windows.Forms.Button();
             this.listFilesOnBackupDiskButton = new System.Windows.Forms.Button();
             this.listFilesInMasterFolderButton = new System.Windows.Forms.Button();
@@ -88,7 +89,6 @@
             this.cancelButton = new System.Windows.Forms.Button();
             this.AllBackupDisksGroupBox = new System.Windows.Forms.GroupBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.speedTestDisksButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.hoursNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minutesNumericUpDown)).BeginInit();
             this.pushoverGroupBox.SuspendLayout();
@@ -281,6 +281,17 @@
         "ES FILES.");
             this.checkAllBackupDisksButton.UseVisualStyleBackColor = true;
             this.checkAllBackupDisksButton.Click += new System.EventHandler(this.CheckAllBackupDisksButton_Click);
+            // 
+            // speedTestDisksButton
+            // 
+            this.speedTestDisksButton.Location = new System.Drawing.Point(819, 157);
+            this.speedTestDisksButton.Name = "speedTestDisksButton";
+            this.speedTestDisksButton.Size = new System.Drawing.Size(201, 23);
+            this.speedTestDisksButton.TabIndex = 60;
+            this.speedTestDisksButton.Text = "Speed Test Disks = OFF";
+            this.toolTip.SetToolTip(this.speedTestDisksButton, "Starts the service monitoring");
+            this.speedTestDisksButton.UseVisualStyleBackColor = true;
+            this.speedTestDisksButton.Click += new System.EventHandler(this.SpeedTestDisksButton_Click);
             // 
             // scheduledBackupTimerButton
             // 
@@ -736,17 +747,6 @@
             this.groupBox1.TabIndex = 68;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Connected Backup disk";
-            // 
-            // speedTestDisksButton
-            // 
-            this.speedTestDisksButton.Location = new System.Drawing.Point(819, 157);
-            this.speedTestDisksButton.Name = "speedTestDisksButton";
-            this.speedTestDisksButton.Size = new System.Drawing.Size(201, 23);
-            this.speedTestDisksButton.TabIndex = 60;
-            this.speedTestDisksButton.Text = "Speed Test Disks = OFF";
-            this.toolTip.SetToolTip(this.speedTestDisksButton, "Starts the service monitoring");
-            this.speedTestDisksButton.UseVisualStyleBackColor = true;
-            this.speedTestDisksButton.Click += new System.EventHandler(this.SpeedTestDisksButton_Click);
             // 
             // Main
             // 
