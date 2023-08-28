@@ -88,6 +88,7 @@
             this.cancelButton = new System.Windows.Forms.Button();
             this.AllBackupDisksGroupBox = new System.Windows.Forms.GroupBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.speedTestDisksButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.hoursNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minutesNumericUpDown)).BeginInit();
             this.pushoverGroupBox.SuspendLayout();
@@ -736,11 +737,23 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Connected Backup disk";
             // 
+            // speedTestDisksButton
+            // 
+            this.speedTestDisksButton.Location = new System.Drawing.Point(819, 157);
+            this.speedTestDisksButton.Name = "speedTestDisksButton";
+            this.speedTestDisksButton.Size = new System.Drawing.Size(201, 23);
+            this.speedTestDisksButton.TabIndex = 60;
+            this.speedTestDisksButton.Text = "Speed Test Disks = OFF";
+            this.toolTip.SetToolTip(this.speedTestDisksButton, "Starts the service monitoring");
+            this.speedTestDisksButton.UseVisualStyleBackColor = true;
+            this.speedTestDisksButton.Click += new System.EventHandler(this.SpeedTestDisksButton_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1309, 336);
+            this.Controls.Add(this.speedTestDisksButton);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.AllBackupDisksGroupBox);
             this.Controls.Add(this.cancelButton);
@@ -849,6 +862,7 @@
         private System.Windows.Forms.CheckBox pushoverHighCheckBox;
         private System.Windows.Forms.CheckBox pushoverNormalCheckBox;
         private System.Windows.Forms.CheckBox pushoverLowCheckBox;
+        private System.Windows.Forms.Button speedTestDisksButton;
     }
 }
 

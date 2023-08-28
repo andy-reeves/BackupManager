@@ -104,6 +104,7 @@ namespace BackupManager
             UpdateSendingPushoverButton();
             UpdateMonitoringButton();
             UpdateScheduledBackupButton();
+            UpdateSpeedTestDisksButton();
 
             if (mediaBackup.Config.MonitoringONOFF)
             {
@@ -2096,6 +2097,11 @@ namespace BackupManager
             monitoringButton.Text = mediaBackup.Config.MonitoringONOFF == true ? "Monitoring = ON" : "Monitoring = OFF";
         }
 
+        private void UpdateSpeedTestDisksButton()
+        {
+            speedTestDisksButton.Text = mediaBackup.Config.SpeedTestONOFF == true ? "Speed Test Disks = ON" : "Speed Test Disks = OFF";
+        }
+
         private void UpdateScheduledBackupButton()
         {
             scheduledBackupTimerButton.Text = mediaBackup.Config.ScheduledBackupONOFF == true ? "Backup = ON" : "Backup = OFF";
@@ -2119,6 +2125,12 @@ namespace BackupManager
         private void PushoverEmergencyCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             mediaBackup.Config.PushoverSendEmergencyONOFF = pushoverEmergencyCheckBox.Checked;
+        }
+
+        private void SpeedTestDisksButton_Click(object sender, EventArgs e)
+        {
+            mediaBackup.Config.SpeedTestONOFF = !mediaBackup.Config.SpeedTestONOFF;
+            UpdateSpeedTestDisksButton();
         }
     }
 }
