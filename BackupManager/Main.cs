@@ -108,15 +108,7 @@ namespace BackupManager
 #endif
             }
 
-            BackupDisk currentDisk = mediaBackup.GetBackupDisk(backupDiskTextBox.Text);
-
-            if (currentDisk != null)
-            {
-                currentDisk.Update(mediaBackup.BackupFiles);
-                currentBackupDiskTextBox.Text = currentDisk.Name;
-                backupDiskCapacityTextBox.Text = currentDisk.CapacityFormatted;
-                backupDiskAvailableTextBox.Text = currentDisk.FreeFormatted;
-            }
+            UpdateCurrentBackupDiskInfo(mediaBackup.GetBackupDisk(backupDiskTextBox.Text));
 
             if (mediaBackup.Config.ScheduledBackupRunOnStartup)
             {
@@ -133,6 +125,22 @@ namespace BackupManager
         #endregion
 
         #region Methods
+
+        private bool UpdateCurrentBackupDiskInfo(BackupDisk disk)
+        {
+            bool returnValue = false;
+
+            if (disk != null)
+            {
+                returnValue = disk.Update(mediaBackup.BackupFiles);
+
+                currentBackupDiskTextBox.Invoke(x => x.Text = disk.Name);
+                backupDiskCapacityTextBox.Invoke(x => x.Text = disk.CapacityFormatted);
+                backupDiskAvailableTextBox.Invoke(x => x.Text = disk.FreeFormatted);
+
+            }
+            return returnValue;
+        }
 
         private void CheckConnectedBackupDiskButton_Click(object sender, EventArgs e)
         {
@@ -325,7 +333,8 @@ namespace BackupManager
 
             disk.UpdateDiskChecked();
 
-            bool result = disk.Update(mediaBackup.BackupFiles);
+            //bool result = disk.Update(mediaBackup.BackupFiles);
+            bool result = UpdateCurrentBackupDiskInfo(disk);
             if (!result)
             {
                 Utils.LogWithPushover(BackupAction.BackupFiles,
@@ -416,11 +425,9 @@ namespace BackupManager
                 WaitForNewDisk(nextDiskMessage);
             } while (disk == null);
 
-            currentBackupDiskTextBox.Invoke(x => x.Text = disk.Name);
-            backupDiskCapacityTextBox.Invoke(x => x.Text = disk.CapacityFormatted);
-            backupDiskAvailableTextBox.Invoke(x => x.Text = disk.FreeFormatted);
+            UpdateCurrentBackupDiskInfo(disk);
 
-            return disk.Update(mediaBackup.BackupFiles) ? disk : null;
+            return disk;
         }
 
         private void CopyFiles(bool showCompletedMessage)
@@ -612,7 +619,9 @@ namespace BackupManager
                 }
             }
 
-            result = disk.Update(mediaBackup.BackupFiles);
+            // result = disk.Update(mediaBackup.BackupFiles);
+            result = UpdateCurrentBackupDiskInfo(disk);
+
             if (!result)
             {
                 Utils.LogWithPushover(BackupAction.BackupFiles,
@@ -837,8 +846,6 @@ namespace BackupManager
                     c.Invoke(x => x.Enabled = false);
                 }
             }
-
-
 
             cancelButton.Invoke(x => x.Enabled = true);
             testPushoverEmergencyButton.Invoke(x => x.Enabled = true);
