@@ -96,6 +96,10 @@
             this.label7 = new System.Windows.Forms.Label();
             this.backupDiskAvailableTextBox = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
+            this.notOnABackupDiskTextBox = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.totalFilesTextBox = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
             this.pushoverGroupBox.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.listFilesInMasterFolderGroupBox.SuspendLayout();
@@ -736,7 +740,7 @@
             this.groupBox4.Controls.Add(this.updateMasterFilesButton);
             this.groupBox4.Controls.Add(this.speedTestButton);
             this.groupBox4.Controls.Add(this.recalculateAllHashesButton);
-            this.groupBox4.Location = new System.Drawing.Point(29, 141);
+            this.groupBox4.Location = new System.Drawing.Point(29, 130);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(217, 110);
             this.groupBox4.TabIndex = 70;
@@ -794,11 +798,49 @@
             this.label8.TabIndex = 75;
             this.label8.Text = "Available";
             // 
+            // notOnABackupDiskTextBox
+            // 
+            this.notOnABackupDiskTextBox.Location = new System.Drawing.Point(140, 285);
+            this.notOnABackupDiskTextBox.Name = "notOnABackupDiskTextBox";
+            this.notOnABackupDiskTextBox.ReadOnly = true;
+            this.notOnABackupDiskTextBox.Size = new System.Drawing.Size(106, 20);
+            this.notOnABackupDiskTextBox.TabIndex = 80;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(23, 287);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(109, 13);
+            this.label9.TabIndex = 79;
+            this.label9.Text = "Not on a backup disk";
+            // 
+            // totalFilesTextBox
+            // 
+            this.totalFilesTextBox.Location = new System.Drawing.Point(140, 257);
+            this.totalFilesTextBox.Name = "totalFilesTextBox";
+            this.totalFilesTextBox.ReadOnly = true;
+            this.totalFilesTextBox.Size = new System.Drawing.Size(106, 20);
+            this.totalFilesTextBox.TabIndex = 78;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(80, 259);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(52, 13);
+            this.label10.TabIndex = 77;
+            this.label10.Text = "Total files";
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1309, 336);
+            this.Controls.Add(this.notOnABackupDiskTextBox);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.totalFilesTextBox);
+            this.Controls.Add(this.label10);
             this.Controls.Add(this.backupDiskAvailableTextBox);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.backupDiskCapacityTextBox);
@@ -916,6 +958,10 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox backupDiskAvailableTextBox;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox notOnABackupDiskTextBox;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox totalFilesTextBox;
+        private System.Windows.Forms.Label label10;
     }
 }
 

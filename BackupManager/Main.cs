@@ -39,6 +39,11 @@ namespace BackupManager
 
         #region Constructors and Destructors
 
+        private void UpdateMediaFilesCountDisplay()
+        {
+            totalFilesTextBox.Invoke(x => x.Text = mediaBackup.BackupFiles.Count().ToString("N0"));
+            notOnABackupDiskTextBox.Invoke(x => x.Text = mediaBackup.GetBackupFilesWithDiskEmpty().Count().ToString("N0"));
+        }
         public Main()
         {
             InitializeComponent();
@@ -58,6 +63,8 @@ namespace BackupManager
             string localMediaXml = Path.Combine(Application.StartupPath, "MediaBackup.xml");
 
             mediaBackup = MediaBackup.Load(File.Exists(localMediaXml) ? localMediaXml : mediaBackupXml);
+
+            UpdateMediaFilesCountDisplay();
 
             Utils.Config = mediaBackup.Config;
 
@@ -208,6 +215,7 @@ namespace BackupManager
             {
                 fileName.ClearDiskChecked();
             }
+            UpdateMediaFilesCountDisplay();
 
             UpdateStatusLabel($"Scanning {folderToCheck}");
 
@@ -344,6 +352,8 @@ namespace BackupManager
                 return null;
             }
 
+            UpdateMediaFilesCountDisplay();
+
             mediaBackup.Save();
             UpdateStatusLabel($"Saved.");
 
@@ -478,6 +488,8 @@ namespace BackupManager
                 {
                     fileCounter++;
                     UpdateStatusLabel("Copying", Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
+
+                    UpdateMediaFilesCountDisplay();
 
                     if (string.IsNullOrEmpty(backupFile.IndexFolder))
                     {
@@ -1153,6 +1165,7 @@ namespace BackupManager
                                 }
 
                                 mediaBackup.EnsureFile(file, masterFolder, indexFolder);
+                                UpdateMediaFilesCountDisplay();
                             }
                         }
                     }
