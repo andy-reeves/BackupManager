@@ -100,6 +100,8 @@
             this.label9 = new System.Windows.Forms.Label();
             this.totalFilesTextBox = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
+            this.notOnABackupDiskSizeTextBox1 = new System.Windows.Forms.TextBox();
+            this.totalFilesSizeTextBox = new System.Windows.Forms.TextBox();
             this.pushoverGroupBox.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.listFilesInMasterFolderGroupBox.SuspendLayout();
@@ -800,16 +802,16 @@
             // 
             // notOnABackupDiskTextBox
             // 
-            this.notOnABackupDiskTextBox.Location = new System.Drawing.Point(140, 285);
+            this.notOnABackupDiskTextBox.Location = new System.Drawing.Point(111, 285);
             this.notOnABackupDiskTextBox.Name = "notOnABackupDiskTextBox";
             this.notOnABackupDiskTextBox.ReadOnly = true;
-            this.notOnABackupDiskTextBox.Size = new System.Drawing.Size(106, 20);
+            this.notOnABackupDiskTextBox.Size = new System.Drawing.Size(67, 20);
             this.notOnABackupDiskTextBox.TabIndex = 80;
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(23, 287);
+            this.label9.Location = new System.Drawing.Point(2, 287);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(109, 13);
             this.label9.TabIndex = 79;
@@ -817,26 +819,44 @@
             // 
             // totalFilesTextBox
             // 
-            this.totalFilesTextBox.Location = new System.Drawing.Point(140, 257);
+            this.totalFilesTextBox.Location = new System.Drawing.Point(111, 257);
             this.totalFilesTextBox.Name = "totalFilesTextBox";
             this.totalFilesTextBox.ReadOnly = true;
-            this.totalFilesTextBox.Size = new System.Drawing.Size(106, 20);
+            this.totalFilesTextBox.Size = new System.Drawing.Size(67, 20);
             this.totalFilesTextBox.TabIndex = 78;
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(80, 259);
+            this.label10.Location = new System.Drawing.Point(59, 259);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(52, 13);
             this.label10.TabIndex = 77;
             this.label10.Text = "Total files";
+            // 
+            // notOnABackupDiskSizeTextBox1
+            // 
+            this.notOnABackupDiskSizeTextBox1.Location = new System.Drawing.Point(184, 285);
+            this.notOnABackupDiskSizeTextBox1.Name = "notOnABackupDiskSizeTextBox1";
+            this.notOnABackupDiskSizeTextBox1.ReadOnly = true;
+            this.notOnABackupDiskSizeTextBox1.Size = new System.Drawing.Size(62, 20);
+            this.notOnABackupDiskSizeTextBox1.TabIndex = 82;
+            // 
+            // totalFilesSizeTextBox
+            // 
+            this.totalFilesSizeTextBox.Location = new System.Drawing.Point(184, 257);
+            this.totalFilesSizeTextBox.Name = "totalFilesSizeTextBox";
+            this.totalFilesSizeTextBox.ReadOnly = true;
+            this.totalFilesSizeTextBox.Size = new System.Drawing.Size(62, 20);
+            this.totalFilesSizeTextBox.TabIndex = 81;
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1309, 336);
+            this.Controls.Add(this.notOnABackupDiskSizeTextBox1);
+            this.Controls.Add(this.totalFilesSizeTextBox);
             this.Controls.Add(this.notOnABackupDiskTextBox);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.totalFilesTextBox);
@@ -962,6 +982,8 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TextBox totalFilesTextBox;
         private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.TextBox notOnABackupDiskSizeTextBox1;
+        private System.Windows.Forms.TextBox totalFilesSizeTextBox;
     }
 }
 

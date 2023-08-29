@@ -1331,16 +1331,16 @@ namespace BackupManager
         internal static string FormatSize(long value)
         {
             return value > BytesInOneTerabyte
-                ? $"{(decimal)value / BytesInOneTerabyte:0.#}TB"
+                ? $"{(decimal)value / BytesInOneTerabyte:0.#} TB"
                 : value > 25 * (long)BytesInOneGigabyte
-                ? $"{value / BytesInOneGigabyte:n0}GB"
+                ? $"{value / BytesInOneGigabyte:n0} GB"
                 : value > BytesInOneGigabyte
-                ? $"{(decimal)value / BytesInOneGigabyte:0.#}GB"
+                ? $"{(decimal)value / BytesInOneGigabyte:0.#} GB"
                 : value > (25 * BytesInOneMegabyte)
-                ? $"{value / BytesInOneMegabyte:n0}MB"
+                ? $"{value / BytesInOneMegabyte:n0} MB"
                 : value > BytesInOneMegabyte
-                ? $"{(decimal)value / BytesInOneMegabyte:0.#}MB"
-                : value > BytesInOneKilobyte ? $"{value / BytesInOneKilobyte:n0}KB" : $"{value:n0}bytes";
+                ? $"{(decimal)value / BytesInOneMegabyte:0.#} MB"
+                : value > BytesInOneKilobyte ? $"{value / BytesInOneKilobyte:n0} KB" : $"{value:n0} bytes";
         }
 
         /// <summary>
@@ -1405,16 +1405,16 @@ namespace BackupManager
             // else return bytes/s
 
             return value > BytesInOneTerabyte
-                ? $"{(decimal)value / BytesInOneTerabyte:0.#}TB/s"
+                ? $"{(decimal)value / BytesInOneTerabyte:0.#} TB/s"
                 : value > (25 * (long)BytesInOneGigabyte)
-                ? $"{value / BytesInOneGigabyte:n0}GB/s"
+                ? $"{value / BytesInOneGigabyte:n0} GB/s"
                 : value > BytesInOneGigabyte
-                ? $"{(decimal)value / BytesInOneGigabyte:0.#}GB/s"
+                ? $"{(decimal)value / BytesInOneGigabyte:0.#} GB/s"
                 : value > (25 * BytesInOneMegabyte)
-                ? $"{value / BytesInOneMegabyte:n0}MB/s"
+                ? $"{value / BytesInOneMegabyte:n0} MB/s"
                 : value > BytesInOneMegabyte
-                ? $"{(decimal)value / BytesInOneMegabyte:0.#}MB/s"
-                : value > BytesInOneKilobyte ? $"{value / BytesInOneKilobyte:n0}KB/s" : $"{value:n0}bytes/s";
+                ? $"{(decimal)value / BytesInOneMegabyte:0.#} MB/s"
+                : value > BytesInOneKilobyte ? $"{value / BytesInOneKilobyte:n0} KB/s" : $"{value:n0} bytes/s";
         }
 
         /// <summary>

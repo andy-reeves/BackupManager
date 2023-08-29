@@ -42,7 +42,10 @@ namespace BackupManager
         private void UpdateMediaFilesCountDisplay()
         {
             totalFilesTextBox.Invoke(x => x.Text = mediaBackup.BackupFiles.Count().ToString("N0"));
+            totalFilesSizeTextBox.Invoke(x => x.Text = Utils.FormatSize(mediaBackup.BackupFiles.Sum(y => y.Length)));
+
             notOnABackupDiskTextBox.Invoke(x => x.Text = mediaBackup.GetBackupFilesWithDiskEmpty().Count().ToString("N0"));
+            notOnABackupDiskSizeTextBox1.Invoke(x => x.Text = Utils.FormatSize(mediaBackup.GetBackupFilesWithDiskEmpty().Sum(y => y.Length)));
         }
         public Main()
         {
@@ -53,7 +56,7 @@ namespace BackupManager
                          Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"),
                          "myListener"));
 
-            // backupDiskTextBox.Text = "\\\\nas1\\assets1\\_Test\\BackupDisks\\backup 1001 parent";
+            backupDiskTextBox.Text = "\\\\nas1\\assets1\\_Test\\BackupDisks\\backup 1001 parent";
 #else
             backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
 #endif
@@ -229,6 +232,8 @@ namespace BackupManager
                 string backupFileIndexFolderRelativePath = backupFileFullPath.Substring(folderToCheck.Length + 1);
 
                 UpdateStatusLabel($"Scanning {folderToCheck}", i + 1);
+
+                UpdateMediaFilesCountDisplay();
 
                 if (mediaBackup.Contains(backupFileIndexFolderRelativePath))
                 {
@@ -2061,6 +2066,8 @@ namespace BackupManager
             cancelButton.Enabled = false;
             longRunningActionExecutingRightNow = false;
             ResetAllControls();
+
+            UpdateMediaFilesCountDisplay();
 
             tokenSource = null;
         }
