@@ -48,7 +48,7 @@ namespace BackupManager
                          Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"),
                          "myListener"));
 
-            backupDiskTextBox.Text = "\\\\nas1\\assets1\\_Test\\BackupDisks\\backup 1001 parent";
+            // backupDiskTextBox.Text = "\\\\nas1\\assets1\\_Test\\BackupDisks\\backup 1001 parent";
 #else
             backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
 #endif
@@ -101,7 +101,7 @@ namespace BackupManager
 
             if (mediaBackup.Config.MonitoringONOFF)
             {
-                // we swtich it off and force the button to be clicked to tuen it on again
+                // we swtich it off and force the button to be clicked to turn it on again
                 mediaBackup.Config.MonitoringONOFF = false;
 #if !DEBUG
                 MonitoringButton_Click(null, null);
@@ -112,7 +112,10 @@ namespace BackupManager
 
             if (currentDisk != null)
             {
+                currentDisk.Update(mediaBackup.BackupFiles);
                 currentBackupDiskTextBox.Text = currentDisk.Name;
+                backupDiskCapacityTextBox.Text = currentDisk.CapacityFormatted;
+                backupDiskAvailableTextBox.Text = currentDisk.FreeFormatted;
             }
 
             if (mediaBackup.Config.ScheduledBackupRunOnStartup)
@@ -414,6 +417,8 @@ namespace BackupManager
             } while (disk == null);
 
             currentBackupDiskTextBox.Invoke(x => x.Text = disk.Name);
+            backupDiskCapacityTextBox.Invoke(x => x.Text = disk.CapacityFormatted);
+            backupDiskAvailableTextBox.Invoke(x => x.Text = disk.FreeFormatted);
 
             return disk.Update(mediaBackup.BackupFiles) ? disk : null;
         }
