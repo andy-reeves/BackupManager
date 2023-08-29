@@ -60,8 +60,6 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.testPushoverEmergencyButton = new System.Windows.Forms.Button();
-            this.hoursNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.minutesNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.runOnTimerStartCheckBox = new System.Windows.Forms.CheckBox();
@@ -89,8 +87,7 @@
             this.cancelButton = new System.Windows.Forms.Button();
             this.AllBackupDisksGroupBox = new System.Windows.Forms.GroupBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            ((System.ComponentModel.ISupportInitialize)(this.hoursNumericUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.minutesNumericUpDown)).BeginInit();
+            this.scheduledDateTimePicker = new System.Windows.Forms.DateTimePicker();
             this.pushoverGroupBox.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.listFilesGroupBox.SuspendLayout();
@@ -413,54 +410,6 @@
             this.testPushoverEmergencyButton.UseVisualStyleBackColor = true;
             this.testPushoverEmergencyButton.Click += new System.EventHandler(this.TestPushoverEmergencyButton_Click);
             // 
-            // hoursNumericUpDown
-            // 
-            this.hoursNumericUpDown.Location = new System.Drawing.Point(32, 29);
-            this.hoursNumericUpDown.Maximum = new decimal(new int[] {
-            24,
-            0,
-            0,
-            0});
-            this.hoursNumericUpDown.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            -2147483648});
-            this.hoursNumericUpDown.Name = "hoursNumericUpDown";
-            this.hoursNumericUpDown.Size = new System.Drawing.Size(36, 20);
-            this.hoursNumericUpDown.TabIndex = 45;
-            this.hoursNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.hoursNumericUpDown.Value = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.hoursNumericUpDown.ValueChanged += new System.EventHandler(this.HoursNumericUpDown_ValueChanged);
-            // 
-            // minutesNumericUpDown
-            // 
-            this.minutesNumericUpDown.Location = new System.Drawing.Point(76, 29);
-            this.minutesNumericUpDown.Maximum = new decimal(new int[] {
-            60,
-            0,
-            0,
-            0});
-            this.minutesNumericUpDown.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            -2147483648});
-            this.minutesNumericUpDown.Name = "minutesNumericUpDown";
-            this.minutesNumericUpDown.Size = new System.Drawing.Size(36, 20);
-            this.minutesNumericUpDown.TabIndex = 46;
-            this.minutesNumericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.minutesNumericUpDown.Value = new decimal(new int[] {
-            30,
-            0,
-            0,
-            0});
-            this.minutesNumericUpDown.ValueChanged += new System.EventHandler(this.MinutesNumericUpDown_ValueChanged);
-            // 
             // label2
             // 
             this.label2.AutoSize = true;
@@ -644,9 +593,8 @@
             // 
             // groupBox5
             // 
+            this.groupBox5.Controls.Add(this.scheduledDateTimePicker);
             this.groupBox5.Controls.Add(this.scheduledBackupTimerButton);
-            this.groupBox5.Controls.Add(this.hoursNumericUpDown);
-            this.groupBox5.Controls.Add(this.minutesNumericUpDown);
             this.groupBox5.Controls.Add(this.label2);
             this.groupBox5.Controls.Add(this.label5);
             this.groupBox5.Controls.Add(this.runOnTimerStartCheckBox);
@@ -748,6 +696,16 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Connected Backup disk";
             // 
+            // scheduledDateTimePicker
+            // 
+            this.scheduledDateTimePicker.CustomFormat = "HH:mm";
+            this.scheduledDateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.scheduledDateTimePicker.Location = new System.Drawing.Point(38, 28);
+            this.scheduledDateTimePicker.Name = "scheduledDateTimePicker";
+            this.scheduledDateTimePicker.ShowUpDown = true;
+            this.scheduledDateTimePicker.Size = new System.Drawing.Size(57, 20);
+            this.scheduledDateTimePicker.TabIndex = 69;
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -782,8 +740,6 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Backup Manager";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Main_FormClosed);
-            ((System.ComponentModel.ISupportInitialize)(this.hoursNumericUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.minutesNumericUpDown)).EndInit();
             this.pushoverGroupBox.ResumeLayout(false);
             this.pushoverGroupBox.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -829,8 +785,6 @@
         private System.Windows.Forms.Button testPushoverEmergencyButton;
         private System.Windows.Forms.Button reportBackupDiskStatusButton;
         private System.Windows.Forms.Button speedTestButton;
-        private System.Windows.Forms.NumericUpDown hoursNumericUpDown;
-        private System.Windows.Forms.NumericUpDown minutesNumericUpDown;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.CheckBox runOnTimerStartCheckBox;
@@ -863,6 +817,7 @@
         private System.Windows.Forms.CheckBox pushoverNormalCheckBox;
         private System.Windows.Forms.CheckBox pushoverLowCheckBox;
         private System.Windows.Forms.Button speedTestDisksButton;
+        private System.Windows.Forms.DateTimePicker scheduledDateTimePicker;
     }
 }
 

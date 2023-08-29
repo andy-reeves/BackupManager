@@ -92,11 +92,7 @@ namespace BackupManager
 
             monitoringAction = () => { MonitorServices(); };
 
-            DateTime startTime = DateTime.Parse(mediaBackup.Config.ScheduledBackupStartTime);
-
-            hoursNumericUpDown.Value = startTime.Hour;
-
-            minutesNumericUpDown.Value = startTime.Minute;
+            scheduledDateTimePicker.Value = DateTime.Parse(mediaBackup.Config.ScheduledBackupStartTime);
 
             UpdateSendingPushoverButton();
             UpdateMonitoringButton();
@@ -1240,7 +1236,7 @@ namespace BackupManager
 
         private void SetupDailyTrigger()
         {
-            trigger = new DailyTrigger(Convert.ToInt32(hoursNumericUpDown.Value), Convert.ToInt32(minutesNumericUpDown.Value));
+            trigger = new DailyTrigger(Convert.ToInt32(scheduledDateTimePicker.Value.Hour), Convert.ToInt32(scheduledDateTimePicker.Value.Minute));
             trigger.OnTimeTriggered += scheduledBackupAction;
         }
 
@@ -1718,44 +1714,6 @@ namespace BackupManager
 
             ResetAllControls();
             longRunningActionExecutingRightNow = false;
-        }
-
-        private void MinutesNumericUpDown_ValueChanged(object sender, EventArgs e)
-        {
-            Utils.Trace("minutesNumericUpDown_ValueChanged enter");
-
-            if (minutesNumericUpDown.Value == 60)
-            {
-                minutesNumericUpDown.Value = 0;
-            }
-
-            if (minutesNumericUpDown.Value == -1)
-            {
-                minutesNumericUpDown.Value = 59;
-            }
-
-            mediaBackup.Config.ScheduledBackupStartTime = $"{hoursNumericUpDown.Value}:{minutesNumericUpDown.Value}";
-
-            Utils.Trace("minutesNumericUpDown_ValueChanged exit");
-        }
-
-        private void HoursNumericUpDown_ValueChanged(object sender, EventArgs e)
-        {
-            Utils.Trace("hoursNumericUpDown_ValueChanged enter");
-
-            if (hoursNumericUpDown.Value == 24)
-            {
-                hoursNumericUpDown.Value = 0;
-            }
-
-            if (hoursNumericUpDown.Value == -1)
-            {
-                hoursNumericUpDown.Value = 23;
-            }
-
-            mediaBackup.Config.ScheduledBackupStartTime = $"{hoursNumericUpDown.Value}:{minutesNumericUpDown.Value}";
-
-            Utils.Trace("hoursNumericUpDown_ValueChanged exit");
         }
 
         private void MonitoringButton_Click(object sender, EventArgs e)
