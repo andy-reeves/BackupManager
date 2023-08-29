@@ -108,17 +108,21 @@ namespace BackupManager
 #endif
             }
 
+            BackupDisk currentDisk = mediaBackup.GetBackupDisk(backupDiskTextBox.Text);
+
+            if (currentDisk != null)
+            {
+                currentBackupDiskTextBox.Text = currentDisk.Name;
+            }
+
             if (mediaBackup.Config.ScheduledBackupRunOnStartup)
             {
-#if !DEBUG   
+#if !DEBUG
                 TaskWrapper(ScheduledBackupAsync);
 #endif
             }
 
-            if (mediaBackup.Config.ScheduledBackupONOFF)
-            {
-                SetupDailyTrigger();
-            }
+            SetupDailyTrigger(mediaBackup.Config.ScheduledBackupONOFF);
 
             Utils.Trace("Main exit");
         }
@@ -405,16 +409,13 @@ namespace BackupManager
             BackupDisk disk;
             do
             {
-                // check the backupDisks has an entry for this disk
                 disk = mediaBackup.GetBackupDisk(backupDiskTextBox.Text);
-                if (disk != null)
-                {
-                    return disk.Update(mediaBackup.BackupFiles) ? disk : null;
-                }
                 WaitForNewDisk(nextDiskMessage);
             } while (disk == null);
 
-            return disk;
+            currentBackupDiskTextBox.Invoke(x => x.Text = disk.Name);
+
+            return disk.Update(mediaBackup.BackupFiles) ? disk : null;
         }
 
         private void CopyFiles(bool showCompletedMessage)
@@ -832,6 +833,8 @@ namespace BackupManager
                 }
             }
 
+
+
             cancelButton.Invoke(x => x.Enabled = true);
             testPushoverEmergencyButton.Invoke(x => x.Enabled = true);
             testPushoverHighButton.Invoke(x => x.Enabled = true);
@@ -845,9 +848,17 @@ namespace BackupManager
             listMoviesWithMultipleFilesButton.Invoke(x => x.Enabled = true);
             processesGroupBox.Invoke(x => x.Enabled = true);
             pushoverGroupBox.Invoke(x => x.Enabled = true);
+            listFilesGroupBox.Invoke(x => x.Enabled = true);
+            allBackupDisksGroupBox.Invoke(x => x.Enabled = true);
+            reportBackupDiskStatusButton.Invoke(x => x.Enabled = true);
+            listFilesInMasterFolderGroupBox.Invoke(x => x.Enabled = true);
+
+            checkAllBackupDisksButton.Invoke(x => x.Enabled = false);
+            checkDeleteAndCopyAllBackupDisksButton.Invoke(x => x.Enabled = false);
+
             monitoringButton.Invoke(x => x.Enabled = true);
             reportBackupDiskStatusButton.Invoke(x => x.Enabled = true);
-            listFilesGroupBox.Invoke(x => x.Enabled = true);
+            listFilesInMasterFolderGroupBox.Invoke(x => x.Enabled = true);
             listFilesOnBackupDiskGroupBox.Invoke(x => x.Enabled = true);
 
             if (ct.IsCancellationRequested) { ct.ThrowIfCancellationRequested(); }
@@ -867,6 +878,9 @@ namespace BackupManager
             {
                 c.Invoke(x => x.Enabled = true);
             }
+
+            checkAllBackupDisksButton.Invoke(x => x.Enabled = true);
+            checkDeleteAndCopyAllBackupDisksButton.Invoke(x => x.Enabled = true);
 
             cancelButton.Invoke(x => x.Enabled = false);
             statusStrip.Invoke(x => toolStripProgressBar.Visible = false);
@@ -1213,10 +1227,6 @@ namespace BackupManager
             if (mediaBackup.Config.ScheduledBackupONOFF)
             {
                 mediaBackup.Config.ScheduledBackupONOFF = false;
-                if (trigger != null)
-                {
-                    trigger.OnTimeTriggered -= scheduledBackupAction;
-                }
             }
             else
             {
@@ -1226,18 +1236,28 @@ namespace BackupManager
                 {
                     TaskWrapper(ScheduledBackupAsync);
                 }
-
-                SetupDailyTrigger();
             }
+
+            SetupDailyTrigger(mediaBackup.Config.ScheduledBackupONOFF);
 
             UpdateScheduledBackupButton();
             Utils.Trace("timerButton_Click exit");
         }
 
-        private void SetupDailyTrigger()
+        private void SetupDailyTrigger(bool addTrigger)
         {
-            trigger = new DailyTrigger(Convert.ToInt32(scheduledDateTimePicker.Value.Hour), Convert.ToInt32(scheduledDateTimePicker.Value.Minute));
-            trigger.OnTimeTriggered += scheduledBackupAction;
+            if (addTrigger)
+            {
+                trigger = new DailyTrigger(Convert.ToInt32(scheduledDateTimePicker.Value.Hour), Convert.ToInt32(scheduledDateTimePicker.Value.Minute));
+                trigger.OnTimeTriggered += scheduledBackupAction;
+            }
+            else
+            {
+                if (trigger != null)
+                {
+                    trigger.OnTimeTriggered -= scheduledBackupAction;
+                }
+            }
         }
 
         private void ScheduledBackupAsync()
@@ -1724,9 +1744,7 @@ namespace BackupManager
             {
                 monitoringTimer.Stop();
                 Utils.LogWithPushover(BackupAction.Monitoring, "Stopped");
-
                 mediaBackup.Config.MonitoringONOFF = false;
-                UpdateMonitoringButton();
             }
             else
             {
@@ -1736,10 +1754,9 @@ namespace BackupManager
 
                 monitoringTimer.Interval = mediaBackup.Config.MonitoringInterval * 1000;
                 monitoringTimer.Start();
-
                 mediaBackup.Config.MonitoringONOFF = true;
-                UpdateMonitoringButton();
             }
+            UpdateMonitoringButton();
 
             Utils.Trace("monitoringButton_Click exit");
         }
