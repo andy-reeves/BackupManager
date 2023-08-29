@@ -115,8 +115,13 @@ namespace BackupManager
             if (mediaBackup.Config.ScheduledBackupRunOnStartup)
             {
 #if !DEBUG   
-                BackupTimerButton_Click(null, null);
+                TaskWrapper(ScheduledBackupAsync);
 #endif
+            }
+
+            if (mediaBackup.Config.ScheduledBackupONOFF)
+            {
+                SetupDailyTrigger();
             }
 
             Utils.Trace("Main exit");
@@ -1226,12 +1231,17 @@ namespace BackupManager
                     TaskWrapper(ScheduledBackupAsync);
                 }
 
-                trigger = new DailyTrigger(Convert.ToInt32(hoursNumericUpDown.Value), Convert.ToInt32(minutesNumericUpDown.Value));
-                trigger.OnTimeTriggered += scheduledBackupAction;
+                SetupDailyTrigger();
             }
 
             UpdateScheduledBackupButton();
             Utils.Trace("timerButton_Click exit");
+        }
+
+        private void SetupDailyTrigger()
+        {
+            trigger = new DailyTrigger(Convert.ToInt32(hoursNumericUpDown.Value), Convert.ToInt32(minutesNumericUpDown.Value));
+            trigger.OnTimeTriggered += scheduledBackupAction;
         }
 
         private void ScheduledBackupAsync()
