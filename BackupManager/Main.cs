@@ -418,12 +418,13 @@ namespace BackupManager
         {
             string nextDiskMessage = "Please insert the next backup disk now";
 
-            BackupDisk disk;
-            do
+            BackupDisk disk = mediaBackup.GetBackupDisk(backupDiskTextBox.Text);
+
+            while (disk == null)
             {
-                disk = mediaBackup.GetBackupDisk(backupDiskTextBox.Text);
                 WaitForNewDisk(nextDiskMessage);
-            } while (disk == null);
+                disk = mediaBackup.GetBackupDisk(backupDiskTextBox.Text);
+            }
 
             UpdateCurrentBackupDiskInfo(disk);
 
