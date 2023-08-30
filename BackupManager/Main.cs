@@ -636,6 +636,7 @@ namespace BackupManager
                 }
 
                 _ = UpdateCurrentBackupDiskInfo(disk);
+                UpdateEstimatedFinish();
             }
 
             UpdateMediaFilesCountDisplay();
@@ -672,6 +673,11 @@ namespace BackupManager
             }
 
             Utils.Trace("CopyFiles exit");
+        }
+
+        private void UpdateEstimatedFinish()
+        {
+            estimatedFinishTimeTextBox.Invoke(x => x.Text = string.Empty);
         }
 
         private void UpdateEstimatedFinish(DateTime estimatedFinishDateTime)
