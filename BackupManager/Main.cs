@@ -45,7 +45,7 @@ namespace BackupManager
             totalFilesSizeTextBox.Invoke(x => x.Text = Utils.FormatSize(mediaBackup.BackupFiles.Sum(y => y.Length)));
 
             notOnABackupDiskTextBox.Invoke(x => x.Text = mediaBackup.GetBackupFilesWithDiskEmpty().Count().ToString("N0"));
-            notOnABackupDiskSizeTextBox1.Invoke(x => x.Text = Utils.FormatSize(mediaBackup.GetBackupFilesWithDiskEmpty().Sum(y => y.Length)));
+            notOnABackupDiskSizeTextBox.Invoke(x => x.Text = Utils.FormatSize(mediaBackup.GetBackupFilesWithDiskEmpty().Sum(y => y.Length)));
         }
         public Main()
         {
@@ -637,6 +637,8 @@ namespace BackupManager
 
                 _ = UpdateCurrentBackupDiskInfo(disk);
             }
+
+            UpdateMediaFilesCountDisplay();
 
             result = UpdateCurrentBackupDiskInfo(disk);
 
