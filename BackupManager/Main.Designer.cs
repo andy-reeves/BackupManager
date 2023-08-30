@@ -102,6 +102,8 @@
             this.label10 = new System.Windows.Forms.Label();
             this.notOnABackupDiskSizeTextBox1 = new System.Windows.Forms.TextBox();
             this.totalFilesSizeTextBox = new System.Windows.Forms.TextBox();
+            this.estimatedFinishTimeTextBox = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
             this.pushoverGroupBox.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.listFilesInMasterFolderGroupBox.SuspendLayout();
@@ -850,11 +852,30 @@
             this.totalFilesSizeTextBox.Size = new System.Drawing.Size(62, 20);
             this.totalFilesSizeTextBox.TabIndex = 81;
             // 
+            // estimatedFinishTimeTextBox
+            // 
+            this.estimatedFinishTimeTextBox.Location = new System.Drawing.Point(417, 285);
+            this.estimatedFinishTimeTextBox.Name = "estimatedFinishTimeTextBox";
+            this.estimatedFinishTimeTextBox.ReadOnly = true;
+            this.estimatedFinishTimeTextBox.Size = new System.Drawing.Size(67, 20);
+            this.estimatedFinishTimeTextBox.TabIndex = 84;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(308, 287);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(102, 13);
+            this.label11.TabIndex = 83;
+            this.label11.Text = "Estimated finish time";
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1309, 336);
+            this.Controls.Add(this.estimatedFinishTimeTextBox);
+            this.Controls.Add(this.label11);
             this.Controls.Add(this.notOnABackupDiskSizeTextBox1);
             this.Controls.Add(this.totalFilesSizeTextBox);
             this.Controls.Add(this.notOnABackupDiskTextBox);
@@ -984,6 +1005,8 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox notOnABackupDiskSizeTextBox1;
         private System.Windows.Forms.TextBox totalFilesSizeTextBox;
+        private System.Windows.Forms.TextBox estimatedFinishTimeTextBox;
+        private System.Windows.Forms.Label label11;
     }
 }
 

@@ -147,7 +147,6 @@ namespace BackupManager
                 currentBackupDiskTextBox.Invoke(x => x.Text = disk.Name);
                 backupDiskCapacityTextBox.Invoke(x => x.Text = disk.CapacityFormatted);
                 backupDiskAvailableTextBox.Invoke(x => x.Text = disk.FreeFormatted);
-
             }
             return returnValue;
         }
@@ -562,14 +561,14 @@ namespace BackupManager
                                 {
                                     formattedEndDateTime = ". Estimated finish by tomorrow at " + estimatedFinishDateTime.ToString("HH:mm");
                                 }
+
+                                UpdateEstimatedFinish(estimatedFinishDateTime);
                             }
 
                             Utils.LogWithPushover(BackupAction.BackupFiles,
                                                   $"[{fileCounter}/{totalFileCount}] {Utils.FormatSize(availableSpace)} free.\nCopying {sourceFileName} at {sourceFileSize}{formattedEndDateTime}");
 
                             Utils.FileDelete(destinationFileNameTemp);
-
-                            //DateTime startTime = DateTime.UtcNow;
 
                             Stopwatch sw = Stopwatch.StartNew();
                             _ = Utils.FileCopyNewProcess(sourceFileName, destinationFileNameTemp);
@@ -635,9 +634,10 @@ namespace BackupManager
                                           PushoverPriority.Emergency,
                                           $"IOException during copy. Skipping file. Details {ex}");
                 }
+
+                _ = UpdateCurrentBackupDiskInfo(disk);
             }
 
-            // result = disk.Update(mediaBackup.BackupFiles);
             result = UpdateCurrentBackupDiskInfo(disk);
 
             if (!result)
@@ -670,6 +670,11 @@ namespace BackupManager
             }
 
             Utils.Trace("CopyFiles exit");
+        }
+
+        private void UpdateEstimatedFinish(DateTime estimatedFinishDateTime)
+        {
+            estimatedFinishTimeTextBox.Invoke(x => x.Text = estimatedFinishDateTime.ToString("HH:mm"));
         }
 
         private void ListFilesNotOnBackupDiskButton_Click(object sender, EventArgs e)
