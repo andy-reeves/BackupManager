@@ -1726,7 +1726,12 @@ namespace BackupManager
             long actualUsuableSpace = 0;
             foreach (BackupDisk disk in disks)
             {
-                DateTime d = DateTime.Parse(disk.Checked);
+                string lastChecked = string.Empty;
+                if (disk.Checked.HasValue())
+                {
+                    DateTime d = DateTime.Parse(disk.Checked);
+                    lastChecked = d.ToString("dd-MMM-yy");
+                }
 
                 long totalSizeOfFilesFromSumOfFiles = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name).Sum(p => p.Length);
 
@@ -1737,7 +1742,7 @@ namespace BackupManager
 
                 string percentString = percentageDiff < 1 && percentageDiff > -1 ? "-" : $"{percentageDiff}%";
 
-                Utils.Log($"{disk.Name,-10}   Last check: {d:dd-MMM-yy}   Capacity: {disk.CapacityFormatted,-7}   Used: {Utils.FormatSize(sizeFromDiskAnalysis),-8}   Free: {disk.FreeFormatted,-7}   Sum of files: {Utils.FormatSize(totalSizeOfFilesFromSumOfFiles),-7}   Diff: {Utils.FormatSize(difference),-6} {percentString}");
+                Utils.Log($"{disk.Name,-11}   Last check: {lastChecked,-9}   Capacity: {disk.CapacityFormatted,-7}   Used: {Utils.FormatSize(sizeFromDiskAnalysis),-8}   Free: {disk.FreeFormatted,-7}   Sum of files: {Utils.FormatSize(totalSizeOfFilesFromSumOfFiles),-7}   Diff: {Utils.FormatSize(difference),-9} {percentString}");
 
                 if (disk.Free > Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave))
                 {
