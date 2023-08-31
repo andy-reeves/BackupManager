@@ -48,6 +48,7 @@
             this.checkDeleteAndCopyAllBackupDisksButton = new System.Windows.Forms.Button();
             this.checkAllBackupDisksButton = new System.Windows.Forms.Button();
             this.speedTestDisksButton = new System.Windows.Forms.Button();
+            this.refreshBackupDiskButton = new System.Windows.Forms.Button();
             this.scheduledBackupTimerButton = new System.Windows.Forms.Button();
             this.listFilesOnBackupDiskButton = new System.Windows.Forms.Button();
             this.listFilesInMasterFolderButton = new System.Windows.Forms.Button();
@@ -155,7 +156,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(62, 15);
+            this.label1.Location = new System.Drawing.Point(24, 15);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(70, 13);
             this.label1.TabIndex = 6;
@@ -163,9 +164,9 @@
             // 
             // backupDiskTextBox
             // 
-            this.backupDiskTextBox.Location = new System.Drawing.Point(140, 12);
+            this.backupDiskTextBox.Location = new System.Drawing.Point(102, 12);
             this.backupDiskTextBox.Name = "backupDiskTextBox";
-            this.backupDiskTextBox.Size = new System.Drawing.Size(106, 20);
+            this.backupDiskTextBox.Size = new System.Drawing.Size(135, 20);
             this.backupDiskTextBox.TabIndex = 7;
             this.backupDiskTextBox.Text = "d:\\";
             // 
@@ -307,6 +308,18 @@
             this.toolTip.SetToolTip(this.speedTestDisksButton, "Starts the service monitoring");
             this.speedTestDisksButton.UseVisualStyleBackColor = true;
             this.speedTestDisksButton.Click += new System.EventHandler(this.SpeedTestDisksButton_Click);
+            // 
+            // refreshBackupDiskButton
+            // 
+            this.refreshBackupDiskButton.Location = new System.Drawing.Point(182, 80);
+            this.refreshBackupDiskButton.Name = "refreshBackupDiskButton";
+            this.refreshBackupDiskButton.Size = new System.Drawing.Size(55, 23);
+            this.refreshBackupDiskButton.TabIndex = 45;
+            this.refreshBackupDiskButton.Text = "Refresh";
+            this.toolTip.SetToolTip(this.refreshBackupDiskButton, "Resets the entire collection of backup files. Extra entries are removed if no lon" +
+        "ger there.");
+            this.refreshBackupDiskButton.UseVisualStyleBackColor = true;
+            this.refreshBackupDiskButton.Click += new System.EventHandler(this.RefreshBackupDiskButton_Click);
             // 
             // scheduledBackupTimerButton
             // 
@@ -754,32 +767,32 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(30, 41);
+            this.label6.Location = new System.Drawing.Point(28, 42);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(102, 13);
+            this.label6.Size = new System.Drawing.Size(66, 13);
             this.label6.TabIndex = 71;
-            this.label6.Text = "Current backup disk";
+            this.label6.Text = "Backup disk";
             // 
             // currentBackupDiskTextBox
             // 
-            this.currentBackupDiskTextBox.Location = new System.Drawing.Point(140, 39);
+            this.currentBackupDiskTextBox.Location = new System.Drawing.Point(102, 39);
             this.currentBackupDiskTextBox.Name = "currentBackupDiskTextBox";
             this.currentBackupDiskTextBox.ReadOnly = true;
-            this.currentBackupDiskTextBox.Size = new System.Drawing.Size(106, 20);
+            this.currentBackupDiskTextBox.Size = new System.Drawing.Size(135, 20);
             this.currentBackupDiskTextBox.TabIndex = 72;
             // 
             // backupDiskCapacityTextBox
             // 
-            this.backupDiskCapacityTextBox.Location = new System.Drawing.Point(140, 67);
+            this.backupDiskCapacityTextBox.Location = new System.Drawing.Point(102, 66);
             this.backupDiskCapacityTextBox.Name = "backupDiskCapacityTextBox";
             this.backupDiskCapacityTextBox.ReadOnly = true;
-            this.backupDiskCapacityTextBox.Size = new System.Drawing.Size(106, 20);
+            this.backupDiskCapacityTextBox.Size = new System.Drawing.Size(62, 20);
             this.backupDiskCapacityTextBox.TabIndex = 74;
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(84, 69);
+            this.label7.Location = new System.Drawing.Point(46, 69);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(48, 13);
             this.label7.TabIndex = 73;
@@ -787,16 +800,16 @@
             // 
             // backupDiskAvailableTextBox
             // 
-            this.backupDiskAvailableTextBox.Location = new System.Drawing.Point(140, 95);
+            this.backupDiskAvailableTextBox.Location = new System.Drawing.Point(102, 95);
             this.backupDiskAvailableTextBox.Name = "backupDiskAvailableTextBox";
             this.backupDiskAvailableTextBox.ReadOnly = true;
-            this.backupDiskAvailableTextBox.Size = new System.Drawing.Size(106, 20);
+            this.backupDiskAvailableTextBox.Size = new System.Drawing.Size(62, 20);
             this.backupDiskAvailableTextBox.TabIndex = 76;
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(82, 97);
+            this.label8.Location = new System.Drawing.Point(44, 97);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(50, 13);
             this.label8.TabIndex = 75;
@@ -874,9 +887,11 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1309, 336);
+            this.Controls.Add(this.refreshBackupDiskButton);
             this.Controls.Add(this.estimatedFinishTimeTextBox);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.notOnABackupDiskSizeTextBox);
+            this.Controls.Add(this.backupDiskCapacityTextBox);
             this.Controls.Add(this.totalFilesSizeTextBox);
             this.Controls.Add(this.notOnABackupDiskTextBox);
             this.Controls.Add(this.label9);
@@ -884,7 +899,6 @@
             this.Controls.Add(this.label10);
             this.Controls.Add(this.backupDiskAvailableTextBox);
             this.Controls.Add(this.label8);
-            this.Controls.Add(this.backupDiskCapacityTextBox);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.currentBackupDiskTextBox);
             this.Controls.Add(this.label6);
@@ -1007,6 +1021,7 @@
         private System.Windows.Forms.TextBox totalFilesSizeTextBox;
         private System.Windows.Forms.TextBox estimatedFinishTimeTextBox;
         private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Button refreshBackupDiskButton;
     }
 }
 

@@ -424,6 +424,18 @@ namespace BackupManager
             Utils.Trace("CopyFilesToBackupDiskButton_Click exit");
         }
 
+        private void SetupBackupDiskAsync()
+        {
+            longRunningActionExecutingRightNow = true;
+            DisableControlsForAsyncTasks();
+
+            BackupDisk disk = SetupBackupDisk();
+            _ = UpdateCurrentBackupDiskInfo(disk);
+
+            ResetAllControls();
+            longRunningActionExecutingRightNow = false;
+        }
+
         /// <summary>
         /// Waits for a valid backup disk to be inserted
         /// </summary>
@@ -2153,6 +2165,15 @@ namespace BackupManager
         {
             mediaBackup.Config.SpeedTestONOFF = !mediaBackup.Config.SpeedTestONOFF;
             UpdateSpeedTestDisksButton();
+        }
+
+        private void RefreshBackupDiskButton_Click(object sender, EventArgs e)
+        {
+            Utils.Trace("RefreshBackupDiskButton_Click enter");
+
+            TaskWrapper(SetupBackupDiskAsync);
+
+            Utils.Trace("RefreshBackupDiskButton_Click exit");
         }
     }
 }
