@@ -75,7 +75,6 @@ namespace BackupManager.Entities
 
             mediaBackup.mediaBackupPath = path;
 
-            bool toSave = false;
 
             foreach (BackupFile backupFile in mediaBackup.BackupFiles)
             {
@@ -90,9 +89,7 @@ namespace BackupManager.Entities
                 }
                 else
                 {
-                    // flag it for removal
-                    backupFile.Flag = true;
-                    toSave = true;
+                    throw new ApplicationException($"Duplicate hash foound on load of {backupFile.FileName}");
                 }
 
                 if (!backupFile.DiskChecked.HasValue())
@@ -101,12 +98,7 @@ namespace BackupManager.Entities
                 }
             }
 
-            if (toSave)
-            {
-                mediaBackup.RemoveFilesWithFlag(true, false);
-                mediaBackup.Save();
-                mediaBackup.ClearFlags();
-            }
+
 
             Config config = Config.Load(Path.Combine(new FileInfo(path).DirectoryName, "Config.xml"));
 
@@ -364,12 +356,30 @@ namespace BackupManager.Entities
         }
 
         /// <summary>
-        /// Get BackupFiles where Disk is null or Empty
+        /// Get BackupFiles that are marked as Deleted
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<BackupFile> GetBackupFilesMarkedAsDeleted()
+        {
+            return BackupFiles.Where(p => p.Deleted).OrderBy(q => q.BackupDiskNumber);
+        }
+
+        /// <summary>
+        /// Get BackupFiles that are NOT marked as Deleted
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<BackupFile> GetBackupFilesNotMarkedAsDeleted()
+        {
+            return BackupFiles.Where(p => !p.Deleted);
+        }
+
+        /// <summary>
+        /// Get BackupFiles where Disk is null or Empty (doesn not included MarkedAsDeleted files)
         /// </summary>
         /// <returns></returns>
         public IEnumerable<BackupFile> GetBackupFilesWithDiskEmpty()
         {
-            return BackupFiles.Where(p => string.IsNullOrEmpty(p.Disk));
+            return BackupFiles.Where(p => string.IsNullOrEmpty(p.Disk) && !p.Deleted);
         }
 
         /// <summary>
@@ -444,6 +454,24 @@ namespace BackupManager.Entities
             }
 
             return oldestFile;
+        }
+
+        /// <summary>
+        /// Removes a file from our collection
+        /// </summary>
+        /// <param name="backupFile"></param>
+        internal void RemoveFile(BackupFile backupFile)
+        {
+
+            if (indexFolderAndRelativePath.Contains(backupFile.Hash))
+            {
+                indexFolderAndRelativePath.Remove(backupFile.Hash);
+            }
+
+            if (BackupFiles.Contains(backupFile))
+            {
+                _ = BackupFiles.Remove(backupFile);
+            }
         }
     }
 }

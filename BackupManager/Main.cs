@@ -41,11 +41,14 @@ namespace BackupManager
 
         private void UpdateMediaFilesCountDisplay()
         {
-            totalFilesTextBox.Invoke(x => x.Text = mediaBackup.BackupFiles.Count().ToString("N0"));
-            totalFilesSizeTextBox.Invoke(x => x.Text = Utils.FormatSize(mediaBackup.BackupFiles.Sum(y => y.Length)));
+            totalFilesTextBox.Invoke(x => x.Text = mediaBackup.GetBackupFilesNotMarkedAsDeleted().Count().ToString("N0"));
+            totalFilesSizeTextBox.Invoke(x => x.Text = Utils.FormatSize(mediaBackup.GetBackupFilesNotMarkedAsDeleted().Sum(y => y.Length)));
 
             notOnABackupDiskTextBox.Invoke(x => x.Text = mediaBackup.GetBackupFilesWithDiskEmpty().Count().ToString("N0"));
             notOnABackupDiskSizeTextBox.Invoke(x => x.Text = Utils.FormatSize(mediaBackup.GetBackupFilesWithDiskEmpty().Sum(y => y.Length)));
+
+            filesMarkedAsDeletedTextBox.Invoke(x => x.Text = mediaBackup.GetBackupFilesMarkedAsDeleted().Count().ToString("N0"));
+            filesMarkedAsDeletedSizeTextBox.Invoke(x => x.Text = Utils.FormatSize(mediaBackup.GetBackupFilesMarkedAsDeleted().Sum(y => y.Length)));
         }
         public Main()
         {
@@ -269,6 +272,12 @@ namespace BackupManager
                             continue;
                         }
                     }
+                    else
+                    {
+                        // Backup doesn't exist in the master folder anymore
+                        // so delete it
+                        mediaBackup.RemoveFile(backupFile);
+                    }
                 }
                 else
                 {
@@ -452,7 +461,7 @@ namespace BackupManager
                 disk = mediaBackup.GetBackupDisk(backupDiskTextBox.Text);
             }
 
-            UpdateCurrentBackupDiskInfo(disk);
+            _ = UpdateCurrentBackupDiskInfo(disk);
 
             return disk;
         }
@@ -1069,7 +1078,6 @@ namespace BackupManager
 
             Utils.LogWithPushover(BackupAction.ScanFolders, "Started");
             UpdateStatusLabel("Started");
-            UpdateProgressBar(1);
 
             foreach (string masterFolder in mediaBackup.Config.MasterFolders)
             {
@@ -1220,10 +1228,22 @@ namespace BackupManager
                 }
             }
 
+            // instead of removing files that are no longer found in Master Folders we now flag them as deleted so we can report them later
+            foreach (BackupFile backupFile in mediaBackup.BackupFiles.Where(backupFile => backupFile.Flag == false))
+            {
+                if (backupFile.DiskChecked.HasValue())
+                {
+                    backupFile.Deleted = true;
+                    backupFile.Flag = true;
+                }
+            }
+
             mediaBackup.RemoveFilesWithFlag(false, true);
+
             mediaBackup.Save();
 
             UpdateStatusLabel($"Saved.");
+            UpdateMediaFilesCountDisplay();
 
             int totalFiles = mediaBackup.BackupFiles.Count();
 
@@ -2179,6 +2199,24 @@ namespace BackupManager
             TaskWrapper(SetupBackupDiskAsync);
 
             Utils.Trace("RefreshBackupDiskButton_Click exit");
+        }
+
+        private void ListFilesMarkedAsDeletedButton_Click(object sender, EventArgs e)
+        {
+            Utils.Trace("ListFilesMarkedAsDeletedButton_Click enter");
+
+            IEnumerable<BackupFile> files = mediaBackup.GetBackupFilesMarkedAsDeleted();
+
+            Utils.Log("Listing files marked as deleted");
+
+            foreach (BackupFile file in files)
+            {
+                Utils.Log($"{file.FullPath} at {Utils.FormatSize(file.Length)} on {file.Disk}");
+            }
+
+            Utils.Log($"{files.Count()} files at {Utils.FormatSize(files.Sum(p => p.Length))}");
+
+            Utils.Trace("ListFilesMarkedAsDeletedButton_Click exit");
         }
     }
 }

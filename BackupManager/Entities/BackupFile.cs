@@ -33,6 +33,11 @@ namespace BackupManager.Entities
         public string IndexFolder;
 
         /// <summary>
+        /// This gets set to true for files no longer found in a Master Folder.
+        /// </summary>
+        public bool Deleted;
+
+        /// <summary>
         /// The MD5 hash of the file contents.
         /// </summary>
         [XmlElement("Hash")]

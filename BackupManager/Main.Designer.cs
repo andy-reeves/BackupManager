@@ -49,6 +49,7 @@
             this.checkAllBackupDisksButton = new System.Windows.Forms.Button();
             this.speedTestDisksButton = new System.Windows.Forms.Button();
             this.refreshBackupDiskButton = new System.Windows.Forms.Button();
+            this.listFilesMarkedAsDeletedButton = new System.Windows.Forms.Button();
             this.scheduledBackupTimerButton = new System.Windows.Forms.Button();
             this.listFilesOnBackupDiskButton = new System.Windows.Forms.Button();
             this.listFilesInMasterFolderButton = new System.Windows.Forms.Button();
@@ -105,6 +106,9 @@
             this.totalFilesSizeTextBox = new System.Windows.Forms.TextBox();
             this.estimatedFinishTimeTextBox = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
+            this.filesMarkedAsDeletedSizeTextBox = new System.Windows.Forms.TextBox();
+            this.filesMarkedAsDeletedTextBox = new System.Windows.Forms.TextBox();
+            this.label12 = new System.Windows.Forms.Label();
             this.pushoverGroupBox.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.listFilesInMasterFolderGroupBox.SuspendLayout();
@@ -320,6 +324,18 @@
         "ger there.");
             this.refreshBackupDiskButton.UseVisualStyleBackColor = true;
             this.refreshBackupDiskButton.Click += new System.EventHandler(this.RefreshBackupDiskButton_Click);
+            // 
+            // listFilesMarkedAsDeletedButton
+            // 
+            this.listFilesMarkedAsDeletedButton.Location = new System.Drawing.Point(6, 133);
+            this.listFilesMarkedAsDeletedButton.Name = "listFilesMarkedAsDeletedButton";
+            this.listFilesMarkedAsDeletedButton.Size = new System.Drawing.Size(199, 23);
+            this.listFilesMarkedAsDeletedButton.TabIndex = 62;
+            this.listFilesMarkedAsDeletedButton.Text = "... marked as Deleted";
+            this.toolTip.SetToolTip(this.listFilesMarkedAsDeletedButton, "Outputs files that are marked as Deleted because they cannot be found in the mast" +
+        "er folder anymore");
+            this.listFilesMarkedAsDeletedButton.UseVisualStyleBackColor = true;
+            this.listFilesMarkedAsDeletedButton.Click += new System.EventHandler(this.ListFilesMarkedAsDeletedButton_Click);
             // 
             // scheduledBackupTimerButton
             // 
@@ -594,7 +610,7 @@
             // 
             this.listFilesInMasterFolderGroupBox.Controls.Add(this.listFilesInMasterFolderButton);
             this.listFilesInMasterFolderGroupBox.Controls.Add(this.listMasterFoldersComboBox);
-            this.listFilesInMasterFolderGroupBox.Location = new System.Drawing.Point(290, 162);
+            this.listFilesInMasterFolderGroupBox.Location = new System.Drawing.Point(290, 202);
             this.listFilesInMasterFolderGroupBox.Name = "listFilesInMasterFolderGroupBox";
             this.listFilesInMasterFolderGroupBox.Size = new System.Drawing.Size(217, 49);
             this.listFilesInMasterFolderGroupBox.TabIndex = 56;
@@ -605,7 +621,7 @@
             // 
             this.listFilesOnBackupDiskGroupBox.Controls.Add(this.listFilesComboBox);
             this.listFilesOnBackupDiskGroupBox.Controls.Add(this.listFilesOnBackupDiskButton);
-            this.listFilesOnBackupDiskGroupBox.Location = new System.Drawing.Point(290, 222);
+            this.listFilesOnBackupDiskGroupBox.Location = new System.Drawing.Point(290, 256);
             this.listFilesOnBackupDiskGroupBox.Name = "listFilesOnBackupDiskGroupBox";
             this.listFilesOnBackupDiskGroupBox.Size = new System.Drawing.Size(217, 54);
             this.listFilesOnBackupDiskGroupBox.TabIndex = 57;
@@ -684,7 +700,7 @@
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel,
             this.toolStripProgressBar});
-            this.statusStrip.Location = new System.Drawing.Point(0, 314);
+            this.statusStrip.Location = new System.Drawing.Point(0, 345);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(1309, 22);
             this.statusStrip.TabIndex = 62;
@@ -719,7 +735,7 @@
             this.allBackupDisksGroupBox.Controls.Add(this.checkAllBackupDisksButton);
             this.allBackupDisksGroupBox.Controls.Add(this.checkDeleteAndCopyAllBackupDisksButton);
             this.allBackupDisksGroupBox.Controls.Add(this.reportBackupDiskStatusButton);
-            this.allBackupDisksGroupBox.Location = new System.Drawing.Point(551, 183);
+            this.allBackupDisksGroupBox.Location = new System.Drawing.Point(551, 155);
             this.allBackupDisksGroupBox.Name = "allBackupDisksGroupBox";
             this.allBackupDisksGroupBox.Size = new System.Drawing.Size(217, 108);
             this.allBackupDisksGroupBox.TabIndex = 67;
@@ -741,13 +757,14 @@
             // 
             // listFilesGroupBox
             // 
+            this.listFilesGroupBox.Controls.Add(this.listFilesMarkedAsDeletedButton);
             this.listFilesGroupBox.Controls.Add(this.listFilesNotOnBackupDiskButton);
             this.listFilesGroupBox.Controls.Add(this.listFilesNotCheckedInXXButton);
             this.listFilesGroupBox.Controls.Add(this.listMoviesWithMultipleFilesButton);
             this.listFilesGroupBox.Controls.Add(this.listFilesWithDuplicateContentHashcodesButton);
             this.listFilesGroupBox.Location = new System.Drawing.Point(290, 9);
             this.listFilesGroupBox.Name = "listFilesGroupBox";
-            this.listFilesGroupBox.Size = new System.Drawing.Size(217, 138);
+            this.listFilesGroupBox.Size = new System.Drawing.Size(217, 166);
             this.listFilesGroupBox.TabIndex = 69;
             this.listFilesGroupBox.TabStop = false;
             this.listFilesGroupBox.Text = "List files";
@@ -826,7 +843,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(2, 287);
+            this.label9.Location = new System.Drawing.Point(1, 287);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(109, 13);
             this.label9.TabIndex = 79;
@@ -843,7 +860,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(59, 259);
+            this.label10.Location = new System.Drawing.Point(58, 259);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(52, 13);
             this.label10.TabIndex = 77;
@@ -867,7 +884,7 @@
             // 
             // estimatedFinishTimeTextBox
             // 
-            this.estimatedFinishTimeTextBox.Location = new System.Drawing.Point(417, 285);
+            this.estimatedFinishTimeTextBox.Location = new System.Drawing.Point(676, 284);
             this.estimatedFinishTimeTextBox.Name = "estimatedFinishTimeTextBox";
             this.estimatedFinishTimeTextBox.ReadOnly = true;
             this.estimatedFinishTimeTextBox.Size = new System.Drawing.Size(67, 20);
@@ -876,17 +893,45 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(308, 287);
+            this.label11.Location = new System.Drawing.Point(575, 286);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(102, 13);
             this.label11.TabIndex = 83;
             this.label11.Text = "Estimated finish time";
             // 
+            // filesMarkedAsDeletedSizeTextBox
+            // 
+            this.filesMarkedAsDeletedSizeTextBox.Location = new System.Drawing.Point(184, 313);
+            this.filesMarkedAsDeletedSizeTextBox.Name = "filesMarkedAsDeletedSizeTextBox";
+            this.filesMarkedAsDeletedSizeTextBox.ReadOnly = true;
+            this.filesMarkedAsDeletedSizeTextBox.Size = new System.Drawing.Size(62, 20);
+            this.filesMarkedAsDeletedSizeTextBox.TabIndex = 87;
+            // 
+            // filesMarkedAsDeletedTextBox
+            // 
+            this.filesMarkedAsDeletedTextBox.Location = new System.Drawing.Point(111, 313);
+            this.filesMarkedAsDeletedTextBox.Name = "filesMarkedAsDeletedTextBox";
+            this.filesMarkedAsDeletedTextBox.ReadOnly = true;
+            this.filesMarkedAsDeletedTextBox.Size = new System.Drawing.Size(67, 20);
+            this.filesMarkedAsDeletedTextBox.TabIndex = 86;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(13, 315);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(97, 13);
+            this.label12.TabIndex = 85;
+            this.label12.Text = "Marked as Deleted";
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1309, 336);
+            this.ClientSize = new System.Drawing.Size(1309, 367);
+            this.Controls.Add(this.filesMarkedAsDeletedSizeTextBox);
+            this.Controls.Add(this.filesMarkedAsDeletedTextBox);
+            this.Controls.Add(this.label12);
             this.Controls.Add(this.refreshBackupDiskButton);
             this.Controls.Add(this.estimatedFinishTimeTextBox);
             this.Controls.Add(this.label11);
@@ -1022,6 +1067,10 @@
         private System.Windows.Forms.TextBox estimatedFinishTimeTextBox;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Button refreshBackupDiskButton;
+        private System.Windows.Forms.Button listFilesMarkedAsDeletedButton;
+        private System.Windows.Forms.TextBox filesMarkedAsDeletedSizeTextBox;
+        private System.Windows.Forms.TextBox filesMarkedAsDeletedTextBox;
+        private System.Windows.Forms.Label label12;
     }
 }
 
