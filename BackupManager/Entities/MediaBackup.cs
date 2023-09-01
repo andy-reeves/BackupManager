@@ -336,13 +336,15 @@ namespace BackupManager.Entities
         }
 
         /// <summary>
-        /// Get BackupFiles on the diskName provided.
+        /// Get BackupFiles on the diskName provided. Optionally including files marked as Deleted
         /// </summary>
         /// <param name="diskName"></param>
         /// <returns></returns>
-        public IEnumerable<BackupFile> GetBackupFilesOnBackupDisk(string diskName)
+        public IEnumerable<BackupFile> GetBackupFilesOnBackupDisk(string diskName, bool includeDeletedFiles)
         {
-            return BackupFiles.Where(p => p.Disk.Equals(diskName, StringComparison.CurrentCultureIgnoreCase));
+            return includeDeletedFiles
+                ? BackupFiles.Where(p => p.Disk.Equals(diskName, StringComparison.CurrentCultureIgnoreCase))
+                : BackupFiles.Where(p => p.Disk.Equals(diskName, StringComparison.CurrentCultureIgnoreCase) && !p.Deleted);
         }
 
         /// <summary>

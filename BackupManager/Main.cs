@@ -214,7 +214,7 @@ namespace BackupManager
                                       $"{disk.FreeFormatted} free is very low. Prepare new backup disk");
             }
 
-            IEnumerable<BackupFile> filesToReset = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name);
+            IEnumerable<BackupFile> filesToReset = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, true);
 
             foreach (BackupFile fileName in filesToReset)
             {
@@ -1424,7 +1424,7 @@ namespace BackupManager
             {
                 string selectedItemText = listFilesComboBox.SelectedItem.ToString();
 
-                IEnumerable<BackupFile> files = mediaBackup.GetBackupFilesOnBackupDisk(selectedItemText);
+                IEnumerable<BackupFile> files = mediaBackup.GetBackupFilesOnBackupDisk(selectedItemText, true);
 
                 Utils.Log($"Listing files on backup disk {selectedItemText}");
 
@@ -1753,7 +1753,10 @@ namespace BackupManager
                     lastChecked = d.ToString("dd-MMM-yy");
                 }
 
-                long totalSizeOfFilesFromSumOfFiles = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name).Sum(p => p.Length);
+                long totalSizeOfFilesFromSumOfFiles = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, false).Sum(p => p.Length);
+
+                int deletedCount = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, true).Count() -
+                                   mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, false).Count();
 
                 long sizeFromDiskAnalysis = disk.Capacity - disk.Free;
 
@@ -1762,7 +1765,7 @@ namespace BackupManager
 
                 string percentString = percentageDiff < 1 && percentageDiff > -1 ? "-" : $"{percentageDiff}%";
 
-                Utils.Log($"{disk.Name,-11}   Last check: {lastChecked,-9}   Capacity: {disk.CapacityFormatted,-7}   Used: {Utils.FormatSize(sizeFromDiskAnalysis),-8}   Free: {disk.FreeFormatted,-7}   Sum of files: {Utils.FormatSize(totalSizeOfFilesFromSumOfFiles),-7}   Diff: {Utils.FormatSize(difference),-9} {percentString}");
+                Utils.Log($"{disk.Name,-11}   Last check: {lastChecked,-9}   Capacity: {disk.CapacityFormatted,-7}   Used: {Utils.FormatSize(sizeFromDiskAnalysis),-8}   Free: {disk.FreeFormatted,-7}   Sum of files: {Utils.FormatSize(totalSizeOfFilesFromSumOfFiles),-7}  DeletedFiles: {deletedCount,-6} Diff: {Utils.FormatSize(difference),-9} {percentString}");
 
                 if (disk.Free > Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave))
                 {
