@@ -1229,13 +1229,10 @@ namespace BackupManager
             }
 
             // instead of removing files that are no longer found in Master Folders we now flag them as deleted so we can report them later
-            foreach (BackupFile backupFile in mediaBackup.BackupFiles.Where(backupFile => backupFile.Flag == false))
+            foreach (BackupFile backupFile in mediaBackup.BackupFiles.Where(backupFile => !backupFile.Flag && backupFile.DiskChecked.HasValue()))
             {
-                if (backupFile.DiskChecked.HasValue())
-                {
-                    backupFile.Deleted = true;
-                    backupFile.Flag = true;
-                }
+                backupFile.Deleted = true;
+                backupFile.Flag = true;
             }
 
             mediaBackup.RemoveFilesWithFlag(false, true);

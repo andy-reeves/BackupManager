@@ -33,7 +33,6 @@ namespace BackupManager.Entities
         // The only guaranteed unique value is the indexfiolder and relative path
         // We dont want to delete the file off backup and then copy it again so we try a rename
         // as long as the file has the same indexfolder and relative path we can find it and rename it
-
         // This happened with The Porridge movie which is also stored as a Tv episode.
         private readonly Hashtable indexFolderAndRelativePath = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
 
@@ -75,7 +74,6 @@ namespace BackupManager.Entities
 
             mediaBackup.mediaBackupPath = path;
 
-
             foreach (BackupFile backupFile in mediaBackup.BackupFiles)
             {
                 if (backupFile.ContentsHash == Utils.ZeroByteHash)
@@ -89,16 +87,14 @@ namespace BackupManager.Entities
                 }
                 else
                 {
-                    throw new ApplicationException($"Duplicate hash foound on load of {backupFile.FileName}");
+                    throw new ApplicationException($"Duplicate hash found on load of {backupFile.FileName}");
                 }
 
-                if (!backupFile.DiskChecked.HasValue())
+                if (!backupFile.DiskChecked.HasValue() || !backupFile.Disk.HasValue())
                 {
                     backupFile.ClearDiskChecked();
                 }
             }
-
-
 
             Config config = Config.Load(Path.Combine(new FileInfo(path).DirectoryName, "Config.xml"));
 
@@ -133,7 +129,7 @@ namespace BackupManager.Entities
         /// <param name="value">The contents Hashcode of the file to find.</param>
         /// <param name="masterFolder"></param>
         /// <param name="indexFolder"></param>
-        /// <returns>Null if it wasn't found or null if more thsn 1</returns>
+        /// <returns>Null if it wasn't found or null if more than 1</returns>
         public BackupFile GetBackupFileFromContentsHashcode(string value)
         {
             Utils.Trace("GetBackupFileFromContentsHashcode enter");
@@ -237,11 +233,7 @@ namespace BackupManager.Entities
                         }
                     }
 
-                    // Check the file length
-                    if (backupFile.Length == 0)
-                    {
-                        backupFile.UpdateFileLength();
-                    }
+                    backupFile.UpdateFileLength();
                 }
 
                 // Now we check the fullpath has not changed the UPPER or lowerase anywhere
@@ -348,7 +340,7 @@ namespace BackupManager.Entities
         }
 
         /// <summary>
-        /// Get BackupFiles that are in the MasterFolder provided
+        /// Get BackupFiles that are in the MasterFolder provided. Includes files marked as Deleted
         /// </summary>
         /// <param name="masterFolder"></param>
         /// <returns></returns>
@@ -376,7 +368,7 @@ namespace BackupManager.Entities
         }
 
         /// <summary>
-        /// Get BackupFiles where Disk is null or Empty (doesn not included MarkedAsDeleted files)
+        /// Get BackupFiles where Disk is null or Empty (does not included MarkedAsDeleted files)
         /// </summary>
         /// <returns></returns>
         public IEnumerable<BackupFile> GetBackupFilesWithDiskEmpty()

@@ -28,8 +28,14 @@ namespace BackupManager.Entities
         [XmlElement("Path")]
         public string RelativePath;
 
+        /// <summary>
+        /// The MasterFolder this file is located at. Like \\nas1\assets1
+        /// </summary>
         public string MasterFolder;
 
+        /// <summary>
+        /// The IndexFolder this file is located at. Like _Movies or _TV
+        /// </summary>
         public string IndexFolder;
 
         /// <summary>
@@ -95,7 +101,7 @@ namespace BackupManager.Entities
         /// <param name="backupPath">The path to the current backup disk.</param>
         public string BackupDiskFullPath(string backupPath)
         {
-            // always calculate path in case the MasterFolder, IndexFolder or RelativePath properties have been changed.
+            // always calculate path in case the IndexFolder or RelativePath properties have been changed.
             return Path.Combine(backupPath, IndexFolder, RelativePath);
         }
 
@@ -187,7 +193,7 @@ namespace BackupManager.Entities
         /// <summary>
         /// Updates the DiskChecked with the current date as 'yyyy-MM-dd' and the backup disk provided.
         /// </summary>
-        /// <param name="backupDisk">The disk this file ewas checked on.</param>
+        /// <param name="backupDisk">The disk this file was checked on.</param>
         public void UpdateDiskChecked(string backupDisk)
         {
             if (backupDisk != Disk && Disk.HasValue())
