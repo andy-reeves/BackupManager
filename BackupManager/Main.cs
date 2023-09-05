@@ -1297,19 +1297,7 @@ namespace BackupManager
         {
             Utils.Trace("timerButton_Click enter");
 
-            if (mediaBackup.Config.ScheduledBackupONOFF)
-            {
-                mediaBackup.Config.ScheduledBackupONOFF = false;
-            }
-            else
-            {
-                mediaBackup.Config.ScheduledBackupONOFF = true;
-                // Fire once if CheckBox is ticked
-                if (runOnTimerStartCheckBox.Checked)
-                {
-                    TaskWrapper(ScheduledBackupAsync);
-                }
-            }
+            mediaBackup.Config.ScheduledBackupONOFF = !mediaBackup.Config.ScheduledBackupONOFF;
 
             SetupDailyTrigger(mediaBackup.Config.ScheduledBackupONOFF);
 
@@ -1321,8 +1309,9 @@ namespace BackupManager
         {
             if (addTrigger)
             {
-                trigger = new DailyTrigger(Convert.ToInt32(scheduledDateTimePicker.Value.Hour), Convert.ToInt32(scheduledDateTimePicker.Value.Minute));
+                trigger = new DailyTrigger(scheduledDateTimePicker.Value);
                 trigger.OnTimeTriggered += scheduledBackupAction;
+                UpdateBackupTimer_Tick(null, null);
             }
             else
             {
@@ -1330,7 +1319,10 @@ namespace BackupManager
                 {
                     trigger.OnTimeTriggered -= scheduledBackupAction;
                 }
+                timeToNextRunTextBox.Text = string.Empty;
             }
+
+            updateBackupTimer.Enabled = addTrigger;
         }
 
         private void ScheduledBackupAsync()
@@ -2217,6 +2209,32 @@ namespace BackupManager
             Utils.Log($"{files.Count()} files at {Utils.FormatSize(files.Sum(p => p.Length))}");
 
             Utils.Trace("ListFilesMarkedAsDeletedButton_Click exit");
+        }
+
+        private void ScheduledBackupRunNowButton_Click(object sender, EventArgs e)
+        {
+            Utils.Trace("ScheduledBackupRunNowButton_Click enter");
+
+            TaskWrapper(ScheduledBackupAsync);
+
+            Utils.Trace("ScheduledBackupRunNowButton_Click exit");
+        }
+
+        private void UpdateBackupTimer_Tick(object sender, EventArgs e)
+        {
+            if (trigger == null || !updateBackupTimer.Enabled)
+            {
+                timeToNextRunTextBox.Text = string.Empty;
+            }
+
+            TimeSpan timeLeft = new TimeSpan(24, 0, 0) - new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second) + trigger.TriggerHour;
+
+            if (timeLeft.TotalHours > 24)
+            {
+                timeLeft = timeLeft.Subtract(new TimeSpan(24, 0, 0));
+            }
+
+            timeToNextRunTextBox.Text = timeLeft.ToString("h'h 'mm'm'");
         }
     }
 }

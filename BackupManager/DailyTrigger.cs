@@ -18,7 +18,7 @@ namespace BackupManager
         /// <summary>
         /// Time of day (from 00:00:00) to trigger
         /// </summary>
-        private TimeSpan TriggerHour { get; }
+        public TimeSpan TriggerHour { get; }
 
         /// <summary>
         /// Task cancellation token source to cancel delayed task on disposal
@@ -29,6 +29,8 @@ namespace BackupManager
         /// Reference to the running task
         /// </summary>
         private Task RunningTask { get; set; }
+
+        public DailyTrigger(DateTime startTime) : this(startTime.Hour, startTime.Minute, startTime.Second) { }
 
         /// <summary>
         /// Initiator

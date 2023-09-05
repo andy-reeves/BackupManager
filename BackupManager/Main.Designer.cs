@@ -64,7 +64,6 @@
             this.testPushoverEmergencyButton = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.runOnTimerStartCheckBox = new System.Windows.Forms.CheckBox();
             this.monitoringTimer = new System.Windows.Forms.Timer(this.components);
             this.killProcessesButton = new System.Windows.Forms.Button();
             this.listMasterFoldersComboBox = new System.Windows.Forms.ComboBox();
@@ -80,6 +79,9 @@
             this.listFilesOnBackupDiskGroupBox = new System.Windows.Forms.GroupBox();
             this.listFilesComboBox = new System.Windows.Forms.ComboBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.timeToNextRunTextBox = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.scheduledBackupRunNowButton = new System.Windows.Forms.Button();
             this.scheduledDateTimePicker = new System.Windows.Forms.DateTimePicker();
             this.stopProcessButton = new System.Windows.Forms.Button();
             this.processesComboBox = new System.Windows.Forms.ComboBox();
@@ -109,6 +111,7 @@
             this.filesMarkedAsDeletedSizeTextBox = new System.Windows.Forms.TextBox();
             this.filesMarkedAsDeletedTextBox = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
+            this.updateBackupTimer = new System.Windows.Forms.Timer(this.components);
             this.pushoverGroupBox.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.listFilesInMasterFolderGroupBox.SuspendLayout();
@@ -477,18 +480,6 @@
             this.label5.Text = ":";
             this.label5.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
-            // runOnTimerStartCheckBox
-            // 
-            this.runOnTimerStartCheckBox.AutoSize = true;
-            this.runOnTimerStartCheckBox.Checked = true;
-            this.runOnTimerStartCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.runOnTimerStartCheckBox.Location = new System.Drawing.Point(5, 59);
-            this.runOnTimerStartCheckBox.Name = "runOnTimerStartCheckBox";
-            this.runOnTimerStartCheckBox.Size = new System.Drawing.Size(84, 17);
-            this.runOnTimerStartCheckBox.TabIndex = 49;
-            this.runOnTimerStartCheckBox.Text = "Run on start";
-            this.runOnTimerStartCheckBox.UseVisualStyleBackColor = true;
-            // 
             // monitoringTimer
             // 
             this.monitoringTimer.Interval = 60000;
@@ -640,11 +631,13 @@
             // 
             // groupBox5
             // 
+            this.groupBox5.Controls.Add(this.timeToNextRunTextBox);
+            this.groupBox5.Controls.Add(this.label13);
+            this.groupBox5.Controls.Add(this.scheduledBackupRunNowButton);
             this.groupBox5.Controls.Add(this.scheduledDateTimePicker);
             this.groupBox5.Controls.Add(this.scheduledBackupTimerButton);
             this.groupBox5.Controls.Add(this.label2);
             this.groupBox5.Controls.Add(this.label5);
-            this.groupBox5.Controls.Add(this.runOnTimerStartCheckBox);
             this.groupBox5.Location = new System.Drawing.Point(1066, 155);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(217, 88);
@@ -652,11 +645,38 @@
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Scheduled Backup";
             // 
+            // timeToNextRunTextBox
+            // 
+            this.timeToNextRunTextBox.Location = new System.Drawing.Point(159, 27);
+            this.timeToNextRunTextBox.Name = "timeToNextRunTextBox";
+            this.timeToNextRunTextBox.ReadOnly = true;
+            this.timeToNextRunTextBox.Size = new System.Drawing.Size(51, 20);
+            this.timeToNextRunTextBox.TabIndex = 89;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(95, 31);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(65, 13);
+            this.label13.TabIndex = 88;
+            this.label13.Text = "Time to next";
+            // 
+            // scheduledBackupRunNowButton
+            // 
+            this.scheduledBackupRunNowButton.Location = new System.Drawing.Point(9, 55);
+            this.scheduledBackupRunNowButton.Name = "scheduledBackupRunNowButton";
+            this.scheduledBackupRunNowButton.Size = new System.Drawing.Size(98, 23);
+            this.scheduledBackupRunNowButton.TabIndex = 70;
+            this.scheduledBackupRunNowButton.Text = "Run now";
+            this.scheduledBackupRunNowButton.UseVisualStyleBackColor = true;
+            this.scheduledBackupRunNowButton.Click += new System.EventHandler(this.ScheduledBackupRunNowButton_Click);
+            // 
             // scheduledDateTimePicker
             // 
             this.scheduledDateTimePicker.CustomFormat = "HH:mm";
             this.scheduledDateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.scheduledDateTimePicker.Location = new System.Drawing.Point(38, 28);
+            this.scheduledDateTimePicker.Location = new System.Drawing.Point(31, 28);
             this.scheduledDateTimePicker.Name = "scheduledDateTimePicker";
             this.scheduledDateTimePicker.ShowUpDown = true;
             this.scheduledDateTimePicker.Size = new System.Drawing.Size(57, 20);
@@ -884,7 +904,7 @@
             // 
             // estimatedFinishTimeTextBox
             // 
-            this.estimatedFinishTimeTextBox.Location = new System.Drawing.Point(676, 284);
+            this.estimatedFinishTimeTextBox.Location = new System.Drawing.Point(677, 280);
             this.estimatedFinishTimeTextBox.Name = "estimatedFinishTimeTextBox";
             this.estimatedFinishTimeTextBox.ReadOnly = true;
             this.estimatedFinishTimeTextBox.Size = new System.Drawing.Size(67, 20);
@@ -893,7 +913,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(575, 286);
+            this.label11.Location = new System.Drawing.Point(576, 282);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(102, 13);
             this.label11.TabIndex = 83;
@@ -923,6 +943,11 @@
             this.label12.Size = new System.Drawing.Size(97, 13);
             this.label12.TabIndex = 85;
             this.label12.Text = "Marked as Deleted";
+            // 
+            // updateBackupTimer
+            // 
+            this.updateBackupTimer.Interval = 60000;
+            this.updateBackupTimer.Tick += new System.EventHandler(this.UpdateBackupTimer_Tick);
             // 
             // Main
             // 
@@ -1019,7 +1044,6 @@
         private System.Windows.Forms.Button speedTestButton;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.CheckBox runOnTimerStartCheckBox;
         private System.Windows.Forms.Button monitoringButton;
         private System.Windows.Forms.Timer monitoringTimer;
         private System.Windows.Forms.Button killProcessesButton;
@@ -1071,6 +1095,10 @@
         private System.Windows.Forms.TextBox filesMarkedAsDeletedSizeTextBox;
         private System.Windows.Forms.TextBox filesMarkedAsDeletedTextBox;
         private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Button scheduledBackupRunNowButton;
+        private System.Windows.Forms.TextBox timeToNextRunTextBox;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Timer updateBackupTimer;
     }
 }
 
