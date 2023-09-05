@@ -1683,5 +1683,24 @@ namespace BackupManager
         {
             return Convert.ToInt64(value * BytesInOneGigabyte);
         }
+
+        /// <summary>
+        /// Returns the TimeSpan between the DateTime provided and the target TimeSpan
+        /// </summary>
+        /// <param name="startTime"></param>
+        /// <param name="targetTime"></param>
+        /// <returns></returns>
+        internal static TimeSpan TimeLeft(DateTime startTime, TimeSpan targetTime)
+        {
+            TimeSpan OneDay = new TimeSpan(24, 0, 0);
+            TimeSpan timeLeft = OneDay - new TimeSpan(startTime.Hour, startTime.Minute, startTime.Second) + targetTime;
+
+            if (timeLeft.TotalHours > 24)
+            {
+                timeLeft -= OneDay;
+            }
+
+            return timeLeft;
+        }
     }
 }

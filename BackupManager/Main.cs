@@ -2227,14 +2227,7 @@ namespace BackupManager
                 timeToNextRunTextBox.Text = string.Empty;
             }
 
-            TimeSpan timeLeft = new TimeSpan(24, 0, 0) - new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second) + trigger.TriggerHour;
-
-            if (timeLeft.TotalHours > 24)
-            {
-                timeLeft = timeLeft.Subtract(new TimeSpan(24, 0, 0));
-            }
-
-            timeToNextRunTextBox.Text = timeLeft.ToString("h'h 'mm'm'");
+            timeToNextRunTextBox.Text = Utils.TimeLeft(DateTime.Now, trigger.TriggerHour).ToString("h'h 'mm'm'");
         }
     }
 }
