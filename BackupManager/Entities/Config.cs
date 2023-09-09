@@ -54,6 +54,16 @@ namespace BackupManager.Entities
         public long BackupDiskMinimumFreeSpaceToLeave;
 
         /// <summary>
+        /// True and the Master Folders are monitored for changes
+        /// </summary>
+        public bool MasterFoldersFileChangeWatchersONOFF;
+
+        /// <summary>
+        /// Number of days before running a full master folder scan
+        /// </summary>
+        public int MasterFoldersDaysBetweenFullScan;
+
+        /// <summary>
         /// Minimum space before we throw a critical Disk space message in MB for  Config.MasterFolders
         /// </summary>
         public long MasterFolderMinimumCriticalSpace;
@@ -67,6 +77,21 @@ namespace BackupManager.Entities
         /// Config.MinimumMasterFolderWriteSpeed in MB/s
         /// </summary>
         public int MasterFolderMinimumWriteSpeed;
+
+        /// <summary>
+        /// How often we process the detected folder changes in seconds
+        /// </summary>
+        public int MasterFoldersProcessChangesTimer;
+
+        /// <summary>
+        /// How often we scan the folders we've detected changes on in seconds
+        /// </summary>
+        public int MasterFoldersScanTimer;
+
+        /// <summary>
+        /// The minimum age of changes in folders before we schedule a scan in seconds
+        /// </summary>
+        public int MasterFolderScanMinimumAgeBeforeScanning;
 
         /// <summary>
         /// Interval in seconds

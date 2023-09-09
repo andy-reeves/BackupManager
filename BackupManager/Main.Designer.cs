@@ -50,6 +50,7 @@
             this.speedTestDisksButton = new System.Windows.Forms.Button();
             this.refreshBackupDiskButton = new System.Windows.Forms.Button();
             this.listFilesMarkedAsDeletedButton = new System.Windows.Forms.Button();
+            this.fileWatcherButton = new System.Windows.Forms.Button();
             this.scheduledBackupTimerButton = new System.Windows.Forms.Button();
             this.listFilesOnBackupDiskButton = new System.Windows.Forms.Button();
             this.listFilesInMasterFolderButton = new System.Windows.Forms.Button();
@@ -112,6 +113,8 @@
             this.filesMarkedAsDeletedTextBox = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
             this.updateBackupTimer = new System.Windows.Forms.Timer(this.components);
+            this.processFolderChangesTimer = new System.Windows.Forms.Timer(this.components);
+            this.scanFoldersTimer = new System.Windows.Forms.Timer(this.components);
             this.pushoverGroupBox.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.listFilesInMasterFolderGroupBox.SuspendLayout();
@@ -339,6 +342,17 @@
         "er folder anymore");
             this.listFilesMarkedAsDeletedButton.UseVisualStyleBackColor = true;
             this.listFilesMarkedAsDeletedButton.Click += new System.EventHandler(this.ListFilesMarkedAsDeletedButton_Click);
+            // 
+            // fileWatcherButton
+            // 
+            this.fileWatcherButton.Location = new System.Drawing.Point(817, 294);
+            this.fileWatcherButton.Name = "fileWatcherButton";
+            this.fileWatcherButton.Size = new System.Drawing.Size(199, 23);
+            this.fileWatcherButton.TabIndex = 88;
+            this.fileWatcherButton.Text = "File Watchers = OFF";
+            this.toolTip.SetToolTip(this.fileWatcherButton, "Starts the file watchers");
+            this.fileWatcherButton.UseVisualStyleBackColor = true;
+            this.fileWatcherButton.Click += new System.EventHandler(this.FileWatcherButton_Click);
             // 
             // scheduledBackupTimerButton
             // 
@@ -949,11 +963,22 @@
             this.updateBackupTimer.Interval = 60000;
             this.updateBackupTimer.Tick += new System.EventHandler(this.UpdateBackupTimer_Tick);
             // 
+            // processFolderChangesTimer
+            // 
+            this.processFolderChangesTimer.Interval = 5000;
+            this.processFolderChangesTimer.Tick += new System.EventHandler(this.ProcessFolderChangesTimer_Tick);
+            // 
+            // scanFoldersTimer
+            // 
+            this.scanFoldersTimer.Interval = 30000;
+            this.scanFoldersTimer.Tick += new System.EventHandler(this.ScanFoldersTimer_Tick);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1309, 367);
+            this.Controls.Add(this.fileWatcherButton);
             this.Controls.Add(this.filesMarkedAsDeletedSizeTextBox);
             this.Controls.Add(this.filesMarkedAsDeletedTextBox);
             this.Controls.Add(this.label12);
@@ -1099,6 +1124,9 @@
         private System.Windows.Forms.TextBox timeToNextRunTextBox;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Timer updateBackupTimer;
+        private System.Windows.Forms.Button fileWatcherButton;
+        private System.Windows.Forms.Timer processFolderChangesTimer;
+        private System.Windows.Forms.Timer scanFoldersTimer;
     }
 }
 

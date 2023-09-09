@@ -712,7 +712,7 @@ namespace BackupManager
             Trace("GetShortMd5HashFromFile enter");
             Trace($"Params: path={path}");
 
-            if (string.IsNullOrEmpty(path))
+            if (string.IsNullOrEmpty(path) || !File.Exists(path))
             {
                 return null;
             }

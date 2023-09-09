@@ -73,6 +73,7 @@
     <Compile Include="Entities\BackupFile.cs" />
     <Compile Include="Entities\Config.cs" />
     <Compile Include="Entities\FileRule.cs" />
+    <Compile Include="Entities\Folder.cs" />
     <Compile Include="Entities\ProcessServiceMonitor.cs" />
     <Compile Include="Entities\Rules.cs" />
     <Compile Include="Extensions\ControlExtensions.cs" />

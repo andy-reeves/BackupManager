@@ -13,14 +13,24 @@
   <!-- MinimumFreeSpaceToLeaveOnBackupDisk in MB -->
   <BackupDiskMinimumFreeSpaceToLeave>210</BackupDiskMinimumFreeSpaceToLeave>
 
+  <MasterFoldersFileChangeWatchersONOFF>true</MasterFoldersFileChangeWatchersONOFF>
+  
   <!-- MinimumCriticalMasterFolderSpace in MB -->
   <MasterFolderMinimumCriticalSpace>200000</MasterFolderMinimumCriticalSpace>
+
+  <MasterFoldersDaysBetweenFullScan>7</MasterFoldersDaysBetweenFullScan>
 
   <!-- Minimum read speed in MB/s -->
   <MasterFolderMinimumReadSpeed>30</MasterFolderMinimumReadSpeed>
 
   <!-- Minimum write speed in MB/s -->
   <MasterFolderMinimumWriteSpeed>30</MasterFolderMinimumWriteSpeed>
+
+  <MasterFoldersProcessChangesTimer>5</MasterFoldersProcessChangesTimer>
+
+  <MasterFoldersScanTimer>10</MasterFoldersScanTimer>
+
+  <MasterFolderScanMinimumAgeBeforeScanning>20</MasterFolderScanMinimumAgeBeforeScanning>
 
   <!-- Monitor interval in seconds -->
   <MonitoringInterval>30</MonitoringInterval>
@@ -74,25 +84,35 @@
       <Port>0</Port>
     </Monitor>
   </Monitors>
-  <MasterFolders>
-    <!-- List each UNC path that you want to scan for files to backup here -->
-    <MasterFolder>\\nas1\assets1\_Test</MasterFolder>
-  </MasterFolders>
-  <IndexFolders>
-    <!-- These are the subfolders that will be searched in the shares above -->
-    <IndexFolder>_Audio Books</IndexFolder>
-    <IndexFolder>_Comedy</IndexFolder>
-    <IndexFolder>_Concerts</IndexFolder>
-    <IndexFolder>_MMA</IndexFolder>
-    <IndexFolder>_Movies</IndexFolder>
-    <IndexFolder>_Music</IndexFolder>
-    <IndexFolder>_Other</IndexFolder>
-    <IndexFolder>_Pictures</IndexFolder>
-    <IndexFolder>_Playlists</IndexFolder>
-    <IndexFolder>_Sport</IndexFolder>
-    <IndexFolder>_TV</IndexFolder>
-    <IndexFolder>_Videos</IndexFolder>
-  </IndexFolders>
+
+    <MasterFolders>
+      <!-- List each UNC path that you want to scan for files to backup here -->
+      <MasterFolder>\\nas1\assets1\_Test</MasterFolder> 
+    </MasterFolders>
+
+    <IndexFolders>
+      <!-- These are the subfolders that will be searched in the shares above -->
+      <IndexFolder>_Audio Books</IndexFolder>
+      <IndexFolder>_Backup</IndexFolder>
+      <IndexFolder>_Comedy</IndexFolder>
+      <IndexFolder>_Comedy (non-tmdb)</IndexFolder>
+      <IndexFolder>_Concerts</IndexFolder>
+      <IndexFolder>_Concerts (non-tmdb)</IndexFolder>
+      <IndexFolder>_From Mum</IndexFolder>
+      <IndexFolder>_MMA</IndexFolder>
+      <IndexFolder>_Movies</IndexFolder>
+      <IndexFolder>_Movies (non-tmdb)</IndexFolder>
+      <IndexFolder>_Music</IndexFolder>
+      <IndexFolder>_Other</IndexFolder>
+      <IndexFolder>_Pictures</IndexFolder>
+      <IndexFolder>_Playlists</IndexFolder>
+      <IndexFolder>_Software</IndexFolder>
+      <IndexFolder>_Sport</IndexFolder>
+      <IndexFolder>_TV</IndexFolder>
+      <IndexFolder>_TV (non-tvdb)</IndexFolder>
+      <IndexFolder>_Videos</IndexFolder>
+    </IndexFolders>
+
   <Filters>
     <!-- RegEx's of file to ignore when executing a scan -->
     <FilterRegEx>!*.bup</FilterRegEx>

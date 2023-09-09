@@ -27,6 +27,11 @@ namespace BackupManager.Entities
         [XmlArrayItem("BackupDisk")]
         public Collection<BackupDisk> BackupDisks;
 
+        [XmlIgnore()]
+        public Collection<Folder> FoldersToScan;
+
+        private string masterFoldersLastFullScan;
+
         // We need to a hash of the index folder and relative path
         // we do this so we can look up files quickly by 
         // contents hashes are not unique. Duplicate files in different locations
@@ -36,9 +41,24 @@ namespace BackupManager.Entities
         // This happened with The Porridge movie which is also stored as a Tv episode.
         private readonly Hashtable indexFolderAndRelativePath = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
 
+        public string MasterFoldersLastFullScan
+        {
+            get
+            {
+                return string.IsNullOrEmpty(masterFoldersLastFullScan) ? string.Empty : masterFoldersLastFullScan;
+            }
+
+            set
+            {
+                masterFoldersLastFullScan = value;
+            }
+        }
+
         public MediaBackup()
         {
             BackupFiles = new Collection<BackupFile>();
+            BackupDisks = new Collection<BackupDisk>();
+            FoldersToScan = new Collection<Folder>();
         }
 
         public MediaBackup(string mediaBackupPath)
@@ -104,6 +124,26 @@ namespace BackupManager.Entities
             }
 
             return mediaBackup;
+        }
+
+        public bool GetMasterFolderAndIndexFoldersForPath(string path, out string masterFolder, out string indexFolder)
+        {
+            masterFolder = null;
+            indexFolder = null;
+            foreach (string master in Config.MasterFolders)
+            {
+                foreach (string index in Config.IndexFolders)
+                {
+                    if (path.StartsWith(Utils.EnsurePathHasATerminatingSeparator(Path.Combine(master, index))))
+                    {
+                        masterFolder = master;
+                        indexFolder = index;
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         public void Save()
@@ -172,6 +212,11 @@ namespace BackupManager.Entities
             // if these have changed we redo the hash
             // files with same hash are allowed (Porridge TV ep and movie)
             // files can't have same hash and same filename though
+
+            if (!File.Exists(fullPath))
+            {
+                return null;
+            }
 
             string hashOfContents;
 
@@ -258,15 +303,16 @@ namespace BackupManager.Entities
         }
 
         /// <summary>
-        /// Ensures the BackupFile exists and sets the Flag=TRUE 
+        /// Ensures the BackupFile exists and sets the Flag=TRUE. Sets Deleted=FALSE 
         /// </summary>
         /// <param name="path"></param>
         /// <param name="masterFolder"></param>
         /// <param name="indexFolder"></param>
         /// <exception cref="ApplicationException"></exception>
-        internal void EnsureFile(string path, string masterFolder, string indexFolder)
+        internal void EnsureFile(string path)
         {
             Utils.Trace("EnsureFile enter");
+            _ = GetMasterFolderAndIndexFoldersForPath(path, out string masterFolder, out string indexFolder);
 
             // Empty Index folder is not allowed
             if (string.IsNullOrEmpty(indexFolder))
@@ -276,9 +322,35 @@ namespace BackupManager.Entities
 
             BackupFile backupFile = GetBackupFile(path, masterFolder, indexFolder)
                                     ?? throw new ApplicationException($"Duplicate hashcode detected indicated a copy of a file at {path}");
+
+            backupFile.Deleted = false;
             backupFile.Flag = true;
 
             Utils.Trace("EnsureFile exit");
+        }
+
+        /// <summary>
+        /// Returns the path to the parent folder of the file provided. Thats the path to the first folder after an index folder
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns>Null if the Path doesn't contain an IndexFolder or if its in the root of the IndexFolder</returns>
+        public string GetParentFolder(string path)
+        {
+            foreach (string indexFolder in Config.IndexFolders)
+            {
+                if (path.Contains(indexFolder + "\\"))
+                {
+                    string pathAfterSlash = path.SubstringAfter(indexFolder + "\\", StringComparison.CurrentCultureIgnoreCase);
+                    int lastSlashLocation = pathAfterSlash.IndexOf('\\');
+                    return lastSlashLocation < 0 ? null : path.Substring(0, lastSlashLocation + (path.Length - pathAfterSlash.Length));
+                }
+            }
+            return null;
+        }
+
+        public string GetFilters()
+        {
+            return string.Join(",", Config.Filters.ToArray());
         }
 
         /// <summary>

@@ -32,6 +32,12 @@ namespace BackupManager
 
         private readonly Action monitoringAction;
 
+        private readonly List<FileSystemWatcher> watcherList = new List<FileSystemWatcher>();
+
+        private static readonly List<Tuple<string, DateTime>> folderChanges = new List<Tuple<string, DateTime>>();
+
+        private readonly Dictionary<string, DateTime> foldersToScan = new Dictionary<string, DateTime>();
+
         /// <summary>
         /// Any long-running action sets this to TRUE to stop the scheduledBackup timer from being able to start
         /// </summary>
@@ -132,10 +138,106 @@ namespace BackupManager
 
             SetupDailyTrigger(mediaBackup.Config.ScheduledBackupONOFF);
 
+            processFolderChangesTimer.Interval = mediaBackup.Config.MasterFoldersProcessChangesTimer * 1000;
+            scanFoldersTimer.Interval = mediaBackup.Config.MasterFoldersScanTimer * 1000;
+
+            SetupFileWatchers();
+
             Utils.Trace("Main exit");
         }
 
+        private void CreateFileSystemWatchers()
+        {
+            Utils.Trace("CreateFileSystemWatchers enter");
+
+            foreach (string masterFolder in mediaBackup.Config.MasterFolders)
+            {
+                FileSystemWatcher watcher = new FileSystemWatcher(masterFolder)
+                {
+                    NotifyFilter = NotifyFilters.Attributes
+                                    | NotifyFilters.CreationTime
+                                    | NotifyFilters.DirectoryName
+                                    | NotifyFilters.FileName
+                                    | NotifyFilters.LastAccess
+                                    | NotifyFilters.LastWrite
+                                    | NotifyFilters.Security
+                                    | NotifyFilters.Size
+                };
+
+                watcher.Changed += FileSystemWatcher_OnChanged;
+                //watcher.Created += FileSystemWatcher_OnCreated;
+                watcher.Deleted += FileSystemWatcher_OnDeleted;
+                //watcher.Renamed += FileSystemWatcher_OnRenamed;
+                watcher.Error += FileSystemWatcher_OnError;
+
+                watcher.Filter = "*.*";
+                watcher.IncludeSubdirectories = true;
+                watcher.EnableRaisingEvents = true;
+
+                watcherList.Add(watcher);
+            }
+
+            Utils.Trace("CreateFileSystemWatchers exit");
+        }
+
+        private void RemoveFileSystemWatchers()
+        {
+            foreach (FileSystemWatcher watcher in watcherList)
+            {
+                watcher.Dispose();
+            }
+        }
         #endregion
+
+        private static void FileSystemWatcher_OnChanged(object sender, FileSystemEventArgs e)
+        {
+            Utils.Trace("FileSystemWatcher_OnChanged enter");
+            Utils.Trace($"e.FullPath = {e.FullPath}");
+
+            if (e.ChangeType != WatcherChangeTypes.Changed)
+            {
+                return;
+            }
+
+            // add this folder to the list of folders to potentially scan
+            folderChanges.Add(new Tuple<string, DateTime>(e.FullPath, DateTime.Now));
+            Utils.Trace("FileSystemWatcher_OnChanged exit");
+        }
+
+        private static void FileSystemWatcher_OnCreated(object sender, FileSystemEventArgs e)
+        {
+            string value = $"Created: {e.FullPath}";
+            Utils.LogWithPushover(BackupAction.General, value);
+        }
+
+        private static void FileSystemWatcher_OnDeleted(object sender, FileSystemEventArgs e)
+        {
+            Utils.Trace("FileSystemWatcher_OnDeleted enter");
+            Utils.Trace($"e.FullPath = {e.FullPath}");
+
+            folderChanges.Add(new Tuple<string, DateTime>(e.FullPath, DateTime.Now));
+
+            Utils.Trace("FileSystemWatcher_OnDeleted exit");
+        }
+
+        private static void FileSystemWatcher_OnRenamed(object sender, RenamedEventArgs e)
+        {
+            Utils.LogWithPushover(BackupAction.General, $"Renamed:     Old: {e.OldFullPath}     New: {e.FullPath}");
+        }
+
+        private static void FileSystemWatcher_OnError(object sender, ErrorEventArgs e)
+        {
+            PrintException(e.GetException());
+        }
+
+        private static void PrintException(Exception ex)
+        {
+            if (ex != null)
+            {
+                Utils.LogWithPushover(BackupAction.General, $"Message: {ex.Message}");
+                Utils.LogWithPushover(BackupAction.General, $"Stacktrace: {ex.StackTrace}");
+            }
+        }
 
         #region Methods
 
@@ -503,6 +605,10 @@ namespace BackupManager
 
             long remainingDiskSpace = availableSpace - Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave);
             long sizeOfCopy = remainingDiskSpace < sizeOfFiles ? remainingDiskSpace : sizeOfFiles;
+            if (sizeOfCopy == 0)
+            {
+                sizeOfCopy = 1;
+            }
 
             /// We use 100 as the max because the actual number of bytes could be far too large 
             EnableProgressBar(0, 100);
@@ -513,7 +619,6 @@ namespace BackupManager
                 {
                     fileCounter++;
                     UpdateStatusLabel("Copying", Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
-
                     UpdateMediaFilesCountDisplay();
 
                     if (string.IsNullOrEmpty(backupFile.IndexFolder))
@@ -1070,7 +1175,7 @@ namespace BackupManager
         {
             Utils.Trace("ScanFolders enter");
 
-            string filters = string.Join(",", mediaBackup.Config.Filters.ToArray());
+            string filters = mediaBackup.GetFilters();
 
             long readSpeed = 0, writeSpeed = 0;
 
@@ -1158,54 +1263,7 @@ namespace BackupManager
 
                     foreach (string indexFolder in mediaBackup.Config.IndexFolders)
                     {
-                        string folderToCheck = Path.Combine(masterFolder, indexFolder);
-
-                        if (Directory.Exists(folderToCheck))
-                        {
-                            Utils.LogWithPushover(BackupAction.ScanFolders, $"{folderToCheck}");
-                            UpdateStatusLabel($"Scanning {folderToCheck}");
-
-                            string[] files = Utils.GetFiles(folderToCheck, filters, SearchOption.AllDirectories);
-
-                            EnableProgressBar(0, files.Length);
-
-                            for (int i = 0; i < files.Length; i++)
-                            {
-                                string file = files[i];
-                                Utils.Trace($"Checking {file}");
-
-                                UpdateStatusLabel($"Scanning {folderToCheck}", i + 1);
-
-                                // Check for files to delete
-                                if (CheckForFilesToDelete(file))
-                                {
-                                    continue;
-                                }
-
-                                // RegEx file name rules
-                                foreach (FileRule rule in mediaBackup.Config.FileRules)
-                                {
-                                    if (Regex.IsMatch(file, rule.FileDiscoveryRegEx))
-                                    {
-                                        if (!rule.Matched)
-                                        {
-                                            Utils.Trace($"{rule.Name} matched file {file}");
-                                            rule.Matched = true;
-                                        }
-
-                                        // if it does then the second regex must be true
-                                        if (!Regex.IsMatch(file, rule.FileTestRegEx))
-                                        {
-                                            Utils.Trace($"File {file} matched by {rule.FileDiscoveryRegEx} but doesn't match {rule.FileTestRegEx}");
-                                            Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High, $"{rule.Name} {rule.Message} {file}");
-                                        }
-                                    }
-                                }
-
-                                mediaBackup.EnsureFile(file, masterFolder, indexFolder);
-                                UpdateMediaFilesCountDisplay();
-                            }
-                        }
+                        ScanSingleFolder(Path.Combine(masterFolder, indexFolder));
                     }
                 }
                 else
@@ -1273,6 +1331,57 @@ namespace BackupManager
             Utils.LogWithPushover(BackupAction.ScanFolders, "Completed");
 
             Utils.Trace("ScanFolders exit");
+        }
+
+        private void ScanSingleFolder(string folderToCheck)
+        {
+            if (Directory.Exists(folderToCheck))
+            {
+                Utils.LogWithPushover(BackupAction.ScanFolders, $"{folderToCheck}");
+                UpdateStatusLabel($"Scanning {folderToCheck}");
+
+                string filters = mediaBackup.GetFilters();
+                string[] files = Utils.GetFiles(folderToCheck, filters, SearchOption.AllDirectories);
+
+                EnableProgressBar(0, files.Length);
+
+                for (int i = 0; i < files.Length; i++)
+                {
+                    string file = files[i];
+                    Utils.Trace($"Checking {file}");
+
+                    UpdateStatusLabel($"Scanning {folderToCheck}", i + 1);
+
+                    // Check for files to delete
+                    if (CheckForFilesToDelete(file))
+                    {
+                        continue;
+                    }
+
+                    // RegEx file name rules
+                    foreach (FileRule rule in mediaBackup.Config.FileRules)
+                    {
+                        if (Regex.IsMatch(file, rule.FileDiscoveryRegEx))
+                        {
+                            if (!rule.Matched)
+                            {
+                                Utils.Trace($"{rule.Name} matched file {file}");
+                                rule.Matched = true;
+                            }
+
+                            // if it does then the second regex must be true
+                            if (!Regex.IsMatch(file, rule.FileTestRegEx))
+                            {
+                                Utils.Trace($"File {file} matched by {rule.FileDiscoveryRegEx} but doesn't match {rule.FileTestRegEx}");
+                                Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High, $"{rule.Name} {rule.Message} {file}");
+                            }
+                        }
+                    }
+
+                    mediaBackup.EnsureFile(file);
+                    UpdateMediaFilesCountDisplay();
+                }
+            }
         }
 
         #endregion
@@ -1367,8 +1476,19 @@ namespace BackupManager
 
                 long oldFileCount = mediaBackup.BackupFiles.Count();
 
-                // Update the master file
-                ScanFolders();
+                bool doFullBackup = false;
+                _ = DateTime.TryParse(mediaBackup.MasterFoldersLastFullScan, out DateTime backupFileDate);
+                if (backupFileDate.AddDays(mediaBackup.Config.MasterFoldersDaysBetweenFullScan) < DateTime.Now)
+                {
+                    doFullBackup = true;
+                }
+
+                // Update the master files if we've not been monitoring folders directly
+                if (!mediaBackup.Config.MasterFoldersFileChangeWatchersONOFF || doFullBackup)
+                {
+                    ScanFolders();
+                    mediaBackup.MasterFoldersLastFullScan = DateTime.Now.ToString("yyyy-MM-dd");
+                }
 
                 if (mediaBackup.Config.BackupDiskDifferenceInFileCountAllowedPercentage != 0)
                 {
@@ -2228,6 +2348,130 @@ namespace BackupManager
             }
 
             timeToNextRunTextBox.Text = Utils.TimeLeft(DateTime.Now, trigger.TriggerHour).ToString("h'h 'mm'm'");
+        }
+
+        private void FileWatcherButton_Click(object sender, EventArgs e)
+        {
+            mediaBackup.Config.MasterFoldersFileChangeWatchersONOFF = !mediaBackup.Config.MasterFoldersFileChangeWatchersONOFF;
+            SetupFileWatchers();
+        }
+
+        private void SetupFileWatchers()
+        {
+            if (mediaBackup.Config.MasterFoldersFileChangeWatchersONOFF)
+            {
+                fileWatcherButton.Text = "File Watchers = ON";
+                CreateFileSystemWatchers();
+            }
+            else
+            {
+                fileWatcherButton.Text = "File Watchers = OFF";
+                RemoveFileSystemWatchers();
+            }
+            processFolderChangesTimer.Enabled = mediaBackup.Config.MasterFoldersFileChangeWatchersONOFF;
+            scanFoldersTimer.Enabled = mediaBackup.Config.MasterFoldersFileChangeWatchersONOFF;
+        }
+
+        private void ProcessFolderChangesTimer_Tick(object sender, EventArgs e)
+        {
+            Utils.Trace("ProcessFolderChangesTimer_Tick enter");
+            Utils.Trace($"folderChanges.Count = {folderChanges.Count}");
+
+            // every few seconds we move through the changes List and put the folders we need to check in our other list
+            if (folderChanges.Count == 0)
+            {
+                Utils.Trace("ProcessFolderChangesTimer_Tick exit");
+                return;
+            }
+
+            for (int i = folderChanges.Count - 1; i >= 0; i--)
+            {
+                Tuple<string, DateTime> a = folderChanges[i];
+                if (a != null)
+                {
+                    Utils.Trace($"path {a.Item1}");
+                    _ = mediaBackup.GetMasterFolderAndIndexFoldersForPath(a.Item1, out string masterFolder, out string indexFolder);
+
+                    Utils.Trace($"masterFolder {masterFolder}");
+                    Utils.Trace($"indexFolder {indexFolder}");
+
+                    if (masterFolder != null && indexFolder != null)
+                    {
+                        string parentFolder = mediaBackup.GetParentFolder(a.Item1);
+                        Utils.Trace($"parentFolder {parentFolder}");
+                        if (parentFolder != null)
+                        {
+                            if (foldersToScan.ContainsKey(parentFolder))
+                            {
+                                if (a.Item2 > foldersToScan[parentFolder])
+                                {
+                                    foldersToScan[parentFolder] = a.Item2;
+                                }
+                            }
+                            else
+                            {
+                                foldersToScan.Add(parentFolder, a.Item2);
+                            }
+                        }
+                    }
+                    folderChanges.RemoveAt(i);
+                }
+            }
+            Utils.Trace("ProcessFolderChangesTimer_Tick exit");
+        }
+
+        private void ScanFoldersTimer_Tick(object sender, EventArgs e)
+        {
+            Utils.Trace("ScanFoldersTimer_Tick enter");
+            Utils.Trace($"foldersToScan.Count = {foldersToScan.Count}");
+
+            bool toSave = false;
+            if (!longRunningActionExecutingRightNow)
+            {
+                if (foldersToScan.Count == 0)
+                {
+                    Utils.Trace("ScanFoldersTimer_Tick exit");
+                    return;
+                }
+
+                for (int i = foldersToScan.Count - 1; i >= 0; i--)
+                {
+                    KeyValuePair<string, DateTime> a = foldersToScan.ElementAt(i);
+
+                    if (a.Value.AddSeconds(mediaBackup.Config.MasterFolderScanMinimumAgeBeforeScanning) < DateTime.Now)
+                    {
+                        mediaBackup.ClearFlags();
+                        ScanSingleFolder(a.Key);
+                        _ = foldersToScan.Remove(a.Key);
+
+                        // instead of removing files that are no longer found in a folder we now flag them as deleted so we can report them later
+                        // unless they aren't on a backup disk in which case they are removed now 
+                        List<BackupFile> files = mediaBackup.BackupFiles.Where(b => !b.Flag && b.FullPath.StartsWith(a.Key)).ToList();
+                        for (int j = files.Count() - 1; j >= 0; j--)
+                        {
+                            BackupFile c = files[j];
+                            if (string.IsNullOrEmpty(c.Disk))
+                            {
+                                mediaBackup.RemoveFile(c);
+                            }
+                            else
+                            {
+                                c.Deleted = true;
+                            }
+                        }
+                        toSave = true;
+                    }
+                }
+
+                if (toSave)
+                {
+                    mediaBackup.Save();
+                    UpdateStatusLabel($"Saved.");
+                    UpdateMediaFilesCountDisplay();
+                }
+            }
+            Utils.Trace("ScanFoldersTimer_Tick exit");
+
         }
     }
 }
