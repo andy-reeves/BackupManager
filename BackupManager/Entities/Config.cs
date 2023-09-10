@@ -245,8 +245,7 @@ namespace BackupManager.Entities
                 text += $"Monitor.ServiceToRestart: {monitor.ServiceToRestart}\n";
                 text += $"Monitor.Timeout: {monitor.Timeout}\n";
             }
-            parameterText = $"Monitors:\n{text}";
-            Utils.Log(BackupAction.General, parameterText);
+            Utils.Log(BackupAction.General, $"Monitors:\n{text}");
 
             text = string.Empty;
             foreach (FileRule rule in FileRules)
@@ -257,19 +256,24 @@ namespace BackupManager.Entities
                 text += $"FileRule.FileTestRegEx: {rule.FileTestRegEx}\n";
                 text += $"FileRule.Message: {rule.Message}\n";
             }
-            parameterText = $"FileRules:\n{text}";
-            Utils.Log(BackupAction.General, parameterText);
+            Utils.Log(BackupAction.General, $"FileRules:\n{text}");
 
             text = $"BackupDiskDaysToReportSinceFilesChecked : {BackupDiskDaysToReportSinceFilesChecked}\n";
             text += $"BackupDiskDifferenceInFileCountAllowedPercentage : {BackupDiskDifferenceInFileCountAllowedPercentage}\n";
             text += $"BackupDiskMinimumCriticalSpace : {BackupDiskMinimumCriticalSpace}\n";
             text += $"BackupDiskMinimumFreeSpaceToLeave : {BackupDiskMinimumFreeSpaceToLeave}\n";
 
+            text += $"MasterFoldersDaysBetweenFullScan : {MasterFoldersDaysBetweenFullScan}\n";
+            text += $"MasterFoldersFileChangeWatchersONOFF : {MasterFoldersFileChangeWatchersONOFF}\n";
             text += $"MasterFolderMinimumCriticalSpace : {MasterFolderMinimumCriticalSpace}\n";
             text += $"MasterFolderMinimumReadSpeed : {MasterFolderMinimumReadSpeed}\n";
             text += $"MasterFolderMinimumWriteSpeed : {MasterFolderMinimumWriteSpeed}\n";
+            text += $"MasterFoldersProcessChangesTimer : {MasterFoldersProcessChangesTimer}\n";
+            text += $"MasterFoldersScanTimer : {MasterFoldersScanTimer}\n";
+            text += $"MasterFolderScanMinimumAgeBeforeScanning : {MasterFolderScanMinimumAgeBeforeScanning}\n";
+            Utils.Log(BackupAction.General, text);
 
-            text += $"MonitoringInterval : {MonitoringInterval}\n";
+            text = $"MonitoringInterval : {MonitoringInterval}\n";
             text += $"MonitoringONOFF : {MonitoringONOFF}\n";
 
             text += $"PushoverAppToken : {PushoverAppToken}\n";
@@ -288,9 +292,7 @@ namespace BackupManager.Entities
             text += $"SpeedTestFileSize : {SpeedTestFileSize}\n";
             text += $"SpeedTestIterations : {SpeedTestIterations}\n";
             text += $"SpeedTestONOFF : {SpeedTestONOFF}\n";
-
-            parameterText = text;
-            Utils.Log(BackupAction.General, parameterText);
+            Utils.Log(BackupAction.General, text);
         }
     }
 }
