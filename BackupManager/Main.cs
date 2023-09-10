@@ -58,7 +58,9 @@ namespace BackupManager
         }
         public Main()
         {
-            InitializeComponent();
+            try
+            {
+                InitializeComponent();
 
 #if DEBUG
             Trace.Listeners.Add(new TextWriterTraceListener(
@@ -67,83 +69,89 @@ namespace BackupManager
 
             backupDiskTextBox.Text = "\\\\nas1\\assets1\\_Test\\BackupDisks\\backup 1001 parent";
 #else
-            backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
+                backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
 #endif
 
-            string mediaBackupXml = ConfigurationManager.AppSettings.Get("MediaBackupXml");
+                string mediaBackupXml = ConfigurationManager.AppSettings.Get("MediaBackupXml");
 
-            string localMediaXml = Path.Combine(Application.StartupPath, "MediaBackup.xml");
+                string localMediaXml = Path.Combine(Application.StartupPath, "MediaBackup.xml");
 
-            mediaBackup = MediaBackup.Load(File.Exists(localMediaXml) ? localMediaXml : mediaBackupXml);
+                mediaBackup = MediaBackup.Load(File.Exists(localMediaXml) ? localMediaXml : mediaBackupXml);
 
-            UpdateMediaFilesCountDisplay();
+                UpdateMediaFilesCountDisplay();
 
-            Utils.Config = mediaBackup.Config;
+                Utils.Config = mediaBackup.Config;
 
-            Utils.LogWithPushover(BackupAction.General, $"BackupManager started");
+                Utils.LogWithPushover(BackupAction.General, $"BackupManager started");
 
-            // Log the parameters after setting the Pushover keys in the Utils class
-            mediaBackup.Config.LogParameters();
+                // Log the parameters after setting the Pushover keys in the Utils class
+                mediaBackup.Config.LogParameters();
 
-            // Populate the  Config.MasterFolders combo boxes
-            string[] masterFoldersArray = mediaBackup.Config.MasterFolders.ToArray();
+                // Populate the  Config.MasterFolders combo boxes
+                string[] masterFoldersArray = mediaBackup.Config.MasterFolders.ToArray();
 
-            listMasterFoldersComboBox.Items.AddRange(masterFoldersArray);
-            masterFoldersComboBox.Items.AddRange(masterFoldersArray);
-            restoreMasterFolderComboBox.Items.AddRange(masterFoldersArray);
+                listMasterFoldersComboBox.Items.AddRange(masterFoldersArray);
+                masterFoldersComboBox.Items.AddRange(masterFoldersArray);
+                restoreMasterFolderComboBox.Items.AddRange(masterFoldersArray);
 
-            foreach (BackupDisk disk in mediaBackup.BackupDisks)
-            {
-                listFilesComboBox.Items.Add(disk.Name);
-            }
+                foreach (BackupDisk disk in mediaBackup.BackupDisks)
+                {
+                    listFilesComboBox.Items.Add(disk.Name);
+                }
 
-            pushoverLowCheckBox.Checked = mediaBackup.Config.PushoverSendLowONOFF;
-            pushoverNormalCheckBox.Checked = mediaBackup.Config.PushoverSendNormalONOFF;
-            pushoverHighCheckBox.Checked = mediaBackup.Config.PushoverSendHighONOFF;
-            pushoverEmergencyCheckBox.Checked = mediaBackup.Config.PushoverSendEmergencyONOFF;
+                pushoverLowCheckBox.Checked = mediaBackup.Config.PushoverSendLowONOFF;
+                pushoverNormalCheckBox.Checked = mediaBackup.Config.PushoverSendNormalONOFF;
+                pushoverHighCheckBox.Checked = mediaBackup.Config.PushoverSendHighONOFF;
+                pushoverEmergencyCheckBox.Checked = mediaBackup.Config.PushoverSendEmergencyONOFF;
 
-            foreach (ProcessServiceMonitor monitor in mediaBackup.Config.Monitors)
-            {
-                processesComboBox.Items.Add(monitor.Name);
-            }
+                foreach (ProcessServiceMonitor monitor in mediaBackup.Config.Monitors)
+                {
+                    processesComboBox.Items.Add(monitor.Name);
+                }
 
-            scheduledBackupAction = () => { TaskWrapper(ScheduledBackupAsync); };
+                scheduledBackupAction = () => { TaskWrapper(ScheduledBackupAsync); };
 
-            monitoringAction = () => { MonitorServices(); };
+                monitoringAction = () => { MonitorServices(); };
 
-            scheduledDateTimePicker.Value = DateTime.Parse(mediaBackup.Config.ScheduledBackupStartTime);
+                scheduledDateTimePicker.Value = DateTime.Parse(mediaBackup.Config.ScheduledBackupStartTime);
 
-            UpdateSendingPushoverButton();
-            UpdateMonitoringButton();
-            UpdateScheduledBackupButton();
-            UpdateSpeedTestDisksButton();
+                UpdateSendingPushoverButton();
+                UpdateMonitoringButton();
+                UpdateScheduledBackupButton();
+                UpdateSpeedTestDisksButton();
 
-            if (mediaBackup.Config.MonitoringONOFF)
-            {
-                // we swtich it off and force the button to be clicked to turn it on again
-                mediaBackup.Config.MonitoringONOFF = false;
+                if (mediaBackup.Config.MonitoringONOFF)
+                {
+                    // we swtich it off and force the button to be clicked to turn it on again
+                    mediaBackup.Config.MonitoringONOFF = false;
 #if !DEBUG
-                MonitoringButton_Click(null, null);
+                    MonitoringButton_Click(null, null);
 #endif
-            }
+                }
 
-            UpdateCurrentBackupDiskInfo(mediaBackup.GetBackupDisk(backupDiskTextBox.Text));
+                UpdateCurrentBackupDiskInfo(mediaBackup.GetBackupDisk(backupDiskTextBox.Text));
 
-            if (mediaBackup.Config.ScheduledBackupRunOnStartup)
-            {
+                if (mediaBackup.Config.ScheduledBackupRunOnStartup)
+                {
 #if !DEBUG
-                TaskWrapper(ScheduledBackupAsync);
+                    TaskWrapper(ScheduledBackupAsync);
 #endif
+                }
+
+                SetupDailyTrigger(mediaBackup.Config.ScheduledBackupONOFF);
+
+                processFolderChangesTimer.Interval = mediaBackup.Config.MasterFoldersProcessChangesTimer * 1000;
+                scanFoldersTimer.Interval = mediaBackup.Config.MasterFoldersScanTimer * 1000;
+
+                SetupFileWatchers();
+
+                Utils.Trace("Main exit");
             }
-
-            SetupDailyTrigger(mediaBackup.Config.ScheduledBackupONOFF);
-
-            processFolderChangesTimer.Interval = mediaBackup.Config.MasterFoldersProcessChangesTimer * 1000;
-            scanFoldersTimer.Interval = mediaBackup.Config.MasterFoldersScanTimer * 1000;
-
-            SetupFileWatchers();
-
-            Utils.Trace("Main exit");
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Exception occured during application start. {ex}");
+                Environment.Exit(0);
+            }
         }
 
         private void CreateFileSystemWatchers()
