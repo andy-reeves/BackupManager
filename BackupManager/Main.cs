@@ -374,7 +374,7 @@ namespace BackupManager
                                 // There was an error with the hashcodes of the source file anf the file on the backup disk
                                 Utils.LogWithPushover(BackupAction.CheckBackupDisk,
                                                       PushoverPriority.High,
-                                                      $"There was an error with the hashcodes on the source and backup disk. It's likely the sourcefile has changed since the last backup of {backupFile.FullPath}. It could be that the source file or destination file are corrupted though.");
+                                                      $"There was an error with the hashcodes on the source and backup disk. It's likely the sourcefile has changed since the last backup of {backupFile.FullPath}. It could be that the source file or destination file are corrupted or in use by another process.");
 
                                 diskInfoMessageWasTheLastSent = false;
 

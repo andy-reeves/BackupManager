@@ -308,17 +308,17 @@ namespace BackupManager.Entities
         /// </summary>
         /// <param name="disk">The BackupDisk the BackupFile is on</param>
         /// <exception cref="ApplicationException"></exception>
-        /// <returns>False is the hashes are different</returns>
+        /// <returns>False is the hashes are different, or if the files are not found or or the source or backup file are not accessible</returns>
         public bool CheckContentHashes(BackupDisk disk)
         {
-            if (!File.Exists(FullPath))
+            if (!File.Exists(FullPath) || !Utils.IsFileAccessible(FullPath))
             {
                 return false;
             }
 
             string pathToBackupDiskFile = Path.Combine(disk.BackupPath, IndexFolder, RelativePath);
 
-            if (!File.Exists(pathToBackupDiskFile))
+            if (!File.Exists(pathToBackupDiskFile) || !Utils.IsFileAccessible(pathToBackupDiskFile))
             {
                 return false;
             }
