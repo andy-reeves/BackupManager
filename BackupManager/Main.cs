@@ -1294,7 +1294,7 @@ namespace BackupManager
             }
 
             mediaBackup.RemoveFilesWithFlag(false, true);
-
+            mediaBackup.UpdateLastFullScan();
             mediaBackup.Save();
 
             UpdateStatusLabel($"Saved.");
@@ -1487,7 +1487,6 @@ namespace BackupManager
                 if (!mediaBackup.Config.MasterFoldersFileChangeWatchersONOFF || doFullBackup)
                 {
                     ScanFolders();
-                    mediaBackup.MasterFoldersLastFullScan = DateTime.Now.ToString("yyyy-MM-dd");
                 }
 
                 if (mediaBackup.Config.BackupDiskDifferenceInFileCountAllowedPercentage != 0)

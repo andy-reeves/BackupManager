@@ -30,6 +30,9 @@ namespace BackupManager.Entities
         [XmlIgnore()]
         public Collection<Folder> FoldersToScan;
 
+        /// <summary>
+        /// The DateTime of the last full Master Folders scan
+        /// </summary>
         private string masterFoldersLastFullScan;
 
         // We need to a hash of the index folder and relative path
@@ -46,11 +49,6 @@ namespace BackupManager.Entities
             get
             {
                 return string.IsNullOrEmpty(masterFoldersLastFullScan) ? string.Empty : masterFoldersLastFullScan;
-            }
-
-            set
-            {
-                masterFoldersLastFullScan = value;
             }
         }
 
@@ -144,6 +142,14 @@ namespace BackupManager.Entities
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Updates the DateTime of the last full Master Folders scan.
+        /// </summary>
+        public void UpdateLastFullScan()
+        {
+            masterFoldersLastFullScan = DateTime.Now.ToString("yyyy-MM-dd");
         }
 
         public void Save()
