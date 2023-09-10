@@ -77,57 +77,73 @@ namespace BackupManager.Entities
 
         public static MediaBackup Load(string path)
         {
-            MediaBackup mediaBackup;
-            XmlSerializer serializer = new XmlSerializer(typeof(MediaBackup));
-
-            using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read))
+            try
             {
-                mediaBackup = serializer.Deserialize(stream) as MediaBackup;
-            }
+                MediaBackup mediaBackup;
+                XmlSerializer serializer = new XmlSerializer(typeof(MediaBackup));
 
-            if (mediaBackup == null)
-            {
-                return null;
-            }
-
-            mediaBackup.mediaBackupPath = path;
-
-            foreach (BackupFile backupFile in mediaBackup.BackupFiles)
-            {
-                if (backupFile.ContentsHash == Utils.ZeroByteHash)
+                using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read))
                 {
-                    throw new ApplicationException("Zerobyte Hash detected on load");
+                    mediaBackup = serializer.Deserialize(stream) as MediaBackup;
                 }
 
-                if (!mediaBackup.indexFolderAndRelativePath.Contains(backupFile.Hash))
+                if (mediaBackup == null)
                 {
-                    mediaBackup.indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
-                }
-                else
-                {
-                    throw new ApplicationException($"Duplicate hash found on load of {backupFile.FileName}");
+                    return null;
                 }
 
-                if (!backupFile.DiskChecked.HasValue() || !backupFile.Disk.HasValue())
+                mediaBackup.mediaBackupPath = path;
+
+                foreach (BackupFile backupFile in mediaBackup.BackupFiles)
                 {
-                    backupFile.ClearDiskChecked();
+                    if (backupFile.ContentsHash == Utils.ZeroByteHash)
+                    {
+                        throw new ApplicationException("Zerobyte Hash detected on load");
+                    }
+
+                    if (!mediaBackup.indexFolderAndRelativePath.Contains(backupFile.Hash))
+                    {
+                        mediaBackup.indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
+                    }
+                    else
+                    {
+                        throw new ApplicationException($"Duplicate hash found on load of {backupFile.FileName}");
+                    }
+
+                    if (!backupFile.DiskChecked.HasValue() || !backupFile.Disk.HasValue())
+                    {
+                        backupFile.ClearDiskChecked();
+                    }
                 }
+
+                Config config = Config.Load(Path.Combine(new FileInfo(path).DirectoryName, "Config.xml"));
+
+                if (config != null)
+                {
+                    mediaBackup.Config = config;
+                }
+
+                return mediaBackup;
             }
-
-            Config config = Config.Load(Path.Combine(new FileInfo(path).DirectoryName, "Config.xml"));
-
-            if (config != null)
+            catch (InvalidOperationException ex)
             {
-                mediaBackup.Config = config;
+                throw new ApplicationException($"Unable to load MediaBackup.xml {ex}");
             }
-
-            return mediaBackup;
         }
 
-        public bool GetMasterFolderAndIndexFoldersForPath(string path, out string masterFolder, out string indexFolder)
+        /// <summary>
+        /// Returns the MasterFolder, IndexFolder and RelativePath for the path provided.
+        /// </summary>
+        /// <param name="path">Full path to the file</param>
+        /// <param name="masterFolder"></param>
+        /// <param name="indexFolder"></param>
+        /// <returns>False if the MasterFolder or IndexFolder cannot be found.</returns>
+        public bool GetFoldersForPath(string path, out string masterFolder, out string indexFolder, out string relativePath)
         {
             masterFolder = null;
             indexFolder = null;
+            relativePath = null;
+
             foreach (string master in Config.MasterFolders)
             {
                 foreach (string index in Config.IndexFolders)
@@ -136,6 +152,8 @@ namespace BackupManager.Entities
                     {
                         masterFolder = master;
                         indexFolder = index;
+                        relativePath = BackupFile.GetRelativePath(path, masterFolder, indexFolder);
+
                         return true;
                     }
                 }
@@ -205,13 +223,27 @@ namespace BackupManager.Entities
         /// Gets a BackupFile representing the file at fullPath
         /// </summary>
         /// <param name="fullPath">The fullPath to the file.</param>
-        /// <param name="masterFolder"></param>
-        /// <param name="indexFolder"></param>
-        /// <returns>Null if it wasn't found or couldn't be created</returns>
-        public BackupFile GetBackupFile(string fullPath, string masterFolder, string indexFolder)
+        /// <returns>Null if it wasn't found or couldn't be created maybe locked by another process</returns>
+        public BackupFile GetBackupFile(string fullPath)
         {
             Utils.Trace("GetBackupFile enter");
             Utils.Trace($"Params: path={fullPath}");
+
+            if (!File.Exists(fullPath) || !Utils.IsFileAccessible(fullPath))
+            {
+                return null;
+            }
+
+            if (!GetFoldersForPath(fullPath, out string masterFolder, out string indexFolder, out string relativePath))
+            {
+                throw new ApplicationException("Unable to determine MasterFolder or IndexFolder.");
+
+            }
+
+            if (string.IsNullOrEmpty(indexFolder) || string.IsNullOrEmpty(masterFolder))
+            {
+                throw new ApplicationException("IndexFolder or MasterFolder is empty. Not supported");
+            }
 
             // we hash the path of the file so we can look it up quickly
             // then we check the ModifiedTime and size
@@ -219,16 +251,9 @@ namespace BackupManager.Entities
             // files with same hash are allowed (Porridge TV ep and movie)
             // files can't have same hash and same filename though
 
-            if (!File.Exists(fullPath))
-            {
-                return null;
-            }
-
             string hashOfContents;
 
             BackupFile backupFile;
-
-            string relativePath = BackupFile.GetRelativePath(fullPath, masterFolder, indexFolder);
 
             string hashKey = Path.Combine(indexFolder, relativePath);
 
@@ -309,30 +334,27 @@ namespace BackupManager.Entities
         }
 
         /// <summary>
-        /// Ensures the BackupFile exists and sets the Flag=TRUE. Sets Deleted=FALSE 
+        /// Ensures the BackupFile exists and sets the Flag=TRUE. Sets Deleted=FALSE.   
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="masterFolder"></param>
-        /// <param name="indexFolder"></param>
-        /// <exception cref="ApplicationException"></exception>
-        internal void EnsureFile(string path)
+        /// <param name="path">Full path to the path in the MasterFolder</param>
+        /// <returns>Null is the file  was locked or an error occured</returns>
+        internal bool EnsureFile(string path)
         {
             Utils.Trace("EnsureFile enter");
-            _ = GetMasterFolderAndIndexFoldersForPath(path, out string masterFolder, out string indexFolder);
 
-            // Empty Index folder is not allowed
-            if (string.IsNullOrEmpty(indexFolder))
+            BackupFile backupFile = GetBackupFile(path);
+
+            if (backupFile == null)
             {
-                throw new ApplicationException("IndexFolder is empty. Not supported");
+                Utils.Trace("EnsureFile exit with False");
+                return false;
             }
-
-            BackupFile backupFile = GetBackupFile(path, masterFolder, indexFolder)
-                                    ?? throw new ApplicationException($"Duplicate hashcode detected indicated a copy of a file at {path}");
 
             backupFile.Deleted = false;
             backupFile.Flag = true;
 
-            Utils.Trace("EnsureFile exit");
+            Utils.Trace("EnsureFile exit with True");
+            return true;
         }
 
         /// <summary>
@@ -396,11 +418,11 @@ namespace BackupManager.Entities
         }
 
         /// <summary>
-        /// Gets a BackupFile from the path provided. Path should include indexfolder and relativePath
+        /// Gets a BackupFile from the path provided. Path should include indexfolder and relativePath and not a full path
         /// </summary>
-        /// <param name="path"></param>
+        /// <param name="indexFolderAndRelativePath"></param>
         /// <returns>Null if it doen't exist.</returns>
-        public BackupFile GetBackupFile(string path)
+        public BackupFile GetBackupFileFromHashKey(string path)
         {
             return indexFolderAndRelativePath.Contains(path) ? (BackupFile)indexFolderAndRelativePath[path] : null;
         }

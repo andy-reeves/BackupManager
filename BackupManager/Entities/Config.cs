@@ -6,6 +6,7 @@
 
 namespace BackupManager.Entities
 {
+    using System;
     using System.Collections.ObjectModel;
     using System.IO;
     using System.Xml.Serialization;
@@ -176,22 +177,29 @@ namespace BackupManager.Entities
 
         public static Config Load(string path)
         {
-            Config config;
-            XmlSerializer serializer = new XmlSerializer(typeof(Config));
-
-            using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read))
+            try
             {
-                config = serializer.Deserialize(stream) as Config;
+                Config config;
+                XmlSerializer serializer = new XmlSerializer(typeof(Config));
+
+                using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read))
+                {
+                    config = serializer.Deserialize(stream) as Config;
+                }
+
+                Rules rules = Rules.Load(Path.Combine(new FileInfo(path).DirectoryName, "Rules.xml"));
+
+                if (rules != null)
+                {
+                    config.FileRules = rules.FileRules;
+                }
+
+                return config;
             }
-
-            Rules rules = Rules.Load(Path.Combine(new FileInfo(path).DirectoryName, "Rules.xml"));
-
-            if (rules != null)
+            catch (InvalidOperationException ex)
             {
-                config.FileRules = rules.FileRules;
+                throw new ApplicationException($"Unable to load config.xml {ex}");
             }
-
-            return config ?? null;
         }
 
         internal void LogParameters()

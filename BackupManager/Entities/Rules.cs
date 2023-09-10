@@ -6,6 +6,7 @@
 
 namespace BackupManager.Entities
 {
+    using System;
     using System.Collections.ObjectModel;
     using System.IO;
     using System.Xml.Serialization;
@@ -21,15 +22,23 @@ namespace BackupManager.Entities
 
         public static Rules Load(string path)
         {
-            Rules rules;
-            XmlSerializer serializer = new XmlSerializer(typeof(Rules));
-
-            using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read))
+            try
             {
-                rules = serializer.Deserialize(stream) as Rules;
+                Rules rules;
+                XmlSerializer serializer = new XmlSerializer(typeof(Rules));
+
+                using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read))
+                {
+                    rules = serializer.Deserialize(stream) as Rules;
+                }
+
+                return rules;
             }
 
-            return rules ?? null;
+            catch (InvalidOperationException ex)
+            {
+                throw new ApplicationException($"Unable to load Rules.xml {ex}");
+            }
         }
     }
 }

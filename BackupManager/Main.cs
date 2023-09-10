@@ -341,7 +341,7 @@ namespace BackupManager
 
                 if (mediaBackup.Contains(backupFileIndexFolderRelativePath))
                 {
-                    BackupFile backupFile = mediaBackup.GetBackupFile(backupFileIndexFolderRelativePath);
+                    BackupFile backupFile = mediaBackup.GetBackupFileFromHashKey(backupFileIndexFolderRelativePath);
 
                     if (File.Exists(backupFile.FullPath))
                     {
@@ -1171,7 +1171,11 @@ namespace BackupManager
             }
         }
 
-        private void ScanFolders()
+        /// <summary>
+        /// Scans all MasterFolders and IndexFolders
+        /// </summary>
+        /// <returns>True if successful otherwise False</returns>
+        private bool ScanFolders()
         {
             Utils.Trace("ScanFolders enter");
 
@@ -1263,7 +1267,10 @@ namespace BackupManager
 
                     foreach (string indexFolder in mediaBackup.Config.IndexFolders)
                     {
-                        ScanSingleFolder(Path.Combine(masterFolder, indexFolder));
+                        if (!ScanSingleFolder(Path.Combine(masterFolder, indexFolder)))
+                        {
+                            return false;
+                        }
                     }
                 }
                 else
@@ -1329,11 +1336,16 @@ namespace BackupManager
                                   $"{filesNotOnBackupDisk.Count():n0} files to backup at {Utils.FormatSize(fileSizeToCopy)}");
 
             Utils.LogWithPushover(BackupAction.ScanFolders, "Completed");
-
             Utils.Trace("ScanFolders exit");
+            return true;
         }
 
-        private void ScanSingleFolder(string folderToCheck)
+        /// <summary>
+        /// Scan the folder provided
+        /// </summary>
+        /// <param name="folderToCheck"></param>
+        /// <returns>True if the scan was successful otherwise False.</returns>
+        private bool ScanSingleFolder(string folderToCheck)
         {
             if (Directory.Exists(folderToCheck))
             {
@@ -1378,10 +1390,15 @@ namespace BackupManager
                         }
                     }
 
-                    mediaBackup.EnsureFile(file);
+                    if (!mediaBackup.EnsureFile(file))
+                    {
+                        return false;
+                    }
+
                     UpdateMediaFilesCountDisplay();
                 }
             }
+            return true;
         }
 
         #endregion
@@ -2389,7 +2406,7 @@ namespace BackupManager
                 if (a != null)
                 {
                     Utils.Trace($"path {a.Item1}");
-                    _ = mediaBackup.GetMasterFolderAndIndexFoldersForPath(a.Item1, out string masterFolder, out string indexFolder);
+                    _ = mediaBackup.GetFoldersForPath(a.Item1, out string masterFolder, out string indexFolder, out _);
 
                     Utils.Trace($"masterFolder {masterFolder}");
                     Utils.Trace($"indexFolder {indexFolder}");
@@ -2440,25 +2457,27 @@ namespace BackupManager
                     if (a.Value.AddSeconds(mediaBackup.Config.MasterFolderScanMinimumAgeBeforeScanning) < DateTime.Now)
                     {
                         mediaBackup.ClearFlags();
-                        ScanSingleFolder(a.Key);
-                        _ = foldersToScan.Remove(a.Key);
-
-                        // instead of removing files that are no longer found in a folder we now flag them as deleted so we can report them later
-                        // unless they aren't on a backup disk in which case they are removed now 
-                        List<BackupFile> files = mediaBackup.BackupFiles.Where(b => !b.Flag && b.FullPath.StartsWith(a.Key)).ToList();
-                        for (int j = files.Count() - 1; j >= 0; j--)
+                        if (ScanSingleFolder(a.Key))
                         {
-                            BackupFile c = files[j];
-                            if (string.IsNullOrEmpty(c.Disk))
+                            _ = foldersToScan.Remove(a.Key);
+
+                            // instead of removing files that are no longer found in a folder we now flag them as deleted so we can report them later
+                            // unless they aren't on a backup disk in which case they are removed now 
+                            List<BackupFile> files = mediaBackup.BackupFiles.Where(b => !b.Flag && b.FullPath.StartsWith(a.Key)).ToList();
+                            for (int j = files.Count() - 1; j >= 0; j--)
                             {
-                                mediaBackup.RemoveFile(c);
+                                BackupFile c = files[j];
+                                if (string.IsNullOrEmpty(c.Disk))
+                                {
+                                    mediaBackup.RemoveFile(c);
+                                }
+                                else
+                                {
+                                    c.Deleted = true;
+                                }
                             }
-                            else
-                            {
-                                c.Deleted = true;
-                            }
+                            toSave = true;
                         }
-                        toSave = true;
                     }
                 }
 

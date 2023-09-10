@@ -1702,5 +1702,30 @@ namespace BackupManager
 
             return timeLeft;
         }
+
+        /// <summary>
+        /// Returns True if FileName is accessible (not locked) by another process
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns>True if not locked or False if locked</returns>
+        internal static bool IsFileAccessible(string fileName)
+        {
+            Trace("IsFileAccessible enter");
+            Trace($"fileName = {fileName}");
+
+            try
+            {
+                FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+
+                fileStream.Close();
+            }
+            catch (IOException)
+            {
+                Trace("IsFileAccessible esit with False");
+                return false;
+            }
+            Trace("IsFileAccessible exit with True");
+            return true;
+        }
     }
 }

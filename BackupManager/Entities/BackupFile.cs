@@ -229,6 +229,7 @@ namespace BackupManager.Entities
             UpdateLastWriteTime();
             UpdateFileLength();
         }
+
         /// <summary>
         /// Returns the remaining path from fullPath after masterFolder and indexFolder
         /// </summary>
