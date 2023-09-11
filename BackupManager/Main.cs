@@ -1257,6 +1257,15 @@ namespace BackupManager
                                               $"Free space on {masterFolder} is too low");
                     }
 
+                    UpdateStatusLabel($"Deleting empty folders in {masterFolder}");
+
+                    string[] directoriesDeleted = Utils.DeleteEmptyDirectories(masterFolder);
+
+                    foreach (string directory in directoriesDeleted)
+                    {
+                        Utils.Log(BackupAction.ScanFolders, $"Deleted empty folder {directory}");
+                    }
+
                     UpdateStatusLabel($"Scanning {masterFolder}");
 
                     // Check for files in the root of the master folder alongside te indexfolders
