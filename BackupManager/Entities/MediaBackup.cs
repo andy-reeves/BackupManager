@@ -50,6 +50,10 @@ namespace BackupManager.Entities
             {
                 return string.IsNullOrEmpty(masterFoldersLastFullScan) ? string.Empty : masterFoldersLastFullScan;
             }
+            set
+            {
+                masterFoldersLastFullScan = value;
+            }
         }
 
         public MediaBackup()
