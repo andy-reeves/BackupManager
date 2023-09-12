@@ -73,7 +73,7 @@
 
   <!-- If True we test the speed of the disks -->
   <SpeedTestONOFF>false</SpeedTestONOFF>
- 
+
   <Monitors>
     <Monitor>
       <Url />
@@ -82,10 +82,12 @@
       <ApplicationToStart>"%ProgramFiles(x86)%\Plex\Plex Media Server\Plex Media Server.exe"</ApplicationToStart>
       <Name>Plex</Name>
       <Port>0</Port>
+      <FailureTimePeriod>30</FailureTimePeriod>
+      <MaximumFailures>10</MaximumFailures>
     </Monitor>
   </Monitors>
-
-    <MasterFolders>
+  
+  <MasterFolders>
       <!-- List each UNC path that you want to scan for files to backup here -->
       <MasterFolder>\\nas1\assets1\_Test</MasterFolder> 
     </MasterFolders>

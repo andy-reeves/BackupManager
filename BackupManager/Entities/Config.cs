@@ -252,6 +252,9 @@ namespace BackupManager.Entities
                 text += $"Monitor.Port: {monitor.Port}\n";
                 text += $"Monitor.ServiceToRestart: {monitor.ServiceToRestart}\n";
                 text += $"Monitor.Timeout: {monitor.Timeout}\n";
+                text += $"Monitor.FailureTimePeriod: {monitor.FailureTimePeriod}\n";
+                text += $"Monitor.MaximumFailures: {monitor.MaximumFailures}\n";
+
             }
             Utils.Log(BackupAction.General, $"Monitors:\n{text}");
 

@@ -6,6 +6,10 @@
 
 namespace BackupManager.Entities
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Xml.Serialization;
+
     public class ProcessServiceMonitor
     {
         public string Url;
@@ -39,8 +43,60 @@ namespace BackupManager.Entities
         public int Port;
 
         /// <summary>
-        /// Any servie names to restart if this monitor is detected down.
+        /// Any service names to restart if this monitor is detected down.
         /// </summary>
         public string ServiceToRestart;
+
+        /// <summary>
+        /// The list of DateTimes of the last failures to occur
+        /// </summary>
+        [XmlIgnore()]
+        public List<DateTime> Failures = new List<DateTime>();
+
+        /// <summary>
+        /// Number of seconds to count the number of service/process failures. If this is exceeded then the a service stop/restart is no longer attempted
+        /// </summary>
+        public int FailureTimePeriod;
+
+        /// <summary>
+        /// The maximum number of failures in FailureTimePeriod before we stop trying to start services again
+        /// </summary>
+        public int MaximumFailures;
+
+        /// <summary>
+        /// Once we've failed too much we set this to TRUE and don't try anymore
+        /// </summary>
+        [XmlIgnore()]
+        public bool FailureRetryExceeded;
+
+        public void UpdateFailures(DateTime newFailure)
+        {
+            Utils.Trace("UpdateFailures enter");
+            if (FailureRetryExceeded)
+            {
+                Utils.Trace("UpdateFailures exit as FailureRetry=TRUE");
+                return;
+            }
+
+            Failures.Add(newFailure);
+
+            for (int i = Failures.Count - 1; i >= 0; i--)
+            {
+                DateTime a = Failures[i];
+                if (a < DateTime.Now.AddSeconds(-FailureTimePeriod))
+                {
+                    Utils.Trace("UpdateFailures removing old failure as expired");
+                    Failures.Remove(a);
+                }
+            }
+
+            if (Failures.Count > MaximumFailures)
+            {
+                Utils.Trace("UpdateFailures setting FailureRetry=TRUE");
+                FailureRetryExceeded = true;
+            }
+            Utils.Trace($"Failures.Count = {Failures.Count}");
+            Utils.Trace("UpdateFailures exit");
+        }
     }
 }

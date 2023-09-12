@@ -2003,79 +2003,84 @@ namespace BackupManager
                 // The monitor is down
                 if (!result)
                 {
-                    string text = $"'{monitor.Name}' is down";
+                    monitor.UpdateFailures(DateTime.Now);
 
-                    Utils.LogWithPushover(BackupAction.Monitoring,
-                                          PushoverPriority.High,
-                                          text);
-
-                    if (monitor.ProcessToKill.HasValue())
+                    if (!monitor.FailureRetryExceeded)
                     {
-                        text = $"Stopping all '{monitor.ProcessToKill}' processes that match";
+                        string text = $"'{monitor.Name}' is down";
 
                         Utils.LogWithPushover(BackupAction.Monitoring,
-                                              PushoverPriority.Normal,
+                                              PushoverPriority.High,
                                               text);
 
-                        _ = Utils.KillProcesses(monitor.ProcessToKill);
-                    }
-
-                    if (monitor.ApplicationToStart.HasValue())
-                    {
-                        text = $"Starting {monitor.ApplicationToStart}";
-
-                        Utils.LogWithPushover(BackupAction.Monitoring,
-                                              PushoverPriority.Normal,
-                                              text);
-
-                        string processToStart = Environment.ExpandEnvironmentVariables(monitor.ApplicationToStart);
-
-                        if (File.Exists(processToStart))
+                        if (monitor.ProcessToKill.HasValue())
                         {
-                            Process newProcess = Process.Start(processToStart, monitor.ApplicationToStartArguments);
+                            text = $"Stopping all '{monitor.ProcessToKill}' processes that match";
 
-                            if (newProcess == null)
+                            Utils.LogWithPushover(BackupAction.Monitoring,
+                                                  PushoverPriority.Normal,
+                                                  text);
+
+                            _ = Utils.KillProcesses(monitor.ProcessToKill);
+                        }
+
+                        if (monitor.ApplicationToStart.HasValue())
+                        {
+                            text = $"Starting {monitor.ApplicationToStart}";
+
+                            Utils.LogWithPushover(BackupAction.Monitoring,
+                                                  PushoverPriority.Normal,
+                                                  text);
+
+                            string processToStart = Environment.ExpandEnvironmentVariables(monitor.ApplicationToStart);
+
+                            if (File.Exists(processToStart))
+                            {
+                                Process newProcess = Process.Start(processToStart, monitor.ApplicationToStartArguments);
+
+                                if (newProcess == null)
+                                {
+                                    Utils.LogWithPushover(BackupAction.Monitoring,
+                                                          PushoverPriority.High,
+                                                          $"Failed to start the new process '{monitor.Name}'");
+                                }
+                                else
+                                {
+                                    Utils.LogWithPushover(BackupAction.Monitoring,
+                                                          PushoverPriority.Normal,
+                                                          $"'{monitor.Name}' started");
+                                }
+                            }
+                            else
                             {
                                 Utils.LogWithPushover(BackupAction.Monitoring,
                                                       PushoverPriority.High,
-                                                      $"Failed to start the new process '{monitor.Name}'");
+                                                      $"Failed to start the new process '{monitor.Name}' as its not found at {monitor.ApplicationToStart} (expanded to {processToStart})");
                             }
-                            else
+                        }
+
+                        if (monitor.ServiceToRestart.HasValue())
+                        {
+                            text = $"Restarting '{monitor.ServiceToRestart}'";
+
+                            Utils.LogWithPushover(BackupAction.Monitoring,
+                                                  PushoverPriority.Normal,
+                                                  text);
+
+                            result = Utils.RestartService(monitor.ServiceToRestart, monitor.Timeout * 1000);
+
+                            if (result)
                             {
                                 Utils.LogWithPushover(BackupAction.Monitoring,
                                                       PushoverPriority.Normal,
                                                       $"'{monitor.Name}' started");
                             }
-                        }
-                        else
-                        {
-                            Utils.LogWithPushover(BackupAction.Monitoring,
-                                                  PushoverPriority.High,
-                                                  $"Failed to start the new process '{monitor.Name}' as its not found at {monitor.ApplicationToStart} (expanded to {processToStart})");
-                        }
-                    }
-
-                    if (monitor.ServiceToRestart.HasValue())
-                    {
-                        text = $"Restarting '{monitor.ServiceToRestart}'";
-
-                        Utils.LogWithPushover(BackupAction.Monitoring,
-                                              PushoverPriority.Normal,
-                                              text);
-
-                        result = Utils.RestartService(monitor.ServiceToRestart, monitor.Timeout * 1000);
-
-                        if (result)
-                        {
-                            Utils.LogWithPushover(BackupAction.Monitoring,
-                                                  PushoverPriority.Normal,
-                                                  $"'{monitor.Name}' started");
-                        }
-                        else
-                        {
-                            Utils.LogWithPushover(BackupAction.Monitoring,
-                                                  PushoverPriority.High,
-                                                  $"Failed to restart the service '{monitor.Name}'");
+                            else
+                            {
+                                Utils.LogWithPushover(BackupAction.Monitoring,
+                                                      PushoverPriority.High,
+                                                      $"Failed to restart the service '{monitor.Name}'");
+                            }
                         }
                     }
                 }
