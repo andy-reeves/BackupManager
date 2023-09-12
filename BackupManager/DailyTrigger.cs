@@ -40,6 +40,8 @@ namespace BackupManager
         /// <param name="second">The second to trigger</param>
         public DailyTrigger(int hour, int minute = 0, int second = 0)
         {
+            Utils.Trace("DailyTrigger enter");
+
             TriggerHour = new TimeSpan(hour, minute, second);
             CancellationToken = new CancellationTokenSource();
             RunningTask = Task.Run(async () =>
@@ -52,10 +54,16 @@ namespace BackupManager
                         triggerTime = triggerTime.Add(new TimeSpan(24, 0, 0));
                     }
 
+                    Utils.Trace($"triggerTime={triggerTime}");
+
                     await Task.Delay(triggerTime, CancellationToken.Token);
+                    Utils.Trace($"Invoke now");
                     OnTimeTriggered?.Invoke();
+                    Utils.Trace($"Invoke complete");
                 }
             }, CancellationToken.Token);
+
+            Utils.Trace("DailyTrigger exit");
         }
 
         /// <inheritdoc/>

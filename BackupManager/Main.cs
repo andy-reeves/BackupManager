@@ -1450,10 +1450,14 @@ namespace BackupManager
 
         private void SetupDailyTrigger(bool addTrigger)
         {
+            Utils.Trace($"SetupDailyTrigger enter");
+
             if (addTrigger)
             {
                 trigger = new DailyTrigger(scheduledDateTimePicker.Value);
+
                 trigger.OnTimeTriggered += scheduledBackupAction;
+                Utils.Trace($"SetupDailyTrigger OnTimeTriggered added");
                 UpdateBackupTimer_Tick(null, null);
             }
             else
@@ -1461,11 +1465,13 @@ namespace BackupManager
                 if (trigger != null)
                 {
                     trigger.OnTimeTriggered -= scheduledBackupAction;
+                    Utils.Trace($"SetupDailyTrigger OnTimeTriggered removed");
                 }
                 timeToNextRunTextBox.Text = string.Empty;
             }
 
             updateBackupTimer.Enabled = addTrigger;
+            Utils.Trace($"SetupDailyTrigger exit");
         }
 
         private void ScheduledBackupAsync()
@@ -1477,6 +1483,11 @@ namespace BackupManager
                 DisableControlsForAsyncTasks();
 
                 ScheduledBackup();
+
+                // reset the daily trigger
+                SetupDailyTrigger(mediaBackup.Config.ScheduledBackupONOFF);
+
+                Utils.Trace($"TriggerHour={trigger.TriggerHour}");
 
                 ResetAllControls();
                 longRunningActionExecutingRightNow = false;
