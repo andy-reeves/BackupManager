@@ -2528,6 +2528,11 @@ namespace BackupManager
 
                             toSave = true;
                         }
+                        else
+                        {
+                            string text = $"Folder scan skipped. It will be scanned again in {mediaBackup.Config.MasterFoldersScanTimer} seconds.";
+                            Utils.LogWithPushover(BackupAction.ScanFolders, text);
+                        }
                     }
                 }
 
