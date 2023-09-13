@@ -7,8 +7,11 @@
 namespace BackupManager.Entities
 {
     using System;
+    using System.Collections;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.IO;
+    using System.Reflection;
     using System.Xml.Serialization;
 
     public class Config
@@ -202,108 +205,69 @@ namespace BackupManager.Entities
             }
         }
 
+        /// <summary>
+        /// Uses Reflection to Log all the Config parameters
+        /// </summary>
         internal void LogParameters()
         {
-            string text = string.Empty;
-            foreach (string masterFolder in MasterFolders)
+            LogFieldsForType(this);
+        }
+
+        private void LogFieldsForType(object obj)
+        {
+            Type myType = obj.GetType();
+            FieldInfo[] fields = myType.GetFields();
+            string parameterText;
+            string text;
+
+            foreach (FieldInfo field in fields)
             {
-                text += $"{masterFolder}\n";
+                if (field.FieldType == typeof(Collection<string>))
+                {
+                    text = string.Empty;
+                    Collection<string> fieldValues = (Collection<string>)field.GetValue(obj);
+                    foreach (string fieldValue in fieldValues)
+                    {
+                        text += $"{fieldValue}\n";
+                    }
+                    if (fieldValues.Count == 0)
+                    {
+                        text += "<none>";
+                    }
+                    parameterText = $" {field.Name}:\n{text}";
+                    Utils.Log(BackupAction.General, parameterText);
+                }
+                else if (field.FieldType == typeof(Collection<ProcessServiceMonitor>)
+                      || field.FieldType == typeof(Collection<FileRule>)
+                      || field.FieldType == typeof(List<DateTime>)
+                    )
+                {
+                    text = string.Empty;
+                    Utils.Log(BackupAction.General, $"{field.Name}:");
+
+                    ICollection fieldValues = (ICollection)field.GetValue(obj);
+                    foreach (object fieldValue in fieldValues)
+                    {
+                        LogFieldsForType(fieldValue);
+                    }
+                    if (fieldValues.Count == 0)
+                    {
+                        Utils.Log(BackupAction.General, "<none>");
+                    }
+                }
+                else
+                {
+                    if (field.FieldType.IsGenericType)
+                    {
+                        Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, $"Unknown Config parameter type detected: {field.Name}");
+                    }
+                    else
+                    {
+                        parameterText = $"{myType.Name}.{field.Name} : {field.GetValue(obj)}\n";
+                        Utils.Log(BackupAction.General, parameterText);
+                    }
+                }
             }
-
-            string parameterText = $" MasterFolders:\n{text}";
-
-            text = string.Empty;
-            foreach (string indexFolder in IndexFolders)
-            {
-                text += $"{indexFolder}\n";
-            }
-            parameterText += $"IndexFolders:\n{text}";
-
-            text = string.Empty;
-            foreach (string filter in Filters)
-            {
-                text += $"{filter}\n";
-            }
-            parameterText += $"Filters:\n{text}";
-
-            text = string.Empty;
-            foreach (string filesToDelete in FilesToDelete)
-            {
-                text += $"{filesToDelete}\n";
-            }
-            parameterText += $"FilesToDelete:\n{text}";
-
-            text = string.Empty;
-            foreach (string disksToSkip in DisksToSkipOnRestore)
-            {
-                text += $"{disksToSkip}\n";
-            }
-            parameterText += $"DisksToSkipOnRestore:\n{text}";
-            Utils.Log(BackupAction.General, parameterText);
-
-            text = string.Empty;
-            foreach (ProcessServiceMonitor monitor in Monitors)
-            {
-                text += $"Monitor.Name: {monitor.Name}\n";
-                text += $"Monitor.ProcessToKill: {monitor.ProcessToKill}\n";
-                text += $"Monitor.Url: {monitor.Url}\n";
-                text += $"Monitor.ApplicationToStart: {monitor.ApplicationToStart}\n";
-                text += $"Monitor.ApplicationToStartArguments: {monitor.ApplicationToStartArguments}\n";
-                text += $"Monitor.Port: {monitor.Port}\n";
-                text += $"Monitor.ServiceToRestart: {monitor.ServiceToRestart}\n";
-                text += $"Monitor.Timeout: {monitor.Timeout}\n";
-                text += $"Monitor.FailureTimePeriod: {monitor.FailureTimePeriod}\n";
-                text += $"Monitor.MaximumFailures: {monitor.MaximumFailures}\n";
-
-            }
-            Utils.Log(BackupAction.General, $"Monitors:\n{text}");
-
-            text = string.Empty;
-            foreach (FileRule rule in FileRules)
-            {
-                text += $"FileRule.Number: {rule.Number}\n";
-                text += $"FileRule.Name: {rule.Name}\n";
-                text += $"FileRule.FileDiscoveryRegEx: {rule.FileDiscoveryRegEx}\n";
-                text += $"FileRule.FileTestRegEx: {rule.FileTestRegEx}\n";
-                text += $"FileRule.Message: {rule.Message}\n";
-            }
-            Utils.Log(BackupAction.General, $"FileRules:\n{text}");
-
-            text = $"BackupDiskDaysToReportSinceFilesChecked : {BackupDiskDaysToReportSinceFilesChecked}\n";
-            text += $"BackupDiskDifferenceInFileCountAllowedPercentage : {BackupDiskDifferenceInFileCountAllowedPercentage}\n";
-            text += $"BackupDiskMinimumCriticalSpace : {BackupDiskMinimumCriticalSpace}\n";
-            text += $"BackupDiskMinimumFreeSpaceToLeave : {BackupDiskMinimumFreeSpaceToLeave}\n";
-
-            text += $"MasterFoldersDaysBetweenFullScan : {MasterFoldersDaysBetweenFullScan}\n";
-            text += $"MasterFoldersFileChangeWatchersONOFF : {MasterFoldersFileChangeWatchersONOFF}\n";
-            text += $"MasterFolderMinimumCriticalSpace : {MasterFolderMinimumCriticalSpace}\n";
-            text += $"MasterFolderMinimumReadSpeed : {MasterFolderMinimumReadSpeed}\n";
-            text += $"MasterFolderMinimumWriteSpeed : {MasterFolderMinimumWriteSpeed}\n";
-            text += $"MasterFoldersProcessChangesTimer : {MasterFoldersProcessChangesTimer}\n";
-            text += $"MasterFoldersScanTimer : {MasterFoldersScanTimer}\n";
-            text += $"MasterFolderScanMinimumAgeBeforeScanning : {MasterFolderScanMinimumAgeBeforeScanning}\n";
-            Utils.Log(BackupAction.General, text);
-
-            text = $"MonitoringInterval : {MonitoringInterval}\n";
-            text += $"MonitoringONOFF : {MonitoringONOFF}\n";
-
-            text += $"PushoverAppToken : {PushoverAppToken}\n";
-            text += $"PushoverONOFF : {PushoverONOFF}\n";
-            text += $"PushoverSendLowONOFF : {PushoverSendLowONOFF}\n";
-            text += $"PushoverSendNormalONOFF : {PushoverSendNormalONOFF}\n";
-            text += $"PushoverSendHighONOFF : {PushoverSendHighONOFF}\n";
-            text += $"PushoverSendEmergencyONOFF : {PushoverSendEmergencyONOFF}\n";
-            text += $"PushoverWarningMessagesRemaining : {PushoverWarningMessagesRemaining}\n";
-            text += $"PushoverUserKey : {PushoverUserKey}\n";
-
-            text += $"ScheduledBackupRunOnStartup : {ScheduledBackupRunOnStartup}\n";
-            text += $"ScheduledBackupONOFF : {ScheduledBackupONOFF}\n";
-            text += $"ScheduledBackupStartTime : {ScheduledBackupStartTime}\n";
-
-            text += $"SpeedTestFileSize : {SpeedTestFileSize}\n";
-            text += $"SpeedTestIterations : {SpeedTestIterations}\n";
-            text += $"SpeedTestONOFF : {SpeedTestONOFF}\n";
-            Utils.Log(BackupAction.General, text);
         }
     }
 }

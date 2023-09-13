@@ -86,7 +86,7 @@ namespace BackupManager
 
                 // Log the parameters after setting the Pushover keys in the Utils class
                 mediaBackup.Config.LogParameters();
-
+                
                 // Populate the  Config.MasterFolders combo boxes
                 string[] masterFoldersArray = mediaBackup.Config.MasterFolders.ToArray();
 
