@@ -2018,7 +2018,8 @@ namespace BackupManager
 
                     if (!monitor.FailureRetryExceeded)
                     {
-                        string text = $"'{monitor.Name}' is down";
+                        string s = monitor.Failures.Count > 1 ? "s" : string.Empty;
+                        string text = $"'{monitor.Name}' is down. ${monitor.Failures.Count()} failure{s} in the last {monitor.FailureTimePeriod} seconds.";
 
                         Utils.LogWithPushover(BackupAction.Monitoring,
                                               PushoverPriority.High,
@@ -2490,8 +2491,14 @@ namespace BackupManager
                     if (a.Value.AddSeconds(mediaBackup.Config.MasterFolderScanMinimumAgeBeforeScanning) < DateTime.Now)
                     {
                         mediaBackup.ClearFlags();
+
+                        int fileCountInFolderBefore = mediaBackup.BackupFiles.Count(b => b.FullPath.StartsWith(a.Key));
+
                         if (ScanSingleFolder(a.Key))
                         {
+                            int removedFilesCount = 0;
+                            int markedAsDeletedFilesCount = 0;
+
                             _ = foldersToScan.Remove(a.Key);
 
                             // instead of removing files that are no longer found in a folder we now flag them as deleted so we can report them later
@@ -2503,12 +2510,22 @@ namespace BackupManager
                                 if (string.IsNullOrEmpty(c.Disk))
                                 {
                                     mediaBackup.RemoveFile(c);
+                                    removedFilesCount++;
                                 }
                                 else
                                 {
                                     c.Deleted = true;
+                                    markedAsDeletedFilesCount++;
                                 }
                             }
+
+                            int fileCountInFolderAfter = mediaBackup.BackupFiles.Count(b => b.FullPath.StartsWith(a.Key));
+                            int filesNotOnBackupDiskCount = mediaBackup.GetBackupFilesWithDiskEmpty().Count();
+
+                            // build the text for the scan summary
+                            string text = $"Folder scan completed. {fileCountInFolderBefore} files before and now {fileCountInFolderAfter} files. {markedAsDeletedFilesCount} marked as deleted and {removedFilesCount} removed. {filesNotOnBackupDiskCount} to backup.";
+                            Utils.LogWithPushover(BackupAction.ScanFolders, text);
+
                             toSave = true;
                         }
                     }
