@@ -222,25 +222,11 @@ namespace BackupManager.Entities
 
             foreach (FieldInfo field in fields)
             {
-                if (field.FieldType == typeof(Collection<string>))
-                {
-                    text = string.Empty;
-                    Collection<string> fieldValues = (Collection<string>)field.GetValue(obj);
-                    foreach (string fieldValue in fieldValues)
-                    {
-                        text += $"{fieldValue}\n";
-                    }
-                    if (fieldValues.Count == 0)
-                    {
-                        text += "<none>";
-                    }
-                    parameterText = $" {field.Name}:\n{text}";
-                    Utils.Log(BackupAction.General, parameterText);
-                }
-                else if (field.FieldType == typeof(Collection<ProcessServiceMonitor>)
-                      || field.FieldType == typeof(Collection<FileRule>)
-                      || field.FieldType == typeof(List<DateTime>)
-                    )
+                if (field.FieldType == typeof(Collection<ProcessServiceMonitor>)
+                       || field.FieldType == typeof(Collection<FileRule>)
+                       || field.FieldType == typeof(List<DateTime>)
+                       || field.FieldType == typeof(Collection<string>)
+                     )
                 {
                     text = string.Empty;
                     Utils.Log(BackupAction.General, $"{field.Name}:");
@@ -263,7 +249,7 @@ namespace BackupManager.Entities
                     }
                     else
                     {
-                        parameterText = $"{myType.Name}.{field.Name} : {field.GetValue(obj)}\n";
+                        parameterText = myType.Name == "String" ? $"{obj}\n" : $"{myType.Name}.{field.Name} : {field.GetValue(obj)}\n";
                         Utils.Log(BackupAction.General, parameterText);
                     }
                 }
