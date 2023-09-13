@@ -35,7 +35,10 @@ namespace BackupManager.Entities
         /// </summary>
         public string Number;
 
+        /// <summary>
+        /// We use this to track if the rule has been used for any files at all in a full scan
+        /// </summary>
         [XmlIgnore]
-        public bool Matched;
+        internal bool Matched;
     }
 }
