@@ -21,6 +21,15 @@ namespace BackupManager
         public TimeSpan TriggerHour { get; }
 
         /// <summary>
+        /// The time left until the next trigger fires
+        /// </summary>
+        /// <returns></returns>
+        public TimeSpan TimeToNextTrigger()
+        {
+            return Utils.TimeLeft(DateTime.Now, TriggerHour);
+        }
+
+        /// <summary>
         /// Task cancellation token source to cancel delayed task on disposal
         /// </summary>
         private CancellationTokenSource CancellationToken { get; set; }

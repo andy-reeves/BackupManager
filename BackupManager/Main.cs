@@ -2397,7 +2397,7 @@ namespace BackupManager
                 timeToNextRunTextBox.Text = string.Empty;
             }
 
-            timeToNextRunTextBox.Text = Utils.TimeLeft(DateTime.Now, trigger.TriggerHour).ToString("h'h 'mm'm'");
+            timeToNextRunTextBox.Text = trigger.TimeToNextTrigger().ToString("h'h 'mm'm'");
         }
 
         private void FileWatcherButton_Click(object sender, EventArgs e)
