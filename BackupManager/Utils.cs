@@ -481,8 +481,11 @@ namespace BackupManager
         {
             Trace("GetFiles enter");
 
+            Stopwatch sw = Stopwatch.StartNew();
+
             if (!Directory.Exists(path))
             {
+                Trace("GetFiles exit with new string[]");
                 return new string[] { };
             }
 
@@ -490,6 +493,7 @@ namespace BackupManager
 
             if (directoryInfo.Parent != null && AnyFlagSet(directoryInfo.Attributes, directoryAttributesToIgnore))
             {
+                Trace("GetFiles exit with new string[]");
                 return new string[] { };
             }
 
@@ -551,6 +555,7 @@ namespace BackupManager
                 }
             }
 
+            Trace($"Time taken = {sw.Elapsed.TotalSeconds} seconds");
             Trace("GetFiles exit");
             return foundFiles.ToArray();
         }
