@@ -2019,7 +2019,7 @@ namespace BackupManager
                     if (!monitor.FailureRetryExceeded)
                     {
                         string s = monitor.Failures.Count > 1 ? "s" : string.Empty;
-                        string text = $"'{monitor.Name}' is down. ${monitor.Failures.Count()} failure{s} in the last {monitor.FailureTimePeriod} seconds.";
+                        string text = $"'{monitor.Name}' is down. {monitor.Failures.Count()} failure{s} in the last {monitor.FailureTimePeriod} seconds.";
 
                         Utils.LogWithPushover(BackupAction.Monitoring,
                                               PushoverPriority.High,
