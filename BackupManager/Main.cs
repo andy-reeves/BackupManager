@@ -1452,7 +1452,7 @@ namespace BackupManager
         {
             Utils.Trace($"SetupDailyTrigger enter");
 
-            updateBackupTimer.Enabled = addTrigger;
+            updateUITimer.Enabled = true; // because we want to update the folder tracking every 1 min or so anyway
 
             if (addTrigger)
             {
@@ -1460,7 +1460,7 @@ namespace BackupManager
 
                 trigger.OnTimeTriggered += scheduledBackupAction;
                 Utils.Trace($"SetupDailyTrigger OnTimeTriggered added");
-                UpdateBackupTimer_Tick(null, null);
+                UpdateUI_Tick(null, null);
             }
             else
             {
@@ -2391,9 +2391,9 @@ namespace BackupManager
             Utils.Trace("ScheduledBackupRunNowButton_Click exit");
         }
 
-        private void UpdateBackupTimer_Tick(object sender, EventArgs e)
+        private void UpdateUI_Tick(object sender, EventArgs e)
         {
-            timeToNextRunTextBox.Text = trigger == null || !updateBackupTimer.Enabled ? string.Empty : trigger.TimeToNextTrigger().ToString("h'h 'mm'm'");
+            timeToNextRunTextBox.Text = trigger == null || !updateUITimer.Enabled ? string.Empty : trigger.TimeToNextTrigger().ToString("h'h 'mm'm'");
 
             foldersToScanTextBox.Text = foldersToScan.Count.ToString();
             fileChangesDetectedTextBox.Text = folderChanges.Count.ToString();
@@ -2544,6 +2544,20 @@ namespace BackupManager
             }
             Utils.Trace("ScanFoldersTimer_Tick exit");
 
+        }
+
+        private void Main_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (foldersToScan.Count > 0 || folderChanges.Count > 0)
+            {
+                DialogResult result = MessageBox.Show("There are folders to scan queued. Would you like to scan them before closing?", "Scan folders", MessageBoxButtons.YesNo);
+
+                if (result == DialogResult.Yes)
+                {
+                    ProcessFolderChangesTimer_Tick(null, null);
+                    ScanFoldersTimer_Tick(null, null);
+                }
+            }
         }
     }
 }

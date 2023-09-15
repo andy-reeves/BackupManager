@@ -112,7 +112,7 @@
             this.filesMarkedAsDeletedSizeTextBox = new System.Windows.Forms.TextBox();
             this.filesMarkedAsDeletedTextBox = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
-            this.updateBackupTimer = new System.Windows.Forms.Timer(this.components);
+            this.updateUITimer = new System.Windows.Forms.Timer(this.components);
             this.processFolderChangesTimer = new System.Windows.Forms.Timer(this.components);
             this.scanFoldersTimer = new System.Windows.Forms.Timer(this.components);
             this.foldersToScanTextBox = new System.Windows.Forms.TextBox();
@@ -962,10 +962,10 @@
             this.label12.TabIndex = 85;
             this.label12.Text = "Marked as Deleted";
             // 
-            // updateBackupTimer
+            // updateUITimer
             // 
-            this.updateBackupTimer.Interval = 60000;
-            this.updateBackupTimer.Tick += new System.EventHandler(this.UpdateBackupTimer_Tick);
+            this.updateUITimer.Interval = 60000;
+            this.updateUITimer.Tick += new System.EventHandler(this.UpdateUI_Tick);
             // 
             // processFolderChangesTimer
             // 
@@ -1063,6 +1063,7 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Backup Manager";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Main_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Main_FormClosed);
             this.pushoverGroupBox.ResumeLayout(false);
             this.pushoverGroupBox.PerformLayout();
@@ -1167,7 +1168,7 @@
         private System.Windows.Forms.Button scheduledBackupRunNowButton;
         private System.Windows.Forms.TextBox timeToNextRunTextBox;
         private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.Timer updateBackupTimer;
+        private System.Windows.Forms.Timer updateUITimer;
         private System.Windows.Forms.Button fileWatcherButton;
         private System.Windows.Forms.Timer processFolderChangesTimer;
         private System.Windows.Forms.Timer scanFoldersTimer;
