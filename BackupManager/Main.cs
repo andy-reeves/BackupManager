@@ -1452,6 +1452,8 @@ namespace BackupManager
         {
             Utils.Trace($"SetupDailyTrigger enter");
 
+            updateBackupTimer.Enabled = addTrigger;
+
             if (addTrigger)
             {
                 trigger = new DailyTrigger(scheduledDateTimePicker.Value);
@@ -1470,7 +1472,6 @@ namespace BackupManager
                 timeToNextRunTextBox.Text = string.Empty;
             }
 
-            updateBackupTimer.Enabled = addTrigger;
             Utils.Trace($"SetupDailyTrigger exit");
         }
 
@@ -2392,12 +2393,10 @@ namespace BackupManager
 
         private void UpdateBackupTimer_Tick(object sender, EventArgs e)
         {
-            if (trigger == null || !updateBackupTimer.Enabled)
-            {
-                timeToNextRunTextBox.Text = string.Empty;
-            }
+            timeToNextRunTextBox.Text = trigger == null || !updateBackupTimer.Enabled ? string.Empty : trigger.TimeToNextTrigger().ToString("h'h 'mm'm'");
 
-            timeToNextRunTextBox.Text = trigger.TimeToNextTrigger().ToString("h'h 'mm'm'");
+            foldersToScanTextBox.Text = foldersToScan.Count.ToString();
+            fileChangesDetectedTextBox.Text = folderChanges.Count.ToString();
         }
 
         private void FileWatcherButton_Click(object sender, EventArgs e)

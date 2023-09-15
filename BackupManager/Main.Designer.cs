@@ -115,6 +115,10 @@
             this.updateBackupTimer = new System.Windows.Forms.Timer(this.components);
             this.processFolderChangesTimer = new System.Windows.Forms.Timer(this.components);
             this.scanFoldersTimer = new System.Windows.Forms.Timer(this.components);
+            this.foldersToScanTextBox = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.fileChangesDetectedTextBox = new System.Windows.Forms.TextBox();
+            this.label15 = new System.Windows.Forms.Label();
             this.pushoverGroupBox.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.listFilesInMasterFolderGroupBox.SuspendLayout();
@@ -615,7 +619,7 @@
             // 
             this.listFilesInMasterFolderGroupBox.Controls.Add(this.listFilesInMasterFolderButton);
             this.listFilesInMasterFolderGroupBox.Controls.Add(this.listMasterFoldersComboBox);
-            this.listFilesInMasterFolderGroupBox.Location = new System.Drawing.Point(290, 202);
+            this.listFilesInMasterFolderGroupBox.Location = new System.Drawing.Point(290, 186);
             this.listFilesInMasterFolderGroupBox.Name = "listFilesInMasterFolderGroupBox";
             this.listFilesInMasterFolderGroupBox.Size = new System.Drawing.Size(217, 49);
             this.listFilesInMasterFolderGroupBox.TabIndex = 56;
@@ -626,7 +630,7 @@
             // 
             this.listFilesOnBackupDiskGroupBox.Controls.Add(this.listFilesComboBox);
             this.listFilesOnBackupDiskGroupBox.Controls.Add(this.listFilesOnBackupDiskButton);
-            this.listFilesOnBackupDiskGroupBox.Location = new System.Drawing.Point(290, 256);
+            this.listFilesOnBackupDiskGroupBox.Location = new System.Drawing.Point(290, 242);
             this.listFilesOnBackupDiskGroupBox.Name = "listFilesOnBackupDiskGroupBox";
             this.listFilesOnBackupDiskGroupBox.Size = new System.Drawing.Size(217, 54);
             this.listFilesOnBackupDiskGroupBox.TabIndex = 57;
@@ -918,7 +922,7 @@
             // 
             // estimatedFinishTimeTextBox
             // 
-            this.estimatedFinishTimeTextBox.Location = new System.Drawing.Point(677, 280);
+            this.estimatedFinishTimeTextBox.Location = new System.Drawing.Point(414, 312);
             this.estimatedFinishTimeTextBox.Name = "estimatedFinishTimeTextBox";
             this.estimatedFinishTimeTextBox.ReadOnly = true;
             this.estimatedFinishTimeTextBox.Size = new System.Drawing.Size(67, 20);
@@ -927,7 +931,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(576, 282);
+            this.label11.Location = new System.Drawing.Point(313, 314);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(102, 13);
             this.label11.TabIndex = 83;
@@ -973,11 +977,49 @@
             this.scanFoldersTimer.Interval = 30000;
             this.scanFoldersTimer.Tick += new System.EventHandler(this.ScanFoldersTimer_Tick);
             // 
+            // foldersToScanTextBox
+            // 
+            this.foldersToScanTextBox.Location = new System.Drawing.Point(677, 313);
+            this.foldersToScanTextBox.Name = "foldersToScanTextBox";
+            this.foldersToScanTextBox.ReadOnly = true;
+            this.foldersToScanTextBox.Size = new System.Drawing.Size(67, 20);
+            this.foldersToScanTextBox.TabIndex = 90;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(594, 315);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(79, 13);
+            this.label14.TabIndex = 89;
+            this.label14.Text = "Folders to scan";
+            // 
+            // fileChangesDetectedTextBox
+            // 
+            this.fileChangesDetectedTextBox.Location = new System.Drawing.Point(677, 283);
+            this.fileChangesDetectedTextBox.Name = "fileChangesDetectedTextBox";
+            this.fileChangesDetectedTextBox.ReadOnly = true;
+            this.fileChangesDetectedTextBox.Size = new System.Drawing.Size(67, 20);
+            this.fileChangesDetectedTextBox.TabIndex = 92;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(561, 285);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(112, 13);
+            this.label15.TabIndex = 91;
+            this.label15.Text = "File changes detected";
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1309, 367);
+            this.Controls.Add(this.fileChangesDetectedTextBox);
+            this.Controls.Add(this.label15);
+            this.Controls.Add(this.foldersToScanTextBox);
+            this.Controls.Add(this.label14);
             this.Controls.Add(this.fileWatcherButton);
             this.Controls.Add(this.filesMarkedAsDeletedSizeTextBox);
             this.Controls.Add(this.filesMarkedAsDeletedTextBox);
@@ -1129,6 +1171,10 @@
         private System.Windows.Forms.Button fileWatcherButton;
         private System.Windows.Forms.Timer processFolderChangesTimer;
         private System.Windows.Forms.Timer scanFoldersTimer;
+        private System.Windows.Forms.TextBox foldersToScanTextBox;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.TextBox fileChangesDetectedTextBox;
+        private System.Windows.Forms.Label label15;
     }
 }
 
