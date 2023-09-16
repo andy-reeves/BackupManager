@@ -2518,7 +2518,9 @@ namespace BackupManager
 
                             // instead of removing files that are no longer found in a folder we now flag them as deleted so we can report them later
                             // unless they aren't on a backup disk in which case they are removed now 
-                            List<BackupFile> files = mediaBackup.BackupFiles.Where(b => !b.Flag && b.FullPath.StartsWith(folderToScan.Key)).ToList();
+                            List<BackupFile> files = searchOption == SearchOption.AllDirectories
+                                ? mediaBackup.BackupFiles.Where(b => !b.Flag && b.FullPath.StartsWith(folderToScan.Key)).ToList()
+                                : mediaBackup.BackupFiles.Where(b => !b.Flag && b.FullPath.StartsWith(folderToScan.Key) && !b.RelativePath.Contains("\\")).ToList();
                             for (int j = files.Count() - 1; j >= 0; j--)
                             {
                                 BackupFile backupFile = files[j];
@@ -2559,7 +2561,6 @@ namespace BackupManager
                 }
             }
             Utils.Trace("ScanFoldersTimer_Tick exit");
-
         }
 
         private void Main_FormClosing(object sender, FormClosingEventArgs e)

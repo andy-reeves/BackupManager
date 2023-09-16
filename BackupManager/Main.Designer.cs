@@ -366,8 +366,8 @@
             this.listFoldersToScanButton.Size = new System.Drawing.Size(201, 25);
             this.listFoldersToScanButton.TabIndex = 90;
             this.listFoldersToScanButton.Text = "... changes detected & folders to scan";
-            this.toolTip.SetToolTip(this.listFoldersToScanButton, "Outputs files that are marked as Deleted because they cannot be found in the mast" +
-        "er folder anymore");
+            this.toolTip.SetToolTip(this.listFoldersToScanButton, "Outputs lists of folders that we\'ve detected changes in and that will be scanned " +
+        "next");
             this.listFoldersToScanButton.UseVisualStyleBackColor = true;
             this.listFoldersToScanButton.Click += new System.EventHandler(this.ListFoldersToScanButton_Click);
             // 
@@ -990,7 +990,6 @@
             // 
             this.scanFoldersTimer.Interval = 30000;
             this.scanFoldersTimer.Tick += new System.EventHandler(this.ScanFoldersTimer_Tick);
-            
             // 
             // label14
             // 
