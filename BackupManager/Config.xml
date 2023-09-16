@@ -26,10 +26,13 @@
   <!-- Minimum write speed in MB/s -->
   <MasterFolderMinimumWriteSpeed>30</MasterFolderMinimumWriteSpeed>
 
+  <!-- in seconds -->
   <MasterFoldersProcessChangesTimer>5</MasterFoldersProcessChangesTimer>
 
+  <!-- in seconds -->
   <MasterFoldersScanTimer>10</MasterFoldersScanTimer>
 
+  <!-- in seconds -->
   <MasterFolderScanMinimumAgeBeforeScanning>20</MasterFolderScanMinimumAgeBeforeScanning>
 
   <!-- Monitor interval in seconds -->

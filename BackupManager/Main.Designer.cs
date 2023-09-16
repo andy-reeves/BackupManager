@@ -51,6 +51,7 @@
             this.refreshBackupDiskButton = new System.Windows.Forms.Button();
             this.listFilesMarkedAsDeletedButton = new System.Windows.Forms.Button();
             this.fileWatcherButton = new System.Windows.Forms.Button();
+            this.listFoldersToScanButton = new System.Windows.Forms.Button();
             this.scheduledBackupTimerButton = new System.Windows.Forms.Button();
             this.listFilesOnBackupDiskButton = new System.Windows.Forms.Button();
             this.listFilesInMasterFolderButton = new System.Windows.Forms.Button();
@@ -115,10 +116,10 @@
             this.updateUITimer = new System.Windows.Forms.Timer(this.components);
             this.processFolderChangesTimer = new System.Windows.Forms.Timer(this.components);
             this.scanFoldersTimer = new System.Windows.Forms.Timer(this.components);
-            this.foldersToScanTextBox = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
             this.fileChangesDetectedTextBox = new System.Windows.Forms.TextBox();
             this.label15 = new System.Windows.Forms.Label();
+            this.foldersToScanTextBox = new System.Windows.Forms.TextBox();
             this.pushoverGroupBox.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.listFilesInMasterFolderGroupBox.SuspendLayout();
@@ -357,6 +358,18 @@
             this.toolTip.SetToolTip(this.fileWatcherButton, "Starts the file watchers");
             this.fileWatcherButton.UseVisualStyleBackColor = true;
             this.fileWatcherButton.Click += new System.EventHandler(this.FileWatcherButton_Click);
+            // 
+            // listFoldersToScanButton
+            // 
+            this.listFoldersToScanButton.Location = new System.Drawing.Point(6, 162);
+            this.listFoldersToScanButton.Name = "listFoldersToScanButton";
+            this.listFoldersToScanButton.Size = new System.Drawing.Size(201, 25);
+            this.listFoldersToScanButton.TabIndex = 90;
+            this.listFoldersToScanButton.Text = "... changes detected & folders to scan";
+            this.toolTip.SetToolTip(this.listFoldersToScanButton, "Outputs files that are marked as Deleted because they cannot be found in the mast" +
+        "er folder anymore");
+            this.listFoldersToScanButton.UseVisualStyleBackColor = true;
+            this.listFoldersToScanButton.Click += new System.EventHandler(this.ListFoldersToScanButton_Click);
             // 
             // scheduledBackupTimerButton
             // 
@@ -619,7 +632,7 @@
             // 
             this.listFilesInMasterFolderGroupBox.Controls.Add(this.listFilesInMasterFolderButton);
             this.listFilesInMasterFolderGroupBox.Controls.Add(this.listMasterFoldersComboBox);
-            this.listFilesInMasterFolderGroupBox.Location = new System.Drawing.Point(290, 186);
+            this.listFilesInMasterFolderGroupBox.Location = new System.Drawing.Point(290, 217);
             this.listFilesInMasterFolderGroupBox.Name = "listFilesInMasterFolderGroupBox";
             this.listFilesInMasterFolderGroupBox.Size = new System.Drawing.Size(217, 49);
             this.listFilesInMasterFolderGroupBox.TabIndex = 56;
@@ -630,7 +643,7 @@
             // 
             this.listFilesOnBackupDiskGroupBox.Controls.Add(this.listFilesComboBox);
             this.listFilesOnBackupDiskGroupBox.Controls.Add(this.listFilesOnBackupDiskButton);
-            this.listFilesOnBackupDiskGroupBox.Location = new System.Drawing.Point(290, 242);
+            this.listFilesOnBackupDiskGroupBox.Location = new System.Drawing.Point(290, 277);
             this.listFilesOnBackupDiskGroupBox.Name = "listFilesOnBackupDiskGroupBox";
             this.listFilesOnBackupDiskGroupBox.Size = new System.Drawing.Size(217, 54);
             this.listFilesOnBackupDiskGroupBox.TabIndex = 57;
@@ -738,7 +751,7 @@
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel,
             this.toolStripProgressBar});
-            this.statusStrip.Location = new System.Drawing.Point(0, 345);
+            this.statusStrip.Location = new System.Drawing.Point(0, 385);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(1309, 22);
             this.statusStrip.TabIndex = 62;
@@ -797,12 +810,13 @@
             // 
             this.listFilesGroupBox.Controls.Add(this.listFilesMarkedAsDeletedButton);
             this.listFilesGroupBox.Controls.Add(this.listFilesNotOnBackupDiskButton);
+            this.listFilesGroupBox.Controls.Add(this.listFoldersToScanButton);
             this.listFilesGroupBox.Controls.Add(this.listFilesNotCheckedInXXButton);
             this.listFilesGroupBox.Controls.Add(this.listMoviesWithMultipleFilesButton);
             this.listFilesGroupBox.Controls.Add(this.listFilesWithDuplicateContentHashcodesButton);
             this.listFilesGroupBox.Location = new System.Drawing.Point(290, 9);
             this.listFilesGroupBox.Name = "listFilesGroupBox";
-            this.listFilesGroupBox.Size = new System.Drawing.Size(217, 166);
+            this.listFilesGroupBox.Size = new System.Drawing.Size(217, 194);
             this.listFilesGroupBox.TabIndex = 69;
             this.listFilesGroupBox.TabStop = false;
             this.listFilesGroupBox.Text = "List files";
@@ -922,7 +936,7 @@
             // 
             // estimatedFinishTimeTextBox
             // 
-            this.estimatedFinishTimeTextBox.Location = new System.Drawing.Point(414, 312);
+            this.estimatedFinishTimeTextBox.Location = new System.Drawing.Point(414, 345);
             this.estimatedFinishTimeTextBox.Name = "estimatedFinishTimeTextBox";
             this.estimatedFinishTimeTextBox.ReadOnly = true;
             this.estimatedFinishTimeTextBox.Size = new System.Drawing.Size(67, 20);
@@ -931,7 +945,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(313, 314);
+            this.label11.Location = new System.Drawing.Point(313, 347);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(102, 13);
             this.label11.TabIndex = 83;
@@ -976,14 +990,7 @@
             // 
             this.scanFoldersTimer.Interval = 30000;
             this.scanFoldersTimer.Tick += new System.EventHandler(this.ScanFoldersTimer_Tick);
-            // 
-            // foldersToScanTextBox
-            // 
-            this.foldersToScanTextBox.Location = new System.Drawing.Point(677, 313);
-            this.foldersToScanTextBox.Name = "foldersToScanTextBox";
-            this.foldersToScanTextBox.ReadOnly = true;
-            this.foldersToScanTextBox.Size = new System.Drawing.Size(67, 20);
-            this.foldersToScanTextBox.TabIndex = 90;
+            
             // 
             // label14
             // 
@@ -1011,14 +1018,22 @@
             this.label15.TabIndex = 91;
             this.label15.Text = "File changes detected";
             // 
+            // foldersToScanTextBox
+            // 
+            this.foldersToScanTextBox.Location = new System.Drawing.Point(677, 313);
+            this.foldersToScanTextBox.Name = "foldersToScanTextBox";
+            this.foldersToScanTextBox.ReadOnly = true;
+            this.foldersToScanTextBox.Size = new System.Drawing.Size(67, 20);
+            this.foldersToScanTextBox.TabIndex = 93;
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1309, 367);
+            this.ClientSize = new System.Drawing.Size(1309, 407);
+            this.Controls.Add(this.foldersToScanTextBox);
             this.Controls.Add(this.fileChangesDetectedTextBox);
             this.Controls.Add(this.label15);
-            this.Controls.Add(this.foldersToScanTextBox);
             this.Controls.Add(this.label14);
             this.Controls.Add(this.fileWatcherButton);
             this.Controls.Add(this.filesMarkedAsDeletedSizeTextBox);
@@ -1057,7 +1072,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(1325, 406);
+            this.MaximumSize = new System.Drawing.Size(1325, 446);
             this.MinimumSize = new System.Drawing.Size(1325, 406);
             this.Name = "Main";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
@@ -1172,10 +1187,11 @@
         private System.Windows.Forms.Button fileWatcherButton;
         private System.Windows.Forms.Timer processFolderChangesTimer;
         private System.Windows.Forms.Timer scanFoldersTimer;
-        private System.Windows.Forms.TextBox foldersToScanTextBox;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.TextBox fileChangesDetectedTextBox;
         private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Button listFoldersToScanButton;
+        private System.Windows.Forms.TextBox foldersToScanTextBox;
     }
 }
 

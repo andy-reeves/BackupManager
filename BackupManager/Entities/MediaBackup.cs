@@ -27,8 +27,7 @@ namespace BackupManager.Entities
         [XmlArrayItem("BackupDisk")]
         public Collection<BackupDisk> BackupDisks;
 
-        [XmlIgnore()]
-        public Collection<Folder> FoldersToScan;
+        public SerializableDictionary<string, DateTime> FoldersToScan;
 
         /// <summary>
         /// The DateTime of the last full Master Folders scan
@@ -60,7 +59,7 @@ namespace BackupManager.Entities
         {
             BackupFiles = new Collection<BackupFile>();
             BackupDisks = new Collection<BackupDisk>();
-            FoldersToScan = new Collection<Folder>();
+            FoldersToScan = new SerializableDictionary<string, DateTime>();
         }
 
         public MediaBackup(string mediaBackupPath)
@@ -147,6 +146,8 @@ namespace BackupManager.Entities
             masterFolder = null;
             indexFolder = null;
             relativePath = null;
+
+            path = Utils.EnsurePathHasATerminatingSeparator(path);
 
             foreach (string master in Config.MasterFolders)
             {
