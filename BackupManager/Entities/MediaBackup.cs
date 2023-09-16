@@ -147,13 +147,13 @@ namespace BackupManager.Entities
             indexFolder = null;
             relativePath = null;
 
-            path = Utils.EnsurePathHasATerminatingSeparator(path);
+            string pathWithTerminatingString = Utils.EnsurePathHasATerminatingSeparator(path);
 
             foreach (string master in Config.MasterFolders)
             {
                 foreach (string index in Config.IndexFolders)
                 {
-                    if (path.StartsWith(Utils.EnsurePathHasATerminatingSeparator(Path.Combine(master, index))))
+                    if (pathWithTerminatingString.StartsWith(Utils.EnsurePathHasATerminatingSeparator(Path.Combine(master, index))))
                     {
                         masterFolder = master;
                         indexFolder = index;
