@@ -2557,6 +2557,7 @@ namespace BackupManager
                 {
                     mediaBackup.Save();
                     UpdateStatusLabel($"Saved.");
+                    UpdateUI_Tick(null, null);
                     UpdateMediaFilesCountDisplay();
                 }
             }
