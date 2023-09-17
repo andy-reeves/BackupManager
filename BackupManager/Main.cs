@@ -34,7 +34,7 @@ namespace BackupManager
 
         private readonly List<FileSystemWatcher> watcherList = new List<FileSystemWatcher>();
 
-        private static readonly List<Tuple<string, DateTime>> folderChanges = new List<Tuple<string, DateTime>>();
+        private static readonly Dictionary<string, DateTime> folderChanges = new Dictionary<string, DateTime>();
 
         /// <summary>
         /// Any long-running action sets this to TRUE to stop the scheduledBackup timer from being able to start
@@ -171,9 +171,7 @@ namespace BackupManager
                 };
 
                 watcher.Changed += FileSystemWatcher_OnChanged;
-                //watcher.Created += FileSystemWatcher_OnCreated;
                 watcher.Deleted += FileSystemWatcher_OnDeleted;
-                //watcher.Renamed += FileSystemWatcher_OnRenamed;
                 watcher.Error += FileSystemWatcher_OnError;
 
                 watcher.Filter = "*.*";
@@ -206,14 +204,15 @@ namespace BackupManager
             }
 
             // add this folder to the list of folders to potentially scan
-            folderChanges.Add(new Tuple<string, DateTime>(e.FullPath, DateTime.Now));
+            if (folderChanges.ContainsKey(e.FullPath))
+            {
+                folderChanges[e.FullPath] = DateTime.Now;
+            }
+            else
+            {
+                folderChanges.Add(e.FullPath, DateTime.Now);
+            }
             Utils.Trace("FileSystemWatcher_OnChanged exit");
-        }
-
-        private static void FileSystemWatcher_OnCreated(object sender, FileSystemEventArgs e)
-        {
-            string value = $"Created: {e.FullPath}";
-            Utils.LogWithPushover(BackupAction.General, value);
         }
 
         private static void FileSystemWatcher_OnDeleted(object sender, FileSystemEventArgs e)
@@ -221,23 +220,21 @@ namespace BackupManager
             Utils.Trace("FileSystemWatcher_OnDeleted enter");
             Utils.Trace($"e.FullPath = {e.FullPath}");
 
-            folderChanges.Add(new Tuple<string, DateTime>(e.FullPath, DateTime.Now));
-
+            if (folderChanges.ContainsKey(e.FullPath))
+            {
+                folderChanges[e.FullPath] = DateTime.Now;
+            }
+            else
+            {
+                folderChanges.Add(e.FullPath, DateTime.Now);
+            }
             Utils.Trace("FileSystemWatcher_OnDeleted exit");
-        }
-
-        private static void FileSystemWatcher_OnRenamed(object sender, RenamedEventArgs e)
-        {
-            Utils.LogWithPushover(BackupAction.General, $"Renamed:     Old: {e.OldFullPath}     New: {e.FullPath}");
         }
 
         private static void FileSystemWatcher_OnError(object sender, ErrorEventArgs e)
         {
-            PrintException(e.GetException());
-        }
+            Exception ex = e.GetException();
 
-        private static void PrintException(Exception ex)
-        {
             if (ex != null)
             {
                 Utils.LogWithPushover(BackupAction.General, $"Message: {ex.Message}");
@@ -2440,40 +2437,39 @@ namespace BackupManager
             bool toSave = false;
             for (int i = folderChanges.Count - 1; i >= 0; i--)
             {
-                Tuple<string, DateTime> folderChange = folderChanges[i];
-                if (folderChange != null)
+                KeyValuePair<string, DateTime> folderChange = folderChanges.ElementAt(i);
+
+                Utils.Trace($"path {folderChange.Key}");
+                _ = mediaBackup.GetFoldersForPath(folderChange.Key, out string masterFolder, out string indexFolder, out _);
+
+                Utils.Trace($"masterFolder {masterFolder}");
+                Utils.Trace($"indexFolder {indexFolder}");
+
+                if (masterFolder != null && indexFolder != null)
                 {
-                    Utils.Trace($"path {folderChange.Item1}");
-                    _ = mediaBackup.GetFoldersForPath(folderChange.Item1, out string masterFolder, out string indexFolder, out _);
+                    string parentFolder = mediaBackup.GetParentFolder(folderChange.Key);
+                    Utils.Trace($"parentFolder {parentFolder}");
 
-                    Utils.Trace($"masterFolder {masterFolder}");
-                    Utils.Trace($"indexFolder {indexFolder}");
+                    string scanFolder = parentFolder ?? Path.Combine(masterFolder, indexFolder);
 
-                    if (masterFolder != null && indexFolder != null)
+                    if (mediaBackup.FoldersToScanContains(scanFolder))
                     {
-                        string parentFolder = mediaBackup.GetParentFolder(folderChange.Item1);
-                        Utils.Trace($"parentFolder {parentFolder}");
+                        FoldersToScan scannedFolder = mediaBackup.GetFolderToScan(scanFolder);
 
-                        string scanFolder = parentFolder ?? Path.Combine(masterFolder, indexFolder);
-
-                        if (mediaBackup.FoldersToScanContains(scanFolder))
+                        if (folderChange.Value > scannedFolder.Timestamp)
                         {
-                            FoldersToScan scannedFolder = mediaBackup.GetFolderToScan(scanFolder);
-
-                            if (folderChange.Item2 > scannedFolder.Timestamp)
-                            {
-                                scannedFolder.Timestamp = folderChange.Item2;
-                                toSave = true;
-                            }
-                        }
-                        else
-                        {
-                            mediaBackup.FoldersToScan.Add(new FoldersToScan(scanFolder, folderChange.Item2));
+                            scannedFolder.Timestamp = folderChange.Value;
                             toSave = true;
                         }
                     }
-                    folderChanges.RemoveAt(i);
+                    else
+                    {
+                        mediaBackup.FoldersToScan.Add(new FoldersToScan(scanFolder, folderChange.Value));
+                        toSave = true;
+                    }
                 }
+                folderChanges.Remove(folderChange.Key);
+
             }
 
             if (toSave)
@@ -2588,11 +2584,8 @@ namespace BackupManager
 
             for (int i = folderChanges.Count - 1; i >= 0; i--)
             {
-                Tuple<string, DateTime> folderChange = folderChanges[i];
-                if (folderChange != null)
-                {
-                    Utils.Log($"{folderChange.Item1} changed at at {folderChange.Item2}");
-                }
+                KeyValuePair<string, DateTime> folderChange = folderChanges.ElementAt(i);
+                Utils.Log($"{folderChange.Key} changed at at {folderChange.Value}");
             }
 
             Utils.Log("Listing FoldersToScan queued");

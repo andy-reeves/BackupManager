@@ -16,7 +16,7 @@ namespace BackupManager.Entities
 
         public FoldersToScan()
         {
-        } 
+        }
 
         public FoldersToScan(string scanFolder, DateTime dateTime)
         {
