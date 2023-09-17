@@ -11,7 +11,7 @@ namespace BackupManager.Entities
     /// <summary>
     /// This class allows us to keep a Collection of FoldersToScan with the path and datetime it was last changed
     /// </summary>
-    public class FoldersToScan: IEquatable<FoldersToScan>
+    public class FoldersToScan : IEquatable<FoldersToScan>
     {
         /// <summary>
         /// The path to the folder/file that changed

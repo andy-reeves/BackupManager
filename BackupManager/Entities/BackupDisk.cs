@@ -13,7 +13,7 @@ namespace BackupManager.Entities
     using System.Linq;
     using System.Xml.Serialization;
 
-    public class BackupDisk
+    public class BackupDisk : IEquatable<BackupDisk>
     {
         /// <summary>
         /// The name of the backup disk and the main folder on the disk. Typically like 'backup 23'
@@ -118,7 +118,7 @@ namespace BackupManager.Entities
         }
 
         /// <summary>
-        /// Updates the file count on this disk and the total and free space. It uses backupFiles to get the count of the fiels on this disk
+        /// Updates the file count on this disk and the total and free space. It uses backupFiles to get the count of the files on this disk
         /// </summary>
         /// <param name="backupFiles"></param>
         /// <returns></returns>
@@ -215,6 +215,20 @@ namespace BackupManager.Entities
             {
                 LastWriteSpeed = Utils.FormatSpeed(writeSpeed);
             }
+        }
+
+        public bool Equals(BackupDisk other)
+        {
+            return null != other && Name == other.Name;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as BackupDisk);
+        }
+        public override int GetHashCode()
+        {
+            return Name.GetHashCode();
         }
     }
 }

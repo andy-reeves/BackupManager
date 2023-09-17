@@ -406,14 +406,13 @@ namespace BackupManager.Entities
                 return null;
             }
 
-            foreach (BackupDisk backupDisk in BackupDisks)
+            BackupDisk backupDisk = BackupDisks.FirstOrDefault(x => x.Name == diskName);
+
+            if (backupDisk != null)
             {
-                if (backupDisk.Name.Equals(diskName, StringComparison.CurrentCultureIgnoreCase))
-                {
-                    backupDisk.BackupShare = backupShare;
-                    Utils.Trace($"GetBackupDisk exit with {backupDisk.Name}");
-                    return backupDisk;
-                }
+                backupDisk.BackupShare = backupShare;
+                Utils.Trace($"GetBackupDisk exit with {backupDisk.Name}");
+                return backupDisk;
             }
 
             BackupDisk disk = new BackupDisk(diskName, backupShare);
