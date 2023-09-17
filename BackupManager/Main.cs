@@ -1365,7 +1365,7 @@ namespace BackupManager
 
             if (Directory.Exists(folderToCheck))
             {
-                string subFolderText = searchOption == SearchOption.TopDirectoryOnly ? "folder  only" : "and subfolders";
+                string subFolderText = searchOption == SearchOption.TopDirectoryOnly ? "folder only" : "and subfolders";
                 Utils.LogWithPushover(BackupAction.ScanFolders, $"{folderToCheck} {subFolderText}");
                 UpdateStatusLabel($"Scanning {folderToCheck}");
 
