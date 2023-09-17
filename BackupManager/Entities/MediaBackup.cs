@@ -135,30 +135,6 @@ namespace BackupManager.Entities
             }
         }
 
-        public FoldersToScan GetFolderToScan(string folder)
-        {
-            foreach (FoldersToScan folderToScan in FoldersToScan)
-            {
-                if (folderToScan.Path == folder)
-                {
-                    return folderToScan;
-                }
-            }
-            return null;
-        }
-
-        public bool FoldersToScanContains(string folder)
-        {
-            foreach (FoldersToScan folderToScan in FoldersToScan)
-            {
-                if (folderToScan.Path == folder)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         /// <summary>
         /// Returns the MasterFolder, IndexFolder and RelativePath for the path provided.
         /// </summary>
