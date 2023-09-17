@@ -27,7 +27,8 @@ namespace BackupManager.Entities
         [XmlArrayItem("BackupDisk")]
         public Collection<BackupDisk> BackupDisks;
 
-        public SerializableDictionary<string, DateTime> FoldersToScan;
+        [XmlArrayItem("Folder")]
+        public Collection<FoldersToScan> FoldersToScan;
 
         /// <summary>
         /// The DateTime of the last full Master Folders scan
@@ -59,7 +60,7 @@ namespace BackupManager.Entities
         {
             BackupFiles = new Collection<BackupFile>();
             BackupDisks = new Collection<BackupDisk>();
-            FoldersToScan = new SerializableDictionary<string, DateTime>();
+            FoldersToScan = new Collection<FoldersToScan>();
         }
 
         public MediaBackup(string mediaBackupPath)
@@ -132,6 +133,30 @@ namespace BackupManager.Entities
             {
                 throw new ApplicationException($"Unable to load MediaBackup.xml {ex}");
             }
+        }
+
+        public FoldersToScan GetFolderToScan(string folder)
+        {
+            foreach (FoldersToScan folderToScan in FoldersToScan)
+            {
+                if (folderToScan.Path == folder)
+                {
+                    return folderToScan;
+                }
+            }
+            return null;
+        }
+
+        public bool FoldersToScanContains(string folder)
+        {
+            foreach (FoldersToScan folderToScan in FoldersToScan)
+            {
+                if (folderToScan.Path == folder)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>

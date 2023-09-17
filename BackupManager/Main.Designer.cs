@@ -338,7 +338,7 @@
             // 
             // listFilesMarkedAsDeletedButton
             // 
-            this.listFilesMarkedAsDeletedButton.Location = new System.Drawing.Point(6, 133);
+            this.listFilesMarkedAsDeletedButton.Location = new System.Drawing.Point(6, 132);
             this.listFilesMarkedAsDeletedButton.Name = "listFilesMarkedAsDeletedButton";
             this.listFilesMarkedAsDeletedButton.Size = new System.Drawing.Size(199, 23);
             this.listFilesMarkedAsDeletedButton.TabIndex = 62;
@@ -361,9 +361,9 @@
             // 
             // listFoldersToScanButton
             // 
-            this.listFoldersToScanButton.Location = new System.Drawing.Point(6, 162);
+            this.listFoldersToScanButton.Location = new System.Drawing.Point(6, 160);
             this.listFoldersToScanButton.Name = "listFoldersToScanButton";
-            this.listFoldersToScanButton.Size = new System.Drawing.Size(201, 25);
+            this.listFoldersToScanButton.Size = new System.Drawing.Size(199, 25);
             this.listFoldersToScanButton.TabIndex = 90;
             this.listFoldersToScanButton.Text = "... changes detected & folders to scan";
             this.toolTip.SetToolTip(this.listFoldersToScanButton, "Outputs lists of folders that we\'ve detected changes in and that will be scanned " +

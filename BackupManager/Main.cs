@@ -2456,17 +2456,19 @@ namespace BackupManager
 
                         string scanFolder = parentFolder ?? Path.Combine(masterFolder, indexFolder);
 
-                        if (mediaBackup.FoldersToScan.ContainsKey(scanFolder))
+                        if (mediaBackup.FoldersToScanContains(scanFolder))
                         {
-                            if (folderChange.Item2 > mediaBackup.FoldersToScan[scanFolder])
+                            FoldersToScan scannedFolder = mediaBackup.GetFolderToScan(scanFolder);
+
+                            if (folderChange.Item2 > scannedFolder.Timestamp)
                             {
-                                mediaBackup.FoldersToScan[scanFolder] = folderChange.Item2;
+                                scannedFolder.Timestamp = folderChange.Item2;
                                 toSave = true;
                             }
                         }
                         else
                         {
-                            mediaBackup.FoldersToScan.Add(scanFolder, folderChange.Item2);
+                            mediaBackup.FoldersToScan.Add(new FoldersToScan(scanFolder, folderChange.Item2));
                             toSave = true;
                         }
                     }
@@ -2497,30 +2499,30 @@ namespace BackupManager
 
                 for (int i = mediaBackup.FoldersToScan.Count - 1; i >= 0; i--)
                 {
-                    KeyValuePair<string, DateTime> folderToScan = mediaBackup.FoldersToScan.ElementAt(i);
+                    FoldersToScan folderToScan = mediaBackup.FoldersToScan[i];
 
-                    if (folderToScan.Value.AddSeconds(mediaBackup.Config.MasterFolderScanMinimumAgeBeforeScanning) < DateTime.Now)
+                    if (folderToScan.Timestamp.AddSeconds(mediaBackup.Config.MasterFolderScanMinimumAgeBeforeScanning) < DateTime.Now)
                     {
                         mediaBackup.ClearFlags();
 
-                        int fileCountInFolderBefore = mediaBackup.BackupFiles.Count(b => b.FullPath.StartsWith(folderToScan.Key));
+                        int fileCountInFolderBefore = mediaBackup.BackupFiles.Count(b => b.FullPath.StartsWith(folderToScan.Path));
 
-                        _ = mediaBackup.GetFoldersForPath(folderToScan.Key, out string masterFolder, out string indexFolder, out _);
+                        _ = mediaBackup.GetFoldersForPath(folderToScan.Path, out string masterFolder, out string indexFolder, out _);
 
-                        SearchOption searchOption = folderToScan.Key == Path.Combine(masterFolder, indexFolder) ? SearchOption.TopDirectoryOnly :
+                        SearchOption searchOption = folderToScan.Path == Path.Combine(masterFolder, indexFolder) ? SearchOption.TopDirectoryOnly :
                                                                                                                   SearchOption.AllDirectories;
-                        if (ScanSingleFolder(folderToScan.Key, searchOption))
+                        if (ScanSingleFolder(folderToScan.Path, searchOption))
                         {
                             int removedFilesCount = 0;
                             int markedAsDeletedFilesCount = 0;
 
-                            _ = mediaBackup.FoldersToScan.Remove(folderToScan.Key);
+                            _ = mediaBackup.FoldersToScan.Remove(folderToScan);
 
                             // instead of removing files that are no longer found in a folder we now flag them as deleted so we can report them later
                             // unless they aren't on a backup disk in which case they are removed now 
                             List<BackupFile> files = searchOption == SearchOption.AllDirectories
-                                ? mediaBackup.BackupFiles.Where(b => !b.Flag && b.FullPath.StartsWith(folderToScan.Key)).ToList()
-                                : mediaBackup.BackupFiles.Where(b => !b.Flag && b.FullPath.StartsWith(folderToScan.Key) && !b.RelativePath.Contains("\\")).ToList();
+                                ? mediaBackup.BackupFiles.Where(b => !b.Flag && b.FullPath.StartsWith(folderToScan.Path)).ToList()
+                                : mediaBackup.BackupFiles.Where(b => !b.Flag && b.FullPath.StartsWith(folderToScan.Path) && !b.RelativePath.Contains("\\")).ToList();
                             for (int j = files.Count() - 1; j >= 0; j--)
                             {
                                 BackupFile backupFile = files[j];
@@ -2536,7 +2538,7 @@ namespace BackupManager
                                 }
                             }
 
-                            int fileCountInFolderAfter = mediaBackup.BackupFiles.Count(b => b.FullPath.StartsWith(folderToScan.Key));
+                            int fileCountInFolderAfter = mediaBackup.BackupFiles.Count(b => b.FullPath.StartsWith(folderToScan.Path));
                             int filesNotOnBackupDiskCount = mediaBackup.GetBackupFilesWithDiskEmpty().Count();
 
                             // build the text for the scan summary
@@ -2597,9 +2599,9 @@ namespace BackupManager
 
             for (int i = mediaBackup.FoldersToScan.Count - 1; i >= 0; i--)
             {
-                KeyValuePair<string, DateTime> folderToSCan = mediaBackup.FoldersToScan.ElementAt(i);
+                FoldersToScan folderToScan = mediaBackup.FoldersToScan[i];
 
-                Utils.Log($"{folderToSCan.Key} changed at at {folderToSCan.Value}");
+                Utils.Log($"{folderToScan.Path} changed at at {folderToScan.Timestamp}");
             }
             Utils.Trace("ListFoldersToScanButton_Click exit");
         }
