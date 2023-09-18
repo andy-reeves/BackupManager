@@ -85,7 +85,7 @@ namespace BackupManager
                 // Log the parameters after setting the Pushover keys in the Utils class
                 mediaBackup.Config.LogParameters();
 
-                // Populate the  Config.MasterFolders combo boxes
+                // Populate the MasterFolders combo boxes
                 string[] masterFoldersArray = mediaBackup.Config.MasterFolders.ToArray();
 
                 listMasterFoldersComboBox.Items.AddRange(masterFoldersArray);
@@ -170,8 +170,8 @@ namespace BackupManager
                                     | NotifyFilters.Size
                 };
 
-                watcher.Changed += FileSystemWatcher_OnChanged;
-                watcher.Deleted += FileSystemWatcher_OnDeleted;
+                watcher.Changed += FileSystemWatcher_OnChangedOrDeleted;
+                watcher.Deleted += FileSystemWatcher_OnChangedOrDeleted;
                 watcher.Error += FileSystemWatcher_OnError;
 
                 watcher.Filter = "*.*";
@@ -190,16 +190,19 @@ namespace BackupManager
             {
                 watcher.Dispose();
             }
+
+            watcherList.Clear();
         }
         #endregion
 
-        private static void FileSystemWatcher_OnChanged(object sender, FileSystemEventArgs e)
+        private static void FileSystemWatcher_OnChangedOrDeleted(object sender, FileSystemEventArgs e)
         {
-            Utils.Trace("FileSystemWatcher_OnChanged enter");
+            Utils.Trace("FileSystemWatcher_OnChangedOrDeleted enter");
             Utils.Trace($"e.FullPath = {e.FullPath}");
 
-            if (e.ChangeType != WatcherChangeTypes.Changed)
+            if (e.ChangeType != WatcherChangeTypes.Changed && e.ChangeType != WatcherChangeTypes.Deleted)
             {
+                Utils.Trace("FileSystemWatcher_OnChangedOrDeleted exit as not changed and not deleted");
                 return;
             }
 
@@ -212,23 +215,7 @@ namespace BackupManager
             {
                 folderChanges.Add(e.FullPath, DateTime.Now);
             }
-            Utils.Trace("FileSystemWatcher_OnChanged exit");
-        }
-
-        private static void FileSystemWatcher_OnDeleted(object sender, FileSystemEventArgs e)
-        {
-            Utils.Trace("FileSystemWatcher_OnDeleted enter");
-            Utils.Trace($"e.FullPath = {e.FullPath}");
-
-            if (folderChanges.ContainsKey(e.FullPath))
-            {
-                folderChanges[e.FullPath] = DateTime.Now;
-            }
-            else
-            {
-                folderChanges.Add(e.FullPath, DateTime.Now);
-            }
-            Utils.Trace("FileSystemWatcher_OnDeleted exit");
+            Utils.Trace("FileSystemWatcher_OnChangedOrDeleted exit");
         }
 
         private static void FileSystemWatcher_OnError(object sender, ErrorEventArgs e)
@@ -2455,7 +2442,7 @@ namespace BackupManager
 
                     if (mediaBackup.FoldersToScan.Any(f => f.Path == scanFolder))
                     {
-                        Folder scannedFolder = mediaBackup.FoldersToScan.FirstOrDefault(f => f.Path == scanFolder);
+                        Folder scannedFolder = mediaBackup.FoldersToScan.First(f => f.Path == scanFolder);
 
                         if (folderChange.Value > scannedFolder.ModifiedDateTime)
                         {

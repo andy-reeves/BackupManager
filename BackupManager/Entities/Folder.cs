@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-//  <copyright file="FoldersToScan.cs" company="Andy Reeves">
+//  <copyright file="Folder.cs" company="Andy Reeves">
 //
 //  </copyright>
 //  --------------------------------------------------------------------------------------------------------------------
@@ -27,15 +27,11 @@ namespace BackupManager.Entities
         {
         }
 
-        public Folder(string scanFolder)
-        {
-            Path = scanFolder;
-            ModifiedDateTime = DateTime.Now;
-        }
+        public Folder(string path) : this(path, DateTime.Now) { }
 
-        public Folder(string scanFolder, DateTime dateTime)
+        public Folder(string path, DateTime dateTime)
         {
-            Path = scanFolder;
+            Path = path;
             ModifiedDateTime = dateTime;
         }
 
