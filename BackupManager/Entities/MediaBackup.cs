@@ -7,7 +7,6 @@
 namespace BackupManager.Entities
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.IO;
@@ -42,7 +41,7 @@ namespace BackupManager.Entities
         // We dont want to delete the file off backup and then copy it again so we try a rename
         // as long as the file has the same indexfolder and relative path we can find it and rename it
         // This happened with The Porridge movie which is also stored as a Tv episode.
-        private readonly Hashtable indexFolderAndRelativePath = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
+        private readonly Dictionary<string, BackupFile> indexFolderAndRelativePath = new Dictionary<string, BackupFile>(StringComparer.CurrentCultureIgnoreCase);
 
         public string MasterFoldersLastFullScan
         {
@@ -105,7 +104,7 @@ namespace BackupManager.Entities
                         throw new ApplicationException("Zerobyte Hash detected on load");
                     }
 
-                    if (!mediaBackup.indexFolderAndRelativePath.Contains(backupFile.Hash))
+                    if (!mediaBackup.indexFolderAndRelativePath.ContainsKey(backupFile.Hash))
                     {
                         mediaBackup.indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
                     }
@@ -264,9 +263,9 @@ namespace BackupManager.Entities
             string hashKey = Path.Combine(indexFolder, relativePath);
 
             // if this path is already added then return it
-            if (indexFolderAndRelativePath.Contains(hashKey))
+            if (indexFolderAndRelativePath.ContainsKey(hashKey))
             {
-                backupFile = (BackupFile)indexFolderAndRelativePath[hashKey];
+                backupFile = indexFolderAndRelativePath[hashKey];
 
                 // consider a file a.txt thats on \\nas1\assets1 in indexFolder _TV and on \\nas1\assets4 in _TV too
                 // this has same index folder and path but its a different file
@@ -429,7 +428,7 @@ namespace BackupManager.Entities
         /// <returns>Null if it doen't exist.</returns>
         public BackupFile GetBackupFileFromHashKey(string path)
         {
-            return indexFolderAndRelativePath.Contains(path) ? (BackupFile)indexFolderAndRelativePath[path] : null;
+            return indexFolderAndRelativePath.ContainsKey(path) ? indexFolderAndRelativePath[path] : null;
         }
 
         /// <summary>
@@ -488,7 +487,7 @@ namespace BackupManager.Entities
         /// <returns></returns>
         public bool Contains(string path)
         {
-            return indexFolderAndRelativePath.Contains(path);
+            return indexFolderAndRelativePath.ContainsKey(path);
         }
 
         /// <summary>
@@ -516,9 +515,9 @@ namespace BackupManager.Entities
             {
                 if (clearHashes)
                 {
-                    if (indexFolderAndRelativePath.Contains(backupFile.Hash))
+                    if (indexFolderAndRelativePath.ContainsKey(backupFile.Hash))
                     {
-                        indexFolderAndRelativePath.Remove(backupFile.Hash);
+                        _ = indexFolderAndRelativePath.Remove(backupFile.Hash);
                     }
                 }
 
@@ -562,9 +561,9 @@ namespace BackupManager.Entities
         internal void RemoveFile(BackupFile backupFile)
         {
 
-            if (indexFolderAndRelativePath.Contains(backupFile.Hash))
+            if (indexFolderAndRelativePath.ContainsKey(backupFile.Hash))
             {
-                indexFolderAndRelativePath.Remove(backupFile.Hash);
+                _ = indexFolderAndRelativePath.Remove(backupFile.Hash);
             }
 
             if (BackupFiles.Contains(backupFile))
