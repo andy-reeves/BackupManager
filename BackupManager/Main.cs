@@ -2453,9 +2453,9 @@ namespace BackupManager
 
                     string scanFolder = parentFolder ?? Path.Combine(masterFolder, indexFolder);
 
-                    if (mediaBackup.FoldersToScan.Contains(new FoldersToScan(scanFolder)))
+                    if (mediaBackup.FoldersToScan.Contains(new Folder(scanFolder)))
                     {
-                        FoldersToScan scannedFolder = mediaBackup.FoldersToScan.FirstOrDefault(f => f.Path == scanFolder);
+                        Folder scannedFolder = mediaBackup.FoldersToScan.FirstOrDefault(f => f.Path == scanFolder);
 
                         if (folderChange.Value > scannedFolder.ModifiedDateTime)
                         {
@@ -2465,7 +2465,7 @@ namespace BackupManager
                     }
                     else
                     {
-                        mediaBackup.FoldersToScan.Add(new FoldersToScan(scanFolder, folderChange.Value));
+                        mediaBackup.FoldersToScan.Add(new Folder(scanFolder, folderChange.Value));
                         toSave = true;
                     }
                 }
@@ -2496,7 +2496,7 @@ namespace BackupManager
 
                 for (int i = mediaBackup.FoldersToScan.Count - 1; i >= 0; i--)
                 {
-                    FoldersToScan folderToScan = mediaBackup.FoldersToScan[i];
+                    Folder folderToScan = mediaBackup.FoldersToScan[i];
 
                     if (folderToScan.ModifiedDateTime.AddSeconds(mediaBackup.Config.MasterFolderScanMinimumAgeBeforeScanning) < DateTime.Now)
                     {
@@ -2593,7 +2593,7 @@ namespace BackupManager
 
             for (int i = mediaBackup.FoldersToScan.Count - 1; i >= 0; i--)
             {
-                FoldersToScan folderToScan = mediaBackup.FoldersToScan[i];
+                Folder folderToScan = mediaBackup.FoldersToScan[i];
 
                 Utils.Log($"{folderToScan.Path} changed at at {folderToScan.ModifiedDateTime}");
             }

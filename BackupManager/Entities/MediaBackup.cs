@@ -28,7 +28,7 @@ namespace BackupManager.Entities
         public Collection<BackupDisk> BackupDisks;
 
         [XmlArrayItem("Folder")]
-        public Collection<FoldersToScan> FoldersToScan;
+        public Collection<Folder> FoldersToScan;
 
         /// <summary>
         /// The DateTime of the last full Master Folders scan
@@ -60,7 +60,7 @@ namespace BackupManager.Entities
         {
             BackupFiles = new Collection<BackupFile>();
             BackupDisks = new Collection<BackupDisk>();
-            FoldersToScan = new Collection<FoldersToScan>();
+            FoldersToScan = new Collection<Folder>();
         }
 
         public MediaBackup(string mediaBackupPath)
