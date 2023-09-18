@@ -315,7 +315,7 @@
             // 
             // speedTestDisksButton
             // 
-            this.speedTestDisksButton.Location = new System.Drawing.Point(817, 259);
+            this.speedTestDisksButton.Location = new System.Drawing.Point(817, 269);
             this.speedTestDisksButton.Name = "speedTestDisksButton";
             this.speedTestDisksButton.Size = new System.Drawing.Size(199, 23);
             this.speedTestDisksButton.TabIndex = 60;
@@ -350,7 +350,7 @@
             // 
             // fileWatcherButton
             // 
-            this.fileWatcherButton.Location = new System.Drawing.Point(817, 294);
+            this.fileWatcherButton.Location = new System.Drawing.Point(817, 304);
             this.fileWatcherButton.Name = "fileWatcherButton";
             this.fileWatcherButton.Size = new System.Drawing.Size(199, 23);
             this.fileWatcherButton.TabIndex = 88;
@@ -739,7 +739,7 @@
             this.processesGroupBox.Controls.Add(this.stopProcessButton);
             this.processesGroupBox.Controls.Add(this.processesComboBox);
             this.processesGroupBox.Controls.Add(this.monitoringButton);
-            this.processesGroupBox.Location = new System.Drawing.Point(811, 134);
+            this.processesGroupBox.Location = new System.Drawing.Point(811, 135);
             this.processesGroupBox.Name = "processesGroupBox";
             this.processesGroupBox.Size = new System.Drawing.Size(217, 119);
             this.processesGroupBox.TabIndex = 60;
@@ -773,7 +773,7 @@
             // cancelButton
             // 
             this.cancelButton.Enabled = false;
-            this.cancelButton.Location = new System.Drawing.Point(1066, 281);
+            this.cancelButton.Location = new System.Drawing.Point(1066, 342);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(217, 23);
             this.cancelButton.TabIndex = 64;
@@ -936,7 +936,7 @@
             // 
             // estimatedFinishTimeTextBox
             // 
-            this.estimatedFinishTimeTextBox.Location = new System.Drawing.Point(414, 345);
+            this.estimatedFinishTimeTextBox.Location = new System.Drawing.Point(1190, 306);
             this.estimatedFinishTimeTextBox.Name = "estimatedFinishTimeTextBox";
             this.estimatedFinishTimeTextBox.ReadOnly = true;
             this.estimatedFinishTimeTextBox.Size = new System.Drawing.Size(67, 20);
@@ -945,7 +945,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(313, 347);
+            this.label11.Location = new System.Drawing.Point(1089, 308);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(102, 13);
             this.label11.TabIndex = 83;

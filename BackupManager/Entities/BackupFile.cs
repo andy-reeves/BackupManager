@@ -12,7 +12,7 @@ namespace BackupManager.Entities
     using System.Xml.Serialization;
 
     [DebuggerDisplay("RelativePath = {RelativePath}")]
-    public class BackupFile
+    public class BackupFile :IEquatable<BackupFile>
     {
         private string contentsHash;
 
@@ -349,6 +349,20 @@ namespace BackupManager.Entities
             UpdateDiskChecked(disk.Name);
 
             return true;
+        }
+
+        public bool Equals(BackupFile other)
+        {
+            return null != other && FullPath == other.FullPath;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as BackupFile);
+        }
+        public override int GetHashCode()
+        {
+            return FullPath.GetHashCode();
         }
     }
 }

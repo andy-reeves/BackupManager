@@ -14,14 +14,14 @@ namespace BackupManager.Entities
     public class FoldersToScan : IEquatable<FoldersToScan>
     {
         /// <summary>
-        /// The path to the folder/file that changed
+        /// The path to the folder that changed
         /// </summary>
         public string Path;
 
         /// <summary>
-        /// The Timestamp the file was last changed
+        /// The Timestamp the folder was last changed
         /// </summary>
-        public DateTime Timestamp;
+        public DateTime ModifiedDateTime;
 
         public FoldersToScan()
         {
@@ -30,13 +30,13 @@ namespace BackupManager.Entities
         public FoldersToScan(string scanFolder)
         {
             Path = scanFolder;
-            Timestamp = DateTime.Now;
+            ModifiedDateTime = DateTime.Now;
         }
 
         public FoldersToScan(string scanFolder, DateTime dateTime)
         {
             Path = scanFolder;
-            Timestamp = dateTime;
+            ModifiedDateTime = dateTime;
         }
 
         public bool Equals(FoldersToScan other)

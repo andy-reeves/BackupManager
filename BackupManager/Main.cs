@@ -2457,9 +2457,9 @@ namespace BackupManager
                     {
                         FoldersToScan scannedFolder = mediaBackup.FoldersToScan.FirstOrDefault(f => f.Path == scanFolder);
 
-                        if (folderChange.Value > scannedFolder.Timestamp)
+                        if (folderChange.Value > scannedFolder.ModifiedDateTime)
                         {
-                            scannedFolder.Timestamp = folderChange.Value;
+                            scannedFolder.ModifiedDateTime = folderChange.Value;
                             toSave = true;
                         }
                     }
@@ -2498,7 +2498,7 @@ namespace BackupManager
                 {
                     FoldersToScan folderToScan = mediaBackup.FoldersToScan[i];
 
-                    if (folderToScan.Timestamp.AddSeconds(mediaBackup.Config.MasterFolderScanMinimumAgeBeforeScanning) < DateTime.Now)
+                    if (folderToScan.ModifiedDateTime.AddSeconds(mediaBackup.Config.MasterFolderScanMinimumAgeBeforeScanning) < DateTime.Now)
                     {
                         mediaBackup.ClearFlags();
 
@@ -2595,7 +2595,7 @@ namespace BackupManager
             {
                 FoldersToScan folderToScan = mediaBackup.FoldersToScan[i];
 
-                Utils.Log($"{folderToScan.Path} changed at at {folderToScan.Timestamp}");
+                Utils.Log($"{folderToScan.Path} changed at at {folderToScan.ModifiedDateTime}");
             }
             Utils.Trace("ListFoldersToScanButton_Click exit");
         }
