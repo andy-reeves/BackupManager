@@ -2453,7 +2453,7 @@ namespace BackupManager
 
                     string scanFolder = parentFolder ?? Path.Combine(masterFolder, indexFolder);
 
-                    if (mediaBackup.FoldersToScan.Contains(new Folder(scanFolder)))
+                    if (mediaBackup.FoldersToScan.Any(f => f.Path == scanFolder))
                     {
                         Folder scannedFolder = mediaBackup.FoldersToScan.FirstOrDefault(f => f.Path == scanFolder);
 

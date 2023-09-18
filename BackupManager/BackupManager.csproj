@@ -76,7 +76,6 @@
     <Compile Include="Entities\Folder.cs" />
     <Compile Include="Entities\ProcessServiceMonitor.cs" />
     <Compile Include="Entities\Rules.cs" />
-    <Compile Include="Entities\SerializableDictionary.cs" />
     <Compile Include="Extensions\ControlExtensions.cs" />
     <Compile Include="Extensions\IntegerExtensions.cs" />
     <Compile Include="Main.cs">
