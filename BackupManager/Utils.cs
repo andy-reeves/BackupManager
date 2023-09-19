@@ -176,51 +176,12 @@ namespace BackupManager
         }
 
         /// <summary>
-        /// Copies an existing file to a new file. Overwriting a file of the same name is not allowed. Ensures the destination folder exists too.
-        /// </summary>
-        /// <param name="sourceFileName">The file to copy.</param>
-        /// <param name="destFileName">The name of the destination file. This cannot be a directory or an existing file.</param>
-        internal static void FileCopy(string sourceFileName, string destFileName)
-        {
-            Trace("FileCopy enter");
-            Trace($"Params: sourceFileName={sourceFileName}, destFileName={destFileName}");
-
-            EnsureDirectories(destFileName);
-            File.Copy(sourceFileName, destFileName);
-            Trace("FileCopy exit");
-        }
-
-        /// <summary>
-        /// Copies an existing file to a new file asynchronously. Overwriting a file of the same name is not allowed. Ensures the destination folder exists too.
-        /// </summary>
-        /// <param name="sourceFileName">The file to copy.</param>
-        /// <param name="destFileName">The name of the destination file. This cannot be a directory or an existing file.</param>
-
-        internal static void FileCopyAsync(string sourceFileName, string destFileName, CancellationToken ct)
-        {
-            Trace("FileCopyAsync enter");
-            Trace($"Params: sourceFileName={sourceFileName}, destFileName={destFileName}");
-
-            int bufferSize = 20 * BytesInOneMegabyte;
-            EnsureDirectories(destFileName);
-
-            if (ct != null && ct.IsCancellationRequested) { ct.ThrowIfCancellationRequested(); }
-
-            using (FileStream srcStream = new FileStream(sourceFileName, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize, true))
-            using (FileStream dstStream = new FileStream(destFileName, FileMode.Create, FileAccess.Write, FileShare.Write, bufferSize, true))
-            {
-                srcStream.CopyToAsync(dstStream, bufferSize, ct).GetAwaiter().GetResult();
-            }
-            Trace("FileCopyAsync exit");
-        }
-
-        /// <summary>
         /// Copies an existing file to a new file asynchronously. Overwriting a file of the same name is not allowed. Ensures the destination folder exists too.
         /// </summary>
         /// <param name="sourceFileName">The file to copy.</param>
         /// <param name="destFileName">The name of the destination file. This cannot be a directory or an existing file.</param>
         /// <returns>True if copy was successful or False</returns>
-        internal static bool FileCopyNewProcess(string sourceFileName, string destFileName)
+        internal static bool FileCopy(string sourceFileName, string destFileName)
         {
             Trace("FileCopyNewProcess enter");
             Trace($"Params: sourceFileName={sourceFileName}, destFileName={destFileName}");
@@ -229,10 +190,6 @@ namespace BackupManager
             {
                 throw new NotSupportedException("Destination file already exists");
             }
-
-#if DEBUG
-            Task.Delay(5000).Wait();
-#endif
 
             EnsureDirectories(destFileName);
 
@@ -574,14 +531,9 @@ namespace BackupManager
         /// </returns>
         internal static string GetHashFromFile(string fileName, HashAlgorithm algorithm)
         {
-            Trace("GetHashFromFile enter");
-
             using (BufferedStream stream = new BufferedStream(File.OpenRead(fileName), BytesInOneMegabyte))
             {
-                string value = ByteArrayToString(algorithm.ComputeHash(stream));
-
-                Trace("GetHashFromFile exit");
-                return value;
+                return ByteArrayToString(algorithm.ComputeHash(stream));
             }
         }
 
@@ -599,8 +551,6 @@ namespace BackupManager
         /// </returns>
         internal static byte[] GetRemoteFileByteArray(Stream fileStream, long byteCountToReturn)
         {
-            Trace("GetRemoteFileByteArray enter");
-
             byte[] buffer = new byte[byteCountToReturn];
 
             int count;
@@ -616,11 +566,9 @@ namespace BackupManager
                 byte[] byteArray = new byte[sum];
                 Buffer.BlockCopy(buffer, 0, byteArray, 0, sum);
 
-                Trace("GetRemoteFileByteArray exit");
                 return byteArray;
             }
 
-            Trace("GetRemoteFileByteArray exit");
             return buffer;
         }
 
@@ -638,8 +586,6 @@ namespace BackupManager
         /// </returns>
         internal static string GetShortMd5HashFromFile(FileStream stream, long size)
         {
-            Trace("GetShortMd5HashFromFile enter");
-
             if (stream == null)
             {
                 return null;
@@ -671,10 +617,7 @@ namespace BackupManager
                 startBlock = GetLocalFileByteArray(stream, 0, size);
             }
 
-            string value = CreateHashForByteArray(startBlock, middleBlock, endBlock);
-
-            Trace("GetShortMd5HashFromFile exit");
-            return value;
+            return CreateHashForByteArray(startBlock, middleBlock, endBlock);
         }
 
         internal static long GetFileLength(string fileName)
@@ -726,7 +669,6 @@ namespace BackupManager
 
             if (size == 0)
             {
-                Trace("GetShortMd5HashFromFile exit1");
                 return string.Empty;
             }
 
@@ -751,10 +693,7 @@ namespace BackupManager
                 startBlock = GetLocalFileByteArray(path, 0, size);
             }
 
-            string value = CreateHashForByteArray(startBlock, middleBlock, endBlock);
-
-            Trace("GetShortMd5HashFromFile exit2");
-            return value;
+            return CreateHashForByteArray(startBlock, middleBlock, endBlock);
         }
 
         internal static void SendPushoverMessage(string title, PushoverPriority priority, string message)
@@ -851,9 +790,6 @@ namespace BackupManager
         /// <exception cref="ArgumentException"></exception>
         internal static bool KillProcesses(string processName)
         {
-            Trace("KillProcesses enter");
-
-            // without '.exe' and check for all that match 
             IEnumerable<Process> processes = Process.GetProcesses().Where(p =>
                     p.ProcessName.StartsWith(processName, StringComparison.CurrentCultureIgnoreCase));
 
@@ -870,7 +806,6 @@ namespace BackupManager
                 return false;
             }
 
-            Trace("KillProcesses exit");
             return true;
         }
 
@@ -893,7 +828,6 @@ namespace BackupManager
         /// <returns>True if success code returned</returns>
         internal static bool UrlExists(string url, int timeout)
         {
-            //Trace("UrlExists enter");
             bool returnValue;
             try
             {
@@ -911,7 +845,6 @@ namespace BackupManager
                 return false;
             }
 
-            //Trace("UrlExists exit");
             return returnValue;
         }
 
@@ -922,8 +855,6 @@ namespace BackupManager
         /// <returns>True if the connection is made</returns>
         internal static bool ConnectionExists(string host, int port)
         {
-            //Trace("ConnectionExists enter");
-
             try
             {
                 using (TcpClient tcpClient = new TcpClient())
@@ -937,7 +868,6 @@ namespace BackupManager
                 return false;
             }
 
-            //Trace("ConnectionExists exit");
             return true;
         }
 
@@ -1281,8 +1211,6 @@ namespace BackupManager
         /// <exception cref="ArgumentNullException"></exception>
         internal static bool GetDiskInfo(string folderName, out long freespace, out long totalBytes)
         {
-            Trace("GetDiskInfo enter");
-
             if (string.IsNullOrEmpty(folderName))
             {
                 throw new ArgumentNullException("folderName");
@@ -1293,10 +1221,7 @@ namespace BackupManager
                 folderName += '\\';
             }
 
-            bool returnValue = GetDiskFreeSpaceEx(folderName, out freespace, out totalBytes, out _);
-
-            Trace("GetDiskInfo exit");
-            return returnValue;
+            return GetDiskFreeSpaceEx(folderName, out freespace, out totalBytes, out _);
         }
 
         /// <summary>
@@ -1355,8 +1280,6 @@ namespace BackupManager
         /// <returns></returns>
         internal static string RandomString(long size)
         {
-            Trace("RandomString enter");
-
             StringBuilder builder = new StringBuilder();
             Random random = new Random();
             char ch;
@@ -1366,10 +1289,7 @@ namespace BackupManager
                 _ = builder.Append(ch);
             }
 
-            string returnValue = builder.ToString();
-
-            Trace("RandomString exit");
-            return returnValue;
+            return builder.ToString();
         }
 
         /// <summary>
@@ -1715,9 +1635,6 @@ namespace BackupManager
         /// <returns>True if not locked or False if locked</returns>
         internal static bool IsFileAccessible(string fileName)
         {
-            Trace("IsFileAccessible enter");
-            Trace($"fileName = {fileName}");
-
             try
             {
                 FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
@@ -1726,10 +1643,8 @@ namespace BackupManager
             }
             catch (IOException)
             {
-                Trace("IsFileAccessible esit with False");
                 return false;
             }
-            Trace("IsFileAccessible exit with True");
             return true;
         }
     }

@@ -693,7 +693,7 @@ namespace BackupManager
                             Utils.FileDelete(destinationFileNameTemp);
 
                             Stopwatch sw = Stopwatch.StartNew();
-                            _ = Utils.FileCopyNewProcess(sourceFileName, destinationFileNameTemp);
+                            _ = Utils.FileCopy(sourceFileName, destinationFileNameTemp);
                             sw.Stop();
                             double timeTaken = sw.Elapsed.TotalSeconds;
 
