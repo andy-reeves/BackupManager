@@ -34,6 +34,9 @@ namespace BackupManager
 
         private readonly List<FileSystemWatcher> watcherList = new List<FileSystemWatcher>();
 
+        /// <summary>
+        /// This is a Dictionary of files/folders where changes have been detected and the last time they changed
+        /// </summary>
         private static readonly Dictionary<string, DateTime> folderChanges = new Dictionary<string, DateTime>();
 
         /// <summary>
@@ -85,7 +88,6 @@ namespace BackupManager
                 // Log the parameters after setting the Pushover keys in the Utils class
                 mediaBackup.Config.LogParameters();
 
-                // Populate the MasterFolders combo boxes
                 string[] masterFoldersArray = mediaBackup.Config.MasterFolders.ToArray();
 
                 listMasterFoldersComboBox.Items.AddRange(masterFoldersArray);
@@ -231,6 +233,11 @@ namespace BackupManager
 
         #region Methods
 
+        /// <summary>
+        /// Updates the disk info and redraws the UI
+        /// </summary>
+        /// <param name="disk"></param>
+        /// <returns></returns>
         private bool UpdateCurrentBackupDiskInfo(BackupDisk disk)
         {
             bool returnValue = false;
@@ -446,9 +453,7 @@ namespace BackupManager
 
             disk.UpdateDiskChecked();
 
-            //bool result = disk.Update(mediaBackup.BackupFiles);
-            bool result = UpdateCurrentBackupDiskInfo(disk);
-            if (!result)
+            if (!UpdateCurrentBackupDiskInfo(disk))
             {
                 Utils.LogWithPushover(BackupAction.BackupFiles,
                                       PushoverPriority.Emergency,
@@ -597,6 +602,7 @@ namespace BackupManager
             long sizeOfCopy = remainingDiskSpace < sizeOfFiles ? remainingDiskSpace : sizeOfFiles;
             if (sizeOfCopy == 0)
             {
+                // This avoids any division by zero errors later
                 sizeOfCopy = 1;
             }
 
@@ -710,9 +716,8 @@ namespace BackupManager
 
                             // it could be that the source file hash changed after we read it (we read the hash, updated the master file and then copied it)
                             // in which case check the source hash again and then check the copied file 
-                            bool returnValue = backupFile.CheckContentHashes(disk);
 
-                            if (returnValue == false)
+                            if (!backupFile.CheckContentHashes(disk))
                             {
                                 // There was an error with the hashcodes of the source file anf the file on the backup disk
                                 Utils.LogWithPushover(BackupAction.BackupFiles,
@@ -757,9 +762,7 @@ namespace BackupManager
 
             UpdateMediaFilesCountDisplay();
 
-            result = UpdateCurrentBackupDiskInfo(disk);
-
-            if (!result)
+            if (!UpdateCurrentBackupDiskInfo(disk))
             {
                 Utils.LogWithPushover(BackupAction.BackupFiles,
                                       PushoverPriority.Emergency,
@@ -823,13 +826,9 @@ namespace BackupManager
         {
             Utils.Trace("recalculateAllHashesButton_Click enter");
 
-            DialogResult answer =
-                MessageBox.Show(
-                    "Are you sure you want to recalculate the hashcodes from the master files?",
-                    "Recalculate Hashcodes",
-                    MessageBoxButtons.YesNo);
-
-            if (answer == DialogResult.Yes)
+            if (MessageBox.Show("Are you sure you want to recalculate the hashcodes from the master files?",
+                                "Recalculate Hashcodes",
+                                MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 foreach (BackupFile backupFile in mediaBackup.BackupFiles)
                 {
@@ -883,7 +882,10 @@ namespace BackupManager
                     continue;
                 }
 
-                if (copyFiles) { CopyFiles(false); }
+                if (copyFiles)
+                {
+                    CopyFiles(false);
+                }
 
                 // send pushover high to change disk
                 Utils.LogWithPushover(BackupAction.General,
@@ -960,7 +962,6 @@ namespace BackupManager
 
         public void TaskWrapper(Action<bool, bool> methodName, bool param1, bool param2)
         {
-
             if (methodName is null)
             {
                 throw new ArgumentNullException(nameof(methodName));
@@ -1052,11 +1053,9 @@ namespace BackupManager
 
             if (!longRunningActionExecutingRightNow)
             {
-                DialogResult answer = MessageBox.Show("Are you sure you want to rebuild the master list?",
+                if (MessageBox.Show("Are you sure you want to rebuild the master list?",
                                                       "Rebuild master list",
-                                                      MessageBoxButtons.YesNo);
-
-                if (answer == DialogResult.Yes)
+                                                      MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
                     TaskWrapper(ScanFolderAsync);
                 }
@@ -1368,7 +1367,6 @@ namespace BackupManager
 
                     UpdateStatusLabel($"Scanning {folderToCheck}", i + 1);
 
-                    // Check for files to delete
                     if (CheckForFilesToDelete(file))
                     {
                         continue;
@@ -1413,11 +1411,9 @@ namespace BackupManager
         {
             Utils.Trace("checkDiskAndDeleteButton_Click enter");
 
-            DialogResult answer = MessageBox.Show("Are you sure you want delete any extra files on the backup disk not in our list?",
+            if (MessageBox.Show("Are you sure you want delete any extra files on the backup disk not in our list?",
                                                   "Delete extra files",
-                                                  MessageBoxButtons.YesNo);
-
-            if (answer == DialogResult.Yes)
+                                                  MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, true, false);
             }
@@ -1599,7 +1595,7 @@ namespace BackupManager
                 Utils.Log($"{file.FullPath} : {file.Disk}");
                 if (string.IsNullOrEmpty(file.Disk))
                 {
-                    Utils.Log($"ERROR: {file.FullPath} : not on a backup disk");
+                    Utils.Log($"{file.FullPath} : not on a backup disk");
                 }
             }
 
@@ -1635,7 +1631,6 @@ namespace BackupManager
             if (files.Count() == 0)
             {
                 Utils.Log(BackupAction.General, $"All files checked in last {mediaBackup.Config.BackupDiskDaysToReportSinceFilesChecked} days");
-
             }
             else
             {
@@ -1661,12 +1656,9 @@ namespace BackupManager
             // prompt for the back up disk to be inserted 
             // check we have it inserted
             // copy any files off this disk until we're all done to the new disk that we specified
-
-            DialogResult answer = MessageBox.Show("Are you sure you want to copy files from multiple backup disks to the new master folder location?",
+            if (MessageBox.Show("Are you sure you want to copy files from multiple backup disks to the new master folder location?",
                                                   "Restore backup files",
-                                                  MessageBoxButtons.YesNo);
-
-            if (answer == DialogResult.Yes)
+                                                  MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 if (masterFoldersComboBox.SelectedItem == null)
                 {
@@ -1774,7 +1766,6 @@ namespace BackupManager
 
                 mediaBackup.Save();
             }
-
             Utils.Trace("restoreFilesButton_Click exit");
         }
 
@@ -1782,11 +1773,9 @@ namespace BackupManager
         {
             Utils.Trace("checkBackupDeleteAndCopyButton_Click enter");
 
-            DialogResult answer = MessageBox.Show("Are you sure you want delete any extra files on the backup disk not in our list?",
+            if (MessageBox.Show("Are you sure you want delete any extra files on the backup disk not in our list?",
                                                   "Delete extra files",
-                                                  MessageBoxButtons.YesNo);
-
-            if (answer == DialogResult.Yes)
+                                                  MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, true, true);
             }
@@ -2017,13 +2006,16 @@ namespace BackupManager
 
                         if (monitor.ProcessToKill.HasValue())
                         {
-                            text = $"Stopping all '{monitor.ProcessToKill}' processes that match";
+                            string[] processesToKill = monitor.ProcessToKill.Split(',');
 
-                            Utils.LogWithPushover(BackupAction.Monitoring,
-                                                  PushoverPriority.Normal,
-                                                  text);
+                            foreach (string toKill in processesToKill)
+                            {
+                                Utils.LogWithPushover(BackupAction.Monitoring,
+                                                      PushoverPriority.Normal,
+                                                      $"Stopping all '{toKill}' processes that match");
 
-                            _ = Utils.KillProcesses(monitor.ProcessToKill);
+                                _ = Utils.KillProcesses(toKill);
+                            }
                         }
 
                         if (monitor.ApplicationToStart.HasValue())
@@ -2099,11 +2091,16 @@ namespace BackupManager
             {
                 if (monitor.ProcessToKill.HasValue())
                 {
-                    Utils.LogWithPushover(BackupAction.Monitoring,
-                                          PushoverPriority.Normal,
-                                          $"Stopping all '{monitor.ProcessToKill}' processes that match");
+                    string[] processesToKill = monitor.ProcessToKill.Split(',');
 
-                    _ = Utils.KillProcesses(monitor.ProcessToKill);
+                    foreach (string toKill in processesToKill)
+                    {
+                        Utils.LogWithPushover(BackupAction.Monitoring,
+                                              PushoverPriority.Normal,
+                                              $"Stopping all '{toKill}' processes that match");
+
+                        _ = Utils.KillProcesses(toKill);
+                    }
                 }
 
                 if (monitor.ServiceToRestart.HasValue())
@@ -2229,14 +2226,11 @@ namespace BackupManager
         {
             // Check the current backup disk connected
             // when its finished prompt for another disk and wait
-
             Utils.Trace("CheckDeleteAndCopyAllBackupDisksButton_Click enter");
 
-            DialogResult answer = MessageBox.Show("Are you sure you want delete any extra files on the backup disk not in our list?",
+            if (MessageBox.Show("Are you sure you want delete any extra files on the backup disk not in our list?",
                                                   "Delete extra files",
-                                                  MessageBoxButtons.YesNo);
-
-            if (answer == DialogResult.Yes)
+                                                  MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 TaskWrapper(CheckConnectedDiskAndCopyFilesRepeaterAsync, true);
             }
@@ -2281,11 +2275,9 @@ namespace BackupManager
 
             Utils.Trace("CheckAllBackupDisksButton_Click enter");
 
-            DialogResult answer = MessageBox.Show("Are you sure you want delete any extra files on the backup disk not in our list?",
+            if (MessageBox.Show("Are you sure you want delete any extra files on the backup disk not in our list?",
                                                   "Delete extra files",
-                                                  MessageBoxButtons.YesNo);
-
-            if (answer == DialogResult.Yes)
+                                                  MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 TaskWrapper(CheckConnectedDiskAndCopyFilesRepeaterAsync, false);
             }
@@ -2456,7 +2448,7 @@ namespace BackupManager
                         toSave = true;
                     }
                 }
-                folderChanges.Remove(folderChange.Key);
+                _ = folderChanges.Remove(folderChange.Key);
 
             }
 
@@ -2554,9 +2546,9 @@ namespace BackupManager
         {
             if (mediaBackup.FoldersToScan.Count > 0 || folderChanges.Count > 0)
             {
-                DialogResult result = MessageBox.Show("There are folders to scan queued. Would you like to scan them before closing?", "Scan folders", MessageBoxButtons.YesNo);
-
-                if (result == DialogResult.Yes)
+                if (MessageBox.Show("There are folders to scan queued. Would you like to scan them before closing?",
+                                    "Scan folders",
+                                    MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
                     ProcessFolderChangesTimer_Tick(null, null);
                     ScanFoldersTimer_Tick(null, null);
@@ -2570,18 +2562,15 @@ namespace BackupManager
 
             Utils.Log("Listing folderChanges detected");
 
-            for (int i = folderChanges.Count - 1; i >= 0; i--)
+            foreach (KeyValuePair<string, DateTime> folderChange in folderChanges)
             {
-                KeyValuePair<string, DateTime> folderChange = folderChanges.ElementAt(i);
                 Utils.Log($"{folderChange.Key} changed at at {folderChange.Value}");
             }
 
             Utils.Log("Listing FoldersToScan queued");
 
-            for (int i = mediaBackup.FoldersToScan.Count - 1; i >= 0; i--)
+            foreach (Folder folderToScan in mediaBackup.FoldersToScan)
             {
-                Folder folderToScan = mediaBackup.FoldersToScan[i];
-
                 Utils.Log($"{folderToScan.Path} changed at at {folderToScan.ModifiedDateTime}");
             }
             Utils.Trace("ListFoldersToScanButton_Click exit");
