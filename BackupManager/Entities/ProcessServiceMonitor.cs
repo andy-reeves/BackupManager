@@ -86,7 +86,7 @@ namespace BackupManager.Entities
                 if (a < DateTime.Now.AddSeconds(-FailureTimePeriod))
                 {
                     Utils.Trace("UpdateFailures removing old failure as expired");
-                    Failures.Remove(a);
+                    _ = Failures.Remove(a);
                 }
             }
 

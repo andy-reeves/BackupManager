@@ -12,7 +12,7 @@ namespace BackupManager.Entities
     using System.Xml.Serialization;
 
     [DebuggerDisplay("RelativePath = {RelativePath}")]
-    public class BackupFile :IEquatable<BackupFile>
+    public class BackupFile : IEquatable<BackupFile>
     {
         private string contentsHash;
 
