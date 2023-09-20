@@ -7,6 +7,7 @@
 namespace BackupManager
 {
     using BackupManager.Entities;
+    using BackupManager.Extensions;
     using System;
     using System.Collections.Generic;
     using System.Configuration;
@@ -32,12 +33,12 @@ namespace BackupManager
 
         private readonly Action monitoringAction;
 
-        private readonly List<FileSystemWatcher> watcherList = new List<FileSystemWatcher>();
+        private readonly List<FileSystemWatcher> watcherList = new();
 
         /// <summary>
         /// This is a Dictionary of files/folders where changes have been detected and the last time they changed
         /// </summary>
-        private static readonly Dictionary<string, DateTime> folderChanges = new Dictionary<string, DateTime>();
+        private static readonly Dictionary<string, DateTime> folderChanges = new();
 
         /// <summary>
         /// Any long-running action sets this to TRUE to stop the scheduledBackup timer from being able to start
@@ -160,7 +161,7 @@ namespace BackupManager
 
             foreach (string masterFolder in mediaBackup.Config.MasterFolders)
             {
-                FileSystemWatcher watcher = new FileSystemWatcher(masterFolder)
+                FileSystemWatcher watcher = new(masterFolder)
                 {
                     NotifyFilter = NotifyFilters.Attributes
                                     | NotifyFilters.CreationTime
@@ -202,7 +203,7 @@ namespace BackupManager
             Utils.Trace("FileSystemWatcher_OnChangedOrDeleted enter");
             Utils.Trace($"e.FullPath = {e.FullPath}");
 
-            if (e.ChangeType != WatcherChangeTypes.Changed && e.ChangeType != WatcherChangeTypes.Deleted)
+            if (e.ChangeType is not WatcherChangeTypes.Changed and not WatcherChangeTypes.Deleted)
             {
                 Utils.Trace("FileSystemWatcher_OnChangedOrDeleted exit as not changed and not deleted");
                 return;
@@ -330,7 +331,7 @@ namespace BackupManager
             for (int i = 0; i < backupDiskFiles.Length; i++)
             {
                 string backupFileFullPath = backupDiskFiles[i];
-                string backupFileIndexFolderRelativePath = backupFileFullPath.Substring(folderToCheck.Length + 1);
+                string backupFileIndexFolderRelativePath = backupFileFullPath[(folderToCheck.Length + 1)..];
 
                 UpdateStatusLabel($"Scanning {folderToCheck}", i + 1);
 
@@ -630,7 +631,7 @@ namespace BackupManager
                     string destinationFileNameTemp = destinationFileName + ".copying";
 
                     string sourceFileName = backupFile.FullPath;
-                    FileInfo sourceFileInfo = new FileInfo(sourceFileName);
+                    FileInfo sourceFileInfo = new(sourceFileName);
                     string sourceFileSize = Utils.FormatSize(sourceFileInfo.Length);
 
                     if (File.Exists(destinationFileName))
@@ -775,7 +776,7 @@ namespace BackupManager
 
             string text = string.Empty;
 
-            if (filesStillNotOnBackupDisk.Count() > 0)
+            if (filesStillNotOnBackupDisk.Any())
             {
                 sizeOfFiles = filesStillNotOnBackupDisk.Sum(p => p.Length);
 
@@ -987,7 +988,7 @@ namespace BackupManager
 
             foreach (Control c in Controls)
             {
-                if (!(c is StatusStrip))
+                if (c is not StatusStrip)
                 {
                     c.Invoke(x => x.Enabled = false);
                 }
@@ -1303,7 +1304,7 @@ namespace BackupManager
             UpdateStatusLabel($"Saved.");
             UpdateMediaFilesCountDisplay();
 
-            int totalFiles = mediaBackup.BackupFiles.Count();
+            int totalFiles = mediaBackup.BackupFiles.Count;
 
             long totalFileSize = mediaBackup.BackupFiles.Sum(p => p.Length);
 
@@ -1503,7 +1504,7 @@ namespace BackupManager
                                           $"Service monitoring is not running");
                 }
 
-                long oldFileCount = mediaBackup.BackupFiles.Count();
+                long oldFileCount = mediaBackup.BackupFiles.Count;
 
                 bool doFullBackup = false;
                 _ = DateTime.TryParse(mediaBackup.MasterFoldersLastFullScan, out DateTime backupFileDate);
@@ -1522,7 +1523,7 @@ namespace BackupManager
                 {
                     long minimumFileCountAllowed = oldFileCount - (oldFileCount * mediaBackup.Config.BackupDiskDifferenceInFileCountAllowedPercentage / 100);
 
-                    long newFileCount = mediaBackup.BackupFiles.Count();
+                    long newFileCount = mediaBackup.BackupFiles.Count;
 
                     if (newFileCount < minimumFileCountAllowed)
                     {
@@ -1626,7 +1627,7 @@ namespace BackupManager
                                       $"Backup disks not checked in {numberOfDays} days - {disk.Disk}");
             }
 
-            if (files.Count() == 0)
+            if (!files.Any())
             {
                 Utils.Log(BackupAction.General, $"All files checked in last {mediaBackup.Config.BackupDiskDaysToReportSinceFilesChecked} days");
             }
@@ -1734,7 +1735,7 @@ namespace BackupManager
                             {
                                 Utils.LogWithPushover(BackupAction.Restore,
                                                       $"[{fileCounter}/{countOfFiles}] Copying {sourceFileFullPath} as {targetFilePath}");
-                                Utils.FileCopy(sourceFileFullPath, targetFilePath);
+                                _ = Utils.FileCopy(sourceFileFullPath, targetFilePath);
                             }
                             else
                             {
@@ -1787,9 +1788,9 @@ namespace BackupManager
 
             Utils.Log("Listing movies with multiple files in folder");
 
-            Dictionary<string, BackupFile> allMovies = new Dictionary<string, BackupFile>();
+            Dictionary<string, BackupFile> allMovies = new();
 
-            List<BackupFile> backupFilesWithDuplicates = new List<BackupFile>();
+            List<BackupFile> backupFilesWithDuplicates = new();
 
             foreach (BackupFile file in mediaBackup.BackupFiles)
             {
@@ -1893,7 +1894,7 @@ namespace BackupManager
                 long difference = totalSizeOfFilesFromSumOfFiles > sizeFromDiskAnalysis ? 0 : sizeFromDiskAnalysis - totalSizeOfFilesFromSumOfFiles;
                 double percentageDiff = difference * 100 / sizeFromDiskAnalysis;
 
-                string percentString = percentageDiff < 1 && percentageDiff > -1 ? "-" : $"{percentageDiff}%";
+                string percentString = percentageDiff is < 1 and > (-1) ? "-" : $"{percentageDiff}%";
 
                 Utils.Log($"{disk.Name,-11}   Last check: {lastChecked,-9}   Capacity: {disk.CapacityFormatted,-7}   Used: {Utils.FormatSize(sizeFromDiskAnalysis),-8}   Free: {disk.FreeFormatted,-7}   Sum of files: {Utils.FormatSize(totalSizeOfFilesFromSumOfFiles),-7}  DeletedFiles: {deletedCount,-6} Diff: {Utils.FormatSize(difference),-9} {percentString}");
 
@@ -1996,7 +1997,7 @@ namespace BackupManager
                     if (!monitor.FailureRetryExceeded)
                     {
                         string s = monitor.Failures.Count > 1 ? "s" : string.Empty;
-                        string text = $"'{monitor.Name}' is down. {monitor.Failures.Count()} failure{s} in the last {monitor.FailureTimePeriod} seconds.";
+                        string text = $"'{monitor.Name}' is down. {monitor.Failures.Count} failure{s} in the last {monitor.FailureTimePeriod} seconds.";
 
                         Utils.LogWithPushover(BackupAction.Monitoring,
                                               PushoverPriority.High,
@@ -2189,8 +2190,8 @@ namespace BackupManager
         {
             Utils.Log("Checking for files with Duplicate ContentsHash in _Movies and _TV");
 
-            Dictionary<string, BackupFile> allFilesUniqueContentsHash = new Dictionary<string, BackupFile>();
-            List<BackupFile> backupFilesWithDuplicates = new List<BackupFile>();
+            Dictionary<string, BackupFile> allFilesUniqueContentsHash = new();
+            List<BackupFile> backupFilesWithDuplicates = new();
 
             foreach (BackupFile f in mediaBackup.BackupFiles)
             {
@@ -2496,8 +2497,8 @@ namespace BackupManager
                             // unless they aren't on a backup disk in which case they are removed now 
                             List<BackupFile> files = searchOption == SearchOption.AllDirectories
                                 ? mediaBackup.BackupFiles.Where(b => !b.Flag && b.FullPath.StartsWith(folderToScan.Path)).ToList()
-                                : mediaBackup.BackupFiles.Where(b => !b.Flag && b.FullPath.StartsWith(folderToScan.Path) && !b.RelativePath.Contains("\\")).ToList();
-                            for (int j = files.Count() - 1; j >= 0; j--)
+                                : mediaBackup.BackupFiles.Where(b => !b.Flag && b.FullPath.StartsWith(folderToScan.Path) && !b.RelativePath.Contains('\\')).ToList();
+                            for (int j = files.Count - 1; j >= 0; j--)
                             {
                                 BackupFile backupFile = files[j];
                                 if (string.IsNullOrEmpty(backupFile.Disk))

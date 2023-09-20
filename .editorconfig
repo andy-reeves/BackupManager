@@ -284,6 +284,12 @@ dotnet_diagnostic.xUnit1004.severity = warning
 dotnet_diagnostic.xUnit1033.severity = warning
 csharp_style_prefer_primary_constructors = true:warning
 
+# IDE0078: Use pattern matching
+dotnet_diagnostic.IDE0078.severity = warning
+
+# IDE0083: Use pattern matching
+dotnet_diagnostic.IDE0083.severity = warning
+
 [*.{cs,vb}]
 dotnet_style_operator_placement_when_wrapping = beginning_of_line
 tab_width = 4

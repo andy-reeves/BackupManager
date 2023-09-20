@@ -4,7 +4,7 @@
 //  </copyright>
 //  --------------------------------------------------------------------------------------------------------------------
 
-namespace BackupManager
+namespace BackupManager.Extensions
 {
     using System;
     using System.Windows.Forms;

@@ -4,8 +4,9 @@
 //  </copyright>
 //  --------------------------------------------------------------------------------------------------------------------
 
-namespace System
+namespace BackupManager.Extensions
 {
+    using System;
     #region Using Directives
 
     using System.Collections.Generic;
@@ -202,7 +203,7 @@ namespace System
             if (string.IsNullOrEmpty(s)) { return string.Empty; }
 
             int index = s.IndexOf(c);
-            return index == -1 ? s : index < s.Length - 1 ? s.Substring(index + 1) : string.Empty;
+            return index == -1 ? s : index < s.Length - 1 ? s[(index + 1)..] : string.Empty;
         }
 
         public static bool StartsWith(this string s, IEnumerable<string> values)
@@ -228,7 +229,7 @@ namespace System
         public static string SubstringAfter(this string s, string value, StringComparison comparisonType)
         {
             int index = s.IndexOf(value, comparisonType);
-            return index == -1 ? s : index < s.Length - 1 ? s.Substring(index + value.Length) : string.Empty;
+            return index == -1 ? s : index < s.Length - 1 ? s[(index + value.Length)..] : string.Empty;
         }
 
         /// <summary>
@@ -246,7 +247,7 @@ namespace System
         public static string SubstringAfterLast(this string s, char c)
         {
             int index = s.LastIndexOf(c);
-            return index == -1 ? s : index < s.Length - 1 ? s.Substring(index + 1) : string.Empty;
+            return index == -1 ? s : index < s.Length - 1 ? s[(index + 1)..] : string.Empty;
         }
 
         /// <summary>
@@ -264,7 +265,7 @@ namespace System
         public static string SubstringBefore(this string s, char c)
         {
             int index = s.IndexOf(c);
-            return index != -1 ? s.Substring(0, index) : s;
+            return index != -1 ? s[..index] : s;
         }
 
         /// <summary>
@@ -285,7 +286,7 @@ namespace System
         public static string SubstringBefore(this string s, string value, StringComparison comparisonType)
         {
             int index = s.IndexOf(value, comparisonType);
-            return index != -1 ? s.Substring(0, index) : s;
+            return index != -1 ? s[..index] : s;
         }
 
         /// <summary>
@@ -303,7 +304,7 @@ namespace System
         public static string SubstringBeforeLast(this string s, char c)
         {
             int index = s.LastIndexOf(c);
-            return index != -1 ? s.Substring(0, index) : s;
+            return index != -1 ? s[..index] : s;
         }
 
         /// <summary>
@@ -324,7 +325,7 @@ namespace System
         public static string SubstringBeforeLast(this string s, string value, StringComparison comparisonType)
         {
             int index = s.LastIndexOf(value, comparisonType);
-            return index != -1 ? s.Substring(0, index) : s;
+            return index != -1 ? s[..index] : s;
         }
 
         /// <summary>
@@ -341,7 +342,7 @@ namespace System
         /// </returns>
         public static string Truncate(this string s, int length)
         {
-            return s.Length > length ? s.Substring(0, length - 1) + "…" : s;
+            return s.Length > length ? s[..(length - 1)] + "…" : s;
         }
 
         public static bool Contains(this string source, string toCheck, StringComparison comp)

@@ -6,6 +6,7 @@
 
 namespace BackupManager.Entities
 {
+    using BackupManager.Extensions;
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -41,7 +42,7 @@ namespace BackupManager.Entities
         // We dont want to delete the file off backup and then copy it again so we try a rename
         // as long as the file has the same indexfolder and relative path we can find it and rename it
         // This happened with The Porridge movie which is also stored as a Tv episode.
-        private readonly Dictionary<string, BackupFile> indexFolderAndRelativePath = new Dictionary<string, BackupFile>(StringComparer.CurrentCultureIgnoreCase);
+        private readonly Dictionary<string, BackupFile> indexFolderAndRelativePath = new(StringComparer.CurrentCultureIgnoreCase);
 
         public string MasterFoldersLastFullScan
         {
@@ -75,7 +76,7 @@ namespace BackupManager.Entities
             // take a copy of the xml file
             string destinationFileName = "MediaBackup-" + DateTime.Now.ToString("yy-MM-dd-HH-mm-ss.ff") + ".xml";
             string destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups", destinationFileName);
-            Utils.FileCopy(mediaBackupPath, destinationPath);
+            _ = Utils.FileCopy(mediaBackupPath, destinationPath);
         }
 
         public static MediaBackup Load(string path)
@@ -83,9 +84,9 @@ namespace BackupManager.Entities
             try
             {
                 MediaBackup mediaBackup;
-                XmlSerializer serializer = new XmlSerializer(typeof(MediaBackup));
+                XmlSerializer serializer = new(typeof(MediaBackup));
 
-                using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read))
+                using (FileStream stream = new(path, FileMode.Open, FileAccess.Read))
                 {
                     mediaBackup = serializer.Deserialize(stream) as MediaBackup;
                 }
@@ -179,17 +180,15 @@ namespace BackupManager.Entities
         {
             BackupMediaFile();
 
-            XmlSerializer xmlSerializer = new XmlSerializer(typeof(MediaBackup));
+            XmlSerializer xmlSerializer = new(typeof(MediaBackup));
 
             if (File.Exists(mediaBackupPath))
             {
                 File.SetAttributes(mediaBackupPath, FileAttributes.Normal);
             }
 
-            using (StreamWriter streamWriter = new StreamWriter(mediaBackupPath))
-            {
-                xmlSerializer.Serialize(streamWriter, this);
-            }
+            using StreamWriter streamWriter = new(mediaBackupPath);
+            xmlSerializer.Serialize(streamWriter, this);
         }
 
         /// <summary>
@@ -375,7 +374,7 @@ namespace BackupManager.Entities
                 {
                     string pathAfterSlash = path.SubstringAfter(indexFolder + "\\", StringComparison.CurrentCultureIgnoreCase);
                     int lastSlashLocation = pathAfterSlash.IndexOf('\\');
-                    return lastSlashLocation < 0 ? null : path.Substring(0, lastSlashLocation + (path.Length - pathAfterSlash.Length));
+                    return lastSlashLocation < 0 ? null : path[..(lastSlashLocation + (path.Length - pathAfterSlash.Length))];
                 }
             }
             return null;
@@ -414,7 +413,7 @@ namespace BackupManager.Entities
                 return backupDisk;
             }
 
-            BackupDisk disk = new BackupDisk(diskName, backupShare);
+            BackupDisk disk = new(diskName, backupShare);
             BackupDisks.Add(disk);
 
             Utils.Trace("GetBackupDisk exit new disk");
@@ -504,7 +503,7 @@ namespace BackupManager.Entities
         /// Removes any files that have a matching flag value as the one provided.
         public void RemoveFilesWithFlag(bool flag, bool clearHashes)
         {
-            Collection<BackupFile> filesToRemove = new Collection<BackupFile>();
+            Collection<BackupFile> filesToRemove = new();
 
             foreach (BackupFile backupFile in BackupFiles.Where(backupFile => backupFile.Flag == flag))
             {

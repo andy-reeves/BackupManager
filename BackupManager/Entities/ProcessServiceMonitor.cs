@@ -51,7 +51,7 @@ namespace BackupManager.Entities
         /// The list of DateTimes of the last failures to occur
         /// </summary>
         [XmlIgnore()]
-        internal List<DateTime> Failures = new List<DateTime>();
+        internal List<DateTime> Failures = new();
 
         /// <summary>
         /// Number of seconds to count the number of service/process failures. If this is exceeded then the a service stop/restart is no longer attempted

@@ -8,6 +8,7 @@ namespace TestProject
 {
     using BackupManager;
     using BackupManager.Entities;
+    using BackupManager.Extensions;
 
     public class FileRulesUnitTest
     {

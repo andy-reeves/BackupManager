@@ -25,9 +25,9 @@ namespace BackupManager.Entities
             try
             {
                 Rules rules;
-                XmlSerializer serializer = new XmlSerializer(typeof(Rules));
+                XmlSerializer serializer = new(typeof(Rules));
 
-                using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read))
+                using (FileStream stream = new(path, FileMode.Open, FileAccess.Read))
                 {
                     rules = serializer.Deserialize(stream) as Rules;
                 }

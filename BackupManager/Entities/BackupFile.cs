@@ -6,6 +6,7 @@
 
 namespace BackupManager.Entities
 {
+    using BackupManager.Extensions;
     using System;
     using System.Diagnostics;
     using System.IO;

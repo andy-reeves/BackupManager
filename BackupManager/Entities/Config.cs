@@ -183,9 +183,9 @@ namespace BackupManager.Entities
             try
             {
                 Config config;
-                XmlSerializer serializer = new XmlSerializer(typeof(Config));
+                XmlSerializer serializer = new(typeof(Config));
 
-                using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read))
+                using (FileStream stream = new(path, FileMode.Open, FileAccess.Read))
                 {
                     config = serializer.Deserialize(stream) as Config;
                 }

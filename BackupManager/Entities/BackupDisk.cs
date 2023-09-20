@@ -6,6 +6,7 @@
 
 namespace BackupManager.Entities
 {
+    using BackupManager.Extensions;
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -159,7 +160,7 @@ namespace BackupManager.Entities
                 return null;
             }
 
-            DirectoryInfo sharePathDirectoryInfo = new DirectoryInfo(sharePath);
+            DirectoryInfo sharePathDirectoryInfo = new(sharePath);
 
             if (sharePathDirectoryInfo == null || !sharePathDirectoryInfo.Exists)
             {

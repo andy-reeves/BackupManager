@@ -7,6 +7,7 @@
 namespace BackupManager
 {
     using BackupManager.Entities;
+    using BackupManager.Extensions;
     using System;
     using System.Collections.Generic;
     using System.Collections.Specialized;
@@ -17,12 +18,12 @@ namespace BackupManager
     using System.Net.Sockets;
     using System.Reflection;
     using System.Runtime.InteropServices;
+    using System.Runtime.Versioning;
     using System.Security.Cryptography;
     using System.Security.Principal;
     using System.ServiceProcess;
     using System.Text;
     using System.Text.RegularExpressions;
-    using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -30,7 +31,7 @@ namespace BackupManager
     /// </summary>
     public static class Utils
     {
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool GetDiskFreeSpaceEx(string lpDirectoryName,
         out long lpFreeBytesAvailable,
@@ -106,7 +107,7 @@ namespace BackupManager
         /// <summary>
         /// The MD5 Crypto Provider
         /// </summary>
-        private static readonly MD5CryptoServiceProvider Md5 = new MD5CryptoServiceProvider();
+        private static readonly MD5CryptoServiceProvider Md5 = new();
 
 #if DEBUG
         private static readonly string LogFile = Path.Combine(
@@ -164,17 +165,16 @@ namespace BackupManager
         internal static bool CreateSymbolicLink()
         {
             // mklink /d "j:\_TV\%%~nxi" "%%i"
-           // System.IO.Directory.CreateSymbolicLink()
+            // System.IO.Directory.CreateSymbolicLink()
 
             return true;
         }
-
 
         internal static bool IsRunningAsAdmin()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                WindowsPrincipal principal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
+                WindowsPrincipal principal = new(WindowsIdentity.GetCurrent());
                 return principal.IsInRole(WindowsBuiltInRole.Administrator);
             }
             //for mac and linux
@@ -464,15 +464,15 @@ namespace BackupManager
             if (!Directory.Exists(path))
             {
                 Trace("GetFiles exit with new string[]");
-                return new string[] { };
+                return Array.Empty<string>();
             }
 
-            DirectoryInfo directoryInfo = new DirectoryInfo(path);
+            DirectoryInfo directoryInfo = new(path);
 
             if (directoryInfo.Parent != null && AnyFlagSet(directoryInfo.Attributes, directoryAttributesToIgnore))
             {
                 Trace("GetFiles exit with new string[]");
-                return new string[] { };
+                return Array.Empty<string>();
             }
 
             IEnumerable<string> include =
@@ -480,7 +480,7 @@ namespace BackupManager
                 where filter.Trim().HasValue()
                 select filter.Trim();
 
-            IEnumerable<string> exclude = from filter in include where filter.Contains(@"!") select filter;
+            IEnumerable<string> exclude = from filter in include where filter.Contains('!') select filter;
 
             include = include.Except(exclude);
 
@@ -497,10 +497,10 @@ namespace BackupManager
                                                      .Replace("?", ".")
                                                  select $"^{replace}$";
 
-            Regex excludeRegex = new Regex(string.Join("|", excludeFilters.ToArray()), RegexOptions.IgnoreCase);
+            Regex excludeRegex = new(string.Join("|", excludeFilters.ToArray()), RegexOptions.IgnoreCase);
 
-            Queue<string> pathsToSearch = new Queue<string>();
-            List<string> foundFiles = new List<string>();
+            Queue<string> pathsToSearch = new();
+            List<string> foundFiles = new();
 
             pathsToSearch.Enqueue(path);
 
@@ -552,10 +552,8 @@ namespace BackupManager
         /// </returns>
         internal static string GetHashFromFile(string fileName, HashAlgorithm algorithm)
         {
-            using (BufferedStream stream = new BufferedStream(File.OpenRead(fileName), BytesInOneMegabyte))
-            {
-                return ByteArrayToString(algorithm.ComputeHash(stream));
-            }
+            using BufferedStream stream = new(File.OpenRead(fileName), BytesInOneMegabyte);
+            return ByteArrayToString(algorithm.ComputeHash(stream));
         }
 
         /// <summary>
@@ -648,7 +646,7 @@ namespace BackupManager
 
         internal static DateTime GetFileLastWriteTime(string fileName)
         {
-            FileInfo fileInfo = new FileInfo(fileName);
+            FileInfo fileInfo = new(fileName);
 
             DateTime returnValue;
 
@@ -734,7 +732,8 @@ namespace BackupManager
             {
                 try
                 {
-                    NameValueCollection parameters = new NameValueCollection {
+                    NameValueCollection parameters = new()
+                    {
                 { "token", Config.PushoverAppToken},
                 { "user", Config.PushoverUserKey },
                 { "priority", Convert.ChangeType(priority, priority.GetTypeCode()).ToString() },
@@ -765,32 +764,30 @@ namespace BackupManager
                         parameters.Add("expire", Convert.ChangeType(expires, expires.GetTypeCode()).ToString());
                     }
 
-                    using (WebClient client = new WebClient())
+                    using WebClient client = new();
+                    // ensures there's a 1s gap between messages
+                    while (DateTime.UtcNow < timeLastPushoverMessageSent.AddMilliseconds(TimeDelayOnPushoverMessages))
                     {
-                        // ensures there's a 1s gap between messages
-                        while (DateTime.UtcNow < timeLastPushoverMessageSent.AddMilliseconds(TimeDelayOnPushoverMessages))
-                        {
-                            Task.Delay(TimeDelayOnPushoverMessages / 10).Wait();
-                        }
-
-                        _ = client.UploadValues(PushoverAddress, parameters);
-
-                        int applicationLimitRemaining = Convert.ToInt32(client.ResponseHeaders["X-Limit-App-Remaining"]);
-
-                        Trace($"Pushover messages remaining: {applicationLimitRemaining}");
-
-                        if (applicationLimitRemaining < Config.PushoverWarningMessagesRemaining)
-                        {
-                            if (!AlreadySendingPushoverMessage)
-                            {
-                                AlreadySendingPushoverMessage = true;
-                                SendPushoverMessage("Message Limit Warning", PushoverPriority.High, $"Application Limit Remaining is: {applicationLimitRemaining}");
-                                AlreadySendingPushoverMessage = false;
-                            }
-                        }
-
-                        timeLastPushoverMessageSent = DateTime.UtcNow;
+                        Task.Delay(TimeDelayOnPushoverMessages / 10).Wait();
                     }
+
+                    _ = client.UploadValues(PushoverAddress, parameters);
+
+                    int applicationLimitRemaining = Convert.ToInt32(client.ResponseHeaders["X-Limit-App-Remaining"]);
+
+                    Trace($"Pushover messages remaining: {applicationLimitRemaining}");
+
+                    if (applicationLimitRemaining < Config.PushoverWarningMessagesRemaining)
+                    {
+                        if (!AlreadySendingPushoverMessage)
+                        {
+                            AlreadySendingPushoverMessage = true;
+                            SendPushoverMessage("Message Limit Warning", PushoverPriority.High, $"Application Limit Remaining is: {applicationLimitRemaining}");
+                            AlreadySendingPushoverMessage = false;
+                        }
+                    }
+
+                    timeLastPushoverMessageSent = DateTime.UtcNow;
                 }
                 catch (Exception ex)
                 {
@@ -856,10 +853,8 @@ namespace BackupManager
                 request.Method = "GET";
                 request.Timeout = timeout;
 
-                using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
-                {
-                    returnValue = response.StatusCode == HttpStatusCode.OK;
-                }
+                using HttpWebResponse response = request.GetResponse() as HttpWebResponse;
+                returnValue = response.StatusCode == HttpStatusCode.OK;
             }
             catch
             {
@@ -878,10 +873,8 @@ namespace BackupManager
         {
             try
             {
-                using (TcpClient tcpClient = new TcpClient())
-                {
-                    tcpClient.Connect(host, port);
-                }
+                using TcpClient tcpClient = new();
+                tcpClient.Connect(host, port);
             }
 
             catch
@@ -1009,7 +1002,7 @@ namespace BackupManager
         /// </exception>
         private static string ByteArrayToString(byte[] value)
         {
-            return value == null ? throw new ArgumentNullException("value") : ByteArrayToString(value, 0, value.Length);
+            return value == null ? throw new ArgumentNullException(nameof(value)) : ByteArrayToString(value, 0, value.Length);
         }
 
         /// <summary>
@@ -1037,22 +1030,22 @@ namespace BackupManager
         {
             if (value == null)
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             }
 
             if (startIndex < 0 || (startIndex >= value.Length && startIndex > 0))
             {
-                throw new ArgumentOutOfRangeException("startIndex");
+                throw new ArgumentOutOfRangeException(nameof(startIndex));
             }
 
             if (length < 0)
             {
-                throw new ArgumentOutOfRangeException("length");
+                throw new ArgumentOutOfRangeException(nameof(length));
             }
 
             if (startIndex > value.Length - length)
             {
-                throw new ArgumentException("length");
+                throw new ArgumentException(null, nameof(length));
             }
 
             if (length == 0)
@@ -1062,7 +1055,7 @@ namespace BackupManager
 
             if (length > 715827882)
             {
-                throw new ArgumentOutOfRangeException("length");
+                throw new ArgumentOutOfRangeException(nameof(length));
             }
 
             int length1 = length * 2;
@@ -1178,7 +1171,7 @@ namespace BackupManager
         private static byte[] GetLocalFileByteArray(string fileName, long offset, long byteCountToReturn)
         {
             byte[] buffer;
-            FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+            FileStream fileStream = new(fileName, FileMode.Open, FileAccess.Read);
             _ = fileStream.Seek(offset, SeekOrigin.Begin);
             int sum = 0;
             try
@@ -1234,7 +1227,7 @@ namespace BackupManager
         {
             if (string.IsNullOrEmpty(folderName))
             {
-                throw new ArgumentNullException("folderName");
+                throw new ArgumentNullException(nameof(folderName));
             }
 
             if (!folderName.EndsWith("\\"))
@@ -1255,15 +1248,15 @@ namespace BackupManager
             Assembly assembly = startupClass.GetTypeInfo().Assembly;
             string projectName = assembly.GetName().Name;
             string applicationBasePath = AppContext.BaseDirectory;
-            DirectoryInfo directoryInfo = new DirectoryInfo(applicationBasePath);
+            DirectoryInfo directoryInfo = new(applicationBasePath);
             do
             {
                 directoryInfo = directoryInfo.Parent;
 
-                DirectoryInfo projectDirectoryInfo = new DirectoryInfo(directoryInfo.FullName);
+                DirectoryInfo projectDirectoryInfo = new(directoryInfo.FullName);
                 if (projectDirectoryInfo.Exists)
                 {
-                    FileInfo projectFileInfo = new FileInfo(Path.Combine(projectDirectoryInfo.FullName, projectName, $"{projectName}.csproj"));
+                    FileInfo projectFileInfo = new(Path.Combine(projectDirectoryInfo.FullName, projectName, $"{projectName}.csproj"));
                     if (projectFileInfo.Exists)
                     {
                         return Path.Combine(projectDirectoryInfo.FullName, projectName);
@@ -1301,8 +1294,8 @@ namespace BackupManager
         /// <returns></returns>
         internal static string RandomString(long size)
         {
-            StringBuilder builder = new StringBuilder();
-            Random random = new Random();
+            StringBuilder builder = new();
+            Random random = new();
             char ch;
             for (long i = 0; i < size; i++)
             {
@@ -1322,11 +1315,9 @@ namespace BackupManager
         {
             try
             {
-                using (FileStream fs = File.Create(
+                using FileStream fs = File.Create(
                   Path.Combine(folderPath, Path.GetRandomFileName()),
-                  1, FileOptions.DeleteOnClose)
-                  )
-                { }
+                  1, FileOptions.DeleteOnClose);
                 return true;
             }
             catch
@@ -1390,11 +1381,12 @@ namespace BackupManager
         /// <param name="serviceName"></param>
         /// <param name="timeoutMilliseconds"></param>
         /// <returns>True if the service stopped successfully or it was stopped already</returns>
+        [SupportedOSPlatform("windows")]
         internal static bool StopService(string serviceName, int timeoutMilliseconds)
         {
             Trace("StopService enter");
 
-            ServiceController service = new ServiceController(serviceName);
+            ServiceController service = new(serviceName);
 
             try
             {
@@ -1422,11 +1414,12 @@ namespace BackupManager
         /// <param name="serviceName"></param>
         /// <param name="timeoutMilliseconds"></param>
         /// <returns>True if the service restarted successfully</returns>
+        [SupportedOSPlatform("windows")]
         internal static bool RestartService(string serviceName, int timeoutMilliseconds)
         {
             Trace("RestartService enter");
 
-            ServiceController service = new ServiceController(serviceName);
+            ServiceController service = new(serviceName);
 
             try
             {
@@ -1502,7 +1495,7 @@ namespace BackupManager
                     File.Delete(secondPathFilename);
                 }
 
-                using (StreamWriter sWriter = new StreamWriter(firstPathFilename, true, Encoding.UTF8, streamWriteBufferSize))
+                using (StreamWriter sWriter = new(firstPathFilename, true, Encoding.UTF8, streamWriteBufferSize))
                 {
                     for (long i = 1; i <= appendIterations; i++)
                     {
@@ -1609,10 +1602,10 @@ namespace BackupManager
 
             if (string.IsNullOrEmpty(directory))
             {
-                throw new ArgumentException("Directory is a null reference or an empty string", "directory");
+                throw new ArgumentException("Directory is a null reference or an empty string", nameof(directory));
             }
 
-            List<string> listOfDirectoriesDeleted = new List<string>();
+            List<string> listOfDirectoriesDeleted = new();
 
             DeleteEmptyDirectories(directory, listOfDirectoriesDeleted, directory);
 
@@ -1638,7 +1631,7 @@ namespace BackupManager
         /// <returns></returns>
         internal static TimeSpan TimeLeft(DateTime startTime, TimeSpan targetTime)
         {
-            TimeSpan OneDay = new TimeSpan(24, 0, 0);
+            TimeSpan OneDay = new(24, 0, 0);
             TimeSpan timeLeft = OneDay - new TimeSpan(startTime.Hour, startTime.Minute, startTime.Second) + targetTime;
 
             if (timeLeft.TotalHours > 24)
@@ -1658,7 +1651,7 @@ namespace BackupManager
         {
             try
             {
-                FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+                FileStream fileStream = new(fileName, FileMode.Open, FileAccess.Read);
 
                 fileStream.Close();
             }
