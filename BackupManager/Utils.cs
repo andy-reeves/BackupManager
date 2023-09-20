@@ -18,6 +18,7 @@ namespace BackupManager
     using System.Reflection;
     using System.Runtime.InteropServices;
     using System.Security.Cryptography;
+    using System.Security.Principal;
     using System.ServiceProcess;
     using System.Text;
     using System.Text.RegularExpressions;
@@ -158,6 +159,26 @@ namespace BackupManager
                     continue;
                 }
             }
+        }
+
+        internal static bool CreateSymbolicLink()
+        {
+            // mklink /d "j:\_TV\%%~nxi" "%%i"
+           // System.IO.Directory.CreateSymbolicLink()
+
+            return true;
+        }
+
+
+        internal static bool IsRunningAsAdmin()
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                WindowsPrincipal principal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
+                return principal.IsInRole(WindowsBuiltInRole.Administrator);
+            }
+            //for mac and linux
+            return true;
         }
 
         /// <summary>

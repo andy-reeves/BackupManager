@@ -640,9 +640,7 @@ namespace BackupManager
 
                         // it could be that the source file hash changed after we read it (we read the hash, updated the master file and then copied it)
                         // in which case check the source hash again and then check the copied file 
-                        bool returnValue = backupFile.CheckContentHashes(disk);
-
-                        if (returnValue == false)
+                        if (!backupFile.CheckContentHashes(disk))
                         {
                             // There was an error with the hashcodes of the source file anf the file on the backup disk
                             Utils.LogWithPushover(BackupAction.BackupFiles,
