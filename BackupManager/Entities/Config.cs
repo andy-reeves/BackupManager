@@ -98,6 +98,11 @@ namespace BackupManager.Entities
         public int MasterFolderScanMinimumAgeBeforeScanning;
 
         /// <summary>
+        /// The root folder where Directory SymbolicLinks are created
+        /// </summary>
+        public string SymbolicLinksRootFolder;
+
+        /// <summary>
         /// Interval in seconds
         /// </summary>
         public int MonitoringInterval;

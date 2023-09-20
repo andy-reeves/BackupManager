@@ -15,6 +15,8 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>BackupManager.ico</ApplicationIcon>
+    <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+    <NeutralLanguage>en-GB</NeutralLanguage>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="BackupManager.ico" />

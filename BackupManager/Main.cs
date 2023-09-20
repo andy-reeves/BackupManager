@@ -2498,6 +2498,8 @@ namespace BackupManager
 
                             _ = mediaBackup.FoldersToScan.Remove(folderToScan);
 
+                            UpdateSymbolicLinkForFolder(folderToScan.Path);
+
                             // instead of removing files that are no longer found in a folder we now flag them as deleted so we can report them later
                             // unless they aren't on a backup disk in which case they are removed now 
                             List<BackupFile> files = searchOption == SearchOption.AllDirectories
@@ -2578,6 +2580,98 @@ namespace BackupManager
                 Utils.Log($"{folderToScan.Path} changed at at {folderToScan.ModifiedDateTime}");
             }
             Utils.Trace("ListFoldersToScanButton_Click exit");
+        }
+
+        private void RecreateAllMkLinksButton_Click(object sender, EventArgs e)
+        {
+            CreateLinksForIndexFolder("_Movies");
+            CreateLinksForIndexFolder("_Movies (non-tmdb)");
+            CreateLinksForIndexFolder("_TV");
+            CreateLinksForIndexFolder("_TV (non-tvdb)");
+        }
+
+        private void CreateLinksForIndexFolder(string folder)
+        {
+            Utils.Trace("CreateLinks enter");
+            Utils.Trace($"Param folderToCheck = {folder}");
+
+            IEnumerable<BackupFile> backupFiles = mediaBackup.BackupFiles.Where(b => b.IndexFolder == folder);
+
+            foreach (BackupFile backupFile in backupFiles)
+            {
+                CreateLinkForBackupFile(backupFile);
+            }
+
+            Utils.Trace("CreateLinks exit");
+        }
+
+        private void UpdateSymbolicLinkForFolder(string folderPath)
+        {
+            if (!Directory.Exists(folderPath)) { return; }
+
+            mediaBackup.GetFoldersForPath(folderPath, out string _, out string indexFolder, out string relativePath);
+            string assetType = string.Empty;
+
+            string pathToTarget = mediaBackup.GetParentFolder(Path.Combine(folderPath, "temp"));
+
+            if (indexFolder.StartsWith("_Movies"))
+            {
+                assetType = "_Movies";
+            }
+            else if (indexFolder.StartsWith("_TV"))
+            {
+                assetType = "_TV";
+            }
+
+            if (pathToTarget == null || assetType == string.Empty)
+            {
+                return;
+            }
+            string path = Path.Combine(mediaBackup.Config.SymbolicLinksRootFolder, assetType, new DirectoryInfo(pathToTarget).Name);
+
+            if (Directory.Exists(path))
+            {
+                if (!Directory.GetFileSystemEntries(path).Any())
+                {
+                    Directory.Delete(path, true);
+                }
+            }
+            else
+            {
+                _ = Directory.CreateSymbolicLink(path, pathToTarget);
+            }
+        }
+
+        private void CreateLinkForBackupFile(BackupFile backupFile)
+        {
+            string assetType = string.Empty;
+            string pathToTarget = mediaBackup.GetParentFolder(backupFile.FullPath);
+            if (backupFile.IndexFolder.StartsWith("_Movies"))
+            {
+                assetType = "_Movies";
+            }
+            else if (backupFile.IndexFolder.StartsWith("_TV"))
+            {
+                assetType = "_TV";
+            }
+
+            if (assetType is "_Movies" or "_TV")
+            {
+                string path = Path.Combine(mediaBackup.Config.SymbolicLinksRootFolder, assetType, new DirectoryInfo(pathToTarget).Name);
+
+                if (Directory.Exists(path))
+                {
+                    if (!Directory.GetFileSystemEntries(path).Any())
+                    {
+                        Directory.Delete(path, true);
+                    }
+                }
+
+                if (!Directory.Exists(path))
+                {
+                    _ = Directory.CreateSymbolicLink(path, pathToTarget);
+                }
+            }
         }
     }
 }

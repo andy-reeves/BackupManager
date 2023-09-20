@@ -52,6 +52,7 @@
             listFilesMarkedAsDeletedButton = new System.Windows.Forms.Button();
             fileWatcherButton = new System.Windows.Forms.Button();
             listFoldersToScanButton = new System.Windows.Forms.Button();
+            recreateAllMkLinksButton = new System.Windows.Forms.Button();
             scheduledBackupTimerButton = new System.Windows.Forms.Button();
             listFilesOnBackupDiskButton = new System.Windows.Forms.Button();
             listFilesInMasterFolderButton = new System.Windows.Forms.Button();
@@ -379,6 +380,18 @@
             toolTip.SetToolTip(listFoldersToScanButton, "Outputs lists of folders that we've detected changes in and that will be scanned next");
             listFoldersToScanButton.UseVisualStyleBackColor = true;
             listFoldersToScanButton.Click += ListFoldersToScanButton_Click;
+            // 
+            // recreateAllMkLinksButton
+            // 
+            recreateAllMkLinksButton.Location = new System.Drawing.Point(8, 127);
+            recreateAllMkLinksButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            recreateAllMkLinksButton.Name = "recreateAllMkLinksButton";
+            recreateAllMkLinksButton.Size = new System.Drawing.Size(234, 27);
+            recreateAllMkLinksButton.TabIndex = 45;
+            recreateAllMkLinksButton.Text = "Recreate all symbolic folder links";
+            toolTip.SetToolTip(recreateAllMkLinksButton, "Recreates all the mklinks for all movies and tv");
+            recreateAllMkLinksButton.UseVisualStyleBackColor = true;
+            recreateAllMkLinksButton.Click += RecreateAllMkLinksButton_Click;
             // 
             // scheduledBackupTimerButton
             // 
@@ -879,6 +892,7 @@
             // 
             // groupBox4
             // 
+            groupBox4.Controls.Add(recreateAllMkLinksButton);
             groupBox4.Controls.Add(updateMasterFilesButton);
             groupBox4.Controls.Add(speedTestButton);
             groupBox4.Controls.Add(recalculateAllHashesButton);
@@ -886,7 +900,7 @@
             groupBox4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             groupBox4.Name = "groupBox4";
             groupBox4.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            groupBox4.Size = new System.Drawing.Size(253, 127);
+            groupBox4.Size = new System.Drawing.Size(253, 168);
             groupBox4.TabIndex = 70;
             groupBox4.TabStop = false;
             groupBox4.Text = "All Master folders";
@@ -950,7 +964,7 @@
             // 
             // notOnABackupDiskTextBox
             // 
-            notOnABackupDiskTextBox.Location = new System.Drawing.Point(130, 329);
+            notOnABackupDiskTextBox.Location = new System.Drawing.Point(130, 372);
             notOnABackupDiskTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             notOnABackupDiskTextBox.Name = "notOnABackupDiskTextBox";
             notOnABackupDiskTextBox.ReadOnly = true;
@@ -960,7 +974,7 @@
             // label9
             // 
             label9.AutoSize = true;
-            label9.Location = new System.Drawing.Point(1, 331);
+            label9.Location = new System.Drawing.Point(1, 374);
             label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label9.Name = "label9";
             label9.Size = new System.Drawing.Size(119, 15);
@@ -969,7 +983,7 @@
             // 
             // totalFilesTextBox
             // 
-            totalFilesTextBox.Location = new System.Drawing.Point(130, 297);
+            totalFilesTextBox.Location = new System.Drawing.Point(130, 340);
             totalFilesTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             totalFilesTextBox.Name = "totalFilesTextBox";
             totalFilesTextBox.ReadOnly = true;
@@ -979,7 +993,7 @@
             // label10
             // 
             label10.AutoSize = true;
-            label10.Location = new System.Drawing.Point(68, 299);
+            label10.Location = new System.Drawing.Point(68, 342);
             label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label10.Name = "label10";
             label10.Size = new System.Drawing.Size(56, 15);
@@ -988,7 +1002,7 @@
             // 
             // notOnABackupDiskSizeTextBox
             // 
-            notOnABackupDiskSizeTextBox.Location = new System.Drawing.Point(215, 329);
+            notOnABackupDiskSizeTextBox.Location = new System.Drawing.Point(215, 372);
             notOnABackupDiskSizeTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             notOnABackupDiskSizeTextBox.Name = "notOnABackupDiskSizeTextBox";
             notOnABackupDiskSizeTextBox.ReadOnly = true;
@@ -997,7 +1011,7 @@
             // 
             // totalFilesSizeTextBox
             // 
-            totalFilesSizeTextBox.Location = new System.Drawing.Point(215, 297);
+            totalFilesSizeTextBox.Location = new System.Drawing.Point(215, 340);
             totalFilesSizeTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             totalFilesSizeTextBox.Name = "totalFilesSizeTextBox";
             totalFilesSizeTextBox.ReadOnly = true;
@@ -1025,7 +1039,7 @@
             // 
             // filesMarkedAsDeletedSizeTextBox
             // 
-            filesMarkedAsDeletedSizeTextBox.Location = new System.Drawing.Point(215, 361);
+            filesMarkedAsDeletedSizeTextBox.Location = new System.Drawing.Point(215, 404);
             filesMarkedAsDeletedSizeTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             filesMarkedAsDeletedSizeTextBox.Name = "filesMarkedAsDeletedSizeTextBox";
             filesMarkedAsDeletedSizeTextBox.ReadOnly = true;
@@ -1034,7 +1048,7 @@
             // 
             // filesMarkedAsDeletedTextBox
             // 
-            filesMarkedAsDeletedTextBox.Location = new System.Drawing.Point(130, 361);
+            filesMarkedAsDeletedTextBox.Location = new System.Drawing.Point(130, 404);
             filesMarkedAsDeletedTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             filesMarkedAsDeletedTextBox.Name = "filesMarkedAsDeletedTextBox";
             filesMarkedAsDeletedTextBox.ReadOnly = true;
@@ -1044,7 +1058,7 @@
             // label12
             // 
             label12.AutoSize = true;
-            label12.Location = new System.Drawing.Point(15, 363);
+            label12.Location = new System.Drawing.Point(15, 406);
             label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label12.Name = "label12";
             label12.Size = new System.Drawing.Size(104, 15);
@@ -1270,6 +1284,7 @@
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Button listFoldersToScanButton;
         private System.Windows.Forms.TextBox foldersToScanTextBox;
+        private System.Windows.Forms.Button recreateAllMkLinksButton;
     }
 }
 

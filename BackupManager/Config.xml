@@ -77,6 +77,9 @@
   <!-- If True we test the speed of the disks -->
   <SpeedTestONOFF>false</SpeedTestONOFF>
 
+  <!-- The root folder where Directory SymbolicLinks are created -->
+  <SymbolicLinksRootFolder>J:\</SymbolicLinksRootFolder>
+
   <Monitors>
     <Monitor>
       <Url />
@@ -89,34 +92,34 @@
       <MaximumFailures>10</MaximumFailures>
     </Monitor>
   </Monitors>
-  
-  <MasterFolders>
-      <!-- List each UNC path that you want to scan for files to backup here -->
-      <MasterFolder>\\nas1\assets1\_Test</MasterFolder> 
-    </MasterFolders>
 
-    <IndexFolders>
-      <!-- These are the subfolders that will be searched in the shares above -->
-      <IndexFolder>_Audio Books</IndexFolder>
-      <IndexFolder>_Backup</IndexFolder>
-      <IndexFolder>_Comedy</IndexFolder>
-      <IndexFolder>_Comedy (non-tmdb)</IndexFolder>
-      <IndexFolder>_Concerts</IndexFolder>
-      <IndexFolder>_Concerts (non-tmdb)</IndexFolder>
-      <IndexFolder>_From Mum</IndexFolder>
-      <IndexFolder>_MMA</IndexFolder>
-      <IndexFolder>_Movies</IndexFolder>
-      <IndexFolder>_Movies (non-tmdb)</IndexFolder>
-      <IndexFolder>_Music</IndexFolder>
-      <IndexFolder>_Other</IndexFolder>
-      <IndexFolder>_Pictures</IndexFolder>
-      <IndexFolder>_Playlists</IndexFolder>
-      <IndexFolder>_Software</IndexFolder>
-      <IndexFolder>_Sport</IndexFolder>
-      <IndexFolder>_TV</IndexFolder>
-      <IndexFolder>_TV (non-tvdb)</IndexFolder>
-      <IndexFolder>_Videos</IndexFolder>
-    </IndexFolders>
+  <MasterFolders>
+    <!-- List each UNC path that you want to scan for files to backup here -->
+    <MasterFolder>\\nas1\assets1\_Test</MasterFolder>
+  </MasterFolders>
+
+  <IndexFolders>
+    <!-- These are the subfolders that will be searched in the shares above -->
+    <IndexFolder>_Audio Books</IndexFolder>
+    <IndexFolder>_Backup</IndexFolder>
+    <IndexFolder>_Comedy</IndexFolder>
+    <IndexFolder>_Comedy (non-tmdb)</IndexFolder>
+    <IndexFolder>_Concerts</IndexFolder>
+    <IndexFolder>_Concerts (non-tmdb)</IndexFolder>
+    <IndexFolder>_From Mum</IndexFolder>
+    <IndexFolder>_MMA</IndexFolder>
+    <IndexFolder>_Movies</IndexFolder>
+    <IndexFolder>_Movies (non-tmdb)</IndexFolder>
+    <IndexFolder>_Music</IndexFolder>
+    <IndexFolder>_Other</IndexFolder>
+    <IndexFolder>_Pictures</IndexFolder>
+    <IndexFolder>_Playlists</IndexFolder>
+    <IndexFolder>_Software</IndexFolder>
+    <IndexFolder>_Sport</IndexFolder>
+    <IndexFolder>_TV</IndexFolder>
+    <IndexFolder>_TV (non-tvdb)</IndexFolder>
+    <IndexFolder>_Videos</IndexFolder>
+  </IndexFolders>
 
   <Filters>
     <!-- RegEx's of file to ignore when executing a scan -->
