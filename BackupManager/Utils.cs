@@ -10,11 +10,11 @@ namespace BackupManager
     using BackupManager.Extensions;
     using System;
     using System.Collections.Generic;
-    using System.Collections.Specialized;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Net;
+    using System.Net.Http;
     using System.Net.Sockets;
     using System.Reflection;
     using System.Runtime.InteropServices;
@@ -107,7 +107,7 @@ namespace BackupManager
         /// <summary>
         /// The MD5 Crypto Provider
         /// </summary>
-        private static readonly MD5CryptoServiceProvider Md5 = new();
+        private static readonly MD5 Md5 = MD5.Create();
 
 #if DEBUG
         private static readonly string LogFile = Path.Combine(
@@ -164,18 +164,22 @@ namespace BackupManager
 
         internal static bool CreateSymbolicLink()
         {
+
             // mklink /d "j:\_TV\%%~nxi" "%%i"
-            // System.IO.Directory.CreateSymbolicLink()
+            //System.IO.Directory.CreateSymbolicLink()
 
             return true;
         }
 
+        /// <summary>
+        /// Returns TRUE if we're running as Admin
+        /// </summary>
+        /// <returns></returns>
         internal static bool IsRunningAsAdmin()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                WindowsPrincipal principal = new(WindowsIdentity.GetCurrent());
-                return principal.IsInRole(WindowsBuiltInRole.Administrator);
+                return new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
             }
             //for mac and linux
             return true;
@@ -732,14 +736,14 @@ namespace BackupManager
             {
                 try
                 {
-                    NameValueCollection parameters = new()
+                    Dictionary<string, string> parameters = new()
                     {
-                { "token", Config.PushoverAppToken},
-                { "user", Config.PushoverUserKey },
-                { "priority", Convert.ChangeType(priority, priority.GetTypeCode()).ToString() },
-                { "message", message },
-                { "title", title }
-                };
+                        { "token", Config.PushoverAppToken },
+                        { "user", Config.PushoverUserKey },
+                        { "priority", Convert.ChangeType(priority, priority.GetTypeCode()).ToString() },
+                        { "message", message },
+                        { "title", title }
+                    };
 
                     if (priority == PushoverPriority.Emergency)
                     {
@@ -764,26 +768,36 @@ namespace BackupManager
                         parameters.Add("expire", Convert.ChangeType(expires, expires.GetTypeCode()).ToString());
                     }
 
-                    using WebClient client = new();
                     // ensures there's a 1s gap between messages
                     while (DateTime.UtcNow < timeLastPushoverMessageSent.AddMilliseconds(TimeDelayOnPushoverMessages))
                     {
                         Task.Delay(TimeDelayOnPushoverMessages / 10).Wait();
                     }
 
-                    _ = client.UploadValues(PushoverAddress, parameters);
-
-                    int applicationLimitRemaining = Convert.ToInt32(client.ResponseHeaders["X-Limit-App-Remaining"]);
-
-                    Trace($"Pushover messages remaining: {applicationLimitRemaining}");
-
-                    if (applicationLimitRemaining < Config.PushoverWarningMessagesRemaining)
+                    using (FormUrlEncodedContent postContent = new(parameters))
                     {
-                        if (!AlreadySendingPushoverMessage)
+                        HttpClient client = new();
+                        Task<HttpResponseMessage> task = Task.Run(() => client.PostAsync(PushoverAddress, postContent));
+                        task.Wait();
+                        HttpResponseMessage response = task.Result;
+
+                        _ = response.EnsureSuccessStatusCode(); // Throw if httpcode is an error
+                        int applicationLimitRemaining = 0;
+                        if (response.Headers.TryGetValues("X-Limit-App-Remaining", out IEnumerable<string> values))
                         {
-                            AlreadySendingPushoverMessage = true;
-                            SendPushoverMessage("Message Limit Warning", PushoverPriority.High, $"Application Limit Remaining is: {applicationLimitRemaining}");
-                            AlreadySendingPushoverMessage = false;
+                            applicationLimitRemaining = Convert.ToInt32(values.First());
+                        }
+
+                        Trace($"Pushover messages remaining: {applicationLimitRemaining}");
+
+                        if (applicationLimitRemaining < Config.PushoverWarningMessagesRemaining)
+                        {
+                            if (!AlreadySendingPushoverMessage)
+                            {
+                                AlreadySendingPushoverMessage = true;
+                                SendPushoverMessage("Message Limit Warning", PushoverPriority.High, $"Application Limit Remaining is: {applicationLimitRemaining}");
+                                AlreadySendingPushoverMessage = false;
+                            }
                         }
                     }
 
@@ -849,11 +863,13 @@ namespace BackupManager
             bool returnValue;
             try
             {
-                HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
-                request.Method = "GET";
-                request.Timeout = timeout;
-
-                using HttpWebResponse response = request.GetResponse() as HttpWebResponse;
+                HttpClient client = new()
+                {
+                    Timeout = TimeSpan.FromMilliseconds(timeout)
+                };
+                Task<HttpResponseMessage> task = Task.Run(() => client.GetAsync(url));
+                task.Wait();
+                HttpResponseMessage response = task.Result;
                 returnValue = response.StatusCode == HttpStatusCode.OK;
             }
             catch

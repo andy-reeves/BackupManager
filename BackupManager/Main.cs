@@ -14,6 +14,7 @@ namespace BackupManager
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
+    using System.Runtime.Versioning;
     using System.Text.RegularExpressions;
     using System.Threading;
     using System.Threading.Tasks;
@@ -58,6 +59,8 @@ namespace BackupManager
             filesMarkedAsDeletedTextBox.Invoke(x => x.Text = mediaBackup.GetBackupFilesMarkedAsDeleted().Count().ToString("N0"));
             filesMarkedAsDeletedSizeTextBox.Invoke(x => x.Text = Utils.FormatSize(mediaBackup.GetBackupFilesMarkedAsDeleted().Sum(y => y.Length)));
         }
+
+        [SupportedOSPlatform("windows")]
         public Main()
         {
             try
@@ -1981,6 +1984,7 @@ namespace BackupManager
             TaskWrapper(monitoringAction);
         }
 
+        [SupportedOSPlatform("windows")]
         private void MonitorServices()
         {
             //Utils.Trace("MonitorServices enter");
@@ -2082,6 +2086,7 @@ namespace BackupManager
             //Utils.Trace("MonitorServices exit");
         }
 
+        [SupportedOSPlatform("windows")]
         private void KillProcessesButton_Click(object sender, EventArgs e)
         {
             Utils.Trace("killProcessesButton_Click enter");
@@ -2143,7 +2148,7 @@ namespace BackupManager
 
             Utils.BackupLogFile();
         }
-
+        [SupportedOSPlatform("windows")]
         private void StopProcessButton_Click(object sender, EventArgs e)
         {
             Utils.Trace("stopProcessButton_Click enter");
