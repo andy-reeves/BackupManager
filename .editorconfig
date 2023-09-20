@@ -282,6 +282,7 @@ dotnet_diagnostic.CA2244.severity = warning
 dotnet_diagnostic.CA2246.severity = warning
 dotnet_diagnostic.xUnit1004.severity = warning
 dotnet_diagnostic.xUnit1033.severity = warning
+csharp_style_prefer_primary_constructors = true:warning
 
 [*.{cs,vb}]
 dotnet_style_operator_placement_when_wrapping = beginning_of_line

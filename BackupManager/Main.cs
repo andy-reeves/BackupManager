@@ -20,7 +20,7 @@ namespace BackupManager
 
     public partial class Main : Form
     {
-        private CancellationTokenSource tokenSource = new CancellationTokenSource();
+        private CancellationTokenSource tokenSource = new();
 
         private CancellationToken ct;
 
@@ -1977,7 +1977,7 @@ namespace BackupManager
 
         private void MonitoringTimer_Tick(object sender, EventArgs e)
         {
-            _ = monitoringAction.BeginInvoke(monitoringAction.EndInvoke, null);
+            TaskWrapper(monitoringAction);
         }
 
         private void MonitorServices()
