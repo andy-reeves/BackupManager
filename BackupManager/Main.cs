@@ -2609,7 +2609,7 @@ namespace BackupManager
         {
             if (!Directory.Exists(folderPath)) { return; }
 
-            mediaBackup.GetFoldersForPath(folderPath, out string _, out string indexFolder, out string relativePath);
+            mediaBackup.GetFoldersForPath(folderPath, out string _, out string indexFolder, out string _);
             string assetType = string.Empty;
 
             string pathToTarget = mediaBackup.GetParentFolder(Path.Combine(folderPath, "temp"));

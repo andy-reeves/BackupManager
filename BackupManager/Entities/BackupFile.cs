@@ -244,7 +244,7 @@ namespace BackupManager.Entities
             string combinedPath = Path.Combine(masterFolder, indexFolder);
 
             return !fullPath.StartsWith(combinedPath)
-                ? throw new ArgumentException()
+                ? throw new ArgumentException("The fullPath must start with the masterFolder and indexFolder", nameof(fullPath))
                 : fullPath.SubstringAfter(combinedPath, StringComparison.CurrentCultureIgnoreCase).TrimStart(new[] { '\\' });
         }
 
