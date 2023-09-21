@@ -2550,6 +2550,10 @@ namespace BackupManager
                     UpdateUI_Tick(null, null);
                     UpdateMediaFilesCountDisplay();
                 }
+                else
+                {
+                    UpdateStatusLabel("");
+                }
             }
             Utils.Trace("ScanFoldersTimer_Tick exit");
         }
