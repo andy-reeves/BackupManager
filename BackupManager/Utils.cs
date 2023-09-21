@@ -225,6 +225,7 @@ namespace BackupManager
             {
                 StartInfo = new ProcessStartInfo
                 {
+                    UseShellExecute = true,
                     WindowStyle = ProcessWindowStyle.Hidden,
                     FileName = "xcopy",
                     Arguments = $"/H /Y \"{sourceFileName}\" \"{destFileName}\""
