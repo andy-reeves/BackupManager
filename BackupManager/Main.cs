@@ -2613,7 +2613,14 @@ namespace BackupManager
 
         private void UpdateSymbolicLinkForFolder(string folderPath)
         {
-            if (!Directory.Exists(folderPath)) { return; }
+            Utils.Trace("UpdateSymbolicLinkForFolder enter");
+            Utils.Trace($"Param folderPath = {folderPath}");
+
+            if (!Directory.Exists(folderPath))
+            {
+                Utils.Trace("UpdateSymbolicLinkForFolder exit as folderPath empty");
+                return;
+            }
 
             _ = mediaBackup.GetFoldersForPath(folderPath, out _, out string indexFolder, out _);
             string assetType = string.Empty;
@@ -2631,19 +2638,23 @@ namespace BackupManager
 
             if (pathToTarget == null || assetType == string.Empty)
             {
+                Utils.Trace("UpdateSymbolicLinkForFolder exit pathToTarget=null");
                 return;
             }
             string path = Path.Combine(mediaBackup.Config.SymbolicLinksRootFolder, assetType, new DirectoryInfo(pathToTarget).Name);
 
             if (Directory.Exists(path) && Utils.IsDirectoryEmpty(path))
             {
+                Utils.Trace("Deleting link directory as its empty");
                 Directory.Delete(path, true);
             }
 
             if (!Directory.Exists(path))
             {
+                Utils.Trace("Creating new symbolic link");
                 _ = Directory.CreateSymbolicLink(path, pathToTarget);
             }
+            Utils.Trace("UpdateSymbolicLinkForFolder exit");
         }
 
         private void CreateLinkForBackupFile(BackupFile backupFile)
