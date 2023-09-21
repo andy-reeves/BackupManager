@@ -2576,14 +2576,14 @@ namespace BackupManager
 
             foreach (KeyValuePair<string, DateTime> folderChange in folderChanges)
             {
-                Utils.Log($"{folderChange.Key} changed at at {folderChange.Value}");
+                Utils.Log($"{folderChange.Key} changed at {folderChange.Value}");
             }
 
             Utils.Log("Listing FoldersToScan queued");
 
             foreach (Folder folderToScan in mediaBackup.FoldersToScan)
             {
-                Utils.Log($"{folderToScan.Path} changed at at {folderToScan.ModifiedDateTime}");
+                Utils.Log($"{folderToScan.Path} changed at {folderToScan.ModifiedDateTime}");
             }
             Utils.Trace("ListFoldersToScanButton_Click exit");
         }
