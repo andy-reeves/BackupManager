@@ -1632,7 +1632,7 @@ namespace BackupManager
                 {
                     DeleteEmptyDirectories(subDirectory, list, rootDirectory);
                 }
- 
+
                 if (IsDirectoryEmpty(directory))
                 {
                     try

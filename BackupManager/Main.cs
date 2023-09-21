@@ -72,7 +72,7 @@ namespace BackupManager
             try
             {
                 InitializeComponent();
-
+                TraceConfiguration.Register();
 #if DEBUG
                 Trace.Listeners.Add(new TextWriterTraceListener(
                          Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"),
