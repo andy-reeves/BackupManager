@@ -121,7 +121,7 @@ namespace BackupManager
 
                 scheduledBackupAction = () => { TaskWrapper(ScheduledBackupAsync); };
 
-                monitoringAction = () => { MonitorServices(); };
+                monitoringAction = MonitorServices;
 
                 scheduledDateTimePicker.Value = DateTime.Parse(mediaBackup.Config.ScheduledBackupStartTime);
 
