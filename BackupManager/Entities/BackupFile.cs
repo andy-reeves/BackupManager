@@ -27,22 +27,22 @@ namespace BackupManager.Entities
         /// The relative path of the file. Doesn't include MasterFolder or IndexFolder.
         /// </summary>
         [XmlElement("Path")]
-        public string RelativePath;
+        public string RelativePath { get; set; }
 
         /// <summary>
         /// The MasterFolder this file is located at. Like \\nas1\assets1
         /// </summary>
-        public string MasterFolder;
+        public string MasterFolder { get; set; }
 
         /// <summary>
         /// The IndexFolder this file is located at. Like _Movies or _TV
         /// </summary>
-        public string IndexFolder;
+        public string IndexFolder { get; set; }
 
         /// <summary>
         /// This gets set to true for files no longer found in a Master Folder.
         /// </summary>
-        public bool Deleted;
+        public bool Deleted { get; set; }
 
         /// <summary>
         /// The MD5 hash of the file contents.
@@ -73,15 +73,15 @@ namespace BackupManager.Entities
         /// <summary>
         /// The last modified date/time of the file.
         /// </summary>
-        public DateTime LastWriteTime;
+        public DateTime LastWriteTime { get; set; }
 
         /// <summary>
         /// The size of the file in bytes.
         /// </summary>
-        public long Length;
+        public long Length { get; set; }
 
         [XmlIgnore]
-        public bool Flag;
+        public bool Flag { get; set; }
 
         /// <summary>
         /// The full path to the backup file on the source disk.

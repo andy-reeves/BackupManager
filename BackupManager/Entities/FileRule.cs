@@ -13,27 +13,27 @@ namespace BackupManager.Entities
         /// <summary>
         /// If the file path matches this then it must match FileTestRegEx
         /// </summary>
-        public string FileDiscoveryRegEx;
+        public string FileDiscoveryRegEx { get; set; }
 
         /// <summary>
         /// If the file path matches FileDiscoveryRegEx then it must match this
         /// </summary>
-        public string FileTestRegEx;
+        public string FileTestRegEx { get; set; }
 
         /// <summary>
         /// The message to display if the rule is not matched
         /// </summary>
-        public string Message;
+        public string Message { get; set; }
 
         /// <summary>
         /// The name of the rule
         /// </summary>
-        public string Name;
+        public string Name { get; set; }
 
         /// <summary>
         /// The number of the rule. Must be unique
         /// </summary>
-        public string Number;
+        public string Number { get; set; }
 
         /// <summary>
         /// We use this to track if the rule has been used for any files at all in a full scan

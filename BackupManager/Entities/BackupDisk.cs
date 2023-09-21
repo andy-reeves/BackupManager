@@ -19,33 +19,33 @@ namespace BackupManager.Entities
         /// <summary>
         /// The name of the backup disk and the main folder on the disk. Typically like 'backup 23'
         /// </summary>
-        public string Name;
+        public string Name { get; set; }
 
         /// <summary>
         /// Date the disk was last scanned and checked
         /// </summary>
-		public string Checked;
+		public string Checked { get; set; }
 
         /// <summary>
         /// Capacity of the disk in bytes
         /// </summary>
-		public long Capacity;
+		public long Capacity { get; set; }
 
         /// <summary>
         /// Total number of files on the disk
         /// </summary>
-		public long TotalFiles;
+		public long TotalFiles { get; set; }
 
         /// <summary>
         /// Available space on the disk in bytes
         /// </summary>
-		public long Free;
+		public long Free { get; set; }
 
         /// <summary>
         /// The current backup share. Typically like '\\media\backup'
         /// </summary>
         [XmlIgnore]
-        public string BackupShare;
+        public string BackupShare { get; set; }
 
         /// <summary>
         /// The full path to the main backup folder. Typically like '\\media\backup\backup23'
@@ -86,12 +86,12 @@ namespace BackupManager.Entities
         /// <summary>
         /// The last read speed of this disk as a formatted string
         /// </summary>
-        public string LastReadSpeed;
+        public string LastReadSpeed { get; set; }
 
         /// <summary>
         /// The last write speed of this disk as a formatted string
         /// </summary>
-        public string LastWriteSpeed;
+        public string LastWriteSpeed { get; set; }
 
         public BackupDisk()
         {

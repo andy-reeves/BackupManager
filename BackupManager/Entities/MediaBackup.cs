@@ -19,16 +19,16 @@ namespace BackupManager.Entities
         private string mediaBackupPath;
 
         [XmlIgnore()]
-        public Config Config;
+        public Config Config { get; set; }
 
         [XmlArrayItem("BackupFile")]
-        public Collection<BackupFile> BackupFiles;
+        public Collection<BackupFile> BackupFiles { get; set; }
 
         [XmlArrayItem("BackupDisk")]
-        public Collection<BackupDisk> BackupDisks;
+        public Collection<BackupDisk> BackupDisks { get; set; }
 
         [XmlArrayItem("Folder")]
-        public Collection<Folder> FoldersToScan;
+        public Collection<Folder> FoldersToScan { get; set; }
 
         /// <summary>
         /// The DateTime of the last full Master Folders scan

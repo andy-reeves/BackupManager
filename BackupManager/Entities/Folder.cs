@@ -16,12 +16,12 @@ namespace BackupManager.Entities
         /// <summary>
         /// The path to the folder that changed
         /// </summary>
-        public string Path;
+        public string Path { get; set; }
 
         /// <summary>
         /// The Timestamp the folder was last changed
         /// </summary>
-        public DateTime ModifiedDateTime;
+        public DateTime ModifiedDateTime { get; set; }
 
         public Folder()
         {

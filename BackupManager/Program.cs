@@ -7,6 +7,7 @@
 namespace BackupManager
 {
     using System;
+    using System.Runtime.Versioning;
     using System.Windows.Forms;
 
     internal static class Program
@@ -14,6 +15,7 @@ namespace BackupManager
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
+        [SupportedOSPlatform("windows")]
         [STAThread]
         private static void Main()
         {

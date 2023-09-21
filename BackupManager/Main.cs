@@ -4,6 +4,12 @@
 //  </copyright>
 //  --------------------------------------------------------------------------------------------------------------------
 
+using System.Reflection;
+using System.Resources;
+
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: NeutralResourcesLanguage("en-GB")]
+
 namespace BackupManager
 {
     using BackupManager.Entities;
@@ -2609,7 +2615,7 @@ namespace BackupManager
         {
             if (!Directory.Exists(folderPath)) { return; }
 
-            mediaBackup.GetFoldersForPath(folderPath, out string _, out string indexFolder, out string _);
+            _ = mediaBackup.GetFoldersForPath(folderPath, out _, out string indexFolder, out _);
             string assetType = string.Empty;
 
             string pathToTarget = mediaBackup.GetParentFolder(Path.Combine(folderPath, "temp"));

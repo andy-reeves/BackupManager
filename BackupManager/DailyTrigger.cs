@@ -83,6 +83,7 @@ namespace BackupManager
             CancellationToken = null;
             RunningTask?.Dispose();
             RunningTask = null;
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>

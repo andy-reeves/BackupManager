@@ -14,7 +14,7 @@ namespace BackupManager.Entities
     public class Rules
     {
         [XmlArrayItem("FileRule")]
-        public Collection<FileRule> FileRules;
+        public Collection<FileRule> FileRules { get; set; }
 
         public Rules()
         {
