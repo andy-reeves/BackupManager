@@ -1324,6 +1324,54 @@ namespace BackupManager
         }
 
         /// <summary>
+        /// Checks to see if the folder specified is empty
+        /// </summary>
+        /// <param name="folderPath">The folder to check</param>
+        /// <returns>True if the folder exists as a normal folder and its empty. If its a Symbolic link and the target is missing or the target is empty it returns True. Otherwise False</returns>
+        internal static bool IsDirectoryEmpty(string folderPath)
+        {
+            if (!Directory.Exists(folderPath))
+            {
+                return false;
+            }
+
+            if (IsSymbolicLink(folderPath))
+            {
+                return !SymbolicLinkTargetExists(folderPath) || !Directory.GetFileSystemEntries(new FileInfo(folderPath).LinkTarget).Any();
+            }
+            else
+            {
+                if (!Directory.EnumerateFileSystemEntries(folderPath).Any())
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Checks to see if the folder is a Symbolic link and its LinkTarget exists
+        /// </summary>
+        /// <param name="folderPath"></param>
+        /// <returns>True if its a symbolic Link with a target that exists otherwise False</returns>
+        internal static bool SymbolicLinkTargetExists(string folderPath)
+        {
+            string linkTarget = new FileInfo(folderPath).LinkTarget;
+            return linkTarget != null && Directory.Exists(linkTarget);
+        }
+
+        /// <summary>
+        /// Checks to see if folderPath is a Symbolic link
+        /// </summary>
+        /// <param name="folderPath"></param>
+        /// <returns>True if folderPath is a symbolic link otherwise False</returns>
+        internal static bool IsSymbolicLink(string folderPath)
+        {
+            FileInfo file = new(folderPath);
+            return file.LinkTarget != null;
+        }
+
+        /// <summary>
         /// Checks the folder is writeable
         /// </summary>
         /// <param name="folderPath"></param>
@@ -1584,10 +1632,8 @@ namespace BackupManager
                 {
                     DeleteEmptyDirectories(subDirectory, list, rootDirectory);
                 }
-
-                IEnumerable<string> entries = Directory.EnumerateFileSystemEntries(directory);
-
-                if (!entries.Any())
+ 
+                if (IsDirectoryEmpty(directory))
                 {
                     try
                     {

@@ -2635,14 +2635,12 @@ namespace BackupManager
             }
             string path = Path.Combine(mediaBackup.Config.SymbolicLinksRootFolder, assetType, new DirectoryInfo(pathToTarget).Name);
 
-            if (Directory.Exists(path))
+            if (Directory.Exists(path) && Utils.IsDirectoryEmpty(path))
             {
-                if (!Directory.GetFileSystemEntries(path).Any())
-                {
-                    Directory.Delete(path, true);
-                }
+                Directory.Delete(path, true);
             }
-            else
+
+            if (!Directory.Exists(path))
             {
                 _ = Directory.CreateSymbolicLink(path, pathToTarget);
             }
@@ -2665,12 +2663,9 @@ namespace BackupManager
             {
                 string path = Path.Combine(mediaBackup.Config.SymbolicLinksRootFolder, assetType, new DirectoryInfo(pathToTarget).Name);
 
-                if (Directory.Exists(path))
+                if (Directory.Exists(path) && Utils.IsDirectoryEmpty(path))
                 {
-                    if (!Directory.GetFileSystemEntries(path).Any())
-                    {
-                        Directory.Delete(path, true);
-                    }
+                    Directory.Delete(path, true);
                 }
 
                 if (!Directory.Exists(path))
