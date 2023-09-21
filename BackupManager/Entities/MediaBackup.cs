@@ -427,7 +427,7 @@ namespace BackupManager.Entities
         /// <returns>Null if it doen't exist.</returns>
         public BackupFile GetBackupFileFromHashKey(string path)
         {
-            return indexFolderAndRelativePath.ContainsKey(path) ? indexFolderAndRelativePath[path] : null;
+            return indexFolderAndRelativePath.TryGetValue(path, out BackupFile backupFile) ? backupFile : null;
         }
 
         /// <summary>
