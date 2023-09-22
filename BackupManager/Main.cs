@@ -182,8 +182,9 @@ namespace BackupManager
                                     | NotifyFilters.Size
                 };
 
-                watcher.Changed += FileSystemWatcher_OnChangedOrDeleted;
-                watcher.Deleted += FileSystemWatcher_OnChangedOrDeleted;
+                watcher.Changed += FileSystemWatcher_OnSomethingHappened;
+                watcher.Deleted += FileSystemWatcher_OnSomethingHappened;
+                watcher.Renamed += FileSystemWatcher_OnSomethingHappened;
                 watcher.Error += FileSystemWatcher_OnError;
 
                 watcher.Filter = "*.*";
@@ -207,18 +208,18 @@ namespace BackupManager
         }
         #endregion
 
-        private static void FileSystemWatcher_OnChangedOrDeleted(object sender, FileSystemEventArgs e)
+        private static void FileSystemWatcher_OnSomethingHappened(object sender, FileSystemEventArgs e)
         {
-            Utils.Trace("FileSystemWatcher_OnChangedOrDeleted enter");
+            Utils.Trace("FileSystemWatcher_OnSomethingHappened enter");
             Utils.Trace($"e.FullPath = {e.FullPath}");
 
-            if (e.ChangeType is not WatcherChangeTypes.Changed and not WatcherChangeTypes.Deleted)
+            if (e.ChangeType is not WatcherChangeTypes.Changed and not WatcherChangeTypes.Deleted and not WatcherChangeTypes.Renamed)
             {
-                Utils.Trace("FileSystemWatcher_OnChangedOrDeleted exit as not changed and not deleted");
+                Utils.Trace("FileSystemWatcher_OnSomethingHappened exit as not changed/deleted/renamed");
                 return;
             }
 
-            // add this folder to the list of folders to potentially scan
+            // add this changed folder/file to the list to potentially scan
             if (folderChanges.ContainsKey(e.FullPath))
             {
                 folderChanges[e.FullPath] = DateTime.Now;
@@ -227,7 +228,7 @@ namespace BackupManager
             {
                 folderChanges.Add(e.FullPath, DateTime.Now);
             }
-            Utils.Trace("FileSystemWatcher_OnChangedOrDeleted exit");
+            Utils.Trace("FileSystemWatcher_OnSomethingHappened exit");
         }
 
         private static void FileSystemWatcher_OnError(object sender, ErrorEventArgs e)
