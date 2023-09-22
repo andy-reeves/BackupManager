@@ -37,6 +37,9 @@ namespace BackupManager.Entities
         [XmlIgnore()]
         public Collection<FileRule> FileRules { get; set; }
 
+        [XmlArrayItem("SymbolicLink")]
+        public Collection<SymbolicLink> SymbolicLinks { get; set; }
+
         /// <summary>
         /// Days To Report Old Backup Disks
         /// </summary>
@@ -238,6 +241,7 @@ namespace BackupManager.Entities
                            || property.PropertyType == typeof(Collection<FileRule>)
                            || property.PropertyType == typeof(List<DateTime>)
                            || property.PropertyType == typeof(Collection<string>)
+                           || property.PropertyType == typeof(Collection<SymbolicLink>)
                          )
                     {
                         text = string.Empty;

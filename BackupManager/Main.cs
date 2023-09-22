@@ -89,6 +89,11 @@ namespace BackupManager
 
                 mediaBackup = MediaBackup.Load(File.Exists(localMediaXml) ? localMediaXml : mediaBackupXml);
 
+                if (Utils.IsRunningAsAdmin())
+                {
+                    Text += " - Admin";
+                }
+
                 UpdateMediaFilesCountDisplay();
 
                 Utils.Config = mediaBackup.Config;
@@ -2628,37 +2633,42 @@ namespace BackupManager
                 return;
             }
 
-            _ = mediaBackup.GetFoldersForPath(folderPath, out _, out string indexFolder, out _);
-            string assetType = string.Empty;
-
-            string pathToTarget = mediaBackup.GetParentFolder(Path.Combine(folderPath, "temp"));
-
-            if (indexFolder.StartsWith("_Movies"))
+            foreach (SymbolicLink a in mediaBackup.Config.SymbolicLinks)
             {
-                assetType = "_Movies";
-            }
-            else if (indexFolder.StartsWith("_TV"))
-            {
-                assetType = "_TV";
-            }
+                Match m = Regex.Match(folderPath, a.FileDiscoveryRegEx);
+                if (m.Success)
+                {
+                    string path = Path.Combine(a.RootFolder, a.RelativePath);
+                    string pathToTarget = a.PathToTarget;
 
-            if (pathToTarget == null || assetType == string.Empty)
-            {
-                Utils.Trace("UpdateSymbolicLinkForFolder exit pathToTarget=null");
-                return;
-            }
-            string path = Path.Combine(mediaBackup.Config.SymbolicLinksRootFolder, assetType, new DirectoryInfo(pathToTarget).Name);
+                    for (int i = 0; i < m.Groups.Count; i++)
+                    {
+                        if (m.Groups[i].GetType() == typeof(Group))
+                        {
+                            Group g = m.Groups[i];
+                            path = path.Replace($"${i}", g.Value);
+                            pathToTarget = pathToTarget.Replace($"${i}", g.Value);
+                        }
+                    }
 
-            if (Directory.Exists(path) && Utils.IsDirectoryEmpty(path))
-            {
-                Utils.Trace("Deleting link directory as its empty");
-                Directory.Delete(path, true);
-            }
+                    if (pathToTarget == null)
+                    {
+                        Utils.Trace("UpdateSymbolicLinkForFolder exit pathToTarget=null");
+                        return;
+                    }
 
-            if (!Directory.Exists(path))
-            {
-                Utils.Trace("Creating new symbolic link");
-                _ = Directory.CreateSymbolicLink(path, pathToTarget);
+                    if (Directory.Exists(path) && Utils.IsDirectoryEmpty(path))
+                    {
+                        Utils.Trace("Deleting link directory as its empty");
+                        Directory.Delete(path, true);
+                    }
+
+                    if (!Directory.Exists(path))
+                    {
+                        Utils.Trace("Creating new symbolic link");
+                        _ = Directory.CreateSymbolicLink(path, pathToTarget);
+                    }
+                }
             }
             Utils.Trace("UpdateSymbolicLinkForFolder exit");
         }

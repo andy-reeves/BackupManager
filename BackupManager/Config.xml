@@ -95,7 +95,7 @@
 
   <MasterFolders>
     <!-- List each UNC path that you want to scan for files to backup here -->
-    <MasterFolder>\\nas1\assets1\_Test</MasterFolder>
+    <MasterFolder>\\nas1\assets4</MasterFolder>
   </MasterFolders>
 
   <IndexFolders>
@@ -130,4 +130,19 @@
     <FilesToDeleteRegEx>.DS_Store</FilesToDeleteRegEx>
   </FilesToDelete>
   <DisksToSkipOnRestore />
+  <SymbolicLinks>
+    <!-- we need to capture the path up to and including the movie name and also the movieName -->
+    <SymbolicLink>
+      <RootFolder>J:\</RootFolder>
+      <FileDiscoveryRegEx>^(.*\\_Movies(?:\s\(non-tvdb\))?\\(.*?))(?:$|\\)</FileDiscoveryRegEx>
+      <RelativePath>_Movies\$2</RelativePath>
+      <PathToTarget>$1</PathToTarget>
+    </SymbolicLink>
+    <SymbolicLink>
+      <RootFolder>J:\</RootFolder>
+      <FileDiscoveryRegEx>^(.*\\_TV(?:\s\(non-tvdb\))?\\(.*?))(?:$|\\)</FileDiscoveryRegEx>
+      <RelativePath>_TV\$2</RelativePath>
+      <PathToTarget>$1</PathToTarget>
+    </SymbolicLink>
+  </SymbolicLinks>
 </Config>
