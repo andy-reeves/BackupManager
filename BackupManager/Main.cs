@@ -1361,7 +1361,9 @@ namespace BackupManager
             if (Directory.Exists(folderToCheck))
             {
                 string subFolderText = searchOption == SearchOption.TopDirectoryOnly ? "folder only" : "and subfolders";
-                Utils.LogWithPushover(BackupAction.ScanFolders, $"{folderToCheck} {subFolderText}");
+                Utils.LogWithPushover(BackupAction.ScanFolders, $"{folderToCheck}");
+                Utils.Trace($"{folderToCheck} {subFolderText}");
+
                 UpdateStatusLabel($"Scanning {folderToCheck}");
 
                 string filters = mediaBackup.GetFilters();
@@ -2532,8 +2534,7 @@ namespace BackupManager
 
                             // build the text for the scan summary
                             string text = $"Folder scan completed. {fileCountInFolderBefore} files before and now {fileCountInFolderAfter} files. {markedAsDeletedFilesCount} marked as deleted and {removedFilesCount} removed. {filesNotOnBackupDiskCount} to backup.";
-                            Utils.LogWithPushover(BackupAction.ScanFolders, text);
-
+                            Utils.Log(BackupAction.ScanFolders, text);
                             toSave = true;
                         }
                         else
