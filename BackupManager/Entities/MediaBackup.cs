@@ -74,9 +74,22 @@ namespace BackupManager.Entities
         public void BackupMediaFile()
         {
             // take a copy of the xml file
-            string destinationFileName = "MediaBackup-" + DateTime.Now.ToString("yy-MM-dd-HH-mm-ss.ff") + ".xml";
-            string destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups", destinationFileName);
+            string destinationPath = GetMediaBackupDestinationPath();
             _ = Utils.FileCopy(mediaBackupPath, destinationPath);
+        }
+
+        private static string GetMediaBackupDestinationPath()
+        {
+            string destinationFileName;
+            string destinationPath;
+
+            do
+            {
+                destinationFileName = "MediaBackup-" + DateTime.Now.ToString("yy-MM-dd-HH-mm-ss.ff") + ".xml";
+                destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups", destinationFileName);
+            } while (File.Exists(destinationPath));
+
+            return destinationPath;
         }
 
         public static MediaBackup Load(string path)

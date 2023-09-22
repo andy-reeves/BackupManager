@@ -95,7 +95,7 @@
 
   <MasterFolders>
     <!-- List each UNC path that you want to scan for files to backup here -->
-    <MasterFolder>\\nas1\assets4</MasterFolder>
+    <MasterFolder>\\nas1\assets1\_Test</MasterFolder>
   </MasterFolders>
 
   <IndexFolders>
