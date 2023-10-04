@@ -657,7 +657,7 @@ public partial class Main : Form
 
             var s = monitor.Failures.Count > 1 ? "s" : string.Empty;
             var text =
-                $"'{monitor.Name}' is down. {monitor.Failures.Count} failure{s} in the last {monitor.FailureTimePeriod} seconds.";
+                $"'{monitor.Name}' is down. {monitor.Failures.Count} failure{s} in the last {Utils.FormatTimeFromSeconds(monitor.FailureTimePeriod)}.";
 
             Utils.LogWithPushover(BackupAction.Monitoring,
                 PushoverPriority.High,
@@ -1167,7 +1167,7 @@ public partial class Main : Form
                 else
                 {
                     var text =
-                        $"Folder scan skipped. It will be scanned again in {mediaBackup.Config.MasterFoldersScanTimer} seconds.";
+                        $"Folder scan skipped. It will be scanned again in {Utils.FormatTimeFromSeconds(mediaBackup.Config.MasterFoldersScanTimer)}.";
                     Utils.LogWithPushover(BackupAction.ScanFolders, text);
                 }
             }

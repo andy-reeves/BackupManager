@@ -15,18 +15,11 @@ namespace BackupManager.Entities;
 
 public class Config
 {
-    public Config()
-    {
-        MasterFolders = new Collection<string>();
-        IndexFolders = new Collection<string>();
-        Filters = new Collection<string>();
-    }
+    [XmlArrayItem("MasterFolder")] public Collection<string> MasterFolders { get; set; } = new();
 
-    [XmlArrayItem("MasterFolder")] public Collection<string> MasterFolders { get; set; }
+    [XmlArrayItem("IndexFolder")] public Collection<string> IndexFolders { get; set; } = new();
 
-    [XmlArrayItem("IndexFolder")] public Collection<string> IndexFolders { get; set; }
-
-    [XmlArrayItem("FilterRegEx")] public Collection<string> Filters { get; set; }
+    [XmlArrayItem("FilterRegEx")] public Collection<string> Filters { get; set; } = new();
 
     [XmlArrayItem("FilesToDeleteRegEx")] public Collection<string> FilesToDelete { get; set; }
 

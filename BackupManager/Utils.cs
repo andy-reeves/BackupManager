@@ -1296,6 +1296,30 @@ public static class Utils
         }
     }
 
+    internal static string FormatTimeFromSeconds(int seconds)
+    {
+        return seconds switch
+        {
+            < 120 => $"{seconds} seconds",
+            < 3600 => $"{seconds / 60} minutes",
+            _ => seconds.ToString()
+        };
+    }
+    /// <summary>
+    /// Formats a TimeSpan for display
+    /// </summary>
+    /// <param name="timeSpan"></param>
+    /// <returns></returns>
+    internal static string FormatTimeSpan(TimeSpan timeSpan)
+    {
+        return timeSpan.TotalSeconds switch
+        {
+            < 120 => $"{timeSpan.TotalSeconds} seconds",
+            < 3600 => $"{timeSpan.Minutes} minutes",
+            _ => timeSpan.ToString()
+        };
+    }
+
     /// <summary>
     ///     Formats a string containing a speed with a suitable suffix
     /// </summary>
