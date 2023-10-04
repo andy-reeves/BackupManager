@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Resources;
+using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -22,6 +23,7 @@ using BackupManager.Extensions;
 
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: NeutralResourcesLanguage("en-GB")]
+[assembly: InternalsVisibleTo("TestProject")]
 
 namespace BackupManager;
 

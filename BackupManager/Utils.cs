@@ -1302,9 +1302,12 @@ public static class Utils
         {
             < 120 => $"{seconds} seconds",
             < 3600 => $"{seconds / 60} minutes",
-            _ => seconds.ToString()
+            < 4000 => $"1 hour",
+            < 86400 => $"{seconds / 3600} hours",
+            _ => "a day or so"
         };
     }
+
     /// <summary>
     /// Formats a TimeSpan for display
     /// </summary>
@@ -1312,12 +1315,7 @@ public static class Utils
     /// <returns></returns>
     internal static string FormatTimeSpan(TimeSpan timeSpan)
     {
-        return timeSpan.TotalSeconds switch
-        {
-            < 120 => $"{timeSpan.TotalSeconds} seconds",
-            < 3600 => $"{timeSpan.Minutes} minutes",
-            _ => timeSpan.ToString()
-        };
+        return FormatTimeFromSeconds(Convert.ToInt32(timeSpan.TotalSeconds));
     }
 
     /// <summary>
