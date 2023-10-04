@@ -6,7 +6,7 @@
 
 namespace BackupManager.Entities
 {
-    using BackupManager.Extensions;
+    using Extensions;
     using System;
     using System.Diagnostics;
     using System.IO;
@@ -17,35 +17,49 @@ namespace BackupManager.Entities
     {
         private string contentsHash;
 
-        private string fileName;
-
         private string disk;
 
         private string diskChecked;
 
+        private string fileName;
+
+        public BackupFile()
+        {
+        }
+
         /// <summary>
-        /// The relative path of the file. Doesn't include MasterFolder or IndexFolder.
+        /// </summary>
+        /// <param name="fullPath"></param>
+        /// <param name="masterFolder"></param>
+        /// <param name="indexFolder"></param>
+        public BackupFile(string fullPath, string masterFolder, string indexFolder)
+        {
+            SetFullPath(fullPath, masterFolder, indexFolder);
+        }
+
+        /// <summary>
+        ///     The relative path of the file. Doesn't include MasterFolder or IndexFolder.
         /// </summary>
         [XmlElement("Path")]
         public string RelativePath { get; set; }
 
         /// <summary>
-        /// The MasterFolder this file is located at. Like \\nas1\assets1
+        ///     The MasterFolder this file is located at. Like \\nas1\assets1
         /// </summary>
         public string MasterFolder { get; set; }
 
         /// <summary>
-        /// The IndexFolder this file is located at. Like _Movies or _TV
+        ///     The IndexFolder this file is located at. Like _Movies or _TV
         /// </summary>
         public string IndexFolder { get; set; }
 
         /// <summary>
-        /// This gets set to true for files no longer found in a Master Folder.
+        ///     This gets set to true for files no longer found in a Master Folder.
         /// </summary>
         public bool Deleted { get; set; }
 
         /// <summary>
-        /// The MD5 hash of the file contents.
+        ///     The MD5 hash of the file contents.
         /// </summary>
         [XmlElement("Hash")]
         public string ContentsHash
@@ -71,22 +85,21 @@ namespace BackupManager.Entities
         }
 
         /// <summary>
-        /// The last modified date/time of the file.
+        ///     The last modified date/time of the file.
         /// </summary>
         public DateTime LastWriteTime { get; set; }
 
         /// <summary>
-        /// The size of the file in bytes.
+        ///     The size of the file in bytes.
         /// </summary>
         public long Length { get; set; }
 
-        [XmlIgnore]
-        public bool Flag { get; set; }
+        [XmlIgnore] public bool Flag { get; set; }
 
         /// <summary>
-        /// The full path to the backup file on the source disk.
+        ///     The full path to the backup file on the source disk.
         /// </summary>
-        [XmlIgnore()]
+        [XmlIgnore]
         public string FullPath
         {
             get
@@ -97,19 +110,9 @@ namespace BackupManager.Entities
         }
 
         /// <summary>
-        /// The full path to the backup file on the backup disk.
+        ///     Gets the number only of this disk this file is on. 0 if not backed up
         /// </summary>
-        /// <param name="backupPath">The path to the current backup disk.</param>
-        public string BackupDiskFullPath(string backupPath)
-        {
-            // always calculate path in case the IndexFolder or RelativePath properties have been changed.
-            return Path.Combine(backupPath, IndexFolder, RelativePath);
-        }
-
-        /// <summary>
-        /// Gets the number only of this disk this file is on. 0 if not backed up
-        /// </summary>
-        [XmlIgnore()]
+        [XmlIgnore]
         public int BackupDiskNumber
         {
             get
@@ -122,9 +125,9 @@ namespace BackupManager.Entities
         }
 
         /// <summary>
-        /// This is a combination key of index folder and relative path.
+        ///     This is a combination key of index folder and relative path.
         /// </summary>
-        [XmlIgnore()]
+        [XmlIgnore]
         public string Hash
         {
             get
@@ -134,7 +137,8 @@ namespace BackupManager.Entities
         }
 
         /// <summary>
-        /// A date/time this file was last checked. If this is cleared then the Disk is automatically set to null also. Returns string.Empty if no value
+        ///     A date/time this file was last checked. If this is cleared then the Disk is automatically set to null also. Returns
+        ///     string.Empty if no value
         /// </summary>
         public string DiskChecked
         {
@@ -156,7 +160,8 @@ namespace BackupManager.Entities
         }
 
         /// <summary>
-        /// The backup disk this file is on or string.Empty if its not on a backup yet. If this is cleared then the DiskChecked is also cleared.
+        ///     The backup disk this file is on or string.Empty if its not on a backup yet. If this is cleared then the DiskChecked
+        ///     is also cleared.
         /// </summary>
         public string Disk
         {
@@ -176,23 +181,40 @@ namespace BackupManager.Entities
             }
         }
 
-        public BackupFile()
-        {
-        }
-
         /// <summary>
-        /// 
+        ///     Returns the filename and extension of the BackupFile.
         /// </summary>
-        /// <param name="fullPath"></param>
-        /// <param name="masterFolder"></param>
-        /// <param name="indexFolder"></param>
-        public BackupFile(string fullPath, string masterFolder, string indexFolder)
+        /// <returns>The filename and extension of the file</returns>
+        public string FileName
         {
-            SetFullPath(fullPath, masterFolder, indexFolder);
+            get
+            {
+                if (string.IsNullOrEmpty(fileName))
+                {
+                    fileName = Path.GetFileName(FullPath);
+                }
+
+                return fileName;
+            }
+        }
+
+        public bool Equals(BackupFile other)
+        {
+            return null != other && FullPath == other.FullPath;
         }
 
         /// <summary>
-        /// Updates the DiskChecked with the current date as 'yyyy-MM-dd' and the backup disk provided.
+        ///     The full path to the backup file on the backup disk.
+        /// </summary>
+        /// <param name="backupPath">The path to the current backup disk.</param>
+        public string BackupDiskFullPath(string backupPath)
+        {
+            // always calculate path in case the IndexFolder or RelativePath properties have been changed.
+            return Path.Combine(backupPath, IndexFolder, RelativePath);
+        }
+
+        /// <summary>
+        ///     Updates the DiskChecked with the current date as 'yyyy-MM-dd' and the backup disk provided.
         /// </summary>
         /// <param name="backupDisk">The disk this file was checked on.</param>
         public void UpdateDiskChecked(string backupDisk)
@@ -201,12 +223,13 @@ namespace BackupManager.Entities
             {
                 Utils.Log($"{FullPath} was on {Disk} but now on {backupDisk}");
             }
+
             disk = backupDisk;
             diskChecked = DateTime.Now.ToString("yyyy-MM-dd");
         }
 
         /// <summary>
-        /// Resets Disk and DiskChecked to null.
+        ///     Resets Disk and DiskChecked to null.
         /// </summary>
         public void ClearDiskChecked()
         {
@@ -232,7 +255,7 @@ namespace BackupManager.Entities
         }
 
         /// <summary>
-        /// Returns the remaining path from fullPath after masterFolder and indexFolder
+        ///     Returns the remaining path from fullPath after masterFolder and indexFolder
         /// </summary>
         /// <param name="fullPath"></param>
         /// <param name="masterFolder"></param>
@@ -244,43 +267,28 @@ namespace BackupManager.Entities
             string combinedPath = Path.Combine(masterFolder, indexFolder);
 
             return !fullPath.StartsWith(combinedPath)
-                ? throw new ArgumentException("The fullPath must start with the masterFolder and indexFolder", nameof(fullPath))
-                : fullPath.SubstringAfter(combinedPath, StringComparison.CurrentCultureIgnoreCase).TrimStart(new[] { '\\' });
+                ? throw new ArgumentException("The fullPath must start with the masterFolder and indexFolder",
+                    nameof(fullPath))
+                : fullPath.SubstringAfter(combinedPath, StringComparison.CurrentCultureIgnoreCase)
+                    .TrimStart(new[] { '\\' });
         }
 
         /// <summary>
-        /// Returns the filename and extension of the BackupFile.
-        /// </summary>
-        /// <returns>The filename and extension of the file</returns>
-        public string FileName
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(fileName))
-                {
-                    fileName = Path.GetFileName(FullPath);
-                }
-
-                return fileName;
-            }
-        }
-
-        /// <summary>
-        /// Updates the hash of the file contents to newContentsHash.
+        ///     Updates the hash of the file contents to newContentsHash.
         /// </summary>
         /// <exception cref="ApplicationException"></exception>
         private void UpdateContentsHash(string newContentsHash)
         {
             if (newContentsHash == Utils.ZeroByteHash)
             {
-                throw new ApplicationException($"Zerobyte Hashcode");
+                throw new ApplicationException("Zerobyte Hashcode");
             }
 
             ContentsHash = newContentsHash;
         }
 
         /// <summary>
-        /// Calculates the hash of the file contents from the Source location.
+        ///     Calculates the hash of the file contents from the Source location.
         /// </summary>
         /// <exception cref="ApplicationException"></exception>
         public void UpdateContentsHash()
@@ -289,7 +297,8 @@ namespace BackupManager.Entities
         }
 
         /// <summary>
-        /// Updates the LastWriteTime of the file from the file on the source disk. If LastWriteTime isn't set it uses LastAccessTime instead
+        ///     Updates the LastWriteTime of the file from the file on the source disk. If LastWriteTime isn't set it uses
+        ///     LastAccessTime instead
         /// </summary>
         public void UpdateLastWriteTime()
         {
@@ -297,7 +306,7 @@ namespace BackupManager.Entities
         }
 
         /// <summary>
-        /// Updates the file length of the file from the source disk. Zero byte files are allowed.
+        ///     Updates the file length of the file from the source disk. Zero byte files are allowed.
         /// </summary>
         public void UpdateFileLength()
         {
@@ -305,11 +314,15 @@ namespace BackupManager.Entities
         }
 
         /// <summary>
-        /// Checks the files hash at the source location and at the backup location match. Updates DiskChecked and ContentsHash accordingly.
+        ///     Checks the files hash at the source location and at the backup location match. Updates DiskChecked and ContentsHash
+        ///     accordingly.
         /// </summary>
         /// <param name="disk">The BackupDisk the BackupFile is on</param>
         /// <exception cref="ApplicationException"></exception>
-        /// <returns>False is the hashes are different, or if the files are not found or or the source or backup file are not accessible</returns>
+        /// <returns>
+        ///     False is the hashes are different, or if the files are not found or or the source or backup file are not
+        ///     accessible
+        /// </returns>
         public bool CheckContentHashes(BackupDisk disk)
         {
             if (!File.Exists(FullPath) || !Utils.IsFileAccessible(FullPath))
@@ -333,14 +346,14 @@ namespace BackupManager.Entities
 
             ContentsHash = hashFromSourceFile;
 
-            string hashFrombackupDiskFile = Utils.GetShortMd5HashFromFile(pathToBackupDiskFile);
+            string hashFromBackupDiskFile = Utils.GetShortMd5HashFromFile(pathToBackupDiskFile);
 
-            if (hashFrombackupDiskFile == Utils.ZeroByteHash)
+            if (hashFromBackupDiskFile == Utils.ZeroByteHash)
             {
-                throw new ApplicationException($"ERROR: {hashFrombackupDiskFile} has zerobyte hashcode");
+                throw new ApplicationException($"ERROR: {hashFromBackupDiskFile} has zerobyte hashcode");
             }
 
-            if (hashFrombackupDiskFile != hashFromSourceFile)
+            if (hashFromBackupDiskFile != hashFromSourceFile)
             {
                 // Hashes are now different on source and backup
                 return false;
@@ -352,15 +365,11 @@ namespace BackupManager.Entities
             return true;
         }
 
-        public bool Equals(BackupFile other)
-        {
-            return null != other && FullPath == other.FullPath;
-        }
-
         public override bool Equals(object obj)
         {
             return Equals(obj as BackupFile);
         }
+
         public override int GetHashCode()
         {
             return FullPath.GetHashCode();

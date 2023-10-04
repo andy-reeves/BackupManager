@@ -4,68 +4,62 @@
 //  </copyright>
 //  --------------------------------------------------------------------------------------------------------------------
 
-namespace TestProject
+using BackupManager;
+using BackupManager.Entities;
+using BackupManager.Extensions;
+
+namespace TestProject;
+
+public class FileRulesUnitTest
 {
-    using BackupManager;
-    using BackupManager.Entities;
-    using BackupManager.Extensions;
+    private static readonly MediaBackup MediaBackup;
 
-    public class FileRulesUnitTest
+    static FileRulesUnitTest()
     {
-        private static readonly MediaBackup mediaBackup;
+        var localMediaXml = "..\\BackupManager\\MediaBackup.xml";
+        MediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)), localMediaXml));
+    }
 
-        static FileRulesUnitTest()
+    [Fact]
+    public void FileRuleTests()
+    {
+        var testsFromFile =
+            File.ReadAllText(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)), "FileRuleTests.txt"));
+
+        var lines = testsFromFile.Split('\n');
+
+        foreach (var line in lines)
         {
-            string localMediaXml = "..\\BackupManager\\MediaBackup.xml";
-            mediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)), localMediaXml));
-        }
+            var cols = line.Split('|');
 
-        [Fact]
-        public void FileRuleTests()
-        {
-            string testsFromFile = File.ReadAllText(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)), "FileRuleTests.txt"));
+            for (var i = 0; i < cols.Length; i++) cols[i] = cols[i].TrimStart(' ', '"').TrimEnd(' ', '"', '\r', '\n');
 
-            string[] lines = testsFromFile.Split('\n');
+            if (cols[0].StartsWith("#") || cols.Length != 4) continue;
 
-            foreach (string line in lines)
-            {
-                string[] cols = line.Split('|');
+            var ruleNumberTestNumber = cols[0];
 
-                for (int i = 0; i < cols.Length; i++)
-                {
-                    cols[i] = cols[i].TrimStart(new char[] { ' ', '"' }).TrimEnd(new char[] { ' ', '"', '\r', '\n' });
-                }
+            var a = ruleNumberTestNumber.Split(".");
 
-                if (!cols[0].StartsWith("#") && cols.Length == 4)
-                {
-                    string ruleNumberTestNumber = cols[0];
+            Assert.True(a.Length == 2);
 
-                    string[] a = ruleNumberTestNumber.Split(".");
+            var ruleNumber = a[0];
+            var testNumber = a[1];
 
-                    Assert.True(a.Length == 2);
+            var testOrDiscovery = cols[1];
+            var expectedResult = Convert.ToBoolean(cols[2]);
+            var testPath = cols[3];
 
-                    string ruleNumber = a[0];
-                    string testNumber = a[1];
+            var rule = MediaBackup.Config.FileRules.SingleOrDefault(p => p.Number == ruleNumber);
+            Assert.NotNull(rule);
 
-                    string testOrDiscovery = cols[1];
-                    bool expectedResult = Convert.ToBoolean(cols[2]);
-                    string testPath = cols[3];
+            var regEx = testOrDiscovery.StartsWith("T") ? rule.FileTestRegEx : rule.FileDiscoveryRegEx;
 
-                    FileRule? rule = mediaBackup.Config.FileRules.SingleOrDefault(p => p.Number == ruleNumber);
-                    Assert.NotNull(rule);
-
-                    string regEx = testOrDiscovery.StartsWith("T") ? rule.FileTestRegEx : rule.FileDiscoveryRegEx;
-
-                    if (expectedResult)
-                    {
-                        Assert.True(testPath.IsMatch(regEx), $"Test {testNumber} of Rule {ruleNumber} {rule.Message} for {testPath}");
-                    }
-                    else
-                    {
-                        Assert.False(testPath.IsMatch(regEx), $"Test {testNumber} of Rule {ruleNumber} {rule.Message} for {testPath}");
-                    }
-                }
-            }
+            if (expectedResult)
+                Assert.True(testPath.IsMatch(regEx),
+                    $"Test {testNumber} of Rule {ruleNumber} {rule.Message} for {testPath}");
+            else
+                Assert.False(testPath.IsMatch(regEx),
+                    $"Test {testNumber} of Rule {ruleNumber} {rule.Message} for {testPath}");
         }
     }
 }

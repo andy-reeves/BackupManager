@@ -13,26 +13,16 @@ namespace BackupManager.Entities
 
     public class Rules
     {
-        [XmlArrayItem("FileRule")]
-        public Collection<FileRule> FileRules { get; set; }
-
-        public Rules()
-        {
-        }
+        [XmlArrayItem("FileRule")] public Collection<FileRule> FileRules { get; set; }
 
         public static Rules Load(string path)
         {
             try
             {
-                Rules rules;
                 XmlSerializer serializer = new(typeof(Rules));
 
-                using (FileStream stream = new(path, FileMode.Open, FileAccess.Read))
-                {
-                    rules = serializer.Deserialize(stream) as Rules;
-                }
-
-                return rules;
+                using FileStream stream = new(path, FileMode.Open, FileAccess.Read);
+                return serializer.Deserialize(stream) as Rules;
             }
 
             catch (InvalidOperationException ex)

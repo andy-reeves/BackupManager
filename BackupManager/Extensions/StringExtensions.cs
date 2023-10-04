@@ -6,9 +6,9 @@
 
 namespace BackupManager.Extensions
 {
-    using System;
     #region Using Directives
 
+    using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
@@ -17,32 +17,33 @@ namespace BackupManager.Extensions
     #endregion
 
     /// <summary>
-    /// Extension methods for the <see cref="string"/> class.
+    ///     Extension methods for the <see cref="string" /> class.
     /// </summary>
     public static class StringExtensions
     {
         #region Methods
 
         /// <summary>
-        /// Returns the TitleCase of the string but fixes 10Th to 10th etc.
+        ///     Returns the TitleCase of the string but fixes 10Th to 10th etc.
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
         public static string ToTitleCaseIgnoreOrdinals(this string text)
         {
             string input = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(text);
-            string result = Regex.Replace(input, "([0-9]st)|([0-9]th)|([0-9]rd)|([0-9]nd)", new MatchEvaluator((m) => m.Captures[0].Value.ToLower()), RegexOptions.IgnoreCase);
+            string result = Regex.Replace(input, "([0-9]st)|([0-9]th)|([0-9]rd)|([0-9]nd)",
+                m => m.Captures[0].Value.ToLower(), RegexOptions.IgnoreCase);
             return result;
         }
 
         /// <summary>
-        /// Capitalizes the first character of the specified string.
+        ///     Capitalizes the first character of the specified string.
         /// </summary>
         /// <param name="s">
-        /// The string to capitalize.
+        ///     The string to capitalize.
         /// </param>
         /// <returns>
-        /// A string with the first character capitalized.
+        ///     A string with the first character capitalized.
         /// </returns>
         public static string Capitalize(this string s)
         {
@@ -57,28 +58,31 @@ namespace BackupManager.Extensions
         }
 
         /// <summary>
-        /// Replaces the format item in a <see cref="string"/> with the text equivalent of the value of a corresponding <see cref="object"/> 
-        /// instance in a specified array, using the <see cref="CultureInfo.InvariantCulture"/>.
+        ///     Replaces the format item in a <see cref="string" /> with the text equivalent of the value of a corresponding
+        ///     <see cref="object" />
+        ///     instance in a specified array, using the <see cref="CultureInfo.InvariantCulture" />.
         /// </summary>
         /// <param name="format">
-        /// A composite format string.
+        ///     A composite format string.
         /// </param>
         /// <param name="args">
-        /// An <see cref="object"/> array containing zero or more objects to format.
+        ///     An <see cref="object" /> array containing zero or more objects to format.
         /// </param>
         /// <returns>
-        /// A copy of format in which the format items have been replaced by the <see cref="string"/> equivalent of the corresponding instances 
-        /// of <see cref="object"/>  in args.
+        ///     A copy of format in which the format items have been replaced by the <see cref="string" /> equivalent of the
+        ///     corresponding instances
+        ///     of <see cref="object" />  in args.
         /// </returns>
         /// <exception cref="ArgumentNullException">
-        /// Either <paramref name="format"/> or <paramref name="args"/> is <c>Null.</c>.
+        ///     Either <paramref name="format" /> or <paramref name="args" /> is <c>Null.</c>.
         /// </exception>
         /// <exception cref="FormatException">
-        /// <paramref name="format"/>is invalid.
-        /// <para>
-        /// - or -.
-        /// </para>
-        /// The number indicating an argument to format is less than zero, or greater than or equal to the length of the <paramref name="args"/> array.
+        ///     <paramref name="format" />is invalid.
+        ///     <para>
+        ///         - or -.
+        ///     </para>
+        ///     The number indicating an argument to format is less than zero, or greater than or equal to the length of the
+        ///     <paramref name="args" /> array.
         /// </exception>
         public static string FormatWith(this string format, params object[] args)
         {
@@ -86,31 +90,34 @@ namespace BackupManager.Extensions
         }
 
         /// <summary>
-        /// Replaces the format item in a <see cref="string"/> with the text equivalent of the value of a corresponding <see cref="object"/> 
-        /// instance in a specified array. A specified parameter supplies culture-specific formatting information.
+        ///     Replaces the format item in a <see cref="string" /> with the text equivalent of the value of a corresponding
+        ///     <see cref="object" />
+        ///     instance in a specified array. A specified parameter supplies culture-specific formatting information.
         /// </summary>
         /// <param name="format">
-        /// A composite format string.
+        ///     A composite format string.
         /// </param>
         /// <param name="provider">
-        /// An <see cref="IFormatProvider"/> that supplies culture-specific formatting information.
+        ///     An <see cref="IFormatProvider" /> that supplies culture-specific formatting information.
         /// </param>
         /// <param name="args">
-        /// An <see cref="object"/> array containing zero or more objects to format.
+        ///     An <see cref="object" /> array containing zero or more objects to format.
         /// </param>
         /// <returns>
-        /// A copy of format in which the format items have been replaced by the <see cref="string"/> equivalent of the corresponding instances 
-        /// of <see cref="object"/>  in args.
+        ///     A copy of format in which the format items have been replaced by the <see cref="string" /> equivalent of the
+        ///     corresponding instances
+        ///     of <see cref="object" />  in args.
         /// </returns>
         /// <exception cref="ArgumentNullException">
-        /// Either <paramref name="format"/> or <paramref name="args"/> is <c>Null.</c>.
+        ///     Either <paramref name="format" /> or <paramref name="args" /> is <c>Null.</c>.
         /// </exception>
         /// <exception cref="FormatException">
-        /// <paramref name="format"/>is invalid.
-        /// <para>
-        /// - or -.
-        /// </para>
-        /// The number indicating an argument to format is less than zero, or greater than or equal to the length of the <paramref name="args"/> array.
+        ///     <paramref name="format" />is invalid.
+        ///     <para>
+        ///         - or -.
+        ///     </para>
+        ///     The number indicating an argument to format is less than zero, or greater than or equal to the length of the
+        ///     <paramref name="args" /> array.
         /// </exception>
         public static string FormatWith(this string format, IFormatProvider provider, params object[] args)
         {
@@ -118,13 +125,13 @@ namespace BackupManager.Extensions
         }
 
         /// <summary>
-        /// Indicates whether the specified <see cref="string"/> is null or an <see cref="string.Empty"/> string.
+        ///     Indicates whether the specified <see cref="string" /> is null or an <see cref="string.Empty" /> string.
         /// </summary>
         /// <param name="s">
-        /// The <see cref="string"/> to check.
+        ///     The <see cref="string" /> to check.
         /// </param>
         /// <returns>
-        /// <c>false</c> if the value is null or an <see cref="string.Empty"/> string; otherwise, <c>true</c>.
+        ///     <c>false</c> if the value is null or an <see cref="string.Empty" /> string; otherwise, <c>true</c>.
         /// </returns>
         public static bool HasValue(this string s)
         {
@@ -132,16 +139,16 @@ namespace BackupManager.Extensions
         }
 
         /// <summary>
-        /// Indicates whether the regular expression finds a match in the input string, using the regular expression specified.
+        ///     Indicates whether the regular expression finds a match in the input string, using the regular expression specified.
         /// </summary>
         /// <param name="s">
-        /// The string to search for a match.
+        ///     The string to search for a match.
         /// </param>
         /// <param name="regex">
-        /// The regular expression pattern to match.
+        ///     The regular expression pattern to match.
         /// </param>
         /// <returns>
-        /// <c>true</c> if the regular expression finds a match; otherwise <c>false</c>.
+        ///     <c>true</c> if the regular expression finds a match; otherwise <c>false</c>.
         /// </returns>
         public static bool IsMatch(this string s, string regex)
         {
@@ -149,20 +156,21 @@ namespace BackupManager.Extensions
         }
 
         /// <summary>
-        /// Indicates whether the regular expression finds a match in the input string, using the regular expression specified 
-        /// and the matching options supplied in the options parameter.
+        ///     Indicates whether the regular expression finds a match in the input string, using the regular expression specified
+        ///     and the matching options supplied in the options parameter.
         /// </summary>
         /// <param name="s">
-        /// The string to search for a match.
+        ///     The string to search for a match.
         /// </param>
         /// <param name="regex">
-        /// The regular expression pattern to match.
+        ///     The regular expression pattern to match.
         /// </param>
-        /// <param name="options">The regular expression options.
-        /// A bitwise OR combination of <see cref="RegexOptions"/> enumeration values.
+        /// <param name="options">
+        ///     The regular expression options.
+        ///     A bitwise OR combination of <see cref="RegexOptions" /> enumeration values.
         /// </param>
         /// <returns>
-        /// <c>true</c> if the regular expression finds a match; otherwise <c>false</c>.
+        ///     <c>true</c> if the regular expression finds a match; otherwise <c>false</c>.
         /// </returns>
         public static bool IsMatch(this string s, string regex, RegexOptions options)
         {
@@ -170,16 +178,17 @@ namespace BackupManager.Extensions
         }
 
         /// <summary>
-        /// Concatenates a specified separator string between each element of a specified sequence, yielding a single concatenated string.
+        ///     Concatenates a specified separator string between each element of a specified sequence, yielding a single
+        ///     concatenated string.
         /// </summary>
         /// <param name="source">
-        /// The sequence of strings to join.
+        ///     The sequence of strings to join.
         /// </param>
         /// <param name="separator">
-        /// The separator to join the strings with.
+        ///     The separator to join the strings with.
         /// </param>
         /// <returns>
-        /// A single concatenated string.
+        ///     A single concatenated string.
         /// </returns>
         public static string JoinWith(this IEnumerable<string> source, string separator)
         {
@@ -187,16 +196,17 @@ namespace BackupManager.Extensions
         }
 
         /// <summary>
-        /// Retrieves a substring after the first instance of a character.
+        ///     Retrieves a substring after the first instance of a character.
         /// </summary>
         /// <param name="s">
-        /// The string to retrieve the substring from.
+        ///     The string to retrieve the substring from.
         /// </param>
         /// <param name="c">
-        /// The character to seek.
+        ///     The character to seek.
         /// </param>
         /// <returns>
-        /// The substring after the first occurrence of <paramref name="c"/>, or <paramref name="s"/> if <paramref name="c"/> is not found.
+        ///     The substring after the first occurrence of <paramref name="c" />, or <paramref name="s" /> if
+        ///     <paramref name="c" /> is not found.
         /// </returns>
         public static string SubstringAfter(this string s, char c)
         {
@@ -212,19 +222,20 @@ namespace BackupManager.Extensions
         }
 
         /// <summary>
-        /// Retrieves a substring after the first instance of a string.
+        ///     Retrieves a substring after the first instance of a string.
         /// </summary>
         /// <param name="s">
-        /// The string to retrieve the substring from.
+        ///     The string to retrieve the substring from.
         /// </param>
         /// <param name="value">
-        /// The string to seek.
+        ///     The string to seek.
         /// </param>
         /// <param name="comparisonType">
-        /// The type of comparison to perform.
+        ///     The type of comparison to perform.
         /// </param>
         /// <returns>
-        /// The substring after the first occurrence of <paramref name="value"/>, or <paramref name="s"/> if <paramref name="value"/> is not found.
+        ///     The substring after the first occurrence of <paramref name="value" />, or <paramref name="s" /> if
+        ///     <paramref name="value" /> is not found.
         /// </returns>
         public static string SubstringAfter(this string s, string value, StringComparison comparisonType)
         {
@@ -233,16 +244,17 @@ namespace BackupManager.Extensions
         }
 
         /// <summary>
-        /// Retrieves a substring after the last instance of a character.
+        ///     Retrieves a substring after the last instance of a character.
         /// </summary>
         /// <param name="s">
-        /// The string to retrieve the substring from.
+        ///     The string to retrieve the substring from.
         /// </param>
         /// <param name="c">
-        /// The character to seek.
+        ///     The character to seek.
         /// </param>
         /// <returns>
-        /// The substring after the last occurrence of <paramref name="c"/>, or <paramref name="s"/> if <paramref name="c"/> is not found.
+        ///     The substring after the last occurrence of <paramref name="c" />, or <paramref name="s" /> if <paramref name="c" />
+        ///     is not found.
         /// </returns>
         public static string SubstringAfterLast(this string s, char c)
         {
@@ -251,16 +263,17 @@ namespace BackupManager.Extensions
         }
 
         /// <summary>
-        /// Retrieves a substring before the first instance of a character.
+        ///     Retrieves a substring before the first instance of a character.
         /// </summary>
         /// <param name="s">
-        /// The string to retrieve the substring from.
+        ///     The string to retrieve the substring from.
         /// </param>
         /// <param name="c">
-        /// The character to seek.
+        ///     The character to seek.
         /// </param>
         /// <returns>
-        /// The substring before the first occurrence of <paramref name="c"/>, or <paramref name="s"/> if <paramref name="c"/> is not found.
+        ///     The substring before the first occurrence of <paramref name="c" />, or <paramref name="s" /> if
+        ///     <paramref name="c" /> is not found.
         /// </returns>
         public static string SubstringBefore(this string s, char c)
         {
@@ -269,19 +282,20 @@ namespace BackupManager.Extensions
         }
 
         /// <summary>
-        /// Retrieves a substring before the first instance of a string.
+        ///     Retrieves a substring before the first instance of a string.
         /// </summary>
         /// <param name="s">
-        /// The string to retrieve the substring from.
+        ///     The string to retrieve the substring from.
         /// </param>
         /// <param name="value">
-        /// The value to seek.
+        ///     The value to seek.
         /// </param>
         /// <param name="comparisonType">
-        /// The type of comparison to perform.
+        ///     The type of comparison to perform.
         /// </param>
         /// <returns>
-        /// The substring before the first occurrence of <paramref name="value"/>, or <paramref name="s"/> if <paramref name="value"/> is not found.
+        ///     The substring before the first occurrence of <paramref name="value" />, or <paramref name="s" /> if
+        ///     <paramref name="value" /> is not found.
         /// </returns>
         public static string SubstringBefore(this string s, string value, StringComparison comparisonType)
         {
@@ -290,16 +304,17 @@ namespace BackupManager.Extensions
         }
 
         /// <summary>
-        /// Retrieves a substring before the last instance of a character.
+        ///     Retrieves a substring before the last instance of a character.
         /// </summary>
         /// <param name="s">
-        /// The string to retrieve the substring from.
+        ///     The string to retrieve the substring from.
         /// </param>
         /// <param name="c">
-        /// The character to seek.
+        ///     The character to seek.
         /// </param>
         /// <returns>
-        /// The substring before the last occurrence of <paramref name="c"/>, or <paramref name="s"/> if <paramref name="c"/> is not found.
+        ///     The substring before the last occurrence of <paramref name="c" />, or <paramref name="s" /> if
+        ///     <paramref name="c" /> is not found.
         /// </returns>
         public static string SubstringBeforeLast(this string s, char c)
         {
@@ -308,19 +323,20 @@ namespace BackupManager.Extensions
         }
 
         /// <summary>
-        /// Retrieves a substring before the last instance of a string.
+        ///     Retrieves a substring before the last instance of a string.
         /// </summary>
         /// <param name="s">
-        /// The string to retrieve the substring from.
+        ///     The string to retrieve the substring from.
         /// </param>
         /// <param name="value">
-        /// The string to seek.
+        ///     The string to seek.
         /// </param>
         /// <param name="comparisonType">
-        /// The type of comparison to perform.
+        ///     The type of comparison to perform.
         /// </param>
         /// <returns>
-        /// The substring before the last occurrence of <paramref name="value"/>, or <paramref name="s"/> if <paramref name="value"/> is not found.
+        ///     The substring before the last occurrence of <paramref name="value" />, or <paramref name="s" /> if
+        ///     <paramref name="value" /> is not found.
         /// </returns>
         public static string SubstringBeforeLast(this string s, string value, StringComparison comparisonType)
         {
@@ -329,16 +345,16 @@ namespace BackupManager.Extensions
         }
 
         /// <summary>
-        /// Truncates a string to a specified length, suffixing the truncated string with an ellipsis (…).
+        ///     Truncates a string to a specified length, suffixing the truncated string with an ellipsis (…).
         /// </summary>
         /// <param name="s">
-        /// The string to truncate.
+        ///     The string to truncate.
         /// </param>
         /// <param name="length">
-        /// The maximum length of the truncated string, including the ellipsis.
+        ///     The maximum length of the truncated string, including the ellipsis.
         /// </param>
         /// <returns>
-        /// The truncated string.
+        ///     The truncated string.
         /// </returns>
         public static string Truncate(this string s, int length)
         {

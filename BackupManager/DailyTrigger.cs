@@ -11,38 +11,14 @@ namespace BackupManager
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Utility class for triggering an event every 24 hours at a specified time of day
+    ///     Utility class for triggering an event every 24 hours at a specified time of day
     /// </summary>
     public class DailyTrigger : IDisposable
     {
-        /// <summary>
-        /// Time of day (from 00:00:00) to trigger
-        /// </summary>
-        public TimeSpan TriggerHour { get; }
-
-        /// <summary>
-        /// The time left until the next trigger fires
-        /// </summary>
-        /// <returns></returns>
-        public TimeSpan TimeToNextTrigger()
-        {
-            return Utils.TimeLeft(DateTime.Now, TriggerHour);
-        }
-
-        /// <summary>
-        /// Task cancellation token source to cancel delayed task on disposal
-        /// </summary>
-        private CancellationTokenSource CancellationToken { get; set; }
-
-        /// <summary>
-        /// Reference to the running task
-        /// </summary>
-        private Task RunningTask { get; set; }
-
         public DailyTrigger(DateTime startTime) : this(startTime.Hour, startTime.Minute, startTime.Second) { }
 
         /// <summary>
-        /// Initiator
+        ///     Initiator
         /// </summary>
         /// <param name="hour">The hour of the day to trigger</param>
         /// <param name="minute">The minute to trigger</param>
@@ -66,16 +42,31 @@ namespace BackupManager
                     Utils.Trace($"triggerTime={triggerTime}");
 
                     await Task.Delay(triggerTime, CancellationToken.Token);
-                    Utils.Trace($"Invoke now");
+                    Utils.Trace("Invoke now");
                     OnTimeTriggered?.Invoke();
-                    Utils.Trace($"Invoke complete");
+                    Utils.Trace("Invoke complete");
                 }
             }, CancellationToken.Token);
 
             Utils.Trace("DailyTrigger exit");
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        ///     Time of day (from 00:00:00) to trigger
+        /// </summary>
+        public TimeSpan TriggerHour { get; }
+
+        /// <summary>
+        ///     Task cancellation token source to cancel delayed task on disposal
+        /// </summary>
+        private CancellationTokenSource CancellationToken { get; set; }
+
+        /// <summary>
+        ///     Reference to the running task
+        /// </summary>
+        private Task RunningTask { get; set; }
+
+        /// <inheritdoc />
         public void Dispose()
         {
             CancellationToken?.Cancel();
@@ -87,13 +78,25 @@ namespace BackupManager
         }
 
         /// <summary>
-        /// Triggers once every 24 hours on the specified time
+        ///     The time left until the next trigger fires
+        /// </summary>
+        /// <returns></returns>
+        public TimeSpan TimeToNextTrigger()
+        {
+            return Utils.TimeLeft(DateTime.Now, TriggerHour);
+        }
+
+        /// <summary>
+        ///     Triggers once every 24 hours on the specified time
         /// </summary>
         public event Action OnTimeTriggered;
 
         /// <summary>
-        /// Finalized to ensure Dispose is called when out of scope
+        ///     Finalized to ensure Dispose is called when out of scope
         /// </summary>
-        ~DailyTrigger() => Dispose();
+        ~DailyTrigger()
+        {
+            Dispose();
+        }
     }
 }

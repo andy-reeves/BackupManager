@@ -4,584 +4,518 @@
 //  </copyright>
 //  --------------------------------------------------------------------------------------------------------------------
 
-namespace BackupManager.Entities
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
+using System.Xml.Serialization;
+using BackupManager.Extensions;
+
+namespace BackupManager.Entities;
+
+public class MediaBackup
 {
-    using BackupManager.Extensions;
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.IO;
-    using System.Linq;
-    using System.Xml.Serialization;
+    // We need to a hash of the index folder and relative path
+    // we do this so we can look up files quickly by 
+    // contents hashes are not unique. Duplicate files in different locations
+    // The only guaranteed unique value is the indexfolder and relative path
+    // We dont want to delete the file off backup and then copy it again so we try a rename
+    // as long as the file has the same indexfolder and relative path we can find it and rename it
+    // This happened with The Porridge movie which is also stored as a Tv episode.
+    private readonly Dictionary<string, BackupFile> indexFolderAndRelativePath =
+        new(StringComparer.CurrentCultureIgnoreCase);
 
-    public class MediaBackup
+    /// <summary>
+    ///     The DateTime of the last full Master Folders scan
+    /// </summary>
+    private string masterFoldersLastFullScan;
+
+    private string mediaBackupPath;
+
+    public MediaBackup()
     {
-        private string mediaBackupPath;
+        BackupFiles = new Collection<BackupFile>();
+        BackupDisks = new Collection<BackupDisk>();
+        FoldersToScan = new Collection<Folder>();
+    }
 
-        [XmlIgnore()]
-        public Config Config { get; set; }
+    public MediaBackup(string mediaBackupPath)
+    {
+        this.mediaBackupPath = mediaBackupPath;
+    }
 
-        [XmlArrayItem("BackupFile")]
-        public Collection<BackupFile> BackupFiles { get; set; }
+    [XmlIgnore] public Config Config { get; set; }
 
-        [XmlArrayItem("BackupDisk")]
-        public Collection<BackupDisk> BackupDisks { get; set; }
+    [XmlArrayItem("BackupFile")] public Collection<BackupFile> BackupFiles { get; set; }
 
-        [XmlArrayItem("Folder")]
-        public Collection<Folder> FoldersToScan { get; set; }
+    [XmlArrayItem("BackupDisk")] public Collection<BackupDisk> BackupDisks { get; set; }
 
-        /// <summary>
-        /// The DateTime of the last full Master Folders scan
-        /// </summary>
-        private string masterFoldersLastFullScan;
+    [XmlArrayItem("Folder")] public Collection<Folder> FoldersToScan { get; set; }
 
-        // We need to a hash of the index folder and relative path
-        // we do this so we can look up files quickly by 
-        // contents hashes are not unique. Duplicate files in different locations
-        // The only guaranteed unique value is the indexfiolder and relative path
-        // We dont want to delete the file off backup and then copy it again so we try a rename
-        // as long as the file has the same indexfolder and relative path we can find it and rename it
-        // This happened with The Porridge movie which is also stored as a Tv episode.
-        private readonly Dictionary<string, BackupFile> indexFolderAndRelativePath = new(StringComparer.CurrentCultureIgnoreCase);
+    public string MasterFoldersLastFullScan
+    {
+        get => string.IsNullOrEmpty(masterFoldersLastFullScan) ? string.Empty : masterFoldersLastFullScan;
+        set => masterFoldersLastFullScan = value;
+    }
 
-        public string MasterFoldersLastFullScan
+    /// <summary>
+    ///     Creates a backup of the current xml file
+    /// </summary>
+    public void BackupMediaFile()
+    {
+        // take a copy of the xml file
+        var destinationPath = GetMediaBackupDestinationPath();
+        _ = Utils.FileCopy(mediaBackupPath, destinationPath);
+    }
+
+    private static string GetMediaBackupDestinationPath()
+    {
+        string destinationPath;
+
+        do
         {
-            get
+            var destinationFileName = "MediaBackup-" + DateTime.Now.ToString("yy-MM-dd-HH-mm-ss.ff") + ".xml";
+            destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                "BackupManager_Backups", destinationFileName);
+        } while (File.Exists(destinationPath));
+
+        return destinationPath;
+    }
+
+    public static MediaBackup Load(string path)
+    {
+        try
+        {
+            MediaBackup mediaBackup;
+            XmlSerializer serializer = new(typeof(MediaBackup));
+
+            using (FileStream stream = new(path, FileMode.Open, FileAccess.Read))
             {
-                return string.IsNullOrEmpty(masterFoldersLastFullScan) ? string.Empty : masterFoldersLastFullScan;
+                mediaBackup = serializer.Deserialize(stream) as MediaBackup;
             }
-            set
+
+            if (mediaBackup == null) return null;
+
+            mediaBackup.mediaBackupPath = path;
+
+            foreach (var backupFile in mediaBackup.BackupFiles)
             {
-                masterFoldersLastFullScan = value;
+                if (backupFile.ContentsHash == Utils.ZeroByteHash)
+                    throw new ApplicationException("Zerobyte Hash detected on load");
+
+                if (!mediaBackup.indexFolderAndRelativePath.ContainsKey(backupFile.Hash))
+                    mediaBackup.indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
+                else
+                    throw new ApplicationException($"Duplicate hash found on load of {backupFile.FileName}");
+
+                if (!backupFile.DiskChecked.HasValue() || !backupFile.Disk.HasValue()) backupFile.ClearDiskChecked();
             }
+
+            var config = Config.Load(Path.Combine(new FileInfo(path).DirectoryName, "Config.xml"));
+
+            if (config != null) mediaBackup.Config = config;
+
+            return mediaBackup;
         }
-
-        public MediaBackup()
+        catch (InvalidOperationException ex)
         {
-            BackupFiles = new Collection<BackupFile>();
-            BackupDisks = new Collection<BackupDisk>();
-            FoldersToScan = new Collection<Folder>();
+            throw new ApplicationException($"Unable to load MediaBackup.xml {ex}");
         }
+    }
 
-        public MediaBackup(string mediaBackupPath)
-        {
-            this.mediaBackupPath = mediaBackupPath;
-        }
+    /// <summary>
+    ///     Returns the MasterFolder, IndexFolder and RelativePath for the path provided.
+    /// </summary>
+    /// <param name="path">Full path to the file</param>
+    /// <param name="masterFolder"></param>
+    /// <param name="indexFolder"></param>
+    /// <returns>False if the MasterFolder or IndexFolder cannot be found.</returns>
+    public bool GetFoldersForPath(string path, out string masterFolder, out string indexFolder,
+        out string relativePath)
+    {
+        masterFolder = null;
+        indexFolder = null;
+        relativePath = null;
 
-        /// <summary>
-        /// Creates a backup of the current xml file
-        /// </summary>
-        public void BackupMediaFile()
-        {
-            // take a copy of the xml file
-            string destinationPath = GetMediaBackupDestinationPath();
-            _ = Utils.FileCopy(mediaBackupPath, destinationPath);
-        }
+        var pathWithTerminatingString = Utils.EnsurePathHasATerminatingSeparator(path);
 
-        private static string GetMediaBackupDestinationPath()
-        {
-            string destinationFileName;
-            string destinationPath;
-
-            do
+        foreach (var master in Config.MasterFolders)
+        foreach (var index in Config.IndexFolders)
+            if (pathWithTerminatingString.StartsWith(
+                    Utils.EnsurePathHasATerminatingSeparator(Path.Combine(master, index))))
             {
-                destinationFileName = "MediaBackup-" + DateTime.Now.ToString("yy-MM-dd-HH-mm-ss.ff") + ".xml";
-                destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups", destinationFileName);
-            } while (File.Exists(destinationPath));
+                masterFolder = master;
+                indexFolder = index;
+                relativePath = BackupFile.GetRelativePath(path, masterFolder, indexFolder);
 
-            return destinationPath;
+                return true;
+            }
+
+        return false;
+    }
+
+    /// <summary>
+    ///     Updates the DateTime of the last full Master Folders scan.
+    /// </summary>
+    public void UpdateLastFullScan()
+    {
+        masterFoldersLastFullScan = DateTime.Now.ToString("yyyy-MM-dd");
+    }
+
+    public void Save()
+    {
+        BackupMediaFile();
+
+        XmlSerializer xmlSerializer = new(typeof(MediaBackup));
+
+        if (File.Exists(mediaBackupPath)) File.SetAttributes(mediaBackupPath, FileAttributes.Normal);
+
+        using StreamWriter streamWriter = new(mediaBackupPath);
+        xmlSerializer.Serialize(streamWriter, this);
+    }
+
+    /// <summary>
+    ///     Gets a BackupFile representing the file from the contents Hashcode provided
+    /// </summary>
+    /// <param name="value">The contents Hashcode of the file to find.</param>
+    /// <param name="masterFolder"></param>
+    /// <param name="indexFolder"></param>
+    /// <returns>Null if it wasn't found or null if more than 1</returns>
+    public BackupFile GetBackupFileFromContentsHashcode(string value)
+    {
+        Utils.Trace("GetBackupFileFromContentsHashcode enter");
+
+        var count = BackupFiles.Count(a => a.ContentsHash == value);
+
+        switch (count)
+        {
+            case 0:
+                Utils.Trace("GetBackupFileFromContentsHashcode exit1");
+                return null;
+            case > 1:
+                Utils.Trace($"More than 1 file with same ContentsHashcode {value}");
+                Utils.Trace("GetBackupFileFromContentsHashcode exit2");
+                return null;
         }
 
-        public static MediaBackup Load(string path)
-        {
-            try
-            {
-                MediaBackup mediaBackup;
-                XmlSerializer serializer = new(typeof(MediaBackup));
+        var file = BackupFiles.First(q => q.ContentsHash == value);
 
-                using (FileStream stream = new(path, FileMode.Open, FileAccess.Read))
+        Utils.Trace("GetBackupFileFromContentsHashcode exit");
+        return file;
+    }
+
+    /// <summary>
+    ///     Gets a BackupFile representing the file at fullPath
+    /// </summary>
+    /// <param name="fullPath">The fullPath to the file.</param>
+    /// <returns>Null if it wasn't found or couldn't be created maybe locked by another process</returns>
+    public BackupFile GetBackupFile(string fullPath)
+    {
+        Utils.Trace("GetBackupFile enter");
+        Utils.Trace($"Params: path={fullPath}");
+
+        if (!File.Exists(fullPath) || !Utils.IsFileAccessible(fullPath)) return null;
+
+        if (!GetFoldersForPath(fullPath, out var masterFolder, out var indexFolder, out var relativePath))
+            throw new ApplicationException("Unable to determine MasterFolder or IndexFolder.");
+
+        if (string.IsNullOrEmpty(indexFolder) || string.IsNullOrEmpty(masterFolder))
+            throw new ApplicationException("IndexFolder or MasterFolder is empty. Not supported");
+
+        // we hash the path of the file so we can look it up quickly
+        // then we check the ModifiedTime and size
+        // if these have changed we redo the hash
+        // files with same hash are allowed (Porridge TV ep and movie)
+        // files can't have same hash and same filename though
+
+        var hashKey = Path.Combine(indexFolder, relativePath);
+
+        // if this path is already added then return it
+        if (indexFolderAndRelativePath.TryGetValue(hashKey, out var backupFile))
+        {
+        
+
+            // consider a file a.txt thats on \\nas1\assets1 in indexFolder _TV and on \\nas1\assets4 in _TV too
+            // this has same index folder and path but its a different file
+            string hashOfContents;
+            if (backupFile.MasterFolder != masterFolder)
+            {
+                // This is similar file in different master folders
+                // This also happens if a file is moved from 1 masterFolder to another
+                // its old location is still in the xml but the new location will be found on disk
+                Utils.Trace($"Duplicate file detected at {fullPath} and {backupFile.FullPath}");
+
+                // First we can check the hash of both
+                // its its the same hash then we can assume the file has just been moved
+                hashOfContents = Utils.GetShortMd5HashFromFile(fullPath);
+                if (hashOfContents == backupFile.ContentsHash)
                 {
-                    mediaBackup = serializer.Deserialize(stream) as MediaBackup;
+                    Utils.Trace($"Changing masterFolder on {backupFile.FullPath} to {masterFolder}");
+                    backupFile.MasterFolder = masterFolder;
                 }
-
-                if (mediaBackup == null)
+                else
                 {
+                    Utils.Trace("Hashes are different on the duplicate files");
+                    Utils.Trace("GetBackupFile exit error");
                     return null;
                 }
+            }
+            else
+            {
+                // check the timestamp against what we have
+                var lastWriteTimeFromMasterFile = Utils.GetFileLastWriteTime(fullPath);
 
-                mediaBackup.mediaBackupPath = path;
-
-                foreach (BackupFile backupFile in mediaBackup.BackupFiles)
+                // if the file on disk is different then check the hash 
+                if (backupFile.LastWriteTime != lastWriteTimeFromMasterFile)
                 {
-                    if (backupFile.ContentsHash == Utils.ZeroByteHash)
-                    {
-                        throw new ApplicationException("Zerobyte Hash detected on load");
-                    }
+                    // update the timestamp as its changed/missing
+                    backupFile.LastWriteTime = lastWriteTimeFromMasterFile;
 
-                    if (!mediaBackup.indexFolderAndRelativePath.ContainsKey(backupFile.Hash))
-                    {
-                        mediaBackup.indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
-                    }
-                    else
-                    {
-                        throw new ApplicationException($"Duplicate hash found on load of {backupFile.FileName}");
-                    }
+                    hashOfContents = Utils.GetShortMd5HashFromFile(fullPath);
 
-                    if (!backupFile.DiskChecked.HasValue() || !backupFile.Disk.HasValue())
+                    // has the contents hash changed too?
+                    if (hashOfContents != backupFile.ContentsHash)
                     {
+                        backupFile.UpdateContentsHash();
+
+                        // clear the backup details as the master file hash has changed
                         backupFile.ClearDiskChecked();
                     }
                 }
 
-                Config config = Config.Load(Path.Combine(new FileInfo(path).DirectoryName, "Config.xml"));
-
-                if (config != null)
-                {
-                    mediaBackup.Config = config;
-                }
-
-                return mediaBackup;
-            }
-            catch (InvalidOperationException ex)
-            {
-                throw new ApplicationException($"Unable to load MediaBackup.xml {ex}");
-            }
-        }
-
-        /// <summary>
-        /// Returns the MasterFolder, IndexFolder and RelativePath for the path provided.
-        /// </summary>
-        /// <param name="path">Full path to the file</param>
-        /// <param name="masterFolder"></param>
-        /// <param name="indexFolder"></param>
-        /// <returns>False if the MasterFolder or IndexFolder cannot be found.</returns>
-        public bool GetFoldersForPath(string path, out string masterFolder, out string indexFolder, out string relativePath)
-        {
-            masterFolder = null;
-            indexFolder = null;
-            relativePath = null;
-
-            string pathWithTerminatingString = Utils.EnsurePathHasATerminatingSeparator(path);
-
-            foreach (string master in Config.MasterFolders)
-            {
-                foreach (string index in Config.IndexFolders)
-                {
-                    if (pathWithTerminatingString.StartsWith(Utils.EnsurePathHasATerminatingSeparator(Path.Combine(master, index))))
-                    {
-                        masterFolder = master;
-                        indexFolder = index;
-                        relativePath = BackupFile.GetRelativePath(path, masterFolder, indexFolder);
-
-                        return true;
-                    }
-                }
+                backupFile.UpdateFileLength();
             }
 
-            return false;
-        }
-
-        /// <summary>
-        /// Updates the DateTime of the last full Master Folders scan.
-        /// </summary>
-        public void UpdateLastFullScan()
-        {
-            masterFoldersLastFullScan = DateTime.Now.ToString("yyyy-MM-dd");
-        }
-
-        public void Save()
-        {
-            BackupMediaFile();
-
-            XmlSerializer xmlSerializer = new(typeof(MediaBackup));
-
-            if (File.Exists(mediaBackupPath))
-            {
-                File.SetAttributes(mediaBackupPath, FileAttributes.Normal);
-            }
-
-            using StreamWriter streamWriter = new(mediaBackupPath);
-            xmlSerializer.Serialize(streamWriter, this);
-        }
-
-        /// <summary>
-        /// Gets a BackupFile representing the file from the contents Hashcode provided
-        /// </summary>
-        /// <param name="value">The contents Hashcode of the file to find.</param>
-        /// <param name="masterFolder"></param>
-        /// <param name="indexFolder"></param>
-        /// <returns>Null if it wasn't found or null if more than 1</returns>
-        public BackupFile GetBackupFileFromContentsHashcode(string value)
-        {
-            Utils.Trace("GetBackupFileFromContentsHashcode enter");
-
-            int count = BackupFiles.Where(a => a.ContentsHash == value).Count();
-
-            if (count == 0)
-            {
-                Utils.Trace("GetBackupFileFromContentsHashcode exit1");
-                return null;
-            }
-
-            if (count > 1)
-            {
-                Utils.Trace($"More than 1 file with same ContentsHashcode {value}");
-                Utils.Trace("GetBackupFileFromContentsHashcode exit2");
-                return null;
-            }
-
-            BackupFile file = BackupFiles.First(q => q.ContentsHash == value);
-
-            Utils.Trace("GetBackupFileFromContentsHashcode exit");
-            return file;
-        }
-
-        /// <summary>
-        /// Gets a BackupFile representing the file at fullPath
-        /// </summary>
-        /// <param name="fullPath">The fullPath to the file.</param>
-        /// <returns>Null if it wasn't found or couldn't be created maybe locked by another process</returns>
-        public BackupFile GetBackupFile(string fullPath)
-        {
-            Utils.Trace("GetBackupFile enter");
-            Utils.Trace($"Params: path={fullPath}");
-
-            if (!File.Exists(fullPath) || !Utils.IsFileAccessible(fullPath))
-            {
-                return null;
-            }
-
-            if (!GetFoldersForPath(fullPath, out string masterFolder, out string indexFolder, out string relativePath))
-            {
-                throw new ApplicationException("Unable to determine MasterFolder or IndexFolder.");
-
-            }
-
-            if (string.IsNullOrEmpty(indexFolder) || string.IsNullOrEmpty(masterFolder))
-            {
-                throw new ApplicationException("IndexFolder or MasterFolder is empty. Not supported");
-            }
-
-            // we hash the path of the file so we can look it up quickly
-            // then we check the ModifiedTime and size
-            // if these have changed we redo the hash
-            // files with same hash are allowed (Porridge TV ep and movie)
-            // files can't have same hash and same filename though
-
-            string hashOfContents;
-
-            BackupFile backupFile;
-
-            string hashKey = Path.Combine(indexFolder, relativePath);
-
-            // if this path is already added then return it
-            if (indexFolderAndRelativePath.ContainsKey(hashKey))
-            {
-                backupFile = indexFolderAndRelativePath[hashKey];
-
-                // consider a file a.txt thats on \\nas1\assets1 in indexFolder _TV and on \\nas1\assets4 in _TV too
-                // this has same index folder and path but its a different file
-                if (backupFile.MasterFolder != masterFolder)
-                {
-                    // This is similar file in different master folders
-                    // This also happens if a file is moved from 1 masterFolder to another
-                    // its old location is still in the xml but the new location will be found on disk
-                    Utils.Trace($"Duplicate file detected at {fullPath} and {backupFile.FullPath}");
-
-                    // First we can check the hash of both
-                    // its its the same hash then we can assume the file has just been moved
-                    hashOfContents = Utils.GetShortMd5HashFromFile(fullPath);
-                    if (hashOfContents == backupFile.ContentsHash)
-                    {
-                        Utils.Trace($"Changing masterFolder on {backupFile.FullPath} to {masterFolder}");
-                        backupFile.MasterFolder = masterFolder;
-                    }
-                    else
-                    {
-                        Utils.Trace($"Hashes are different on the duplicate files");
-                        Utils.Trace("GetBackupFile exit error");
-                        return null;
-                    }
-                }
-                else
-                {
-                    // check the timestamp against what we have
-                    DateTime lastWriteTimeFromMasterFile = Utils.GetFileLastWriteTime(fullPath);
-
-                    // if the file on disk is different then check the hash 
-                    if (backupFile.LastWriteTime != lastWriteTimeFromMasterFile)
-                    {
-                        // update the timestamp as its changed/missing
-                        backupFile.LastWriteTime = lastWriteTimeFromMasterFile;
-
-                        hashOfContents = Utils.GetShortMd5HashFromFile(fullPath);
-
-                        // has the contents hash changed too?
-                        if (hashOfContents != backupFile.ContentsHash)
-                        {
-                            backupFile.UpdateContentsHash();
-
-                            // clear the backup details as the master file hash has changed
-                            backupFile.ClearDiskChecked();
-                        }
-                    }
-
-                    backupFile.UpdateFileLength();
-                }
-
-                // Now we check the fullpath has not changed the UPPER or lowerase anywhere
-                // we're not case sensitive but we want it to match the casing on the master folder
-                if (fullPath != backupFile.FullPath)
-                {
-                    backupFile.SetFullPath(fullPath, masterFolder, indexFolder);
-                }
-
-                Utils.Trace("GetBackupFile exit");
-                return backupFile;
-            }
-
-            backupFile = new BackupFile(fullPath, masterFolder, indexFolder);
-            Utils.Trace($"Adding backup file {backupFile.RelativePath}");
-            BackupFiles.Add(backupFile);
-
-            indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
+            // Now we check the fullpath has not changed the UPPER or lowerase anywhere
+            // we're not case sensitive but we want it to match the casing on the master folder
+            if (fullPath != backupFile.FullPath) backupFile.SetFullPath(fullPath, masterFolder, indexFolder);
 
             Utils.Trace("GetBackupFile exit");
             return backupFile;
         }
 
-        /// <summary>
-        /// Ensures the BackupFile exists and sets the Flag=TRUE. Sets Deleted=FALSE.   
-        /// </summary>
-        /// <param name="path">Full path to the path in the MasterFolder</param>
-        /// <returns>Null is the file  was locked or an error occured</returns>
-        internal bool EnsureFile(string path)
+        backupFile = new BackupFile(fullPath, masterFolder, indexFolder);
+        Utils.Trace($"Adding backup file {backupFile.RelativePath}");
+        BackupFiles.Add(backupFile);
+
+        indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
+
+        Utils.Trace("GetBackupFile exit");
+        return backupFile;
+    }
+
+    /// <summary>
+    ///     Ensures the BackupFile exists and sets the Flag=TRUE. Sets Deleted=FALSE.
+    /// </summary>
+    /// <param name="path">Full path to the path in the MasterFolder</param>
+    /// <returns>Null is the file  was locked or an error occured</returns>
+    internal bool EnsureFile(string path)
+    {
+        Utils.Trace("EnsureFile enter");
+
+        var backupFile = GetBackupFile(path);
+
+        if (backupFile == null)
         {
-            Utils.Trace("EnsureFile enter");
-
-            BackupFile backupFile = GetBackupFile(path);
-
-            if (backupFile == null)
-            {
-                Utils.Trace("EnsureFile exit with False");
-                return false;
-            }
-
-            backupFile.Deleted = false;
-            backupFile.Flag = true;
-
-            Utils.Trace("EnsureFile exit with True");
-            return true;
+            Utils.Trace("EnsureFile exit with False");
+            return false;
         }
 
-        /// <summary>
-        /// Returns the path to the parent folder of the file provided. Thats the path to the first folder after an index folder
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns>Null if the Path doesn't contain an IndexFolder or if its in the root of the IndexFolder</returns>
-        public string GetParentFolder(string path)
+        backupFile.Deleted = false;
+        backupFile.Flag = true;
+
+        Utils.Trace("EnsureFile exit with True");
+        return true;
+    }
+
+    /// <summary>
+    ///     Returns the path to the parent folder of the file provided. Thats the path to the first folder after an index
+    ///     folder
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns>Null if the Path doesn't contain an IndexFolder or if its in the root of the IndexFolder</returns>
+    public string GetParentFolder(string path)
+    {
+        return (from indexFolder in Config.IndexFolders
+            where path.Contains(indexFolder + "\\")
+            select path.SubstringAfter(indexFolder + "\\", StringComparison.CurrentCultureIgnoreCase)
+            into pathAfterSlash
+            let lastSlashLocation = pathAfterSlash.IndexOf('\\')
+            select lastSlashLocation < 0
+                ? null
+                : path[..(lastSlashLocation + (path.Length - pathAfterSlash.Length))]).FirstOrDefault();
+    }
+
+    public string GetFilters()
+    {
+        return string.Join(",", Config.Filters.ToArray());
+    }
+
+    /// <summary>
+    ///     Get a BackupDisk for the current backupShare
+    /// </summary>
+    /// <param name="backupShare"></param>
+    /// <returns>Null if disk is not connected</returns>
+    public BackupDisk GetBackupDisk(string backupShare)
+    {
+        Utils.Trace("GetBackupDisk enter");
+
+        // try and find a disk based on the diskname only
+        // if more than 1 disk than return the first one
+        var diskName = BackupDisk.GetBackupFolderName(backupShare);
+
+        if (string.IsNullOrEmpty(diskName))
         {
-            foreach (string indexFolder in Config.IndexFolders)
-            {
-                if (path.Contains(indexFolder + "\\"))
-                {
-                    string pathAfterSlash = path.SubstringAfter(indexFolder + "\\", StringComparison.CurrentCultureIgnoreCase);
-                    int lastSlashLocation = pathAfterSlash.IndexOf('\\');
-                    return lastSlashLocation < 0 ? null : path[..(lastSlashLocation + (path.Length - pathAfterSlash.Length))];
-                }
-            }
+            Utils.Trace("GetBackupDisk exit with null");
             return null;
         }
 
-        public string GetFilters()
+        var backupDisk = BackupDisks.FirstOrDefault(x => x.Name == diskName);
+
+        if (backupDisk != null)
         {
-            return string.Join(",", Config.Filters.ToArray());
+            backupDisk.BackupShare = backupShare;
+            Utils.Trace($"GetBackupDisk exit with {backupDisk.Name}");
+            return backupDisk;
         }
 
-        /// <summary>
-        /// Get a BackupDisk for the current backupShare
-        /// </summary>
-        /// <param name="backupShare"></param>
-        /// <returns>Null if disk is not connected</returns>
-        public BackupDisk GetBackupDisk(string backupShare)
+        BackupDisk disk = new(diskName, backupShare);
+        BackupDisks.Add(disk);
+
+        Utils.Trace("GetBackupDisk exit new disk");
+        return disk;
+    }
+
+    /// <summary>
+    ///     Gets a BackupFile from the path provided. Path should include indexfolder and relativePath and not a full path
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns>Null if it doen't exist.</returns>
+    public BackupFile GetBackupFileFromHashKey(string path)
+    {
+        return indexFolderAndRelativePath.TryGetValue(path, out var backupFile) ? backupFile : null;
+    }
+
+    /// <summary>
+    ///     Get BackupFiles on the diskName provided. Optionally including files marked as Deleted
+    /// </summary>
+    /// <param name="diskName"></param>
+    /// <param name="includeDeletedFiles"></param>
+    /// <returns></returns>
+    public IEnumerable<BackupFile> GetBackupFilesOnBackupDisk(string diskName, bool includeDeletedFiles)
+    {
+        return includeDeletedFiles
+            ? BackupFiles.Where(p => p.Disk.Equals(diskName, StringComparison.CurrentCultureIgnoreCase))
+            : BackupFiles.Where(p =>
+                p.Disk.Equals(diskName, StringComparison.CurrentCultureIgnoreCase) && !p.Deleted);
+    }
+
+    /// <summary>
+    ///     Get BackupFiles that are in the MasterFolder provided. Includes files marked as Deleted
+    /// </summary>
+    /// <param name="masterFolder"></param>
+    /// <returns></returns>
+    public IEnumerable<BackupFile> GetBackupFilesInMasterFolder(string masterFolder)
+    {
+        return BackupFiles.Where(p => p.MasterFolder == masterFolder).OrderBy(q => q.BackupDiskNumber);
+    }
+
+    /// <summary>
+    ///     Get BackupFiles that are marked as Deleted
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerable<BackupFile> GetBackupFilesMarkedAsDeleted()
+    {
+        return BackupFiles.Where(p => p.Deleted).OrderBy(q => q.BackupDiskNumber);
+    }
+
+    /// <summary>
+    ///     Get BackupFiles that are NOT marked as Deleted
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerable<BackupFile> GetBackupFilesNotMarkedAsDeleted()
+    {
+        return BackupFiles.Where(p => !p.Deleted);
+    }
+
+    /// <summary>
+    ///     Get BackupFiles where Disk is null or Empty (does not included MarkedAsDeleted files)
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerable<BackupFile> GetBackupFilesWithDiskEmpty()
+    {
+        return BackupFiles.Where(p => string.IsNullOrEmpty(p.Disk) && !p.Deleted);
+    }
+
+    /// <summary>
+    ///     Returns True if this path exists already. Path should contain indexfolder and relativepath.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public bool Contains(string path)
+    {
+        return indexFolderAndRelativePath.ContainsKey(path);
+    }
+
+    /// <summary>
+    ///     Sets the Flag to False on all BackupFiles
+    /// </summary>
+    public void ClearFlags()
+    {
+        foreach (var backupFile in BackupFiles) backupFile.Flag = false;
+    }
+
+    /// Removes any files that have a matching flag value as the one provided.
+    public void RemoveFilesWithFlag(bool flag, bool clearHashes)
+    {
+        Collection<BackupFile> filesToRemove = new();
+
+        foreach (var backupFile in BackupFiles.Where(backupFile => backupFile.Flag == flag))
+            filesToRemove.Add(backupFile);
+
+        foreach (var backupFile in filesToRemove)
         {
-            Utils.Trace("GetBackupDisk enter");
+            if (clearHashes)
+                if (indexFolderAndRelativePath.ContainsKey(backupFile.Hash))
+                    _ = indexFolderAndRelativePath.Remove(backupFile.Hash);
 
-            // try and find a disk based on the diskname only
-            // if more than 1 disk than return the first one
-            string diskName = BackupDisk.GetBackupFolderName(backupShare);
+            if (BackupFiles.Contains(backupFile)) _ = BackupFiles.Remove(backupFile);
+        }
+    }
 
-            if (string.IsNullOrEmpty(diskName))
+    /// <summary>
+    ///     Returns the oldest BackupFile we have using the DiskChecked property.
+    /// </summary>
+    /// <returns></returns>
+    public BackupFile GetOldestFile()
+    {
+        var oldestFileDate = DateTime.Today;
+        BackupFile oldestFile = null;
+
+        foreach (var backupFile in BackupFiles)
+            if (backupFile.DiskChecked.HasValue())
             {
-                Utils.Trace($"GetBackupDisk exit with null");
-                return null;
+                var backupFileDate = DateTime.Parse(backupFile.DiskChecked);
+
+                if (backupFileDate >= oldestFileDate) continue;
+
+                oldestFileDate = backupFileDate;
+                oldestFile = backupFile;
             }
 
-            BackupDisk backupDisk = BackupDisks.FirstOrDefault(x => x.Name == diskName);
+        return oldestFile;
+    }
 
-            if (backupDisk != null)
-            {
-                backupDisk.BackupShare = backupShare;
-                Utils.Trace($"GetBackupDisk exit with {backupDisk.Name}");
-                return backupDisk;
-            }
+    /// <summary>
+    ///     Removes a file from our collection
+    /// </summary>
+    /// <param name="backupFile"></param>
+    internal void RemoveFile(BackupFile backupFile)
+    {
+        if (indexFolderAndRelativePath.ContainsKey(backupFile.Hash))
+            _ = indexFolderAndRelativePath.Remove(backupFile.Hash);
 
-            BackupDisk disk = new(diskName, backupShare);
-            BackupDisks.Add(disk);
-
-            Utils.Trace("GetBackupDisk exit new disk");
-            return disk;
-        }
-
-        /// <summary>
-        /// Gets a BackupFile from the path provided. Path should include indexfolder and relativePath and not a full path
-        /// </summary>
-        /// <param name="indexFolderAndRelativePath"></param>
-        /// <returns>Null if it doen't exist.</returns>
-        public BackupFile GetBackupFileFromHashKey(string path)
-        {
-            return indexFolderAndRelativePath.TryGetValue(path, out BackupFile backupFile) ? backupFile : null;
-        }
-
-        /// <summary>
-        /// Get BackupFiles on the diskName provided. Optionally including files marked as Deleted
-        /// </summary>
-        /// <param name="diskName"></param>
-        /// <returns></returns>
-        public IEnumerable<BackupFile> GetBackupFilesOnBackupDisk(string diskName, bool includeDeletedFiles)
-        {
-            return includeDeletedFiles
-                ? BackupFiles.Where(p => p.Disk.Equals(diskName, StringComparison.CurrentCultureIgnoreCase))
-                : BackupFiles.Where(p => p.Disk.Equals(diskName, StringComparison.CurrentCultureIgnoreCase) && !p.Deleted);
-        }
-
-        /// <summary>
-        /// Get BackupFiles that are in the MasterFolder provided. Includes files marked as Deleted
-        /// </summary>
-        /// <param name="masterFolder"></param>
-        /// <returns></returns>
-        public IEnumerable<BackupFile> GetBackupFilesInMasterFolder(string masterFolder)
-        {
-            return BackupFiles.Where(p => p.MasterFolder == masterFolder).OrderBy(q => q.BackupDiskNumber);
-        }
-
-        /// <summary>
-        /// Get BackupFiles that are marked as Deleted
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<BackupFile> GetBackupFilesMarkedAsDeleted()
-        {
-            return BackupFiles.Where(p => p.Deleted).OrderBy(q => q.BackupDiskNumber);
-        }
-
-        /// <summary>
-        /// Get BackupFiles that are NOT marked as Deleted
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<BackupFile> GetBackupFilesNotMarkedAsDeleted()
-        {
-            return BackupFiles.Where(p => !p.Deleted);
-        }
-
-        /// <summary>
-        /// Get BackupFiles where Disk is null or Empty (does not included MarkedAsDeleted files)
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<BackupFile> GetBackupFilesWithDiskEmpty()
-        {
-            return BackupFiles.Where(p => string.IsNullOrEmpty(p.Disk) && !p.Deleted);
-        }
-
-        /// <summary>
-        /// Returns True if this path exists already. Path should contain indexfolder and relativepath.
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public bool Contains(string path)
-        {
-            return indexFolderAndRelativePath.ContainsKey(path);
-        }
-
-        /// <summary>
-        /// Sets the Flag to False on all BackupFiles
-        /// </summary>
-        public void ClearFlags()
-        {
-            foreach (BackupFile backupFile in BackupFiles)
-            {
-                backupFile.Flag = false;
-            }
-        }
-
-        /// Removes any files that have a matching flag value as the one provided.
-        public void RemoveFilesWithFlag(bool flag, bool clearHashes)
-        {
-            Collection<BackupFile> filesToRemove = new();
-
-            foreach (BackupFile backupFile in BackupFiles.Where(backupFile => backupFile.Flag == flag))
-            {
-                filesToRemove.Add(backupFile);
-            }
-
-            foreach (BackupFile backupFile in filesToRemove)
-            {
-                if (clearHashes)
-                {
-                    if (indexFolderAndRelativePath.ContainsKey(backupFile.Hash))
-                    {
-                        _ = indexFolderAndRelativePath.Remove(backupFile.Hash);
-                    }
-                }
-
-                if (BackupFiles.Contains(backupFile))
-                {
-                    _ = BackupFiles.Remove(backupFile);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Returns the oldest BackupFile we have using the DiskChecked property.
-        /// </summary>
-        /// <returns></returns>
-        public BackupFile GetOldestFile()
-        {
-            DateTime oldestFileDate = DateTime.Today;
-            BackupFile oldestFile = null;
-
-            foreach (BackupFile backupFile in BackupFiles)
-            {
-                if (backupFile.DiskChecked.HasValue())
-                {
-                    DateTime backupFileDate = DateTime.Parse(backupFile.DiskChecked);
-
-                    if (backupFileDate < oldestFileDate)
-                    {
-                        oldestFileDate = backupFileDate;
-                        oldestFile = backupFile;
-                    }
-                }
-            }
-
-            return oldestFile;
-        }
-
-        /// <summary>
-        /// Removes a file from our collection
-        /// </summary>
-        /// <param name="backupFile"></param>
-        internal void RemoveFile(BackupFile backupFile)
-        {
-
-            if (indexFolderAndRelativePath.ContainsKey(backupFile.Hash))
-            {
-                _ = indexFolderAndRelativePath.Remove(backupFile.Hash);
-            }
-
-            if (BackupFiles.Contains(backupFile))
-            {
-                _ = BackupFiles.Remove(backupFile);
-            }
-        }
+        if (BackupFiles.Contains(backupFile)) _ = BackupFiles.Remove(backupFile);
     }
 }

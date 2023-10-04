@@ -15,7 +15,7 @@ namespace BackupManager.Extensions
         {
             if (c.InvokeRequired)
             {
-                _ = c.Invoke(new Action<T, Action<T>>(Invoke), new object[] { c, action });
+                _ = c.Invoke(new Action<T, Action<T>>(Invoke), c, action);
             }
             else
             {

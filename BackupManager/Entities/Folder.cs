@@ -9,20 +9,10 @@ namespace BackupManager.Entities
     using System;
 
     /// <summary>
-    /// This class allows us to keep a Collection of FoldersToScan with the path and datetime it was last changed
+    ///     This class allows us to keep a Collection of FoldersToScan with the path and datetime it was last changed
     /// </summary>
     public class Folder : IEquatable<Folder>
     {
-        /// <summary>
-        /// The path to the folder that changed
-        /// </summary>
-        public string Path { get; set; }
-
-        /// <summary>
-        /// The Timestamp the folder was last changed
-        /// </summary>
-        public DateTime ModifiedDateTime { get; set; }
-
         public Folder()
         {
         }
@@ -35,6 +25,16 @@ namespace BackupManager.Entities
             ModifiedDateTime = dateTime;
         }
 
+        /// <summary>
+        ///     The path to the folder that changed
+        /// </summary>
+        public string Path { get; set; }
+
+        /// <summary>
+        ///     The Timestamp the folder was last changed
+        /// </summary>
+        public DateTime ModifiedDateTime { get; set; }
+
         public bool Equals(Folder other)
         {
             return null != other && Path == other.Path;
@@ -44,6 +44,7 @@ namespace BackupManager.Entities
         {
             return Equals(obj as Folder);
         }
+
         public override int GetHashCode()
         {
             return Path.GetHashCode();
