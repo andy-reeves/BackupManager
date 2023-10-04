@@ -1,7 +1,7 @@
 ﻿using BackupManager;
 
 namespace TestProject;
-
+#if DEBUG
 public class UtilsUnitTest
 {
     [Fact]
@@ -33,3 +33,4 @@ public class UtilsUnitTest
         Assert.True(a == "a day or so");
     }
 }
+#endif

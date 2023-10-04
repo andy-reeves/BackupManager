@@ -23,7 +23,10 @@ using BackupManager.Extensions;
 
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: NeutralResourcesLanguage("en-GB")]
+
+#if DEBUG
 [assembly: InternalsVisibleTo("TestProject")]
+#endif
 
 namespace BackupManager;
 
