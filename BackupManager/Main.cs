@@ -1359,7 +1359,7 @@ public partial class Main : Form
             // Log the parameters after setting the Pushover keys in the Utils class
             mediaBackup.Config.LogParameters();
 
-            string[] masterFoldersArray = mediaBackup.Config.MasterFolders.ToArray();
+            var masterFoldersArray = mediaBackup.Config.MasterFolders.ToArray();
 
             Utils.Trace($"masterFoldersArray.Length = {masterFoldersArray.Length}");
             listMasterFoldersComboBox.Items.AddRange(masterFoldersArray);
@@ -1735,7 +1735,7 @@ public partial class Main : Form
                 $"Connect new backup drive to restore from {backupDisk}"
             );
 
-            var answer =
+            var answer = 
                 MessageBox.Show(
                     $"Please connect backup disk {backupDisk} so we can continue restoring files. Have you connected this disk now?",
                     "Connect correct backup disk",
