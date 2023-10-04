@@ -148,9 +148,10 @@ public class BackupDisk : IEquatable<BackupDisk>
                 ((file.Attributes & FileAttributes.System) == 0));
 
         // In here there should be 1 directory starting with 'backup '
-        if (directoriesInRootFolder.Count() != 1) return null;
+        var inRootFolder = directoriesInRootFolder as DirectoryInfo[] ?? directoriesInRootFolder.ToArray();
+        if (inRootFolder.Length != 1) return null;
 
-        var firstDirectory = directoriesInRootFolder.Single();
+        var firstDirectory = inRootFolder.Single();
 
         return !firstDirectory.Name.StartsWith("backup ", StringComparison.CurrentCultureIgnoreCase)
             ? null

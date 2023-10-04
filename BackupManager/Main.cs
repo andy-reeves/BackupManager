@@ -2495,7 +2495,8 @@ public partial class Main : Form
 
         var filesNotOnBackupDisk = mediaBackup.GetBackupFilesWithDiskEmpty();
 
-        var fileSizeToCopy = filesNotOnBackupDisk.Sum(p => p.Length);
+        var notOnBackupDisk = filesNotOnBackupDisk as BackupFile[] ?? filesNotOnBackupDisk.ToArray();
+        var fileSizeToCopy = notOnBackupDisk.Sum(p => p.Length);
 
         Utils.LogWithPushover(BackupAction.ScanFolders,
             $"{totalFiles:n0} files at {Utils.FormatSize(totalFileSize)}");
@@ -2515,7 +2516,7 @@ public partial class Main : Form
         }
 
         Utils.LogWithPushover(BackupAction.ScanFolders,
-            $"{filesNotOnBackupDisk.Count():n0} files to backup at {Utils.FormatSize(fileSizeToCopy)}");
+            $"{notOnBackupDisk.Length:n0} files to backup at {Utils.FormatSize(fileSizeToCopy)}");
 
         Utils.LogWithPushover(BackupAction.ScanFolders, "Completed");
         Utils.Trace("ScanFolders exit");

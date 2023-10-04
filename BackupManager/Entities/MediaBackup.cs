@@ -130,6 +130,7 @@ public class MediaBackup
     /// <param name="path">Full path to the file</param>
     /// <param name="masterFolder"></param>
     /// <param name="indexFolder"></param>
+    /// <param name="relativePath"></param>
     /// <returns>False if the MasterFolder or IndexFolder cannot be found.</returns>
     public bool GetFoldersForPath(string path, out string masterFolder, out string indexFolder,
         out string relativePath)
@@ -179,8 +180,6 @@ public class MediaBackup
     ///     Gets a BackupFile representing the file from the contents Hashcode provided
     /// </summary>
     /// <param name="value">The contents Hashcode of the file to find.</param>
-    /// <param name="masterFolder"></param>
-    /// <param name="indexFolder"></param>
     /// <returns>Null if it wasn't found or null if more than 1</returns>
     public BackupFile GetBackupFileFromContentsHashcode(string value)
     {
