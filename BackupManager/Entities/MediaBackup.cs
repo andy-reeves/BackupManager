@@ -180,25 +180,23 @@ public class MediaBackup
     /// <returns>Null if it wasn't found or null if more than 1</returns>
     public BackupFile GetBackupFileFromContentsHashcode(string value)
     {
-        Utils.Trace("GetBackupFileFromContentsHashcode enter");
+        Utils.TraceIn();
 
         var count = BackupFiles.Count(a => a.ContentsHash == value);
 
         switch (count)
         {
             case 0:
-                Utils.Trace("GetBackupFileFromContentsHashcode exit1");
-                return null;
+                return Utils.TraceOut<BackupFile>("exit1");
+
             case > 1:
                 Utils.Trace($"More than 1 file with same ContentsHashcode {value}");
-                Utils.Trace("GetBackupFileFromContentsHashcode exit2");
-                return null;
+                return Utils.TraceOut<BackupFile>("exit2");
         }
 
         var file = BackupFiles.First(q => q.ContentsHash == value);
 
-        Utils.Trace("GetBackupFileFromContentsHashcode exit");
-        return file;
+        return Utils.TraceOut(file);
     }
 
     /// <summary>
@@ -208,8 +206,7 @@ public class MediaBackup
     /// <returns>Null if it wasn't found or couldn't be created maybe locked by another process</returns>
     public BackupFile GetBackupFile(string fullPath)
     {
-        Utils.Trace("GetBackupFile enter");
-        Utils.Trace($"Params: path={fullPath}");
+        Utils.TraceIn(fullPath);
 
         if (!File.Exists(fullPath) || !Utils.IsFileAccessible(fullPath)) return null;
 
@@ -230,7 +227,7 @@ public class MediaBackup
         // if this path is already added then return it
         if (indexFolderAndRelativePath.TryGetValue(hashKey, out var backupFile))
         {
-            // consider a file a.txt thats on \\nas1\assets1 in indexFolder _TV and on \\nas1\assets4 in _TV too
+            // consider a file a.txt that's on \\nas1\assets1 in indexFolder _TV and on \\nas1\assets4 in _TV too
             // this has same index folder and path but its a different file
             string hashOfContents;
 
@@ -253,8 +250,7 @@ public class MediaBackup
                 else
                 {
                     Utils.Trace("Hashes are different on the duplicate files");
-                    Utils.Trace("GetBackupFile exit error");
-                    return null;
+                    return Utils.TraceOut<BackupFile>();
                 }
             }
             else
@@ -287,8 +283,7 @@ public class MediaBackup
             // we're not case sensitive but we want it to match the casing on the master folder
             if (fullPath != backupFile.FullPath) backupFile.SetFullPath(fullPath, masterFolder, indexFolder);
 
-            Utils.Trace("GetBackupFile exit");
-            return backupFile;
+            return Utils.TraceOut(backupFile);
         }
 
         backupFile = new BackupFile(fullPath, masterFolder, indexFolder);
@@ -297,8 +292,7 @@ public class MediaBackup
 
         indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
 
-        Utils.Trace("GetBackupFile exit");
-        return backupFile;
+        return Utils.TraceOut(backupFile);
     }
 
     /// <summary>
@@ -308,25 +302,20 @@ public class MediaBackup
     /// <returns>Null is the file  was locked or an error occured</returns>
     internal bool EnsureFile(string path)
     {
-        Utils.Trace("EnsureFile enter");
+        Utils.TraceIn();
 
         var backupFile = GetBackupFile(path);
 
-        if (backupFile == null)
-        {
-            Utils.Trace("EnsureFile exit with False");
-            return false;
-        }
+        if (backupFile == null) return Utils.TraceOut(false);
 
         backupFile.Deleted = false;
         backupFile.Flag = true;
 
-        Utils.Trace("EnsureFile exit with True");
-        return true;
+        return Utils.TraceOut(true);
     }
 
     /// <summary>
-    ///     Returns the path to the parent folder of the file provided. Thats the path to the first folder after an index
+    ///     Returns the path to the parent folder of the file provided. That's the path to the first folder after an index
     ///     folder
     /// </summary>
     /// <param name="path"></param>
@@ -353,39 +342,34 @@ public class MediaBackup
     /// <returns>Null if disk is not connected</returns>
     public BackupDisk GetBackupDisk(string backupShare)
     {
-        Utils.Trace("GetBackupDisk enter");
+        Utils.TraceIn();
 
-        // try and find a disk based on the diskname only
+        // try and find a disk based on the disk name only
         // if more than 1 disk than return the first one
         var diskName = BackupDisk.GetBackupFolderName(backupShare);
 
-        if (string.IsNullOrEmpty(diskName))
-        {
-            Utils.Trace("GetBackupDisk exit with null");
-            return null;
-        }
+        if (string.IsNullOrEmpty(diskName)) return Utils.TraceOut<BackupDisk>();
 
         var backupDisk = BackupDisks.FirstOrDefault(x => x.Name == diskName);
 
         if (backupDisk != null)
         {
             backupDisk.BackupShare = backupShare;
-            Utils.Trace($"GetBackupDisk exit with {backupDisk.Name}");
-            return backupDisk;
+
+            return Utils.TraceOut(backupDisk);
         }
 
         BackupDisk disk = new(diskName, backupShare);
         BackupDisks.Add(disk);
 
-        Utils.Trace("GetBackupDisk exit new disk");
-        return disk;
+        return Utils.TraceOut(disk);
     }
 
     /// <summary>
     ///     Gets a BackupFile from the path provided. Path should include indexfolder and relativePath and not a full path
     /// </summary>
     /// <param name="path"></param>
-    /// <returns>Null if it doen't exist.</returns>
+    /// <returns>Null if it doesn't exist.</returns>
     public BackupFile GetBackupFileFromHashKey(string path)
     {
         return indexFolderAndRelativePath.TryGetValue(path, out var backupFile) ? backupFile : null;

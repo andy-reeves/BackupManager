@@ -13,6 +13,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Security.Cryptography;
@@ -110,8 +111,7 @@ public static class Utils
 #if DEBUG
     private static readonly string LogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Debug.log");
 #else
-        private static readonly string LogFile = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager.log");
+    private static readonly string LogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager.log");
 #endif
     /// <summary>
     ///     We use this to track when we sent the messages. This allows us to delay between messages
@@ -667,7 +667,7 @@ public static class Utils
 
     internal static void SendPushoverMessage(string title, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires, string message)
     {
-        Trace("SendPushoverMessage enter");
+        TraceIn();
 
         if (Config.PushoverONOFF && ((priority is PushoverPriority.Low or PushoverPriority.Lowest && Config.PushoverSendLowONOFF) ||
                                      (priority == PushoverPriority.Normal && Config.PushoverSendNormalONOFF) ||
@@ -732,7 +732,7 @@ public static class Utils
                 Log($"Exception sending Pushover message {ex}");
             }
 
-        Trace("SendPushoverMessage exit");
+        TraceOut();
     }
 
     /// <summary>
@@ -1456,6 +1456,61 @@ public static class Utils
         Trace("Speed Calculation complete");
         Trace($"DiskSpeedTest exit with {returnValue}");
         return returnValue;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    internal static string GetFullyQualifiedGetCurrentMethodName()
+    {
+        var sf = new StackTrace().GetFrame(2);
+        if (sf == null) return string.Empty;
+
+        var name = sf.GetMethod()?.Name;
+
+        if (name is "MoveNext")
+
+            // We're inside an async method
+            name = sf.GetMethod()?.ReflectedType?.Name.Split(new[] { '<', '>' }, StringSplitOptions.RemoveEmptyEntries)[0];
+
+        return $"{sf.GetMethod()?.DeclaringType?.FullName}.{name}";
+    }
+
+    internal static void TraceIn()
+    {
+        var methodName = GetFullyQualifiedGetCurrentMethodName();
+        System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} enter");
+    }
+
+    internal static void TraceIn(params object[] parameters)
+    {
+        var methodName = GetFullyQualifiedGetCurrentMethodName();
+        System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} enter");
+
+        for (var index = 0; index < parameters.Length; index++)
+        {
+            var parameter = parameters[index];
+            Trace($"param{index}={parameter}");
+        }
+    }
+
+    internal static T TraceOut<T>(T t, string text = "")
+    {
+        var methodName = GetFullyQualifiedGetCurrentMethodName();
+        System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} exit {t} {text}");
+        return t;
+    }
+
+
+    internal static void TraceOut(string text = "")
+    {
+        var methodName = GetFullyQualifiedGetCurrentMethodName();
+        System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} exit {text}");
+    }
+
+    internal static T TraceOut<T>(string text = "")
+    {
+        var methodName = GetFullyQualifiedGetCurrentMethodName();
+        System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} exit {text}");
+        return default;
     }
 
     internal static void Trace(string value)

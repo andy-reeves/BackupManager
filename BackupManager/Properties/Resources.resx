@@ -46,7 +46,7 @@
     
     mimetype: application/x-microsoft.net.object.binary.base64
     value   : The object must be serialized with 
-            : System.Serialization.Formatters.Binary.BinaryFormatter
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
     
     mimetype: application/x-microsoft.net.object.soap.base64
@@ -60,6 +60,7 @@
             : and then encoded with base64 encoding.
     -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
@@ -68,9 +69,10 @@
               <xsd:sequence>
                 <xsd:element name="value" type="xsd:string" minOccurs="0" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" />
+              <xsd:attribute name="name" use="required" type="xsd:string" />
               <xsd:attribute name="type" type="xsd:string" />
               <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="assembly">
@@ -85,9 +87,10 @@
                 <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
                 <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
               <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
               <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
@@ -109,9 +112,75 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Main_AdminTitle" xml:space="preserve">
+    <value> - Admin</value>
+  </data>
+  <data name="Main_ExceptionOccured" xml:space="preserve">
+    <value>Exception occured during application start. {0}</value>
+  </data>
+  <data name="Main_AreYouSureDelete" xml:space="preserve">
+    <value>Are you sure you want delete any extra files on the backup disk not in our list?</value>
+  </data>
+  <data name="Main_DeleteExtraTitle" xml:space="preserve">
+    <value>Delete extra files</value>
+  </data>
+  <data name="Main_RestoreFiles" xml:space="preserve">
+    <value>Are you sure you want to copy files from multiple backup disks to the new master folder location?</value>
+  </data>
+  <data name="Main_RestoreFilesTitle" xml:space="preserve">
+    <value>Restore backup files</value>
+  </data>
+  <data name="Main_RestoreFilesSelectAMasterFolder" xml:space="preserve">
+    <value>You must select a master folder that you'd files the files from backup disks restored for. This is typically the drive that is now failing</value>
+  </data>
+  <data name="Main_RestoreFilesMasterFolderToRestoreTo" xml:space="preserve">
+    <value>You must select a master folder that you'd files the files from backup copied to. This is typically a new drive that will replace the failing drive</value>
+  </data>
+  <data name="Main_Cancelling" xml:space="preserve">
+    <value>Cancelling ...</value>
+  </data>
+  <data name="Main_SetupFileWatchers_On" xml:space="preserve">
+    <value>File Watchers = ON</value>
+  </data>
+  <data name="Main_SetupFileWatchers_Off" xml:space="preserve">
+    <value>File Watchers = OFF</value>
+  </data>
+  <data name="Main_FoldersQueued" xml:space="preserve">
+    <value>There are folders to scan queued. Would you like to scan them before closing?</value>
+  </data>
+  <data name="Main_ScanFoldersTitle" xml:space="preserve">
+    <value>Scan folders</value>
+  </data>
+  <data name="Main_BackupDiskConnectCorrectDisk2" xml:space="preserve">
+    <value>Please connect backup disk {0} so we can continue restoring files. Have you connected this disk now?</value>
+  </data>
+  <data name="Main_BackupDiskConnectCorrectDisk" xml:space="preserve">
+    <value>Connect correct backup disk</value>
+  </data>
+  <data name="Main_RecalculateAllHashes" xml:space="preserve">
+    <value>Are you sure you want to recalculate the hashcodes from the master files?</value>
+  </data>
+  <data name="Main_RecalculateAllHashesTitle" xml:space="preserve">
+    <value>Recalculate Hashcodes</value>
+  </data>
+  <data name="Main_BackupDiskError" xml:space="preserve">
+    <value>There was an error checking the connected backup disk</value>
+  </data>
+  <data name="Main_BackupDiskTitle" xml:space="preserve">
+    <value>Backup disk</value>
+  </data>
+  <data name="Main_TaskWrapperException" xml:space="preserve">
+    <value>Exception occured. Cancelling operation. {0}</value>
+  </data>
+  <data name="Main_UpdateMasterFiles" xml:space="preserve">
+    <value>Are you sure you want to rebuild the master list?</value>
+  </data>
+  <data name="Main_UpdateMasterFilesTitle" xml:space="preserve">
+    <value>Rebuild master list</value>
+  </data>
 </root>

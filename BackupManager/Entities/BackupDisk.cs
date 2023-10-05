@@ -194,4 +194,9 @@ public class BackupDisk : IEquatable<BackupDisk>
     {
         return Number.GetHashCode();
     }
+
+    public override string ToString()
+    {
+        return Name;
+    }
 }

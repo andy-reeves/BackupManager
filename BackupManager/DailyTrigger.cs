@@ -27,7 +27,7 @@ public class DailyTrigger : IDisposable
     /// <param name="second">The second to trigger</param>
     public DailyTrigger(int hour, int minute = 0, int second = 0)
     {
-        Utils.Trace("DailyTrigger enter");
+        Utils.TraceIn();
 
         TriggerHour = new TimeSpan(hour, minute, second);
         CancellationToken = new CancellationTokenSource();
@@ -48,7 +48,7 @@ public class DailyTrigger : IDisposable
             }
         }, CancellationToken.Token);
 
-        Utils.Trace("DailyTrigger exit");
+        Utils.TraceOut();
     }
 
     /// <summary>
