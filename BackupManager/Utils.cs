@@ -1303,15 +1303,16 @@ public static class Utils
     }
 
     /// <summary>
-    ///     Runs a speedtest on the disk provided.
+    ///     Runs a speed test on the disk provided.
     /// </summary>
     /// <param name="pathToDiskToTest">The path to test.</param>
+    /// <param name="testIterations"></param>
     /// <param name="readSpeed">in bytes per second</param>
     /// <param name="writeSpeed">in bytes per second</param>
+    /// <param name="testFileSize"></param>
     internal static void DiskSpeedTest(string pathToDiskToTest, long testFileSize, int testIterations, out long readSpeed, out long writeSpeed)
     {
-        Trace("DiskSpeedTest enter");
-        Trace($"Params: pathToDiskToTest={pathToDiskToTest}, testFileSize={testFileSize}, testIterations={testIterations}");
+        TraceIn(pathToDiskToTest, testFileSize, testIterations);
 
         var tempPath = Path.GetTempPath();
 
@@ -1320,7 +1321,7 @@ public static class Utils
         Trace("Starting write test");
         writeSpeed = DiskSpeedTest(tempPath, pathToDiskToTest, testFileSize, testIterations);
 
-        Trace("DiskSpeedTest exit");
+        TraceOut();
     }
 
     /// <summary>
@@ -1332,7 +1333,7 @@ public static class Utils
     [SupportedOSPlatform("windows")]
     internal static bool StopService(string serviceName, int timeoutMilliseconds)
     {
-        Trace("StopService enter");
+        TraceIn();
 
         ServiceController service = new(serviceName);
 
@@ -1346,11 +1347,10 @@ public static class Utils
         }
         catch
         {
-            return false;
+            return TraceOut(false);
         }
 
-        Trace("StopService exit");
-        return true;
+        return TraceOut(true);
     }
 
     /// <summary>
@@ -1362,7 +1362,7 @@ public static class Utils
     [SupportedOSPlatform("windows")]
     internal static bool RestartService(string serviceName, int timeoutMilliseconds)
     {
-        Trace("RestartService enter");
+        TraceIn();
 
         ServiceController service = new(serviceName);
 
@@ -1387,11 +1387,10 @@ public static class Utils
         }
         catch
         {
-            return false;
+            return TraceOut(false);
         }
 
-        Trace("RestartService exit");
-        return true;
+        return TraceOut(true);
     }
 
     /// <summary>
@@ -1403,7 +1402,7 @@ public static class Utils
     /// <returns>The bytes read/written in 1s</returns>
     internal static long DiskSpeedTest(string sourcePath, string destinationPath, long testFileSize, int testIterations)
     {
-        Trace("DiskSpeedTest enter");
+        TraceIn();
 
         const long randomStringSize = 500_000;
         const int streamWriteBufferSize = 20 * BytesInOneMegabyte;
@@ -1449,12 +1448,10 @@ public static class Utils
 
         // maybe interval.TotalSeconds is so small sometimes that we get an error
         // may need to check for TotalSeconds <0.0.17 and exit accordingly without the division attempt
-        Trace("Iterations complete");
         Trace($"totalPerf: {totalPerf}, testIterations: {testIterations}");
         var returnValue = Convert.ToInt64(totalPerf / testIterations);
-        Trace("Speed Calculation complete");
-        Trace($"DiskSpeedTest exit with {returnValue}");
-        return returnValue;
+
+        return TraceOut(returnValue);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
