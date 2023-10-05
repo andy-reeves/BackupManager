@@ -67,6 +67,14 @@ public class UtilsUnitTest
         var b = new[] { 1, 2, 3 };
         var result7 = Utils.TraceOut(b, "Test");
         Assert.True(result7 == b);
+
+        a = Array.Empty<string>();
+        var result8 = Utils.TraceOut(a, "Test");
+        Assert.True(result8 == a);
+
+        a = Array.Empty<string>();
+        result8 = Utils.TraceOut(a);
+        Assert.True(result8 == a);
     }
 }
 #endif
