@@ -627,8 +627,7 @@ public static class Utils
     /// </returns>
     internal static string GetShortMd5HashFromFile(string path)
     {
-        Trace("GetShortMd5HashFromFile enter");
-        Trace($"Params: path={path}");
+        TraceIn(path);
 
         if (string.IsNullOrEmpty(path) || !File.Exists(path)) return null;
 
@@ -657,7 +656,7 @@ public static class Utils
             startBlock = GetLocalFileByteArray(path, 0, size);
         }
 
-        return CreateHashForByteArray(startBlock, middleBlock, endBlock);
+        return TraceOut(CreateHashForByteArray(startBlock, middleBlock, endBlock));
     }
 
     internal static void SendPushoverMessage(string title, PushoverPriority priority, string message)
@@ -1406,8 +1405,8 @@ public static class Utils
     {
         Trace("DiskSpeedTest enter");
 
-        long randomStringSize = 500_000;
-        var streamWriteBufferSize = 20 * BytesInOneMegabyte;
+        const long randomStringSize = 500_000;
+        const int streamWriteBufferSize = 20 * BytesInOneMegabyte;
 
         var randomText = RandomString(randomStringSize);
 
@@ -1499,18 +1498,18 @@ public static class Utils
         return t;
     }
 
-
-    internal static void TraceOut(string text = "")
-    {
-        var methodName = GetFullyQualifiedGetCurrentMethodName();
-        System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} exit {text}");
-    }
-
     internal static T TraceOut<T>(string text = "")
     {
         var methodName = GetFullyQualifiedGetCurrentMethodName();
         System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} exit {text}");
         return default;
+    }
+
+    internal static string TraceOut(string value = "")
+    {
+        var methodName = GetFullyQualifiedGetCurrentMethodName();
+        System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} exit {value}");
+        return value;
     }
 
     internal static void Trace(string value)
@@ -1538,7 +1537,7 @@ public static class Utils
 
     private static void DeleteEmptyDirectories(string directory, List<string> list, string rootDirectory)
     {
-        Trace("DeleteEmptyDirectories enter");
+        TraceIn(directory);
 
         try
         {
@@ -1568,7 +1567,7 @@ public static class Utils
         {
         }
 
-        Trace("DeleteEmptyDirectories exit");
+        TraceOut();
     }
 
     /// <summary>
@@ -1579,7 +1578,7 @@ public static class Utils
     /// <returns>An array of the directory paths that were removed</returns>
     internal static string[] DeleteEmptyDirectories(string directory)
     {
-        Trace("DeleteEmptyDirectories enter");
+        TraceIn();
 
         if (string.IsNullOrEmpty(directory)) throw new ArgumentException("Directory is a null reference or an empty string", nameof(directory));
 
@@ -1587,8 +1586,7 @@ public static class Utils
 
         DeleteEmptyDirectories(directory, listOfDirectoriesDeleted, directory);
 
-        Trace("DeleteEmptyDirectories exit");
-        return listOfDirectoriesDeleted.ToArray();
+        return TraceOut(listOfDirectoriesDeleted.ToArray());
     }
 
     /// <summary>

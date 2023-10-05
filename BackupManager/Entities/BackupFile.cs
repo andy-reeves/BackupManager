@@ -69,6 +69,7 @@ public class BackupFile : IEquatable<BackupFile>
             // Empty files are allowed so empty contentsHash is also fine
             if (contentsHash == null) UpdateContentsHash();
 
+            Debug.Assert(contentsHash != null);
             return contentsHash;
         }
 
@@ -239,7 +240,7 @@ public class BackupFile : IEquatable<BackupFile>
     {
         if (newContentsHash == Utils.ZeroByteHash) throw new ApplicationException("Zerobyte Hashcode");
 
-        ContentsHash = newContentsHash;
+        contentsHash = newContentsHash;
     }
 
     /// <summary>

@@ -73,7 +73,7 @@ public partial class Main : Form
 
             backupDiskTextBox.Text = "\\\\nas1\\assets1\\_Test\\BackupDisks\\backup 1001 parent";
 #else
-                backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
+            backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
 #endif
 
             var mediaBackupXml = ConfigurationManager.AppSettings.Get("MediaBackupXml");
@@ -100,22 +100,18 @@ public partial class Main : Form
             masterFoldersComboBox.Items.AddRange(masterFoldersArray);
             restoreMasterFolderComboBox.Items.AddRange(masterFoldersArray);
 
-            Utils.Trace($"BackupDisks.Count = {mediaBackup.BackupDisks.Count}");
 
             foreach (var disk in mediaBackup.BackupDisks)
             {
-                Utils.Trace($"disk.Name = {disk.Name}");
                 listFilesComboBox.Items.Add(disk.Name);
             }
 
-            Utils.Trace($"BackupDisks.Count = {mediaBackup.BackupDisks.Count}");
 
             pushoverLowCheckBox.Checked = mediaBackup.Config.PushoverSendLowONOFF;
             pushoverNormalCheckBox.Checked = mediaBackup.Config.PushoverSendNormalONOFF;
             pushoverHighCheckBox.Checked = mediaBackup.Config.PushoverSendHighONOFF;
             pushoverEmergencyCheckBox.Checked = mediaBackup.Config.PushoverSendEmergencyONOFF;
 
-            Utils.Trace($"Monitors.Count = {mediaBackup.Config.Monitors.Count}");
 
             foreach (var monitor in mediaBackup.Config.Monitors)
             {
@@ -142,7 +138,6 @@ public partial class Main : Form
 #endif
             }
 
-            var bob = mediaBackup.GetBackupDisk("\\a\a");
 
             UpdateCurrentBackupDiskInfo(mediaBackup.GetBackupDisk(backupDiskTextBox.Text));
 
@@ -160,7 +155,7 @@ public partial class Main : Form
 
             SetupFileWatchers();
 
-            Utils.Trace("Main exit");
+            Utils.TraceOut();
         }
         catch (Exception ex)
         {
@@ -1029,7 +1024,7 @@ public partial class Main : Form
 
     private void ListFilesMarkedAsDeletedButton_Click(object sender, EventArgs e)
     {
-        Utils.Trace("ListFilesMarkedAsDeletedButton_Click enter");
+        Utils.TraceIn();
 
         var files = mediaBackup.GetBackupFilesMarkedAsDeleted();
 
@@ -1042,18 +1037,18 @@ public partial class Main : Form
             Utils.Log($"{file.FullPath} at {Utils.FormatSize(file.Length)} on {file.Disk}");
         }
 
-        Utils.Log($"{backupFiles.Count()} files at {Utils.FormatSize(backupFiles.Sum(p => p.Length))}");
+        Utils.Log($"{backupFiles.Length} files at {Utils.FormatSize(backupFiles.Sum(p => p.Length))}");
 
-        Utils.Trace("ListFilesMarkedAsDeletedButton_Click exit");
+        Utils.TraceOut();
     }
 
     private void ScheduledBackupRunNowButton_Click(object sender, EventArgs e)
     {
-        Utils.Trace("ScheduledBackupRunNowButton_Click enter");
+        Utils.TraceIn();
 
         TaskWrapper(ScheduledBackupAsync);
 
-        Utils.Trace("ScheduledBackupRunNowButton_Click exit");
+        Utils.TraceOut();
     }
 
     private void UpdateUI_Tick(object sender, EventArgs e)
