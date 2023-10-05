@@ -163,6 +163,12 @@ public partial class Main : Form
         }
     }
 
+    public sealed override string Text
+    {
+        get => base.Text;
+        set => base.Text = value;
+    }
+
     private static void FileSystemWatcher_OnSomethingHappened(object sender, FileSystemEventArgs e)
     {
         Utils.Trace("FileSystemWatcher_OnSomethingHappened enter");
