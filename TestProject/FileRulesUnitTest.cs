@@ -4,6 +4,8 @@
 //  </copyright>
 //  --------------------------------------------------------------------------------------------------------------------
 
+#if DEBUG
+
 using BackupManager;
 using BackupManager.Entities;
 using BackupManager.Extensions;
@@ -16,15 +18,13 @@ public class FileRulesUnitTest
 
     static FileRulesUnitTest()
     {
-        var localMediaXml = "..\\BackupManager\\MediaBackup.xml";
-        MediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)), localMediaXml));
+        MediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)), "..\\BackupManager\\MediaBackup.xml"));
     }
 
     [Fact]
     public void FileRuleTests()
     {
-        var testsFromFile =
-            File.ReadAllText(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)), "FileRuleTests.txt"));
+        var testsFromFile = File.ReadAllText(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)), "FileRuleTests.txt"));
 
         var lines = testsFromFile.Split('\n');
 
@@ -32,7 +32,10 @@ public class FileRulesUnitTest
         {
             var cols = line.Split('|');
 
-            for (var i = 0; i < cols.Length; i++) cols[i] = cols[i].TrimStart(' ', '"').TrimEnd(' ', '"', '\r', '\n');
+            for (var i = 0; i < cols.Length; i++)
+            {
+                cols[i] = cols[i].TrimStart(' ', '"').TrimEnd(' ', '"', '\r', '\n');
+            }
 
             if (cols[0].StartsWith("#") || cols.Length != 4) continue;
 
@@ -55,11 +58,10 @@ public class FileRulesUnitTest
             var regEx = testOrDiscovery.StartsWith("T") ? rule.FileTestRegEx : rule.FileDiscoveryRegEx;
 
             if (expectedResult)
-                Assert.True(testPath.IsMatch(regEx),
-                    $"Test {testNumber} of Rule {ruleNumber} {rule.Message} for {testPath}");
+                Assert.True(testPath.IsMatch(regEx), $"Test {testNumber} of Rule {ruleNumber} {rule.Message} for {testPath}");
             else
-                Assert.False(testPath.IsMatch(regEx),
-                    $"Test {testNumber} of Rule {ruleNumber} {rule.Message} for {testPath}");
+                Assert.False(testPath.IsMatch(regEx), $"Test {testNumber} of Rule {ruleNumber} {rule.Message} for {testPath}");
         }
     }
 }
+#endif

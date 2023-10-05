@@ -143,19 +143,16 @@ public class BackupDisk : IEquatable<BackupDisk>
         if (!sharePathDirectoryInfo.Exists) return null;
 
         var directoriesInRootFolder = sharePathDirectoryInfo.GetDirectories()
-            .Where(file =>
-                ((file.Attributes & FileAttributes.Hidden) == 0) &
-                ((file.Attributes & FileAttributes.System) == 0));
+            .Where(file => ((file.Attributes & FileAttributes.Hidden) == 0) & ((file.Attributes & FileAttributes.System) == 0));
 
         // In here there should be 1 directory starting with 'backup '
         var inRootFolder = directoriesInRootFolder as DirectoryInfo[] ?? directoriesInRootFolder.ToArray();
+
         if (inRootFolder.Length != 1) return null;
 
         var firstDirectory = inRootFolder.Single();
 
-        return !firstDirectory.Name.StartsWith("backup ", StringComparison.CurrentCultureIgnoreCase)
-            ? null
-            : firstDirectory.Name;
+        return !firstDirectory.Name.StartsWith("backup ", StringComparison.CurrentCultureIgnoreCase) ? null : firstDirectory.Name;
     }
 
     /// <summary>

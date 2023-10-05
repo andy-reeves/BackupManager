@@ -4,23 +4,18 @@
 //  </copyright>
 //  --------------------------------------------------------------------------------------------------------------------
 
-namespace BackupManager.Extensions
-{
-    using System;
-    using System.Windows.Forms;
+using System;
+using System.Windows.Forms;
 
-    public static class ControlExtensions
+namespace BackupManager.Extensions;
+
+public static class ControlExtensions
+{
+    public static void Invoke<T>(this T c, Action<T> action) where T : Control
     {
-        public static void Invoke<T>(this T c, Action<T> action) where T : Control
-        {
-            if (c.InvokeRequired)
-            {
-                _ = c.Invoke(new Action<T, Action<T>>(Invoke), c, action);
-            }
-            else
-            {
-                action(c);
-            }
-        }
+        if (c.InvokeRequired)
+            _ = c.Invoke(new Action<T, Action<T>>(Invoke), c, action);
+        else
+            action(c);
     }
 }

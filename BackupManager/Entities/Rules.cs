@@ -4,31 +4,30 @@
 //  </copyright>
 //  --------------------------------------------------------------------------------------------------------------------
 
-namespace BackupManager.Entities
+using System;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Xml.Serialization;
+
+namespace BackupManager.Entities;
+
+public class Rules
 {
-    using System;
-    using System.Collections.ObjectModel;
-    using System.IO;
-    using System.Xml.Serialization;
+    [XmlArrayItem("FileRule")] public Collection<FileRule> FileRules { get; set; }
 
-    public class Rules
+    public static Rules Load(string path)
     {
-        [XmlArrayItem("FileRule")] public Collection<FileRule> FileRules { get; set; }
-
-        public static Rules Load(string path)
+        try
         {
-            try
-            {
-                XmlSerializer serializer = new(typeof(Rules));
+            XmlSerializer serializer = new(typeof(Rules));
 
-                using FileStream stream = new(path, FileMode.Open, FileAccess.Read);
-                return serializer.Deserialize(stream) as Rules;
-            }
+            using FileStream stream = new(path, FileMode.Open, FileAccess.Read);
+            return serializer.Deserialize(stream) as Rules;
+        }
 
-            catch (InvalidOperationException ex)
-            {
-                throw new ApplicationException($"Unable to load Rules.xml {ex}");
-            }
+        catch (InvalidOperationException ex)
+        {
+            throw new ApplicationException($"Unable to load Rules.xml {ex}");
         }
     }
 }

@@ -183,10 +183,13 @@ public class Config
             }
 
             var directoryName = new FileInfo(path).DirectoryName;
+
             if (directoryName == null) return config;
+
             var rules = Rules.Load(Path.Combine(directoryName, "Rules.xml"));
 
             if (rules == null) return config;
+
             if (config != null) config.FileRules = rules.FileRules;
 
             return config;
@@ -219,18 +222,21 @@ public class Config
         else
         {
             foreach (var property in properties)
-                if (property.PropertyType == typeof(Collection<ProcessServiceMonitor>)
-                    || property.PropertyType == typeof(Collection<FileRule>)
-                    || property.PropertyType == typeof(List<DateTime>)
-                    || property.PropertyType == typeof(Collection<string>)
-                    || property.PropertyType == typeof(Collection<SymbolicLink>)
-                   )
+            {
+                if (property.PropertyType == typeof(Collection<ProcessServiceMonitor>) || property.PropertyType == typeof(Collection<FileRule>) ||
+                    property.PropertyType == typeof(List<DateTime>) || property.PropertyType == typeof(Collection<string>) ||
+                    property.PropertyType == typeof(Collection<SymbolicLink>))
                 {
                     Utils.Log(BackupAction.General, $"{property.Name}:");
 
                     var propertyValues = (ICollection)property.GetValue(obj);
+
                     if (propertyValues == null) continue;
-                    foreach (var propertyValue in propertyValues) LogPropertiesForType(propertyValue);
+
+                    foreach (var propertyValue in propertyValues)
+                    {
+                        LogPropertiesForType(propertyValue);
+                    }
 
                     if (propertyValues.Count == 0) Utils.Log(BackupAction.General, "<none>");
                 }
@@ -238,17 +244,15 @@ public class Config
                 {
                     if (property.PropertyType.IsGenericType)
                     {
-                        Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
-                            $"Unknown Config parameter type detected: {property.Name}");
+                        Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, $"Unknown Config parameter type detected: {property.Name}");
                     }
                     else
                     {
-                        parameterText = myType.Name == "String"
-                            ? $"{obj}\n"
-                            : $"{myType.Name}.{property.Name} : {property.GetValue(obj)}\n";
+                        parameterText = myType.Name == "String" ? $"{obj}\n" : $"{myType.Name}.{property.Name} : {property.GetValue(obj)}\n";
                         Utils.Log(BackupAction.General, parameterText);
                     }
                 }
+            }
         }
     }
 }

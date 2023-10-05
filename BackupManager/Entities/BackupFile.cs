@@ -72,10 +72,7 @@ public class BackupFile : IEquatable<BackupFile>
             return contentsHash;
         }
 
-        set
-        {
-            if (value != contentsHash) contentsHash = value;
-        }
+        set => contentsHash = value;
     }
 
     /// <summary>
@@ -95,6 +92,7 @@ public class BackupFile : IEquatable<BackupFile>
     /// </summary>
     [XmlIgnore]
     public string FullPath =>
+
         // always calculate the FullPath in case the MasterFolder, IndexFolder or RelativePath properties have been changed.
         Path.Combine(MasterFolder, IndexFolder, RelativePath);
 
@@ -229,10 +227,8 @@ public class BackupFile : IEquatable<BackupFile>
         var combinedPath = Path.Combine(masterFolder, indexFolder);
 
         return !fullPath.StartsWith(combinedPath)
-            ? throw new ArgumentException("The fullPath must start with the masterFolder and indexFolder",
-                nameof(fullPath))
-            : fullPath.SubstringAfter(combinedPath, StringComparison.CurrentCultureIgnoreCase)
-                .TrimStart(new[] { '\\' });
+            ? throw new ArgumentException("The fullPath must start with the masterFolder and indexFolder", nameof(fullPath))
+            : fullPath.SubstringAfter(combinedPath, StringComparison.CurrentCultureIgnoreCase).TrimStart(new[] { '\\' });
     }
 
     /// <summary>
@@ -292,17 +288,16 @@ public class BackupFile : IEquatable<BackupFile>
 
         var hashFromSourceFile = Utils.GetShortMd5HashFromFile(FullPath);
 
-        if (hashFromSourceFile == Utils.ZeroByteHash)
-            throw new ApplicationException($"ERROR: {FullPath} has zerobyte hashcode");
+        if (hashFromSourceFile == Utils.ZeroByteHash) throw new ApplicationException($"ERROR: {FullPath} has zerobyte hashcode");
 
         ContentsHash = hashFromSourceFile;
 
         var hashFromBackupDiskFile = Utils.GetShortMd5HashFromFile(pathToBackupDiskFile);
 
-        if (hashFromBackupDiskFile == Utils.ZeroByteHash)
-            throw new ApplicationException($"ERROR: {hashFromBackupDiskFile} has zerobyte hashcode");
+        if (hashFromBackupDiskFile == Utils.ZeroByteHash) throw new ApplicationException($"ERROR: {hashFromBackupDiskFile} has zerobyte hashcode");
 
         if (hashFromBackupDiskFile != hashFromSourceFile)
+
             // Hashes are now different on source and backup
             return false;
 

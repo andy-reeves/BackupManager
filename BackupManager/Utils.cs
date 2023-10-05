@@ -33,9 +33,7 @@ public static class Utils
 {
     [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    internal static extern bool GetDiskFreeSpaceEx(string lpDirectoryName,
-        out long lpFreeBytesAvailable,
-        out long lpTotalNumberOfBytes,
+    internal static extern bool GetDiskFreeSpaceEx(string lpDirectoryName, out long lpFreeBytesAvailable, out long lpTotalNumberOfBytes,
         out long lpTotalNumberOfFreeBytes);
 
     #region Constants
@@ -110,8 +108,7 @@ public static class Utils
     private static readonly MD5 Md5 = MD5.Create();
 
 #if DEBUG
-    private static readonly string LogFile = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Debug.log");
+    private static readonly string LogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Debug.log");
 #else
         private static readonly string LogFile = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager.log");
@@ -140,17 +137,18 @@ public static class Utils
 #if DEBUG
         suffix = "_Debug";
 #endif
-        var destLogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-            "BackupManager_Backups", $"BackupManager{suffix}_{timeLog}.log");
+        var destLogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups",
+            $"BackupManager{suffix}_{timeLog}.log");
 
         if (File.Exists(LogFile)) FileMove(LogFile, destLogFile);
 
-        var traceFiles = GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-            "*BackupManager_Trace.log", SearchOption.TopDirectoryOnly);
+        var traceFiles = GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "*BackupManager_Trace.log", SearchOption.TopDirectoryOnly);
+
         foreach (var file in traceFiles)
         {
-            var destfile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                "BackupManager_Backups", $"{new FileInfo(file).Name}_{timeLog}.log");
+            var destfile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups",
+                $"{new FileInfo(file).Name}_{timeLog}.log");
+
             try
             {
                 FileMove(file, destfile);
@@ -177,6 +175,7 @@ public static class Utils
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             return new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
+
         //for mac and linux
         return true;
     }
@@ -266,8 +265,7 @@ public static class Utils
     /// </returns>
     internal static bool AnyFlagSet(FileAttributes value, FileAttributes flagsToCheckFor)
     {
-        return flagsToCheckFor != 0
-               && Enum.GetValues(typeof(FileAttributes)).Cast<Enum>().Where(flagsToCheckFor.HasFlag).Any(value.HasFlag);
+        return flagsToCheckFor != 0 && Enum.GetValues(typeof(FileAttributes)).Cast<Enum>().Where(flagsToCheckFor.HasFlag).Any(value.HasFlag);
     }
 
     /// <summary>
@@ -311,28 +309,16 @@ public static class Utils
     /// <returns>
     ///     A String of the hash.
     /// </returns>
-    internal static string CreateHashForByteArray(
-        byte[] firstByteArray,
-        byte[] secondByteArray,
-        byte[] thirdByteArray)
+    internal static string CreateHashForByteArray(byte[] firstByteArray, byte[] secondByteArray, byte[] thirdByteArray)
     {
-        var byteArrayToHash = secondByteArray == null && thirdByteArray == null
-            ? new byte[firstByteArray.Length]
-            : thirdByteArray == null
-                ? new byte[firstByteArray.Length + secondByteArray.Length]
-                : new byte[firstByteArray.Length + secondByteArray.Length + thirdByteArray.Length];
+        var byteArrayToHash = secondByteArray == null && thirdByteArray == null ? new byte[firstByteArray.Length] :
+            thirdByteArray == null ? new byte[firstByteArray.Length + secondByteArray.Length] :
+            new byte[firstByteArray.Length + secondByteArray.Length + thirdByteArray.Length];
         Buffer.BlockCopy(firstByteArray, 0, byteArrayToHash, 0, firstByteArray.Length);
 
-        if (secondByteArray != null)
-            Buffer.BlockCopy(secondByteArray, 0, byteArrayToHash, secondByteArray.Length, secondByteArray.Length);
+        if (secondByteArray != null) Buffer.BlockCopy(secondByteArray, 0, byteArrayToHash, secondByteArray.Length, secondByteArray.Length);
 
-        if (thirdByteArray != null)
-            Buffer.BlockCopy(
-                thirdByteArray,
-                0,
-                byteArrayToHash,
-                firstByteArray.Length + secondByteArray.Length,
-                thirdByteArray.Length);
+        if (thirdByteArray != null) Buffer.BlockCopy(thirdByteArray, 0, byteArrayToHash, firstByteArray.Length + secondByteArray.Length, thirdByteArray.Length);
 
         return ByteArrayToString(Md5.ComputeHash(byteArrayToHash));
     }
@@ -396,11 +382,7 @@ public static class Utils
     /// <returns>
     ///     The <see cref="string[]" />.
     /// </returns>
-    internal static string[] GetFiles(
-        string path,
-        string filters,
-        SearchOption searchOption,
-        FileAttributes directoryAttributesToIgnore)
+    internal static string[] GetFiles(string path, string filters, SearchOption searchOption, FileAttributes directoryAttributesToIgnore)
     {
         return GetFiles(path, filters, searchOption, directoryAttributesToIgnore, 0);
     }
@@ -446,11 +428,7 @@ public static class Utils
     /// <returns>
     ///     The <see cref="string[]" />.
     /// </returns>
-    internal static string[] GetFiles(
-        string path,
-        string filters,
-        SearchOption searchOption,
-        FileAttributes directoryAttributesToIgnore,
+    internal static string[] GetFiles(string path, string filters, SearchOption searchOption, FileAttributes directoryAttributesToIgnore,
         FileAttributes fileAttributesToIgnore)
     {
         Trace("GetFiles enter");
@@ -471,10 +449,7 @@ public static class Utils
             return Array.Empty<string>();
         }
 
-        var include =
-            from filter in filters.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-            where filter.Trim().HasValue()
-            select filter.Trim();
+        var include = from filter in filters.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries) where filter.Trim().HasValue() select filter.Trim();
 
         var exclude = from filter in include where filter.Contains('!') select filter;
 
@@ -483,11 +458,7 @@ public static class Utils
         if (!include.Any()) include = new[] { "*" };
 
         var excludeFilters = from filter in exclude
-            let replace =
-                filter.Replace("!", string.Empty)
-                    .Replace(".", @"\.")
-                    .Replace("*", ".*")
-                    .Replace("?", ".")
+            let replace = filter.Replace("!", string.Empty).Replace(".", @"\.").Replace("*", ".*").Replace("?", ".")
             select $"^{replace}$";
 
         Regex excludeRegex = new(string.Join("|", excludeFilters.ToArray()), RegexOptions.IgnoreCase);
@@ -502,23 +473,19 @@ public static class Utils
             var dir = pathsToSearch.Dequeue();
 
             if (searchOption == SearchOption.AllDirectories)
-                foreach (var subDir in
-                         Directory.GetDirectories(dir)
-                             .Where(
-                                 subDir =>
-                                     !AnyFlagSet(new DirectoryInfo(subDir).Attributes, directoryAttributesToIgnore)))
+                foreach (var subDir in Directory.GetDirectories(dir)
+                             .Where(subDir => !AnyFlagSet(new DirectoryInfo(subDir).Attributes, directoryAttributesToIgnore)))
+                {
                     pathsToSearch.Enqueue(subDir);
+                }
 
             foreach (var filter in include)
             {
                 var allfiles = Directory.GetFiles(dir, filter, SearchOption.TopDirectoryOnly);
 
-                var collection = exclude.Any()
-                    ? allfiles.Where(p => !excludeRegex.Match(p).Success)
-                    : allfiles;
+                var collection = exclude.Any() ? allfiles.Where(p => !excludeRegex.Match(p).Success) : allfiles;
 
-                foundFiles.AddRange(
-                    collection.Where(p => !AnyFlagSet(new FileInfo(p).Attributes, fileAttributesToIgnore)));
+                foundFiles.AddRange(collection.Where(p => !AnyFlagSet(new FileInfo(p).Attributes, fileAttributesToIgnore)));
             }
         }
 
@@ -564,8 +531,11 @@ public static class Utils
         int count;
         var sum = 0;
         var length = Convert.ToInt32(byteCountToReturn);
-        while ((count = fileStream.Read(buffer, sum, length - sum)) >
-               0) sum += count; // sum is a buffer offset for next reading
+
+        while ((count = fileStream.Read(buffer, sum, length - sum)) > 0)
+        {
+            sum += count; // sum is a buffer offset for next reading
+        }
 
         if (sum < byteCountToReturn)
         {
@@ -695,17 +665,14 @@ public static class Utils
         SendPushoverMessage(title, priority, PushoverRetry.None, PushoverExpires.Immediately, message);
     }
 
-    internal static void SendPushoverMessage(string title, PushoverPriority priority, PushoverRetry retry,
-        PushoverExpires expires, string message)
+    internal static void SendPushoverMessage(string title, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires, string message)
     {
         Trace("SendPushoverMessage enter");
 
-        if (Config.PushoverONOFF &&
-            (((priority == PushoverPriority.Low || priority == PushoverPriority.Lowest) &&
-              Config.PushoverSendLowONOFF) ||
-             (priority == PushoverPriority.Normal && Config.PushoverSendNormalONOFF) ||
-             (priority == PushoverPriority.High && Config.PushoverSendHighONOFF) ||
-             (priority == PushoverPriority.Emergency && Config.PushoverSendEmergencyONOFF)))
+        if (Config.PushoverONOFF && ((priority is PushoverPriority.Low or PushoverPriority.Lowest && Config.PushoverSendLowONOFF) ||
+                                     (priority == PushoverPriority.Normal && Config.PushoverSendNormalONOFF) ||
+                                     (priority == PushoverPriority.High && Config.PushoverSendHighONOFF) ||
+                                     (priority == PushoverPriority.Emergency && Config.PushoverSendEmergencyONOFF)))
             try
             {
                 Dictionary<string, string> parameters = new()
@@ -724,15 +691,15 @@ public static class Utils
                     if (expires == PushoverExpires.Immediately) expires = PushoverExpires.FiveMinutes;
                 }
 
-                if (retry != PushoverRetry.None)
-                    parameters.Add("retry", Convert.ChangeType(retry, retry.GetTypeCode()).ToString());
+                if (retry != PushoverRetry.None) parameters.Add("retry", Convert.ChangeType(retry, retry.GetTypeCode()).ToString());
 
-                if (expires != PushoverExpires.Immediately)
-                    parameters.Add("expire", Convert.ChangeType(expires, expires.GetTypeCode()).ToString());
+                if (expires != PushoverExpires.Immediately) parameters.Add("expire", Convert.ChangeType(expires, expires.GetTypeCode()).ToString());
 
                 // ensures there's a 1s gap between messages
                 while (DateTime.UtcNow < timeLastPushoverMessageSent.AddMilliseconds(TimeDelayOnPushoverMessages))
+                {
                     Task.Delay(TimeDelayOnPushoverMessages / 10).Wait();
+                }
 
                 using (FormUrlEncodedContent postContent = new(parameters))
                 {
@@ -743,8 +710,8 @@ public static class Utils
 
                     _ = response.EnsureSuccessStatusCode(); // Throw if httpcode is an error
                     var applicationLimitRemaining = 0;
-                    if (response.Headers.TryGetValues("X-Limit-App-Remaining", out var values))
-                        applicationLimitRemaining = Convert.ToInt32(values.First());
+
+                    if (response.Headers.TryGetValues("X-Limit-App-Remaining", out var values)) applicationLimitRemaining = Convert.ToInt32(values.First());
 
                     Trace($"Pushover messages remaining: {applicationLimitRemaining}");
 
@@ -752,8 +719,7 @@ public static class Utils
                         if (!alreadySendingPushoverMessage)
                         {
                             alreadySendingPushoverMessage = true;
-                            SendPushoverMessage("Message Limit Warning", PushoverPriority.High,
-                                $"Application Limit Remaining is: {applicationLimitRemaining}");
+                            SendPushoverMessage("Message Limit Warning", PushoverPriority.High, $"Application Limit Remaining is: {applicationLimitRemaining}");
                             alreadySendingPushoverMessage = false;
                         }
                 }
@@ -779,12 +745,14 @@ public static class Utils
     /// <exception cref="ArgumentException"></exception>
     internal static bool KillProcesses(string processName)
     {
-        var processes = Process.GetProcesses().Where(p =>
-            p.ProcessName.StartsWith(processName, StringComparison.CurrentCultureIgnoreCase));
+        var processes = Process.GetProcesses().Where(p => p.ProcessName.StartsWith(processName, StringComparison.CurrentCultureIgnoreCase));
 
         try
         {
-            foreach (var process in processes) process.Kill();
+            foreach (var process in processes)
+            {
+                process.Kill();
+            }
         }
 
         catch (Exception)
@@ -799,7 +767,6 @@ public static class Utils
     ///     Returns True if the Url returns a 200 response with a timeout of 30 seconds
     /// </summary>
     /// <param name="url">The url to check</param>
-    /// <param name="timeout">Timeout in seconds</param>
     /// <returns>True if success code returned</returns>
     internal static bool UrlExists(string url)
     {
@@ -815,12 +782,10 @@ public static class Utils
     internal static bool UrlExists(string url, int timeout)
     {
         bool returnValue;
+
         try
         {
-            HttpClient client = new()
-            {
-                Timeout = TimeSpan.FromMilliseconds(timeout)
-            };
+            HttpClient client = new() { Timeout = TimeSpan.FromMilliseconds(timeout) };
             var task = Task.Run(() => client.GetAsync(url));
             task.Wait();
             var response = task.Result;
@@ -836,9 +801,10 @@ public static class Utils
 
     /// <summary>
     ///     Returns True if the host can be connected to on that port
-    ///     <param name="host">The host to check</param>
-    ///     <param name="port">The port to connect on</param>
-    ///     <returns>True if the connection is made</returns>
+    /// </summary>
+    /// <param name="host">The host to check</param>
+    /// <param name="port">The port to connect on</param>
+    /// <returns>True if the connection is made</returns>
     internal static bool ConnectionExists(string host, int port)
     {
         try
@@ -859,15 +825,17 @@ public static class Utils
     {
         if (lengthOfLargestBackupActionEnumNames == 0)
             foreach (var enumName in Enum.GetNames(typeof(BackupAction)))
-                if (enumName.Length > lengthOfLargestBackupActionEnumNames)
-                    lengthOfLargestBackupActionEnumNames = enumName.Length;
+            {
+                if (enumName.Length > lengthOfLargestBackupActionEnumNames) lengthOfLargestBackupActionEnumNames = enumName.Length;
+            }
 
         var actionText = Enum.GetName(typeof(BackupAction), action) + " ";
         var textArrayToWrite = message.Split('\n');
 
         foreach (var line in textArrayToWrite)
-            if (line.HasValue())
-                Log(actionText.PadRight(lengthOfLargestBackupActionEnumNames + 1) + line);
+        {
+            if (line.HasValue()) Log(actionText.PadRight(lengthOfLargestBackupActionEnumNames + 1) + line);
+        }
     }
 
     /// <summary>
@@ -879,19 +847,21 @@ public static class Utils
         var textArrayToWrite = text.Split('\n');
 
         foreach (var line in textArrayToWrite)
-            if (line.HasValue())
+        {
+            if (!line.HasValue()) continue;
+
+            var textToWrite = $"{DateTime.Now:dd-MM-yy HH:mm:ss} {line}";
+
+            Console.WriteLine(textToWrite);
+
+            if (LogFile.HasValue())
             {
-                var textToWrite = $"{DateTime.Now:dd-MM-yy HH:mm:ss} {line}";
-
-                Console.WriteLine(textToWrite);
-                if (LogFile.HasValue())
-                {
-                    EnsureDirectories(LogFile);
-                    File.AppendAllLines(LogFile, new[] { textToWrite });
-                }
-
-                Trace(text);
+                EnsureDirectories(LogFile);
+                File.AppendAllLines(LogFile, new[] { textToWrite });
             }
+
+            Trace(text);
+        }
     }
 
     /// <summary>
@@ -915,9 +885,7 @@ public static class Utils
         Log(backupAction, text);
 
         if (Config.PushoverAppToken.HasValue() && Config.PushoverAppToken != "InsertYourPushoverAppTokenHere")
-            SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction),
-                priority,
-                text);
+            SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, text);
     }
 
     /// <summary>
@@ -928,17 +896,11 @@ public static class Utils
     /// <param name="retry"></param>
     /// <param name="expires"></param>
     /// <param name="text"></param>
-    internal static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, PushoverRetry retry,
-        PushoverExpires expires, string text)
+    internal static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires, string text)
     {
         Log(backupAction, text);
 
-        if (Config.PushoverAppToken.HasValue())
-            SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction),
-                priority,
-                retry,
-                expires,
-                text);
+        if (Config.PushoverAppToken.HasValue()) SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, text);
     }
 
     #endregion
@@ -958,9 +920,7 @@ public static class Utils
     /// </exception>
     private static string ByteArrayToString(byte[] value)
     {
-        return value == null
-            ? throw new ArgumentNullException(nameof(value))
-            : ByteArrayToString(value, 0, value.Length);
+        return value == null ? throw new ArgumentNullException(nameof(value)) : ByteArrayToString(value, 0, value.Length);
     }
 
     /// <summary>
@@ -988,8 +948,7 @@ public static class Utils
     {
         if (value == null) throw new ArgumentNullException(nameof(value));
 
-        if (startIndex < 0 || (startIndex >= value.Length && startIndex > 0))
-            throw new ArgumentOutOfRangeException(nameof(startIndex));
+        if (startIndex < 0 || (startIndex >= value.Length && startIndex > 0)) throw new ArgumentOutOfRangeException(nameof(startIndex));
 
         if (length < 0) throw new ArgumentOutOfRangeException(nameof(length));
 
@@ -1003,6 +962,7 @@ public static class Utils
         var chArray = new char[length1];
         var num1 = startIndex;
         var index = 0;
+
         while (index < length1)
         {
             var num2 = value[num1++];
@@ -1028,13 +988,11 @@ public static class Utils
     /// </returns>
     internal static string CreateHashForByteArray(byte[] firstByteArray, byte[] endByteArray)
     {
-        var byteArrayToHash = endByteArray == null
-            ? new byte[firstByteArray.Length]
-            : new byte[firstByteArray.Length + endByteArray.Length];
+        var byteArrayToHash = endByteArray == null ? new byte[firstByteArray.Length] : new byte[firstByteArray.Length + endByteArray.Length];
 
         Buffer.BlockCopy(firstByteArray, 0, byteArrayToHash, 0, firstByteArray.Length);
-        if (endByteArray != null)
-            Buffer.BlockCopy(endByteArray, 0, byteArrayToHash, firstByteArray.Length, endByteArray.Length);
+
+        if (endByteArray != null) Buffer.BlockCopy(endByteArray, 0, byteArrayToHash, firstByteArray.Length, endByteArray.Length);
 
         return ByteArrayToString(Md5.ComputeHash(byteArrayToHash));
     }
@@ -1077,8 +1035,11 @@ public static class Utils
         int count;
         var sum = 0;
         var length = Convert.ToInt32(byteCountToReturn);
-        while ((count = fileStream.Read(buffer, sum, length - sum)) >
-               0) sum += count; // sum is a buffer offset for next reading
+
+        while ((count = fileStream.Read(buffer, sum, length - sum)) > 0)
+        {
+            sum += count; // sum is a buffer offset for next reading
+        }
 
         if (sum < byteCountToReturn)
         {
@@ -1111,14 +1072,18 @@ public static class Utils
         FileStream fileStream = new(fileName, FileMode.Open, FileAccess.Read);
         _ = fileStream.Seek(offset, SeekOrigin.Begin);
         var sum = 0;
+
         try
         {
             buffer = new byte[byteCountToReturn];
 
             var length = Convert.ToInt32(byteCountToReturn);
             int count;
-            while ((count = fileStream.Read(buffer, sum, length - sum)) >
-                   0) sum += count; // sum is a buffer offset for next reading
+
+            while ((count = fileStream.Read(buffer, sum, length - sum)) > 0)
+            {
+                sum += count; // sum is a buffer offset for next reading
+            }
         }
         finally
         {
@@ -1178,15 +1143,17 @@ public static class Utils
         var projectName = assembly.GetName().Name;
         var applicationBasePath = AppContext.BaseDirectory;
         DirectoryInfo directoryInfo = new(applicationBasePath);
+
         do
         {
             directoryInfo = directoryInfo.Parent;
 
             DirectoryInfo projectDirectoryInfo = new(directoryInfo.FullName);
+
             if (projectDirectoryInfo.Exists)
             {
-                FileInfo projectFileInfo =
-                    new(Path.Combine(projectDirectoryInfo.FullName, projectName, $"{projectName}.csproj"));
+                FileInfo projectFileInfo = new(Path.Combine(projectDirectoryInfo.FullName, projectName, $"{projectName}.csproj"));
+
                 if (projectFileInfo.Exists) return Path.Combine(projectDirectoryInfo.FullName, projectName);
             }
         } while (directoryInfo.Parent != null);
@@ -1201,19 +1168,12 @@ public static class Utils
     /// <returns>a string like x.yTB, xGB, xMB or xKB depending on the size</returns>
     internal static string FormatSize(long value)
     {
-        return value > BytesInOneTerabyte
-            ? $"{(decimal)value / BytesInOneTerabyte:0.#} TB"
-            : value > 25 * (long)BytesInOneGigabyte
-                ? $"{value / BytesInOneGigabyte:n0} GB"
-                : value > BytesInOneGigabyte
-                    ? $"{(decimal)value / BytesInOneGigabyte:0.#} GB"
-                    : value > 25 * BytesInOneMegabyte
-                        ? $"{value / BytesInOneMegabyte:n0} MB"
-                        : value > BytesInOneMegabyte
-                            ? $"{(decimal)value / BytesInOneMegabyte:0.#} MB"
-                            : value > BytesInOneKilobyte
-                                ? $"{value / BytesInOneKilobyte:n0} KB"
-                                : $"{value:n0} bytes";
+        return value > BytesInOneTerabyte ? $"{(decimal)value / BytesInOneTerabyte:0.#} TB" :
+            value > 25 * (long)BytesInOneGigabyte ? $"{value / BytesInOneGigabyte:n0} GB" :
+            value > BytesInOneGigabyte ? $"{(decimal)value / BytesInOneGigabyte:0.#} GB" :
+            value > 25 * BytesInOneMegabyte ? $"{value / BytesInOneMegabyte:n0} MB" :
+            value > BytesInOneMegabyte ? $"{(decimal)value / BytesInOneMegabyte:0.#} MB" :
+            value > BytesInOneKilobyte ? $"{value / BytesInOneKilobyte:n0} KB" : $"{value:n0} bytes";
     }
 
     /// <summary>
@@ -1225,6 +1185,7 @@ public static class Utils
     {
         StringBuilder builder = new();
         Random random = new();
+
         for (long i = 0; i < size; i++)
         {
             var ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
@@ -1246,12 +1207,10 @@ public static class Utils
     {
         if (!Directory.Exists(folderPath)) return false;
 
-        if (IsSymbolicLink(folderPath))
-            return !SymbolicLinkTargetExists(folderPath) ||
-                   !Directory.GetFileSystemEntries(new FileInfo(folderPath).LinkTarget).Any();
+        if (!IsSymbolicLink(folderPath)) return !Directory.EnumerateFileSystemEntries(folderPath).Any();
 
-        if (!Directory.EnumerateFileSystemEntries(folderPath).Any()) return true;
-        return false;
+        var linkTarget = new FileInfo(folderPath).LinkTarget;
+        return linkTarget != null && (!SymbolicLinkTargetExists(folderPath) || !Directory.GetFileSystemEntries(linkTarget).Any());
     }
 
     /// <summary>
@@ -1277,17 +1236,15 @@ public static class Utils
     }
 
     /// <summary>
-    ///     Checks the folder is writeable
+    ///     Checks the folder is writable
     /// </summary>
     /// <param name="folderPath"></param>
-    /// <returns>True if writeable else False</returns>
+    /// <returns>True if writable else False</returns>
     internal static bool IsFolderWritable(string folderPath)
     {
         try
         {
-            using var fs = File.Create(
-                Path.Combine(folderPath, Path.GetRandomFileName()),
-                1, FileOptions.DeleteOnClose);
+            using var fs = File.Create(Path.Combine(folderPath, Path.GetRandomFileName()), 1, FileOptions.DeleteOnClose);
             return true;
         }
         catch
@@ -1296,20 +1253,25 @@ public static class Utils
         }
     }
 
+    /// <summary>
+    ///     Formats a time in seconds ready for display with a suitable suffix like '2 minutes'
+    /// </summary>
+    /// <param name="seconds">The time in seconds to format</param>
+    /// <returns>A formatted time ready for display with a suffix</returns>
     internal static string FormatTimeFromSeconds(int seconds)
     {
         return seconds switch
         {
             < 120 => $"{seconds} seconds",
             < 3600 => $"{seconds / 60} minutes",
-            < 4000 => $"1 hour",
+            < 4000 => "1 hour",
             < 86400 => $"{seconds / 3600} hours",
             _ => "a day or so"
         };
     }
 
     /// <summary>
-    /// Formats a TimeSpan for display
+    ///     Formats a TimeSpan for display
     /// </summary>
     /// <param name="timeSpan"></param>
     /// <returns></returns>
@@ -1333,19 +1295,12 @@ public static class Utils
         // if disk speed greater than 1KB/s return xKB/s
         // else return bytes/s
 
-        return value > BytesInOneTerabyte
-            ? $"{(decimal)value / BytesInOneTerabyte:0.#} TB/s"
-            : value > 25 * (long)BytesInOneGigabyte
-                ? $"{value / BytesInOneGigabyte:n0} GB/s"
-                : value > BytesInOneGigabyte
-                    ? $"{(decimal)value / BytesInOneGigabyte:0.#} GB/s"
-                    : value > 25 * BytesInOneMegabyte
-                        ? $"{value / BytesInOneMegabyte:n0} MB/s"
-                        : value > BytesInOneMegabyte
-                            ? $"{(decimal)value / BytesInOneMegabyte:0.#} MB/s"
-                            : value > BytesInOneKilobyte
-                                ? $"{value / BytesInOneKilobyte:n0} KB/s"
-                                : $"{value:n0} bytes/s";
+        return value > BytesInOneTerabyte ? $"{(decimal)value / BytesInOneTerabyte:0.#} TB/s" :
+            value > 25 * (long)BytesInOneGigabyte ? $"{value / BytesInOneGigabyte:n0} GB/s" :
+            value > BytesInOneGigabyte ? $"{(decimal)value / BytesInOneGigabyte:0.#} GB/s" :
+            value > 25 * BytesInOneMegabyte ? $"{value / BytesInOneMegabyte:n0} MB/s" :
+            value > BytesInOneMegabyte ? $"{(decimal)value / BytesInOneMegabyte:0.#} MB/s" :
+            value > BytesInOneKilobyte ? $"{value / BytesInOneKilobyte:n0} KB/s" : $"{value:n0} bytes/s";
     }
 
     /// <summary>
@@ -1354,12 +1309,10 @@ public static class Utils
     /// <param name="pathToDiskToTest">The path to test.</param>
     /// <param name="readSpeed">in bytes per second</param>
     /// <param name="writeSpeed">in bytes per second</param>
-    internal static void DiskSpeedTest(string pathToDiskToTest, long testFileSize, int testIterations,
-        out long readSpeed, out long writeSpeed)
+    internal static void DiskSpeedTest(string pathToDiskToTest, long testFileSize, int testIterations, out long readSpeed, out long writeSpeed)
     {
         Trace("DiskSpeedTest enter");
-        Trace(
-            $"Params: pathToDiskToTest={pathToDiskToTest}, testFileSize={testFileSize}, testIterations={testIterations}");
+        Trace($"Params: pathToDiskToTest={pathToDiskToTest}, testFileSize={testFileSize}, testIterations={testIterations}");
 
         var tempPath = Path.GetTempPath();
 
@@ -1473,7 +1426,10 @@ public static class Utils
 
             using (StreamWriter sWriter = new(firstPathFilename, true, Encoding.UTF8, streamWriteBufferSize))
             {
-                for (long i = 1; i <= appendIterations; i++) sWriter.Write(randomText);
+                for (long i = 1; i <= appendIterations; i++)
+                {
+                    sWriter.Write(randomText);
+                }
             }
 
             Trace($"{firstPathFilename} created");
@@ -1507,8 +1463,9 @@ public static class Utils
         var textArrayToWrite = value.Split('\n');
 
         foreach (var line in textArrayToWrite)
-            if (line.HasValue())
-                System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {line}");
+        {
+            if (line.HasValue()) System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {line}");
+        }
     }
 
     /// <summary>
@@ -1531,7 +1488,9 @@ public static class Utils
         try
         {
             foreach (var subDirectory in Directory.EnumerateDirectories(directory))
+            {
                 DeleteEmptyDirectories(subDirectory, list, rootDirectory);
+            }
 
             if (IsDirectoryEmpty(directory))
                 try
@@ -1567,8 +1526,7 @@ public static class Utils
     {
         Trace("DeleteEmptyDirectories enter");
 
-        if (string.IsNullOrEmpty(directory))
-            throw new ArgumentException("Directory is a null reference or an empty string", nameof(directory));
+        if (string.IsNullOrEmpty(directory)) throw new ArgumentException("Directory is a null reference or an empty string", nameof(directory));
 
         List<string> listOfDirectoriesDeleted = new();
 

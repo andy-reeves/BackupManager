@@ -4,15 +4,14 @@
 //  </copyright>
 //  --------------------------------------------------------------------------------------------------------------------
 
-namespace BackupManager
+namespace BackupManager;
+
+public enum BackupAction
 {
-    public enum BackupAction
-    {
-        General,
-        ScanFolders,
-        BackupFiles,
-        CheckBackupDisk,
-        Restore,
-        Monitoring
-    }
+    General,
+    ScanFolders,
+    BackupFiles,
+    CheckBackupDisk,
+    Restore,
+    Monitoring
 }

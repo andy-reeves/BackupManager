@@ -1,7 +1,15 @@
-﻿using BackupManager;
+﻿// --------------------------------------------------------------------------------------------------------------------
+//  <copyright file="UtilsUnitTest.cs" company="Andy Reeves">
+//
+//  </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#if DEBUG
+
+using BackupManager;
 
 namespace TestProject;
-#if DEBUG
+
 public class UtilsUnitTest
 {
     [Fact]

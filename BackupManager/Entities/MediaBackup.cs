@@ -23,8 +23,7 @@ public class MediaBackup
     // We dont want to delete the file off backup and then copy it again so we try a rename
     // as long as the file has the same indexfolder and relative path we can find it and rename it
     // This happened with The Porridge movie which is also stored as a Tv episode.
-    private readonly Dictionary<string, BackupFile> indexFolderAndRelativePath =
-        new(StringComparer.CurrentCultureIgnoreCase);
+    private readonly Dictionary<string, BackupFile> indexFolderAndRelativePath = new(StringComparer.CurrentCultureIgnoreCase);
 
     /// <summary>
     ///     The DateTime of the last full Master Folders scan
@@ -76,8 +75,7 @@ public class MediaBackup
         do
         {
             var destinationFileName = "MediaBackup-" + DateTime.Now.ToString("yy-MM-dd-HH-mm-ss.ff") + ".xml";
-            destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                "BackupManager_Backups", destinationFileName);
+            destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups", destinationFileName);
         } while (File.Exists(destinationPath));
 
         return destinationPath;
@@ -101,8 +99,7 @@ public class MediaBackup
 
             foreach (var backupFile in mediaBackup.BackupFiles)
             {
-                if (backupFile.ContentsHash == Utils.ZeroByteHash)
-                    throw new ApplicationException("Zerobyte Hash detected on load");
+                if (backupFile.ContentsHash == Utils.ZeroByteHash) throw new ApplicationException("Zerobyte Hash detected on load");
 
                 if (!mediaBackup.indexFolderAndRelativePath.ContainsKey(backupFile.Hash))
                     mediaBackup.indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
@@ -132,8 +129,7 @@ public class MediaBackup
     /// <param name="indexFolder"></param>
     /// <param name="relativePath"></param>
     /// <returns>False if the MasterFolder or IndexFolder cannot be found.</returns>
-    public bool GetFoldersForPath(string path, out string masterFolder, out string indexFolder,
-        out string relativePath)
+    public bool GetFoldersForPath(string path, out string masterFolder, out string indexFolder, out string relativePath)
     {
         masterFolder = null;
         indexFolder = null;
@@ -143,8 +139,8 @@ public class MediaBackup
 
         foreach (var master in Config.MasterFolders)
         foreach (var index in Config.IndexFolders)
-            if (pathWithTerminatingString.StartsWith(
-                    Utils.EnsurePathHasATerminatingSeparator(Path.Combine(master, index))))
+        {
+            if (pathWithTerminatingString.StartsWith(Utils.EnsurePathHasATerminatingSeparator(Path.Combine(master, index))))
             {
                 masterFolder = master;
                 indexFolder = index;
@@ -152,6 +148,7 @@ public class MediaBackup
 
                 return true;
             }
+        }
 
         return false;
     }
@@ -233,11 +230,10 @@ public class MediaBackup
         // if this path is already added then return it
         if (indexFolderAndRelativePath.TryGetValue(hashKey, out var backupFile))
         {
-        
-
             // consider a file a.txt thats on \\nas1\assets1 in indexFolder _TV and on \\nas1\assets4 in _TV too
             // this has same index folder and path but its a different file
             string hashOfContents;
+
             if (backupFile.MasterFolder != masterFolder)
             {
                 // This is similar file in different master folders
@@ -248,6 +244,7 @@ public class MediaBackup
                 // First we can check the hash of both
                 // its its the same hash then we can assume the file has just been moved
                 hashOfContents = Utils.GetShortMd5HashFromFile(fullPath);
+
                 if (hashOfContents == backupFile.ContentsHash)
                 {
                     Utils.Trace($"Changing masterFolder on {backupFile.FullPath} to {masterFolder}");
@@ -341,9 +338,7 @@ public class MediaBackup
             select path.SubstringAfter(indexFolder + "\\", StringComparison.CurrentCultureIgnoreCase)
             into pathAfterSlash
             let lastSlashLocation = pathAfterSlash.IndexOf('\\')
-            select lastSlashLocation < 0
-                ? null
-                : path[..(lastSlashLocation + (path.Length - pathAfterSlash.Length))]).FirstOrDefault();
+            select lastSlashLocation < 0 ? null : path[..(lastSlashLocation + (path.Length - pathAfterSlash.Length))]).FirstOrDefault();
     }
 
     public string GetFilters()
@@ -406,8 +401,7 @@ public class MediaBackup
     {
         return includeDeletedFiles
             ? BackupFiles.Where(p => p.Disk.Equals(diskName, StringComparison.CurrentCultureIgnoreCase))
-            : BackupFiles.Where(p =>
-                p.Disk.Equals(diskName, StringComparison.CurrentCultureIgnoreCase) && !p.Deleted);
+            : BackupFiles.Where(p => p.Disk.Equals(diskName, StringComparison.CurrentCultureIgnoreCase) && !p.Deleted);
     }
 
     /// <summary>
@@ -462,7 +456,10 @@ public class MediaBackup
     /// </summary>
     public void ClearFlags()
     {
-        foreach (var backupFile in BackupFiles) backupFile.Flag = false;
+        foreach (var backupFile in BackupFiles)
+        {
+            backupFile.Flag = false;
+        }
     }
 
     /// Removes any files that have a matching flag value as the one provided.
@@ -471,7 +468,9 @@ public class MediaBackup
         Collection<BackupFile> filesToRemove = new();
 
         foreach (var backupFile in BackupFiles.Where(backupFile => backupFile.Flag == flag))
+        {
             filesToRemove.Add(backupFile);
+        }
 
         foreach (var backupFile in filesToRemove)
         {
@@ -493,6 +492,7 @@ public class MediaBackup
         BackupFile oldestFile = null;
 
         foreach (var backupFile in BackupFiles)
+        {
             if (backupFile.DiskChecked.HasValue())
             {
                 var backupFileDate = DateTime.Parse(backupFile.DiskChecked);
@@ -502,6 +502,7 @@ public class MediaBackup
                 oldestFileDate = backupFileDate;
                 oldestFile = backupFile;
             }
+        }
 
         return oldestFile;
     }
@@ -512,8 +513,7 @@ public class MediaBackup
     /// <param name="backupFile"></param>
     internal void RemoveFile(BackupFile backupFile)
     {
-        if (indexFolderAndRelativePath.ContainsKey(backupFile.Hash))
-            _ = indexFolderAndRelativePath.Remove(backupFile.Hash);
+        if (indexFolderAndRelativePath.ContainsKey(backupFile.Hash)) _ = indexFolderAndRelativePath.Remove(backupFile.Hash);
 
         if (BackupFiles.Contains(backupFile)) _ = BackupFiles.Remove(backupFile);
     }

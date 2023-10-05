@@ -4,14 +4,13 @@
 //  </copyright>
 //  --------------------------------------------------------------------------------------------------------------------
 
-namespace BackupManager
+namespace BackupManager;
+
+public enum PushoverPriority
 {
-    public enum PushoverPriority
-    {
-        Lowest = -2,
-        Low = -1,
-        Normal = 0,
-        High = 1,
-        Emergency = 2
-    }
+    Lowest = -2,
+    Low = -1,
+    Normal = 0,
+    High = 1,
+    Emergency = 2
 }
