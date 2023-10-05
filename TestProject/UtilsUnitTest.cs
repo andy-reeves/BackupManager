@@ -7,6 +7,7 @@
 #if DEBUG
 
 using BackupManager;
+using BackupManager.Entities;
 
 namespace TestProject;
 
@@ -75,6 +76,16 @@ public class UtilsUnitTest
         a = Array.Empty<string>();
         result8 = Utils.TraceOut(a);
         Assert.True(result8 == a);
+
+        var result9 = Utils.TraceOut(32);
+        Assert.True(result9 == 32);
+
+        var result10 = Utils.TraceOut<BackupFile>("Test");
+        Assert.True(result10 == null);
+
+        var c = new BackupFile();
+        var result11 = Utils.TraceOut(c, "Test");
+        Assert.True(result11.Equals(c));
     }
 }
 #endif

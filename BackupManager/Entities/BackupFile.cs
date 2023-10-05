@@ -89,13 +89,20 @@ public class BackupFile : IEquatable<BackupFile>
     [XmlIgnore] public bool Flag { get; set; }
 
     /// <summary>
-    ///     The full path to the backup file on the source disk.
+    ///     The full path to the backup file on the source disk. Returns String.Empty if any of Master, Index or RelativePath
+    ///     are null
     /// </summary>
     [XmlIgnore]
-    public string FullPath =>
+    public string FullPath
+    {
+        get
+        {
+            // always calculate the FullPath in case the MasterFolder, IndexFolder or RelativePath properties have been changed.
+            if (MasterFolder == null || IndexFolder == null || RelativePath == null) return string.Empty;
 
-        // always calculate the FullPath in case the MasterFolder, IndexFolder or RelativePath properties have been changed.
-        Path.Combine(MasterFolder, IndexFolder, RelativePath);
+            return Path.Combine(MasterFolder, IndexFolder, RelativePath);
+        }
+    }
 
     /// <summary>
     ///     Gets the number only of this disk this file is on. 0 if not backed up
