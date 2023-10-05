@@ -40,5 +40,33 @@ public class UtilsUnitTest
         a = Utils.FormatTimeFromSeconds(90000);
         Assert.True(a == "a day or so");
     }
+
+    [Fact]
+    public void TraceOut()
+    {
+        var result = Utils.TraceOut(true);
+        Assert.True(result);
+
+        var result2 = Utils.TraceOut("Test string");
+        Assert.True(result2 == "Test string");
+
+        var result3 = Utils.TraceOut(this);
+        Assert.True(result3 == this);
+
+        var result4 = Utils.TraceOut(this, "Test");
+        Assert.True(result4 == this);
+
+        var a = new[] { "a", "b", "c" };
+        var result5 = Utils.TraceOut(a, "Test");
+
+        Assert.True(result5 == a);
+
+        var result6 = Utils.TraceOut(a);
+        Assert.True(result6 == a);
+
+        var b = new[] { 1, 2, 3 };
+        var result7 = Utils.TraceOut(b, "Test");
+        Assert.True(result7 == b);
+    }
 }
 #endif

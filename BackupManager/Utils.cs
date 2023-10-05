@@ -5,6 +5,7 @@
 //  --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -205,8 +206,8 @@ public static class Utils
     /// <returns>True if copy was successful or False</returns>
     internal static bool FileCopy(string sourceFileName, string destFileName)
     {
-        Trace("FileCopyNewProcess enter");
-        Trace($"Params: sourceFileName={sourceFileName}, destFileName={destFileName}");
+        TraceIn(sourceFileName, destFileName);
+        if (destFileName == null || sourceFileName == null) return false;
 
         if (File.Exists(destFileName)) throw new NotSupportedException("Destination file already exists");
 
@@ -239,8 +240,7 @@ public static class Utils
             return false;
         }
 
-        Trace($"FileCopyNewProcess exit with {CopyProcess.ExitCode}");
-        return CopyProcess.ExitCode == 0;
+        return TraceOut(CopyProcess.ExitCode == 0);
     }
 
     /// <summary>
@@ -1487,14 +1487,28 @@ public static class Utils
         for (var index = 0; index < parameters.Length; index++)
         {
             var parameter = parameters[index];
-            Trace($"param{index}={parameter}");
+            Trace($"param{index} = {parameter}");
         }
     }
 
     internal static T TraceOut<T>(T t, string text = "")
     {
         var methodName = GetFullyQualifiedGetCurrentMethodName();
-        System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} exit {t} {text}");
+
+        if (t is IEnumerable array)
+        {
+            System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} exit {text}");
+
+            foreach (var value in array)
+            {
+                System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} exit {value}");
+            }
+        }
+        else
+        {
+            System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} exit {t} {text}");
+        }
+
         return t;
     }
 

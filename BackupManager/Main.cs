@@ -72,6 +72,7 @@ public partial class Main : Form
                     "myListener"));
 
             backupDiskTextBox.Text = "\\\\nas1\\assets1\\_Test\\BackupDisks\\backup 1001 parent";
+
 #else
             backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
 #endif
@@ -100,18 +101,15 @@ public partial class Main : Form
             masterFoldersComboBox.Items.AddRange(masterFoldersArray);
             restoreMasterFolderComboBox.Items.AddRange(masterFoldersArray);
 
-
             foreach (var disk in mediaBackup.BackupDisks)
             {
                 listFilesComboBox.Items.Add(disk.Name);
             }
 
-
             pushoverLowCheckBox.Checked = mediaBackup.Config.PushoverSendLowONOFF;
             pushoverNormalCheckBox.Checked = mediaBackup.Config.PushoverSendNormalONOFF;
             pushoverHighCheckBox.Checked = mediaBackup.Config.PushoverSendHighONOFF;
             pushoverEmergencyCheckBox.Checked = mediaBackup.Config.PushoverSendEmergencyONOFF;
-
 
             foreach (var monitor in mediaBackup.Config.Monitors)
             {
@@ -137,7 +135,6 @@ public partial class Main : Form
                     MonitoringButton_Click(null, null);
 #endif
             }
-
 
             UpdateCurrentBackupDiskInfo(mediaBackup.GetBackupDisk(backupDiskTextBox.Text));
 
