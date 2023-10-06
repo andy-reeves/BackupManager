@@ -431,7 +431,7 @@ public static class Utils
     internal static string[] GetFiles(string path, string filters, SearchOption searchOption, FileAttributes directoryAttributesToIgnore,
         FileAttributes fileAttributesToIgnore)
     {
-        Trace("GetFiles enter");
+        TraceIn();
 
         var sw = Stopwatch.StartNew();
 
@@ -443,11 +443,7 @@ public static class Utils
 
         DirectoryInfo directoryInfo = new(path);
 
-        if (directoryInfo.Parent != null && AnyFlagSet(directoryInfo.Attributes, directoryAttributesToIgnore))
-        {
-            Trace("GetFiles exit with new string[]");
-            return Array.Empty<string>();
-        }
+        if (directoryInfo.Parent != null && AnyFlagSet(directoryInfo.Attributes, directoryAttributesToIgnore)) return TraceOut(Array.Empty<string>());
 
         var include = from filter in filters.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries) where filter.Trim().HasValue() select filter.Trim();
 
@@ -481,17 +477,15 @@ public static class Utils
 
             foreach (var filter in include)
             {
-                var allfiles = Directory.GetFiles(dir, filter, SearchOption.TopDirectoryOnly);
+                var allFiles = Directory.GetFiles(dir, filter, SearchOption.TopDirectoryOnly);
 
-                var collection = exclude.Any() ? allfiles.Where(p => !excludeRegex.Match(p).Success) : allfiles;
+                var collection = exclude.Any() ? allFiles.Where(p => !excludeRegex.Match(p).Success) : allFiles;
 
                 foundFiles.AddRange(collection.Where(p => !AnyFlagSet(new FileInfo(p).Attributes, fileAttributesToIgnore)));
             }
         }
 
-        Trace($"Time taken = {sw.Elapsed.TotalSeconds} seconds");
-        Trace("GetFiles exit");
-        return foundFiles.ToArray();
+        return TraceOut(foundFiles.ToArray(), $"Time taken = {sw.Elapsed.TotalSeconds} seconds");
     }
 
     /// <summary>

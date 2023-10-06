@@ -183,4 +183,10 @@
   <data name="Main_UpdateMasterFilesTitle" xml:space="preserve">
     <value>Rebuild master list</value>
   </data>
+  <data name="Main_RecreateAllMkLinksAre_you_sure" xml:space="preserve">
+    <value>Are you sure you want to check all the symbolic links?</value>
+  </data>
+  <data name="Main_SymbolicLinksTitle" xml:space="preserve">
+    <value>Symbolic Links</value>
+  </data>
 </root>

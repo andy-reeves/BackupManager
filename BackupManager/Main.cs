@@ -358,6 +358,7 @@ public partial class Main : Form
         {
             Utils.DiskSpeedTest(masterFolder, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations,
                 out var readSpeed, out var writeSpeed);
+
             Utils.Log($"Testing {masterFolder}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
         }
 
@@ -679,6 +680,7 @@ public partial class Main : Form
 
             Utils.DiskSpeedTest(masterFolder, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations,
                 out var readSpeed, out var writeSpeed);
+
             Utils.Log($"testing {masterFolder}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
         }
 
@@ -1200,6 +1202,7 @@ public partial class Main : Form
 
                     var text =
                         $"Folder scan completed. {fileCountInFolderBefore} files before and now {fileCountInFolderAfter} files. {markedAsDeletedFilesCount} marked as deleted and {removedFilesCount} removed. {filesNotOnBackupDiskCount} to backup.";
+
                     Utils.Log(BackupAction.ScanFolders, text);
                     toSave = true;
                 }
@@ -1259,35 +1262,61 @@ public partial class Main : Form
 
     private void RecreateAllMkLinksButton_Click(object sender, EventArgs e)
     {
-        CreateLinksForIndexFolder("_Movies");
-        CreateLinksForIndexFolder("_Movies (non-tmdb)");
-        CreateLinksForIndexFolder("_TV");
-        CreateLinksForIndexFolder("_TV (non-tvdb)");
+        if (longRunningActionExecutingRightNow) return;
+
+        if (MessageBox.Show(Resources.Main_RecreateAllMkLinksAre_you_sure, Resources.Main_SymbolicLinksTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
+            TaskWrapper(UpdateSymbolicLinksAsync);
     }
 
-    private void CreateLinksForIndexFolder(string folder)
+    private void UpdateSymbolicLinksAsync()
     {
-        Utils.Trace("CreateLinks enter");
-        Utils.Trace($"Param folderToCheck = {folder}");
+        longRunningActionExecutingRightNow = true;
+        DisableControlsForAsyncTasks();
 
-        var backupFiles = mediaBackup.BackupFiles.Where(b => b.IndexFolder == folder);
+        UpdateSymbolicLinks();
 
-        foreach (var backupFile in backupFiles)
+        ResetAllControls();
+        longRunningActionExecutingRightNow = false;
+    }
+
+    private void UpdateSymbolicLinks()
+    {
+        Utils.TraceIn();
+        UpdateStatusLabel("Started");
+
+        HashSet<string> hashSet = new();
+
+        // HashSet of parent paths
+        foreach (var backupFile in mediaBackup.BackupFiles)
         {
-            CreateLinkForBackupFile(backupFile);
+            var p = mediaBackup.GetParentFolder(backupFile.FullPath);
+            if (p == null) continue;
+            hashSet.Add(p);
         }
 
-        Utils.Trace("CreateLinks exit");
+        EnableProgressBar(0, 100);
+        var fileCounter = 0;
+
+        foreach (var folderBackupFile in hashSet)
+        {
+            fileCounter++;
+            var a = folderBackupFile;
+            UpdateStatusLabel($"Checking {a}", Convert.ToInt32(fileCounter * 100 / hashSet.Count));
+
+            UpdateSymbolicLinkForFolder(a);
+        }
+
+        UpdateStatusLabel("Completed.");
+        Utils.TraceOut();
     }
 
     private void UpdateSymbolicLinkForFolder(string folderPath)
     {
-        Utils.Trace("UpdateSymbolicLinkForFolder enter");
-        Utils.Trace($"Param folderPath = {folderPath}");
+        Utils.TraceIn(folderPath);
 
         if (!Directory.Exists(folderPath))
         {
-            Utils.Trace("UpdateSymbolicLinkForFolder exit as folderPath empty");
+            Utils.TraceOut();
             return;
         }
 
@@ -1295,60 +1324,39 @@ public partial class Main : Form
         {
             var m = Regex.Match(folderPath, a.FileDiscoveryRegEx);
 
-            if (m.Success)
+            if (!m.Success) continue;
+
+            var path = Path.Combine(a.RootFolder, a.RelativePath);
+            var pathToTarget = a.PathToTarget;
+
+            for (var i = 0; i < m.Groups.Count; i++)
             {
-                var path = Path.Combine(a.RootFolder, a.RelativePath);
-                var pathToTarget = a.PathToTarget;
+                if (m.Groups[i].GetType() != typeof(Group)) continue;
 
-                for (var i = 0; i < m.Groups.Count; i++)
-                {
-                    if (m.Groups[i].GetType() == typeof(Group))
-                    {
-                        var g = m.Groups[i];
-                        path = path.Replace($"${i}", g.Value);
-                        pathToTarget = pathToTarget.Replace($"${i}", g.Value);
-                    }
-                }
-
-                if (pathToTarget == null)
-                {
-                    Utils.Trace("UpdateSymbolicLinkForFolder exit pathToTarget=null");
-                    return;
-                }
-
-                if (Directory.Exists(path) && Utils.IsDirectoryEmpty(path))
-                {
-                    Utils.Trace("Deleting link directory as its empty");
-                    Directory.Delete(path, true);
-                }
-
-                if (Directory.Exists(path)) continue;
-
-                Utils.Trace($"Creating new symbolic link at {path} with target {pathToTarget}");
-                _ = Directory.CreateSymbolicLink(path, pathToTarget);
+                var g = m.Groups[i];
+                path = path.Replace($"${i}", g.Value);
+                pathToTarget = pathToTarget.Replace($"${i}", g.Value);
             }
+
+            if (pathToTarget == null)
+            {
+                Utils.TraceOut();
+                return;
+            }
+
+            if (Directory.Exists(path) && Utils.IsDirectoryEmpty(path))
+            {
+                Utils.Trace("Deleting link directory as its empty");
+                Directory.Delete(path, true);
+            }
+
+            if (Directory.Exists(path)) continue;
+
+            Utils.Trace($"Creating new symbolic link at {path} with target {pathToTarget}");
+            _ = Directory.CreateSymbolicLink(path, pathToTarget);
         }
 
-        Utils.Trace("UpdateSymbolicLinkForFolder exit");
-    }
-
-    private void CreateLinkForBackupFile(BackupFile backupFile)
-    {
-        var assetType = string.Empty;
-        var pathToTarget = mediaBackup.GetParentFolder(backupFile.FullPath);
-
-        if (backupFile.IndexFolder.StartsWith("_Movies"))
-            assetType = "_Movies";
-        else if (backupFile.IndexFolder.StartsWith("_TV")) assetType = "_TV";
-
-        if (assetType is "_Movies" or "_TV")
-        {
-            var path = Path.Combine(mediaBackup.Config.SymbolicLinksRootFolder, assetType, new DirectoryInfo(pathToTarget).Name);
-
-            if (Directory.Exists(path) && Utils.IsDirectoryEmpty(path)) Directory.Delete(path, true);
-
-            if (!Directory.Exists(path)) _ = Directory.CreateSymbolicLink(path, pathToTarget);
-        }
+        Utils.TraceOut();
     }
 
     private void UpdateMediaFilesCountDisplay()
@@ -1567,6 +1575,7 @@ public partial class Main : Form
                         {
                             Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal,
                                 $"File exists already so deleting {backupFileFullPath} instead");
+
                             Utils.FileDelete(backupFileFullPath);
                         }
                     }
@@ -1663,6 +1672,7 @@ public partial class Main : Form
             {
                 case DialogResult.No:
                     return false;
+
                 case DialogResult.Yes:
                     currentConnectedBackupDiskName = BackupDisk.GetBackupFolderName(backupDiskTextBox.Text);
                     break;
@@ -1782,6 +1792,7 @@ public partial class Main : Form
                 {
                     Utils.LogWithPushover(BackupAction.BackupFiles,
                         $"[{fileCounter}/{totalFileCount}]\nSkipping copy of {sourceFileName} as it exists already.");
+
                     UpdateStatusLabel($"Skipping {Path.GetFileName(sourceFileName)}", Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
 
                     // it could be that the source file hash changed after we read it (we read the hash, updated the master file and then copied it)
@@ -1869,6 +1880,7 @@ public partial class Main : Form
                         {
                             Utils.LogWithPushover(BackupAction.BackupFiles,
                                 $"[{fileCounter}/{totalFileCount}] {Utils.FormatSize(availableSpace)} free.\nSkipping {sourceFileName} as not enough free space");
+
                             outOfDiskSpaceMessageSent = true;
                         }
                     }
@@ -2156,13 +2168,13 @@ public partial class Main : Form
 
     private void UpdateMasterFilesButton_Click(object sender, EventArgs e)
     {
-        Utils.Trace("UpdateMasterFilesButton_Click enter");
+        Utils.TraceIn();
 
         if (!longRunningActionExecutingRightNow)
             if (MessageBox.Show(Resources.Main_UpdateMasterFiles, Resources.Main_UpdateMasterFilesTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
                 TaskWrapper(ScanFolderAsync);
 
-        Utils.Trace("UpdateMasterFilesButton_Click exit");
+        Utils.TraceOut();
     }
 
     /// <summary>
@@ -2254,7 +2266,7 @@ public partial class Main : Form
     /// <returns>True if successful otherwise False</returns>
     private bool ScanFolders()
     {
-        Utils.Trace("ScanFolders enter");
+        Utils.TraceIn();
 
         var filters = mediaBackup.GetFilters();
 
@@ -2327,9 +2339,7 @@ public partial class Main : Form
                 {
                     Utils.Trace($"Checking {file}");
 
-                    if (CheckForFilesToDelete(file))
-                    {
-                    }
+                    CheckForFilesToDelete(file);
                 }
 
                 if (mediaBackup.Config.IndexFolders.Any(indexFolder => !ScanSingleFolder(Path.Combine(masterFolder, indexFolder), SearchOption.AllDirectories)))
@@ -2402,8 +2412,7 @@ public partial class Main : Form
     /// <returns>True if the scan was successful otherwise False.</returns>
     private bool ScanSingleFolder(string folderToCheck, SearchOption searchOption)
     {
-        Utils.Trace("ScanSingleFolder enter");
-        Utils.Trace($"Params: folderToCheck={folderToCheck} searchOption={searchOption}");
+        Utils.TraceIn(folderToCheck, searchOption);
 
         if (Directory.Exists(folderToCheck))
         {
@@ -2430,34 +2439,30 @@ public partial class Main : Form
                 // RegEx file name rules
                 foreach (var rule in mediaBackup.Config.FileRules)
                 {
-                    if (Regex.IsMatch(file, rule.FileDiscoveryRegEx))
-                    {
-                        if (!rule.Matched)
-                        {
-                            Utils.Trace($"{rule.Name} matched file {file}");
-                            rule.Matched = true;
-                        }
+                    if (!Regex.IsMatch(file, rule.FileDiscoveryRegEx)) continue;
 
-                        // if it does then the second regex must be true
-                        if (!Regex.IsMatch(file, rule.FileTestRegEx))
-                        {
-                            Utils.Trace($"File {file} matched by {rule.FileDiscoveryRegEx} but doesn't match {rule.FileTestRegEx}");
-                            Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High, $"{rule.Name} {rule.Message} {file}");
-                        }
+                    if (!rule.Matched)
+                    {
+                        Utils.Trace($"{rule.Name} matched file {file}");
+                        rule.Matched = true;
                     }
+
+                    // if it does then the second regex must be true
+                    if (Regex.IsMatch(file, rule.FileTestRegEx)) continue;
+                    Utils.Trace($"File {file} matched by {rule.FileDiscoveryRegEx} but doesn't match {rule.FileTestRegEx}");
+                    Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High, $"{rule.Name} {rule.Message} {file}");
                 }
 
                 if (!mediaBackup.EnsureFile(file))
                 {
                     Utils.Trace("ScanSingleFolder exit with false");
-                    return false;
+                    return Utils.TraceOut(false);
                 }
 
                 UpdateMediaFilesCountDisplay();
             }
         }
 
-        Utils.Trace("ScanSingleFolder exit with true");
-        return true;
+        return Utils.TraceOut(true);
     }
 }

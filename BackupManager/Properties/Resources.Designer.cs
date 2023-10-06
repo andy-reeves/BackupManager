@@ -169,6 +169,15 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to check all the symbolic links?.
+        /// </summary>
+        internal static string Main_RecreateAllMkLinksAre_you_sure {
+            get {
+                return ResourceManager.GetString("Main_RecreateAllMkLinksAre_you_sure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Are you sure you want to copy files from multiple backup disks to the new master folder location?.
         /// </summary>
         internal static string Main_RestoreFiles {
@@ -228,6 +237,15 @@ namespace BackupManager.Properties {
         internal static string Main_SetupFileWatchers_On {
             get {
                 return ResourceManager.GetString("Main_SetupFileWatchers_On", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Symbolic Links.
+        /// </summary>
+        internal static string Main_SymbolicLinksTitle {
+            get {
+                return ResourceManager.GetString("Main_SymbolicLinksTitle", resourceCulture);
             }
         }
         
