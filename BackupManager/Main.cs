@@ -169,7 +169,7 @@ public partial class Main : Form
 
     private static void FileSystemWatcher_OnSomethingHappened(object sender, FileSystemEventArgs e)
     {
-        Utils.Trace("FileSystemWatcher_OnSomethingHappened enter");
+        Utils.TraceIn();
         Utils.Trace($"e.FullPath = {e.FullPath}");
 
         if (e.ChangeType is not WatcherChangeTypes.Changed and not WatcherChangeTypes.Deleted and not WatcherChangeTypes.Renamed)
@@ -184,7 +184,7 @@ public partial class Main : Form
         else
             FolderChanges.Add(e.FullPath, DateTime.Now);
 
-        Utils.Trace("FileSystemWatcher_OnSomethingHappened exit");
+        Utils.TraceOut();
     }
 
     private static void FileSystemWatcher_OnError(object sender, ErrorEventArgs e)
@@ -197,24 +197,23 @@ public partial class Main : Form
 
     private void CheckDiskAndDeleteButton_Click(object sender, EventArgs e)
     {
-        Utils.Trace("checkDiskAndDeleteButton_Click enter");
+        Utils.TraceIn();
 
         if (MessageBox.Show(Resources.Main_AreYouSureDelete, Resources.Main_DeleteExtraTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
             TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, true, false);
 
-        Utils.Trace("checkDiskAndDeleteButton_Click exit");
+        Utils.TraceOut();
     }
 
     private void BackupTimerButton_Click(object sender, EventArgs e)
     {
-        Utils.Trace("timerButton_Click enter");
-
+        Utils.TraceIn();
         mediaBackup.Config.ScheduledBackupONOFF = !mediaBackup.Config.ScheduledBackupONOFF;
 
         SetupDailyTrigger(mediaBackup.Config.ScheduledBackupONOFF);
 
         UpdateScheduledBackupButton();
-        Utils.Trace("timerButton_Click exit");
+        Utils.TraceOut();
     }
 
     private void SetupDailyTrigger(bool addTrigger)
@@ -266,7 +265,7 @@ public partial class Main : Form
 
     private void ScheduledBackup()
     {
-        Utils.Trace("ScheduledBackup enter");
+        Utils.TraceIn();
 
         try
         {
@@ -320,12 +319,12 @@ public partial class Main : Form
             Utils.LogWithPushover(BackupAction.General, PushoverPriority.Emergency, $"Exception occured {ex}");
         }
 
-        Utils.Trace("ScheduledBackup exit");
+        Utils.TraceOut();
     }
 
     private void ListFilesOnBackupDiskButton_Click(object sender, EventArgs e)
     {
-        Utils.Trace("listFilesOnBackupDiskButton_Click enter");
+        Utils.TraceIn();
 
         if (listFilesComboBox.SelectedItem != null)
         {
@@ -341,12 +340,12 @@ public partial class Main : Form
             }
         }
 
-        Utils.Trace("listFilesOnBackupDiskButton_Click exit");
+        Utils.TraceOut();
     }
 
     private void ListFilesInMasterFolderButton_Click(object sender, EventArgs e)
     {
-        Utils.Trace("listFilesInMasterFolderButton_Click enter");
+        Utils.TraceIn();
 
         var masterFolder = listMasterFoldersComboBox.SelectedItem.ToString();
 
@@ -369,21 +368,21 @@ public partial class Main : Form
             if (string.IsNullOrEmpty(file.Disk)) Utils.Log($"{file.FullPath} : not on a backup disk");
         }
 
-        Utils.Trace("listFilesInMasterFolderButton_Click exit");
+        Utils.TraceOut();
     }
 
     private void CheckForOldBackupDisks_Click(object sender, EventArgs e)
     {
-        Utils.Trace("CheckForOldBackupDisks_Click enter");
+        Utils.TraceIn();
 
         CheckForOldBackupDisks();
 
-        Utils.Trace("CheckForOldBackupDisks_Click exit");
+        Utils.TraceOut();
     }
 
     private void CheckForOldBackupDisks()
     {
-        Utils.Trace("CheckForOldBackupDisks enter");
+        Utils.TraceIn();
 
         var numberOfDays = mediaBackup.Config.BackupDiskDaysToReportSinceFilesChecked;
 
@@ -409,12 +408,12 @@ public partial class Main : Form
             Utils.Log(BackupAction.General, $"{file.FullPath} - not checked in {days} day(s) on disk {file.Disk}");
         }
 
-        Utils.Trace("CheckForOldBackupDisks exit");
+        Utils.TraceOut();
     }
 
     private void RestoreFilesButton_Click(object sender, EventArgs e)
     {
-        Utils.Trace("restoreFilesButton_Click enter");
+        Utils.TraceIn();
 
         // loop through all the files looking for the master folder specified in the top drop down and copy to the bottom drop down 
         // for each file order by backup disk
@@ -521,23 +520,22 @@ public partial class Main : Form
             mediaBackup.Save();
         }
 
-        Utils.Trace("restoreFilesButton_Click exit");
+        Utils.TraceOut();
     }
 
     private void CheckBackupDeleteAndCopyButton_Click(object sender, EventArgs e)
     {
-        Utils.Trace("checkBackupDeleteAndCopyButton_Click enter");
+        Utils.TraceIn();
 
         if (MessageBox.Show(Resources.Main_AreYouSureDelete, Resources.Main_DeleteExtraTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
             TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, true, true);
 
-        Utils.Trace("checkBackupDeleteAndCopyButton_Click exit");
+        Utils.TraceOut();
     }
 
     private void ListMoviesWithMultipleFilesButton_Click(object sender, EventArgs e)
     {
-        Utils.Trace("listMoviesWithMultipleFilesButton_Click enter");
-
+        Utils.TraceIn();
         Utils.Log("Listing movies with multiple files in folder");
 
         Dictionary<string, BackupFile> allMovies = new();
@@ -574,39 +572,36 @@ public partial class Main : Form
             Utils.Log($"{backupMovieDuplicate.FullPath}");
         }
 
-        Utils.Trace("listMoviesWithMultipleFilesButton_Click exit");
+        Utils.TraceOut();
     }
 
     private void TestPushoverHighButton_Click(object sender, EventArgs e)
     {
-        Utils.Trace("testPushoverHighButton_Click enter");
-
+        Utils.TraceIn();
         Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, "High priority test");
 
-        Utils.Trace("testPushoverHighButton_Click exit");
+        Utils.TraceOut();
     }
 
     private void TestPushoverNormalButton_Click(object sender, EventArgs e)
     {
-        Utils.Trace("testPushoverNormalButton_Click enter");
-
+        Utils.TraceIn();
         Utils.LogWithPushover(BackupAction.General, PushoverPriority.Normal, "Normal priority test\nLine 2\nLine 3");
-
-        Utils.Trace("testPushoverNormalButton_Click exit");
+        Utils.TraceOut();
     }
 
     private void TestPushoverEmergencyButton_Click(object sender, EventArgs e)
     {
-        Utils.Trace("testPushoverEmergencyButton_Click enter");
+        Utils.TraceIn();
 
         Utils.LogWithPushover(BackupAction.General, PushoverPriority.Emergency, PushoverRetry.OneMinute, PushoverExpires.OneHour, "Emergency priority test");
 
-        Utils.Trace("testPushoverEmergencyButton_Click exit");
+        Utils.TraceOut();
     }
 
     private void ReportBackupDiskStatusButton_Click(object sender, EventArgs e)
     {
-        Utils.Trace("reportBackupDiskStatusButton_Click enter");
+        Utils.TraceIn();
 
         IEnumerable<BackupDisk> disks = mediaBackup.BackupDisks.OrderBy(p => p.Number);
 
@@ -649,16 +644,15 @@ public partial class Main : Form
         Utils.Log(
             $"Total Capacity: {totalSizeFormatted} Free: {totalFreeSpaceFormatted}  UsableSpace: {Utils.FormatSize(actualUsableSpace)} Sum of files: {Utils.FormatSize(mediaBackup.BackupFiles.Sum(p => p.Length))}");
 
-        Utils.Trace("reportBackupDiskStatusButton_Click exit");
+        Utils.TraceOut();
     }
 
     private void SpeedTestButton_Click(object sender, EventArgs e)
     {
-        Utils.Trace("speedTestButton_Click enter");
-
+        Utils.TraceIn();
         TaskWrapper(SpeedTestAllMasterFoldersAsync);
 
-        Utils.Trace("speedTestButton_Click exit");
+        Utils.TraceOut();
     }
 
     private void SpeedTestAllMasterFoldersAsync()
@@ -722,8 +716,6 @@ public partial class Main : Form
     [SupportedOSPlatform("windows")]
     private void MonitorServices()
     {
-        //Utils.Trace("MonitorServices enter");
-
         foreach (var monitor in mediaBackup.Config.Monitors)
         {
             var result = monitor.Port > 0 ? Utils.ConnectionExists(monitor.Url, monitor.Port) : Utils.UrlExists(monitor.Url, monitor.Timeout * 1000);
@@ -789,14 +781,12 @@ public partial class Main : Form
             else
                 Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High, $"Failed to restart the service '{monitor.Name}'");
         }
-
-        //Utils.Trace("MonitorServices exit");
     }
 
     [SupportedOSPlatform("windows")]
     private void KillProcessesButton_Click(object sender, EventArgs e)
     {
-        Utils.Trace("killProcessesButton_Click enter");
+        Utils.TraceIn();
 
         foreach (var monitor in mediaBackup.Config.Monitors)
         {
@@ -820,25 +810,23 @@ public partial class Main : Form
                 Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High, $"Failed to stop the service '{monitor.Name}'");
         }
 
-        Utils.Trace("killProcessesButton_Click exit");
+        Utils.TraceOut();
     }
 
     private void TestPushoverLowButton_Click(object sender, EventArgs e)
     {
-        Utils.Trace("testPushoverLowButton_Click enter");
-
+        Utils.TraceIn();
         Utils.LogWithPushover(BackupAction.General, PushoverPriority.Low, "Low priority test\nLine 2\nLine 3");
 
-        Utils.Trace("testPushoverLowButton_Click exit");
+        Utils.TraceOut();
     }
 
     private void Main_FormClosed(object sender, FormClosedEventArgs e)
     {
-        Utils.Trace("Main_FormClosed enter");
-
+        Utils.TraceIn();
         Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, "BackupManager stopped");
 
-        Utils.Trace("Main_FormClosed exit");
+        Utils.TraceOut();
 
         Utils.BackupLogFile();
     }
@@ -846,7 +834,7 @@ public partial class Main : Form
     [SupportedOSPlatform("windows")]
     private void StopProcessButton_Click(object sender, EventArgs e)
     {
-        Utils.Trace("stopProcessButton_Click enter");
+        Utils.TraceIn();
 
         if (processesComboBox.SelectedItem != null)
         {
@@ -875,30 +863,28 @@ public partial class Main : Form
             }
         }
 
-        Utils.Trace("stopProcessButton_Click exit");
+        Utils.TraceOut();
     }
 
     private void ListFilesWithDuplicateContentHashcodesButton_Click(object sender, EventArgs e)
     {
-        Utils.Log("Checking for files with Duplicate ContentsHash in _Movies and _TV");
-
+        Utils.TraceIn();
         Dictionary<string, BackupFile> allFilesUniqueContentsHash = new();
         List<BackupFile> backupFilesWithDuplicates = new();
 
         foreach (var f in mediaBackup.BackupFiles)
         {
-            if (f.FullPath.Contains("_Movies") || f.FullPath.Contains("_TV"))
-            {
-                if (allFilesUniqueContentsHash.TryGetValue(f.ContentsHash, out var originalFile))
-                {
-                    backupFilesWithDuplicates.Add(f);
+            if (!f.FullPath.Contains("_Movies") && !f.FullPath.Contains("_TV")) continue;
 
-                    if (!backupFilesWithDuplicates.Contains(originalFile)) backupFilesWithDuplicates.Add(originalFile);
-                }
-                else
-                {
-                    allFilesUniqueContentsHash.Add(f.ContentsHash, f);
-                }
+            if (allFilesUniqueContentsHash.TryGetValue(f.ContentsHash, out var originalFile))
+            {
+                backupFilesWithDuplicates.Add(f);
+
+                if (!backupFilesWithDuplicates.Contains(originalFile)) backupFilesWithDuplicates.Add(originalFile);
+            }
+            else
+            {
+                allFilesUniqueContentsHash.Add(f.ContentsHash, f);
             }
         }
 
@@ -906,28 +892,31 @@ public partial class Main : Form
         {
             Utils.Log($"{f.FullPath} has a duplicate");
         }
+
+        Utils.TraceOut();
     }
 
     private void CheckDeleteAndCopyAllBackupDisksButton_Click(object sender, EventArgs e)
     {
+        Utils.TraceIn();
+
         // Check the current backup disk connected
         // when its finished prompt for another disk and wait
-        Utils.Trace("CheckDeleteAndCopyAllBackupDisksButton_Click enter");
 
         if (MessageBox.Show(Resources.Main_AreYouSureDelete, Resources.Main_DeleteExtraTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
             TaskWrapper(CheckConnectedDiskAndCopyFilesRepeaterAsync, true);
 
-        Utils.Trace("CheckDeleteAndCopyAllBackupDisksButton_Click exit");
+        Utils.TraceOut();
     }
 
     private void WaitForNewDisk(string message)
     {
-        Utils.Trace("WaitForNewDisk enter");
+        Utils.TraceIn();
 
         UpdateStatusLabel(message);
         Task.Delay(5000).Wait();
 
-        Utils.Trace("WaitForNewDisk exit");
+        Utils.TraceOut();
     }
 
     private void CancelButton_Click(object sender, EventArgs e)
@@ -952,73 +941,93 @@ public partial class Main : Form
         // Check the current backup disk connected
         // when its finished prompt for another disk and wait
 
-        Utils.Trace("CheckAllBackupDisksButton_Click enter");
+        Utils.TraceIn();
 
         if (MessageBox.Show(Resources.Main_AreYouSureDelete, Resources.Main_DeleteExtraTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
             TaskWrapper(CheckConnectedDiskAndCopyFilesRepeaterAsync, false);
 
-        Utils.Trace("CheckAllBackupDisksButton_Click exit");
+        Utils.TraceOut();
     }
 
     private void PushoverOnOffButton_Click(object sender, EventArgs e)
     {
+        Utils.TraceIn();
         mediaBackup.Config.PushoverONOFF = !mediaBackup.Config.PushoverONOFF;
         UpdateSendingPushoverButton();
+        Utils.TraceOut();
     }
 
     private void UpdateSendingPushoverButton()
     {
+        Utils.TraceIn();
         pushoverOnOffButton.Text = mediaBackup.Config.PushoverONOFF ? "Sending = ON" : "Sending = OFF";
+        Utils.TraceOut();
     }
 
     private void UpdateMonitoringButton()
     {
+        Utils.TraceIn();
         monitoringButton.Text = mediaBackup.Config.MonitoringONOFF ? "Monitoring = ON" : "Monitoring = OFF";
+        Utils.TraceOut();
     }
 
     private void UpdateSpeedTestDisksButton()
     {
+        Utils.TraceIn();
         speedTestDisksButton.Text = mediaBackup.Config.SpeedTestONOFF ? "Speed Test Disks = ON" : "Speed Test Disks = OFF";
+        Utils.TraceOut();
     }
 
     private void UpdateScheduledBackupButton()
     {
+        Utils.TraceIn();
         scheduledBackupTimerButton.Text = mediaBackup.Config.ScheduledBackupONOFF ? "Backup = ON" : "Backup = OFF";
+        Utils.TraceOut();
     }
 
     private void PushoverLowCheckBox_CheckedChanged(object sender, EventArgs e)
     {
+        Utils.TraceIn();
         mediaBackup.Config.PushoverSendLowONOFF = pushoverLowCheckBox.Checked;
+        Utils.TraceOut();
     }
 
     private void PushoverNormalCheckBox_CheckedChanged(object sender, EventArgs e)
     {
+        Utils.TraceIn();
         mediaBackup.Config.PushoverSendNormalONOFF = pushoverNormalCheckBox.Checked;
+        Utils.TraceOut();
     }
 
     private void PushoverHighCheckBox_CheckedChanged(object sender, EventArgs e)
     {
+        Utils.TraceIn();
         mediaBackup.Config.PushoverSendHighONOFF = pushoverHighCheckBox.Checked;
+        Utils.TraceOut();
     }
 
     private void PushoverEmergencyCheckBox_CheckedChanged(object sender, EventArgs e)
     {
+        Utils.TraceIn();
         mediaBackup.Config.PushoverSendEmergencyONOFF = pushoverEmergencyCheckBox.Checked;
+        Utils.TraceOut();
     }
 
     private void SpeedTestDisksButton_Click(object sender, EventArgs e)
     {
+        Utils.TraceIn();
         mediaBackup.Config.SpeedTestONOFF = !mediaBackup.Config.SpeedTestONOFF;
         UpdateSpeedTestDisksButton();
+        Utils.TraceOut();
     }
 
     private void RefreshBackupDiskButton_Click(object sender, EventArgs e)
     {
-        Utils.Trace("RefreshBackupDiskButton_Click enter");
+        Utils.TraceIn();
 
         TaskWrapper(SetupBackupDiskAsync);
 
-        Utils.Trace("RefreshBackupDiskButton_Click exit");
+        Utils.TraceOut();
     }
 
     private void ListFilesMarkedAsDeletedButton_Click(object sender, EventArgs e)
@@ -1060,12 +1069,15 @@ public partial class Main : Form
 
     private void FileWatcherButton_Click(object sender, EventArgs e)
     {
+        Utils.TraceIn();
         mediaBackup.Config.MasterFoldersFileChangeWatchersONOFF = !mediaBackup.Config.MasterFoldersFileChangeWatchersONOFF;
         SetupFileWatchers();
     }
 
     private void SetupFileWatchers()
     {
+        Utils.TraceIn();
+
         if (mediaBackup.Config.MasterFoldersFileChangeWatchersONOFF)
         {
             fileWatcherButton.Text = Resources.Main_SetupFileWatchers_On;
@@ -1262,6 +1274,8 @@ public partial class Main : Form
 
     private void RecreateAllMkLinksButton_Click(object sender, EventArgs e)
     {
+        Utils.TraceIn();
+
         if (longRunningActionExecutingRightNow) return;
 
         if (MessageBox.Show(Resources.Main_RecreateAllMkLinksAre_you_sure, Resources.Main_SymbolicLinksTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
@@ -1969,7 +1983,7 @@ public partial class Main : Form
 
     private void RecalculateAllHashesButton_Click(object sender, EventArgs e)
     {
-        Utils.Trace("recalculateAllHashesButton_Click enter");
+        Utils.TraceIn();
 
         if (MessageBox.Show(Resources.Main_RecalculateAllHashes, Resources.Main_RecalculateAllHashesTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
         {
@@ -1981,7 +1995,7 @@ public partial class Main : Form
             mediaBackup.Save();
         }
 
-        Utils.Trace("recalculateAllHashesButton_Click exit");
+        Utils.TraceOut();
     }
 
     private void CopyFilesAsync(bool showCompletedMessage)
@@ -2013,7 +2027,7 @@ public partial class Main : Form
         longRunningActionExecutingRightNow = true;
         DisableControlsForAsyncTasks();
 
-        var nextDiskMessage = "Please insert the next backup disk now";
+        const string nextDiskMessage = "Please insert the next backup disk now";
 
         while (true)
         {
@@ -2080,13 +2094,11 @@ public partial class Main : Form
         ct = tokenSource.Token;
         var t = Task.Run(() => methodName(param1), ct).ContinueWith(u =>
         {
-            if (u.Exception != null)
-            {
-                Utils.Log("Exception occured. Cancelling operation.");
-                _ = MessageBox.Show(string.Format(Resources.Main_TaskWrapperException, u.Exception));
+            if (u.Exception == null) return;
+            Utils.Log("Exception occured. Cancelling operation.");
+            _ = MessageBox.Show(string.Format(Resources.Main_TaskWrapperException, u.Exception));
 
-                CancelButton_Click(null, null);
-            }
+            CancelButton_Click(null, null);
         }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
     }
 
@@ -2098,13 +2110,11 @@ public partial class Main : Form
         ct = tokenSource.Token;
         var t = Task.Run(() => methodName(param1, param2), ct).ContinueWith(u =>
         {
-            if (u.Exception != null)
-            {
-                Utils.Log("Exception occured. Cancelling operation.");
-                _ = MessageBox.Show(string.Format(Resources.Main_TaskWrapperException, u.Exception));
+            if (u.Exception == null) return;
+            Utils.Log("Exception occured. Cancelling operation.");
+            _ = MessageBox.Show(string.Format(Resources.Main_TaskWrapperException, u.Exception));
 
-                CancelButton_Click(null, null);
-            }
+            CancelButton_Click(null, null);
         }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
     }
 
@@ -2400,8 +2410,7 @@ public partial class Main : Form
         Utils.LogWithPushover(BackupAction.ScanFolders, $"{notOnBackupDisk.Length:n0} files to backup at {Utils.FormatSize(fileSizeToCopy)}");
 
         Utils.LogWithPushover(BackupAction.ScanFolders, "Completed");
-        Utils.Trace("ScanFolders exit");
-        return true;
+        return Utils.TraceOut(true);
     }
 
     /// <summary>

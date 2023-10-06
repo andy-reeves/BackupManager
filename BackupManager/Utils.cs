@@ -189,12 +189,10 @@ public static class Utils
     /// <param name="destFileName">The new path and name for the file.</param>
     internal static void FileMove(string sourceFileName, string destFileName)
     {
-        Trace("FileMove enter");
-        Trace($"Params: sourceFileName={sourceFileName}, destFileName={destFileName}");
-
+        TraceIn(sourceFileName, destFileName);
         EnsureDirectories(destFileName);
         File.Move(sourceFileName, destFileName);
-        Trace("FileMove exit");
+        TraceOut();
     }
 
     /// <summary>
@@ -275,8 +273,7 @@ public static class Utils
     /// <param name="attributeToRemove"></param>
     internal static void ClearFileAttribute(string path, FileAttributes attributeToRemove)
     {
-        Trace("ClearFileAttribute enter");
-        Trace($"Params: path={path}, attributeToRemove={attributeToRemove}");
+        TraceIn(path, attributeToRemove);
 
         var attributes = File.GetAttributes(path);
 
@@ -286,7 +283,7 @@ public static class Utils
             File.SetAttributes(path, attributes);
         }
 
-        Trace("ClearFileAttribute exit");
+        TraceOut();
     }
 
     private static FileAttributes RemoveAttribute(FileAttributes attributes, FileAttributes attributesToRemove)

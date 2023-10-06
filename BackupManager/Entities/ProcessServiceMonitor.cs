@@ -76,11 +76,11 @@ public class ProcessServiceMonitor
 
     public void UpdateFailures(DateTime newFailure)
     {
-        Utils.Trace("UpdateFailures enter");
+        Utils.TraceIn();
 
         if (FailureRetryExceeded)
         {
-            Utils.Trace("UpdateFailures exit as FailureRetry=TRUE");
+            Utils.TraceOut("FailureRetry=TRUE");
             return;
         }
 
@@ -90,20 +90,17 @@ public class ProcessServiceMonitor
         {
             var a = Failures[i];
 
-            if (a < DateTime.Now.AddSeconds(-FailureTimePeriod))
-            {
-                Utils.Trace("UpdateFailures removing old failure as expired");
-                _ = Failures.Remove(a);
-            }
+            if (a >= DateTime.Now.AddSeconds(-FailureTimePeriod)) continue;
+            Utils.Trace("UpdateFailures removing old failure as expired");
+            _ = Failures.Remove(a);
         }
 
         if (Failures.Count > MaximumFailures)
         {
-            Utils.Trace("UpdateFailures setting FailureRetry=TRUE");
+            Utils.Trace("Setting FailureRetry=TRUE");
             FailureRetryExceeded = true;
         }
 
-        Utils.Trace($"Failures.Count = {Failures.Count}");
-        Utils.Trace("UpdateFailures exit");
+        Utils.TraceOut($"Failures.Count = {Failures.Count}");
     }
 }

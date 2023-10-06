@@ -42,9 +42,7 @@ public class DailyTrigger : IDisposable
                 Utils.Trace($"triggerTime={triggerTime}");
 
                 await Task.Delay(triggerTime, CancellationToken.Token);
-                Utils.Trace("Invoke now");
                 OnTimeTriggered?.Invoke();
-                Utils.Trace("Invoke complete");
             }
         }, CancellationToken.Token);
 
