@@ -105,10 +105,10 @@ public partial class Main : Form
                 listFilesComboBox.Items.Add(disk.Name);
             }
 
-            pushoverLowCheckBox.Checked = mediaBackup.Config.PushoverSendLowONOFF;
-            pushoverNormalCheckBox.Checked = mediaBackup.Config.PushoverSendNormalONOFF;
-            pushoverHighCheckBox.Checked = mediaBackup.Config.PushoverSendHighONOFF;
-            pushoverEmergencyCheckBox.Checked = mediaBackup.Config.PushoverSendEmergencyONOFF;
+            pushoverLowCheckBox.Checked = mediaBackup.Config.PushoverSendLowOnOff;
+            pushoverNormalCheckBox.Checked = mediaBackup.Config.PushoverSendNormalOnOff;
+            pushoverHighCheckBox.Checked = mediaBackup.Config.PushoverSendHighOnOff;
+            pushoverEmergencyCheckBox.Checked = mediaBackup.Config.PushoverSendEmergencyOnOff;
 
             foreach (var monitor in mediaBackup.Config.Monitors)
             {
@@ -126,12 +126,12 @@ public partial class Main : Form
             UpdateScheduledBackupButton();
             UpdateSpeedTestDisksButton();
 
-            if (mediaBackup.Config.MonitoringONOFF)
+            if (mediaBackup.Config.MonitoringOnOff)
             {
                 // we switch it off and force the button to be clicked to turn it on again
-                mediaBackup.Config.MonitoringONOFF = false;
+                mediaBackup.Config.MonitoringOnOff = false;
 #if !DEBUG
-                    MonitoringButton_Click(null, null);
+                MonitoringButton_Click(null, null);
 #endif
             }
 
@@ -144,7 +144,7 @@ public partial class Main : Form
 #endif
             }
 
-            SetupDailyTrigger(mediaBackup.Config.ScheduledBackupONOFF);
+            SetupDailyTrigger(mediaBackup.Config.ScheduledBackupOnOff);
 
             processFolderChangesTimer.Interval = mediaBackup.Config.MasterFoldersProcessChangesTimer * 1000;
             scanFoldersTimer.Interval = mediaBackup.Config.MasterFoldersScanTimer * 1000;
@@ -207,9 +207,9 @@ public partial class Main : Form
     private void BackupTimerButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        mediaBackup.Config.ScheduledBackupONOFF = !mediaBackup.Config.ScheduledBackupONOFF;
+        mediaBackup.Config.ScheduledBackupOnOff = !mediaBackup.Config.ScheduledBackupOnOff;
 
-        SetupDailyTrigger(mediaBackup.Config.ScheduledBackupONOFF);
+        SetupDailyTrigger(mediaBackup.Config.ScheduledBackupOnOff);
 
         UpdateScheduledBackupButton();
         Utils.TraceOut();
@@ -254,7 +254,7 @@ public partial class Main : Form
         ScheduledBackup();
 
         // reset the daily trigger
-        SetupDailyTrigger(mediaBackup.Config.ScheduledBackupONOFF);
+        SetupDailyTrigger(mediaBackup.Config.ScheduledBackupOnOff);
 
         Utils.Trace($"TriggerHour={trigger.TriggerHour}");
 
@@ -275,7 +275,7 @@ public partial class Main : Form
             // This happens if the server running the backup cannot connect to the nas devices sometimes
             // It'll then delete everything off the connected backup disk as it doesn't think they're needed so this will prevent that
 
-            if (mediaBackup.Config.MonitoringONOFF)
+            if (mediaBackup.Config.MonitoringOnOff)
                 Utils.LogWithPushover(BackupAction.General, $"Service monitoring is running every {mediaBackup.Config.MonitoringInterval} seconds");
             else
                 Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, "Service monitoring is not running");
@@ -288,7 +288,7 @@ public partial class Main : Form
             if (backupFileDate.AddDays(mediaBackup.Config.MasterFoldersDaysBetweenFullScan) < DateTime.Now) doFullBackup = true;
 
             // Update the master files if we've not been monitoring folders directly
-            if (!mediaBackup.Config.MasterFoldersFileChangeWatchersONOFF || doFullBackup)
+            if (!mediaBackup.Config.MasterFoldersFileChangeWatchersOnOff || doFullBackup)
             {
                 ScanFolders();
                 UpdateSymbolicLinks();
@@ -356,7 +356,7 @@ public partial class Main : Form
 
         Utils.Log($"Listing files in master folder {masterFolder}");
 
-        if (mediaBackup.Config.SpeedTestONOFF)
+        if (mediaBackup.Config.SpeedTestOnOff)
         {
             Utils.DiskSpeedTest(masterFolder, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations,
                 out var readSpeed, out var writeSpeed);
@@ -689,11 +689,11 @@ public partial class Main : Form
     {
         Utils.TraceIn();
 
-        if (mediaBackup.Config.MonitoringONOFF)
+        if (mediaBackup.Config.MonitoringOnOff)
         {
             monitoringTimer.Stop();
             Utils.LogWithPushover(BackupAction.Monitoring, "Stopped");
-            mediaBackup.Config.MonitoringONOFF = false;
+            mediaBackup.Config.MonitoringOnOff = false;
         }
         else
         {
@@ -703,7 +703,7 @@ public partial class Main : Form
 
             monitoringTimer.Interval = mediaBackup.Config.MonitoringInterval * 1000;
             monitoringTimer.Start();
-            mediaBackup.Config.MonitoringONOFF = true;
+            mediaBackup.Config.MonitoringOnOff = true;
         }
 
         UpdateMonitoringButton();
@@ -955,7 +955,7 @@ public partial class Main : Form
     private void PushoverOnOffButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        mediaBackup.Config.PushoverONOFF = !mediaBackup.Config.PushoverONOFF;
+        mediaBackup.Config.PushoverOnOff = !mediaBackup.Config.PushoverOnOff;
         UpdateSendingPushoverButton();
         Utils.TraceOut();
     }
@@ -963,63 +963,63 @@ public partial class Main : Form
     private void UpdateSendingPushoverButton()
     {
         Utils.TraceIn();
-        pushoverOnOffButton.Text = mediaBackup.Config.PushoverONOFF ? "Sending = ON" : "Sending = OFF";
+        pushoverOnOffButton.Text = mediaBackup.Config.PushoverOnOff ? "Sending = ON" : "Sending = OFF";
         Utils.TraceOut();
     }
 
     private void UpdateMonitoringButton()
     {
         Utils.TraceIn();
-        monitoringButton.Text = mediaBackup.Config.MonitoringONOFF ? "Monitoring = ON" : "Monitoring = OFF";
+        monitoringButton.Text = mediaBackup.Config.MonitoringOnOff ? "Monitoring = ON" : "Monitoring = OFF";
         Utils.TraceOut();
     }
 
     private void UpdateSpeedTestDisksButton()
     {
         Utils.TraceIn();
-        speedTestDisksButton.Text = mediaBackup.Config.SpeedTestONOFF ? "Speed Test Disks = ON" : "Speed Test Disks = OFF";
+        speedTestDisksButton.Text = mediaBackup.Config.SpeedTestOnOff ? "Speed Test Disks = ON" : "Speed Test Disks = OFF";
         Utils.TraceOut();
     }
 
     private void UpdateScheduledBackupButton()
     {
         Utils.TraceIn();
-        scheduledBackupTimerButton.Text = mediaBackup.Config.ScheduledBackupONOFF ? "Backup = ON" : "Backup = OFF";
+        scheduledBackupTimerButton.Text = mediaBackup.Config.ScheduledBackupOnOff ? "Backup = ON" : "Backup = OFF";
         Utils.TraceOut();
     }
 
     private void PushoverLowCheckBox_CheckedChanged(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        mediaBackup.Config.PushoverSendLowONOFF = pushoverLowCheckBox.Checked;
+        mediaBackup.Config.PushoverSendLowOnOff = pushoverLowCheckBox.Checked;
         Utils.TraceOut();
     }
 
     private void PushoverNormalCheckBox_CheckedChanged(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        mediaBackup.Config.PushoverSendNormalONOFF = pushoverNormalCheckBox.Checked;
+        mediaBackup.Config.PushoverSendNormalOnOff = pushoverNormalCheckBox.Checked;
         Utils.TraceOut();
     }
 
     private void PushoverHighCheckBox_CheckedChanged(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        mediaBackup.Config.PushoverSendHighONOFF = pushoverHighCheckBox.Checked;
+        mediaBackup.Config.PushoverSendHighOnOff = pushoverHighCheckBox.Checked;
         Utils.TraceOut();
     }
 
     private void PushoverEmergencyCheckBox_CheckedChanged(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        mediaBackup.Config.PushoverSendEmergencyONOFF = pushoverEmergencyCheckBox.Checked;
+        mediaBackup.Config.PushoverSendEmergencyOnOff = pushoverEmergencyCheckBox.Checked;
         Utils.TraceOut();
     }
 
     private void SpeedTestDisksButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        mediaBackup.Config.SpeedTestONOFF = !mediaBackup.Config.SpeedTestONOFF;
+        mediaBackup.Config.SpeedTestOnOff = !mediaBackup.Config.SpeedTestOnOff;
         UpdateSpeedTestDisksButton();
         Utils.TraceOut();
     }
@@ -1073,7 +1073,7 @@ public partial class Main : Form
     private void FileWatcherButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        mediaBackup.Config.MasterFoldersFileChangeWatchersONOFF = !mediaBackup.Config.MasterFoldersFileChangeWatchersONOFF;
+        mediaBackup.Config.MasterFoldersFileChangeWatchersOnOff = !mediaBackup.Config.MasterFoldersFileChangeWatchersOnOff;
         SetupFileWatchers();
     }
 
@@ -1081,7 +1081,7 @@ public partial class Main : Form
     {
         Utils.TraceIn();
 
-        if (mediaBackup.Config.MasterFoldersFileChangeWatchersONOFF)
+        if (mediaBackup.Config.MasterFoldersFileChangeWatchersOnOff)
         {
             fileWatcherButton.Text = Resources.Main_SetupFileWatchers_On;
             CreateFileSystemWatchers();
@@ -1092,8 +1092,8 @@ public partial class Main : Form
             RemoveFileSystemWatchers();
         }
 
-        processFolderChangesTimer.Enabled = mediaBackup.Config.MasterFoldersFileChangeWatchersONOFF;
-        scanFoldersTimer.Enabled = mediaBackup.Config.MasterFoldersFileChangeWatchersONOFF;
+        processFolderChangesTimer.Enabled = mediaBackup.Config.MasterFoldersFileChangeWatchersOnOff;
+        scanFoldersTimer.Enabled = mediaBackup.Config.MasterFoldersFileChangeWatchersOnOff;
     }
 
     private void ProcessFolderChangesTimer_Tick(object sender, EventArgs e)
@@ -1480,7 +1480,7 @@ public partial class Main : Form
 
         long readSpeed = 0, writeSpeed = 0;
 
-        if (mediaBackup.Config.SpeedTestONOFF)
+        if (mediaBackup.Config.SpeedTestOnOff)
         {
             var diskTestSize = disk.Free > Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize)
                 ? Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize)
@@ -2303,7 +2303,7 @@ public partial class Main : Form
 
                 _ = Utils.GetDiskInfo(masterFolder, out var freeSpaceOnCurrentMasterFolder, out var totalBytesOnMasterFolderDisk);
 
-                if (mediaBackup.Config.SpeedTestONOFF)
+                if (mediaBackup.Config.SpeedTestOnOff)
                 {
                     UpdateStatusLabel($"Speed testing {masterFolder}");
                     Utils.DiskSpeedTest(masterFolder, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations,
@@ -2320,7 +2320,7 @@ public partial class Main : Form
 
                 Utils.LogWithPushover(BackupAction.ScanFolders, text);
 
-                if (mediaBackup.Config.SpeedTestONOFF)
+                if (mediaBackup.Config.SpeedTestOnOff)
                 {
                     if (readSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumReadSpeed))
                         Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High,

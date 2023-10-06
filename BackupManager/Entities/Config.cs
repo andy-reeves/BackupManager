@@ -54,7 +54,7 @@ public class Config
     /// <summary>
     ///     True and the Master Folders are monitored for changes
     /// </summary>
-    public bool MasterFoldersFileChangeWatchersONOFF { get; set; }
+    public bool MasterFoldersFileChangeWatchersOnOff { get; set; }
 
     /// <summary>
     ///     Number of days before running a full master folder scan
@@ -92,11 +92,6 @@ public class Config
     public int MasterFolderScanMinimumAgeBeforeScanning { get; set; }
 
     /// <summary>
-    ///     The root folder where Directory SymbolicLinks are created
-    /// </summary>
-    public string SymbolicLinksRootFolder { get; set; }
-
-    /// <summary>
     ///     Interval in seconds
     /// </summary>
     public int MonitoringInterval { get; set; }
@@ -104,34 +99,34 @@ public class Config
     /// <summary>
     ///     If True the service monitoring will start when the application starts
     /// </summary>
-    public bool MonitoringONOFF { get; set; }
+    public bool MonitoringOnOff { get; set; }
 
     public string PushoverAppToken { get; set; }
 
     /// <summary>
     ///     If True Pushover messages are sent
     /// </summary>
-    public bool PushoverONOFF { get; set; }
+    public bool PushoverOnOff { get; set; }
 
     /// <summary>
     ///     If TRUE Pushover Emergency priority messages will be sent when required
     /// </summary>
-    public bool PushoverSendEmergencyONOFF { get; set; }
+    public bool PushoverSendEmergencyOnOff { get; set; }
 
     /// <summary>
     ///     If TRUE Pushover High priority messages will be sent when required
     /// </summary>
-    public bool PushoverSendHighONOFF { get; set; }
+    public bool PushoverSendHighOnOff { get; set; }
 
     /// <summary>
     ///     If TRUE Pushover Low/Lowest priority messages will be sent when required
     /// </summary>
-    public bool PushoverSendLowONOFF { get; set; }
+    public bool PushoverSendLowOnOff { get; set; }
 
     /// <summary>
     ///     If TRUE Pushover Normal priority messages will be sent when required
     /// </summary>
-    public bool PushoverSendNormalONOFF { get; set; }
+    public bool PushoverSendNormalOnOff { get; set; }
 
     public string PushoverUserKey { get; set; }
 
@@ -143,7 +138,7 @@ public class Config
     /// <summary>
     ///     If True the scheduled backup will start when scheduled
     /// </summary>
-    public bool ScheduledBackupONOFF { get; set; }
+    public bool ScheduledBackupOnOff { get; set; }
 
     /// <summary>
     ///     If True the scheduled backup will start when the application starts
@@ -168,7 +163,7 @@ public class Config
     /// <summary>
     ///     True to execute disk speed tests
     /// </summary>
-    public bool SpeedTestONOFF { get; set; }
+    public bool SpeedTestOnOff { get; set; }
 
     public static Config Load(string path)
     {

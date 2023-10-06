@@ -13,7 +13,7 @@
   <!-- MinimumFreeSpaceToLeaveOnBackupDisk in MB -->
   <BackupDiskMinimumFreeSpaceToLeave>210</BackupDiskMinimumFreeSpaceToLeave>
 
-  <MasterFoldersFileChangeWatchersONOFF>true</MasterFoldersFileChangeWatchersONOFF>
+  <MasterFoldersFileChangeWatchersOnOff>true</MasterFoldersFileChangeWatchersOnOff>
   
   <!-- MinimumCriticalMasterFolderSpace in MB -->
   <MasterFolderMinimumCriticalSpace>200000</MasterFolderMinimumCriticalSpace>
@@ -39,20 +39,20 @@
   <MonitoringInterval>30</MonitoringInterval>
 
   <!-- When true the service monitoring starts when the app starts -->
-  <MonitoringONOFF>false</MonitoringONOFF>
+  <MonitoringOnOff>false</MonitoringOnOff>
 
   <PushoverAppToken>InsertYourPushoverAppTokenHere</PushoverAppToken>
 
   <!-- True to enable sending Pushover messages -->
-  <PushoverONOFF>true</PushoverONOFF>
+  <PushoverOnOff>true</PushoverOnOff>
   
-  <PushoverSendLowONOFF>true</PushoverSendLowONOFF>
+  <PushoverSendLowOnOff>true</PushoverSendLowOnOff>
 
-  <PushoverSendNormalONOFF>true</PushoverSendNormalONOFF>
+  <PushoverSendNormalOnOff>true</PushoverSendNormalOnOff>
 
-  <PushoverSendHighONOFF>true</PushoverSendHighONOFF>
+  <PushoverSendHighOnOff>true</PushoverSendHighOnOff>
 
-  <PushoverSendEmergencyONOFF>true</PushoverSendEmergencyONOFF>
+  <PushoverSendEmergencyOnOff>true</PushoverSendEmergencyOnOff>
 
   <PushoverUserKey>InsertYourPushoverUserKeyHere</PushoverUserKey>
 
@@ -60,7 +60,7 @@
   <PushoverWarningMessagesRemaining>500</PushoverWarningMessagesRemaining>
  
   <!-- When true a backup scan will run when scheduled -->
-  <ScheduledBackupONOFF>true</ScheduledBackupONOFF>
+  <ScheduledBackupOnOff>true</ScheduledBackupOnOff>
   
   <!-- When true a backup scan will run when the app starts -->
   <ScheduledBackupRunOnStartup>false</ScheduledBackupRunOnStartup>
@@ -75,10 +75,7 @@
   <SpeedTestIterations>1</SpeedTestIterations>
 
   <!-- If True we test the speed of the disks -->
-  <SpeedTestONOFF>false</SpeedTestONOFF>
-
-  <!-- The root folder where Directory SymbolicLinks are created -->
-  <SymbolicLinksRootFolder>J:\</SymbolicLinksRootFolder>
+  <SpeedTestOnOff>false</SpeedTestOnOff>
 
   <Monitors>
     <Monitor>

@@ -659,10 +659,10 @@ public static class Utils
     {
         TraceIn();
 
-        if (Config.PushoverONOFF && ((priority is PushoverPriority.Low or PushoverPriority.Lowest && Config.PushoverSendLowONOFF) ||
-                                     (priority == PushoverPriority.Normal && Config.PushoverSendNormalONOFF) ||
-                                     (priority == PushoverPriority.High && Config.PushoverSendHighONOFF) ||
-                                     (priority == PushoverPriority.Emergency && Config.PushoverSendEmergencyONOFF)))
+        if (Config.PushoverOnOff && ((priority is PushoverPriority.Low or PushoverPriority.Lowest && Config.PushoverSendLowOnOff) ||
+                                     (priority == PushoverPriority.Normal && Config.PushoverSendNormalOnOff) ||
+                                     (priority == PushoverPriority.High && Config.PushoverSendHighOnOff) ||
+                                     (priority == PushoverPriority.Emergency && Config.PushoverSendEmergencyOnOff)))
             try
             {
                 Dictionary<string, string> parameters = new()
