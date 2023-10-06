@@ -289,7 +289,11 @@ public partial class Main : Form
             if (backupFileDate.AddDays(mediaBackup.Config.MasterFoldersDaysBetweenFullScan) < DateTime.Now) doFullBackup = true;
 
             // Update the master files if we've not been monitoring folders directly
-            if (!mediaBackup.Config.MasterFoldersFileChangeWatchersONOFF || doFullBackup) _ = ScanFolders();
+            if (!mediaBackup.Config.MasterFoldersFileChangeWatchersONOFF || doFullBackup)
+            {
+                ScanFolders();
+                UpdateSymbolicLinks();
+            }
 
             if (mediaBackup.Config.BackupDiskDifferenceInFileCountAllowedPercentage != 0)
             {
