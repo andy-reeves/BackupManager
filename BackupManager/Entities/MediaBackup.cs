@@ -279,7 +279,7 @@ public class MediaBackup
                 backupFile.UpdateFileLength();
             }
 
-            // Now we check the fullpath has not changed the UPPER or lowerase anywhere
+            // Now we check the fullpath has not changed the UPPER or lowercase anywhere
             // we're not case sensitive but we want it to match the casing on the master folder
             if (fullPath != backupFile.FullPath) backupFile.SetFullPath(fullPath, masterFolder, indexFolder);
 

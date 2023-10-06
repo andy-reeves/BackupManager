@@ -2453,11 +2453,7 @@ public partial class Main : Form
                     Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High, $"{rule.Name} {rule.Message} {file}");
                 }
 
-                if (!mediaBackup.EnsureFile(file))
-                {
-                    Utils.Trace("ScanSingleFolder exit with false");
-                    return Utils.TraceOut(false);
-                }
+                if (!mediaBackup.EnsureFile(file)) return Utils.TraceOut(false);
 
                 UpdateMediaFilesCountDisplay();
             }

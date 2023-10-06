@@ -315,6 +315,11 @@ public class BackupFile : IEquatable<BackupFile>
         return true;
     }
 
+    public override string ToString()
+    {
+        return FullPath;
+    }
+
     public override bool Equals(object obj)
     {
         return Equals(obj as BackupFile);
