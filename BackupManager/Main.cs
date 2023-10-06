@@ -96,7 +96,6 @@ public partial class Main : Form
 
             var masterFoldersArray = mediaBackup.Config.MasterFolders.ToArray();
 
-            Utils.Trace($"masterFoldersArray.Length = {masterFoldersArray.Length}");
             listMasterFoldersComboBox.Items.AddRange(masterFoldersArray);
             masterFoldersComboBox.Items.AddRange(masterFoldersArray);
             restoreMasterFolderComboBox.Items.AddRange(masterFoldersArray);

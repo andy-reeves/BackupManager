@@ -1507,11 +1507,17 @@ public static class Utils
         return default;
     }
 
-    internal static string TraceOut(string value = "")
+    internal static string TraceOut(string value)
     {
         var methodName = GetFullyQualifiedGetCurrentMethodName();
         System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} exit {value}");
         return value;
+    }
+
+    internal static void TraceOut()
+    {
+        var methodName = GetFullyQualifiedGetCurrentMethodName();
+        System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} exit");
     }
 
     internal static void Trace(string value)

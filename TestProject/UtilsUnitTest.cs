@@ -86,6 +86,8 @@ public class UtilsUnitTest
         var c = new BackupFile();
         var result11 = Utils.TraceOut(c, "Test");
         Assert.True(result11.Equals(c));
+
+        Utils.TraceOut();
     }
 }
 #endif
