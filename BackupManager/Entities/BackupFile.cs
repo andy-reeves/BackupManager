@@ -247,7 +247,7 @@ public class BackupFile : IEquatable<BackupFile>
     /// <exception cref="ApplicationException"></exception>
     private void UpdateContentsHash(string newContentsHash)
     {
-        if (newContentsHash == Utils.ZeroByteHash) throw new ApplicationException("Zerobyte Hashcode");
+        if (newContentsHash == Utils.ZeroByteHash) throw new ApplicationException("Zero byte Hashcode");
 
         contentsHash = newContentsHash;
     }
@@ -297,14 +297,12 @@ public class BackupFile : IEquatable<BackupFile>
         if (!File.Exists(pathToBackupDiskFile) || !Utils.IsFileAccessible(pathToBackupDiskFile)) return false;
 
         var hashFromSourceFile = Utils.GetShortMd5HashFromFile(FullPath);
-
-        if (hashFromSourceFile == Utils.ZeroByteHash) throw new ApplicationException($"ERROR: {FullPath} has zerobyte hashcode");
+        if (hashFromSourceFile == Utils.ZeroByteHash) throw new ApplicationException($"ERROR: {FullPath} has zero byte hashcode");
 
         ContentsHash = hashFromSourceFile;
 
         var hashFromBackupDiskFile = Utils.GetShortMd5HashFromFile(pathToBackupDiskFile);
-
-        if (hashFromBackupDiskFile == Utils.ZeroByteHash) throw new ApplicationException($"ERROR: {hashFromBackupDiskFile} has zerobyte hashcode");
+        if (hashFromBackupDiskFile == Utils.ZeroByteHash) throw new ApplicationException($"ERROR: {hashFromBackupDiskFile} has zero byte hashcode");
 
         if (hashFromBackupDiskFile != hashFromSourceFile)
 

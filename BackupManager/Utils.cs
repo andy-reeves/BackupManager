@@ -694,22 +694,12 @@ public static partial class Utils
     }
 
     /// <summary>
-    ///     Returns True if the Url returns a 200 response with a timeout of 30 seconds
-    /// </summary>
-    /// <param name="url">The url to check</param>
-    /// <returns>True if success code returned</returns>
-    internal static bool UrlExists(string url)
-    {
-        return UrlExists(url, 30 * 1000);
-    }
-
-    /// <summary>
     ///     Returns True if the Url returns a 200 response
     /// </summary>
     /// <param name="url">The url to check</param>
     /// <param name="timeout">Timeout in milliseconds</param>
     /// <returns>True if success code returned</returns>
-    internal static bool UrlExists(string url, int timeout)
+    internal static bool UrlExists(string url, int timeout = 30 * 1000)
     {
         bool returnValue;
 
@@ -1271,18 +1261,24 @@ public static partial class Utils
 
         try
         {
-            var millisec1 = Environment.TickCount;
+            var tickCount = Environment.TickCount;
             var timeout = TimeSpan.FromMilliseconds(timeoutMilliseconds);
             if (service.Status == ServiceControllerStatus.Running) service.Stop();
             service.WaitForStatus(ServiceControllerStatus.Stopped, timeout);
 
             // count the rest of the timeout
-            var millisec2 = Environment.TickCount;
-            timeout = TimeSpan.FromMilliseconds(timeoutMilliseconds - (millisec2 - millisec1));
+            var tickCount2 = Environment.TickCount;
+            timeout = TimeSpan.FromMilliseconds(timeoutMilliseconds - (tickCount2 - tickCount));
 
-            if (service.Status.Equals(ServiceControllerStatus.Stopped))
-                service.Start();
-            else if (service.Status.Equals(ServiceControllerStatus.Paused)) service.Continue();
+            switch (service.Status)
+            {
+                case ServiceControllerStatus.Stopped:
+                    service.Start();
+                    break;
+                case ServiceControllerStatus.Paused:
+                    service.Continue();
+                    break;
+            }
             service.WaitForStatus(ServiceControllerStatus.Running, timeout);
         }
         catch

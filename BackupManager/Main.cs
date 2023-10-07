@@ -2099,7 +2099,7 @@ public partial class Main : Form
         tokenSource = new CancellationTokenSource();
         ct = tokenSource.Token;
 
-        var t = Task.Run(methodName, ct).ContinueWith(u =>
+        Task.Run(methodName, ct).ContinueWith(u =>
         {
             if (u.Exception == null) return;
 
@@ -2115,12 +2115,13 @@ public partial class Main : Form
 
         tokenSource = new CancellationTokenSource();
         ct = tokenSource.Token;
-        var t = Task.Run(() => methodName(param1), ct).ContinueWith(u =>
+
+        Task.Run(() => methodName(param1), ct).ContinueWith(u =>
         {
             if (u.Exception == null) return;
+
             Utils.Log("Exception occured. Cancelling operation.");
             _ = MessageBox.Show(string.Format(Resources.Main_TaskWrapperException, u.Exception));
-
             CancelButton_Click(null, null);
         }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
     }
@@ -2131,12 +2132,13 @@ public partial class Main : Form
 
         tokenSource = new CancellationTokenSource();
         ct = tokenSource.Token;
-        var t = Task.Run(() => methodName(param1, param2), ct).ContinueWith(u =>
+
+        Task.Run(() => methodName(param1, param2), ct).ContinueWith(u =>
         {
             if (u.Exception == null) return;
+
             Utils.Log("Exception occured. Cancelling operation.");
             _ = MessageBox.Show(string.Format(Resources.Main_TaskWrapperException, u.Exception));
-
             CancelButton_Click(null, null);
         }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
     }

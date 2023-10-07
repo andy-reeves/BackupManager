@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
+
 using BackupManager.Extensions;
 
 namespace BackupManager.Entities;
@@ -20,7 +21,7 @@ public class MediaBackup
     // we do this so we can look up files quickly by 
     // contents hashes are not unique. Duplicate files in different locations
     // The only guaranteed unique value is the indexfolder and relative path
-    // We dont want to delete the file off backup and then copy it again so we try a rename
+    // We don't want to delete the file off backup and then copy it again so we try a rename
     // as long as the file has the same indexfolder and relative path we can find it and rename it
     // This happened with The Porridge movie which is also stored as a Tv episode.
     private readonly Dictionary<string, BackupFile> indexFolderAndRelativePath = new(StringComparer.CurrentCultureIgnoreCase);
@@ -99,7 +100,7 @@ public class MediaBackup
 
             foreach (var backupFile in mediaBackup.BackupFiles)
             {
-                if (backupFile.ContentsHash == Utils.ZeroByteHash) throw new ApplicationException("Zerobyte Hash detected on load");
+                if (backupFile.ContentsHash == Utils.ZeroByteHash) throw new ApplicationException("Zero byte Hash detected on load");
 
                 if (!mediaBackup.indexFolderAndRelativePath.ContainsKey(backupFile.Hash))
                     mediaBackup.indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
@@ -283,7 +284,7 @@ public class MediaBackup
                 backupFile.UpdateFileLength();
             }
 
-            // Now we check the fullpath has not changed the UPPER or lowercase anywhere
+            // Now we check the full path has not changed the UPPER or lowercase anywhere
             // we're not case sensitive but we want it to match the casing on the master folder
             if (fullPath != backupFile.FullPath) backupFile.SetFullPath(fullPath, masterFolder, indexFolder);
 
@@ -430,7 +431,7 @@ public class MediaBackup
     }
 
     /// <summary>
-    ///     Returns True if this path exists already. Path should contain indexfolder and relativepath.
+    ///     Returns True if this path exists already. Path should contain indexfolder and relative path.
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
