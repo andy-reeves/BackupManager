@@ -61,6 +61,16 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The fullPath must start with the masterFolder and indexFolder.
+        /// </summary>
+        internal static string BackupFile_GetRelativePath_The_fullPath_must_start_with_the_masterFolder_and_indexFolder {
+            get {
+                return ResourceManager.GetString("BackupFile_GetRelativePath_The_fullPath_must_start_with_the_masterFolder_and_inde" +
+                        "xFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to  - Admin.
         /// </summary>
         internal static string Main_AdminTitle {

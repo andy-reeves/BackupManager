@@ -189,4 +189,7 @@
   <data name="Main_SymbolicLinksTitle" xml:space="preserve">
     <value>Symbolic Links</value>
   </data>
+  <data name="BackupFile_GetRelativePath_The_fullPath_must_start_with_the_masterFolder_and_indexFolder" xml:space="preserve">
+    <value>The fullPath must start with the masterFolder and indexFolder</value>
+  </data>
 </root>

@@ -1053,20 +1053,24 @@ public static partial class Utils
     {
         var assembly = startupClass.GetTypeInfo().Assembly;
         var projectName = assembly.GetName().Name;
+        if (projectName == null) return null;
+
         var applicationBasePath = AppContext.BaseDirectory;
         DirectoryInfo directoryInfo = new(applicationBasePath);
 
         do
         {
             directoryInfo = directoryInfo.Parent;
-            DirectoryInfo projectDirectoryInfo = new(directoryInfo.FullName);
+            if (directoryInfo == null) continue;
 
-            if (projectDirectoryInfo.Exists)
+            DirectoryInfo projectDirectoryInfo = new(directoryInfo.FullName);
+            if (!projectDirectoryInfo.Exists) continue;
+
             {
                 FileInfo projectFileInfo = new(Path.Combine(projectDirectoryInfo.FullName, projectName, $"{projectName}.csproj"));
                 if (projectFileInfo.Exists) return Path.Combine(projectDirectoryInfo.FullName, projectName);
             }
-        } while (directoryInfo.Parent != null);
+        } while (directoryInfo is { Parent: not null });
         return null;
     }
 

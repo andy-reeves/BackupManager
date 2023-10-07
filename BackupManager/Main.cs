@@ -918,8 +918,7 @@ public partial class Main : Form
         Utils.TraceIn();
 
         UpdateStatusLabel(message);
-        Task.Delay(5000).Wait();
-
+        Task.Delay(5000, ct).Wait(ct);
         Utils.TraceOut();
     }
 
@@ -2099,15 +2098,14 @@ public partial class Main : Form
 
         tokenSource = new CancellationTokenSource();
         ct = tokenSource.Token;
-        var t = Task.Run(() => methodName(), ct).ContinueWith(u =>
-        {
-            if (u.Exception != null)
-            {
-                Utils.Log("Exception occured. Cancelling operation.");
-                _ = MessageBox.Show(string.Format(Resources.Main_TaskWrapperException, u.Exception));
 
-                CancelButton_Click(null, null);
-            }
+        var t = Task.Run(methodName, ct).ContinueWith(u =>
+        {
+            if (u.Exception == null) return;
+
+            Utils.Log("Exception occured. Cancelling operation.");
+            MessageBox.Show(string.Format(Resources.Main_TaskWrapperException, u.Exception));
+            CancelButton_Click(null, null);
         }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
     }
 

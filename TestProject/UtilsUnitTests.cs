@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-//  <copyright file="UtilsUnitTest.cs" company="Andy Reeves">
+//  <copyright file="UtilsUnitTests.cs" company="Andy Reeves">
 //
 //  </copyright>
 //  --------------------------------------------------------------------------------------------------------------------
@@ -11,7 +11,7 @@ using BackupManager.Entities;
 
 namespace TestProject;
 
-public class UtilsUnitTest
+public class UtilsUnitTests
 {
     [Fact]
     public void FormatTimeSpanFromSeconds()
@@ -93,7 +93,7 @@ public class UtilsUnitTest
     [Fact]
     public void CreateHashForByteArray()
     {
-        var path = Path.Combine(Utils.GetProjectPath(typeof(UtilsUnitTest)), @"TestData\TestFile1");
+        var path = Path.Combine(Utils.GetProjectPath(typeof(UtilsUnitTests)), @"TestData\TestFile1");
         var size = new FileInfo(path).Length;
         var startDownloadPositionForEndBlock = size - Utils.EndBlockSize;
         var startDownloadPositionForMiddleBlock = size / 2;
