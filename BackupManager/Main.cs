@@ -17,6 +17,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
 using BackupManager.Entities;
 using BackupManager.Extensions;
 using BackupManager.Properties;
@@ -1275,7 +1276,7 @@ public partial class Main : Form
         Utils.TraceOut();
     }
 
-    private void RecreateAllMkLinksButton_Click(object sender, EventArgs e)
+    private void CheckAllSymbolicLinksButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
 
@@ -1303,12 +1304,33 @@ public partial class Main : Form
 
         HashSet<string> hashSet = new();
 
-        // HashSet of parent paths
+        // HashSet of parent paths that match the RegEx's from config
         foreach (var backupFile in mediaBackup.BackupFiles)
         {
-            var p = mediaBackup.GetParentFolder(backupFile.FullPath);
-            if (p == null) continue;
-            hashSet.Add(p);
+            var folderPath = mediaBackup.GetParentFolder(backupFile.FullPath);
+            if (folderPath == null) continue;
+
+            foreach (var a in mediaBackup.Config.SymbolicLinks)
+            {
+                var m = Regex.Match(folderPath, a.FileDiscoveryRegEx);
+
+                if (m.Success)
+                {
+                    hashSet.Add(folderPath);
+                    break;
+                }
+            }
+        }
+        HashSet<string> hashSetOfCheckedFolders = new();
+        UpdateStatusLabel("Checking for broken Symbolic Links");
+
+        // check the symbolic links root folders for any broken links
+        foreach (var a in mediaBackup.Config.SymbolicLinks)
+        {
+            var folderToCheck = Path.Combine(a.RootFolder, Utils.RemoveRegExGroupsFromString(a.RelativePath));
+            if (hashSetOfCheckedFolders.Contains(folderToCheck)) continue;
+            Utils.DeleteBrokenSymbolicLinks(folderToCheck);
+            hashSetOfCheckedFolders.Add(folderToCheck);
         }
 
         EnableProgressBar(0, 100);
@@ -1370,7 +1392,7 @@ public partial class Main : Form
             if (Directory.Exists(path)) continue;
 
             Utils.Trace($"Creating new symbolic link at {path} with target {pathToTarget}");
-            _ = Directory.CreateSymbolicLink(path, pathToTarget);
+            Directory.CreateSymbolicLink(path, pathToTarget);
         }
 
         Utils.TraceOut();
@@ -2212,7 +2234,7 @@ public partial class Main : Form
         return false;
     }
 
-    private void UpdateStatusLabel(string text, int value)
+    private void UpdateStatusLabel(string text, int value = 0)
     {
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
 
@@ -2241,11 +2263,6 @@ public partial class Main : Form
         statusStrip.Invoke(_ => toolStripStatusLabel.Text = textToUse);
 
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
-    }
-
-    private void UpdateStatusLabel(string text)
-    {
-        UpdateStatusLabel(text, 0);
     }
 
     private void EnableProgressBar(int minimum, int maximum)

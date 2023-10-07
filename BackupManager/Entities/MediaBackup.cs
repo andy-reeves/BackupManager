@@ -109,7 +109,11 @@ public class MediaBackup
                 if (!backupFile.DiskChecked.HasValue() || !backupFile.Disk.HasValue()) backupFile.ClearDiskChecked();
             }
 
-            var config = Config.Load(Path.Combine(new FileInfo(path).DirectoryName, "Config.xml"));
+            var directoryName = new FileInfo(path).DirectoryName;
+
+            if (directoryName == null) return null;
+
+            var config = Config.Load(Path.Combine(directoryName, "Config.xml"));
 
             if (config != null) mediaBackup.Config = config;
 

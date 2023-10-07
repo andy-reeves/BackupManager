@@ -7,6 +7,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestProject", "TestProject\TestProject.csproj", "{6D7C81C9-283B-4176-8E12-870BDA06B174}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1321B279-0615-4242-86CB-07E4ED38D6A7}"
+	ProjectSection(SolutionItems) = preProject
+		BackupManager.sln.DotSettings = BackupManager.sln.DotSettings
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

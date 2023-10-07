@@ -23,13 +23,14 @@ using System.ServiceProcess;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+
 using BackupManager.Entities;
 using BackupManager.Extensions;
 
 namespace BackupManager;
 
 /// <summary>
-///     Common Utilty functions in a static class
+///     Common Utility functions in a static class
 /// </summary>
 public static class Utils
 {
@@ -114,6 +115,7 @@ public static class Utils
 #else
     private static readonly string LogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager.log");
 #endif
+
     /// <summary>
     ///     We use this to track when we sent the messages. This allows us to delay between messages
     /// </summary>
@@ -134,38 +136,26 @@ public static class Utils
     {
         var timeLog = DateTime.Now.ToString("yy-MM-dd-HH-mm-ss");
         var suffix = string.Empty;
-
 #if DEBUG
         suffix = "_Debug";
 #endif
+
         var destLogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups",
             $"BackupManager{suffix}_{timeLog}.log");
-
         if (File.Exists(LogFile)) FileMove(LogFile, destLogFile);
-
         var traceFiles = GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "*BackupManager_Trace.log", SearchOption.TopDirectoryOnly);
 
         foreach (var file in traceFiles)
         {
-            var destfile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups",
+            var destFileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups",
                 $"{new FileInfo(file).Name}_{timeLog}.log");
 
             try
             {
-                FileMove(file, destfile);
+                FileMove(file, destFileName);
             }
-            catch (IOException)
-            {
-            }
+            catch (IOException) { }
         }
-    }
-
-    internal static bool CreateSymbolicLink()
-    {
-        // mklink /d "j:\_TV\%%~nxi" "%%i"
-        //System.IO.Directory.CreateSymbolicLink()
-
-        return true;
     }
 
     /// <summary>
@@ -174,11 +164,8 @@ public static class Utils
     /// <returns></returns>
     internal static bool IsRunningAsAdmin()
     {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            return new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
-
-        //for mac and linux
-        return true;
+        return !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ||
+               new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
     }
 
     /// <summary>
@@ -206,9 +193,7 @@ public static class Utils
     {
         TraceIn(sourceFileName, destFileName);
         if (destFileName == null || sourceFileName == null) return false;
-
         if (File.Exists(destFileName)) throw new NotSupportedException("Destination file already exists");
-
         EnsureDirectories(destFileName);
 
         // we create the destination file so xcopy knows its a file and can copy over it
@@ -224,7 +209,6 @@ public static class Utils
                 Arguments = $"/H /Y \"{sourceFileName}\" \"{destFileName}\""
             }
         };
-
         var returnValue = CopyProcess.Start();
 
         if (returnValue)
@@ -233,11 +217,7 @@ public static class Utils
             CopyProcess.WaitForExit();
         }
         else
-        {
-            Trace("FileCopyNewProcess exit with FALSE");
-            return false;
-        }
-
+            return TraceOut(false);
         return TraceOut(CopyProcess.ExitCode == 0);
     }
 
@@ -274,7 +254,6 @@ public static class Utils
     internal static void ClearFileAttribute(string path, FileAttributes attributeToRemove)
     {
         TraceIn(path, attributeToRemove);
-
         var attributes = File.GetAttributes(path);
 
         if ((attributes & attributeToRemove) == attributeToRemove)
@@ -282,7 +261,6 @@ public static class Utils
             attributes = RemoveAttribute(attributes, attributeToRemove);
             File.SetAttributes(path, attributes);
         }
-
         TraceOut();
     }
 
@@ -308,15 +286,24 @@ public static class Utils
     /// </returns>
     internal static string CreateHashForByteArray(byte[] firstByteArray, byte[] secondByteArray, byte[] thirdByteArray)
     {
-        var byteArrayToHash = secondByteArray == null && thirdByteArray == null ? new byte[firstByteArray.Length] :
-            thirdByteArray == null ? new byte[firstByteArray.Length + secondByteArray.Length] :
-            new byte[firstByteArray.Length + secondByteArray.Length + thirdByteArray.Length];
+        /* if (secondByteArray == null && thirdByteArray == null)
+            byteArrayToHash = new byte[firstByteArray.Length];
+        else if (thirdByteArray == null)
+            byteArrayToHash = new byte[firstByteArray.Length + secondByteArray.Length];
+        else
+            byteArrayToHash = new byte[firstByteArray.Length + secondByteArray.Length + thirdByteArray.Length];
+       */
+        var newSize = 0;
+        newSize += firstByteArray.Length;
+        if (secondByteArray != null) newSize += secondByteArray.Length;
+        if (thirdByteArray != null) newSize += thirdByteArray.Length;
+        var byteArrayToHash = new byte[newSize];
         Buffer.BlockCopy(firstByteArray, 0, byteArrayToHash, 0, firstByteArray.Length);
 
+        // TODO Big bug here should be:
+        // Buffer.BlockCopy(secondByteArray, 0, byteArrayToHash, firstByteArray.Length, secondByteArray.Length);
         if (secondByteArray != null) Buffer.BlockCopy(secondByteArray, 0, byteArrayToHash, secondByteArray.Length, secondByteArray.Length);
-
         if (thirdByteArray != null) Buffer.BlockCopy(thirdByteArray, 0, byteArrayToHash, firstByteArray.Length + secondByteArray.Length, thirdByteArray.Length);
-
         return ByteArrayToString(Md5.ComputeHash(byteArrayToHash));
     }
 
@@ -327,7 +314,8 @@ public static class Utils
     /// </param>
     internal static void EnsureDirectories(string filePath)
     {
-        _ = Directory.CreateDirectory(new FileInfo(filePath).DirectoryName);
+        var directoryName = new FileInfo(filePath).DirectoryName;
+        if (directoryName != null) Directory.CreateDirectory(directoryName);
     }
 
     /// <summary>
@@ -336,9 +324,6 @@ public static class Utils
     /// <param name="path">
     ///     The path.
     /// </param>
-    /// <returns>
-    ///     The <see cref="string[]" />.
-    /// </returns>
     internal static string[] GetFiles(string path)
     {
         return GetFiles(path, "*", SearchOption.AllDirectories, 0, 0);
@@ -354,7 +339,6 @@ public static class Utils
     ///     The filters.
     /// </param>
     /// <returns>
-    ///     The <see cref="string[]" />.
     /// </returns>
     internal static string[] GetFiles(string path, string filters)
     {
@@ -377,7 +361,6 @@ public static class Utils
     ///     The directory attributes to ignore.
     /// </param>
     /// <returns>
-    ///     The <see cref="string[]" />.
     /// </returns>
     internal static string[] GetFiles(string path, string filters, SearchOption searchOption, FileAttributes directoryAttributesToIgnore)
     {
@@ -397,7 +380,6 @@ public static class Utils
     ///     The search option.
     /// </param>
     /// <returns>
-    ///     The <see cref="string[]" />.
     /// </returns>
     internal static string[] GetFiles(string path, string filters, SearchOption searchOption)
     {
@@ -423,13 +405,11 @@ public static class Utils
     ///     The file attributes to ignore.
     /// </param>
     /// <returns>
-    ///     The <see cref="string[]" />.
     /// </returns>
     internal static string[] GetFiles(string path, string filters, SearchOption searchOption, FileAttributes directoryAttributesToIgnore,
         FileAttributes fileAttributesToIgnore)
     {
         TraceIn();
-
         var sw = Stopwatch.StartNew();
 
         if (!Directory.Exists(path))
@@ -437,28 +417,19 @@ public static class Utils
             Trace("GetFiles exit with new string[]");
             return Array.Empty<string>();
         }
-
         DirectoryInfo directoryInfo = new(path);
-
         if (directoryInfo.Parent != null && AnyFlagSet(directoryInfo.Attributes, directoryAttributesToIgnore)) return TraceOut(Array.Empty<string>());
-
         var include = from filter in filters.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries) where filter.Trim().HasValue() select filter.Trim();
-
         var exclude = from filter in include where filter.Contains('!') select filter;
-
         include = include.Except(exclude);
-
         if (!include.Any()) include = new[] { "*" };
 
         var excludeFilters = from filter in exclude
             let replace = filter.Replace("!", string.Empty).Replace(".", @"\.").Replace("*", ".*").Replace("?", ".")
             select $"^{replace}$";
-
         Regex excludeRegex = new(string.Join("|", excludeFilters.ToArray()), RegexOptions.IgnoreCase);
-
         Queue<string> pathsToSearch = new();
         List<string> foundFiles = new();
-
         pathsToSearch.Enqueue(path);
 
         while (pathsToSearch.Count > 0)
@@ -466,22 +437,21 @@ public static class Utils
             var dir = pathsToSearch.Dequeue();
 
             if (searchOption == SearchOption.AllDirectories)
+            {
                 foreach (var subDir in Directory.GetDirectories(dir)
                              .Where(subDir => !AnyFlagSet(new DirectoryInfo(subDir).Attributes, directoryAttributesToIgnore)))
                 {
                     pathsToSearch.Enqueue(subDir);
                 }
+            }
 
             foreach (var filter in include)
             {
                 var allFiles = Directory.GetFiles(dir, filter, SearchOption.TopDirectoryOnly);
-
                 var collection = exclude.Any() ? allFiles.Where(p => !excludeRegex.Match(p).Success) : allFiles;
-
                 foundFiles.AddRange(collection.Where(p => !AnyFlagSet(new FileInfo(p).Attributes, fileAttributesToIgnore)));
             }
         }
-
         return TraceOut(foundFiles.ToArray(), $"Time taken = {sw.Elapsed.TotalSeconds} seconds");
     }
 
@@ -513,12 +483,10 @@ public static class Utils
     ///     The byte count to return.
     /// </param>
     /// <returns>
-    ///     The <see cref="byte[]" />.
     /// </returns>
     internal static byte[] GetRemoteFileByteArray(Stream fileStream, long byteCountToReturn)
     {
         var buffer = new byte[byteCountToReturn];
-
         int count;
         var sum = 0;
         var length = Convert.ToInt32(byteCountToReturn);
@@ -527,16 +495,10 @@ public static class Utils
         {
             sum += count; // sum is a buffer offset for next reading
         }
-
-        if (sum < byteCountToReturn)
-        {
-            var byteArray = new byte[sum];
-            Buffer.BlockCopy(buffer, 0, byteArray, 0, sum);
-
-            return byteArray;
-        }
-
-        return buffer;
+        if (sum >= byteCountToReturn) return buffer;
+        var byteArray = new byte[sum];
+        Buffer.BlockCopy(buffer, 0, byteArray, 0, sum);
+        return byteArray;
     }
 
     /// <summary>
@@ -554,9 +516,7 @@ public static class Utils
     internal static string GetShortMd5HashFromFile(FileStream stream, long size)
     {
         if (stream == null) return null;
-
         if (size <= 0) return string.Empty;
-
         byte[] startBlock;
         byte[] middleBlock = null;
         byte[] endBlock = null;
@@ -564,20 +524,13 @@ public static class Utils
         if (size >= StartBlockSize + MiddleBlockSize + EndBlockSize)
         {
             var startDownloadPositionForEndBlock = size - EndBlockSize;
-
             var startDownloadPositionForMiddleBlock = size / 2;
-
             startBlock = GetLocalFileByteArray(stream, 0, StartBlockSize);
-
             middleBlock = GetLocalFileByteArray(stream, startDownloadPositionForMiddleBlock, MiddleBlockSize);
-
             endBlock = GetLocalFileByteArray(stream, startDownloadPositionForEndBlock, EndBlockSize);
         }
         else
-        {
             startBlock = GetLocalFileByteArray(stream, 0, size);
-        }
-
         return CreateHashForByteArray(startBlock, middleBlock, endBlock);
     }
 
@@ -589,7 +542,6 @@ public static class Utils
     internal static DateTime GetFileLastWriteTime(string fileName)
     {
         FileInfo fileInfo = new(fileName);
-
         DateTime returnValue;
 
         try
@@ -603,7 +555,6 @@ public static class Utils
             fileInfo.LastWriteTime = fileInfo.LastAccessTime;
             returnValue = fileInfo.LastWriteTime;
         }
-
         return returnValue;
     }
 
@@ -619,13 +570,9 @@ public static class Utils
     internal static string GetShortMd5HashFromFile(string path)
     {
         TraceIn(path);
-
         if (string.IsNullOrEmpty(path) || !File.Exists(path)) return null;
-
         var size = new FileInfo(path).Length;
-
         if (size == 0) return string.Empty;
-
         byte[] startBlock;
         byte[] middleBlock = null;
         byte[] endBlock = null;
@@ -633,20 +580,13 @@ public static class Utils
         if (size >= StartBlockSize + MiddleBlockSize + EndBlockSize)
         {
             var startDownloadPositionForEndBlock = size - EndBlockSize;
-
             var startDownloadPositionForMiddleBlock = size / 2;
-
             startBlock = GetLocalFileByteArray(path, 0, StartBlockSize);
-
             middleBlock = GetLocalFileByteArray(path, startDownloadPositionForMiddleBlock, MiddleBlockSize);
-
             endBlock = GetLocalFileByteArray(path, startDownloadPositionForEndBlock, EndBlockSize);
         }
         else
-        {
             startBlock = GetLocalFileByteArray(path, 0, size);
-        }
-
         return TraceOut(CreateHashForByteArray(startBlock, middleBlock, endBlock));
     }
 
@@ -663,6 +603,7 @@ public static class Utils
                                      (priority == PushoverPriority.Normal && Config.PushoverSendNormalOnOff) ||
                                      (priority == PushoverPriority.High && Config.PushoverSendHighOnOff) ||
                                      (priority == PushoverPriority.Emergency && Config.PushoverSendEmergencyOnOff)))
+        {
             try
             {
                 Dictionary<string, string> parameters = new()
@@ -677,12 +618,9 @@ public static class Utils
                 if (priority == PushoverPriority.Emergency)
                 {
                     if (retry == PushoverRetry.None) retry = PushoverRetry.ThirtySeconds;
-
                     if (expires == PushoverExpires.Immediately) expires = PushoverExpires.FiveMinutes;
                 }
-
                 if (retry != PushoverRetry.None) parameters.Add("retry", Convert.ChangeType(retry, retry.GetTypeCode()).ToString());
-
                 if (expires != PushoverExpires.Immediately) parameters.Add("expire", Convert.ChangeType(expires, expires.GetTypeCode()).ToString());
 
                 // ensures there's a 1s gap between messages
@@ -697,23 +635,21 @@ public static class Utils
                     var task = Task.Run(() => client.PostAsync(PushoverAddress, postContent));
                     task.Wait();
                     var response = task.Result;
-
                     _ = response.EnsureSuccessStatusCode(); // Throw if httpcode is an error
                     var applicationLimitRemaining = 0;
-
                     if (response.Headers.TryGetValues("X-Limit-App-Remaining", out var values)) applicationLimitRemaining = Convert.ToInt32(values.First());
-
                     Trace($"Pushover messages remaining: {applicationLimitRemaining}");
 
                     if (applicationLimitRemaining < Config.PushoverWarningMessagesRemaining)
+                    {
                         if (!alreadySendingPushoverMessage)
                         {
                             alreadySendingPushoverMessage = true;
                             SendPushoverMessage("Message Limit Warning", PushoverPriority.High, $"Application Limit Remaining is: {applicationLimitRemaining}");
                             alreadySendingPushoverMessage = false;
                         }
+                    }
                 }
-
                 timeLastPushoverMessageSent = DateTime.UtcNow;
             }
             catch (Exception ex)
@@ -721,7 +657,7 @@ public static class Utils
                 // we ignore any push problems
                 Log($"Exception sending Pushover message {ex}");
             }
-
+        }
         TraceOut();
     }
 
@@ -744,12 +680,10 @@ public static class Utils
                 process.Kill();
             }
         }
-
         catch (Exception)
         {
             return false;
         }
-
         return true;
     }
 
@@ -785,7 +719,6 @@ public static class Utils
         {
             return false;
         }
-
         return returnValue;
     }
 
@@ -802,23 +735,22 @@ public static class Utils
             using TcpClient tcpClient = new();
             tcpClient.Connect(host, port);
         }
-
         catch
         {
             return false;
         }
-
         return true;
     }
 
     internal static void Log(BackupAction action, string message)
     {
         if (lengthOfLargestBackupActionEnumNames == 0)
+        {
             foreach (var enumName in Enum.GetNames(typeof(BackupAction)))
             {
                 if (enumName.Length > lengthOfLargestBackupActionEnumNames) lengthOfLargestBackupActionEnumNames = enumName.Length;
             }
-
+        }
         var actionText = Enum.GetName(typeof(BackupAction), action) + " ";
         var textArrayToWrite = message.Split('\n');
 
@@ -839,9 +771,7 @@ public static class Utils
         foreach (var line in textArrayToWrite)
         {
             if (!line.HasValue()) continue;
-
             var textToWrite = $"{DateTime.Now:dd-MM-yy HH:mm:ss} {line}";
-
             Console.WriteLine(textToWrite);
 
             if (LogFile.HasValue())
@@ -849,7 +779,6 @@ public static class Utils
                 EnsureDirectories(LogFile);
                 File.AppendAllLines(LogFile, new[] { textToWrite });
             }
-
             Trace(text);
         }
     }
@@ -889,7 +818,6 @@ public static class Utils
     internal static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires, string text)
     {
         Log(backupAction, text);
-
         if (Config.PushoverAppToken.HasValue()) SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, text);
     }
 
@@ -937,17 +865,11 @@ public static class Utils
     private static string ByteArrayToString(byte[] value, int startIndex, int length)
     {
         if (value == null) throw new ArgumentNullException(nameof(value));
-
         if (startIndex < 0 || (startIndex >= value.Length && startIndex > 0)) throw new ArgumentOutOfRangeException(nameof(startIndex));
-
         if (length < 0) throw new ArgumentOutOfRangeException(nameof(length));
-
         if (startIndex > value.Length - length) throw new ArgumentException(null, nameof(length));
-
         if (length == 0) return string.Empty;
-
         if (length > 715827882) throw new ArgumentOutOfRangeException(nameof(length));
-
         var length1 = length * 2;
         var chArray = new char[length1];
         var num1 = startIndex;
@@ -960,7 +882,6 @@ public static class Utils
             chArray[index + 1] = GetLowercaseHexValue(num2 % 16);
             index += 2;
         }
-
         return new string(chArray, 0, chArray.Length);
     }
 
@@ -979,11 +900,8 @@ public static class Utils
     internal static string CreateHashForByteArray(byte[] firstByteArray, byte[] endByteArray)
     {
         var byteArrayToHash = endByteArray == null ? new byte[firstByteArray.Length] : new byte[firstByteArray.Length + endByteArray.Length];
-
         Buffer.BlockCopy(firstByteArray, 0, byteArrayToHash, 0, firstByteArray.Length);
-
         if (endByteArray != null) Buffer.BlockCopy(endByteArray, 0, byteArrayToHash, firstByteArray.Length, endByteArray.Length);
-
         return ByteArrayToString(Md5.ComputeHash(byteArrayToHash));
     }
 
@@ -1019,9 +937,7 @@ public static class Utils
     private static byte[] GetLocalFileByteArray(FileStream fileStream, long offset, long byteCountToReturn)
     {
         _ = fileStream.Seek(offset, SeekOrigin.Begin);
-
         var buffer = new byte[byteCountToReturn];
-
         int count;
         var sum = 0;
         var length = Convert.ToInt32(byteCountToReturn);
@@ -1037,7 +953,6 @@ public static class Utils
             Buffer.BlockCopy(buffer, 0, byteArray, 0, sum);
             return byteArray;
         }
-
         return buffer;
     }
 
@@ -1066,7 +981,6 @@ public static class Utils
         try
         {
             buffer = new byte[byteCountToReturn];
-
             var length = Convert.ToInt32(byteCountToReturn);
             int count;
 
@@ -1086,7 +1000,6 @@ public static class Utils
             Buffer.BlockCopy(buffer, 0, byteArray, 0, sum);
             return byteArray;
         }
-
         return buffer;
     }
 
@@ -1116,9 +1029,7 @@ public static class Utils
     internal static bool GetDiskInfo(string folderName, out long freespace, out long totalBytes)
     {
         if (string.IsNullOrEmpty(folderName)) throw new ArgumentNullException(nameof(folderName));
-
         if (!folderName.EndsWith("\\")) folderName += '\\';
-
         return GetDiskFreeSpaceEx(folderName, out freespace, out totalBytes, out _);
     }
 
@@ -1137,17 +1048,14 @@ public static class Utils
         do
         {
             directoryInfo = directoryInfo.Parent;
-
             DirectoryInfo projectDirectoryInfo = new(directoryInfo.FullName);
 
             if (projectDirectoryInfo.Exists)
             {
                 FileInfo projectFileInfo = new(Path.Combine(projectDirectoryInfo.FullName, projectName, $"{projectName}.csproj"));
-
                 if (projectFileInfo.Exists) return Path.Combine(projectDirectoryInfo.FullName, projectName);
             }
         } while (directoryInfo.Parent != null);
-
         return null;
     }
 
@@ -1181,7 +1089,6 @@ public static class Utils
             var ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
             _ = builder.Append(ch);
         }
-
         return builder.ToString();
     }
 
@@ -1196,9 +1103,7 @@ public static class Utils
     internal static bool IsDirectoryEmpty(string folderPath)
     {
         if (!Directory.Exists(folderPath)) return false;
-
         if (!IsSymbolicLink(folderPath)) return !Directory.EnumerateFileSystemEntries(folderPath).Any();
-
         var linkTarget = new FileInfo(folderPath).LinkTarget;
         return linkTarget != null && (!SymbolicLinkTargetExists(folderPath) || !Directory.GetFileSystemEntries(linkTarget).Any());
     }
@@ -1284,7 +1189,6 @@ public static class Utils
         // if disk speed greater than 1MB/s return x.yyMB/s
         // if disk speed greater than 1KB/s return xKB/s
         // else return bytes/s
-
         return value > BytesInOneTerabyte ? $"{(decimal)value / BytesInOneTerabyte:0.#} TB/s" :
             value > 25 * (long)BytesInOneGigabyte ? $"{value / BytesInOneGigabyte:n0} GB/s" :
             value > BytesInOneGigabyte ? $"{(decimal)value / BytesInOneGigabyte:0.#} GB/s" :
@@ -1304,14 +1208,11 @@ public static class Utils
     internal static void DiskSpeedTest(string pathToDiskToTest, long testFileSize, int testIterations, out long readSpeed, out long writeSpeed)
     {
         TraceIn(pathToDiskToTest, testFileSize, testIterations);
-
         var tempPath = Path.GetTempPath();
-
         Trace("Starting read test");
         readSpeed = DiskSpeedTest(pathToDiskToTest, tempPath, testFileSize, testIterations);
         Trace("Starting write test");
         writeSpeed = DiskSpeedTest(tempPath, pathToDiskToTest, testFileSize, testIterations);
-
         TraceOut();
     }
 
@@ -1325,22 +1226,18 @@ public static class Utils
     internal static bool StopService(string serviceName, int timeoutMilliseconds)
     {
         TraceIn();
-
         ServiceController service = new(serviceName);
 
         try
         {
             var timeout = TimeSpan.FromMilliseconds(timeoutMilliseconds);
-
             if (service.Status == ServiceControllerStatus.Running) service.Stop();
-
             service.WaitForStatus(ServiceControllerStatus.Stopped, timeout);
         }
         catch
         {
             return TraceOut(false);
         }
-
         return TraceOut(true);
     }
 
@@ -1354,16 +1251,13 @@ public static class Utils
     internal static bool RestartService(string serviceName, int timeoutMilliseconds)
     {
         TraceIn();
-
         ServiceController service = new(serviceName);
 
         try
         {
             var millisec1 = Environment.TickCount;
             var timeout = TimeSpan.FromMilliseconds(timeoutMilliseconds);
-
             if (service.Status == ServiceControllerStatus.Running) service.Stop();
-
             service.WaitForStatus(ServiceControllerStatus.Stopped, timeout);
 
             // count the rest of the timeout
@@ -1373,14 +1267,12 @@ public static class Utils
             if (service.Status.Equals(ServiceControllerStatus.Stopped))
                 service.Start();
             else if (service.Status.Equals(ServiceControllerStatus.Paused)) service.Continue();
-
             service.WaitForStatus(ServiceControllerStatus.Running, timeout);
         }
         catch
         {
             return TraceOut(false);
         }
-
         return TraceOut(true);
     }
 
@@ -1394,23 +1286,17 @@ public static class Utils
     internal static long DiskSpeedTest(string sourcePath, string destinationPath, long testFileSize, int testIterations)
     {
         TraceIn();
-
         const long randomStringSize = 500_000;
         const int streamWriteBufferSize = 20 * BytesInOneMegabyte;
-
         var randomText = RandomString(randomStringSize);
-
         var appendIterations = testFileSize / randomStringSize;
-
         double totalPerf = 0;
 
         for (var j = 1; j <= testIterations; j++)
         {
             var firstPathFilename = sourcePath + "\\" + j + "test.tmp";
             var secondPathFilename = destinationPath + "\\" + j + "test.tmp";
-
             if (File.Exists(firstPathFilename)) File.Delete(firstPathFilename);
-
             if (File.Exists(secondPathFilename)) File.Delete(secondPathFilename);
 
             using (StreamWriter sWriter = new(firstPathFilename, true, Encoding.UTF8, streamWriteBufferSize))
@@ -1420,19 +1306,14 @@ public static class Utils
                     sWriter.Write(randomText);
                 }
             }
-
             Trace($"{firstPathFilename} created");
-
             testFileSize = GetFileLength(firstPathFilename);
             var sw = Stopwatch.StartNew();
             File.Copy(firstPathFilename, secondPathFilename);
             Trace($"{firstPathFilename} copied as {secondPathFilename}");
-
             var interval = sw.Elapsed;
             File.Delete(firstPathFilename);
             File.Delete(secondPathFilename);
-
-
             Trace($"testFileSize: {testFileSize}, interval.TotalSeconds: {interval.TotalSeconds}");
             totalPerf += testFileSize / interval.TotalSeconds;
         }
@@ -1441,7 +1322,6 @@ public static class Utils
         // may need to check for TotalSeconds <0.0.17 and exit accordingly without the division attempt
         Trace($"totalPerf: {totalPerf}, testIterations: {testIterations}");
         var returnValue = Convert.ToInt64(totalPerf / testIterations);
-
         return TraceOut(returnValue);
     }
 
@@ -1450,14 +1330,12 @@ public static class Utils
     {
         var sf = new StackTrace().GetFrame(2);
         if (sf == null) return string.Empty;
-
         var name = sf.GetMethod()?.Name;
 
         if (name is "MoveNext")
 
             // We're inside an async method
             name = sf.GetMethod()?.ReflectedType?.Name.Split(new[] { '<', '>' }, StringSplitOptions.RemoveEmptyEntries)[0];
-
         return $"{sf.GetMethod()?.DeclaringType?.FullName}.{name}";
     }
 
@@ -1493,10 +1371,7 @@ public static class Utils
             }
         }
         else
-        {
             System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} exit {t} {text}");
-        }
-
         return t;
     }
 
@@ -1555,6 +1430,7 @@ public static class Utils
             }
 
             if (IsDirectoryEmpty(directory))
+            {
                 try
                 {
                     if (directory != rootDirectory)
@@ -1564,17 +1440,11 @@ public static class Utils
                         Directory.Delete(directory);
                     }
                 }
-                catch (UnauthorizedAccessException)
-                {
-                }
-                catch (DirectoryNotFoundException)
-                {
-                }
+                catch (UnauthorizedAccessException) { }
+                catch (DirectoryNotFoundException) { }
+            }
         }
-        catch (UnauthorizedAccessException)
-        {
-        }
-
+        catch (UnauthorizedAccessException) { }
         TraceOut();
     }
 
@@ -1587,13 +1457,74 @@ public static class Utils
     internal static string[] DeleteEmptyDirectories(string directory)
     {
         TraceIn();
-
         if (string.IsNullOrEmpty(directory)) throw new ArgumentException("Directory is a null reference or an empty string", nameof(directory));
-
         List<string> listOfDirectoriesDeleted = new();
-
         DeleteEmptyDirectories(directory, listOfDirectoriesDeleted, directory);
+        return TraceOut(listOfDirectoriesDeleted.ToArray());
+    }
 
+    private static void DeleteBrokenSymbolicLinks(string directory, List<string> list, string rootDirectory)
+    {
+        TraceIn(directory);
+
+        try
+        {
+            if (!SymbolicLinkTargetExists(directory))
+            {
+                try
+                {
+                    if (directory != rootDirectory)
+                    {
+                        Trace($"Deleting broken symbolic link folder {directory}");
+                        list.Add(directory);
+                        Directory.Delete(directory);
+                    }
+                }
+                catch (UnauthorizedAccessException) { }
+                catch (DirectoryNotFoundException) { }
+            }
+
+            if (Directory.Exists(directory) && !IsSymbolicLink(directory))
+            {
+                foreach (var subDirectory in Directory.EnumerateDirectories(directory))
+                {
+                    DeleteBrokenSymbolicLinks(subDirectory, list, rootDirectory);
+                }
+            }
+        }
+        catch (UnauthorizedAccessException) { }
+        TraceOut();
+    }
+
+    /// <summary>
+    ///     Removes any '$0', '$1', '$2' etc from t he input string
+    /// </summary>
+    /// <param name="input">THe string to remove the $0 from</param>
+    /// <returns>The string without the $ values</returns>
+    internal static string RemoveRegExGroupsFromString(string input)
+    {
+        const int maxValueToCheck = 20;
+        var newString = input;
+
+        for (var i = 0; i <= maxValueToCheck; i++)
+        {
+            newString = newString.Replace($"${i}", "");
+        }
+        return newString;
+    }
+
+    /// <summary>
+    ///     Deletes any empty directories in the directory specified and checks recursively all its sub-directories.
+    /// </summary>
+    /// <param name="directory">The directory to check</param>
+    /// <exception cref="ArgumentException"></exception>
+    /// <returns>An array of the directory paths that were removed</returns>
+    internal static string[] DeleteBrokenSymbolicLinks(string directory)
+    {
+        TraceIn();
+        if (string.IsNullOrEmpty(directory)) throw new ArgumentException("Directory is a null reference or an empty string", nameof(directory));
+        List<string> listOfDirectoriesDeleted = new();
+        DeleteBrokenSymbolicLinks(directory, listOfDirectoriesDeleted, directory);
         return TraceOut(listOfDirectoriesDeleted.ToArray());
     }
 
@@ -1617,9 +1548,7 @@ public static class Utils
     {
         TimeSpan oneDay = new(24, 0, 0);
         var timeLeft = oneDay - new TimeSpan(startTime.Hour, startTime.Minute, startTime.Second) + targetTime;
-
         if (timeLeft.TotalHours > 24) timeLeft -= oneDay;
-
         return timeLeft;
     }
 
@@ -1633,14 +1562,12 @@ public static class Utils
         try
         {
             FileStream fileStream = new(fileName, FileMode.Open, FileAccess.Read);
-
             fileStream.Close();
         }
         catch (IOException)
         {
             return false;
         }
-
         return true;
     }
 }

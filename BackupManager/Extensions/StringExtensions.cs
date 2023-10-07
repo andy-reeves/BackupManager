@@ -12,10 +12,6 @@ using System.Text.RegularExpressions;
 
 namespace BackupManager.Extensions;
 
-#region Using Directives
-
-#endregion
-
 /// <summary>
 ///     Extension methods for the <see cref="string" /> class.
 /// </summary>

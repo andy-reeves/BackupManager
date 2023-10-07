@@ -388,10 +388,10 @@
             recreateAllMkLinksButton.Name = "recreateAllMkLinksButton";
             recreateAllMkLinksButton.Size = new System.Drawing.Size(234, 27);
             recreateAllMkLinksButton.TabIndex = 45;
-            recreateAllMkLinksButton.Text = "Recreate all symbolic folder links";
-            toolTip.SetToolTip(recreateAllMkLinksButton, "Recreates all the mklinks for all movies and tv");
+            recreateAllMkLinksButton.Text = "Check all symbolic links";
+            toolTip.SetToolTip(recreateAllMkLinksButton, "Checks all the symbolic links with the RegEx in config");
             recreateAllMkLinksButton.UseVisualStyleBackColor = true;
-            recreateAllMkLinksButton.Click += RecreateAllMkLinksButton_Click;
+            recreateAllMkLinksButton.Click += CheckAllSymbolicLinksButton_Click;
             // 
             // scheduledBackupTimerButton
             // 
