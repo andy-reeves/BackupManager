@@ -62,36 +62,12 @@ public class Folder : IEquatable<Folder>, IXmlSerializable
         ModifiedDateTime = XmlConvert.ToDateTime(reader.GetAttribute("ModifiedDateTime") ?? string.Empty, XmlDateTimeSerializationMode.Local);
         reader.ReadStartElement();
         if (!isEmptyElement) reader.ReadEndElement();
-
-        //var pathString = reader.GetAttribute("Path");
-        // if (!string.IsNullOrEmpty(pathString)) Path = pathString;
-        // var modifiedDateTimeString = reader.GetAttribute("ModifiedDateTime");
-        // if (!string.IsNullOrEmpty(modifiedDateTimeString)) ModifiedDateTime = DateTime.Parse(modifiedDateTimeString);
-        /*reader.MoveToContent();
-
-        while (reader.Read())
-        {
-            if (reader.NodeType == XmlNodeType.Element && reader.Name == "Path")
-            {
-                reader.Read();
-                if (reader.NodeType == XmlNodeType.Text) path = reader.Value;
-            }
-
-            if (reader.NodeType == XmlNodeType.Element && reader.Name == "ModifiedDateTime")
-            {
-                reader.Read();
-                if (reader.NodeType == XmlNodeType.Text) ModifiedDateTime = DateTime.Parse(reader.Value);
-            }
-        }*/
     }
 
     public void WriteXml(XmlWriter writer)
     {
         writer.WriteAttributeString("Path", Path);
         writer.WriteAttributeString("ModifiedDateTime", XmlConvert.ToString(ModifiedDateTime, XmlDateTimeSerializationMode.Local));
-
-        //writer.WriteElementString("Path", Path);
-        //writer.WriteElementString("ModifiedDateTime", ModifiedDateTime.ToString("yyyy-MM-ddTHH:mm:ssZ"));
     }
 
     public override bool Equals(object obj)
