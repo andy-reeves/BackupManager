@@ -103,5 +103,14 @@ public class UtilsUnitTest
         var result = Utils.CreateHashForByteArray(firstByteArray, secondByteArray, thirdByteArray);
         Assert.True(result == "1416d38415ac751620b97eab7f433723");
     }
+
+    [Fact]
+    public void GetDiskInfo()
+    {
+        var result = Utils.GetDiskInfo(@$"\\{Environment.MachineName}\Admin$", out var availableSpace, out var totalBytes);
+        Assert.True(result);
+        Assert.True(availableSpace > 0);
+        Assert.True(totalBytes > 0);
+    }
 }
 #endif

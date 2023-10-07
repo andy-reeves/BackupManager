@@ -32,11 +32,11 @@ namespace BackupManager;
 /// <summary>
 ///     Common Utility functions in a static class
 /// </summary>
-public static class Utils
+public static partial class Utils
 {
-    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+    [LibraryImport("kernel32.dll", EntryPoint = "GetDiskFreeSpaceExW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    internal static extern bool GetDiskFreeSpaceEx(string lpDirectoryName, out long lpFreeBytesAvailable, out long lpTotalNumberOfBytes,
+    internal static partial bool GetDiskFreeSpaceEx(string lpDirectoryName, out long lpFreeBytesAvailable, out long lpTotalNumberOfBytes,
         out long lpTotalNumberOfFreeBytes);
 
     #region Constants
@@ -1032,16 +1032,16 @@ public static class Utils
     /// <summary>
     /// </summary>
     /// <param name="folderName"></param>
-    /// <param name="freespace">in bytes</param>
+    /// <param name="freeSpace">in bytes</param>
     /// <param name="totalBytes">in bytes</param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    internal static bool GetDiskInfo(string folderName, out long freespace, out long totalBytes)
+    internal static bool GetDiskInfo(string folderName, out long freeSpace, out long totalBytes)
     {
         if (string.IsNullOrEmpty(folderName)) throw new ArgumentNullException(nameof(folderName));
 
         if (!folderName.EndsWith("\\")) folderName += '\\';
-        return GetDiskFreeSpaceEx(folderName, out freespace, out totalBytes, out _);
+        return GetDiskFreeSpaceEx(folderName, out freeSpace, out totalBytes, out _);
     }
 
     /// <summary>
