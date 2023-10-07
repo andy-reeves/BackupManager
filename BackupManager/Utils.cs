@@ -26,6 +26,7 @@ using System.Threading.Tasks;
 
 using BackupManager.Entities;
 using BackupManager.Extensions;
+using BackupManager.Properties;
 
 namespace BackupManager;
 
@@ -1470,14 +1471,14 @@ public static partial class Utils
     internal static string[] DeleteEmptyDirectories(string directory)
     {
         TraceIn();
-        if (string.IsNullOrEmpty(directory)) throw new ArgumentException("Directory is a null reference or an empty string", nameof(directory));
+        if (string.IsNullOrEmpty(directory)) throw new ArgumentException(Resources.Utils_DirectoryNameNullOrEmpty, nameof(directory));
 
         List<string> listOfDirectoriesDeleted = new();
         DeleteEmptyDirectories(directory, listOfDirectoriesDeleted, directory);
         return TraceOut(listOfDirectoriesDeleted.ToArray());
     }
 
-    private static void DeleteBrokenSymbolicLinks(string directory, List<string> list, string rootDirectory)
+    private static void DeleteBrokenSymbolicLinks(string directory, bool includeRoot, List<string> list, string rootDirectory)
     {
         TraceIn(directory);
 
@@ -1487,7 +1488,7 @@ public static partial class Utils
             {
                 try
                 {
-                    if (directory != rootDirectory)
+                    if (includeRoot || directory != rootDirectory)
                     {
                         Trace($"Deleting broken symbolic link folder {directory}");
                         list.Add(directory);
@@ -1502,7 +1503,7 @@ public static partial class Utils
             {
                 foreach (var subDirectory in Directory.EnumerateDirectories(directory))
                 {
-                    DeleteBrokenSymbolicLinks(subDirectory, list, rootDirectory);
+                    DeleteBrokenSymbolicLinks(subDirectory, includeRoot, list, rootDirectory);
                 }
             }
         }
@@ -1531,15 +1532,16 @@ public static partial class Utils
     ///     Deletes any empty directories in the directory specified and checks recursively all its sub-directories.
     /// </summary>
     /// <param name="directory">The directory to check</param>
+    /// <param name="includeRoot">True to include the root folder for deletion</param>
     /// <exception cref="ArgumentException"></exception>
     /// <returns>An array of the directory paths that were removed</returns>
-    internal static string[] DeleteBrokenSymbolicLinks(string directory)
+    internal static string[] DeleteBrokenSymbolicLinks(string directory, bool includeRoot)
     {
         TraceIn();
-        if (string.IsNullOrEmpty(directory)) throw new ArgumentException("Directory is a null reference or an empty string", nameof(directory));
+        if (string.IsNullOrEmpty(directory)) throw new ArgumentException(Resources.Utils_DirectoryNameNullOrEmpty, nameof(directory));
 
         List<string> listOfDirectoriesDeleted = new();
-        DeleteBrokenSymbolicLinks(directory, listOfDirectoriesDeleted, directory);
+        DeleteBrokenSymbolicLinks(directory, includeRoot, listOfDirectoriesDeleted, directory);
         return TraceOut(listOfDirectoriesDeleted.ToArray());
     }
 

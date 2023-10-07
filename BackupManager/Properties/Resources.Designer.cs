@@ -285,5 +285,14 @@ namespace BackupManager.Properties {
                 return ResourceManager.GetString("Main_UpdateMasterFilesTitle", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Directory is a null reference or an empty string.
+        /// </summary>
+        internal static string Utils_DirectoryNameNullOrEmpty {
+            get {
+                return ResourceManager.GetString("Utils_DirectoryNameNullOrEmpty", resourceCulture);
+            }
+        }
     }
 }

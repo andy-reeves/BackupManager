@@ -1309,29 +1309,22 @@ public partial class Main : Form
             var folderPath = mediaBackup.GetParentFolder(backupFile.FullPath);
             if (folderPath == null) continue;
 
-            foreach (var a in mediaBackup.Config.SymbolicLinks)
-            {
-                var m = Regex.Match(folderPath, a.FileDiscoveryRegEx);
-
-                if (m.Success)
-                {
-                    hashSet.Add(folderPath);
-                    break;
-                }
-            }
+            if (mediaBackup.Config.SymbolicLinks.Select(a => Regex.Match(folderPath, a.FileDiscoveryRegEx)).Any(m => m.Success)) hashSet.Add(folderPath);
         }
-        HashSet<string> hashSetOfCheckedFolders = new();
         UpdateStatusLabel("Checking for broken Symbolic Links");
 
-        // check the symbolic links root folders for any broken links
-        foreach (var a in mediaBackup.Config.SymbolicLinks)
-        {
-            var folderToCheck = Path.Combine(a.RootFolder, Utils.RemoveRegExGroupsFromString(a.RelativePath));
-            if (hashSetOfCheckedFolders.Contains(folderToCheck)) continue;
-            Utils.DeleteBrokenSymbolicLinks(folderToCheck);
-            hashSetOfCheckedFolders.Add(folderToCheck);
-        }
+        var foldersToCheck = mediaBackup.Config.SymbolicLinks.Select(a => Path.Combine(a.RootFolder, Utils.RemoveRegExGroupsFromString(a.RelativePath)))
+            .Where(Directory.Exists).SelectMany(Directory.EnumerateDirectories).ToList();
 
+        // check the symbolic links root folders for any broken links
+        EnableProgressBar(0, foldersToCheck.Count);
+
+        for (var i = 0; i < foldersToCheck.Count; i++)
+        {
+            var folderToCheck = foldersToCheck[i];
+            UpdateStatusLabel($"Checking {folderToCheck}", i);
+            Utils.DeleteBrokenSymbolicLinks(folderToCheck, true);
+        }
         EnableProgressBar(0, 100);
         var fileCounter = 0;
 
