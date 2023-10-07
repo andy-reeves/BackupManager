@@ -89,5 +89,19 @@ public class UtilsUnitTest
 
         Utils.TraceOut();
     }
+
+    [Fact]
+    public void CreateHashForByteArray()
+    {
+        var path = Path.Combine(Utils.GetProjectPath(typeof(UtilsUnitTest)), @"TestData\TestFile1");
+        var size = new FileInfo(path).Length;
+        var startDownloadPositionForEndBlock = size - Utils.EndBlockSize;
+        var startDownloadPositionForMiddleBlock = size / 2;
+        var firstByteArray = Utils.GetLocalFileByteArray(path, 0, Utils.StartBlockSize);
+        var secondByteArray = Utils.GetLocalFileByteArray(path, startDownloadPositionForMiddleBlock, Utils.MiddleBlockSize);
+        var thirdByteArray = Utils.GetLocalFileByteArray(path, startDownloadPositionForEndBlock, Utils.EndBlockSize);
+        var result = Utils.CreateHashForByteArray(firstByteArray, secondByteArray, thirdByteArray);
+        Assert.True(result == "1416d38415ac751620b97eab7f433723");
+    }
 }
 #endif

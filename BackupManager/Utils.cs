@@ -44,17 +44,17 @@ public static class Utils
     /// <summary>
     ///     The end block size.
     /// </summary>
-    private const int EndBlockSize = 16 * BytesInOneKilobyte; // 16K
+    internal const int EndBlockSize = 16 * BytesInOneKilobyte; // 16K
 
     /// <summary>
     ///     The middle block size.
     /// </summary>
-    private const int MiddleBlockSize = 16 * BytesInOneKilobyte; // 16K
+    internal const int MiddleBlockSize = 16 * BytesInOneKilobyte; // 16K
 
     /// <summary>
     ///     The start block size.
     /// </summary>
-    private const int StartBlockSize = 16 * BytesInOneKilobyte; // 16K
+    internal const int StartBlockSize = 16 * BytesInOneKilobyte; // 16K
 
     /// <summary>
     ///     The number of bytes in one Terabyte. 2^40 bytes.
@@ -193,7 +193,9 @@ public static class Utils
     {
         TraceIn(sourceFileName, destFileName);
         if (destFileName == null || sourceFileName == null) return false;
+
         if (File.Exists(destFileName)) throw new NotSupportedException("Destination file already exists");
+
         EnsureDirectories(destFileName);
 
         // we create the destination file so xcopy knows its a file and can copy over it
@@ -218,6 +220,7 @@ public static class Utils
         }
         else
             return TraceOut(false);
+
         return TraceOut(CopyProcess.ExitCode == 0);
     }
 
@@ -286,24 +289,22 @@ public static class Utils
     /// </returns>
     internal static string CreateHashForByteArray(byte[] firstByteArray, byte[] secondByteArray, byte[] thirdByteArray)
     {
-        /* if (secondByteArray == null && thirdByteArray == null)
-            byteArrayToHash = new byte[firstByteArray.Length];
-        else if (thirdByteArray == null)
-            byteArrayToHash = new byte[firstByteArray.Length + secondByteArray.Length];
-        else
-            byteArrayToHash = new byte[firstByteArray.Length + secondByteArray.Length + thirdByteArray.Length];
-       */
         var newSize = 0;
         newSize += firstByteArray.Length;
-        if (secondByteArray != null) newSize += secondByteArray.Length;
+        int thirdByteArrayDestinationOffset;
+
+        if (secondByteArray != null)
+        {
+            newSize += secondByteArray.Length;
+            thirdByteArrayDestinationOffset = firstByteArray.Length + secondByteArray.Length;
+        }
+        else
+            thirdByteArrayDestinationOffset = firstByteArray.Length;
         if (thirdByteArray != null) newSize += thirdByteArray.Length;
         var byteArrayToHash = new byte[newSize];
         Buffer.BlockCopy(firstByteArray, 0, byteArrayToHash, 0, firstByteArray.Length);
-
-        // TODO Big bug here should be:
-        // Buffer.BlockCopy(secondByteArray, 0, byteArrayToHash, firstByteArray.Length, secondByteArray.Length);
-        if (secondByteArray != null) Buffer.BlockCopy(secondByteArray, 0, byteArrayToHash, secondByteArray.Length, secondByteArray.Length);
-        if (thirdByteArray != null) Buffer.BlockCopy(thirdByteArray, 0, byteArrayToHash, firstByteArray.Length + secondByteArray.Length, thirdByteArray.Length);
+        if (secondByteArray != null) Buffer.BlockCopy(secondByteArray, 0, byteArrayToHash, firstByteArray.Length, secondByteArray.Length);
+        if (thirdByteArray != null) Buffer.BlockCopy(thirdByteArray, 0, byteArrayToHash, thirdByteArrayDestinationOffset, thirdByteArray.Length);
         return ByteArrayToString(Md5.ComputeHash(byteArrayToHash));
     }
 
@@ -409,7 +410,6 @@ public static class Utils
     internal static string[] GetFiles(string path, string filters, SearchOption searchOption, FileAttributes directoryAttributesToIgnore,
         FileAttributes fileAttributesToIgnore)
     {
-        TraceIn();
         var sw = Stopwatch.StartNew();
 
         if (!Directory.Exists(path))
@@ -419,6 +419,7 @@ public static class Utils
         }
         DirectoryInfo directoryInfo = new(path);
         if (directoryInfo.Parent != null && AnyFlagSet(directoryInfo.Attributes, directoryAttributesToIgnore)) return TraceOut(Array.Empty<string>());
+
         var include = from filter in filters.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries) where filter.Trim().HasValue() select filter.Trim();
         var exclude = from filter in include where filter.Contains('!') select filter;
         include = include.Except(exclude);
@@ -452,7 +453,8 @@ public static class Utils
                 foundFiles.AddRange(collection.Where(p => !AnyFlagSet(new FileInfo(p).Attributes, fileAttributesToIgnore)));
             }
         }
-        return TraceOut(foundFiles.ToArray(), $"Time taken = {sw.Elapsed.TotalSeconds} seconds");
+        Trace($"Time taken = {sw.Elapsed.TotalSeconds} seconds");
+        return foundFiles.ToArray();
     }
 
     /// <summary>
@@ -496,6 +498,7 @@ public static class Utils
             sum += count; // sum is a buffer offset for next reading
         }
         if (sum >= byteCountToReturn) return buffer;
+
         var byteArray = new byte[sum];
         Buffer.BlockCopy(buffer, 0, byteArray, 0, sum);
         return byteArray;
@@ -517,6 +520,7 @@ public static class Utils
     {
         if (stream == null) return null;
         if (size <= 0) return string.Empty;
+
         byte[] startBlock;
         byte[] middleBlock = null;
         byte[] endBlock = null;
@@ -571,8 +575,10 @@ public static class Utils
     {
         TraceIn(path);
         if (string.IsNullOrEmpty(path) || !File.Exists(path)) return null;
+
         var size = new FileInfo(path).Length;
         if (size == 0) return string.Empty;
+
         byte[] startBlock;
         byte[] middleBlock = null;
         byte[] endBlock = null;
@@ -771,6 +777,7 @@ public static class Utils
         foreach (var line in textArrayToWrite)
         {
             if (!line.HasValue()) continue;
+
             var textToWrite = $"{DateTime.Now:dd-MM-yy HH:mm:ss} {line}";
             Console.WriteLine(textToWrite);
 
@@ -868,8 +875,11 @@ public static class Utils
         if (startIndex < 0 || (startIndex >= value.Length && startIndex > 0)) throw new ArgumentOutOfRangeException(nameof(startIndex));
         if (length < 0) throw new ArgumentOutOfRangeException(nameof(length));
         if (startIndex > value.Length - length) throw new ArgumentException(null, nameof(length));
+
         if (length == 0) return string.Empty;
+
         if (length > 715827882) throw new ArgumentOutOfRangeException(nameof(length));
+
         var length1 = length * 2;
         var chArray = new char[length1];
         var num1 = startIndex;
@@ -969,9 +979,9 @@ public static class Utils
     ///     The byte count to return.
     /// </param>
     /// <returns>
-    ///     The <see cref="byte[]" />.
+    ///     The byte[]
     /// </returns>
-    private static byte[] GetLocalFileByteArray(string fileName, long offset, long byteCountToReturn)
+    internal static byte[] GetLocalFileByteArray(string fileName, long offset, long byteCountToReturn)
     {
         byte[] buffer;
         FileStream fileStream = new(fileName, FileMode.Open, FileAccess.Read);
@@ -1029,6 +1039,7 @@ public static class Utils
     internal static bool GetDiskInfo(string folderName, out long freespace, out long totalBytes)
     {
         if (string.IsNullOrEmpty(folderName)) throw new ArgumentNullException(nameof(folderName));
+
         if (!folderName.EndsWith("\\")) folderName += '\\';
         return GetDiskFreeSpaceEx(folderName, out freespace, out totalBytes, out _);
     }
@@ -1104,6 +1115,7 @@ public static class Utils
     {
         if (!Directory.Exists(folderPath)) return false;
         if (!IsSymbolicLink(folderPath)) return !Directory.EnumerateFileSystemEntries(folderPath).Any();
+
         var linkTarget = new FileInfo(folderPath).LinkTarget;
         return linkTarget != null && (!SymbolicLinkTargetExists(folderPath) || !Directory.GetFileSystemEntries(linkTarget).Any());
     }
@@ -1330,6 +1342,7 @@ public static class Utils
     {
         var sf = new StackTrace().GetFrame(2);
         if (sf == null) return string.Empty;
+
         var name = sf.GetMethod()?.Name;
 
         if (name is "MoveNext")
@@ -1458,6 +1471,7 @@ public static class Utils
     {
         TraceIn();
         if (string.IsNullOrEmpty(directory)) throw new ArgumentException("Directory is a null reference or an empty string", nameof(directory));
+
         List<string> listOfDirectoriesDeleted = new();
         DeleteEmptyDirectories(directory, listOfDirectoriesDeleted, directory);
         return TraceOut(listOfDirectoriesDeleted.ToArray());
@@ -1523,6 +1537,7 @@ public static class Utils
     {
         TraceIn();
         if (string.IsNullOrEmpty(directory)) throw new ArgumentException("Directory is a null reference or an empty string", nameof(directory));
+
         List<string> listOfDirectoriesDeleted = new();
         DeleteBrokenSymbolicLinks(directory, listOfDirectoriesDeleted, directory);
         return TraceOut(listOfDirectoriesDeleted.ToArray());
