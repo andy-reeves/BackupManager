@@ -204,4 +204,7 @@
   <data name="Rules_Load_Missing_file_rules" xml:space="preserve">
     <value>Missing file rules</value>
   </data>
+  <data name="Rules_Load_Duplicate_rule_number_detected_in_rules_xml" xml:space="preserve">
+    <value>Duplicate rule number detected in rules.xml</value>
+  </data>
 </root>

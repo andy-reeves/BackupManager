@@ -305,6 +305,15 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Duplicate rule number detected in rules.xml.
+        /// </summary>
+        internal static string Rules_Load_Duplicate_rule_number_detected_in_rules_xml {
+            get {
+                return ResourceManager.GetString("Rules_Load_Duplicate_rule_number_detected_in_rules_xml", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Missing file rules.
         /// </summary>
         internal static string Rules_Load_Missing_file_rules {

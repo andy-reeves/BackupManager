@@ -4,10 +4,12 @@
 //  </copyright>
 //  --------------------------------------------------------------------------------------------------------------------
 
+using System.Diagnostics;
 using System.Xml.Serialization;
 
 namespace BackupManager.Entities;
 
+[DebuggerDisplay("Message = {Message}")]
 public class FileRule
 {
     /// <summary>

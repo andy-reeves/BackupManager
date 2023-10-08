@@ -5,9 +5,9 @@
 //  --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Xml.Serialization;
 
 using BackupManager.Properties;
@@ -23,14 +23,20 @@ public class Rules
         try
         {
             XmlSerializer serializer = new(typeof(Rules));
-
             using FileStream stream = new(path, FileMode.Open, FileAccess.Read);
             if (serializer.Deserialize(stream) is not Rules rules) return null;
 
-            var rule = rules.FileRules.SingleOrDefault(p => p.Number == "1");
-            return rule == null ? throw new ArgumentException(Resources.Rules_Load_Missing_file_rules, nameof(path)) : rules;
-        }
+            var rulesHashSet = new HashSet<int>();
 
+            foreach (var rulesFileRule in rules.FileRules)
+            {
+                if (rulesHashSet.Contains(Convert.ToInt32(rulesFileRule.Number)))
+                    throw new ArgumentException(Resources.Rules_Load_Duplicate_rule_number_detected_in_rules_xml, nameof(path));
+
+                rulesHashSet.Add(Convert.ToInt32(rulesFileRule.Number));
+            }
+            return rules;
+        }
         catch (InvalidOperationException ex)
         {
             throw new ApplicationException($"Unable to load Rules.xml {ex}");
