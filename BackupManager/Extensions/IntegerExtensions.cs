@@ -4,8 +4,11 @@
 //  </copyright>
 //  --------------------------------------------------------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace BackupManager.Extensions;
 
+[SuppressMessage("ReSharper", "UnusedMember.Global")]
 public static class IntegerExtensions
 {
     /// <summary>

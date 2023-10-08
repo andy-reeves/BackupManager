@@ -71,6 +71,24 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Hash code cannot be null.
+        /// </summary>
+        internal static string BackupFile_UpdateContentsHash_Hash_code_cannot_be_null {
+            get {
+                return ResourceManager.GetString("BackupFile_UpdateContentsHash_Hash_code_cannot_be_null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zero byte Hashcode.
+        /// </summary>
+        internal static string BackupFile_UpdateContentsHash_Zero_byte_Hashcode {
+            get {
+                return ResourceManager.GetString("BackupFile_UpdateContentsHash_Zero_byte_Hashcode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to  - Admin.
         /// </summary>
         internal static string Main_AdminTitle {
@@ -283,6 +301,15 @@ namespace BackupManager.Properties {
         internal static string Main_UpdateMasterFilesTitle {
             get {
                 return ResourceManager.GetString("Main_UpdateMasterFilesTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Missing file rules.
+        /// </summary>
+        internal static string Rules_Load_Missing_file_rules {
+            get {
+                return ResourceManager.GetString("Rules_Load_Missing_file_rules", resourceCulture);
             }
         }
         

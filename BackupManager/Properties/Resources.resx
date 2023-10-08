@@ -195,4 +195,13 @@
   <data name="Utils_DirectoryNameNullOrEmpty" xml:space="preserve">
     <value>Directory is a null reference or an empty string</value>
   </data>
+  <data name="BackupFile_UpdateContentsHash_Zero_byte_Hashcode" xml:space="preserve">
+    <value>Zero byte Hashcode</value>
+  </data>
+  <data name="BackupFile_UpdateContentsHash_Hash_code_cannot_be_null" xml:space="preserve">
+    <value>Hash code cannot be null</value>
+  </data>
+  <data name="Rules_Load_Missing_file_rules" xml:space="preserve">
+    <value>Missing file rules</value>
+  </data>
 </root>

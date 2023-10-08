@@ -91,9 +91,9 @@ public partial class Main : Form
             // Log the parameters after setting the Pushover keys in the Utils class
             mediaBackup.Config.LogParameters();
             var masterFoldersArray = mediaBackup.Config.MasterFolders.ToArray();
-            listMasterFoldersComboBox.Items.AddRange(masterFoldersArray);
-            masterFoldersComboBox.Items.AddRange(masterFoldersArray);
-            restoreMasterFolderComboBox.Items.AddRange(masterFoldersArray);
+            listMasterFoldersComboBox.Items.AddRange(masterFoldersArray.ToArray<object>());
+            masterFoldersComboBox.Items.AddRange(masterFoldersArray.ToArray<object>());
+            restoreMasterFolderComboBox.Items.AddRange(masterFoldersArray.ToArray<object>());
 
             foreach (var disk in mediaBackup.BackupDisks)
             {
@@ -425,31 +425,34 @@ public partial class Main : Form
                     // calculate the source path
                     // calculate the destination path
                     var sourceFileFullPath = Path.Combine(backupShare, file.Disk, file.IndexFolder, file.RelativePath);
-                    Debug.Assert(targetMasterFolder != null, nameof(targetMasterFolder) + " != null");
-                    var targetFilePath = Path.Combine(targetMasterFolder, file.IndexFolder, file.RelativePath);
 
-                    if (File.Exists(targetFilePath))
-                        Utils.LogWithPushover(BackupAction.Restore, $"[{fileCounter}/{countOfFiles}] {targetFilePath} Already exists");
-                    else
+                    if (targetMasterFolder != null)
                     {
-                        if (File.Exists(sourceFileFullPath))
-                        {
-                            Utils.LogWithPushover(BackupAction.Restore, $"[{fileCounter}/{countOfFiles}] Copying {sourceFileFullPath} as {targetFilePath}");
-                            _ = Utils.FileCopy(sourceFileFullPath, targetFilePath);
-                        }
+                        var targetFilePath = Path.Combine(targetMasterFolder, file.IndexFolder, file.RelativePath);
+
+                        if (File.Exists(targetFilePath))
+                            Utils.LogWithPushover(BackupAction.Restore, $"[{fileCounter}/{countOfFiles}] {targetFilePath} Already exists");
                         else
                         {
-                            Utils.LogWithPushover(BackupAction.Restore, PushoverPriority.High,
-                                $"[{fileCounter}/{countOfFiles}] {sourceFileFullPath} doesn't exist");
+                            if (File.Exists(sourceFileFullPath))
+                            {
+                                Utils.LogWithPushover(BackupAction.Restore, $"[{fileCounter}/{countOfFiles}] Copying {sourceFileFullPath} as {targetFilePath}");
+                                _ = Utils.FileCopy(sourceFileFullPath, targetFilePath);
+                            }
+                            else
+                            {
+                                Utils.LogWithPushover(BackupAction.Restore, PushoverPriority.High,
+                                    $"[{fileCounter}/{countOfFiles}] {sourceFileFullPath} doesn't exist");
+                            }
                         }
-                    }
 
-                    if (File.Exists(targetFilePath))
-                    {
-                        if (file.ContentsHash == Utils.GetShortMd5HashFromFile(targetFilePath))
-                            file.MasterFolder = targetMasterFolder;
-                        else
-                            Utils.LogWithPushover(BackupAction.Restore, PushoverPriority.High, $"ERROR: '{targetFilePath}' has a different Hashcode");
+                        if (File.Exists(targetFilePath))
+                        {
+                            if (file.ContentsHash == Utils.GetShortMd5HashFromFile(targetFilePath))
+                                file.MasterFolder = targetMasterFolder;
+                            else
+                                Utils.LogWithPushover(BackupAction.Restore, PushoverPriority.High, $"ERROR: '{targetFilePath}' has a different Hashcode");
+                        }
                     }
                 }
                 lastBackupDisk = file.Disk;
@@ -542,7 +545,7 @@ public partial class Main : Form
                                mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, false).Count();
             var sizeFromDiskAnalysis = disk.Capacity - disk.Free;
             var difference = totalSizeOfFilesFromSumOfFiles > sizeFromDiskAnalysis ? 0 : sizeFromDiskAnalysis - totalSizeOfFilesFromSumOfFiles;
-            double percentageDiff = difference * 100 / sizeFromDiskAnalysis;
+            var percentageDiff = difference * 100 / (double)sizeFromDiskAnalysis;
             var percentString = percentageDiff is < 1 and > -1 ? "-" : $"{percentageDiff}%";
 
             Utils.Log(
@@ -1160,9 +1163,8 @@ public partial class Main : Form
         foreach (var folderBackupFile in hashSet)
         {
             fileCounter++;
-            var a = folderBackupFile;
-            UpdateStatusLabel($"Checking {a}", Convert.ToInt32(fileCounter * 100 / hashSet.Count));
-            UpdateSymbolicLinkForFolder(a);
+            UpdateStatusLabel($"Checking {folderBackupFile}", Convert.ToInt32(fileCounter * 100 / hashSet.Count));
+            UpdateSymbolicLinkForFolder(folderBackupFile);
         }
         UpdateStatusLabel("Completed.");
         Utils.TraceOut();
@@ -1480,6 +1482,7 @@ public partial class Main : Form
             var answer = MessageBox.Show(string.Format(Resources.Main_BackupDiskConnectCorrectDisk2, backupDisk), Resources.Main_BackupDiskConnectCorrectDisk,
                 MessageBoxButtons.YesNo);
 
+            // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
             switch (answer)
             {
                 case DialogResult.No:
@@ -1611,7 +1614,7 @@ public partial class Main : Form
                             // size of remaining files to copy
                             remainingDiskSpace = availableSpace - Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave);
                             var sizeOfCopyRemaining = remainingDiskSpace < remainingSizeOfFilesToCopy ? remainingDiskSpace : remainingSizeOfFilesToCopy;
-                            double numberOfSecondsOfCopyRemaining = sizeOfCopyRemaining / lastCopySpeed;
+                            var numberOfSecondsOfCopyRemaining = sizeOfCopyRemaining / (double)lastCopySpeed;
                             var rightNow = DateTime.Now;
                             var estimatedFinishDateTime = rightNow.AddSeconds(numberOfSecondsOfCopyRemaining);
                             formattedEndDateTime = ". Estimated finish by " + estimatedFinishDateTime.ToString("HH:mm");
@@ -1767,7 +1770,7 @@ public partial class Main : Form
         DisableControlsForAsyncTasks();
         const string nextDiskMessage = "Please insert the next backup disk now";
 
-        while (true)
+        while (!ct.IsCancellationRequested)
         {
             var lastBackupDiskChecked = CheckConnectedDisk(true);
 
@@ -1926,14 +1929,11 @@ public partial class Main : Form
         var filters = mediaBackup.Config.FilesToDelete
             .Select(filter => new { filter, replace = filter.Replace(".", @"\.").Replace("*", ".*").Replace("?", ".") }).Select(t => $"^{t.replace}$");
         var fileName = new FileInfo(filePath).Name;
+        if (!filters.Any(pattern => Regex.IsMatch(fileName, pattern))) return false;
 
-        if (filters.Any(pattern => Regex.IsMatch(fileName, pattern)))
-        {
-            Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.Normal, $"File matches RegEx and so will be deleted {filePath}");
-            Utils.FileDelete(filePath);
-            return true;
-        }
-        return false;
+        Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.Normal, $"File matches RegEx and so will be deleted {filePath}");
+        Utils.FileDelete(filePath);
+        return true;
     }
 
     private void UpdateStatusLabel(string text, int value = 0)
@@ -2113,49 +2113,47 @@ public partial class Main : Form
     /// </summary>
     /// <param name="folderToCheck">The full path to scan</param>
     /// <param name="searchOption">Whether to search subfolders</param>
-    /// <returns>True if the scan was successful otherwise False.</returns>
+    /// <returns>True if the scan was successful otherwise False. Returns True if the folder doesn't exist</returns>
     private bool ScanSingleFolder(string folderToCheck, SearchOption searchOption)
     {
         Utils.TraceIn(folderToCheck, searchOption);
+        if (!Directory.Exists(folderToCheck)) return Utils.TraceOut(true);
 
-        if (Directory.Exists(folderToCheck))
+        var subFolderText = searchOption == SearchOption.TopDirectoryOnly ? "folder only" : "and subfolders";
+        Utils.LogWithPushover(BackupAction.ScanFolders, $"{folderToCheck}");
+        Utils.Trace($"{folderToCheck} {subFolderText}");
+        UpdateStatusLabel($"Scanning {folderToCheck}");
+        var filters = mediaBackup.GetFilters();
+        var files = Utils.GetFiles(folderToCheck, filters, searchOption);
+        EnableProgressBar(0, files.Length);
+
+        for (var i = 0; i < files.Length; i++)
         {
-            var subFolderText = searchOption == SearchOption.TopDirectoryOnly ? "folder only" : "and subfolders";
-            Utils.LogWithPushover(BackupAction.ScanFolders, $"{folderToCheck}");
-            Utils.Trace($"{folderToCheck} {subFolderText}");
-            UpdateStatusLabel($"Scanning {folderToCheck}");
-            var filters = mediaBackup.GetFilters();
-            var files = Utils.GetFiles(folderToCheck, filters, searchOption);
-            EnableProgressBar(0, files.Length);
+            var file = files[i];
+            Utils.Trace($"Checking {file}");
+            UpdateStatusLabel($"Scanning {folderToCheck}", i + 1);
+            if (CheckForFilesToDelete(file)) continue;
 
-            for (var i = 0; i < files.Length; i++)
+            // RegEx file name rules
+            foreach (var rule in mediaBackup.Config.FileRules)
             {
-                var file = files[i];
-                Utils.Trace($"Checking {file}");
-                UpdateStatusLabel($"Scanning {folderToCheck}", i + 1);
-                if (CheckForFilesToDelete(file)) continue;
+                if (!Regex.IsMatch(file, rule.FileDiscoveryRegEx)) continue;
 
-                // RegEx file name rules
-                foreach (var rule in mediaBackup.Config.FileRules)
+                if (!rule.Matched)
                 {
-                    if (!Regex.IsMatch(file, rule.FileDiscoveryRegEx)) continue;
-
-                    if (!rule.Matched)
-                    {
-                        Utils.Trace($"{rule.Name} matched file {file}");
-                        rule.Matched = true;
-                    }
-
-                    // if it does then the second regex must be true
-                    if (Regex.IsMatch(file, rule.FileTestRegEx)) continue;
-
-                    Utils.Trace($"File {file} matched by {rule.FileDiscoveryRegEx} but doesn't match {rule.FileTestRegEx}");
-                    Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High, $"{rule.Name} {rule.Message} {file}");
+                    Utils.Trace($"{rule.Name} matched file {file}");
+                    rule.Matched = true;
                 }
-                if (!mediaBackup.EnsureFile(file)) return Utils.TraceOut(false);
 
-                UpdateMediaFilesCountDisplay();
+                // if it does then the second regex must be true
+                if (Regex.IsMatch(file, rule.FileTestRegEx)) continue;
+
+                Utils.Trace($"File {file} matched by {rule.FileDiscoveryRegEx} but doesn't match {rule.FileTestRegEx}");
+                Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High, $"{rule.Name} {rule.Message} {file}");
             }
+            if (!mediaBackup.EnsureFile(file)) return Utils.TraceOut(false);
+
+            UpdateMediaFilesCountDisplay();
         }
         return Utils.TraceOut(true);
     }

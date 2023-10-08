@@ -70,8 +70,6 @@ public class BackupFile : IEquatable<BackupFile>
         {
             // Empty files are allowed so empty contentsHash is also fine
             if (contentsHash == null) UpdateContentsHash();
-
-            Debug.Assert(contentsHash != null);
             return contentsHash;
         }
 
@@ -247,7 +245,10 @@ public class BackupFile : IEquatable<BackupFile>
     /// <exception cref="ApplicationException"></exception>
     private void UpdateContentsHash(string newContentsHash)
     {
-        if (newContentsHash == Utils.ZeroByteHash) throw new ApplicationException("Zero byte Hashcode");
+        if (newContentsHash == null) throw new ArgumentNullException(nameof(newContentsHash), Resources.BackupFile_UpdateContentsHash_Hash_code_cannot_be_null);
+
+        if (newContentsHash == Utils.ZeroByteHash)
+            throw new ArgumentException(Resources.BackupFile_UpdateContentsHash_Zero_byte_Hashcode, nameof(newContentsHash));
 
         contentsHash = newContentsHash;
     }

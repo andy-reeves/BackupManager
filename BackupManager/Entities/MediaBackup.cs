@@ -145,14 +145,12 @@ public class MediaBackup
         foreach (var master in Config.MasterFolders)
         foreach (var index in Config.IndexFolders)
         {
-            if (pathWithTerminatingString.StartsWith(Utils.EnsurePathHasATerminatingSeparator(Path.Combine(master, index))))
-            {
-                masterFolder = master;
-                indexFolder = index;
-                relativePath = BackupFile.GetRelativePath(path, masterFolder, indexFolder);
+            if (!pathWithTerminatingString.StartsWith(Utils.EnsurePathHasATerminatingSeparator(Path.Combine(master, index)))) continue;
 
-                return true;
-            }
+            masterFolder = master;
+            indexFolder = index;
+            relativePath = BackupFile.GetRelativePath(path, masterFolder, indexFolder);
+            return true;
         }
 
         return false;
@@ -482,15 +480,13 @@ public class MediaBackup
 
         foreach (var backupFile in BackupFiles)
         {
-            if (backupFile.DiskChecked.HasValue())
-            {
-                var backupFileDate = DateTime.Parse(backupFile.DiskChecked);
+            if (!backupFile.DiskChecked.HasValue()) continue;
 
-                if (backupFileDate >= oldestFileDate) continue;
+            var backupFileDate = DateTime.Parse(backupFile.DiskChecked);
+            if (backupFileDate >= oldestFileDate) continue;
 
-                oldestFileDate = backupFileDate;
-                oldestFile = backupFile;
-            }
+            oldestFileDate = backupFileDate;
+            oldestFile = backupFile;
         }
 
         return oldestFile;

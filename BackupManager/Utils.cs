@@ -8,6 +8,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -33,6 +34,7 @@ namespace BackupManager;
 /// <summary>
 ///     Common Utility functions in a static class
 /// </summary>
+[SuppressMessage("ReSharper", "UnusedMember.Global")]
 public static partial class Utils
 {
     [LibraryImport("kernel32.dll", EntryPoint = "GetDiskFreeSpaceExW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
@@ -424,11 +426,14 @@ public static partial class Utils
         if (directoryInfo.Parent != null && AnyFlagSet(directoryInfo.Attributes, directoryAttributesToIgnore)) return TraceOut(Array.Empty<string>());
 
         var include = from filter in filters.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries) where filter.Trim().HasValue() select filter.Trim();
-        var exclude = from filter in include where filter.Contains('!') select filter;
-        include = include.Except(exclude);
-        if (!include.Any()) include = new[] { "*" };
+        var includeAsArray = include as string[] ?? include.ToArray();
+        var exclude = from filter in includeAsArray where filter.Contains('!') select filter;
+        var excludeAsArray = exclude as string[] ?? exclude.ToArray();
+        include = includeAsArray.Except(excludeAsArray);
+        var includeAsArray2 = include as string[] ?? include.ToArray();
+        if (!includeAsArray2.Any()) includeAsArray2 = new[] { "*" };
 
-        var excludeFilters = from filter in exclude
+        var excludeFilters = from filter in excludeAsArray
             let replace = filter.Replace("!", string.Empty).Replace(".", @"\.").Replace("*", ".*").Replace("?", ".")
             select $"^{replace}$";
         Regex excludeRegex = new(string.Join("|", excludeFilters.ToArray()), RegexOptions.IgnoreCase);
@@ -449,10 +454,10 @@ public static partial class Utils
                 }
             }
 
-            foreach (var filter in include)
+            foreach (var filter in includeAsArray2)
             {
                 var allFiles = Directory.GetFiles(dir, filter, SearchOption.TopDirectoryOnly);
-                var collection = exclude.Any() ? allFiles.Where(p => !excludeRegex.Match(p).Success) : allFiles;
+                var collection = excludeAsArray.Any() ? allFiles.Where(p => !excludeRegex.Match(p).Success) : allFiles;
                 foundFiles.AddRange(collection.Where(p => !AnyFlagSet(new FileInfo(p).Attributes, fileAttributesToIgnore)));
             }
         }
@@ -641,6 +646,8 @@ public static partial class Utils
                 using (FormUrlEncodedContent postContent = new(parameters))
                 {
                     HttpClient client = new();
+
+                    // ReSharper disable once AccessToDisposedClosure
                     var task = Task.Run(() => client.PostAsync(PushoverAddress, postContent));
                     task.Wait();
                     var response = task.Result;
@@ -996,14 +1003,11 @@ public static partial class Utils
         {
             fileStream.Close();
         }
+        if (sum >= byteCountToReturn) return buffer;
 
-        if (sum < byteCountToReturn)
-        {
-            var byteArray = new byte[sum];
-            Buffer.BlockCopy(buffer, 0, byteArray, 0, sum);
-            return byteArray;
-        }
-        return buffer;
+        var byteArray = new byte[sum];
+        Buffer.BlockCopy(buffer, 0, byteArray, 0, sum);
+        return byteArray;
     }
 
     /// <summary>
@@ -1281,6 +1285,18 @@ public static partial class Utils
                 case ServiceControllerStatus.Paused:
                     service.Continue();
                     break;
+                case ServiceControllerStatus.StartPending:
+                    break;
+                case ServiceControllerStatus.StopPending:
+                    break;
+                case ServiceControllerStatus.Running:
+                    break;
+                case ServiceControllerStatus.ContinuePending:
+                    break;
+                case ServiceControllerStatus.PausePending:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(serviceName));
             }
             service.WaitForStatus(ServiceControllerStatus.Running, timeout);
         }
@@ -1427,14 +1443,13 @@ public static partial class Utils
     /// <param name="path"></param>
     internal static void FileDelete(string path)
     {
-        if (File.Exists(path))
-        {
-            ClearFileAttribute(path, FileAttributes.ReadOnly);
-            File.Delete(path);
-        }
+        if (!File.Exists(path)) return;
+
+        ClearFileAttribute(path, FileAttributes.ReadOnly);
+        File.Delete(path);
     }
 
-    private static void DeleteEmptyDirectories(string directory, List<string> list, string rootDirectory)
+    private static void DeleteEmptyDirectories(string directory, ICollection<string> list, string rootDirectory)
     {
         TraceIn(directory);
 
@@ -1480,7 +1495,7 @@ public static partial class Utils
         return TraceOut(listOfDirectoriesDeleted.ToArray());
     }
 
-    private static void DeleteBrokenSymbolicLinks(string directory, bool includeRoot, List<string> list, string rootDirectory)
+    private static void DeleteBrokenSymbolicLinks(string directory, bool includeRoot, ICollection<string> list, string rootDirectory)
     {
         TraceIn(directory);
 

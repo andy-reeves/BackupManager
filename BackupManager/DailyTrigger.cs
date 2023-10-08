@@ -15,9 +15,7 @@ namespace BackupManager;
 /// </summary>
 public class DailyTrigger : IDisposable
 {
-    public DailyTrigger(DateTime startTime) : this(startTime.Hour, startTime.Minute, startTime.Second)
-    {
-    }
+    public DailyTrigger(DateTime startTime) : this(startTime.Hour, startTime.Minute, startTime.Second) { }
 
     /// <summary>
     ///     Initiator
@@ -28,24 +26,22 @@ public class DailyTrigger : IDisposable
     public DailyTrigger(int hour, int minute = 0, int second = 0)
     {
         Utils.TraceIn();
-
         TriggerHour = new TimeSpan(hour, minute, second);
         CancellationToken = new CancellationTokenSource();
+
         RunningTask = Task.Run(async () =>
         {
             while (true)
             {
                 var triggerTime = DateTime.Today + TriggerHour - DateTime.Now;
-
                 if (triggerTime < TimeSpan.Zero) triggerTime = triggerTime.Add(new TimeSpan(24, 0, 0));
-
                 Utils.Trace($"triggerTime={triggerTime}");
-
                 await Task.Delay(triggerTime, CancellationToken.Token);
                 OnTimeTriggered?.Invoke();
             }
-        }, CancellationToken.Token);
 
+            // ReSharper disable once FunctionNeverReturns
+        }, CancellationToken.Token);
         Utils.TraceOut();
     }
 
