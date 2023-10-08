@@ -9,21 +9,19 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
+
 using BackupManager.Extensions;
 
 namespace BackupManager.Entities;
 
 public class BackupDisk : IEquatable<BackupDisk>
 {
-    public BackupDisk()
-    {
-    }
+    public BackupDisk() { }
 
     public BackupDisk(string diskName, string backupShare)
     {
         Name = diskName;
         BackupShare = backupShare;
-
         _ = CheckForValidBackupShare(BackupShare);
     }
 
@@ -53,13 +51,13 @@ public class BackupDisk : IEquatable<BackupDisk>
     public long Free { get; set; }
 
     /// <summary>
-    ///     The current backup share. Typically like '\\media\backup'
+    ///     The current backup share. Typically like '//media/backup'
     /// </summary>
     [XmlIgnore]
     public string BackupShare { get; set; }
 
     /// <summary>
-    ///     The full path to the main backup folder. Typically like '\\media\backup\backup23'
+    ///     The full path to the main backup folder. Typically like '//media/backup/backup23'
     /// </summary>
     [XmlIgnore]
     public string BackupPath => Path.Combine(BackupShare, Name);
@@ -116,16 +114,12 @@ public class BackupDisk : IEquatable<BackupDisk>
 
         // Now scan disk for info;
         var result = Utils.GetDiskInfo(BackupShare, out var availableSpace, out var totalBytes);
-
         if (!result) return false;
 
         Free = availableSpace;
         Capacity = totalBytes;
-
         var files = backupFiles.Where(p => p.Disk == Name);
-
         TotalFiles = files.Count();
-
         return true;
     }
 
@@ -139,7 +133,6 @@ public class BackupDisk : IEquatable<BackupDisk>
         if (string.IsNullOrEmpty(sharePath)) return null;
 
         DirectoryInfo sharePathDirectoryInfo = new(sharePath);
-
         if (!sharePathDirectoryInfo.Exists) return null;
 
         var directoriesInRootFolder = sharePathDirectoryInfo.GetDirectories()
@@ -147,11 +140,9 @@ public class BackupDisk : IEquatable<BackupDisk>
 
         // In here there should be 1 directory starting with 'backup '
         var inRootFolder = directoriesInRootFolder as DirectoryInfo[] ?? directoriesInRootFolder.ToArray();
-
         if (inRootFolder.Length != 1) return null;
 
         var firstDirectory = inRootFolder.Single();
-
         return !firstDirectory.Name.StartsWith("backup ", StringComparison.CurrentCultureIgnoreCase) ? null : firstDirectory.Name;
     }
 
@@ -181,7 +172,6 @@ public class BackupDisk : IEquatable<BackupDisk>
     internal void UpdateSpeeds(long readSpeed, long writeSpeed)
     {
         if (readSpeed > 0) LastReadSpeed = Utils.FormatSpeed(readSpeed);
-
         if (writeSpeed > 0) LastWriteSpeed = Utils.FormatSpeed(writeSpeed);
     }
 

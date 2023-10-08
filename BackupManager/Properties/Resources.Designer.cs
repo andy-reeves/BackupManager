@@ -143,7 +143,7 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Exception occured during application start. {0}.
+        ///   Looks up a localized string similar to Exception occurred during application start. {0}.
         /// </summary>
         internal static string Main_ExceptionOccured {
             get {
@@ -161,7 +161,7 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Are you sure you want to recalculate the hashcodes from the master files?.
+        ///   Looks up a localized string similar to Are you sure you want to recalculate the hash codes from the master files?.
         /// </summary>
         internal static string Main_RecalculateAllHashes {
             get {
@@ -170,7 +170,7 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Recalculate Hashcodes.
+        ///   Looks up a localized string similar to Recalculate hash codes.
         /// </summary>
         internal static string Main_RecalculateAllHashesTitle {
             get {
@@ -260,7 +260,7 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Exception occured. Cancelling operation. {0}.
+        ///   Looks up a localized string similar to Exception occurred. Cancelling operation. {0}.
         /// </summary>
         internal static string Main_TaskWrapperException {
             get {

@@ -121,7 +121,7 @@
     <value> - Admin</value>
   </data>
   <data name="Main_ExceptionOccured" xml:space="preserve">
-    <value>Exception occured during application start. {0}</value>
+    <value>Exception occurred during application start. {0}</value>
   </data>
   <data name="Main_AreYouSureDelete" xml:space="preserve">
     <value>Are you sure you want delete any extra files on the backup disk not in our list?</value>
@@ -163,10 +163,10 @@
     <value>Connect correct backup disk</value>
   </data>
   <data name="Main_RecalculateAllHashes" xml:space="preserve">
-    <value>Are you sure you want to recalculate the hashcodes from the master files?</value>
+    <value>Are you sure you want to recalculate the hash codes from the master files?</value>
   </data>
   <data name="Main_RecalculateAllHashesTitle" xml:space="preserve">
-    <value>Recalculate Hashcodes</value>
+    <value>Recalculate hash codes</value>
   </data>
   <data name="Main_BackupDiskError" xml:space="preserve">
     <value>There was an error checking the connected backup disk</value>
@@ -175,7 +175,7 @@
     <value>Backup disk</value>
   </data>
   <data name="Main_TaskWrapperException" xml:space="preserve">
-    <value>Exception occured. Cancelling operation. {0}</value>
+    <value>Exception occurred. Cancelling operation. {0}</value>
   </data>
   <data name="Main_UpdateMasterFiles" xml:space="preserve">
     <value>Are you sure you want to rebuild the master list?</value>

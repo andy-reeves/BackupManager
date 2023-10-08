@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- ReSharper disable MarkupTextTypo -->
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
  
   <!-- After this many days the backup warns to check the disks again -->
@@ -89,7 +90,7 @@
       <MaximumFailures>10</MaximumFailures>
     </Monitor>
   </Monitors>
-
+  
   <MasterFolders>
     <!-- List each UNC path that you want to scan for files to backup here -->
     <MasterFolder>\\nas1\assets1\_Test</MasterFolder>
@@ -143,3 +144,4 @@
     </SymbolicLink>
   </SymbolicLinks>
 </Config>
+<!-- ReSharper restore MarkupTextTypo -->

@@ -232,7 +232,7 @@ public class MediaBackup
         // if this path is already added then return it
         if (indexFolderAndRelativePath.TryGetValue(hashKey, out var backupFile))
         {
-            // consider a file a.txt that's on \\nas1\assets1 in indexFolder _TV and on \\nas1\assets4 in _TV too
+            // consider a file a.txt that's on //nas1/assets1 in indexFolder _TV and on //nas1/assets4 in _TV too
             // this has same index folder and path but its a different file
             string hashOfContents;
 
@@ -304,7 +304,7 @@ public class MediaBackup
     ///     Ensures the BackupFile exists and sets the Flag=TRUE. Sets Deleted=FALSE.
     /// </summary>
     /// <param name="path">Full path to the path in the MasterFolder</param>
-    /// <returns>Null is the file  was locked or an error occured</returns>
+    /// <returns>Null is the file  was locked or an error occurred</returns>
     internal bool EnsureFile(string path)
     {
         Utils.TraceIn();

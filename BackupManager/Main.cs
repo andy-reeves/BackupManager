@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -320,7 +321,7 @@ public partial class Main : Form
 
         catch (Exception ex)
         {
-            Utils.LogWithPushover(BackupAction.General, PushoverPriority.Emergency, $"Exception occured {ex}");
+            Utils.LogWithPushover(BackupAction.General, PushoverPriority.Emergency, $"Exception occurred {ex}");
         }
 
         Utils.TraceOut();
@@ -548,11 +549,7 @@ public partial class Main : Form
 
         foreach (var file in mediaBackup.BackupFiles)
         {
-            const string pattern =
-                @"^(?:.*\\_Movies(?:\s\(non-tmdb\))?\\(.*)\s({tmdb-\d{1,7}?})\s(?:{edition-(?:(?:[1-7][05]TH\sANNIVERSARY)|4K|BLURAY|CHRONOLOGICAL|COLLECTORS|(?:CRITERION|KL\sSTUDIO)\sCOLLECTION|DIAMOND|DVD|IMAX|REDUX|REMASTERED|RESTORED|SPECIAL|(?:THE\sCOMPLETE\s)?EXTENDED|THE\sGODFATHER\sCODA|(?:THE\sRICHARD\sDONNER|DIRECTORS|FINAL)\sCUT|THEATRICAL|ULTIMATE|UNCUT|UNRATED)}\s)?\[(?:DVD|SDTV|(?:WEB(?:Rip|DL)|Bluray|HDTV|Remux)-(?:48|72|108|216)0p)\](?:\[(?:(?:DV)?(?:(?:\s)?HDR10(?:Plus)?)?|PQ|3D)\])?\[(?:DTS(?:\sHD|-(?:X|ES|HD\s(?:M|HR)A))?|(?:TrueHD|EAC3)(?:\sAtmos)?|AC3|FLAC|PCM|MP3|A[AV]C|Opus)\s(?:[1-8]\.[01])\]\[(?:[hx]26[45]|MPEG[24]|HEVC|XviD|V(?:C1|P9)|AVC)\])\.(m(?:kv|p(?:4|e?g))|ts|avi)$";
-
-            var m = Regex.Match(file.FullPath, pattern);
-
+            var m = MoviesFilenameRegex().Match(file.FullPath);
             if (!m.Success) continue;
 
             var movieId = m.Groups[2].Value;
@@ -870,7 +867,7 @@ public partial class Main : Form
         Utils.TraceOut();
     }
 
-    private void ListFilesWithDuplicateContentHashcodesButton_Click(object sender, EventArgs e)
+    private void ListFilesWithDuplicateContentHashCodesButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
         Dictionary<string, BackupFile> allFilesUniqueContentsHash = new();
@@ -1064,6 +1061,7 @@ public partial class Main : Form
 
     private void UpdateUI_Tick(object sender, EventArgs e)
     {
+        // ReSharper disable once StringLiteralTypo
         timeToNextRunTextBox.Text = trigger == null || !updateUITimer.Enabled ? string.Empty : trigger.TimeToNextTrigger().ToString("h'h 'mm'm'");
 
         foldersToScanTextBox.Text = mediaBackup.FoldersToScan.Count.ToString();
@@ -1483,9 +1481,8 @@ public partial class Main : Form
         // find that hash in the backup data file
         // rebuilds the source filename from MasterFolder+IndexFolder+Path
         // checks the file still exists there
-        // if it does compare the hashcodes and update results
-        // force a recalc of both the hashes to check the files can both be read correctly
-
+        // if it does compare the hash codes and update results
+        // force a recalculation of both the hashes to check the files can both be read correctly
         var disk = SetupBackupDisk();
 
         var folderToCheck = disk.BackupPath;
@@ -1565,10 +1562,9 @@ public partial class Main : Form
 
                         if (!returnValue)
                         {
-                            // There was an error with the hashcodes of the source file anf the file on the backup disk
+                            // There was an error with the hash codes of the source file anf the file on the backup disk
                             Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
-                                $"There was an error with the hashcodes on the source and backup disk. It's likely the source file has changed since the last backup of {backupFile.FullPath}. It could be that the source file or destination file are corrupted or in use by another process.");
-
+                                $"There was an error with the hash codes on the source and backup disk. It's likely the source file has changed since the last backup of {backupFile.FullPath}. It could be that the source file or destination file are corrupted or in use by another process.");
                             diskInfoMessageWasTheLastSent = false;
                         }
 
@@ -1621,10 +1617,9 @@ public partial class Main : Form
 
                     if (returnValue == false)
                     {
-                        // There was an error with the hashcodes of the source file anf the file on the backup disk
+                        // There was an error with the hash codes of the source file anf the file on the backup disk
                         Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
-                            $"There was an error with the hashcodes on the source and backup disk. It's likely the sourcefile has changed since the last backup of {file.FullPath}. It could be that the source file or destination file are corrupted though.");
-
+                            $"There was an error with the hash codes on the source and backup disk. It's likely the source file has changed since the last backup of {file.FullPath}. It could be that the source file or destination file are corrupted though.");
                         diskInfoMessageWasTheLastSent = false;
                     }
 
@@ -1830,9 +1825,11 @@ public partial class Main : Form
                     // in which case check the source hash again and then check the copied file 
                     if (!backupFile.CheckContentHashes(disk))
 
-                        // There was an error with the hashcodes of the source file anf the file on the backup disk
+                        // There was an error with the hash codes of the source file anf the file on the backup disk
+                    {
                         Utils.LogWithPushover(BackupAction.BackupFiles, PushoverPriority.High,
-                            $"There was an error with the hashcodes on the source master folder and the backup disk. Its likely the sourcefile has changed since the last backup of {backupFile.FullPath} to {destinationFileName}");
+                            $"There was an error with the hash codes on the source master folder and the backup disk. Its likely the source file has changed since the last backup of {backupFile.FullPath} to {destinationFileName}");
+                    }
                 }
                 else
                 {
@@ -1901,9 +1898,11 @@ public partial class Main : Form
 
                         if (!backupFile.CheckContentHashes(disk))
 
-                            // There was an error with the hashcodes of the source file anf the file on the backup disk
+                            // There was an error with the hash codes of the source file anf the file on the backup disk
+                        {
                             Utils.LogWithPushover(BackupAction.BackupFiles, PushoverPriority.High,
-                                $"There was an error with the hashcodes on the source and backup disk. Its likely the sourcefile has changed since the last backup of {backupFile.FullPath} to {destinationFileName}");
+                                $"There was an error with the hash codes on the source and backup disk. Its likely the source file has changed since the last backup of {backupFile.FullPath} to {destinationFileName}");
+                        }
                     }
                     else
                     {
@@ -2096,7 +2095,7 @@ public partial class Main : Form
         {
             if (u.Exception == null) return;
 
-            Utils.Log("Exception occured. Cancelling operation.");
+            Utils.Log("Exception occurred. Cancelling operation.");
             MessageBox.Show(string.Format(Resources.Main_TaskWrapperException, u.Exception));
             CancelButton_Click(null, null);
         }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
@@ -2113,7 +2112,7 @@ public partial class Main : Form
         {
             if (u.Exception == null) return;
 
-            Utils.Log("Exception occured. Cancelling operation.");
+            Utils.Log("Exception occurred. Cancelling operation.");
             _ = MessageBox.Show(string.Format(Resources.Main_TaskWrapperException, u.Exception));
             CancelButton_Click(null, null);
         }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
@@ -2130,7 +2129,7 @@ public partial class Main : Form
         {
             if (u.Exception == null) return;
 
-            Utils.Log("Exception occured. Cancelling operation.");
+            Utils.Log("Exception occurred. Cancelling operation.");
             _ = MessageBox.Show(string.Format(Resources.Main_TaskWrapperException, u.Exception));
             CancelButton_Click(null, null);
         }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
@@ -2355,7 +2354,7 @@ public partial class Main : Form
 
                 UpdateStatusLabel($"Scanning {masterFolder}");
 
-                // Check for files in the root of the master folder alongside te indexfolders
+                // Check for files in the root of the master folder alongside te index folders
                 var filesInRootOfMasterFolder = Utils.GetFiles(masterFolder, filters, SearchOption.TopDirectoryOnly);
 
                 foreach (var file in filesInRootOfMasterFolder)
@@ -2483,4 +2482,9 @@ public partial class Main : Form
 
         return Utils.TraceOut(true);
     }
+
+    [GeneratedRegex(
+        "^(?:.*\\\\_Movies(?:\\s\\(non-tmdb\\))?\\\\(.*)\\s({tmdb-\\d{1,7}?})\\s(?:{edition-(?:(?:[1-7][05]TH\\sANNIVERSARY)|4K|BLURAY|CHRONOLOGICAL|COLLECTORS|(?:CRITERION|KL\\sSTUDIO)\\sCOLLECTION|DIAMOND|DVD|IMAX|REDUX|REMASTERED|RESTORED|SPECIAL|(?:THE\\sCOMPLETE\\s)?EXTENDED|THE\\sGODFATHER\\sCODA|(?:THE\\sRICHARD\\sDONNER|DIRECTORS|FINAL)\\sCUT|THEATRICAL|ULTIMATE|UNCUT|UNRATED)}\\s)?\\[(?:DVD|SDTV|(?:WEB(?:Rip|DL)|Bluray|HDTV|Remux)-(?:48|72|108|216)0p)\\](?:\\[(?:(?:DV)?(?:(?:\\s)?HDR10(?:Plus)?)?|PQ|3D)\\])?\\[(?:DTS(?:\\sHD|-(?:X|ES|HD\\s(?:M|HR)A))?|(?:TrueHD|EAC3)(?:\\sAtmos)?|AC3|FLAC|PCM|MP3|A[AV]C|Opus)\\s(?:[1-8]\\.[01])\\]\\[(?:[hx]26[45]|MPEG[24]|HEVC|XviD|V(?:C1|P9)|AVC)\\])\\.(m(?:kv|p(?:4|e?g))|ts|avi)$")]
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
+    private static partial Regex MoviesFilenameRegex();
 }

@@ -295,7 +295,7 @@
             listFilesWithDuplicateContentHashcodesButton.Text = "... with duplicate content hashcodes";
             toolTip.SetToolTip(listFilesWithDuplicateContentHashcodesButton, "List files with duplicate content hashcodes");
             listFilesWithDuplicateContentHashcodesButton.UseVisualStyleBackColor = true;
-            listFilesWithDuplicateContentHashcodesButton.Click += ListFilesWithDuplicateContentHashcodesButton_Click;
+            listFilesWithDuplicateContentHashcodesButton.Click += ListFilesWithDuplicateContentHashCodesButton_Click;
             // 
             // checkDeleteAndCopyAllBackupDisksButton
             // 

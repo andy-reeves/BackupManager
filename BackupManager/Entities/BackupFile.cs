@@ -46,7 +46,7 @@ public class BackupFile : IEquatable<BackupFile>
     public string RelativePath { get; set; }
 
     /// <summary>
-    ///     The MasterFolder this file is located at. Like \\nas1\assets1
+    ///     The MasterFolder this file is located at. Like '//nas1/assets1'
     /// </summary>
     public string MasterFolder { get; set; }
 

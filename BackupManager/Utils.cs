@@ -136,9 +136,10 @@ public static partial class Utils
     internal static void BackupLogFile()
     {
         var timeLog = DateTime.Now.ToString("yy-MM-dd-HH-mm-ss");
-        var suffix = string.Empty;
 #if DEBUG
-        suffix = "_Debug";
+        const string suffix = "_Debug";
+#else
+        const string suffix = "";
 #endif
 
         var destLogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups",
@@ -199,6 +200,7 @@ public static partial class Utils
 
         EnsureDirectories(destFileName);
 
+        // ReSharper disable once CommentTypo
         // we create the destination file so xcopy knows its a file and can copy over it
         File.WriteAllText(destFileName, "Temp file");
 
@@ -642,7 +644,7 @@ public static partial class Utils
                     var task = Task.Run(() => client.PostAsync(PushoverAddress, postContent));
                     task.Wait();
                     var response = task.Result;
-                    _ = response.EnsureSuccessStatusCode(); // Throw if httpcode is an error
+                    _ = response.EnsureSuccessStatusCode();
                     var applicationLimitRemaining = 0;
                     if (response.Headers.TryGetValues("X-Limit-App-Remaining", out var values)) applicationLimitRemaining = Convert.ToInt32(values.First());
                     Trace($"Pushover messages remaining: {applicationLimitRemaining}");
