@@ -528,7 +528,6 @@ public partial class Main : Form
         Utils.TraceIn();
         IEnumerable<BackupDisk> disks = mediaBackup.BackupDisks.OrderBy(p => p.Number);
         Utils.Log("Listing backup disk statuses");
-        long actualUsableSpace = 0;
 
         foreach (var disk in disks)
         {
@@ -545,20 +544,17 @@ public partial class Main : Form
                                mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, false).Count();
             var sizeFromDiskAnalysis = disk.Capacity - disk.Free;
             var difference = totalSizeOfFilesFromSumOfFiles > sizeFromDiskAnalysis ? 0 : sizeFromDiskAnalysis - totalSizeOfFilesFromSumOfFiles;
-            var percentageDiff = difference * 100 / (double)sizeFromDiskAnalysis;
+            var percentageDiff = Math.Round(difference * 100 / (double)sizeFromDiskAnalysis, 0);
             var percentString = percentageDiff is < 1 and > -1 ? "-" : $"{percentageDiff}%";
 
             Utils.Log(
-                $"{disk.Name,-11}   Last check: {lastChecked,-9}   Capacity: {disk.CapacityFormatted,-7}   Used: {Utils.FormatSize(sizeFromDiskAnalysis),-8}   Free: {disk.FreeFormatted,-7}   Sum of files: {Utils.FormatSize(totalSizeOfFilesFromSumOfFiles),-7}  DeletedFiles: {deletedCount,-6} Diff: {Utils.FormatSize(difference),-9} {percentString}");
-
-            if (disk.Free > Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave))
-                actualUsableSpace += disk.Free - Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave);
+                $"{disk.Name,-11} Checked: {lastChecked,-9} Capacity: {disk.CapacityFormatted,-8} Used: {Utils.FormatSize(sizeFromDiskAnalysis),-7} Free: {disk.FreeFormatted,-7} Sum of files: {Utils.FormatSize(totalSizeOfFilesFromSumOfFiles),-8} DeletedFiles: {deletedCount,-3} Diff: {Utils.FormatSize(difference),-8} {percentString}");
         }
         var totalSizeFormatted = Utils.FormatSize(mediaBackup.BackupDisks.Sum(p => p.Capacity));
         var totalFreeSpaceFormatted = Utils.FormatSize(mediaBackup.BackupDisks.Sum(p => p.Free));
 
         Utils.Log(
-            $"Total Capacity: {totalSizeFormatted} Free: {totalFreeSpaceFormatted}  UsableSpace: {Utils.FormatSize(actualUsableSpace)} Sum of files: {Utils.FormatSize(mediaBackup.BackupFiles.Sum(p => p.Length))}");
+            $"                         Total Capacity: {totalSizeFormatted,-22} Free: {totalFreeSpaceFormatted,-7} Sum of files: {Utils.FormatSize(mediaBackup.BackupFiles.Sum(p => p.Length))}");
         Utils.TraceOut();
     }
 
