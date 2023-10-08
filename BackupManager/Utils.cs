@@ -869,10 +869,13 @@ public static partial class Utils
         if (length < 0) throw new ArgumentOutOfRangeException(nameof(length));
         if (startIndex > value.Length - length) throw new ArgumentException(null, nameof(length));
 
-        if (length == 0) return string.Empty;
-
-        if (length > 715827882) throw new ArgumentOutOfRangeException(nameof(length));
-
+        switch (length)
+        {
+            case 0:
+                return string.Empty;
+            case > 715827882:
+                throw new ArgumentOutOfRangeException(nameof(length));
+        }
         var length1 = length * 2;
         var chArray = new char[length1];
         var num1 = startIndex;
@@ -925,7 +928,7 @@ public static partial class Utils
     /// <summary>
     ///     The get local file byte array.
     /// </summary>
-    /// <param name="fileStream">
+    /// <param name="stream">
     ///     The file stream.
     /// </param>
     /// <param name="offset">
@@ -935,28 +938,25 @@ public static partial class Utils
     ///     The byte count to return.
     /// </param>
     /// <returns>
-    ///     The <see cref="byte[]" />.
+    ///     The byte[]
     /// </returns>
-    private static byte[] GetLocalFileByteArray(FileStream fileStream, long offset, long byteCountToReturn)
+    private static byte[] GetLocalFileByteArray(Stream stream, long offset, long byteCountToReturn)
     {
-        _ = fileStream.Seek(offset, SeekOrigin.Begin);
+        stream.Seek(offset, SeekOrigin.Begin);
         var buffer = new byte[byteCountToReturn];
         int count;
         var sum = 0;
         var length = Convert.ToInt32(byteCountToReturn);
 
-        while ((count = fileStream.Read(buffer, sum, length - sum)) > 0)
+        while ((count = stream.Read(buffer, sum, length - sum)) > 0)
         {
             sum += count; // sum is a buffer offset for next reading
         }
+        if (sum >= byteCountToReturn) return buffer;
 
-        if (sum < byteCountToReturn)
-        {
-            var byteArray = new byte[sum];
-            Buffer.BlockCopy(buffer, 0, byteArray, 0, sum);
-            return byteArray;
-        }
-        return buffer;
+        var byteArray = new byte[sum];
+        Buffer.BlockCopy(buffer, 0, byteArray, 0, sum);
+        return byteArray;
     }
 
     /// <summary>

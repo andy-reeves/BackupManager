@@ -72,7 +72,11 @@ public partial class Main : Form
             Trace.Listeners.Add(
                 new TextWriterTraceListener(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"),
                     "myListener"));
-            backupDiskTextBox.Text = "\\\\nas1\\assets1\\_Test\\BackupDisks\\backup 1001 parent";
+
+            // ReSharper disable StringLiteralTypo
+            backupDiskTextBox.Text = @"\\nas1\assets1\_Test\BackupDisks\backup 1001 parent";
+
+            // ReSharper restore StringLiteralTypo
 #else
             backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
 #endif
