@@ -72,32 +72,21 @@ public partial class Main : Form
             Trace.Listeners.Add(
                 new TextWriterTraceListener(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"),
                     "myListener"));
-
             backupDiskTextBox.Text = "\\\\nas1\\assets1\\_Test\\BackupDisks\\backup 1001 parent";
-
 #else
             backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
 #endif
-
             var mediaBackupXml = ConfigurationManager.AppSettings.Get("MediaBackupXml");
-
             var localMediaXml = Path.Combine(Application.StartupPath, "MediaBackup.xml");
-
             mediaBackup = MediaBackup.Load(File.Exists(localMediaXml) ? localMediaXml : mediaBackupXml);
-
             if (Utils.IsRunningAsAdmin()) Text += Resources.Main_AdminTitle;
-
             UpdateMediaFilesCountDisplay();
-
             Utils.Config = mediaBackup.Config;
-
             Utils.LogWithPushover(BackupAction.General, "BackupManager started");
 
             // Log the parameters after setting the Pushover keys in the Utils class
             mediaBackup.Config.LogParameters();
-
             var masterFoldersArray = mediaBackup.Config.MasterFolders.ToArray();
-
             listMasterFoldersComboBox.Items.AddRange(masterFoldersArray);
             masterFoldersComboBox.Items.AddRange(masterFoldersArray);
             restoreMasterFolderComboBox.Items.AddRange(masterFoldersArray);
@@ -106,7 +95,6 @@ public partial class Main : Form
             {
                 listFilesComboBox.Items.Add(disk.Name);
             }
-
             pushoverLowCheckBox.Checked = mediaBackup.Config.PushoverSendLowOnOff;
             pushoverNormalCheckBox.Checked = mediaBackup.Config.PushoverSendNormalOnOff;
             pushoverHighCheckBox.Checked = mediaBackup.Config.PushoverSendHighOnOff;
@@ -116,13 +104,9 @@ public partial class Main : Form
             {
                 processesComboBox.Items.Add(monitor.Name);
             }
-
             scheduledBackupAction = () => { TaskWrapper(ScheduledBackupAsync); };
-
             monitoringAction = MonitorServices;
-
             scheduledDateTimePicker.Value = DateTime.Parse(mediaBackup.Config.ScheduledBackupStartTime);
-
             UpdateSendingPushoverButton();
             UpdateMonitoringButton();
             UpdateScheduledBackupButton();
@@ -136,7 +120,6 @@ public partial class Main : Form
                 MonitoringButton_Click(null, null);
 #endif
             }
-
             UpdateCurrentBackupDiskInfo(mediaBackup.GetBackupDisk(backupDiskTextBox.Text));
 
             if (mediaBackup.Config.ScheduledBackupRunOnStartup)
@@ -145,14 +128,10 @@ public partial class Main : Form
                     TaskWrapper(ScheduledBackupAsync);
 #endif
             }
-
             SetupDailyTrigger(mediaBackup.Config.ScheduledBackupOnOff);
-
             processFolderChangesTimer.Interval = mediaBackup.Config.MasterFoldersProcessChangesTimer * 1000;
             scanFoldersTimer.Interval = mediaBackup.Config.MasterFoldersScanTimer * 1000;
-
             SetupFileWatchers();
-
             Utils.TraceOut();
         }
         catch (Exception ex)
@@ -165,6 +144,7 @@ public partial class Main : Form
     public sealed override string Text
     {
         get => base.Text;
+
         set => base.Text = value;
     }
 
@@ -180,18 +160,13 @@ public partial class Main : Form
         }
 
         // add this changed folder/file to the list to potentially scan
-        if (FolderChanges.ContainsKey(e.FullPath))
-            FolderChanges[e.FullPath] = DateTime.Now;
-        else
-            FolderChanges.Add(e.FullPath, DateTime.Now);
-
+        FolderChanges[e.FullPath] = DateTime.Now;
         Utils.TraceOut();
     }
 
     private static void FileSystemWatcher_OnError(object sender, ErrorEventArgs e)
     {
         var ex = e.GetException();
-
         Utils.LogWithPushover(BackupAction.General, $"Message: {ex.Message}");
         Utils.LogWithPushover(BackupAction.General, $"Stacktrace: {ex.StackTrace}");
     }
@@ -202,7 +177,6 @@ public partial class Main : Form
 
         if (MessageBox.Show(Resources.Main_AreYouSureDelete, Resources.Main_DeleteExtraTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
             TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, true, false);
-
         Utils.TraceOut();
     }
 
@@ -210,9 +184,7 @@ public partial class Main : Form
     {
         Utils.TraceIn();
         mediaBackup.Config.ScheduledBackupOnOff = !mediaBackup.Config.ScheduledBackupOnOff;
-
         SetupDailyTrigger(mediaBackup.Config.ScheduledBackupOnOff);
-
         UpdateScheduledBackupButton();
         Utils.TraceOut();
     }
@@ -220,13 +192,11 @@ public partial class Main : Form
     private void SetupDailyTrigger(bool addTrigger)
     {
         Utils.TraceIn();
-
         updateUITimer.Enabled = true; // because we want to update the folder tracking every 1 min or so anyway
 
         if (addTrigger)
         {
             trigger = new DailyTrigger(scheduledDateTimePicker.Value);
-
             trigger.OnTimeTriggered += scheduledBackupAction;
             Utils.Trace("SetupDailyTrigger OnTimeTriggered added");
             UpdateUI_Tick(null, null);
@@ -238,10 +208,8 @@ public partial class Main : Form
                 trigger.OnTimeTriggered -= scheduledBackupAction;
                 Utils.Trace("SetupDailyTrigger OnTimeTriggered removed");
             }
-
             timeToNextRunTextBox.Text = string.Empty;
         }
-
         Utils.TraceOut();
     }
 
@@ -252,14 +220,11 @@ public partial class Main : Form
 
         longRunningActionExecutingRightNow = true;
         DisableControlsForAsyncTasks();
-
         ScheduledBackup();
 
         // reset the daily trigger
         SetupDailyTrigger(mediaBackup.Config.ScheduledBackupOnOff);
-
         Utils.Trace($"TriggerHour={trigger.TriggerHour}");
-
         ResetAllControls();
         longRunningActionExecutingRightNow = false;
     }
@@ -281,12 +246,9 @@ public partial class Main : Form
                 Utils.LogWithPushover(BackupAction.General, $"Service monitoring is running every {mediaBackup.Config.MonitoringInterval} seconds");
             else
                 Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, "Service monitoring is not running");
-
             long oldFileCount = mediaBackup.BackupFiles.Count;
-
             var doFullBackup = false;
             _ = DateTime.TryParse(mediaBackup.MasterFoldersLastFullScan, out var backupFileDate);
-
             if (backupFileDate.AddDays(mediaBackup.Config.MasterFoldersDaysBetweenFullScan) < DateTime.Now) doFullBackup = true;
 
             // Update the master files if we've not been monitoring folders directly
@@ -299,7 +261,6 @@ public partial class Main : Form
             if (mediaBackup.Config.BackupDiskDifferenceInFileCountAllowedPercentage != 0)
             {
                 var minimumFileCountAllowed = oldFileCount - oldFileCount * mediaBackup.Config.BackupDiskDifferenceInFileCountAllowedPercentage / 100;
-
                 long newFileCount = mediaBackup.BackupFiles.Count;
 
                 if (newFileCount < minimumFileCountAllowed)
@@ -315,15 +276,11 @@ public partial class Main : Form
             // Copy any files that need a backup
             CopyFiles(true);
         }
-        catch (OperationCanceledException)
-        {
-        }
-
+        catch (OperationCanceledException) { }
         catch (Exception ex)
         {
             Utils.LogWithPushover(BackupAction.General, PushoverPriority.Emergency, $"Exception occurred {ex}");
         }
-
         Utils.TraceOut();
     }
 
@@ -334,9 +291,7 @@ public partial class Main : Form
         if (listFilesComboBox.SelectedItem != null)
         {
             var selectedItemText = listFilesComboBox.SelectedItem.ToString();
-
             var files = mediaBackup.GetBackupFilesOnBackupDisk(selectedItemText, true);
-
             Utils.Log($"Listing files on backup disk {selectedItemText}");
 
             foreach (var file in files)
@@ -344,55 +299,43 @@ public partial class Main : Form
                 Utils.Log($"{file.FullPath}");
             }
         }
-
         Utils.TraceOut();
     }
 
     private void ListFilesInMasterFolderButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-
         var masterFolder = listMasterFoldersComboBox.SelectedItem.ToString();
-
         var files = mediaBackup.GetBackupFilesInMasterFolder(masterFolder);
-
         Utils.Log($"Listing files in master folder {masterFolder}");
 
         if (mediaBackup.Config.SpeedTestOnOff)
         {
             Utils.DiskSpeedTest(masterFolder, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations,
                 out var readSpeed, out var writeSpeed);
-
             Utils.Log($"Testing {masterFolder}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
         }
 
         foreach (var file in files)
         {
             Utils.Log($"{file.FullPath} : {file.Disk}");
-
             if (string.IsNullOrEmpty(file.Disk)) Utils.Log($"{file.FullPath} : not on a backup disk");
         }
-
         Utils.TraceOut();
     }
 
     private void CheckForOldBackupDisks_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-
         CheckForOldBackupDisks();
-
         Utils.TraceOut();
     }
 
     private void CheckForOldBackupDisks()
     {
         Utils.TraceIn();
-
         var numberOfDays = mediaBackup.Config.BackupDiskDaysToReportSinceFilesChecked;
-
         var files = mediaBackup.BackupFiles.Where(p => p.DiskChecked.HasValue() && DateTime.Parse(p.DiskChecked).AddDays(numberOfDays) < DateTime.Today);
-
         var backupFiles = files as BackupFile[] ?? files.ToArray();
         var disks = backupFiles.GroupBy(p => p.Disk).Select(p => p.First());
 
@@ -409,10 +352,8 @@ public partial class Main : Form
         foreach (var file in backupFiles)
         {
             var days = DateTime.Today.Subtract(DateTime.Parse(file.DiskChecked)).Days;
-
             Utils.Log(BackupAction.General, $"{file.FullPath} - not checked in {days} day(s) on disk {file.Disk}");
         }
-
         Utils.TraceOut();
     }
 
@@ -432,7 +373,6 @@ public partial class Main : Form
                 _ = MessageBox.Show(Resources.Main_RestoreFilesSelectAMasterFolder, Resources.Main_RestoreFilesTitle, MessageBoxButtons.OK);
                 return;
             }
-
             var masterFolder = masterFoldersComboBox.SelectedItem.ToString();
 
             if (restoreMasterFolderComboBox.SelectedItem == null)
@@ -440,20 +380,14 @@ public partial class Main : Form
                 _ = MessageBox.Show(Resources.Main_RestoreFilesMasterFolderToRestoreTo, Resources.Main_RestoreFilesTitle, MessageBoxButtons.OK);
                 return;
             }
-
             var targetMasterFolder = restoreMasterFolderComboBox.SelectedItem.ToString();
-
             var files = mediaBackup.GetBackupFilesInMasterFolder(masterFolder).Where(p => p.Disk.HasValue());
-
             Utils.Log(BackupAction.Restore, $"Restoring files from master folder {masterFolder}");
             Utils.Log(BackupAction.Restore, $"Restoring files to target master folder {targetMasterFolder}");
-
             var backupShare = backupDiskTextBox.Text;
-
             var lastBackupDisk = string.Empty;
             var fileCounter = 0;
             var countOfFiles = 0;
-
             var backupFiles = files as BackupFile[] ?? files.ToArray();
 
             foreach (var file in backupFiles)
@@ -482,20 +416,16 @@ public partial class Main : Form
                         countOfFiles = backupFiles.Count(p => p.Disk == file.Disk);
                         fileCounter = 0;
                     }
-
                     fileCounter++;
 
                     // calculate the source path
                     // calculate the destination path
                     var sourceFileFullPath = Path.Combine(backupShare, file.Disk, file.IndexFolder, file.RelativePath);
-
                     Debug.Assert(targetMasterFolder != null, nameof(targetMasterFolder) + " != null");
                     var targetFilePath = Path.Combine(targetMasterFolder, file.IndexFolder, file.RelativePath);
 
                     if (File.Exists(targetFilePath))
-                    {
                         Utils.LogWithPushover(BackupAction.Restore, $"[{fileCounter}/{countOfFiles}] {targetFilePath} Already exists");
-                    }
                     else
                     {
                         if (File.Exists(sourceFileFullPath))
@@ -518,13 +448,10 @@ public partial class Main : Form
                             Utils.LogWithPushover(BackupAction.Restore, PushoverPriority.High, $"ERROR: '{targetFilePath}' has a different Hashcode");
                     }
                 }
-
                 lastBackupDisk = file.Disk;
             }
-
             mediaBackup.Save();
         }
-
         Utils.TraceOut();
     }
 
@@ -534,7 +461,6 @@ public partial class Main : Form
 
         if (MessageBox.Show(Resources.Main_AreYouSureDelete, Resources.Main_DeleteExtraTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
             TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, true, true);
-
         Utils.TraceOut();
     }
 
@@ -542,9 +468,7 @@ public partial class Main : Form
     {
         Utils.TraceIn();
         Utils.Log("Listing movies with multiple files in folder");
-
         Dictionary<string, BackupFile> allMovies = new();
-
         List<BackupFile> backupFilesWithDuplicates = new();
 
         foreach (var file in mediaBackup.BackupFiles)
@@ -557,22 +481,17 @@ public partial class Main : Form
             if (allMovies.TryGetValue(movieId, out var movie))
             {
                 if (!backupFilesWithDuplicates.Contains(file)) backupFilesWithDuplicates.Add(file);
-
                 if (!backupFilesWithDuplicates.Contains(movie)) backupFilesWithDuplicates.Add(movie);
             }
             else
-            {
                 allMovies.Add(movieId, file);
-            }
         }
-
         var sortedList = backupFilesWithDuplicates.OrderBy(o => o.FileName).ToList();
 
         foreach (var backupMovieDuplicate in sortedList)
         {
             Utils.Log($"{backupMovieDuplicate.FullPath}");
         }
-
         Utils.TraceOut();
     }
 
@@ -580,7 +499,6 @@ public partial class Main : Form
     {
         Utils.TraceIn();
         Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, "High priority test");
-
         Utils.TraceOut();
     }
 
@@ -594,20 +512,15 @@ public partial class Main : Form
     private void TestPushoverEmergencyButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-
         Utils.LogWithPushover(BackupAction.General, PushoverPriority.Emergency, PushoverRetry.OneMinute, PushoverExpires.OneHour, "Emergency priority test");
-
         Utils.TraceOut();
     }
 
     private void ReportBackupDiskStatusButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-
         IEnumerable<BackupDisk> disks = mediaBackup.BackupDisks.OrderBy(p => p.Number);
-
         Utils.Log("Listing backup disk statuses");
-
         long actualUsableSpace = 0;
 
         foreach (var disk in disks)
@@ -619,17 +532,13 @@ public partial class Main : Form
                 var d = DateTime.Parse(disk.Checked);
                 lastChecked = d.ToString("dd-MMM-yy");
             }
-
             var totalSizeOfFilesFromSumOfFiles = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, false).Sum(p => p.Length);
 
             var deletedCount = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, true).Count() -
                                mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, false).Count();
-
             var sizeFromDiskAnalysis = disk.Capacity - disk.Free;
-
             var difference = totalSizeOfFilesFromSumOfFiles > sizeFromDiskAnalysis ? 0 : sizeFromDiskAnalysis - totalSizeOfFilesFromSumOfFiles;
             double percentageDiff = difference * 100 / sizeFromDiskAnalysis;
-
             var percentString = percentageDiff is < 1 and > -1 ? "-" : $"{percentageDiff}%";
 
             Utils.Log(
@@ -638,13 +547,11 @@ public partial class Main : Form
             if (disk.Free > Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave))
                 actualUsableSpace += disk.Free - Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave);
         }
-
         var totalSizeFormatted = Utils.FormatSize(mediaBackup.BackupDisks.Sum(p => p.Capacity));
         var totalFreeSpaceFormatted = Utils.FormatSize(mediaBackup.BackupDisks.Sum(p => p.Free));
 
         Utils.Log(
             $"Total Capacity: {totalSizeFormatted} Free: {totalFreeSpaceFormatted}  UsableSpace: {Utils.FormatSize(actualUsableSpace)} Sum of files: {Utils.FormatSize(mediaBackup.BackupFiles.Sum(p => p.Length))}");
-
         Utils.TraceOut();
     }
 
@@ -652,7 +559,6 @@ public partial class Main : Form
     {
         Utils.TraceIn();
         TaskWrapper(SpeedTestAllMasterFoldersAsync);
-
         Utils.TraceOut();
     }
 
@@ -660,25 +566,19 @@ public partial class Main : Form
     {
         longRunningActionExecutingRightNow = true;
         DisableControlsForAsyncTasks();
-
         Utils.Log("Speed testing all master folders");
-
         EnableProgressBar(0, mediaBackup.Config.MasterFolders.Count);
 
         for (var i = 0; i < mediaBackup.Config.MasterFolders.Count; i++)
         {
             var masterFolder = mediaBackup.Config.MasterFolders[i];
-
             UpdateStatusLabel($"Speed testing {masterFolder}", i + 1);
-
             if (!Utils.IsFolderWritable(masterFolder)) continue;
 
             Utils.DiskSpeedTest(masterFolder, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations,
                 out var readSpeed, out var writeSpeed);
-
             Utils.Log($"testing {masterFolder}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
         }
-
         ResetAllControls();
         longRunningActionExecutingRightNow = false;
     }
@@ -696,16 +596,12 @@ public partial class Main : Form
         else
         {
             Utils.LogWithPushover(BackupAction.Monitoring, "Started");
-
             MonitoringTimer_Tick(null, null);
-
             monitoringTimer.Interval = mediaBackup.Config.MonitoringInterval * 1000;
             monitoringTimer.Start();
             mediaBackup.Config.MonitoringOnOff = true;
         }
-
         UpdateMonitoringButton();
-
         Utils.TraceOut();
     }
 
@@ -720,17 +616,14 @@ public partial class Main : Form
         foreach (var monitor in mediaBackup.Config.Monitors)
         {
             var result = monitor.Port > 0 ? Utils.ConnectionExists(monitor.Url, monitor.Port) : Utils.UrlExists(monitor.Url, monitor.Timeout * 1000);
-
             if (result) continue;
 
             // The monitor is down
             monitor.UpdateFailures(DateTime.Now);
-
             if (monitor.FailureRetryExceeded) continue;
 
             var s = monitor.Failures.Count > 1 ? "s" : string.Empty;
             var text = $"'{monitor.Name}' is down. {monitor.Failures.Count} failure{s} in the last {Utils.FormatTimeFromSeconds(monitor.FailureTimePeriod)}.";
-
             Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High, text);
 
             if (monitor.ProcessToKill.HasValue())
@@ -740,7 +633,6 @@ public partial class Main : Form
                 foreach (var toKill in processesToKill)
                 {
                     Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal, $"Stopping all '{toKill}' processes that match");
-
                     _ = Utils.KillProcesses(toKill);
                 }
             }
@@ -748,9 +640,7 @@ public partial class Main : Form
             if (monitor.ApplicationToStart.HasValue())
             {
                 text = $"Starting {monitor.ApplicationToStart}";
-
                 Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal, text);
-
                 var processToStart = Environment.ExpandEnvironmentVariables(monitor.ApplicationToStart);
 
                 if (File.Exists(processToStart))
@@ -768,13 +658,10 @@ public partial class Main : Form
                         $"Failed to start the new process '{monitor.Name}' as its not found at {monitor.ApplicationToStart} (expanded to {processToStart})");
                 }
             }
-
             if (!monitor.ServiceToRestart.HasValue()) continue;
 
             text = $"Restarting '{monitor.ServiceToRestart}'";
-
             Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal, text);
-
             result = Utils.RestartService(monitor.ServiceToRestart, monitor.Timeout * 1000);
 
             if (result)
@@ -798,11 +685,9 @@ public partial class Main : Form
                 foreach (var toKill in processesToKill)
                 {
                     Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal, $"Stopping all '{toKill}' processes that match");
-
                     _ = Utils.KillProcesses(toKill);
                 }
             }
-
             if (!monitor.ServiceToRestart.HasValue()) continue;
 
             Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal, $"Stopping '{monitor.ServiceToRestart}'");
@@ -810,7 +695,6 @@ public partial class Main : Form
             if (!Utils.StopService(monitor.ServiceToRestart, 5000))
                 Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High, $"Failed to stop the service '{monitor.Name}'");
         }
-
         Utils.TraceOut();
     }
 
@@ -818,7 +702,6 @@ public partial class Main : Form
     {
         Utils.TraceIn();
         Utils.LogWithPushover(BackupAction.General, PushoverPriority.Low, "Low priority test\nLine 2\nLine 3");
-
         Utils.TraceOut();
     }
 
@@ -826,9 +709,7 @@ public partial class Main : Form
     {
         Utils.TraceIn();
         Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, "BackupManager stopped");
-
         Utils.TraceOut();
-
         Utils.BackupLogFile();
     }
 
@@ -840,7 +721,6 @@ public partial class Main : Form
         if (processesComboBox.SelectedItem != null)
         {
             var monitorName = processesComboBox.SelectedItem.ToString();
-
             var monitor = mediaBackup.Config.Monitors.First(m => m.Name == monitorName);
 
             if (monitor.ProcessToKill.HasValue())
@@ -850,7 +730,6 @@ public partial class Main : Form
                 foreach (var toKill in processesToKill)
                 {
                     Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal, $"Stopping all '{toKill}' processes that match");
-
                     _ = Utils.KillProcesses(toKill);
                 }
             }
@@ -863,7 +742,6 @@ public partial class Main : Form
                     Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High, $"Failed to stop the service '{monitor.Name}'");
             }
         }
-
         Utils.TraceOut();
     }
 
@@ -880,20 +758,16 @@ public partial class Main : Form
             if (allFilesUniqueContentsHash.TryGetValue(f.ContentsHash, out var originalFile))
             {
                 backupFilesWithDuplicates.Add(f);
-
                 if (!backupFilesWithDuplicates.Contains(originalFile)) backupFilesWithDuplicates.Add(originalFile);
             }
             else
-            {
                 allFilesUniqueContentsHash.Add(f.ContentsHash, f);
-            }
         }
 
         foreach (var f in backupFilesWithDuplicates)
         {
             Utils.Log($"{f.FullPath} has a duplicate");
         }
-
         Utils.TraceOut();
     }
 
@@ -906,14 +780,12 @@ public partial class Main : Form
 
         if (MessageBox.Show(Resources.Main_AreYouSureDelete, Resources.Main_DeleteExtraTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
             TaskWrapper(CheckConnectedDiskAndCopyFilesRepeaterAsync, true);
-
         Utils.TraceOut();
     }
 
     private void WaitForNewDisk(string message)
     {
         Utils.TraceIn();
-
         UpdateStatusLabel(message);
         Task.Delay(5000, ct).Wait(ct);
         Utils.TraceOut();
@@ -922,17 +794,12 @@ public partial class Main : Form
     private void CancelButton_Click(object sender, EventArgs e)
     {
         tokenSource.Cancel();
-
         toolStripStatusLabel.Text = Resources.Main_Cancelling;
-
         if (Utils.CopyProcess != null && !Utils.CopyProcess.HasExited) Utils.CopyProcess?.Kill();
-
         cancelButton.Enabled = false;
         longRunningActionExecutingRightNow = false;
         ResetAllControls();
-
         UpdateMediaFilesCountDisplay();
-
         tokenSource = null;
     }
 
@@ -940,12 +807,10 @@ public partial class Main : Form
     {
         // Check the current backup disk connected
         // when its finished prompt for another disk and wait
-
         Utils.TraceIn();
 
         if (MessageBox.Show(Resources.Main_AreYouSureDelete, Resources.Main_DeleteExtraTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
             TaskWrapper(CheckConnectedDiskAndCopyFilesRepeaterAsync, false);
-
         Utils.TraceOut();
     }
 
@@ -1024,38 +889,29 @@ public partial class Main : Form
     private void RefreshBackupDiskButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-
         TaskWrapper(SetupBackupDiskAsync);
-
         Utils.TraceOut();
     }
 
     private void ListFilesMarkedAsDeletedButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-
         var files = mediaBackup.GetBackupFilesMarkedAsDeleted();
-
         Utils.Log("Listing files marked as deleted");
-
         var backupFiles = files as BackupFile[] ?? files.ToArray();
 
         foreach (var file in backupFiles)
         {
             Utils.Log($"{file.FullPath} at {Utils.FormatSize(file.Length)} on {file.Disk}");
         }
-
         Utils.Log($"{backupFiles.Length} files at {Utils.FormatSize(backupFiles.Sum(p => p.Length))}");
-
         Utils.TraceOut();
     }
 
     private void ScheduledBackupRunNowButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-
         TaskWrapper(ScheduledBackupAsync);
-
         Utils.TraceOut();
     }
 
@@ -1063,7 +919,6 @@ public partial class Main : Form
     {
         // ReSharper disable once StringLiteralTypo
         timeToNextRunTextBox.Text = trigger == null || !updateUITimer.Enabled ? string.Empty : trigger.TimeToNextTrigger().ToString("h'h 'mm'm'");
-
         foldersToScanTextBox.Text = mediaBackup.FoldersToScan.Count.ToString();
         fileChangesDetectedTextBox.Text = FolderChanges.Count.ToString();
     }
@@ -1089,7 +944,6 @@ public partial class Main : Form
             fileWatcherButton.Text = Resources.Main_SetupFileWatchers_Off;
             RemoveFileSystemWatchers();
         }
-
         processFolderChangesTimer.Enabled = mediaBackup.Config.MasterFoldersFileChangeWatchersOnOff;
         scanFoldersTimer.Enabled = mediaBackup.Config.MasterFoldersFileChangeWatchersOnOff;
     }
@@ -1105,16 +959,13 @@ public partial class Main : Form
             Utils.TraceOut();
             return;
         }
-
         var toSave = false;
 
         for (var i = FolderChanges.Count - 1; i >= 0; i--)
         {
             var folderChange = FolderChanges.ElementAt(i);
-
             Utils.Trace($"path {folderChange.Key}");
             _ = mediaBackup.GetFoldersForPath(folderChange.Key, out var masterFolder, out var indexFolder, out _);
-
             Utils.Trace($"masterFolder {masterFolder}");
             Utils.Trace($"indexFolder {indexFolder}");
 
@@ -1122,7 +973,6 @@ public partial class Main : Form
             {
                 var parentFolder = mediaBackup.GetParentFolder(folderChange.Key);
                 Utils.Trace($"parentFolder {parentFolder}");
-
                 var scanFolder = parentFolder ?? Path.Combine(masterFolder, indexFolder);
 
                 if (mediaBackup.FoldersToScan.Any(f => f.Path == scanFolder))
@@ -1141,12 +991,9 @@ public partial class Main : Form
                     toSave = true;
                 }
             }
-
             _ = FolderChanges.Remove(folderChange.Key);
         }
-
         if (toSave) mediaBackup.Save();
-
         Utils.TraceOut();
     }
 
@@ -1154,7 +1001,6 @@ public partial class Main : Form
     {
         Utils.TraceIn();
         Utils.Trace($"mediaBackup.FoldersToScan.Count = {mediaBackup.FoldersToScan.Count}");
-
         var toSave = false;
 
         if (!longRunningActionExecutingRightNow)
@@ -1168,24 +1014,18 @@ public partial class Main : Form
             for (var i = mediaBackup.FoldersToScan.Count - 1; i >= 0; i--)
             {
                 var folderToScan = mediaBackup.FoldersToScan[i];
-
                 if (folderToScan.ModifiedDateTime.AddSeconds(mediaBackup.Config.MasterFolderScanMinimumAgeBeforeScanning) >= DateTime.Now) continue;
 
                 mediaBackup.ClearFlags();
-
                 var fileCountInFolderBefore = mediaBackup.BackupFiles.Count(b => b.FullPath.StartsWith(folderToScan.Path));
-
                 _ = mediaBackup.GetFoldersForPath(folderToScan.Path, out var masterFolder, out var indexFolder, out _);
-
                 var searchOption = folderToScan.Path == Path.Combine(masterFolder, indexFolder) ? SearchOption.TopDirectoryOnly : SearchOption.AllDirectories;
 
                 if (ScanSingleFolder(folderToScan.Path, searchOption))
                 {
                     var removedFilesCount = 0;
                     var markedAsDeletedFilesCount = 0;
-
                     _ = mediaBackup.FoldersToScan.Remove(folderToScan);
-
                     UpdateSymbolicLinkForFolder(folderToScan.Path);
 
                     // instead of removing files that are no longer found in a folder we now flag them as deleted so we can report them later
@@ -1209,13 +1049,11 @@ public partial class Main : Form
                             markedAsDeletedFilesCount++;
                         }
                     }
-
                     var fileCountInFolderAfter = mediaBackup.BackupFiles.Count(b => b.FullPath.StartsWith(folderToScan.Path));
                     var filesNotOnBackupDiskCount = mediaBackup.GetBackupFilesWithDiskEmpty().Count();
 
                     var text =
                         $"Folder scan completed. {fileCountInFolderBefore} files before and now {fileCountInFolderAfter} files. {markedAsDeletedFilesCount} marked as deleted and {removedFilesCount} removed. {filesNotOnBackupDiskCount} to backup.";
-
                     Utils.Log(BackupAction.ScanFolders, text);
                     toSave = true;
                 }
@@ -1234,18 +1072,14 @@ public partial class Main : Form
                 UpdateMediaFilesCountDisplay();
             }
             else
-            {
                 UpdateStatusLabel("");
-            }
         }
-
         Utils.TraceOut();
     }
 
     private void Main_FormClosing(object sender, FormClosingEventArgs e)
     {
         if (mediaBackup.FoldersToScan.Count <= 0 && FolderChanges.Count <= 0) return;
-
         if (MessageBox.Show(Resources.Main_FoldersQueued, Resources.Main_ScanFoldersTitle, MessageBoxButtons.YesNo) != DialogResult.Yes) return;
 
         ProcessFolderChangesTimer_Tick(null, null);
@@ -1255,28 +1089,24 @@ public partial class Main : Form
     private void ListFoldersToScanButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-
         Utils.Log("Listing folderChanges detected");
 
         foreach (var folderChange in FolderChanges)
         {
             Utils.Log($"{folderChange.Key} changed at {folderChange.Value}");
         }
-
         Utils.Log("Listing FoldersToScan queued");
 
         foreach (var folderToScan in mediaBackup.FoldersToScan)
         {
             Utils.Log($"{folderToScan.Path} changed at {folderToScan.ModifiedDateTime}");
         }
-
         Utils.TraceOut();
     }
 
     private void CheckAllSymbolicLinksButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-
         if (longRunningActionExecutingRightNow) return;
 
         if (MessageBox.Show(Resources.Main_RecreateAllMkLinksAre_you_sure, Resources.Main_SymbolicLinksTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
@@ -1287,9 +1117,7 @@ public partial class Main : Form
     {
         longRunningActionExecutingRightNow = true;
         DisableControlsForAsyncTasks();
-
         UpdateSymbolicLinks();
-
         ResetAllControls();
         longRunningActionExecutingRightNow = false;
     }
@@ -1298,7 +1126,6 @@ public partial class Main : Form
     {
         Utils.TraceIn();
         UpdateStatusLabel("Started");
-
         HashSet<string> hashSet = new();
 
         // HashSet of parent paths that match the RegEx's from config
@@ -1331,10 +1158,8 @@ public partial class Main : Form
             fileCounter++;
             var a = folderBackupFile;
             UpdateStatusLabel($"Checking {a}", Convert.ToInt32(fileCounter * 100 / hashSet.Count));
-
             UpdateSymbolicLinkForFolder(a);
         }
-
         UpdateStatusLabel("Completed.");
         Utils.TraceOut();
     }
@@ -1352,7 +1177,6 @@ public partial class Main : Form
         foreach (var a in mediaBackup.Config.SymbolicLinks)
         {
             var m = Regex.Match(folderPath, a.FileDiscoveryRegEx);
-
             if (!m.Success) continue;
 
             var path = Path.Combine(a.RootFolder, a.RelativePath);
@@ -1378,13 +1202,11 @@ public partial class Main : Form
                 Utils.Trace("Deleting link directory as its empty");
                 Directory.Delete(path, true);
             }
-
             if (Directory.Exists(path)) continue;
 
             Utils.Trace($"Creating new symbolic link at {path} with target {pathToTarget}");
             Directory.CreateSymbolicLink(path, pathToTarget);
         }
-
         Utils.TraceOut();
     }
 
@@ -1392,10 +1214,8 @@ public partial class Main : Form
     {
         totalFilesTextBox.Invoke(x => x.Text = mediaBackup.GetBackupFilesNotMarkedAsDeleted().Count().ToString("N0"));
         totalFilesSizeTextBox.Invoke(x => x.Text = Utils.FormatSize(mediaBackup.GetBackupFilesNotMarkedAsDeleted().Sum(y => y.Length)));
-
         notOnABackupDiskTextBox.Invoke(x => x.Text = mediaBackup.GetBackupFilesWithDiskEmpty().Count().ToString("N0"));
         notOnABackupDiskSizeTextBox.Invoke(x => x.Text = Utils.FormatSize(mediaBackup.GetBackupFilesWithDiskEmpty().Sum(y => y.Length)));
-
         filesMarkedAsDeletedTextBox.Invoke(x => x.Text = mediaBackup.GetBackupFilesMarkedAsDeleted().Count().ToString("N0"));
         filesMarkedAsDeletedSizeTextBox.Invoke(x => x.Text = Utils.FormatSize(mediaBackup.GetBackupFilesMarkedAsDeleted().Sum(y => y.Length)));
     }
@@ -1411,19 +1231,15 @@ public partial class Main : Form
                 NotifyFilter = NotifyFilters.Attributes | NotifyFilters.CreationTime | NotifyFilters.DirectoryName | NotifyFilters.FileName |
                                NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.Security | NotifyFilters.Size
             };
-
             watcher.Changed += FileSystemWatcher_OnSomethingHappened;
             watcher.Deleted += FileSystemWatcher_OnSomethingHappened;
             watcher.Renamed += FileSystemWatcher_OnSomethingHappened;
             watcher.Error += FileSystemWatcher_OnError;
-
             watcher.Filter = "*.*";
             watcher.IncludeSubdirectories = true;
             watcher.EnableRaisingEvents = true;
-
             watcherList.Add(watcher);
         }
-
         Utils.TraceOut();
     }
 
@@ -1435,7 +1251,6 @@ public partial class Main : Form
         {
             watcher.Dispose();
         }
-
         watcherList.Clear();
         Utils.TraceOut();
     }
@@ -1450,20 +1265,16 @@ public partial class Main : Form
         if (disk == null) return false;
 
         var returnValue = disk.Update(mediaBackup.BackupFiles);
-
         currentBackupDiskTextBox.Invoke(x => x.Text = disk.Name);
         backupDiskCapacityTextBox.Invoke(x => x.Text = disk.CapacityFormatted);
         backupDiskAvailableTextBox.Invoke(x => x.Text = disk.FreeFormatted);
-
         return returnValue;
     }
 
     private void CheckConnectedBackupDiskButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-
         TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, false, false);
-
         Utils.TraceOut();
     }
 
@@ -1484,11 +1295,9 @@ public partial class Main : Form
         // if it does compare the hash codes and update results
         // force a recalculation of both the hashes to check the files can both be read correctly
         var disk = SetupBackupDisk();
-
         var folderToCheck = disk.BackupPath;
         Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Started checking backup disk {folderToCheck}");
         UpdateStatusLabel($"Checking backup disk {folderToCheck}");
-
         long readSpeed = 0, writeSpeed = 0;
 
         if (mediaBackup.Config.SpeedTestOnOff)
@@ -1496,45 +1305,34 @@ public partial class Main : Form
             var diskTestSize = disk.Free > Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize)
                 ? Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize)
                 : disk.Free - Utils.BytesInOneKilobyte;
-
             UpdateStatusLabel($"Speed testing {folderToCheck}");
             Utils.DiskSpeedTest(folderToCheck, diskTestSize, mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed);
-
             disk.UpdateSpeeds(readSpeed, writeSpeed);
         }
 
         var text = $"Name: {disk.Name}\nTotal: {disk.CapacityFormatted}\nFree: {disk.FreeFormatted}\n" +
                    $"Read: {Utils.FormatSpeed(readSpeed)}\nWrite: {Utils.FormatSpeed(writeSpeed)}";
-
         var diskInfoMessageWasTheLastSent = true;
-
         Utils.LogWithPushover(BackupAction.CheckBackupDisk, text);
 
         if (disk.Free < Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumCriticalSpace))
             Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, $"{disk.FreeFormatted} free is very low. Prepare new backup disk");
-
         var filesToReset = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, true);
 
         foreach (var fileName in filesToReset)
         {
             fileName.ClearDiskChecked();
         }
-
         UpdateMediaFilesCountDisplay();
-
         UpdateStatusLabel($"Scanning {folderToCheck}");
-
         var backupDiskFiles = Utils.GetFiles(folderToCheck, "*", SearchOption.AllDirectories, FileAttributes.Hidden);
-
         EnableProgressBar(0, backupDiskFiles.Length);
 
         for (var i = 0; i < backupDiskFiles.Length; i++)
         {
             var backupFileFullPath = backupDiskFiles[i];
             var backupFileIndexFolderRelativePath = backupFileFullPath[(folderToCheck.Length + 1)..];
-
             UpdateStatusLabel($"Scanning {folderToCheck}", i + 1);
-
             UpdateMediaFilesCountDisplay();
 
             if (mediaBackup.Contains(backupFileIndexFolderRelativePath))
@@ -1553,7 +1351,6 @@ public partial class Main : Form
 
                         // we will fall through from here to the delete further down and remove the file
                     }
-
                     else
                     {
                         // This forces a hash check on the source and backup disk files
@@ -1567,7 +1364,6 @@ public partial class Main : Form
                                 $"There was an error with the hash codes on the source and backup disk. It's likely the source file has changed since the last backup of {backupFile.FullPath}. It could be that the source file or destination file are corrupted or in use by another process.");
                             diskInfoMessageWasTheLastSent = false;
                         }
-
                         continue;
                     }
                 }
@@ -1587,7 +1383,6 @@ public partial class Main : Form
                 // and then rename it 
                 // if we try to rename and it exists at the destination already then we delete the file instead
                 var hashToCheck = Utils.GetShortMd5HashFromFile(backupFileFullPath);
-
                 var file = mediaBackup.GetBackupFileFromContentsHashcode(hashToCheck);
 
                 if (file != null && file.Length != 0 && file.BackupDiskNumber == 0)
@@ -1602,14 +1397,11 @@ public partial class Main : Form
                         {
                             Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal,
                                 $"File exists already so deleting {backupFileFullPath} instead");
-
                             Utils.FileDelete(backupFileFullPath);
                         }
                     }
                     else
-                    {
                         Utils.FileMove(backupFileFullPath, destFileName);
-                    }
 
                     // This forces a hash check on the source and backup disk files
                     Utils.Trace($"Checking hash for {file.Hash}");
@@ -1622,7 +1414,6 @@ public partial class Main : Form
                             $"There was an error with the hash codes on the source and backup disk. It's likely the source file has changed since the last backup of {file.FullPath}. It could be that the source file or destination file are corrupted though.");
                         diskInfoMessageWasTheLastSent = false;
                     }
-
                     continue;
                 }
             }
@@ -1640,16 +1431,13 @@ public partial class Main : Form
                 diskInfoMessageWasTheLastSent = false;
             }
         }
-
         UpdateStatusLabel($"Deleting {folderToCheck} empty folders");
-
         var directoriesDeleted = Utils.DeleteEmptyDirectories(folderToCheck);
 
         foreach (var directory in directoriesDeleted)
         {
             Utils.Log(BackupAction.CheckBackupDisk, $"Deleted empty folder {directory}");
         }
-
         disk.UpdateDiskChecked();
 
         if (!UpdateCurrentBackupDiskInfo(disk))
@@ -1657,21 +1445,16 @@ public partial class Main : Form
             Utils.LogWithPushover(BackupAction.BackupFiles, PushoverPriority.Emergency, $"Error updating info for backup disk {disk.Name}");
             return null;
         }
-
         UpdateMediaFilesCountDisplay();
-
         mediaBackup.Save();
         UpdateStatusLabel("Saved.");
 
         if (!diskInfoMessageWasTheLastSent)
         {
             text = $"Name: {disk.Name}\nTotal: {disk.CapacityFormatted}\nFree: {disk.FreeFormatted}\nFiles: {disk.TotalFiles:n0}";
-
             Utils.LogWithPushover(BackupAction.CheckBackupDisk, text);
         }
-
         Utils.LogWithPushover(BackupAction.CheckBackupDisk, "Completed");
-
         return Utils.TraceOut(disk);
     }
 
@@ -1682,7 +1465,6 @@ public partial class Main : Form
         // checks the specified backup disk is connected already and returns if it is
         //if its not it prompts the user to insert correct disk and waits
         // user clicks 'Yes' inserted and then returns
-
         if (!BackupDisk.CheckForValidBackupShare(backupDiskTextBox.Text)) return false;
 
         var currentConnectedBackupDiskName = BackupDisk.GetBackupFolderName(backupDiskTextBox.Text);
@@ -1698,22 +1480,18 @@ public partial class Main : Form
             {
                 case DialogResult.No:
                     return false;
-
                 case DialogResult.Yes:
                     currentConnectedBackupDiskName = BackupDisk.GetBackupFolderName(backupDiskTextBox.Text);
                     break;
             }
         }
-
         return Utils.TraceOut(true);
     }
 
     private void CopyFilesToBackupDiskButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-
         TaskWrapper(CopyFilesAsync, true);
-
         Utils.TraceOut();
     }
 
@@ -1721,10 +1499,8 @@ public partial class Main : Form
     {
         longRunningActionExecutingRightNow = true;
         DisableControlsForAsyncTasks();
-
         var disk = SetupBackupDisk();
         _ = UpdateCurrentBackupDiskInfo(disk);
-
         ResetAllControls();
         longRunningActionExecutingRightNow = false;
     }
@@ -1736,7 +1512,6 @@ public partial class Main : Form
     private BackupDisk SetupBackupDisk()
     {
         const string nextDiskMessage = "Please insert the next backup disk now";
-
         var disk = mediaBackup.GetBackupDisk(backupDiskTextBox.Text);
 
         while (disk == null)
@@ -1744,44 +1519,31 @@ public partial class Main : Form
             WaitForNewDisk(nextDiskMessage);
             disk = mediaBackup.GetBackupDisk(backupDiskTextBox.Text);
         }
-
         _ = UpdateCurrentBackupDiskInfo(disk);
-
         return disk;
     }
 
     private void CopyFiles(bool showCompletedMessage)
     {
         Utils.TraceIn();
-
         var disk = SetupBackupDisk();
-
         Utils.LogWithPushover(BackupAction.BackupFiles, "Started");
-
         UpdateStatusLabel("Copying");
-
         IEnumerable<BackupFile> filesToBackup = mediaBackup.GetBackupFilesWithDiskEmpty().OrderByDescending(q => q.Length);
-
         var backupFiles = filesToBackup.ToArray();
         var sizeOfFiles = backupFiles.Sum(x => x.Length);
         var totalFileCount = backupFiles.Length;
-
         Utils.LogWithPushover(BackupAction.BackupFiles, $"{totalFileCount:n0} files to backup at {Utils.FormatSize(sizeOfFiles)}");
-
         var outOfDiskSpaceMessageSent = false;
-
         var fileCounter = 0;
 
         // Start with a 30MB/s copy speed as a guess
         var lastCopySpeed = Utils.ConvertMBtoBytes(30);
-
         var remainingSizeOfFilesToCopy = sizeOfFiles;
 
         // number of bytes copied so far so we can track the percentage complete
         long copiedSoFar = 0;
-
         _ = Utils.GetDiskInfo(backupDiskTextBox.Text, out var availableSpace, out _);
-
         var remainingDiskSpace = availableSpace - Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave);
         var sizeOfCopy = remainingDiskSpace < sizeOfFiles ? remainingDiskSpace : sizeOfFiles;
 
@@ -1800,7 +1562,6 @@ public partial class Main : Form
                 fileCounter++;
                 UpdateStatusLabel("Copying", Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
                 UpdateMediaFilesCountDisplay();
-
                 if (string.IsNullOrEmpty(backupFile.IndexFolder)) throw new ApplicationException("Index folder is empty");
 
                 var destinationFileName = backupFile.BackupDiskFullPath(disk.BackupPath);
@@ -1809,7 +1570,6 @@ public partial class Main : Form
                 // This is in case the Backup is aborted during the copy
                 // This file will be seen on the next scan and removed
                 var destinationFileNameTemp = destinationFileName + ".copying";
-
                 var sourceFileName = backupFile.FullPath;
                 FileInfo sourceFileInfo = new(sourceFileName);
                 var sourceFileSize = Utils.FormatSize(sourceFileInfo.Length);
@@ -1818,7 +1578,6 @@ public partial class Main : Form
                 {
                     Utils.LogWithPushover(BackupAction.BackupFiles,
                         $"[{fileCounter}/{totalFileCount}]\nSkipping copy of {sourceFileName} as it exists already.");
-
                     UpdateStatusLabel($"Skipping {Path.GetFileName(sourceFileName)}", Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
 
                     // it could be that the source file hash changed after we read it (we read the hash, updated the master file and then copied it)
@@ -1834,13 +1593,11 @@ public partial class Main : Form
                 else
                 {
                     UpdateStatusLabel($"Copying {Path.GetFileName(sourceFileName)}", Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
-
                     _ = Utils.GetDiskInfo(backupDiskTextBox.Text, out availableSpace, out _);
 
                     if (availableSpace > Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave) + sourceFileInfo.Length)
                     {
                         outOfDiskSpaceMessageSent = false;
-
                         var formattedEndDateTime = string.Empty;
 
                         if (lastCopySpeed > 0)
@@ -1848,29 +1605,22 @@ public partial class Main : Form
                             // copy speed is known
                             // remaining size is the smallest of remaining disk size-critical space to leave free OR
                             // size of remaining files to copy
-
                             remainingDiskSpace = availableSpace - Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave);
-
                             var sizeOfCopyRemaining = remainingDiskSpace < remainingSizeOfFilesToCopy ? remainingDiskSpace : remainingSizeOfFilesToCopy;
                             double numberOfSecondsOfCopyRemaining = sizeOfCopyRemaining / lastCopySpeed;
-
                             var rightNow = DateTime.Now;
-
                             var estimatedFinishDateTime = rightNow.AddSeconds(numberOfSecondsOfCopyRemaining);
                             formattedEndDateTime = ". Estimated finish by " + estimatedFinishDateTime.ToString("HH:mm");
 
                             // could be the following day
                             if (estimatedFinishDateTime.DayOfWeek != rightNow.DayOfWeek)
                                 formattedEndDateTime = ". Estimated finish by tomorrow at " + estimatedFinishDateTime.ToString("HH:mm");
-
                             UpdateEstimatedFinish(estimatedFinishDateTime);
                         }
 
                         Utils.LogWithPushover(BackupAction.BackupFiles,
                             $"[{fileCounter}/{totalFileCount}] {Utils.FormatSize(availableSpace)} free.\nCopying {sourceFileName} at {sourceFileSize}{formattedEndDateTime}");
-
                         Utils.FileDelete(destinationFileNameTemp);
-
                         var sw = Stopwatch.StartNew();
                         _ = Utils.FileCopy(sourceFileName, destinationFileNameTemp);
                         sw.Stop();
@@ -1878,16 +1628,11 @@ public partial class Main : Form
 
                         // We need to check this here in case Cancel was clicked during the copy of the file
                         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
-
                         Utils.FileMove(destinationFileNameTemp, destinationFileName);
-
                         Utils.Trace($"timeTaken {timeTaken}");
                         Utils.Trace($"sourceFileInfo.Length {sourceFileInfo.Length}");
-
                         lastCopySpeed = timeTaken > 0 ? Convert.ToInt64(sourceFileInfo.Length / timeTaken) : 0;
-
                         var copySpeed = lastCopySpeed > 0 ? Utils.FormatSpeed(lastCopySpeed) : "a very fast speed";
-
                         Utils.Trace($"Copy complete at {copySpeed}");
 
                         // Make sure its not readonly
@@ -1910,32 +1655,26 @@ public partial class Main : Form
                         {
                             Utils.LogWithPushover(BackupAction.BackupFiles,
                                 $"[{fileCounter}/{totalFileCount}] {Utils.FormatSize(availableSpace)} free.\nSkipping {sourceFileName} as not enough free space");
-
                             outOfDiskSpaceMessageSent = true;
                         }
                     }
                 }
-
                 remainingSizeOfFilesToCopy -= backupFile.Length;
                 copiedSoFar += backupFile.Length;
             }
-
             catch (FileNotFoundException)
             {
                 Utils.LogWithPushover(BackupAction.BackupFiles, PushoverPriority.High,
                     $"{backupFile.FullPath} is not found. It's most likely been replaced since our scan.");
             }
-
             catch (IOException ex)
             {
                 // Sometimes during a copy we get this if we lose the connection to the source NAS drive
                 Utils.LogWithPushover(BackupAction.BackupFiles, PushoverPriority.Emergency, $"IOException during copy. Skipping file. Details {ex}");
             }
-
             _ = UpdateCurrentBackupDiskInfo(disk);
             UpdateEstimatedFinish();
         }
-
         UpdateMediaFilesCountDisplay();
 
         if (!UpdateCurrentBackupDiskInfo(disk))
@@ -1943,27 +1682,19 @@ public partial class Main : Form
             Utils.LogWithPushover(BackupAction.BackupFiles, PushoverPriority.Emergency, $"Error updating info for backup disk {disk.Name}");
             return;
         }
-
         mediaBackup.Save();
         UpdateStatusLabel("Saved.");
-
         var filesStillNotOnBackupDisk = mediaBackup.GetBackupFilesWithDiskEmpty();
-
         var text = string.Empty;
-
         var stillNotOnBackupDisk = filesStillNotOnBackupDisk as BackupFile[] ?? filesStillNotOnBackupDisk.ToArray();
 
         if (stillNotOnBackupDisk.Any())
         {
             sizeOfFiles = stillNotOnBackupDisk.Sum(p => p.Length);
-
             text = $"{stillNotOnBackupDisk.Length:n0} files still to backup at {Utils.FormatSize(sizeOfFiles)}.\n";
         }
-
         Utils.LogWithPushover(BackupAction.BackupFiles, text + $"{disk.FreeFormatted} free on backup disk");
-
         if (showCompletedMessage) Utils.LogWithPushover(BackupAction.BackupFiles, PushoverPriority.High, "Completed");
-
         Utils.TraceOut();
     }
 
@@ -1980,20 +1711,15 @@ public partial class Main : Form
     private void ListFilesNotOnBackupDiskButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-
         IEnumerable<BackupFile> filesNotOnBackupDisk = mediaBackup.GetBackupFilesWithDiskEmpty().OrderByDescending(p => p.Length);
-
         Utils.Log("Listing files not on a backup disk");
-
         var notOnBackupDisk = filesNotOnBackupDisk.ToArray();
 
         foreach (var file in notOnBackupDisk)
         {
             Utils.Log($"{file.FullPath} at {Utils.FormatSize(file.Length)}");
         }
-
         Utils.Log($"{notOnBackupDisk.Length} files at {Utils.FormatSize(notOnBackupDisk.Sum(p => p.Length))}");
-
         Utils.TraceOut();
     }
 
@@ -2007,10 +1733,8 @@ public partial class Main : Form
             {
                 backupFile.UpdateContentsHash();
             }
-
             mediaBackup.Save();
         }
-
         Utils.TraceOut();
     }
 
@@ -2018,9 +1742,7 @@ public partial class Main : Form
     {
         longRunningActionExecutingRightNow = true;
         DisableControlsForAsyncTasks();
-
         CopyFiles(showCompletedMessage);
-
         ResetAllControls();
         longRunningActionExecutingRightNow = false;
     }
@@ -2029,11 +1751,8 @@ public partial class Main : Form
     {
         longRunningActionExecutingRightNow = true;
         DisableControlsForAsyncTasks();
-
         _ = CheckConnectedDisk(deleteExtraFiles);
-
         if (copyFiles) CopyFiles(true);
-
         ResetAllControls();
         longRunningActionExecutingRightNow = false;
     }
@@ -2042,7 +1761,6 @@ public partial class Main : Form
     {
         longRunningActionExecutingRightNow = true;
         DisableControlsForAsyncTasks();
-
         const string nextDiskMessage = "Please insert the next backup disk now";
 
         while (true)
@@ -2054,15 +1772,12 @@ public partial class Main : Form
                 _ = MessageBox.Show(Resources.Main_BackupDiskError, Resources.Main_BackupDiskTitle, MessageBoxButtons.OK);
                 continue;
             }
-
             if (copyFiles) CopyFiles(false);
 
             // send pushover high to change disk
             Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
                 $"Backup disk {lastBackupDiskChecked.Name} checked. Please insert the next disk now");
-
             UpdateStatusLabel(nextDiskMessage);
-
             BackupDisk newDisk;
 
             do
@@ -2077,9 +1792,7 @@ public partial class Main : Form
     {
         longRunningActionExecutingRightNow = true;
         DisableControlsForAsyncTasks();
-
         _ = ScanFolders();
-
         ResetAllControls();
         longRunningActionExecutingRightNow = false;
     }
@@ -2143,7 +1856,6 @@ public partial class Main : Form
         {
             if (c is not StatusStrip) c.Invoke(x => x.Enabled = false);
         }
-
         cancelButton.Invoke(x => x.Enabled = true);
         testPushoverEmergencyButton.Invoke(x => x.Enabled = true);
         testPushoverHighButton.Invoke(x => x.Enabled = true);
@@ -2161,15 +1873,12 @@ public partial class Main : Form
         allBackupDisksGroupBox.Invoke(x => x.Enabled = true);
         reportBackupDiskStatusButton.Invoke(x => x.Enabled = true);
         listFilesInMasterFolderGroupBox.Invoke(x => x.Enabled = true);
-
         checkAllBackupDisksButton.Invoke(x => x.Enabled = false);
         checkDeleteAndCopyAllBackupDisksButton.Invoke(x => x.Enabled = false);
-
         monitoringButton.Invoke(x => x.Enabled = true);
         reportBackupDiskStatusButton.Invoke(x => x.Enabled = true);
         listFilesInMasterFolderGroupBox.Invoke(x => x.Enabled = true);
         listFilesOnBackupDiskGroupBox.Invoke(x => x.Enabled = true);
-
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
     }
 
@@ -2184,10 +1893,8 @@ public partial class Main : Form
         {
             c.Invoke(x => x.Enabled = true);
         }
-
         checkAllBackupDisksButton.Invoke(x => x.Enabled = true);
         checkDeleteAndCopyAllBackupDisksButton.Invoke(x => x.Enabled = true);
-
         cancelButton.Invoke(x => x.Enabled = false);
         statusStrip.Invoke(_ => toolStripProgressBar.Visible = false);
         statusStrip.Invoke(_ => toolStripStatusLabel.Text = string.Empty);
@@ -2198,9 +1905,10 @@ public partial class Main : Form
         Utils.TraceIn();
 
         if (!longRunningActionExecutingRightNow)
+        {
             if (MessageBox.Show(Resources.Main_UpdateMasterFiles, Resources.Main_UpdateMasterFilesTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
                 TaskWrapper(ScanFolderAsync);
-
+        }
         Utils.TraceOut();
     }
 
@@ -2213,7 +1921,6 @@ public partial class Main : Form
     {
         var filters = mediaBackup.Config.FilesToDelete
             .Select(filter => new { filter, replace = filter.Replace(".", @"\.").Replace("*", ".*").Replace("?", ".") }).Select(t => $"^{t.replace}$");
-
         var fileName = new FileInfo(filePath).Name;
 
         if (filters.Any(pattern => Regex.IsMatch(fileName, pattern)))
@@ -2222,14 +1929,12 @@ public partial class Main : Form
             Utils.FileDelete(filePath);
             return true;
         }
-
         return false;
     }
 
     private void UpdateStatusLabel(string text, int value = 0)
     {
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
-
         var textToUse = string.Empty;
 
         if (value > 0)
@@ -2242,24 +1947,21 @@ public partial class Main : Form
                 > 99 => 99,
                 _ => progress
             };
-
             textToUse = $"{text}     {progress}%";
         }
         else
         {
             if (!text.EndsWith("...") && !text.EndsWith(".")) textToUse = text + "...";
         }
-
         UpdateProgressBar(value);
-
         statusStrip.Invoke(_ => toolStripStatusLabel.Text = textToUse);
-
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
     }
 
     private void EnableProgressBar(int minimum, int maximum)
     {
         if (maximum < minimum) return;
+
         statusStrip.Invoke(_ => toolStripProgressBar.Minimum = minimum);
         statusStrip.Invoke(_ => toolStripProgressBar.Maximum = maximum);
         statusStrip.Invoke(_ => toolStripProgressBar.Visible = true);
@@ -2271,7 +1973,6 @@ public partial class Main : Form
         if (value > 0)
         {
             if (value >= toolStripProgressBar.Maximum) value = toolStripProgressBar.Maximum - 1;
-
             statusStrip.Invoke(_ => toolStripProgressBar.Visible = true);
             statusStrip.Invoke(_ => toolStripProgressBar.Value = value);
         }
@@ -2289,36 +1990,30 @@ public partial class Main : Form
     private bool ScanFolders()
     {
         Utils.TraceIn();
-
         var filters = mediaBackup.GetFilters();
-
         long readSpeed = 0, writeSpeed = 0;
-
         mediaBackup.ClearFlags();
-
         Utils.LogWithPushover(BackupAction.ScanFolders, "Started");
         UpdateStatusLabel("Started");
 
         foreach (var masterFolder in mediaBackup.Config.MasterFolders)
         {
             UpdateStatusLabel($"Scanning {masterFolder}");
-
             if (!Directory.Exists(masterFolder)) Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High, $"{masterFolder} is not available");
 
             if (Directory.Exists(masterFolder))
             {
                 if (!Utils.IsFolderWritable(masterFolder))
                     Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High, $"{masterFolder} is not writable");
-
                 _ = Utils.GetDiskInfo(masterFolder, out var freeSpaceOnCurrentMasterFolder, out var totalBytesOnMasterFolderDisk);
 
                 if (mediaBackup.Config.SpeedTestOnOff)
                 {
                     UpdateStatusLabel($"Speed testing {masterFolder}");
+
                     Utils.DiskSpeedTest(masterFolder, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations,
                         out readSpeed, out writeSpeed);
                 }
-
                 var totalBytesOnMasterFolderDiskFormatted = Utils.FormatSize(totalBytesOnMasterFolderDisk);
                 var freeSpaceOnCurrentMasterFolderFormatted = Utils.FormatSize(freeSpaceOnCurrentMasterFolder);
                 var readSpeedFormatted = Utils.FormatSpeed(readSpeed);
@@ -2326,32 +2021,32 @@ public partial class Main : Form
 
                 var text =
                     $"{masterFolder}\nTotal: {totalBytesOnMasterFolderDiskFormatted}\nFree: {freeSpaceOnCurrentMasterFolderFormatted}\nRead: {readSpeedFormatted}\nWrite: {writeSpeedFormatted}";
-
                 Utils.LogWithPushover(BackupAction.ScanFolders, text);
 
                 if (mediaBackup.Config.SpeedTestOnOff)
                 {
                     if (readSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumReadSpeed))
+                    {
                         Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High,
                             $"Read speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumReadSpeed))}");
+                    }
 
                     if (writeSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumWriteSpeed))
+                    {
                         Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High,
                             $"Write speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumWriteSpeed))}");
+                    }
                 }
 
                 if (freeSpaceOnCurrentMasterFolder < Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumCriticalSpace))
                     Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High, $"Free space on {masterFolder} is too low");
-
                 UpdateStatusLabel($"Deleting empty folders in {masterFolder}");
-
                 var directoriesDeleted = Utils.DeleteEmptyDirectories(masterFolder);
 
                 foreach (var directory in directoriesDeleted)
                 {
                     Utils.Log(BackupAction.ScanFolders, $"Deleted empty folder {directory}");
                 }
-
                 UpdateStatusLabel($"Scanning {masterFolder}");
 
                 // Check for files in the root of the master folder alongside te index folders
@@ -2360,7 +2055,6 @@ public partial class Main : Form
                 foreach (var file in filesInRootOfMasterFolder)
                 {
                     Utils.Trace($"Checking {file}");
-
                     CheckForFilesToDelete(file);
                 }
 
@@ -2368,11 +2062,8 @@ public partial class Main : Form
                     return false;
             }
             else
-            {
                 Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High, $"{masterFolder} doesn't exist");
-            }
         }
-
         UpdateStatusLabel("Scanning completed.");
 
         foreach (var rule in mediaBackup.Config.FileRules)
@@ -2386,41 +2077,29 @@ public partial class Main : Form
             backupFile.Deleted = true;
             backupFile.Flag = true;
         }
-
         mediaBackup.RemoveFilesWithFlag(false, true);
         mediaBackup.UpdateLastFullScan();
         mediaBackup.Save();
-
         UpdateStatusLabel("Saved.");
         UpdateMediaFilesCountDisplay();
-
         var totalFiles = mediaBackup.BackupFiles.Count;
-
         var totalFileSize = mediaBackup.BackupFiles.Sum(p => p.Length);
-
         var filesNotOnBackupDisk = mediaBackup.GetBackupFilesWithDiskEmpty();
-
         var notOnBackupDisk = filesNotOnBackupDisk as BackupFile[] ?? filesNotOnBackupDisk.ToArray();
         var fileSizeToCopy = notOnBackupDisk.Sum(p => p.Length);
-
         Utils.LogWithPushover(BackupAction.ScanFolders, $"{totalFiles:n0} files at {Utils.FormatSize(totalFileSize)}");
-
         var oldestFile = mediaBackup.GetOldestFile();
 
         if (oldestFile != null)
         {
             var oldestFileDate = DateTime.Parse(oldestFile.DiskChecked);
-
             var days = DateTime.Today.Subtract(oldestFileDate).Days;
-
             var daysText = days == 1 ? string.Empty : "(s)";
 
             Utils.LogWithPushover(BackupAction.ScanFolders,
                 $"Oldest backup date is {days:n0} day{daysText} ago on {oldestFileDate.ToShortDateString()} on {oldestFile.Disk}");
         }
-
         Utils.LogWithPushover(BackupAction.ScanFolders, $"{notOnBackupDisk.Length:n0} files to backup at {Utils.FormatSize(fileSizeToCopy)}");
-
         Utils.LogWithPushover(BackupAction.ScanFolders, "Completed");
         return Utils.TraceOut(true);
     }
@@ -2440,21 +2119,16 @@ public partial class Main : Form
             var subFolderText = searchOption == SearchOption.TopDirectoryOnly ? "folder only" : "and subfolders";
             Utils.LogWithPushover(BackupAction.ScanFolders, $"{folderToCheck}");
             Utils.Trace($"{folderToCheck} {subFolderText}");
-
             UpdateStatusLabel($"Scanning {folderToCheck}");
-
             var filters = mediaBackup.GetFilters();
             var files = Utils.GetFiles(folderToCheck, filters, searchOption);
-
             EnableProgressBar(0, files.Length);
 
             for (var i = 0; i < files.Length; i++)
             {
                 var file = files[i];
                 Utils.Trace($"Checking {file}");
-
                 UpdateStatusLabel($"Scanning {folderToCheck}", i + 1);
-
                 if (CheckForFilesToDelete(file)) continue;
 
                 // RegEx file name rules
@@ -2470,16 +2144,15 @@ public partial class Main : Form
 
                     // if it does then the second regex must be true
                     if (Regex.IsMatch(file, rule.FileTestRegEx)) continue;
+
                     Utils.Trace($"File {file} matched by {rule.FileDiscoveryRegEx} but doesn't match {rule.FileTestRegEx}");
                     Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High, $"{rule.Name} {rule.Message} {file}");
                 }
-
                 if (!mediaBackup.EnsureFile(file)) return Utils.TraceOut(false);
 
                 UpdateMediaFilesCountDisplay();
             }
         }
-
         return Utils.TraceOut(true);
     }
 
