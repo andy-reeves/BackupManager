@@ -144,10 +144,10 @@
   <data name="Main_Cancelling" xml:space="preserve">
     <value>Cancelling ...</value>
   </data>
-  <data name="Main_SetupFileWatchers_On" xml:space="preserve">
+  <data name="Main_SetupFileWatchersOn" xml:space="preserve">
     <value>File Watchers = ON</value>
   </data>
-  <data name="Main_SetupFileWatchers_Off" xml:space="preserve">
+  <data name="Main_SetupFileWatchersOff" xml:space="preserve">
     <value>File Watchers = OFF</value>
   </data>
   <data name="Main_FoldersQueued" xml:space="preserve">
@@ -183,28 +183,28 @@
   <data name="Main_UpdateMasterFilesTitle" xml:space="preserve">
     <value>Rebuild master list</value>
   </data>
-  <data name="Main_RecreateAllMkLinksAre_you_sure" xml:space="preserve">
+  <data name="Main_RecreateAllSymbolicLinks" xml:space="preserve">
     <value>Are you sure you want to check all the symbolic links?</value>
   </data>
   <data name="Main_SymbolicLinksTitle" xml:space="preserve">
     <value>Symbolic Links</value>
   </data>
-  <data name="BackupFile_GetRelativePath_The_fullPath_must_start_with_the_masterFolder_and_indexFolder" xml:space="preserve">
+  <data name="BackupFile_GetRelativePath_The_fullPathCorrect" xml:space="preserve">
     <value>The fullPath must start with the masterFolder and indexFolder</value>
   </data>
   <data name="Utils_DirectoryNameNullOrEmpty" xml:space="preserve">
     <value>Directory is a null reference or an empty string</value>
   </data>
-  <data name="BackupFile_UpdateContentsHash_Zero_byte_Hashcode" xml:space="preserve">
+  <data name="BackupFile_ZeroByteHashcode" xml:space="preserve">
     <value>Zero byte Hashcode</value>
   </data>
-  <data name="BackupFile_UpdateContentsHash_Hash_code_cannot_be_null" xml:space="preserve">
+  <data name="BackupFile_HashCodeNotNull" xml:space="preserve">
     <value>Hash code cannot be null</value>
   </data>
-  <data name="Rules_Load_Missing_file_rules" xml:space="preserve">
+  <data name="Rules_MissingFileRules" xml:space="preserve">
     <value>Missing file rules</value>
   </data>
-  <data name="Rules_Load_Duplicate_rule_number_detected_in_rules_xml" xml:space="preserve">
+  <data name="Rules_DuplicateRuleNumber" xml:space="preserve">
     <value>Duplicate rule number detected in rules.xml</value>
   </data>
 </root>

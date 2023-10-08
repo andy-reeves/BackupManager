@@ -63,28 +63,27 @@ namespace BackupManager.Properties {
         /// <summary>
         ///   Looks up a localized string similar to The fullPath must start with the masterFolder and indexFolder.
         /// </summary>
-        internal static string BackupFile_GetRelativePath_The_fullPath_must_start_with_the_masterFolder_and_indexFolder {
+        internal static string BackupFile_GetRelativePath_The_fullPathCorrect {
             get {
-                return ResourceManager.GetString("BackupFile_GetRelativePath_The_fullPath_must_start_with_the_masterFolder_and_inde" +
-                        "xFolder", resourceCulture);
+                return ResourceManager.GetString("BackupFile_GetRelativePath_The_fullPathCorrect", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Hash code cannot be null.
         /// </summary>
-        internal static string BackupFile_UpdateContentsHash_Hash_code_cannot_be_null {
+        internal static string BackupFile_HashCodeNotNull {
             get {
-                return ResourceManager.GetString("BackupFile_UpdateContentsHash_Hash_code_cannot_be_null", resourceCulture);
+                return ResourceManager.GetString("BackupFile_HashCodeNotNull", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Zero byte Hashcode.
         /// </summary>
-        internal static string BackupFile_UpdateContentsHash_Zero_byte_Hashcode {
+        internal static string BackupFile_ZeroByteHashcode {
             get {
-                return ResourceManager.GetString("BackupFile_UpdateContentsHash_Zero_byte_Hashcode", resourceCulture);
+                return ResourceManager.GetString("BackupFile_ZeroByteHashcode", resourceCulture);
             }
         }
         
@@ -199,9 +198,9 @@ namespace BackupManager.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Are you sure you want to check all the symbolic links?.
         /// </summary>
-        internal static string Main_RecreateAllMkLinksAre_you_sure {
+        internal static string Main_RecreateAllSymbolicLinks {
             get {
-                return ResourceManager.GetString("Main_RecreateAllMkLinksAre_you_sure", resourceCulture);
+                return ResourceManager.GetString("Main_RecreateAllSymbolicLinks", resourceCulture);
             }
         }
         
@@ -253,18 +252,18 @@ namespace BackupManager.Properties {
         /// <summary>
         ///   Looks up a localized string similar to File Watchers = OFF.
         /// </summary>
-        internal static string Main_SetupFileWatchers_Off {
+        internal static string Main_SetupFileWatchersOff {
             get {
-                return ResourceManager.GetString("Main_SetupFileWatchers_Off", resourceCulture);
+                return ResourceManager.GetString("Main_SetupFileWatchersOff", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to File Watchers = ON.
         /// </summary>
-        internal static string Main_SetupFileWatchers_On {
+        internal static string Main_SetupFileWatchersOn {
             get {
-                return ResourceManager.GetString("Main_SetupFileWatchers_On", resourceCulture);
+                return ResourceManager.GetString("Main_SetupFileWatchersOn", resourceCulture);
             }
         }
         
@@ -307,18 +306,18 @@ namespace BackupManager.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Duplicate rule number detected in rules.xml.
         /// </summary>
-        internal static string Rules_Load_Duplicate_rule_number_detected_in_rules_xml {
+        internal static string Rules_DuplicateRuleNumber {
             get {
-                return ResourceManager.GetString("Rules_Load_Duplicate_rule_number_detected_in_rules_xml", resourceCulture);
+                return ResourceManager.GetString("Rules_DuplicateRuleNumber", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Missing file rules.
         /// </summary>
-        internal static string Rules_Load_Missing_file_rules {
+        internal static string Rules_MissingFileRules {
             get {
-                return ResourceManager.GetString("Rules_Load_Missing_file_rules", resourceCulture);
+                return ResourceManager.GetString("Rules_MissingFileRules", resourceCulture);
             }
         }
         

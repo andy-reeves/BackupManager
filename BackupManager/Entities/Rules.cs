@@ -30,8 +30,7 @@ public class Rules
 
             foreach (var rulesFileRule in rules.FileRules)
             {
-                if (rulesHashSet.Contains(Convert.ToInt32(rulesFileRule.Number)))
-                    throw new ArgumentException(Resources.Rules_Load_Duplicate_rule_number_detected_in_rules_xml, nameof(path));
+                if (rulesHashSet.Contains(Convert.ToInt32(rulesFileRule.Number))) throw new ArgumentException(Resources.Rules_DuplicateRuleNumber, nameof(path));
 
                 rulesHashSet.Add(Convert.ToInt32(rulesFileRule.Number));
             }

@@ -943,12 +943,12 @@ public partial class Main : Form
 
         if (mediaBackup.Config.MasterFoldersFileChangeWatchersOnOff)
         {
-            fileWatcherButton.Text = Resources.Main_SetupFileWatchers_On;
+            fileWatcherButton.Text = Resources.Main_SetupFileWatchersOn;
             CreateFileSystemWatchers();
         }
         else
         {
-            fileWatcherButton.Text = Resources.Main_SetupFileWatchers_Off;
+            fileWatcherButton.Text = Resources.Main_SetupFileWatchersOff;
             RemoveFileSystemWatchers();
         }
         processFolderChangesTimer.Enabled = mediaBackup.Config.MasterFoldersFileChangeWatchersOnOff;
@@ -1116,7 +1116,7 @@ public partial class Main : Form
         Utils.TraceIn();
         if (longRunningActionExecutingRightNow) return;
 
-        if (MessageBox.Show(Resources.Main_RecreateAllMkLinksAre_you_sure, Resources.Main_SymbolicLinksTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
+        if (MessageBox.Show(Resources.Main_RecreateAllSymbolicLinks, Resources.Main_SymbolicLinksTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
             TaskWrapper(UpdateSymbolicLinksAsync);
     }
 

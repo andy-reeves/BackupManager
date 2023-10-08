@@ -235,7 +235,7 @@ public class BackupFile : IEquatable<BackupFile>
         var combinedPath = Path.Combine(masterFolder, indexFolder);
 
         return !fullPath.StartsWith(combinedPath)
-            ? throw new ArgumentException(Resources.BackupFile_GetRelativePath_The_fullPath_must_start_with_the_masterFolder_and_indexFolder, nameof(fullPath))
+            ? throw new ArgumentException(Resources.BackupFile_GetRelativePath_The_fullPathCorrect, nameof(fullPath))
             : fullPath.SubstringAfter(combinedPath, StringComparison.CurrentCultureIgnoreCase).TrimStart(new[] { '\\' });
     }
 
@@ -245,10 +245,8 @@ public class BackupFile : IEquatable<BackupFile>
     /// <exception cref="ApplicationException"></exception>
     private void UpdateContentsHash(string newContentsHash)
     {
-        if (newContentsHash == null) throw new ArgumentNullException(nameof(newContentsHash), Resources.BackupFile_UpdateContentsHash_Hash_code_cannot_be_null);
-
-        if (newContentsHash == Utils.ZeroByteHash)
-            throw new ArgumentException(Resources.BackupFile_UpdateContentsHash_Zero_byte_Hashcode, nameof(newContentsHash));
+        if (newContentsHash == null) throw new ArgumentNullException(nameof(newContentsHash), Resources.BackupFile_HashCodeNotNull);
+        if (newContentsHash == Utils.ZeroByteHash) throw new ArgumentException(Resources.BackupFile_ZeroByteHashcode, nameof(newContentsHash));
 
         contentsHash = newContentsHash;
     }
