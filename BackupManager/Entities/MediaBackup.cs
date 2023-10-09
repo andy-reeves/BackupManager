@@ -17,11 +17,6 @@ namespace BackupManager.Entities;
 
 public class MediaBackup
 {
-    /// <summary>
-    ///     This is a Dictionary of files/folders where changes have been detected and the last time they changed
-    /// </summary>
-    public static readonly Collection<Folder> FileOrFolderChangesStatic = new();
-
     // We need to a hash of the index folder and relative path
     // we do this so we can look up files quickly by 
     // contents hashes are not unique. Duplicate files in different locations
@@ -43,7 +38,7 @@ public class MediaBackup
         BackupFiles = new Collection<BackupFile>();
         BackupDisks = new Collection<BackupDisk>();
         FoldersToScan = new Collection<Folder>();
-        FileOrFolderChangesInstance = new Collection<Folder>();
+        FileOrFolderChanges = new Collection<Folder>();
     }
 
     public MediaBackup(string mediaBackupPath)
@@ -59,9 +54,11 @@ public class MediaBackup
 
     [XmlArrayItem("Folder")] public Collection<Folder> FoldersToScan { get; set; }
 
+    /// <summary>
+    ///     We use this to save the xml. Its copied from the static property before saving and after loading
+    /// </summary>
     [XmlArrayItem("Folder")]
-    [XmlArray("FileOrFolderChanges")]
-    public Collection<Folder> FileOrFolderChangesInstance { get; set; }
+    public Collection<Folder> FileOrFolderChanges { get; set; }
 
     public string MasterFoldersLastFullScan
     {
@@ -69,6 +66,11 @@ public class MediaBackup
 
         set => masterFoldersLastFullScan = value;
     }
+
+    /// <summary>
+    ///     This is a Dictionary of files/folders where changes have been detected and the last time they changed
+    /// </summary>
+    internal static Collection<Folder> FileOrFolderChangesStatic { get; } = new();
 
     /// <summary>
     ///     Creates a backup of the current xml file
@@ -105,7 +107,7 @@ public class MediaBackup
             }
             if (mediaBackup == null) return null;
 
-            foreach (var item in mediaBackup.FileOrFolderChangesInstance)
+            foreach (var item in mediaBackup.FileOrFolderChanges)
             {
                 FileOrFolderChangesStatic.Add(item);
             }
@@ -174,7 +176,7 @@ public class MediaBackup
     public void Save()
     {
         BackupMediaFile();
-        FileOrFolderChangesInstance = FileOrFolderChangesStatic;
+        FileOrFolderChanges = FileOrFolderChangesStatic;
         XmlSerializer xmlSerializer = new(typeof(MediaBackup));
         if (File.Exists(mediaBackupPath)) File.SetAttributes(mediaBackupPath, FileAttributes.Normal);
         using StreamWriter streamWriter = new(mediaBackupPath);
