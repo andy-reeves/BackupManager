@@ -5,19 +5,14 @@
 //  --------------------------------------------------------------------------------------------------------------------
 
 using System;
-using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
 
 namespace BackupManager.Entities;
 
 /// <summary>
 ///     This class allows us to keep a Collection of FoldersToScan with the path and datetime it was last changed
 /// </summary>
-public class Folder : IEquatable<Folder>, IXmlSerializable
+public class Folder : IEquatable<Folder>
 {
-    private string path;
-
     public Folder() { }
 
     public Folder(string path) : this(path, DateTime.Now) { }
@@ -32,13 +27,9 @@ public class Folder : IEquatable<Folder>, IXmlSerializable
     ///     The path to the folder that changed
     /// </summary>
 
-    // ReSharper disable once ConvertToAutoProperty
-    public string Path
-    {
-        get => path;
+    public string Path { get; set; }
 
-        private set => path = value;
-    }
+    private string InternalPath => Path;
 
     /// <summary>
     ///     The Timestamp the folder was last changed
@@ -50,26 +41,6 @@ public class Folder : IEquatable<Folder>, IXmlSerializable
         return null != other && Path == other.Path;
     }
 
-    public XmlSchema GetSchema()
-    {
-        return null;
-    }
-
-    public void ReadXml(XmlReader reader)
-    {
-        var isEmptyElement = reader.IsEmptyElement;
-        Path = reader.GetAttribute("Path");
-        ModifiedDateTime = XmlConvert.ToDateTime(reader.GetAttribute("ModifiedDateTime") ?? string.Empty, XmlDateTimeSerializationMode.Local);
-        reader.ReadStartElement();
-        if (!isEmptyElement) reader.ReadEndElement();
-    }
-
-    public void WriteXml(XmlWriter writer)
-    {
-        writer.WriteAttributeString("Path", Path);
-        writer.WriteAttributeString("ModifiedDateTime", XmlConvert.ToString(ModifiedDateTime, XmlDateTimeSerializationMode.Local));
-    }
-
     public override bool Equals(object obj)
     {
         return Equals(obj as Folder);
@@ -77,6 +48,6 @@ public class Folder : IEquatable<Folder>, IXmlSerializable
 
     public override int GetHashCode()
     {
-        return Path.GetHashCode();
+        return InternalPath.GetHashCode();
     }
 }

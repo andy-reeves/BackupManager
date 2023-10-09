@@ -56,6 +56,7 @@ public class MediaBackup
     public string MasterFoldersLastFullScan
     {
         get => string.IsNullOrEmpty(masterFoldersLastFullScan) ? string.Empty : masterFoldersLastFullScan;
+
         set => masterFoldersLastFullScan = value;
     }
 
@@ -78,7 +79,6 @@ public class MediaBackup
             var destinationFileName = "MediaBackup-" + DateTime.Now.ToString("yy-MM-dd-HH-mm-ss.ff") + ".xml";
             destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups", destinationFileName);
         } while (File.Exists(destinationPath));
-
         return destinationPath;
     }
 
@@ -93,7 +93,6 @@ public class MediaBackup
             {
                 mediaBackup = serializer.Deserialize(stream) as MediaBackup;
             }
-
             if (mediaBackup == null) return null;
 
             mediaBackup.mediaBackupPath = path;
@@ -109,15 +108,11 @@ public class MediaBackup
 
                 if (!backupFile.DiskChecked.HasValue() || !backupFile.Disk.HasValue()) backupFile.ClearDiskChecked();
             }
-
             var directoryName = new FileInfo(path).DirectoryName;
-
             if (directoryName == null) return null;
 
             var config = Config.Load(Path.Combine(directoryName, "Config.xml"));
-
             if (config != null) mediaBackup.Config = config;
-
             return mediaBackup;
         }
         catch (InvalidOperationException ex)
@@ -139,7 +134,6 @@ public class MediaBackup
         masterFolder = null;
         indexFolder = null;
         relativePath = null;
-
         var pathWithTerminatingString = Utils.EnsurePathHasATerminatingSeparator(path);
 
         foreach (var master in Config.MasterFolders)
@@ -152,7 +146,6 @@ public class MediaBackup
             relativePath = BackupFile.GetRelativePath(path, masterFolder, indexFolder);
             return true;
         }
-
         return false;
     }
 
@@ -167,11 +160,8 @@ public class MediaBackup
     public void Save()
     {
         BackupMediaFile();
-
         XmlSerializer xmlSerializer = new(typeof(MediaBackup));
-
         if (File.Exists(mediaBackupPath)) File.SetAttributes(mediaBackupPath, FileAttributes.Normal);
-
         using StreamWriter streamWriter = new(mediaBackupPath);
         xmlSerializer.Serialize(streamWriter, this);
     }
@@ -184,21 +174,17 @@ public class MediaBackup
     public BackupFile GetBackupFileFromContentsHashcode(string value)
     {
         Utils.TraceIn();
-
         var count = BackupFiles.Count(a => a.ContentsHash == value);
 
         switch (count)
         {
             case 0:
                 return Utils.TraceOut<BackupFile>("exit1");
-
             case > 1:
                 Utils.Trace($"More than 1 file with same ContentsHashcode {value}");
                 return Utils.TraceOut<BackupFile>("exit2");
         }
-
         var file = BackupFiles.First(q => q.ContentsHash == value);
-
         return Utils.TraceOut(file);
     }
 
@@ -210,7 +196,6 @@ public class MediaBackup
     public BackupFile GetBackupFile(string fullPath)
     {
         Utils.TraceIn(fullPath);
-
         if (!File.Exists(fullPath) || !Utils.IsFileAccessible(fullPath)) return null;
 
         if (!GetFoldersForPath(fullPath, out var masterFolder, out var indexFolder, out var relativePath))
@@ -224,7 +209,6 @@ public class MediaBackup
         // if these have changed we redo the hash
         // files with same hash are allowed (Porridge TV ep and movie)
         // files can't have same hash and same filename though
-
         var hashKey = Path.Combine(indexFolder, relativePath);
 
         // if this path is already added then return it
@@ -266,7 +250,6 @@ public class MediaBackup
                 {
                     // update the timestamp as its changed/missing
                     backupFile.LastWriteTime = lastWriteTimeFromMasterFile;
-
                     hashOfContents = Utils.GetShortMd5HashFromFile(fullPath);
 
                     // has the contents hash changed too?
@@ -278,23 +261,18 @@ public class MediaBackup
                         backupFile.ClearDiskChecked();
                     }
                 }
-
                 backupFile.UpdateFileLength();
             }
 
             // Now we check the full path has not changed the UPPER or lowercase anywhere
             // we're not case sensitive but we want it to match the casing on the master folder
             if (fullPath != backupFile.FullPath) backupFile.SetFullPath(fullPath, masterFolder, indexFolder);
-
             return Utils.TraceOut(backupFile);
         }
-
         backupFile = new BackupFile(fullPath, masterFolder, indexFolder);
         Utils.Trace($"Adding backup file {backupFile.RelativePath}");
         BackupFiles.Add(backupFile);
-
         indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
-
         return Utils.TraceOut(backupFile);
     }
 
@@ -306,14 +284,11 @@ public class MediaBackup
     internal bool EnsureFile(string path)
     {
         Utils.TraceIn();
-
         var backupFile = GetBackupFile(path);
-
         if (backupFile == null) return Utils.TraceOut(false);
 
         backupFile.Deleted = false;
         backupFile.Flag = true;
-
         return Utils.TraceOut(true);
     }
 
@@ -350,7 +325,6 @@ public class MediaBackup
         // try and find a disk based on the disk name only
         // if more than 1 disk than return the first one
         var diskName = BackupDisk.GetBackupFolderName(backupShare);
-
         if (string.IsNullOrEmpty(diskName)) return Utils.TraceOut<BackupDisk>();
 
         var backupDisk = BackupDisks.FirstOrDefault(x => x.Name == diskName);
@@ -358,13 +332,10 @@ public class MediaBackup
         if (backupDisk != null)
         {
             backupDisk.BackupShare = backupShare;
-
             return Utils.TraceOut(backupDisk);
         }
-
         BackupDisk disk = new(diskName, backupShare);
         BackupDisks.Add(disk);
-
         return Utils.TraceOut(disk);
     }
 
@@ -462,9 +433,9 @@ public class MediaBackup
         foreach (var backupFile in filesToRemove)
         {
             if (clearHashes)
-                if (indexFolderAndRelativePath.ContainsKey(backupFile.Hash))
-                    _ = indexFolderAndRelativePath.Remove(backupFile.Hash);
-
+            {
+                if (indexFolderAndRelativePath.ContainsKey(backupFile.Hash)) _ = indexFolderAndRelativePath.Remove(backupFile.Hash);
+            }
             if (BackupFiles.Contains(backupFile)) _ = BackupFiles.Remove(backupFile);
         }
     }
@@ -488,7 +459,6 @@ public class MediaBackup
             oldestFileDate = backupFileDate;
             oldestFile = backupFile;
         }
-
         return oldestFile;
     }
 
@@ -499,7 +469,6 @@ public class MediaBackup
     internal void RemoveFile(BackupFile backupFile)
     {
         if (indexFolderAndRelativePath.ContainsKey(backupFile.Hash)) _ = indexFolderAndRelativePath.Remove(backupFile.Hash);
-
         if (BackupFiles.Contains(backupFile)) _ = BackupFiles.Remove(backupFile);
     }
 }

@@ -4,13 +4,14 @@
 //  </copyright>
 //  --------------------------------------------------------------------------------------------------------------------
 
+using System;
 using System.Diagnostics;
 using System.Xml.Serialization;
 
 namespace BackupManager.Entities;
 
 [DebuggerDisplay("Message = {Message}")]
-public class FileRule
+public class FileRule : IEquatable<FileRule>
 {
     /// <summary>
     ///     We use this to track if the rule has been used for any files at all in a full scan
@@ -33,7 +34,7 @@ public class FileRule
     public string Message { get; set; }
 
     /// <summary>
-    ///     The name of the rule
+    ///     The name of the rule. Must be unique
     /// </summary>
     public string Name { get; set; }
 
@@ -41,4 +42,34 @@ public class FileRule
     ///     The number of the rule. Must be unique
     /// </summary>
     public string Number { get; set; }
+
+    private string InternalName => Name;
+
+    private string InternalNumber => Number;
+
+    public bool Equals(FileRule other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+
+        return Name == other.Name && Number == other.Number;
+    }
+
+    public override bool Equals(object obj)
+    {
+        if (obj is null) return false;
+        if (ReferenceEquals(this, obj)) return true;
+
+        return obj.GetType() == GetType() && Equals((FileRule)obj);
+    }
+
+    public override string ToString()
+    {
+        return $"{Name} {Message}";
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(InternalName, InternalNumber);
+    }
 }

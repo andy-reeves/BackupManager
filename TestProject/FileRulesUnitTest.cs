@@ -25,7 +25,6 @@ public class FileRulesUnitTest
     public void FileRuleTests()
     {
         var testsFromFile = File.ReadAllText(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)), "FileRuleTests.txt"));
-
         var lines = testsFromFile.Split('\n');
 
         foreach (var line in lines)
@@ -36,25 +35,18 @@ public class FileRulesUnitTest
             {
                 cols[i] = cols[i].TrimStart(' ', '"').TrimEnd(' ', '"', '\r', '\n');
             }
-
             if (cols[0].StartsWith("#") || cols.Length != 4) continue;
 
             var ruleNumberTestNumber = cols[0];
-
             var a = ruleNumberTestNumber.Split(".");
-
             Assert.True(a.Length == 2);
-
             var ruleNumber = a[0];
             var testNumber = a[1];
-
             var testOrDiscovery = cols[1];
             var expectedResult = Convert.ToBoolean(cols[2]);
             var testPath = cols[3];
-
             var rule = MediaBackup.Config.FileRules.SingleOrDefault(p => p.Number == ruleNumber);
             Assert.NotNull(rule);
-
             var regEx = testOrDiscovery.StartsWith("T") ? rule.FileTestRegEx : rule.FileDiscoveryRegEx;
 
             if (expectedResult)
