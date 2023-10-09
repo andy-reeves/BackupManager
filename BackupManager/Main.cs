@@ -1079,7 +1079,7 @@ public partial class Main : Form
     {
         if (mediaBackup.FoldersToScan.Count <= 0 && MediaBackup.FileOrFolderChangesStatic.Count <= 0) return;
 
-        // if file or folder changes were detected then save  xml
+        // If file or folder changes were detected then save xml
         mediaBackup.Save();
     }
 
