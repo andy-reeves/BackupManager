@@ -37,11 +37,6 @@ namespace BackupManager;
 
 public partial class Main : Form
 {
-    /// <summary>
-    ///     This is a Dictionary of files/folders where changes have been detected and the last time they changed
-    /// </summary>
-    private static readonly Dictionary<string, DateTime> FolderChanges = new();
-
     private readonly MediaBackup mediaBackup;
 
     private readonly Action monitoringAction;
@@ -164,7 +159,7 @@ public partial class Main : Form
         }
 
         // add this changed folder/file to the list to potentially scan
-        FolderChanges[e.FullPath] = DateTime.Now;
+        MediaBackup.FileOrFolderChangesStatic.Add(new Folder(e.FullPath, DateTime.Now));
         Utils.TraceOut();
     }
 
@@ -923,7 +918,7 @@ public partial class Main : Form
         // ReSharper disable once StringLiteralTypo
         timeToNextRunTextBox.Text = trigger == null || !updateUITimer.Enabled ? string.Empty : trigger.TimeToNextTrigger().ToString("h'h 'mm'm'");
         foldersToScanTextBox.Text = mediaBackup.FoldersToScan.Count.ToString();
-        fileChangesDetectedTextBox.Text = FolderChanges.Count.ToString();
+        fileChangesDetectedTextBox.Text = MediaBackup.FileOrFolderChangesStatic.Count.ToString();
     }
 
     private void FileWatcherButton_Click(object sender, EventArgs e)
@@ -951,30 +946,30 @@ public partial class Main : Form
         scanFoldersTimer.Enabled = mediaBackup.Config.MasterFoldersFileChangeWatchersOnOff;
     }
 
-    private void ProcessFolderChangesTimer_Tick(object sender, EventArgs e)
+    private void ProcessFileOrFolderChangesTimer_Tick(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        Utils.Trace($"folderChanges.Count = {FolderChanges.Count}");
+        Utils.Trace($"folderChanges.Count = {MediaBackup.FileOrFolderChangesStatic.Count}");
 
         // every few seconds we move through the changes List and put the folders we need to check in our other list
-        if (FolderChanges.Count == 0)
+        if (MediaBackup.FileOrFolderChangesStatic.Count == 0)
         {
             Utils.TraceOut();
             return;
         }
         var toSave = false;
 
-        for (var i = FolderChanges.Count - 1; i >= 0; i--)
+        for (var i = MediaBackup.FileOrFolderChangesStatic.Count - 1; i >= 0; i--)
         {
-            var folderChange = FolderChanges.ElementAt(i);
-            Utils.Trace($"path {folderChange.Key}");
-            _ = mediaBackup.GetFoldersForPath(folderChange.Key, out var masterFolder, out var indexFolder, out _);
+            var fileOrFolderChange = MediaBackup.FileOrFolderChangesStatic.ElementAt(i);
+            Utils.Trace($"path {fileOrFolderChange.Path}");
+            _ = mediaBackup.GetFoldersForPath(fileOrFolderChange.Path, out var masterFolder, out var indexFolder, out _);
             Utils.Trace($"masterFolder {masterFolder}");
             Utils.Trace($"indexFolder {indexFolder}");
 
             if (masterFolder != null && indexFolder != null)
             {
-                var parentFolder = mediaBackup.GetParentFolder(folderChange.Key);
+                var parentFolder = mediaBackup.GetParentFolder(fileOrFolderChange.Path);
                 Utils.Trace($"parentFolder {parentFolder}");
                 var scanFolder = parentFolder ?? Path.Combine(masterFolder, indexFolder);
 
@@ -982,19 +977,19 @@ public partial class Main : Form
                 {
                     var scannedFolder = mediaBackup.FoldersToScan.First(f => f.Path == scanFolder);
 
-                    if (folderChange.Value > scannedFolder.ModifiedDateTime)
+                    if (fileOrFolderChange.ModifiedDateTime > scannedFolder.ModifiedDateTime)
                     {
-                        scannedFolder.ModifiedDateTime = folderChange.Value;
+                        scannedFolder.ModifiedDateTime = fileOrFolderChange.ModifiedDateTime;
                         toSave = true;
                     }
                 }
                 else
                 {
-                    mediaBackup.FoldersToScan.Add(new Folder(scanFolder, folderChange.Value));
+                    mediaBackup.FoldersToScan.Add(new Folder(scanFolder, fileOrFolderChange.ModifiedDateTime));
                     toSave = true;
                 }
             }
-            _ = FolderChanges.Remove(folderChange.Key);
+            MediaBackup.FileOrFolderChangesStatic.Remove(fileOrFolderChange);
         }
         if (toSave) mediaBackup.Save();
         Utils.TraceOut();
@@ -1082,11 +1077,10 @@ public partial class Main : Form
 
     private void Main_FormClosing(object sender, FormClosingEventArgs e)
     {
-        if (mediaBackup.FoldersToScan.Count <= 0 && FolderChanges.Count <= 0) return;
-        if (MessageBox.Show(Resources.Main_FoldersQueued, Resources.Main_ScanFoldersTitle, MessageBoxButtons.YesNo) != DialogResult.Yes) return;
+        if (mediaBackup.FoldersToScan.Count <= 0 && MediaBackup.FileOrFolderChangesStatic.Count <= 0) return;
 
-        ProcessFolderChangesTimer_Tick(null, null);
-        ScanFoldersTimer_Tick(null, null);
+        // if file or folder changes were detected then save  xml
+        mediaBackup.Save();
     }
 
     private void ListFoldersToScanButton_Click(object sender, EventArgs e)
@@ -1094,9 +1088,9 @@ public partial class Main : Form
         Utils.TraceIn();
         Utils.Log("Listing folderChanges detected");
 
-        foreach (var folderChange in FolderChanges)
+        foreach (var folderChange in MediaBackup.FileOrFolderChangesStatic)
         {
-            Utils.Log($"{folderChange.Key} changed at {folderChange.Value}");
+            Utils.Log($"{folderChange.Path} changed at {folderChange.ModifiedDateTime}");
         }
         Utils.Log("Listing FoldersToScan queued");
 

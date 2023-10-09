@@ -1073,7 +1073,7 @@
             // processFolderChangesTimer
             // 
             processFolderChangesTimer.Interval = 5000;
-            processFolderChangesTimer.Tick += ProcessFolderChangesTimer_Tick;
+            processFolderChangesTimer.Tick += ProcessFileOrFolderChangesTimer_Tick;
             // 
             // scanFoldersTimer
             // 
