@@ -5,9 +5,9 @@
 //  --------------------------------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Xml.Serialization;
 
 using BackupManager.Properties;
@@ -26,14 +26,9 @@ public class Rules
             using FileStream stream = new(path, FileMode.Open, FileAccess.Read);
             if (serializer.Deserialize(stream) is not Rules rules) return null;
 
-            var rulesHashSet = new HashSet<int>();
+            if (rules.FileRules.Select(x => x.Number).Distinct().Count() != rules.FileRules.Count)
+                throw new ArgumentException(Resources.Rules_DuplicateRuleNumber, nameof(path));
 
-            foreach (var rulesFileRule in rules.FileRules)
-            {
-                if (rulesHashSet.Contains(Convert.ToInt32(rulesFileRule.Number))) throw new ArgumentException(Resources.Rules_DuplicateRuleNumber, nameof(path));
-
-                rulesHashSet.Add(Convert.ToInt32(rulesFileRule.Number));
-            }
             return rules;
         }
         catch (InvalidOperationException ex)
