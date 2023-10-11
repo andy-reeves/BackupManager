@@ -80,7 +80,6 @@ public class BackupFileSystemWatcher
 
     public bool Start()
     {
-        ResetCollections();
         return CreateFileSystemWatchers();
     }
 
