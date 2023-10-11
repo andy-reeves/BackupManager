@@ -50,4 +50,9 @@ public class Folder : IEquatable<Folder>
     {
         return InternalPath.GetHashCode();
     }
+
+    public override string ToString()
+    {
+        return Path;
+    }
 }

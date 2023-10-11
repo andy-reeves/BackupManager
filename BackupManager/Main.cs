@@ -1177,15 +1177,7 @@ public partial class Main : Form
 
             var path = Path.Combine(a.RootFolder, a.RelativePath);
             var pathToTarget = a.PathToTarget;
-
-            for (var i = 0; i < m.Groups.Count; i++)
-            {
-                if (m.Groups[i].GetType() != typeof(Group)) continue;
-
-                var g = m.Groups[i];
-                path = path.Replace($"${i}", g.Value);
-                pathToTarget = pathToTarget.Replace($"${i}", g.Value);
-            }
+            Utils.RegExPathFixer(m, ref path, ref pathToTarget);
 
             if (pathToTarget == null)
             {
@@ -1198,10 +1190,10 @@ public partial class Main : Form
                 Utils.Trace("Deleting link directory as its empty");
                 Directory.Delete(path, true);
             }
-            if (Directory.Exists(path)) continue;
+            if (path != null && Directory.Exists(path)) continue;
 
             Utils.Trace($"Creating new symbolic link at {path} with target {pathToTarget}");
-            Directory.CreateSymbolicLink(path, pathToTarget);
+            if (path != null) Directory.CreateSymbolicLink(path, pathToTarget);
         }
         Utils.TraceOut();
     }

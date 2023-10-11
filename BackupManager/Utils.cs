@@ -1528,10 +1528,23 @@ public static partial class Utils
         TraceOut();
     }
 
+    internal static bool RegExPathFixer(Match m, ref string path, ref string pathToTarget)
+    {
+        for (var i = 0; i < m.Groups.Count; i++)
+        {
+            if (m.Groups[i].GetType() != typeof(Group)) continue;
+
+            var g = m.Groups[i];
+            path = path.Replace($"${i}", g.Value);
+            pathToTarget = pathToTarget.Replace($"${i}", g.Value);
+        }
+        return true;
+    }
+
     /// <summary>
-    ///     Removes any '$0', '$1', '$2' etc from t he input string
+    ///     Removes any '$0', '$1', '$2' etc from the input string
     /// </summary>
-    /// <param name="input">THe string to remove the $0 from</param>
+    /// <param name="input">The string to remove the $0 from</param>
     /// <returns>The string without the $ values</returns>
     internal static string RemoveRegExGroupsFromString(string input)
     {
