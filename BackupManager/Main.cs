@@ -959,8 +959,10 @@ public partial class Main : Form
 
                     // instead of removing files that are no longer found in a folder we now flag them as deleted so we can report them later
                     // unless they aren't on a backup disk in which case they are removed now 
-                    var files = mediaBackup.BackupFiles.Where(b => !b.Flag && b.FullPath.StartsWith(folderToScan.Path) && !b.RelativePath.Contains('\\'))
-                        .ToList();
+                    // var filesTemp = mediaBackup.BackupFiles.Where(b => !b.Flag);
+                    // var filesTemp2 = filesTemp.Where(b => b.FullPath.StartsWith(folderToScan.Path));
+                    //  var filesTemp3 = filesTemp2.Where(b => !b.RelativePath.Contains('\\'));
+                    var files = mediaBackup.BackupFiles.Where(b => !b.Flag && b.FullPath.StartsWith(folderToScan.Path)).ToList();
 
                     for (var j = files.Count - 1; j >= 0; j--)
                     {
