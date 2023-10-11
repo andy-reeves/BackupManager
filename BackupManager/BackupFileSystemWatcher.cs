@@ -151,26 +151,15 @@ public class BackupFileSystemWatcher
 
     private static void ScanFoldersTimerElapsed(object sender, ElapsedEventArgs e)
     {
-        Utils.TraceIn($"FoldersToScan.Count = {FoldersToScan.Count}");
+        Utils.TraceIn();
 
-        if (FoldersToScan.Count == 0)
+        if (FoldersToScan.Count > 0 && FoldersToScan.Count(folderToScan => folderToScan.ModifiedDateTime.AddSeconds(_minimumAgeBeforeScanning) < DateTime.Now) ==
+            FoldersToScan.Count)
         {
-            _scanFoldersTimer.Start();
-            Utils.TraceOut();
-            return;
+            // All the folders are old enough so raise the ReadyToScan event
+            var args = new BackupFileSystemWatcherEventArgs(FoldersToScan);
+            OnThresholdReached(args);
         }
-        var count = FoldersToScan.Count(folderToScan => folderToScan.ModifiedDateTime.AddSeconds(_minimumAgeBeforeScanning) > DateTime.Now);
-
-        if (count == FoldersToScan.Count)
-        {
-            _scanFoldersTimer.Start();
-            Utils.TraceOut();
-            return;
-        }
-
-        // All the folders are old enough so raise the ReadyToScan event
-        var args = new BackupFileSystemWatcherEventArgs(FoldersToScan);
-        OnThresholdReached(args);
         _scanFoldersTimer.Start();
         Utils.TraceOut();
     }
@@ -191,7 +180,7 @@ public class BackupFileSystemWatcher
     /// <param name="e"></param>
     private static void ProcessChangesTimerElapsed(object source, ElapsedEventArgs e)
     {
-        Utils.TraceIn($"folderChanges.Count = {FileOrFolderChanges.Count}");
+        Utils.TraceIn();
 
         // every few seconds we move through the changes List and put the folders we need to check in our other list
         if (FileOrFolderChanges.Count == 0)
@@ -203,7 +192,7 @@ public class BackupFileSystemWatcher
 
         foreach (var fileOrFolderChange in FileOrFolderChanges.GetConsumingEnumerable())
         {
-            Utils.Trace($"path {fileOrFolderChange.Path}");
+            Utils.Trace($"path = {fileOrFolderChange.Path}");
             Folder folderToScan;
 
             if (Directory.Exists(fileOrFolderChange.Path))
