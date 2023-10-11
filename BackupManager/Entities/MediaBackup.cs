@@ -68,11 +68,6 @@ public class MediaBackup
     }
 
     /// <summary>
-    ///     This is a Dictionary of files/folders where changes have been detected and the last time they changed
-    /// </summary>
-    internal static Collection<Folder> FileOrFolderChangesStatic { get; } = new();
-
-    /// <summary>
     ///     Creates a backup of the current xml file
     /// </summary>
     public void BackupMediaFile()
@@ -107,10 +102,6 @@ public class MediaBackup
             }
             if (mediaBackup == null) return null;
 
-            foreach (var item in mediaBackup.FileOrFolderChanges)
-            {
-                FileOrFolderChangesStatic.Add(item);
-            }
             mediaBackup.mediaBackupPath = path;
 
             foreach (var backupFile in mediaBackup.BackupFiles)
@@ -176,7 +167,8 @@ public class MediaBackup
     public void Save()
     {
         BackupMediaFile();
-        FileOrFolderChanges = FileOrFolderChangesStatic;
+        FileOrFolderChanges = new Collection<Folder>(BackupFileSystemWatcher.FileOrFolderChanges.ToList());
+        FoldersToScan = new Collection<Folder>(BackupFileSystemWatcher.FoldersToScan.ToList());
         XmlSerializer xmlSerializer = new(typeof(MediaBackup));
         if (File.Exists(mediaBackupPath)) File.SetAttributes(mediaBackupPath, FileAttributes.Normal);
         using StreamWriter streamWriter = new(mediaBackupPath);

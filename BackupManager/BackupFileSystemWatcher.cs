@@ -17,39 +17,25 @@ namespace BackupManager;
 
 public class BackupFileSystemWatcher
 {
-    /// <summary>
-    ///     This is a Dictionary of files/folders where changes have been detected and the last time they changed
-    /// </summary>
-    internal static BlockingCollection<Folder> FileOrFolderChanges { get; } = new();
+    private static Timer _processChangesTimer;
 
-    /// <summary>
-    ///     These are the folders we will raise events on when they are old enough
-    /// </summary>
-    public static BlockingCollection<Folder> FoldersToScan { get; set; } = new();
+    private static Timer _scanFoldersTimer;
+
+    private static int _minimumAgeBeforeScanning;
+
+    private static readonly List<FileSystemWatcher> _watcherList = new();
+
+    private string filter;
 
     /// <summary>
     ///     The folder paths we will monitor
     /// </summary>
     public string[] FoldersToMonitor;
 
-    public NotifyFilters NotifyFilter { get; set; }
-
-    public string Filter
-    {
-        get => _filter ??= "*";
-
-        set => _filter = value;
-    }
-
-    private static Timer _processChangesTimer;
-
-    private static Timer _scanFoldersTimer;
-
-    public bool IncludeSubdirectories { get; set; }
-
-    public bool EnableRaisingEvents { get; set; }
-
-    public static event EventHandler<BackupFileSystemWatcherEventArgs> ReadyToScan;
+    /// <summary>
+    ///     Minimum time in seconds since this folder was last changed before we will raise any scan folders events
+    /// </summary>
+    public int MinimumAgeBeforeScanning;
 
     /// <summary>
     ///     Time in seconds before we process the files changed to see if they match the RegExs into FilesToMatch. We do this
@@ -66,18 +52,35 @@ public class BackupFileSystemWatcher
     public int ScanTimer;
 
     /// <summary>
-    ///     Minimum time in seconds since this folder was last changed before we will raise any scan folders events
+    ///     This is a Dictionary of files/folders where changes have been detected and the last time they changed
     /// </summary>
-    public int MinimumAgeBeforeScanning;
+    internal static BlockingCollection<Folder> FileOrFolderChanges { get; } = new();
 
-    private static int _minimumAgeBeforeScanning;
+    /// <summary>
+    ///     These are the folders we will raise events on when they are old enough
+    /// </summary>
+    public static BlockingCollection<Folder> FoldersToScan { get; set; } = new();
 
-    private static readonly List<FileSystemWatcher> _watcherList = new();
+    public NotifyFilters NotifyFilter { get; set; }
 
-    private string _filter;
+    public string Filter
+    {
+        get => filter ??= "*";
+
+        set => filter = value;
+    }
+
+    public bool IncludeSubdirectories { get; set; }
+
+    public bool EnableRaisingEvents { get; set; }
+
+    public static event EventHandler<BackupFileSystemWatcherEventArgs> ReadyToScan;
+
+    public static event EventHandler<ErrorEventArgs> Error;
 
     public bool Start()
     {
+        ResetCollections();
         return CreateFileSystemWatchers();
     }
 
@@ -85,11 +88,15 @@ public class BackupFileSystemWatcher
     {
         _scanFoldersTimer.Stop();
         _processChangesTimer.Stop();
+        ResetCollections();
+        return RemoveFileSystemWatchers();
+    }
 
+    private static void ResetCollections()
+    {
         while (FileOrFolderChanges.TryTake(out _)) { }
 
         while (FoldersToScan.TryTake(out _)) { }
-        return RemoveFileSystemWatchers();
     }
 
     private static void OnSomethingHappened(object sender, FileSystemEventArgs e)
@@ -234,10 +241,12 @@ public class BackupFileSystemWatcher
 
     private static void OnError(object sender, ErrorEventArgs e)
     {
+        //BackupFileSystemWatcher has an exception. Typically a monitored folder cannot be accessed
         RemoveFileSystemWatchers();
         _scanFoldersTimer.Stop();
         _processChangesTimer.Stop();
-        throw new ApplicationException("BackupFileSystemWatcher has an exception. Typically a monitored folder cannot be accessed.", e.GetException());
+        var handler = Error;
+        handler?.Invoke(null, e);
     }
 }
 

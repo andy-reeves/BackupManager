@@ -43,8 +43,6 @@ public partial class Main : Form
 
     private readonly Action scheduledBackupAction;
 
-    private readonly List<FileSystemWatcher> watcherList = new();
-
     private CancellationToken ct;
 
     /// <summary>
@@ -55,6 +53,8 @@ public partial class Main : Form
     private CancellationTokenSource tokenSource = new();
 
     private DailyTrigger trigger;
+
+    private BackupFileSystemWatcher watcher;
 
     [SupportedOSPlatform("windows")]
     public Main()
@@ -128,9 +128,8 @@ public partial class Main : Form
 #endif
             }
             SetupDailyTrigger(mediaBackup.Config.ScheduledBackupOnOff);
-            processFolderChangesTimer.Interval = mediaBackup.Config.MasterFoldersProcessChangesTimer * 1000;
-            scanFoldersTimer.Interval = mediaBackup.Config.MasterFoldersScanTimer * 1000;
             SetupFileWatchers();
+            UpdateUI_Tick(null, null);
             Utils.TraceOut();
         }
         catch (Exception ex)
@@ -145,22 +144,6 @@ public partial class Main : Form
         get => base.Text;
 
         set => base.Text = value;
-    }
-
-    private static void FileSystemWatcher_OnSomethingHappened(object sender, FileSystemEventArgs e)
-    {
-        Utils.TraceIn();
-        Utils.Trace($"e.FullPath = {e.FullPath}");
-
-        if (e.ChangeType is not WatcherChangeTypes.Changed and not WatcherChangeTypes.Deleted and not WatcherChangeTypes.Renamed)
-        {
-            Utils.Trace("FileSystemWatcher_OnSomethingHappened exit as not changed/deleted/renamed");
-            return;
-        }
-
-        // add this changed folder/file to the list to potentially scan
-        MediaBackup.FileOrFolderChangesStatic.Add(new Folder(e.FullPath, DateTime.Now));
-        Utils.TraceOut();
     }
 
     private static void FileSystemWatcher_OnError(object sender, ErrorEventArgs e)
@@ -917,8 +900,8 @@ public partial class Main : Form
     {
         // ReSharper disable once StringLiteralTypo
         timeToNextRunTextBox.Text = trigger == null || !updateUITimer.Enabled ? string.Empty : trigger.TimeToNextTrigger().ToString("h'h 'mm'm'");
-        foldersToScanTextBox.Text = mediaBackup.FoldersToScan.Count.ToString();
-        fileChangesDetectedTextBox.Text = MediaBackup.FileOrFolderChangesStatic.Count.ToString();
+        foldersToScanTextBox.Text = BackupFileSystemWatcher.FoldersToScan.Count.ToString();
+        fileChangesDetectedTextBox.Text = BackupFileSystemWatcher.FileOrFolderChanges.Count.ToString();
     }
 
     private void FileWatcherButton_Click(object sender, EventArgs e)
@@ -940,97 +923,44 @@ public partial class Main : Form
         else
         {
             fileWatcherButton.Text = Resources.Main_SetupFileWatchersOff;
-            RemoveFileSystemWatchers();
+            watcher.Stop();
+            watcher = null;
         }
-        processFolderChangesTimer.Enabled = mediaBackup.Config.MasterFoldersFileChangeWatchersOnOff;
-        scanFoldersTimer.Enabled = mediaBackup.Config.MasterFoldersFileChangeWatchersOnOff;
     }
 
-    private void ProcessFileOrFolderChangesTimer_Tick(object sender, EventArgs e)
+    private void FileSystemWatcher_ReadyToScan(object sender, BackupFileSystemWatcherEventArgs e)
     {
-        Utils.TraceIn();
-        Utils.Trace($"folderChanges.Count = {MediaBackup.FileOrFolderChangesStatic.Count}");
-
-        // every few seconds we move through the changes List and put the folders we need to check in our other list
-        if (MediaBackup.FileOrFolderChangesStatic.Count == 0)
-        {
-            Utils.TraceOut();
-            return;
-        }
-        var toSave = false;
-
-        for (var i = MediaBackup.FileOrFolderChangesStatic.Count - 1; i >= 0; i--)
-        {
-            var fileOrFolderChange = MediaBackup.FileOrFolderChangesStatic.ElementAt(i);
-            Utils.Trace($"path {fileOrFolderChange.Path}");
-            _ = mediaBackup.GetFoldersForPath(fileOrFolderChange.Path, out var masterFolder, out var indexFolder, out _);
-            Utils.Trace($"masterFolder {masterFolder}");
-            Utils.Trace($"indexFolder {indexFolder}");
-
-            if (masterFolder != null && indexFolder != null)
-            {
-                var parentFolder = mediaBackup.GetParentFolder(fileOrFolderChange.Path);
-                Utils.Trace($"parentFolder {parentFolder}");
-                var scanFolder = parentFolder ?? Path.Combine(masterFolder, indexFolder);
-
-                if (mediaBackup.FoldersToScan.Any(f => f.Path == scanFolder))
-                {
-                    var scannedFolder = mediaBackup.FoldersToScan.First(f => f.Path == scanFolder);
-
-                    if (fileOrFolderChange.ModifiedDateTime > scannedFolder.ModifiedDateTime)
-                    {
-                        scannedFolder.ModifiedDateTime = fileOrFolderChange.ModifiedDateTime;
-                        toSave = true;
-                    }
-                }
-                else
-                {
-                    mediaBackup.FoldersToScan.Add(new Folder(scanFolder, fileOrFolderChange.ModifiedDateTime));
-                    toSave = true;
-                }
-            }
-            MediaBackup.FileOrFolderChangesStatic.Remove(fileOrFolderChange);
-        }
-        if (toSave) mediaBackup.Save();
-        Utils.TraceOut();
-    }
-
-    private void ScanFoldersTimer_Tick(object sender, EventArgs e)
-    {
-        Utils.TraceIn();
-        Utils.Trace($"mediaBackup.FoldersToScan.Count = {mediaBackup.FoldersToScan.Count}");
+        Utils.TraceIn($"e.Folders = {e.Folders.Length}");
         var toSave = false;
 
         if (!longRunningActionExecutingRightNow)
         {
-            if (mediaBackup.FoldersToScan.Count == 0)
+            if (!e.Folders.Any())
             {
                 Utils.TraceOut();
                 return;
             }
+            var folderList = new List<Folder>();
+            folderList.AddRange(e.Folders);
 
-            for (var i = mediaBackup.FoldersToScan.Count - 1; i >= 0; i--)
+            for (var i = folderList.Count - 1; i >= 0; i--)
             {
-                var folderToScan = mediaBackup.FoldersToScan[i];
-                if (folderToScan.ModifiedDateTime.AddSeconds(mediaBackup.Config.MasterFolderScanMinimumAgeBeforeScanning) >= DateTime.Now) continue;
-
+                var folderToScan = folderList[i];
                 mediaBackup.ClearFlags();
                 var fileCountInFolderBefore = mediaBackup.BackupFiles.Count(b => b.FullPath.StartsWith(folderToScan.Path));
-                _ = mediaBackup.GetFoldersForPath(folderToScan.Path, out var masterFolder, out var indexFolder, out _);
-                var searchOption = folderToScan.Path == Path.Combine(masterFolder, indexFolder) ? SearchOption.TopDirectoryOnly : SearchOption.AllDirectories;
+                var searchOption = SearchOption.TopDirectoryOnly;
 
                 if (ScanSingleFolder(folderToScan.Path, searchOption))
                 {
                     var removedFilesCount = 0;
                     var markedAsDeletedFilesCount = 0;
-                    _ = mediaBackup.FoldersToScan.Remove(folderToScan);
+                    folderList.Remove(folderToScan);
                     UpdateSymbolicLinkForFolder(folderToScan.Path);
 
                     // instead of removing files that are no longer found in a folder we now flag them as deleted so we can report them later
                     // unless they aren't on a backup disk in which case they are removed now 
-                    var files = searchOption == SearchOption.AllDirectories
-                        ? mediaBackup.BackupFiles.Where(b => !b.Flag && b.FullPath.StartsWith(folderToScan.Path)).ToList()
-                        : mediaBackup.BackupFiles.Where(b => !b.Flag && b.FullPath.StartsWith(folderToScan.Path) && !b.RelativePath.Contains('\\')).ToList();
+                    var files = mediaBackup.BackupFiles.Where(b => !b.Flag && b.FullPath.StartsWith(folderToScan.Path) && !b.RelativePath.Contains('\\'))
+                        .ToList();
 
                     for (var j = files.Count - 1; j >= 0; j--)
                     {
@@ -1077,7 +1007,7 @@ public partial class Main : Form
 
     private void Main_FormClosing(object sender, FormClosingEventArgs e)
     {
-        if (mediaBackup.FoldersToScan.Count <= 0 && MediaBackup.FileOrFolderChangesStatic.Count <= 0) return;
+        if (BackupFileSystemWatcher.FoldersToScan.Count <= 0 && BackupFileSystemWatcher.FileOrFolderChanges.Count <= 0) return;
 
         // If file or folder changes were detected then save xml
         mediaBackup.Save();
@@ -1088,13 +1018,13 @@ public partial class Main : Form
         Utils.TraceIn();
         Utils.Log("Listing folderChanges detected");
 
-        foreach (var folderChange in MediaBackup.FileOrFolderChangesStatic)
+        foreach (var folderChange in BackupFileSystemWatcher.FileOrFolderChanges)
         {
             Utils.Log($"{folderChange.Path} changed at {folderChange.ModifiedDateTime}");
         }
         Utils.Log("Listing FoldersToScan queued");
 
-        foreach (var folderToScan in mediaBackup.FoldersToScan)
+        foreach (var folderToScan in BackupFileSystemWatcher.FoldersToScan)
         {
             Utils.Log($"{folderToScan.Path} changed at {folderToScan.ModifiedDateTime}");
         }
@@ -1212,34 +1142,32 @@ public partial class Main : Form
     {
         Utils.TraceIn();
 
-        foreach (var masterFolder in mediaBackup.Config.MasterFolders)
+        watcher = new BackupFileSystemWatcher
         {
-            FileSystemWatcher watcher = new(masterFolder)
-            {
-                NotifyFilter = NotifyFilters.Attributes | NotifyFilters.CreationTime | NotifyFilters.DirectoryName | NotifyFilters.FileName |
-                               NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.Security | NotifyFilters.Size
-            };
-            watcher.Changed += FileSystemWatcher_OnSomethingHappened;
-            watcher.Deleted += FileSystemWatcher_OnSomethingHappened;
-            watcher.Renamed += FileSystemWatcher_OnSomethingHappened;
-            watcher.Error += FileSystemWatcher_OnError;
-            watcher.Filter = "*.*";
-            watcher.IncludeSubdirectories = true;
-            watcher.EnableRaisingEvents = true;
-            watcherList.Add(watcher);
-        }
-        Utils.TraceOut();
-    }
+            NotifyFilter =
+                NotifyFilters.Attributes | NotifyFilters.CreationTime | NotifyFilters.DirectoryName | NotifyFilters.FileName | NotifyFilters.LastAccess |
+                NotifyFilters.LastWrite | NotifyFilters.Security | NotifyFilters.Size,
+            FoldersToMonitor = mediaBackup.Config.MasterFolders.ToArray(),
+            MinimumAgeBeforeScanning = mediaBackup.Config.MasterFolderScanMinimumAgeBeforeScanning,
+            ProcessChangesTimer = mediaBackup.Config.MasterFoldersProcessChangesTimer,
+            ScanTimer = mediaBackup.Config.MasterFoldersScanTimer,
+            Filter = "*.*",
+            IncludeSubdirectories = true,
+            EnableRaisingEvents = true
+        };
+        BackupFileSystemWatcher.ReadyToScan += FileSystemWatcher_ReadyToScan;
+        BackupFileSystemWatcher.Error += FileSystemWatcher_OnError;
 
-    private void RemoveFileSystemWatchers()
-    {
-        Utils.TraceIn();
-
-        foreach (var watcher in watcherList)
+        foreach (var item in mediaBackup.FileOrFolderChanges)
         {
-            watcher.Dispose();
+            BackupFileSystemWatcher.FileOrFolderChanges.TryAdd(item);
         }
-        watcherList.Clear();
+
+        foreach (var item in mediaBackup.FoldersToScan)
+        {
+            BackupFileSystemWatcher.FoldersToScan.TryAdd(item);
+        }
+        watcher.Start();
         Utils.TraceOut();
     }
 

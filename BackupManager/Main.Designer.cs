@@ -115,8 +115,6 @@
             filesMarkedAsDeletedTextBox = new System.Windows.Forms.TextBox();
             label12 = new System.Windows.Forms.Label();
             updateUITimer = new System.Windows.Forms.Timer(components);
-            processFolderChangesTimer = new System.Windows.Forms.Timer(components);
-            scanFoldersTimer = new System.Windows.Forms.Timer(components);
             label14 = new System.Windows.Forms.Label();
             fileChangesDetectedTextBox = new System.Windows.Forms.TextBox();
             label15 = new System.Windows.Forms.Label();
@@ -1070,16 +1068,6 @@
             updateUITimer.Interval = 60000;
             updateUITimer.Tick += UpdateUI_Tick;
             // 
-            // processFolderChangesTimer
-            // 
-            processFolderChangesTimer.Interval = 5000;
-            processFolderChangesTimer.Tick += ProcessFileOrFolderChangesTimer_Tick;
-            // 
-            // scanFoldersTimer
-            // 
-            scanFoldersTimer.Interval = 30000;
-            scanFoldersTimer.Tick += ScanFoldersTimer_Tick;
-            // 
             // label14
             // 
             label14.AutoSize = true;
@@ -1277,8 +1265,6 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Timer updateUITimer;
         private System.Windows.Forms.Button fileWatcherButton;
-        private System.Windows.Forms.Timer processFolderChangesTimer;
-        private System.Windows.Forms.Timer scanFoldersTimer;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.TextBox fileChangesDetectedTextBox;
         private System.Windows.Forms.Label label15;
