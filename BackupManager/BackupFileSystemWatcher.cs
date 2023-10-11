@@ -193,24 +193,31 @@ public class BackupFileSystemWatcher
         foreach (var fileOrFolderChange in FileOrFolderChanges.GetConsumingEnumerable())
         {
             Utils.Trace($"path = {fileOrFolderChange.Path}");
-            Folder folderToScan;
 
-            if (Directory.Exists(fileOrFolderChange.Path))
-                folderToScan = new Folder(fileOrFolderChange.Path);
-            else
+            // What about deleted files and folders?
+            // Check to see if the path exists as a file 
+            // if it does use the parent folder
+            // if its not an existing file check its a folder
+            // if it is use its full path
+            // if its not a folder either then use its full path and its parent
+            List<Folder> foldersToScan = new();
+
+            if (File.Exists(fileOrFolderChange.Path) || !Directory.Exists(fileOrFolderChange.Path))
+                foldersToScan.Add(new Folder(new FileInfo(fileOrFolderChange.Path).DirectoryName));
+            else if (Directory.Exists(fileOrFolderChange.Path) || !File.Exists(fileOrFolderChange.Path)) foldersToScan.Add(new Folder(fileOrFolderChange.Path));
+
+            foreach (var folderToScan in foldersToScan)
             {
-                if (!File.Exists(fileOrFolderChange.Path)) continue;
+                if (FoldersToScan.Any(f => f.Path == folderToScan.Path))
+                {
+                    var scannedFolder = FoldersToScan.First(f => f.Path == folderToScan.Path);
 
-                folderToScan = new Folder(new FileInfo(fileOrFolderChange.Path).DirectoryName);
+                    if (fileOrFolderChange.ModifiedDateTime > scannedFolder.ModifiedDateTime)
+                        scannedFolder.ModifiedDateTime = fileOrFolderChange.ModifiedDateTime;
+                }
+                else
+                    FoldersToScan.Add(new Folder(folderToScan.Path, fileOrFolderChange.ModifiedDateTime));
             }
-
-            if (FoldersToScan.Any(f => f.Path == folderToScan.Path))
-            {
-                var scannedFolder = FoldersToScan.First(f => f.Path == folderToScan.Path);
-                if (fileOrFolderChange.ModifiedDateTime > scannedFolder.ModifiedDateTime) scannedFolder.ModifiedDateTime = fileOrFolderChange.ModifiedDateTime;
-            }
-            else
-                FoldersToScan.Add(new Folder(folderToScan.Path, fileOrFolderChange.ModifiedDateTime));
         }
         _processChangesTimer.Start();
         Utils.TraceOut();
