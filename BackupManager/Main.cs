@@ -70,6 +70,7 @@ public partial class Main : Form
 
             // ReSharper disable StringLiteralTypo
             backupDiskTextBox.Text = @"\\nas1\assets1\_Test\BackupDisks\backup 1001 parent";
+            //backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
 
             // ReSharper restore StringLiteralTypo
 #else
@@ -124,7 +125,7 @@ public partial class Main : Form
             if (mediaBackup.Config.ScheduledBackupRunOnStartup)
             {
 #if !DEBUG
-                    TaskWrapper(ScheduledBackupAsync);
+                TaskWrapper(ScheduledBackupAsync);
 #endif
             }
             SetupDailyTrigger(mediaBackup.Config.ScheduledBackupOnOff);
@@ -899,9 +900,9 @@ public partial class Main : Form
     private void UpdateUI_Tick(object sender, EventArgs e)
     {
         // ReSharper disable once StringLiteralTypo
-        timeToNextRunTextBox.Text = trigger == null || !updateUITimer.Enabled ? string.Empty : trigger.TimeToNextTrigger().ToString("h'h 'mm'm'");
-        foldersToScanTextBox.Text = BackupFileSystemWatcher.FoldersToScan.Count.ToString();
-        fileChangesDetectedTextBox.Text = BackupFileSystemWatcher.FileOrFolderChanges.Count.ToString();
+        timeToNextRunTextBox.Invoke(x => x.Text = trigger == null || !updateUITimer.Enabled ? string.Empty : trigger.TimeToNextTrigger().ToString("h'h 'mm'm'"));
+        foldersToScanTextBox.Invoke(x => x.Text = BackupFileSystemWatcher.FoldersToScan.Count.ToString());
+        fileChangesDetectedTextBox.Invoke(x => x.Text = BackupFileSystemWatcher.FileOrFolderChanges.Count.ToString());
     }
 
     private void FileWatcherButton_Click(object sender, EventArgs e)
@@ -959,10 +960,8 @@ public partial class Main : Form
 
                     // instead of removing files that are no longer found in a folder we now flag them as deleted so we can report them later
                     // unless they aren't on a backup disk in which case they are removed now 
-                    // var filesTemp = mediaBackup.BackupFiles.Where(b => !b.Flag);
-                    // var filesTemp2 = filesTemp.Where(b => b.FullPath.StartsWith(folderToScan.Path));
-                    //  var filesTemp3 = filesTemp2.Where(b => !b.RelativePath.Contains('\\'));
-                    var files = mediaBackup.BackupFiles.Where(b => !b.Flag && b.FullPath.StartsWith(folderToScan.Path)).ToList();
+                    var files = mediaBackup.BackupFiles.Where(b => !b.Flag && b.FullPath.StartsWith(folderToScan.Path) && !b.RelativePath.Contains('\\'))
+                        .ToList();
 
                     for (var j = files.Count - 1; j >= 0; j--)
                     {
