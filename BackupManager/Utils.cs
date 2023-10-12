@@ -1391,12 +1391,14 @@ public static partial class Utils
         return $"{sf.GetMethod()?.DeclaringType?.FullName}.{name}";
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     internal static void TraceIn()
     {
         var methodName = GetFullyQualifiedGetCurrentMethodName();
         System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} enter");
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     internal static void TraceIn(params object[] parameters)
     {
         var methodName = GetFullyQualifiedGetCurrentMethodName();
@@ -1409,6 +1411,7 @@ public static partial class Utils
         }
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     internal static T TraceOut<T>(T t, string text = "")
     {
         var methodName = GetFullyQualifiedGetCurrentMethodName();
@@ -1427,6 +1430,7 @@ public static partial class Utils
         return t;
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     internal static T TraceOut<T>(string text = "")
     {
         var methodName = GetFullyQualifiedGetCurrentMethodName();
@@ -1434,6 +1438,7 @@ public static partial class Utils
         return default;
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     internal static string TraceOut(string value)
     {
         var methodName = GetFullyQualifiedGetCurrentMethodName();
@@ -1441,12 +1446,14 @@ public static partial class Utils
         return value;
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     internal static void TraceOut()
     {
         var methodName = GetFullyQualifiedGetCurrentMethodName();
         System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} exit");
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     internal static void Trace(string value)
     {
         var textArrayToWrite = value.Split('\n');

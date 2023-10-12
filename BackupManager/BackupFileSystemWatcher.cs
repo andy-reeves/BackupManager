@@ -5,8 +5,10 @@
 //  --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Timers;
@@ -22,18 +24,40 @@ public class BackupFileSystemWatcher
                                                      NotifyFilters.FileName | NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.Security |
                                                      NotifyFilters.Size);
 
+    // Filters collection
+    private readonly NormalizedFilterCollection filters = new();
+
     private readonly List<FileSystemWatcher> watcherList = new();
+
+    private string[] foldersToMonitor = Array.Empty<string>();
+
+    private bool includeSubdirectories;
 
     private NotifyFilters notifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName;
 
     private Timer processChangesTimer;
 
+    private bool reset;
+
     private Timer scanFoldersTimer;
+
+    private bool started;
 
     /// <summary>
     ///     The folder paths we will monitor
     /// </summary>
-    public string[] FoldersToMonitor { get; set; } = Array.Empty<string>();
+    public string[] FoldersToMonitor
+    {
+        get => foldersToMonitor;
+
+        set
+        {
+            if (foldersToMonitor == value) return;
+
+            foldersToMonitor = value;
+            Restart();
+        }
+    }
 
     /// <summary>
     ///     Minimum time in seconds since this folder was last changed before we will raise any scan folders events. Default is
@@ -43,11 +67,9 @@ public class BackupFileSystemWatcher
 
     /// <summary>
     ///     Time in seconds before we process the files changed to see if they match the RegExs into FilesToMatch. We do this
-    ///     because they list might be very large and the
-    ///     RegExs may take a while. So we capture them all. Then wait for this long. Then RegEx them. Finally we check this
-    ///     Collection to see if we should scan them.
-    ///     When they are old enough we raise the events.
-    ///     Default is 30 seconds
+    ///     because they list might be very large and the RegExs may take a while. So we capture them all. Then wait for this
+    ///     many seconds. Then RegEx them. Finally we check the Collection to see if we should scan them. When they are old
+    ///     enough we raise the events. Default is 30 seconds
     /// </summary>
     public int ProcessChangesTimer { get; set; } = 30;
 
@@ -64,8 +86,11 @@ public class BackupFileSystemWatcher
     /// <summary>
     ///     These are the folders we will raise events on when they are old enough
     /// </summary>
-    public BlockingCollection<Folder> FoldersToScan { get; set; } = new();
+    public BlockingCollection<Folder> FoldersToScan { get; } = new();
 
+    /// <summary>
+    ///     If you change these after starting then we stop and start again
+    /// </summary>
     public NotifyFilters NotifyFilter
     {
         get => notifyFilter;
@@ -78,20 +103,56 @@ public class BackupFileSystemWatcher
             if (notifyFilter == value) return;
 
             notifyFilter = value;
-            Stop();
-            Start();
+            Restart();
         }
     }
 
-    public string Filter { get; set; } = "*";
+    /// <summary>
+    ///     Gets or sets the filter string, used to determine what files are monitored in a directory.
+    /// </summary>
+    public string Filter
+    {
+        get => Filters.Count == 0 ? "*" : Filters[0];
 
-    public bool IncludeSubdirectories { get; set; }
+        set
+        {
+            Filters.Clear();
+            Filters.Add(value);
+            Restart();
+        }
+    }
+
+    public Collection<string> Filters => filters;
+
+    public bool IncludeSubdirectories
+    {
+        get => includeSubdirectories;
+
+        set
+        {
+            if (includeSubdirectories == value) return;
+
+            includeSubdirectories = value;
+            Restart();
+        }
+    }
+
+    /// <summary>
+    ///     If we're already running then this Stops and Starts again. It won't start if its not already started
+    /// </summary>
+    private void Restart()
+    {
+        if (!started) return;
+
+        Stop();
+        started = Start();
+    }
 
     public event EventHandler<BackupFileSystemWatcherEventArgs> ReadyToScan;
 
     public event EventHandler<ErrorEventArgs> Error;
 
-    private void CheckPathValidity(string path)
+    private static void CheckPathValidity(string path)
     {
         ArgumentNullException.ThrowIfNull(path);
 
@@ -101,23 +162,19 @@ public class BackupFileSystemWatcher
     }
 
     /// <summary>
-    ///     Starts monitoring the folders for changes.
+    ///     If any properties change then we need to call Reset
     /// </summary>
-    /// <returns>True if the monitoring has started</returns>
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="ArgumentException">If any of the folders to monitor do not exist</exception>
-    public bool Start()
+    /// <returns></returns>
+    private bool Reset()
     {
         Utils.TraceIn();
-
-        // call Stop to remove all the old watchers
-        Stop();
 
         // Check current paths are valid
         foreach (var folder in FoldersToMonitor)
         {
             CheckPathValidity(folder);
         }
+        RemoveFileSystemWatchers();
 
         foreach (var folder in FoldersToMonitor)
         {
@@ -137,36 +194,78 @@ public class BackupFileSystemWatcher
             watcherList.Add(watcher);
         }
 
-        //MinimumAgeBeforeScanning = MinimumAgeBeforeScanning;
-
-        // Create the timers
-        processChangesTimer = new Timer(ProcessChangesTimer * 1000);
-        processChangesTimer.Elapsed += ProcessChangesTimerElapsed;
+        // Setup the timers
+        if (processChangesTimer == null)
+        {
+            processChangesTimer = new Timer();
+            processChangesTimer.Elapsed += ProcessChangesTimerElapsed;
+        }
+        processChangesTimer.Interval = ProcessChangesTimer * 1000;
         processChangesTimer.AutoReset = false;
         processChangesTimer.Enabled = true;
-        scanFoldersTimer = new Timer(ScanTimer * 1000);
-        scanFoldersTimer.Elapsed += ScanFoldersTimerElapsed;
+
+        if (scanFoldersTimer == null)
+        {
+            scanFoldersTimer = new Timer();
+            scanFoldersTimer.Elapsed += ScanFoldersTimerElapsed;
+        }
+        scanFoldersTimer.Interval = ScanTimer * 1000;
         scanFoldersTimer.AutoReset = false;
         scanFoldersTimer.Enabled = true;
-        return Utils.TraceOut(true);
+        return Utils.TraceOut(reset = true);
+    }
+
+    /// <summary>
+    ///     Starts monitoring the folders for changes.
+    /// </summary>
+    /// <returns>True if the monitoring has started now or was running already</returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentException">If any of the folders to monitor do not exist</exception>
+    public bool Start()
+    {
+        Utils.TraceIn();
+        if (started) return true;
+
+        if (!reset) Reset();
+
+        // Check current paths are valid
+        foreach (var folder in FoldersToMonitor)
+        {
+            CheckPathValidity(folder);
+        }
+
+        foreach (var watcher in watcherList)
+        {
+            watcher.EnableRaisingEvents = true;
+        }
+        processChangesTimer?.Start();
+        scanFoldersTimer?.Start();
+        return Utils.TraceOut(started = true);
     }
 
     /// <summary>
     ///     Stops monitoring the folders for any more changes. Events no longer raised
     /// </summary>
-    /// <returns></returns>
+    /// <returns>True if we've stopped successfully or were already stopped</returns>
 #pragma warning disable CA1822 // Mark members as static
     public bool Stop()
 #pragma warning restore CA1822 // Mark members as static
     {
+        if (!started) return true;
+
         processChangesTimer?.Stop();
         scanFoldersTimer?.Stop();
-        RemoveFileSystemWatchers();
+
+        foreach (var watcher in watcherList)
+        {
+            watcher.EnableRaisingEvents = false;
+        }
+        started = false;
         return Utils.TraceOut(true);
     }
 
     /// <summary>
-    ///     Clears the two static collections of files and folders
+    ///     Clears the two collections of files and folders
     /// </summary>
     /// <returns>True if they were cleared correctly</returns>
     public bool ResetFolderCollections()
@@ -213,7 +312,9 @@ public class BackupFileSystemWatcher
     protected void OnThresholdReached(object sender, BackupFileSystemWatcherEventArgs e)
     {
         Utils.TraceIn();
-        FoldersToScan = new BlockingCollection<Folder>();
+
+        // Empty the FoldersToScan
+        while (FoldersToScan.TryTake(out _)) { }
         var handler = ReadyToScan;
         handler?.Invoke(sender, e);
         Utils.TraceOut();
@@ -231,14 +332,14 @@ public class BackupFileSystemWatcher
         // every few seconds we move through the changes List and put the folders we need to check in our other list
         if (FileOrFolderChanges.Count == 0)
         {
-            processChangesTimer.Start();
+            if (started) processChangesTimer.Start();
             Utils.TraceOut();
             return;
         }
 
         foreach (var fileOrFolderChange in FileOrFolderChanges.GetConsumingEnumerable())
         {
-            Utils.Trace($"path = {fileOrFolderChange.Path}");
+            Utils.Trace($"fileOrFolderChange.Path = {fileOrFolderChange.Path}");
 
             // What about deleted files and folders?
             // Check to see if the path exists as a file 
@@ -271,11 +372,11 @@ public class BackupFileSystemWatcher
                 }
             }
         }
-        processChangesTimer.Start();
+        if (started) processChangesTimer.Start();
         Utils.TraceOut();
     }
 
-    private bool RemoveFileSystemWatchers()
+    private void RemoveFileSystemWatchers()
     {
         Utils.TraceIn();
 
@@ -284,29 +385,139 @@ public class BackupFileSystemWatcher
             watcher.Dispose();
         }
         watcherList.Clear();
-        return Utils.TraceOut(true);
+        Utils.TraceOut();
     }
 
     private void OnError(object sender, ErrorEventArgs e)
     {
-        if (sender is not FileSystemWatcher a) return;
+        if (sender is not FileSystemWatcher watcher) return;
 
-        var b = a.Path;
+        var watcherPath = watcher.Path;
 
-        if (!Directory.Exists(b))
+        if (!Directory.Exists(watcherPath))
         {
-            var ex = new DirectoryNotFoundException($"Directory {b} not found.", e.GetException());
+            var ex = new DirectoryNotFoundException($"Directory {watcherPath} not found.", e.GetException());
             e = new ErrorEventArgs(ex);
         }
-        else
-        {
-            // not sure what the error was so just throw it
-            RemoveFileSystemWatchers();
-        }
-        scanFoldersTimer.Stop();
-        processChangesTimer.Stop();
+
+        // Stop stops the timers and disables the watchers
+        Stop();
         var handler = Error;
-        handler?.Invoke(a, e);
+        handler?.Invoke(watcher, e);
+    }
+
+    private sealed class NormalizedFilterCollection : Collection<string>
+    {
+        internal NormalizedFilterCollection() : base(new ImmutableStringList()) { }
+
+        protected override void InsertItem(int index, string item)
+        {
+            base.InsertItem(index, string.IsNullOrEmpty(item) || item == "*.*" ? "*" : item);
+        }
+
+        protected override void SetItem(int index, string item)
+        {
+            base.SetItem(index, string.IsNullOrEmpty(item) || item == "*.*" ? "*" : item);
+        }
+
+        internal string[] GetFilters()
+        {
+            return ((ImmutableStringList)Items).Items;
+        }
+
+        /// <summary>
+        ///     List that maintains its underlying data in an immutable array, such that the list
+        ///     will never modify an array returned from its Items property. This is to allow
+        ///     the array to be enumerated safely while another thread might be concurrently mutating
+        ///     the collection.
+        /// </summary>
+        private sealed class ImmutableStringList : IList<string>
+        {
+            public string[] Items = Array.Empty<string>();
+
+            public string this[int index]
+            {
+                get
+                {
+                    var items = Items;
+                    if ((uint)index >= (uint)items.Length) throw new ArgumentOutOfRangeException(nameof(index));
+
+                    return items[index];
+                }
+
+                set
+                {
+                    var clone = (string[])Items.Clone();
+                    clone[index] = value;
+                    Items = clone;
+                }
+            }
+
+            public int Count => Items.Length;
+
+            public bool IsReadOnly => false;
+
+            public void Add(string item)
+            {
+                // Collection<T> doesn't use this method.
+                throw new NotSupportedException();
+            }
+
+            public void Clear()
+            {
+                Items = Array.Empty<string>();
+            }
+
+            public bool Contains(string item)
+            {
+                return Array.IndexOf(Items, item) != -1;
+            }
+
+            public void CopyTo(string[] array, int arrayIndex)
+            {
+                Items.CopyTo(array, arrayIndex);
+            }
+
+            public IEnumerator<string> GetEnumerator()
+            {
+                return ((IEnumerable<string>)Items).GetEnumerator();
+            }
+
+            public int IndexOf(string item)
+            {
+                return Array.IndexOf(Items, item);
+            }
+
+            public void Insert(int index, string item)
+            {
+                var items = Items;
+                var newItems = new string[items.Length + 1];
+                items.AsSpan(0, index).CopyTo(newItems);
+                items.AsSpan(index).CopyTo(newItems.AsSpan(index + 1));
+                newItems[index] = item;
+                Items = newItems;
+            }
+
+            public bool Remove(string item)
+            {
+                // Collection<T> doesn't use this method.
+                throw new NotSupportedException();
+            }
+
+            public void RemoveAt(int index)
+            {
+                var items = Items;
+                var newItems = new string[items.Length - 1];
+                items.AsSpan(0, index).CopyTo(newItems);
+                items.AsSpan(index + 1).CopyTo(newItems.AsSpan(index));
+                Items = newItems;
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+        }
     }
 }
 

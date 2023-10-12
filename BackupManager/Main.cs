@@ -917,21 +917,18 @@ public partial class Main : Form
         if (mediaBackup.Config.MasterFoldersFileChangeWatchersOnOff)
         {
             fileWatcherButton.Text = Resources.Main_SetupFileWatchersOn;
-            CreateFileSystemWatchers();
+            StartFileSystemWatchers();
         }
         else
         {
             fileWatcherButton.Text = Resources.Main_SetupFileWatchersOff;
-            DeleteFileSystemWatchers();
+            StopFileSystemWatchers();
         }
     }
 
-    private void DeleteFileSystemWatchers()
+    private void StopFileSystemWatchers()
     {
         mediaBackup.Watcher.Stop();
-        mediaBackup.Watcher.ReadyToScan -= FileSystemWatcher_ReadyToScan;
-        mediaBackup.Watcher.Error -= FileSystemWatcher_OnError;
-        mediaBackup.Watcher = null;
     }
 
     private void FileSystemWatcher_ReadyToScan(object sender, BackupFileSystemWatcherEventArgs e)
@@ -1144,31 +1141,34 @@ public partial class Main : Form
         filesMarkedAsDeletedSizeTextBox.Invoke(x => x.Text = Utils.FormatSize(mediaBackup.GetBackupFilesMarkedAsDeleted().Sum(y => y.Length)));
     }
 
-    private void CreateFileSystemWatchers()
+    private void StartFileSystemWatchers()
     {
         Utils.TraceIn();
 
-        mediaBackup.Watcher = new BackupFileSystemWatcher
+        if (mediaBackup.Watcher == null || mediaBackup.Watcher.FoldersToMonitor.Length == 0)
         {
-            NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName,
-            FoldersToMonitor = mediaBackup.Config.MasterFolders.ToArray(),
-            ProcessChangesTimer = mediaBackup.Config.MasterFoldersProcessChangesTimer,
-            ScanTimer = mediaBackup.Config.MasterFoldersScanTimer,
-            Filter = "*.*",
-            IncludeSubdirectories = true
-        };
-        mediaBackup.Watcher.ReadyToScan += FileSystemWatcher_ReadyToScan;
-        mediaBackup.Watcher.Error += FileSystemWatcher_OnError;
-        mediaBackup.Watcher.MinimumAgeBeforeScanning = mediaBackup.Config.MasterFolderScanMinimumAgeBeforeScanning;
+            mediaBackup.Watcher = new BackupFileSystemWatcher
+            {
+                NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName,
+                FoldersToMonitor = mediaBackup.Config.MasterFolders.ToArray(),
+                ProcessChangesTimer = mediaBackup.Config.MasterFoldersProcessChangesTimer,
+                ScanTimer = mediaBackup.Config.MasterFoldersScanTimer,
+                Filter = "*.*",
+                IncludeSubdirectories = true
+            };
+            mediaBackup.Watcher.ReadyToScan += FileSystemWatcher_ReadyToScan;
+            mediaBackup.Watcher.Error += FileSystemWatcher_OnError;
+            mediaBackup.Watcher.MinimumAgeBeforeScanning = mediaBackup.Config.MasterFolderScanMinimumAgeBeforeScanning;
 
-        foreach (var item in mediaBackup.FileOrFolderChanges)
-        {
-            mediaBackup.Watcher.FileOrFolderChanges.Add(new Folder(item.Path, item.ModifiedDateTime), ct);
-        }
+            foreach (var item in mediaBackup.FileOrFolderChanges)
+            {
+                mediaBackup.Watcher.FileOrFolderChanges.Add(new Folder(item.Path, item.ModifiedDateTime), ct);
+            }
 
-        foreach (var item in mediaBackup.FoldersToScan)
-        {
-            mediaBackup.Watcher.FoldersToScan.Add(new Folder(item.Path, item.ModifiedDateTime), ct);
+            foreach (var item in mediaBackup.FoldersToScan)
+            {
+                mediaBackup.Watcher.FoldersToScan.Add(new Folder(item.Path, item.ModifiedDateTime), ct);
+            }
         }
         mediaBackup.Watcher.Start();
         Utils.TraceOut();

@@ -24,10 +24,11 @@ namespace TestProject
 
         private int test3ExpectedEventFolderCount;
 
+        private const int WaitInSeconds = 4;
+
         [Fact]
         public void BackupFileSystemWatcherTest1()
         {
-            const int waitInSeconds = 3;
             test1EventsCounter = 0;
             test1ExpectedEventFolderCount = 3;
             var monitoringPath1 = Path.Combine(Path.GetTempPath(), "MonitoringFolder1");
@@ -56,7 +57,7 @@ namespace TestProject
             CreateFile(Path.Combine(monitoringPath1, "test1.txt"));
             CreateFile(Path.Combine(monitoringPath2, "test2.txt"));
             CreateFile(Path.Combine(monitoringPath2, "subFolder", "test3.txt"));
-            Wait(waitInSeconds);
+            Wait(WaitInSeconds);
             Assert.True(test1EventsCounter == 1);
             Assert.True(watcher.FileOrFolderChanges.Count == 0, nameof(BackupFileSystemWatcher.FileOrFolderChanges.Count));
             Assert.True(watcher.FoldersToScan.Count == 0, nameof(BackupFileSystemWatcher.FoldersToScan.Count));
@@ -108,7 +109,6 @@ namespace TestProject
         [Fact]
         public void BackupFileSystemWatcherTest3()
         {
-            const int waitInSeconds = 3;
             test3EventsCounter = 0;
             var monitoringPath1 = Path.Combine(Path.GetTempPath(), "MonitoringFolder1");
             var monitoringPath2 = Path.Combine(Path.GetTempPath(), "MonitoringFolder2");
@@ -134,7 +134,7 @@ namespace TestProject
             CreateFile(Path.Combine(monitoringPath2, "test2.txt"));
             CreateFile(Path.Combine(monitoringPath2, "subFolder", "test3.txt"));
             CreateFile(Path.Combine(monitoringPath3DeletedAfterABit, "test4.txt"));
-            Wait(waitInSeconds);
+            Wait(WaitInSeconds);
             Assert.True(test3EventsCounter == 1);
             Assert.True(watcher.FileOrFolderChanges.Count == 0, nameof(BackupFileSystemWatcher.FileOrFolderChanges.Count));
             Assert.True(watcher.FoldersToScan.Count == 0, nameof(BackupFileSystemWatcher.FoldersToScan.Count));
@@ -154,18 +154,18 @@ namespace TestProject
             CreateFile(Path.Combine(monitoringPath2, "test2.txt"));
             CreateFile(Path.Combine(monitoringPath2, "subFolder", "test3.txt"));
             CreateFile(Path.Combine(monitoringPath3DeletedAfterABit, "test4.txt"));
-            Wait(waitInSeconds);
+            Wait(WaitInSeconds);
             Assert.True(test3EventsCounter == 2);
 
             //delete a folder while we're monitoring it
             if (Directory.Exists(monitoringPath3DeletedAfterABit)) Directory.Delete(monitoringPath3DeletedAfterABit, true);
             test3ExpectedEventFolderCount = 4;
 
-            // now create the folder and file again
+            // now create the folders and file again
             CreateFile(Path.Combine(monitoringPath1, "test1.txt"));
             CreateFile(Path.Combine(monitoringPath2, "test2.txt"));
             CreateFile(Path.Combine(monitoringPath2, "subFolder", "test3.txt"));
-            Wait(waitInSeconds);
+            Wait(WaitInSeconds);
             Assert.True(test3EventsErrorCounter == 1);
 
             // should fail to restart because a folder is missing now
@@ -179,10 +179,13 @@ namespace TestProject
             CreateFile(Path.Combine(monitoringPath2, "test2.txt"));
             CreateFile(Path.Combine(monitoringPath2, "subFolder", "test3.txt"));
             CreateFile(Path.Combine(monitoringPath3DeletedAfterABit, "test4.txt"));
-            Wait(waitInSeconds);
+            Wait(WaitInSeconds);
             Assert.True(test3EventsCounter == 3);
             Assert.True(test3EventsErrorCounter == 1);
             watcher.Stop();
+            watcher.ResetFolderCollections();
+            Assert.True(watcher.FileOrFolderChanges.Count == 0, nameof(BackupFileSystemWatcher.FileOrFolderChanges.Count));
+            Assert.True(watcher.FoldersToScan.Count == 0, nameof(BackupFileSystemWatcher.FoldersToScan.Count));
 
             //Unhook event handlers
             watcher.ReadyToScan -= BackupFileSystemWatcher_ReadyToScan3;
