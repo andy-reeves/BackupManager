@@ -314,6 +314,26 @@ public static partial class Utils
     }
 
     /// <summary>
+    ///     Clears any event handlers on the instance provided
+    /// </summary>
+    /// <param name="instance"></param>
+    internal static void ClearEvents(object instance)
+    {
+        var eventsToClear = instance.GetType().GetEvents(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+
+        foreach (var eventInfo in eventsToClear)
+        {
+            var fieldInfo = instance.GetType().GetField(eventInfo.Name, BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+            if (fieldInfo?.GetValue(instance) is not Delegate eventHandler) continue;
+
+            foreach (var item in eventHandler.GetInvocationList())
+            {
+                eventInfo.GetRemoveMethod(fieldInfo.IsPrivate)?.Invoke(instance, new object[] { item });
+            }
+        }
+    }
+
+    /// <summary>
     ///     Ensures all the folders on the way to the file are created.
     /// </summary>
     /// <param name="filePath">

@@ -12,30 +12,34 @@ using System.Linq;
 using System.Timers;
 
 using BackupManager.Entities;
+using BackupManager.Properties;
 
 namespace BackupManager;
 
 public class BackupFileSystemWatcher
 {
+    private const int NotifyFiltersValidMask = (int)(NotifyFilters.Attributes | NotifyFilters.CreationTime | NotifyFilters.DirectoryName |
+                                                     NotifyFilters.FileName | NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.Security |
+                                                     NotifyFilters.Size);
+
     private static Timer _processChangesTimer;
 
     private static Timer _scanFoldersTimer;
 
-    private static int _minimumAgeBeforeScanning;
-
     private static readonly List<FileSystemWatcher> _watcherList = new();
 
-    private string filter;
+    private NotifyFilters notifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName;
 
     /// <summary>
     ///     The folder paths we will monitor
     /// </summary>
-    public string[] FoldersToMonitor;
+    public string[] FoldersToMonitor { get; set; } = Array.Empty<string>();
 
     /// <summary>
-    ///     Minimum time in seconds since this folder was last changed before we will raise any scan folders events
+    ///     Minimum time in seconds since this folder was last changed before we will raise any scan folders events. Default is
+    ///     300 seconds
     /// </summary>
-    public int MinimumAgeBeforeScanning;
+    public static int MinimumAgeBeforeScanning { get; set; } = 300;
 
     /// <summary>
     ///     Time in seconds before we process the files changed to see if they match the RegExs into FilesToMatch. We do this
@@ -43,16 +47,17 @@ public class BackupFileSystemWatcher
     ///     RegExs may take a while. So we capture them all. Then wait for this long. Then RegEx them. Finally we check this
     ///     Collection to see if we should scan them.
     ///     When they are old enough we raise the events.
+    ///     Default is 30 seconds
     /// </summary>
-    public int ProcessChangesTimer;
+    public int ProcessChangesTimer { get; set; } = 30;
 
     /// <summary>
-    ///     Time in seconds before we raise any scan folders events
+    ///     Time in seconds before we raise any scan folders events. Default is 60 seconds
     /// </summary>
-    public int ScanTimer;
+    public int ScanTimer { get; set; } = 60;
 
     /// <summary>
-    ///     This is a Dictionary of files/folders where changes have been detected and the last time they changed
+    ///     This is a Collection of files/folders where changes have been detected and the last time they changed
     /// </summary>
     internal static BlockingCollection<Folder> FileOrFolderChanges { get; } = new();
 
@@ -61,41 +66,121 @@ public class BackupFileSystemWatcher
     /// </summary>
     public static BlockingCollection<Folder> FoldersToScan { get; set; } = new();
 
-    public NotifyFilters NotifyFilter { get; set; }
-
-    public string Filter
+    public NotifyFilters NotifyFilter
     {
-        get => filter ??= "*";
+        get => notifyFilter;
 
-        set => filter = value;
+        set
+        {
+            if (((int)value & ~NotifyFiltersValidMask) != 0)
+                throw new ArgumentException(string.Format(Resources.InvalidEnumArgument, nameof(value), (int)value, nameof(NotifyFilters)));
+
+            if (notifyFilter == value) return;
+
+            notifyFilter = value;
+            Stop();
+            Start();
+        }
     }
 
-    public bool IncludeSubdirectories { get; set; }
+    public BackupFileSystemWatcher()
+    {
+        // ClearEvents(this);
+    }
 
-    public bool EnableRaisingEvents { get; set; }
+    public string Filter { get; set; } = "*";
+
+    public bool IncludeSubdirectories { get; set; }
 
     public static event EventHandler<BackupFileSystemWatcherEventArgs> ReadyToScan;
 
     public static event EventHandler<ErrorEventArgs> Error;
 
+    private static void CheckPathValidity(string path)
+    {
+        ArgumentNullException.ThrowIfNull(path);
+
+        // Early check for directory parameter so that an exception can be thrown as early as possible.
+        if (path.Length == 0) throw new ArgumentException(string.Format(Resources.InvalidDirName, path), nameof(path));
+        if (!Directory.Exists(path)) throw new ArgumentException(string.Format(Resources.InvalidDirName_NotExists, path), nameof(path));
+    }
+
+    /// <summary>
+    ///     Starts monitoring the folders for changes.
+    /// </summary>
+    /// <returns>True if the monitoring has started</returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentException">If any of the folders to monitor do not exist</exception>
     public bool Start()
     {
-        return CreateFileSystemWatchers();
+        Utils.TraceIn();
+
+        // call Stop to remove all the old watchers
+        Stop();
+
+        // Check current paths are valid
+        foreach (var folder in FoldersToMonitor)
+        {
+            CheckPathValidity(folder);
+        }
+
+        foreach (var folder in FoldersToMonitor)
+        {
+            FileSystemWatcher watcher = new(folder)
+            {
+                EnableRaisingEvents = true,
+                Filter = Filter,
+                IncludeSubdirectories = IncludeSubdirectories,
+                InternalBufferSize = 48 * 1024,
+                NotifyFilter = NotifyFilter
+            };
+            watcher.Error += OnError;
+            watcher.Changed += OnSomethingHappened;
+            watcher.Deleted += OnSomethingHappened;
+            watcher.Renamed += OnSomethingHappened;
+            watcher.Created += OnSomethingHappened;
+            _watcherList.Add(watcher);
+        }
+        MinimumAgeBeforeScanning = MinimumAgeBeforeScanning;
+
+        // Create the timers
+        _processChangesTimer = new Timer(ProcessChangesTimer * 1000);
+        _processChangesTimer.Elapsed += ProcessChangesTimerElapsed;
+        _processChangesTimer.AutoReset = false;
+        _processChangesTimer.Enabled = true;
+        _scanFoldersTimer = new Timer(ScanTimer * 1000);
+        _scanFoldersTimer.Elapsed += ScanFoldersTimerElapsed;
+        _scanFoldersTimer.AutoReset = false;
+        _scanFoldersTimer.Enabled = true;
+        return Utils.TraceOut(true);
     }
 
+    /// <summary>
+    ///     Stops monitoring the folders for any more changes. Events no longer raised
+    /// </summary>
+    /// <returns></returns>
+#pragma warning disable CA1822 // Mark members as static
     public bool Stop()
+#pragma warning restore CA1822 // Mark members as static
     {
-        _scanFoldersTimer.Stop();
-        _processChangesTimer.Stop();
-        ResetCollections();
-        return RemoveFileSystemWatchers();
+        _processChangesTimer?.Stop();
+        _scanFoldersTimer?.Stop();
+        RemoveFileSystemWatchers();
+        return Utils.TraceOut(true);
     }
 
-    private static void ResetCollections()
+    /// <summary>
+    ///     Clears the two static collections of files and folders
+    /// </summary>
+    /// <returns>True if they were cleared correctly</returns>
+    public static bool ResetFolderCollections()
     {
+        Utils.TraceIn();
+
         while (FileOrFolderChanges.TryTake(out _)) { }
 
         while (FoldersToScan.TryTake(out _)) { }
+        return Utils.TraceOut(true);
     }
 
     private static void OnSomethingHappened(object sender, FileSystemEventArgs e)
@@ -114,45 +199,11 @@ public class BackupFileSystemWatcher
         Utils.TraceOut();
     }
 
-    private bool CreateFileSystemWatchers()
-    {
-        Utils.TraceIn();
-
-        foreach (var folder in FoldersToMonitor)
-        {
-            if (folder == null) throw new ArgumentNullException();
-            if (!Directory.Exists(folder)) throw new ArgumentException($"Folder {folder} does nor exist");
-
-            FileSystemWatcher watcher = new(folder) { NotifyFilter = NotifyFilter };
-            watcher.Changed += OnSomethingHappened;
-            watcher.Deleted += OnSomethingHappened;
-            watcher.Renamed += OnSomethingHappened;
-            watcher.Created += OnSomethingHappened;
-            watcher.Error += OnError;
-            watcher.Filter = Filter;
-            watcher.IncludeSubdirectories = IncludeSubdirectories;
-            watcher.EnableRaisingEvents = EnableRaisingEvents;
-            _watcherList.Add(watcher);
-        }
-        _minimumAgeBeforeScanning = MinimumAgeBeforeScanning;
-
-        // Create the timers
-        _processChangesTimer = new Timer(ProcessChangesTimer * 1000);
-        _processChangesTimer.Elapsed += ProcessChangesTimerElapsed;
-        _processChangesTimer.AutoReset = false;
-        _processChangesTimer.Enabled = true;
-        _scanFoldersTimer = new Timer(ScanTimer * 1000);
-        _scanFoldersTimer.Elapsed += ScanFoldersTimerElapsed;
-        _scanFoldersTimer.AutoReset = false;
-        _scanFoldersTimer.Enabled = true;
-        return Utils.TraceOut(true);
-    }
-
     private static void ScanFoldersTimerElapsed(object sender, ElapsedEventArgs e)
     {
         Utils.TraceIn();
 
-        if (FoldersToScan.Count > 0 && FoldersToScan.Count(folderToScan => folderToScan.ModifiedDateTime.AddSeconds(_minimumAgeBeforeScanning) < DateTime.Now) ==
+        if (FoldersToScan.Count > 0 && FoldersToScan.Count(folderToScan => folderToScan.ModifiedDateTime.AddSeconds(MinimumAgeBeforeScanning) < DateTime.Now) ==
             FoldersToScan.Count)
         {
             // All the folders are old enough so raise the ReadyToScan event
@@ -207,15 +258,21 @@ public class BackupFileSystemWatcher
 
             foreach (var folderToScan in foldersToScan)
             {
+                Utils.Trace($"folderToScan = {folderToScan}");
+
                 if (FoldersToScan.Any(f => f.Path == folderToScan.Path))
                 {
                     var scannedFolder = FoldersToScan.First(f => f.Path == folderToScan.Path);
+                    if (fileOrFolderChange.ModifiedDateTime <= scannedFolder.ModifiedDateTime) continue;
 
-                    if (fileOrFolderChange.ModifiedDateTime > scannedFolder.ModifiedDateTime)
-                        scannedFolder.ModifiedDateTime = fileOrFolderChange.ModifiedDateTime;
+                    Utils.Trace($"Updating ModifiedDateTime to {fileOrFolderChange.ModifiedDateTime}");
+                    scannedFolder.ModifiedDateTime = fileOrFolderChange.ModifiedDateTime;
                 }
                 else
+                {
+                    Utils.Trace("Adding to collection");
                     FoldersToScan.Add(new Folder(folderToScan.Path, fileOrFolderChange.ModifiedDateTime));
+                }
             }
         }
         _processChangesTimer.Start();
@@ -236,8 +293,20 @@ public class BackupFileSystemWatcher
 
     private static void OnError(object sender, ErrorEventArgs e)
     {
-        //BackupFileSystemWatcher has an exception. Typically a monitored folder cannot be accessed
-        RemoveFileSystemWatchers();
+        if (sender is not FileSystemWatcher a) return;
+
+        var b = a.Path;
+
+        if (!Directory.Exists(b))
+        {
+            var ex = new DirectoryNotFoundException($"Directory {b} not found.", e.GetException());
+            e = new ErrorEventArgs(ex);
+        }
+        else
+        {
+            // not sure what the error was so just throw it
+            RemoveFileSystemWatchers();
+        }
         _scanFoldersTimer.Stop();
         _processChangesTimer.Stop();
         var handler = Error;
@@ -255,5 +324,8 @@ public class BackupFileSystemWatcherEventArgs : EventArgs
         Utils.TraceOut();
     }
 
-    public Folder[] Folders { get; set; }
+    /// <summary>
+    ///     An Array of Folders that have been changed
+    /// </summary>
+    public Folder[] Folders { get; }
 }

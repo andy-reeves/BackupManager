@@ -88,6 +88,33 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The directory name {0} is invalid..
+        /// </summary>
+        internal static string InvalidDirName {
+            get {
+                return ResourceManager.GetString("InvalidDirName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The directory name &apos;{0}&apos; does not exist..
+        /// </summary>
+        internal static string InvalidDirName_NotExists {
+            get {
+                return ResourceManager.GetString("InvalidDirName_NotExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The value of argument &apos;{0}&apos;({1}) is invalid for Enum type &apos;{2}&apos;..
+        /// </summary>
+        internal static string InvalidEnumArgument {
+            get {
+                return ResourceManager.GetString("InvalidEnumArgument", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to  - Admin.
         /// </summary>
         internal static string Main_AdminTitle {

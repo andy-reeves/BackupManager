@@ -69,8 +69,8 @@ public partial class Main : Form
                     "myListener"));
 
             // ReSharper disable StringLiteralTypo
-            backupDiskTextBox.Text = @"\\nas1\assets1\_Test\BackupDisks\backup 1001 parent";
-            //backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
+            //backupDiskTextBox.Text = @"\\nas1\assets1\_Test\BackupDisks\backup 1001 parent";
+            backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
 
             // ReSharper restore StringLiteralTypo
 #else
@@ -924,9 +924,16 @@ public partial class Main : Form
         else
         {
             fileWatcherButton.Text = Resources.Main_SetupFileWatchersOff;
-            watcher.Stop();
-            watcher = null;
+            DeleteFileSystemWatchers();
         }
+    }
+
+    private void DeleteFileSystemWatchers()
+    {
+        watcher.Stop();
+        BackupFileSystemWatcher.ReadyToScan -= FileSystemWatcher_ReadyToScan;
+        BackupFileSystemWatcher.Error -= FileSystemWatcher_OnError;
+        watcher = null;
     }
 
     private void FileSystemWatcher_ReadyToScan(object sender, BackupFileSystemWatcherEventArgs e)
@@ -949,9 +956,8 @@ public partial class Main : Form
                 var folderToScan = folderList[i];
                 mediaBackup.ClearFlags();
                 var fileCountInFolderBefore = mediaBackup.BackupFiles.Count(b => b.FullPath.StartsWith(folderToScan.Path));
-                var searchOption = SearchOption.TopDirectoryOnly;
 
-                if (ScanSingleFolder(folderToScan.Path, searchOption))
+                if (ScanSingleFolder(folderToScan.Path, SearchOption.TopDirectoryOnly))
                 {
                     var removedFilesCount = 0;
                     var markedAsDeletedFilesCount = 0;
@@ -960,8 +966,9 @@ public partial class Main : Form
 
                     // instead of removing files that are no longer found in a folder we now flag them as deleted so we can report them later
                     // unless they aren't on a backup disk in which case they are removed now 
-                    var files = mediaBackup.BackupFiles.Where(b => !b.Flag && b.FullPath.StartsWith(folderToScan.Path) && !b.RelativePath.Contains('\\'))
-                        .ToList();
+                    var files = mediaBackup.BackupFiles.Where(b => !b.Flag).Where(b => b.FullPath.StartsWith(folderToScan.Path)).Where(b =>
+                        !b.FullPath.SubstringAfter(Utils.EnsurePathHasATerminatingSeparator(folderToScan.Path), StringComparison.CurrentCultureIgnoreCase)
+                            .Contains('\\')).ToList();
 
                     for (var j = files.Count - 1; j >= 0; j--)
                     {
@@ -1145,19 +1152,17 @@ public partial class Main : Form
 
         watcher = new BackupFileSystemWatcher
         {
-            NotifyFilter =
-                NotifyFilters.Attributes | NotifyFilters.CreationTime | NotifyFilters.DirectoryName | NotifyFilters.FileName | NotifyFilters.LastAccess |
-                NotifyFilters.LastWrite | NotifyFilters.Security | NotifyFilters.Size,
+            NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName,
             FoldersToMonitor = mediaBackup.Config.MasterFolders.ToArray(),
-            MinimumAgeBeforeScanning = mediaBackup.Config.MasterFolderScanMinimumAgeBeforeScanning,
             ProcessChangesTimer = mediaBackup.Config.MasterFoldersProcessChangesTimer,
             ScanTimer = mediaBackup.Config.MasterFoldersScanTimer,
             Filter = "*.*",
-            IncludeSubdirectories = true,
-            EnableRaisingEvents = true
+            IncludeSubdirectories = true
         };
         BackupFileSystemWatcher.ReadyToScan += FileSystemWatcher_ReadyToScan;
         BackupFileSystemWatcher.Error += FileSystemWatcher_OnError;
+        BackupFileSystemWatcher.MinimumAgeBeforeScanning = mediaBackup.Config.MasterFolderScanMinimumAgeBeforeScanning;
+        BackupFileSystemWatcher.ResetFolderCollections();
 
         foreach (var item in mediaBackup.FileOrFolderChanges)
         {
