@@ -14,11 +14,11 @@ namespace TestProject;
 
 public class FileRulesUnitTest
 {
-    private static readonly MediaBackup MediaBackup;
+    private static readonly MediaBackup _mediaBackup;
 
     static FileRulesUnitTest()
     {
-        MediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)), "..\\BackupManager\\MediaBackup.xml"));
+        _mediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)), "..\\BackupManager\\MediaBackup.xml"));
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public class FileRulesUnitTest
             var testOrDiscovery = cols[1];
             var expectedResult = Convert.ToBoolean(cols[2]);
             var testPath = cols[3];
-            var rule = MediaBackup.Config.FileRules.SingleOrDefault(p => p.Number == ruleNumber);
+            var rule = _mediaBackup.Config.FileRules.SingleOrDefault(p => p.Number == ruleNumber);
             Assert.NotNull(rule);
             var regEx = testOrDiscovery.StartsWith("T") ? rule.FileTestRegEx : rule.FileDiscoveryRegEx;
 

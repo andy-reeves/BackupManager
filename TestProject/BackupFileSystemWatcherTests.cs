@@ -14,18 +14,22 @@ namespace TestProject
 {
     public class BackupFileSystemWatcherTests
     {
-        private static int _test1EventsCounter;
+        private int test1EventsCounter;
 
-        private static int _test3EventsCounter;
+        private int test1ExpectedEventFolderCount;
 
-        private static int _test3EventsErrorCounter;
+        private int test3EventsCounter;
 
-        private static int _test3ExpectedEventFolderCount;
+        private int test3EventsErrorCounter;
+
+        private int test3ExpectedEventFolderCount;
 
         [Fact]
         public void BackupFileSystemWatcherTest1()
         {
-            const int waitInSeconds = 4;
+            const int waitInSeconds = 6;
+            test1EventsCounter = 0;
+            test1ExpectedEventFolderCount = 3;
             var monitoringPath1 = Path.Combine(Path.GetTempPath(), "MonitoringFolder1");
             var monitoringPath2 = Path.Combine(Path.GetTempPath(), "MonitoringFolder2");
             EnsureFoldersForDirectoryPath(monitoringPath1);
@@ -37,30 +41,31 @@ namespace TestProject
             Assert.True(watcher.FoldersToMonitor.Length == 0, nameof(watcher.FoldersToMonitor.Length));
             Assert.True(watcher.NotifyFilter == (NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName), nameof(watcher.NotifyFilter));
             Assert.True(watcher.ProcessChangesTimer == 30, nameof(watcher.ProcessChangesTimer));
-            Assert.True(BackupFileSystemWatcher.ResetFolderCollections(), nameof(BackupFileSystemWatcher.ResetFolderCollections));
-            Assert.True(BackupFileSystemWatcher.FoldersToScan.Count == 0, nameof(BackupFileSystemWatcher.FoldersToScan.Count));
-            Assert.True(BackupFileSystemWatcher.FileOrFolderChanges.Count == 0, nameof(BackupFileSystemWatcher.FileOrFolderChanges.Count));
+
+            //Assert.True(watcher.ResetFolderCollections(), nameof(BackupFileSystemWatcher.ResetFolderCollections));
+            Assert.True(watcher.FoldersToScan.Count == 0, nameof(BackupFileSystemWatcher.FoldersToScan.Count));
+            Assert.True(watcher.FileOrFolderChanges.Count == 0, nameof(BackupFileSystemWatcher.FileOrFolderChanges.Count));
             watcher.Filter = "*";
             watcher.IncludeSubdirectories = true;
-            watcher.ScanTimer = 2;
-            BackupFileSystemWatcher.MinimumAgeBeforeScanning = 2;
+            watcher.ScanTimer = 1;
+            watcher.MinimumAgeBeforeScanning = 1;
             watcher.FoldersToMonitor = new[] { monitoringPath1, monitoringPath2 };
             watcher.ProcessChangesTimer = 1;
-            BackupFileSystemWatcher.ReadyToScan += BackupFileSystemWatcher_ReadyToScan1;
-            Assert.True(BackupFileSystemWatcher.FoldersToScan.Count == 0, nameof(BackupFileSystemWatcher.FoldersToScan.Count));
-            Assert.True(BackupFileSystemWatcher.FileOrFolderChanges.Count == 0, nameof(BackupFileSystemWatcher.FileOrFolderChanges.Count));
+            watcher.ReadyToScan += BackupFileSystemWatcher_ReadyToScan1;
+            Assert.True(watcher.FoldersToScan.Count == 0, nameof(BackupFileSystemWatcher.FoldersToScan.Count));
+            Assert.True(watcher.FileOrFolderChanges.Count == 0, nameof(BackupFileSystemWatcher.FileOrFolderChanges.Count));
             watcher.Start();
             CreateFile(Path.Combine(monitoringPath1, "test1.txt"));
             CreateFile(Path.Combine(monitoringPath2, "test2.txt"));
             CreateFile(Path.Combine(monitoringPath2, "subFolder", "test3.txt"));
             Wait(waitInSeconds);
-            Assert.True(_test1EventsCounter == 1);
-            Assert.True(BackupFileSystemWatcher.FileOrFolderChanges.Count == 0, nameof(BackupFileSystemWatcher.FileOrFolderChanges.Count));
-            Assert.True(BackupFileSystemWatcher.FoldersToScan.Count == 0, nameof(BackupFileSystemWatcher.FoldersToScan.Count));
+            Assert.True(test1EventsCounter == 1);
+            Assert.True(watcher.FileOrFolderChanges.Count == 0, nameof(BackupFileSystemWatcher.FileOrFolderChanges.Count));
+            Assert.True(watcher.FoldersToScan.Count == 0, nameof(BackupFileSystemWatcher.FoldersToScan.Count));
             watcher.Stop();
 
             //Unhook event handlers
-            BackupFileSystemWatcher.ReadyToScan -= BackupFileSystemWatcher_ReadyToScan1;
+            watcher.ReadyToScan -= BackupFileSystemWatcher_ReadyToScan1;
 
             // Delete the folders we created
             if (Directory.Exists(monitoringPath1)) Directory.Delete(monitoringPath1, true);
@@ -80,11 +85,11 @@ namespace TestProject
             EnsureFoldersForDirectoryPath(monitoringPath1);
             EnsureFoldersForDirectoryPath(monitoringPath2);
             var watcher = new BackupFileSystemWatcher { FoldersToMonitor = new[] { monitoringPath1, monitoringPath2, monitoringPath3Missing } };
-            BackupFileSystemWatcher.ReadyToScan += BackupFileSystemWatcher_ReadyToScan2;
+            watcher.ReadyToScan += BackupFileSystemWatcher_ReadyToScan2;
             Assert.Throws<ArgumentException>(() => watcher.Start());
 
             //Unhook event handlers
-            BackupFileSystemWatcher.ReadyToScan -= BackupFileSystemWatcher_ReadyToScan2;
+            watcher.ReadyToScan -= BackupFileSystemWatcher_ReadyToScan2;
 
             // Delete the folders we created
             if (Directory.Exists(monitoringPath1)) Directory.Delete(monitoringPath1, true);
@@ -105,7 +110,8 @@ namespace TestProject
         [Fact]
         public void BackupFileSystemWatcherTest3()
         {
-            const int waitInSeconds = 4;
+            const int waitInSeconds = 3;
+            test3EventsCounter = 0;
             var monitoringPath1 = Path.Combine(Path.GetTempPath(), "MonitoringFolder1");
             var monitoringPath2 = Path.Combine(Path.GetTempPath(), "MonitoringFolder2");
             var monitoringPath3DeletedAfterABit = Path.Combine(Path.GetTempPath(), "MonitoringFolder3");
@@ -119,21 +125,21 @@ namespace TestProject
                 IncludeSubdirectories = true,
                 ScanTimer = 1,
                 FoldersToMonitor = new[] { monitoringPath1, monitoringPath2, monitoringPath3DeletedAfterABit },
-                ProcessChangesTimer = 1
+                ProcessChangesTimer = 1,
+                MinimumAgeBeforeScanning = 1
             };
-            BackupFileSystemWatcher.MinimumAgeBeforeScanning = 2;
-            BackupFileSystemWatcher.ReadyToScan += BackupFileSystemWatcher_ReadyToScan3;
-            BackupFileSystemWatcher.Error += BackupFileSystemWatcher_ErrorTest3;
+            watcher.ReadyToScan += BackupFileSystemWatcher_ReadyToScan3;
+            watcher.Error += BackupFileSystemWatcher_ErrorTest3;
             watcher.Start();
-            _test3ExpectedEventFolderCount = 4;
+            test3ExpectedEventFolderCount = 4;
             CreateFile(Path.Combine(monitoringPath1, "test1.txt"));
             CreateFile(Path.Combine(monitoringPath2, "test2.txt"));
             CreateFile(Path.Combine(monitoringPath2, "subFolder", "test3.txt"));
             CreateFile(Path.Combine(monitoringPath3DeletedAfterABit, "test4.txt"));
             Wait(waitInSeconds);
-            Assert.True(_test3EventsCounter == 1);
-            Assert.True(BackupFileSystemWatcher.FileOrFolderChanges.Count == 0, nameof(BackupFileSystemWatcher.FileOrFolderChanges.Count));
-            Assert.True(BackupFileSystemWatcher.FoldersToScan.Count == 0, nameof(BackupFileSystemWatcher.FoldersToScan.Count));
+            Assert.True(test3EventsCounter == 1);
+            Assert.True(watcher.FileOrFolderChanges.Count == 0, nameof(BackupFileSystemWatcher.FileOrFolderChanges.Count));
+            Assert.True(watcher.FoldersToScan.Count == 0, nameof(BackupFileSystemWatcher.FoldersToScan.Count));
             watcher.Stop();
 
             // Now delete a folder we are monitoring after we've stopped
@@ -145,24 +151,24 @@ namespace TestProject
             // now create the folder again and start
             EnsureFoldersForDirectoryPath(monitoringPath3DeletedAfterABit);
             watcher.Start();
-            _test3ExpectedEventFolderCount = 4;
+            test3ExpectedEventFolderCount = 4;
             CreateFile(Path.Combine(monitoringPath1, "test1.txt"));
             CreateFile(Path.Combine(monitoringPath2, "test2.txt"));
             CreateFile(Path.Combine(monitoringPath2, "subFolder", "test3.txt"));
             CreateFile(Path.Combine(monitoringPath3DeletedAfterABit, "test4.txt"));
             Wait(waitInSeconds);
-            Assert.True(_test3EventsCounter == 2);
+            Assert.True(test3EventsCounter == 2);
 
             //delete a folder while we're monitoring it
             if (Directory.Exists(monitoringPath3DeletedAfterABit)) Directory.Delete(monitoringPath3DeletedAfterABit, true);
-            _test3ExpectedEventFolderCount = 4;
+            test3ExpectedEventFolderCount = 4;
 
             // now create the folder and file again
             CreateFile(Path.Combine(monitoringPath1, "test1.txt"));
             CreateFile(Path.Combine(monitoringPath2, "test2.txt"));
             CreateFile(Path.Combine(monitoringPath2, "subFolder", "test3.txt"));
             Wait(waitInSeconds);
-            Assert.True(_test3EventsErrorCounter == 1);
+            Assert.True(test3EventsErrorCounter == 1);
 
             // should fail to restart because a folder is missing now
             Assert.Throws<ArgumentException>(() => watcher.Start());
@@ -170,19 +176,19 @@ namespace TestProject
             // now create the folder again and start
             EnsureFoldersForDirectoryPath(monitoringPath3DeletedAfterABit);
             watcher.Start();
-            _test3ExpectedEventFolderCount = 4;
+            test3ExpectedEventFolderCount = 4;
             CreateFile(Path.Combine(monitoringPath1, "test1.txt"));
             CreateFile(Path.Combine(monitoringPath2, "test2.txt"));
             CreateFile(Path.Combine(monitoringPath2, "subFolder", "test3.txt"));
             CreateFile(Path.Combine(monitoringPath3DeletedAfterABit, "test4.txt"));
             Wait(waitInSeconds);
-            Assert.True(_test3EventsCounter == 3);
-            Assert.True(_test3EventsErrorCounter == 1);
+            Assert.True(test3EventsCounter == 3);
+            Assert.True(test3EventsErrorCounter == 1);
             watcher.Stop();
 
             //Unhook event handlers
-            BackupFileSystemWatcher.ReadyToScan -= BackupFileSystemWatcher_ReadyToScan3;
-            BackupFileSystemWatcher.Error -= BackupFileSystemWatcher_ErrorTest3;
+            watcher.ReadyToScan -= BackupFileSystemWatcher_ReadyToScan3;
+            watcher.Error -= BackupFileSystemWatcher_ErrorTest3;
 
             // Delete the folders we created
             if (Directory.Exists(monitoringPath1)) Directory.Delete(monitoringPath1, true);
@@ -190,13 +196,13 @@ namespace TestProject
             if (Directory.Exists(monitoringPath3DeletedAfterABit)) Directory.Delete(monitoringPath3DeletedAfterABit, true);
         }
 
-        private static void BackupFileSystemWatcher_ErrorTest3(object? sender, ErrorEventArgs e)
+        private void BackupFileSystemWatcher_ErrorTest3(object? sender, ErrorEventArgs e)
         {
             Assert.Contains("MonitoringFolder3 not found.", e.GetException().Message);
-            _test3EventsErrorCounter++;
+            test3EventsErrorCounter++;
         }
 
-        private static void Wait(int howManySecondsToWait)
+        private void Wait(int howManySecondsToWait)
         {
             var howLongToWait = new TimeSpan(0, 0, howManySecondsToWait);
             var sw = Stopwatch.StartNew();
@@ -204,39 +210,45 @@ namespace TestProject
             while (sw.Elapsed < howLongToWait) { }
         }
 
-        private static void BackupFileSystemWatcher_ReadyToScan1(object? sender, BackupFileSystemWatcherEventArgs e)
+        private void BackupFileSystemWatcher_ReadyToScan1(object? sender, BackupFileSystemWatcherEventArgs e)
         {
+            if (sender is not BackupFileSystemWatcher watcher) return;
+
+            foreach (var folder in e.Folders)
+            {
+                Utils.Trace($"{folder.Path} at {folder.ModifiedDateTime}");
+            }
+            Assert.True(e.Folders.Length == test1ExpectedEventFolderCount, nameof(e.Folders.Length));
+            Assert.True(watcher.FileOrFolderChanges.Count == 0, nameof(BackupFileSystemWatcher.FileOrFolderChanges.Count));
+            Assert.True(watcher.FoldersToScan.Count == 0, nameof(BackupFileSystemWatcher.FoldersToScan.Count));
+            test1EventsCounter += 1;
+        }
+
+        private void BackupFileSystemWatcher_ReadyToScan2(object? sender, BackupFileSystemWatcherEventArgs e)
+        {
+            if (sender is not BackupFileSystemWatcher watcher) return;
+
             foreach (var folder in e.Folders)
             {
                 Utils.Trace($"{folder.Path} at {folder.ModifiedDateTime}");
             }
             Assert.True(e.Folders.Length == 3, nameof(e.Folders.Length));
-            Assert.True(BackupFileSystemWatcher.FileOrFolderChanges.Count == 0, nameof(BackupFileSystemWatcher.FileOrFolderChanges.Count));
-            Assert.True(BackupFileSystemWatcher.FoldersToScan.Count == 0, nameof(BackupFileSystemWatcher.FoldersToScan.Count));
-            _test1EventsCounter += 1;
+            Assert.True(watcher.FileOrFolderChanges.Count == 0, nameof(BackupFileSystemWatcher.FileOrFolderChanges.Count));
+            Assert.True(watcher.FoldersToScan.Count == 0, nameof(BackupFileSystemWatcher.FoldersToScan.Count));
         }
 
-        private static void BackupFileSystemWatcher_ReadyToScan2(object? sender, BackupFileSystemWatcherEventArgs e)
+        private void BackupFileSystemWatcher_ReadyToScan3(object? sender, BackupFileSystemWatcherEventArgs e)
         {
+            if (sender is not BackupFileSystemWatcher watcher) return;
+
             foreach (var folder in e.Folders)
             {
                 Utils.Trace($"{folder.Path} at {folder.ModifiedDateTime}");
             }
-            Assert.True(e.Folders.Length == 3, nameof(e.Folders.Length));
-            Assert.True(BackupFileSystemWatcher.FileOrFolderChanges.Count == 0, nameof(BackupFileSystemWatcher.FileOrFolderChanges.Count));
-            Assert.True(BackupFileSystemWatcher.FoldersToScan.Count == 0, nameof(BackupFileSystemWatcher.FoldersToScan.Count));
-        }
-
-        private static void BackupFileSystemWatcher_ReadyToScan3(object? sender, BackupFileSystemWatcherEventArgs e)
-        {
-            foreach (var folder in e.Folders)
-            {
-                Utils.Trace($"{folder.Path} at {folder.ModifiedDateTime}");
-            }
-            Assert.True(e.Folders.Length == _test3ExpectedEventFolderCount, nameof(e.Folders.Length));
-            Assert.True(BackupFileSystemWatcher.FileOrFolderChanges.Count == 0, nameof(BackupFileSystemWatcher.FileOrFolderChanges.Count));
-            Assert.True(BackupFileSystemWatcher.FoldersToScan.Count == 0, nameof(BackupFileSystemWatcher.FoldersToScan.Count));
-            _test3EventsCounter++;
+            Assert.True(e.Folders.Length == test3ExpectedEventFolderCount, nameof(e.Folders.Length));
+            Assert.True(watcher.FileOrFolderChanges.Count == 0, nameof(BackupFileSystemWatcher.FileOrFolderChanges.Count));
+            Assert.True(watcher.FoldersToScan.Count == 0, nameof(BackupFileSystemWatcher.FoldersToScan.Count));
+            test3EventsCounter++;
         }
     }
 }

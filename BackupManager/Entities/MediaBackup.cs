@@ -33,6 +33,8 @@ public class MediaBackup
 
     private string mediaBackupPath;
 
+    [XmlIgnore] public BackupFileSystemWatcher Watcher = new();
+
     public MediaBackup()
     {
         BackupFiles = new Collection<BackupFile>();
@@ -167,8 +169,8 @@ public class MediaBackup
     public void Save()
     {
         BackupMediaFile();
-        FileOrFolderChanges = new Collection<Folder>(BackupFileSystemWatcher.FileOrFolderChanges.ToList());
-        FoldersToScan = new Collection<Folder>(BackupFileSystemWatcher.FoldersToScan.ToList());
+        FileOrFolderChanges = new Collection<Folder>(Watcher.FileOrFolderChanges.ToList());
+        FoldersToScan = new Collection<Folder>(Watcher.FoldersToScan.ToList());
         XmlSerializer xmlSerializer = new(typeof(MediaBackup));
         if (File.Exists(mediaBackupPath)) File.SetAttributes(mediaBackupPath, FileAttributes.Normal);
         using StreamWriter streamWriter = new(mediaBackupPath);
@@ -442,9 +444,8 @@ public class MediaBackup
         foreach (var backupFile in filesToRemove)
         {
             if (clearHashes)
-            {
-                if (indexFolderAndRelativePath.ContainsKey(backupFile.Hash)) _ = indexFolderAndRelativePath.Remove(backupFile.Hash);
-            }
+                if (indexFolderAndRelativePath.ContainsKey(backupFile.Hash))
+                    _ = indexFolderAndRelativePath.Remove(backupFile.Hash);
             if (BackupFiles.Contains(backupFile)) _ = BackupFiles.Remove(backupFile);
         }
     }
