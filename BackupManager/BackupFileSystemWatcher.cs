@@ -25,7 +25,7 @@ public class BackupFileSystemWatcher
                                                      NotifyFilters.Size);
 
     // Filters collection
-    private readonly NormalizedFilterCollection filters = new();
+    private string filter = "*.*";
 
     private readonly List<FileSystemWatcher> watcherList = new();
 
@@ -35,11 +35,15 @@ public class BackupFileSystemWatcher
 
     private NotifyFilters notifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName;
 
+    private int processChangesInterval = 30;
+
     private Timer processChangesTimer;
 
     private bool reset;
 
     private Timer scanFoldersTimer;
+
+    private int scanTimerInterval = 60;
 
     private bool started;
 
@@ -71,12 +75,34 @@ public class BackupFileSystemWatcher
     ///     many seconds. Then RegEx them. Finally we check the Collection to see if we should scan them. When they are old
     ///     enough we raise the events. Default is 30 seconds
     /// </summary>
-    public int ProcessChangesTimer { get; set; } = 30;
+    public int ProcessChangesInterval
+    {
+        get => processChangesInterval;
+
+        set
+        {
+            if (processChangesInterval == value) return;
+
+            processChangesInterval = value;
+            if (processChangesTimer != null) processChangesTimer.Interval = value * 1000;
+        }
+    }
 
     /// <summary>
     ///     Time in seconds before we raise any scan folders events. Default is 60 seconds
     /// </summary>
-    public int ScanTimer { get; set; } = 60;
+    public int ScanTimerInterval
+    {
+        get => scanTimerInterval;
+
+        set
+        {
+            if (scanTimerInterval == value) return;
+
+            scanTimerInterval = value;
+            if (scanFoldersTimer != null) scanFoldersTimer.Interval = value * 1000;
+        }
+    }
 
     /// <summary>
     ///     This is a Collection of files/folders where changes have been detected and the last time they changed
@@ -112,17 +138,16 @@ public class BackupFileSystemWatcher
     /// </summary>
     public string Filter
     {
-        get => Filters.Count == 0 ? "*" : Filters[0];
+        get => filter;
 
         set
         {
-            Filters.Clear();
-            Filters.Add(value);
+            if (filter == value) return;
+
+            filter = value;
             Restart();
         }
     }
-
-    public Collection<string> Filters => filters;
 
     public bool IncludeSubdirectories
     {
@@ -200,7 +225,7 @@ public class BackupFileSystemWatcher
             processChangesTimer = new Timer();
             processChangesTimer.Elapsed += ProcessChangesTimerElapsed;
         }
-        processChangesTimer.Interval = ProcessChangesTimer * 1000;
+        processChangesTimer.Interval = ProcessChangesInterval * 1000;
         processChangesTimer.AutoReset = false;
         processChangesTimer.Enabled = true;
 
@@ -209,7 +234,7 @@ public class BackupFileSystemWatcher
             scanFoldersTimer = new Timer();
             scanFoldersTimer.Elapsed += ScanFoldersTimerElapsed;
         }
-        scanFoldersTimer.Interval = ScanTimer * 1000;
+        scanFoldersTimer.Interval = ScanTimerInterval * 1000;
         scanFoldersTimer.AutoReset = false;
         scanFoldersTimer.Enabled = true;
         return Utils.TraceOut(reset = true);

@@ -36,20 +36,20 @@ namespace TestProject
             EnsureFoldersForDirectoryPath(monitoringPath1);
             EnsureFoldersForDirectoryPath(monitoringPath2);
             var watcher = new BackupFileSystemWatcher();
-            Assert.True(watcher.Filter == "*", nameof(watcher.Filter));
+            Assert.True(watcher.Filter == "*.*", nameof(watcher.Filter));
             Assert.True(watcher.IncludeSubdirectories == false, nameof(watcher.IncludeSubdirectories));
-            Assert.True(watcher.ScanTimer == 60, nameof(watcher.ScanTimer));
+            Assert.True(watcher.ScanTimerInterval == 60, nameof(watcher.ScanTimerInterval));
             Assert.True(watcher.FoldersToMonitor.Length == 0, nameof(watcher.FoldersToMonitor.Length));
             Assert.True(watcher.NotifyFilter == (NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName), nameof(watcher.NotifyFilter));
-            Assert.True(watcher.ProcessChangesTimer == 30, nameof(watcher.ProcessChangesTimer));
+            Assert.True(watcher.ProcessChangesInterval == 30, nameof(watcher.ProcessChangesInterval));
             Assert.True(watcher.FoldersToScan.Count == 0, nameof(BackupFileSystemWatcher.FoldersToScan.Count));
             Assert.True(watcher.FileOrFolderChanges.Count == 0, nameof(BackupFileSystemWatcher.FileOrFolderChanges.Count));
-            watcher.Filter = "*";
+            watcher.Filter = "*.*";
             watcher.IncludeSubdirectories = true;
-            watcher.ScanTimer = 1;
+            watcher.ScanTimerInterval = 1;
             watcher.MinimumAgeBeforeScanning = 1;
             watcher.FoldersToMonitor = new[] { monitoringPath1, monitoringPath2 };
-            watcher.ProcessChangesTimer = 1;
+            watcher.ProcessChangesInterval = 1;
             watcher.ReadyToScan += BackupFileSystemWatcher_ReadyToScan1;
             Assert.True(watcher.FoldersToScan.Count == 0, nameof(BackupFileSystemWatcher.FoldersToScan.Count));
             Assert.True(watcher.FileOrFolderChanges.Count == 0, nameof(BackupFileSystemWatcher.FileOrFolderChanges.Count));
@@ -119,11 +119,11 @@ namespace TestProject
 
             var watcher = new BackupFileSystemWatcher
             {
-                Filter = "*",
+                Filter = "*.*",
                 IncludeSubdirectories = true,
-                ScanTimer = 1,
+                ScanTimerInterval = 1,
                 FoldersToMonitor = new[] { monitoringPath1, monitoringPath2, monitoringPath3DeletedAfterABit },
-                ProcessChangesTimer = 1,
+                ProcessChangesInterval = 1,
                 MinimumAgeBeforeScanning = 1
             };
             watcher.ReadyToScan += BackupFileSystemWatcher_ReadyToScan3;

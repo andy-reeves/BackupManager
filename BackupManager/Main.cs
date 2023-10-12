@@ -1151,8 +1151,8 @@ public partial class Main : Form
             {
                 NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName,
                 FoldersToMonitor = mediaBackup.Config.MasterFolders.ToArray(),
-                ProcessChangesTimer = mediaBackup.Config.MasterFoldersProcessChangesTimer,
-                ScanTimer = mediaBackup.Config.MasterFoldersScanTimer,
+                ProcessChangesInterval = mediaBackup.Config.MasterFoldersProcessChangesTimer,
+                ScanTimerInterval = mediaBackup.Config.MasterFoldersScanTimer,
                 Filter = "*.*",
                 IncludeSubdirectories = true
             };
