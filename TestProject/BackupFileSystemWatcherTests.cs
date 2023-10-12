@@ -27,7 +27,7 @@ namespace TestProject
         [Fact]
         public void BackupFileSystemWatcherTest1()
         {
-            const int waitInSeconds = 6;
+            const int waitInSeconds = 3;
             test1EventsCounter = 0;
             test1ExpectedEventFolderCount = 3;
             var monitoringPath1 = Path.Combine(Path.GetTempPath(), "MonitoringFolder1");
@@ -41,8 +41,6 @@ namespace TestProject
             Assert.True(watcher.FoldersToMonitor.Length == 0, nameof(watcher.FoldersToMonitor.Length));
             Assert.True(watcher.NotifyFilter == (NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName), nameof(watcher.NotifyFilter));
             Assert.True(watcher.ProcessChangesTimer == 30, nameof(watcher.ProcessChangesTimer));
-
-            //Assert.True(watcher.ResetFolderCollections(), nameof(BackupFileSystemWatcher.ResetFolderCollections));
             Assert.True(watcher.FoldersToScan.Count == 0, nameof(BackupFileSystemWatcher.FoldersToScan.Count));
             Assert.True(watcher.FileOrFolderChanges.Count == 0, nameof(BackupFileSystemWatcher.FileOrFolderChanges.Count));
             watcher.Filter = "*";
