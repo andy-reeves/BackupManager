@@ -61,16 +61,15 @@ public class FileSystemWatcher
     }
 
     /// <summary>
-    ///     Minimum time in seconds since this folder was last changed before we will raise any scan folders events. Default is
-    ///     300 seconds
+    ///     Minimum time in seconds since this directory or any items changed in the directory) was last changed before we will
+    ///     raise any scan folders events. Default is 300 seconds.
     /// </summary>
     public int MinimumAgeBeforeScanEventRaised { get; set; } = 300;
 
     /// <summary>
-    ///     Time in seconds before we process the files changed to see if they match the RegExs into FilesToMatch. We do this
-    ///     because they list might be very large and the RegExs may take a while. So we capture them all. Then wait for this
-    ///     many seconds. Then RegEx them. Finally we check the Collection to see if we should scan them. When they are old
-    ///     enough we raise the events. Default is 30 seconds
+    ///     Time in seconds before we process the file system changes detected and put their directories in the
+    ///     DirectoriesToScan collection.
+    ///     many seconds. Default is 30 seconds.
     /// </summary>
     public int ProcessChangesInterval
     {
@@ -86,7 +85,7 @@ public class FileSystemWatcher
     }
 
     /// <summary>
-    ///     Interval in seconds between scan folder events being raised. Default is 60 seconds
+    ///     Interval in seconds between scan folder events being raised. Default is 60 seconds.
     /// </summary>
     public int ScanInterval
     {
@@ -102,17 +101,17 @@ public class FileSystemWatcher
     }
 
     /// <summary>
-    ///     This is a Collection of files/folders where changes have been detected and the last time they changed
+    ///     This is a Collection of files/folders where changes have been detected and the last time they changed.
     /// </summary>
     internal BlockingCollection<FileSystemEntry> FileSystemChanges { get; } = new();
 
     /// <summary>
-    ///     These are the directories we will raise events on when they are old enough
+    ///     These are the directories we will raise events on when they are old enough.
     /// </summary>
     public BlockingCollection<FileSystemEntry> DirectoriesToScan { get; } = new();
 
     /// <summary>
-    ///     If you change these after starting then we stop and start again
+    ///     If you change these after starting then we stop and start again.
     /// </summary>
     public NotifyFilters NotifyFilter
     {
@@ -147,7 +146,7 @@ public class FileSystemWatcher
     }
 
     /// <summary>
-    ///     True to monitor subdirectories as well
+    ///     True to monitor subdirectories as well.
     /// </summary>
     public bool IncludeSubdirectories
     {
@@ -163,7 +162,7 @@ public class FileSystemWatcher
     }
 
     /// <summary>
-    ///     If we're already running then this Stops and Starts again. It won't start if its not already started
+    ///     If we're already running then this Stops and Starts again. It won't start if its not already started.
     /// </summary>
     private void Restart()
     {
@@ -174,12 +173,12 @@ public class FileSystemWatcher
     }
 
     /// <summary>
-    ///     Raised when the directories are ready to be scanned
+    ///     Raised when the directories are ready to be scanned.
     /// </summary>
-    public event EventHandler<BackupFileSystemWatcherEventArgs> ReadyToScan;
+    public event EventHandler<FileSystemWatcherEventArgs> ReadyToScan;
 
     /// <summary>
-    ///     Raised when an error occurs
+    ///     Raised when an error occurs.
     /// </summary>
     public event EventHandler<ErrorEventArgs> Error;
 
@@ -187,15 +186,15 @@ public class FileSystemWatcher
     {
         ArgumentNullException.ThrowIfNull(path);
 
-        // Early check for directory parameter so that an exception can be thrown as early as possible.
+        // Early check for directory parameter so that an exception can be thrown as early as possible
         if (path.Length == 0) throw new ArgumentException(string.Format(Resources.InvalidDirName, path), nameof(path));
         if (!Directory.Exists(path)) throw new ArgumentException(string.Format(Resources.InvalidDirName_NotExists, path), nameof(path));
     }
 
     /// <summary>
-    ///     If any properties change then we need to call Reset
+    ///     If any properties change then we need to call Reset.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>True if Reset was successful</returns>
     private bool Reset()
     {
         Utils.TraceIn();
@@ -277,7 +276,7 @@ public class FileSystemWatcher
     }
 
     /// <summary>
-    ///     Stops monitoring the directories for any more changes. Events no longer raised
+    ///     Stops monitoring the directories for any more changes. Events no longer raised.
     /// </summary>
     /// <returns>True if we've stopped successfully or were already stopped</returns>
     public bool Stop()
@@ -296,7 +295,7 @@ public class FileSystemWatcher
     }
 
     /// <summary>
-    ///     Clears the two collections of files and directories
+    ///     Clears the two collections of files and directories.
     /// </summary>
     /// <returns>True if they were cleared correctly</returns>
     public bool ResetCollections()
@@ -309,6 +308,11 @@ public class FileSystemWatcher
         return Utils.TraceOut(true);
     }
 
+    /// <summary>
+    ///     Executes when any changes to items in the monitored directories are detected.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void OnSomethingHappened(object sender, FileSystemEventArgs e)
     {
         Utils.TraceIn($"e.FullPath = {e.FullPath}");
@@ -334,14 +338,14 @@ public class FileSystemWatcher
             DirectoriesToScan.Count)
         {
             // All the folders are old enough so raise the ReadyToScan event
-            var args = new BackupFileSystemWatcherEventArgs(DirectoriesToScan);
+            var args = new FileSystemWatcherEventArgs(DirectoriesToScan);
             OnThresholdReached(this, args);
         }
         if (Running) scanFoldersTimer.Start();
         Utils.TraceOut();
     }
 
-    protected void OnThresholdReached(object sender, BackupFileSystemWatcherEventArgs e)
+    protected void OnThresholdReached(object sender, FileSystemWatcherEventArgs e)
     {
         Utils.TraceIn();
 
@@ -353,7 +357,8 @@ public class FileSystemWatcher
     }
 
     /// <summary>
-    ///     Processes the FileSystemEntries to see if we should scan them
+    ///     Processes the FileSystemEntries of changes. Any new directories are added and any we've already added have their
+    ///     Modified DateTime updated.
     /// </summary>
     /// <param name="source"></param>
     /// <param name="e"></param>
@@ -409,6 +414,9 @@ public class FileSystemWatcher
         Utils.TraceOut();
     }
 
+    /// <summary>
+    ///     Calls Dispose on all watchers we have and clears the list.
+    /// </summary>
     private void RemoveFileSystemWatchers()
     {
         Utils.TraceIn();
@@ -421,6 +429,11 @@ public class FileSystemWatcher
         Utils.TraceOut();
     }
 
+    /// <summary>
+    ///     Any errors detected calls this.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void OnError(object sender, ErrorEventArgs e)
     {
         if (sender is not System.IO.FileSystemWatcher watcher) return;
@@ -440,9 +453,12 @@ public class FileSystemWatcher
     }
 }
 
-public class BackupFileSystemWatcherEventArgs : EventArgs
+/// <summary>
+///     Used to pass the Folders changed to any events.
+/// </summary>
+public class FileSystemWatcherEventArgs : EventArgs
 {
-    public BackupFileSystemWatcherEventArgs(BlockingCollection<FileSystemEntry> foldersToScan)
+    public FileSystemWatcherEventArgs(BlockingCollection<FileSystemEntry> foldersToScan)
     {
         Utils.TraceIn();
         Folders = new FileSystemEntry[foldersToScan.Count];

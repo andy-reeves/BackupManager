@@ -932,7 +932,7 @@ public partial class Main : Form
         mediaBackup.Watcher.Stop();
     }
 
-    private void FileSystemWatcher_ReadyToScan(object sender, BackupFileSystemWatcherEventArgs e)
+    private void FileSystemWatcher_ReadyToScan(object sender, FileSystemWatcherEventArgs e)
     {
         Utils.TraceIn($"e.Folders = {e.Folders.Length}");
         var toSave = false;
