@@ -1,0 +1,250 @@
+﻿using System.IO;
+using System.Windows.Forms;
+
+using BackupManager.Entities;
+using BackupManager.Extensions;
+using BackupManager.Properties;
+
+namespace BackupManager
+{
+    partial class Main {
+        /// <summary>
+        ///     Returns a BackupDisk of the connected disk that's just been checked
+        /// </summary>
+        /// <param name="deleteExtraFiles"></param>
+        /// <returns>null if there was an error</returns>
+        private BackupDisk CheckConnectedDisk(bool deleteExtraFiles)
+        {
+            Utils.TraceIn();
+
+            // Scans the connected backup disk and finds all its files
+            // for each for found calculate the hash from the backup disk
+            // find that hash in the backup data file
+            // rebuilds the source filename from MasterFolder+IndexFolder+Path
+            // checks the file still exists there
+            // if it does compare the hash codes and update results
+            // force a recalculation of both the hashes to check the files can both be read correctly
+            var disk = SetupBackupDisk();
+            var folderToCheck = disk.BackupPath;
+            Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Started checking backup disk {folderToCheck}");
+            UpdateStatusLabel($"Checking backup disk {folderToCheck}");
+            long readSpeed = 0, writeSpeed = 0;
+
+            if (mediaBackup.Config.SpeedTestOnOff)
+            {
+                var diskTestSize = disk.Free > Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize)
+                    ? Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize)
+                    : disk.Free - Utils.BytesInOneKilobyte;
+                UpdateStatusLabel($"Speed testing {folderToCheck}");
+                Utils.DiskSpeedTest(folderToCheck, diskTestSize, mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed);
+                disk.UpdateSpeeds(readSpeed, writeSpeed);
+            }
+
+            var text = $"Name: {disk.Name}\nTotal: {disk.CapacityFormatted}\nFree: {disk.FreeFormatted}\n" +
+                       $"Read: {Utils.FormatSpeed(readSpeed)}\nWrite: {Utils.FormatSpeed(writeSpeed)}";
+            var diskInfoMessageWasTheLastSent = true;
+            Utils.LogWithPushover(BackupAction.CheckBackupDisk, text);
+
+            if (disk.Free < Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumCriticalSpace))
+                Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, $"{disk.FreeFormatted} free is very low. Prepare new backup disk");
+            var filesToReset = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, true);
+
+            foreach (var fileName in filesToReset)
+            {
+                fileName.ClearDiskChecked();
+            }
+            UpdateMediaFilesCountDisplay();
+            UpdateStatusLabel($"Scanning {folderToCheck}");
+            var backupDiskFiles = Utils.GetFiles(folderToCheck, "*", SearchOption.AllDirectories, FileAttributes.Hidden);
+            EnableProgressBar(0, backupDiskFiles.Length);
+
+            for (var i = 0; i < backupDiskFiles.Length; i++)
+            {
+                var backupFileFullPath = backupDiskFiles[i];
+                var backupFileIndexFolderRelativePath = backupFileFullPath[(folderToCheck.Length + 1)..];
+                UpdateStatusLabel($"Scanning {folderToCheck}", i + 1);
+                UpdateMediaFilesCountDisplay();
+
+                if (mediaBackup.Contains(backupFileIndexFolderRelativePath))
+                {
+                    var backupFile = mediaBackup.GetBackupFileFromHashKey(backupFileIndexFolderRelativePath);
+
+                    if (File.Exists(backupFile.FullPath))
+                    {
+                        // sometimes we get the same file on multiple backup disks
+                        // calling CheckContentHashes will switch it from one disk to another and they'll keep doing it
+                        // so if it was last seen on another disk delete it from this one
+
+                        if (disk.Name != backupFile.Disk && backupFile.Disk.HasValue())
+                        {
+                            Utils.Log($"{backupFile.FullPath} was on {backupFile.Disk} but now found on {disk.Name}");
+
+                            // we will fall through from here to the delete further down and remove the file
+                        }
+                        else
+                        {
+                            // This forces a hash check on the source and backup disk files
+                            Utils.Trace($"Checking hash for {backupFile.Hash}");
+                            var returnValue = backupFile.CheckContentHashes(disk);
+
+                            if (!returnValue)
+                            {
+                                // There was an error with the hash codes of the source file anf the file on the backup disk
+                                Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
+                                    $"There was an error with the hash codes on the source and backup disk. It's likely the source file has changed since the last backup of {backupFile.FullPath}. It could be that the source file or destination file are corrupted or in use by another process.");
+                                diskInfoMessageWasTheLastSent = false;
+                            }
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        // Backup doesn't exist in the master folder anymore
+                        // so delete it
+                        mediaBackup.RemoveFile(backupFile);
+                    }
+                }
+                else
+                {
+                    // The file on the backup disk isn't found in the masterfolder anymore
+                    // it could be that we've renamed it in the master folder
+                    // We could just let it get deleted off the backup disk and copied again next time
+                    // Alternatively, find it by the contents hashcode as that's (almost guaranteed unique)
+                    // and then rename it 
+                    // if we try to rename and it exists at the destination already then we delete the file instead
+                    var hashToCheck = Utils.GetShortMd5HashFromFile(backupFileFullPath);
+                    var file = mediaBackup.GetBackupFileFromContentsHashcode(hashToCheck);
+
+                    if (file != null && file.Length != 0 && file.BackupDiskNumber == 0)
+                    {
+                        var destFileName = file.BackupDiskFullPath(disk.BackupPath);
+                        Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal, $"Renaming {backupFileFullPath} to {destFileName}");
+
+                        if (File.Exists(destFileName))
+                        {
+                            // check the hash of the destination file to check its the same as what we would've renamed too
+                            if (Utils.GetShortMd5HashFromFile(destFileName) == hashToCheck)
+                            {
+                                Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal,
+                                    $"File exists already so deleting {backupFileFullPath} instead");
+                                Utils.FileDelete(backupFileFullPath);
+                            }
+                        }
+                        else
+                            Utils.FileMove(backupFileFullPath, destFileName);
+
+                        // This forces a hash check on the source and backup disk files
+                        Utils.Trace($"Checking hash for {file.Hash}");
+                        var returnValue = file.CheckContentHashes(disk);
+
+                        if (returnValue == false)
+                        {
+                            // There was an error with the hash codes of the source file anf the file on the backup disk
+                            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
+                                $"There was an error with the hash codes on the source and backup disk. It's likely the source file has changed since the last backup of {file.FullPath}. It could be that the source file or destination file are corrupted though.");
+                            diskInfoMessageWasTheLastSent = false;
+                        }
+                        continue;
+                    }
+                }
+
+                // Extra file on a backup disk
+                if (deleteExtraFiles)
+                {
+                    Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Extra file {backupFileFullPath} on backup disk {disk.Name} now deleted");
+                    Utils.FileDelete(backupFileFullPath);
+                    diskInfoMessageWasTheLastSent = false;
+                }
+                else
+                {
+                    Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Extra file {backupFileFullPath} on backup disk {disk.Name}");
+                    diskInfoMessageWasTheLastSent = false;
+                }
+            }
+            UpdateStatusLabel($"Deleting {folderToCheck} empty folders");
+            var directoriesDeleted = Utils.DeleteEmptyDirectories(folderToCheck);
+
+            foreach (var directory in directoriesDeleted)
+            {
+                Utils.Log(BackupAction.CheckBackupDisk, $"Deleted empty folder {directory}");
+            }
+            disk.UpdateDiskChecked();
+
+            if (!UpdateCurrentBackupDiskInfo(disk))
+            {
+                Utils.LogWithPushover(BackupAction.BackupFiles, PushoverPriority.Emergency, $"Error updating info for backup disk {disk.Name}");
+                return null;
+            }
+            UpdateMediaFilesCountDisplay();
+            mediaBackup.Save();
+            UpdateStatusLabel("Saved.");
+
+            if (!diskInfoMessageWasTheLastSent)
+            {
+                text = $"Name: {disk.Name}\nTotal: {disk.CapacityFormatted}\nFree: {disk.FreeFormatted}\nFiles: {disk.TotalFiles:n0}";
+                Utils.LogWithPushover(BackupAction.CheckBackupDisk, text);
+            }
+            Utils.LogWithPushover(BackupAction.CheckBackupDisk, "Completed");
+            return Utils.TraceOut(disk);
+        }
+
+        private bool EnsureConnectedBackupDisk(string backupDisk)
+        {
+            Utils.TraceIn();
+
+            // checks the specified backup disk is connected already and returns if it is
+            //if its not it prompts the user to insert correct disk and waits
+            // user clicks 'Yes' inserted and then returns
+            if (!BackupDisk.CheckForValidBackupShare(backupDiskTextBox.Text)) return false;
+
+            var currentConnectedBackupDiskName = BackupDisk.GetBackupFolderName(backupDiskTextBox.Text);
+
+            while (currentConnectedBackupDiskName != backupDisk)
+            {
+                Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, $"Connect new backup drive to restore from {backupDisk}");
+
+                var answer = MessageBox.Show(string.Format(Resources.Main_BackupDiskConnectCorrectDisk2, backupDisk),
+                    Resources.Main_BackupDiskConnectCorrectDisk, MessageBoxButtons.YesNo);
+
+                // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
+                switch (answer)
+                {
+                    case DialogResult.No:
+                        return false;
+                    case DialogResult.Yes:
+                        currentConnectedBackupDiskName = BackupDisk.GetBackupFolderName(backupDiskTextBox.Text);
+                        break;
+                }
+            }
+            return Utils.TraceOut(true);
+        }
+
+        private void SetupBackupDiskAsync()
+        {
+            longRunningActionExecutingRightNow = true;
+            DisableControlsForAsyncTasks();
+            var disk = SetupBackupDisk();
+            _ = UpdateCurrentBackupDiskInfo(disk);
+            ResetAllControls();
+            longRunningActionExecutingRightNow = false;
+        }
+
+        /// <summary>
+        ///     Waits for a valid backup disk to be inserted
+        /// </summary>
+        /// <returns></returns>
+        private BackupDisk SetupBackupDisk()
+        {
+            const string nextDiskMessage = "Please insert the next backup disk now";
+            var disk = mediaBackup.GetBackupDisk(backupDiskTextBox.Text);
+
+            while (disk == null)
+            {
+                WaitForNewDisk(nextDiskMessage);
+                disk = mediaBackup.GetBackupDisk(backupDiskTextBox.Text);
+            }
+            _ = UpdateCurrentBackupDiskInfo(disk);
+            return disk;
+        }
+    }
+}
