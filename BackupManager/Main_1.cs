@@ -19,6 +19,23 @@ namespace BackupManager;
 
 partial class Main
 {
+    private readonly MediaBackup mediaBackup;
+
+    private readonly Action monitoringAction;
+
+    private readonly Action scheduledBackupAction;
+
+    private CancellationToken ct;
+
+    /// <summary>
+    ///     Any long-running action sets this to TRUE to stop the scheduledBackup timer from being able to start
+    /// </summary>
+    private bool longRunningActionExecutingRightNow;
+
+    private CancellationTokenSource tokenSource = new();
+
+    private DailyTrigger trigger;
+
     [SupportedOSPlatform("windows")]
     public Main()
     {
