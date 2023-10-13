@@ -5,10 +5,8 @@
 //  --------------------------------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Timers;
@@ -24,12 +22,11 @@ public class BackupFileSystemWatcher
                                                      NotifyFilters.FileName | NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.Security |
                                                      NotifyFilters.Size);
 
-    // Filters collection
-    private string filter = "*.*";
-
     private readonly List<FileSystemWatcher> watcherList = new();
 
-    private string[] foldersToMonitor = Array.Empty<string>();
+    private string[] directories = Array.Empty<string>();
+
+    private string filter = "*.*";
 
     private bool includeSubdirectories;
 
@@ -43,22 +40,22 @@ public class BackupFileSystemWatcher
 
     private Timer scanFoldersTimer;
 
-    private int scanTimerInterval = 60;
+    private int scanInterval = 60;
 
-    private bool started;
+    public bool Running { get; private set; }
 
     /// <summary>
-    ///     The folder paths we will monitor
+    ///     The paths to the directories we will monitor.
     /// </summary>
-    public string[] FoldersToMonitor
+    public string[] Directories
     {
-        get => foldersToMonitor;
+        get => directories;
 
         set
         {
-            if (foldersToMonitor == value) return;
+            if (directories == value) return;
 
-            foldersToMonitor = value;
+            directories = value;
             Restart();
         }
     }
@@ -67,7 +64,7 @@ public class BackupFileSystemWatcher
     ///     Minimum time in seconds since this folder was last changed before we will raise any scan folders events. Default is
     ///     300 seconds
     /// </summary>
-    public int MinimumAgeBeforeScanning { get; set; } = 300;
+    public int MinimumAgeBeforeScanEventRaised { get; set; } = 300;
 
     /// <summary>
     ///     Time in seconds before we process the files changed to see if they match the RegExs into FilesToMatch. We do this
@@ -89,17 +86,17 @@ public class BackupFileSystemWatcher
     }
 
     /// <summary>
-    ///     Time in seconds before we raise any scan folders events. Default is 60 seconds
+    ///     Interval in seconds between scan folder events being raised. Default is 60 seconds
     /// </summary>
-    public int ScanTimerInterval
+    public int ScanInterval
     {
-        get => scanTimerInterval;
+        get => scanInterval;
 
         set
         {
-            if (scanTimerInterval == value) return;
+            if (scanInterval == value) return;
 
-            scanTimerInterval = value;
+            scanInterval = value;
             if (scanFoldersTimer != null) scanFoldersTimer.Interval = value * 1000;
         }
     }
@@ -107,12 +104,12 @@ public class BackupFileSystemWatcher
     /// <summary>
     ///     This is a Collection of files/folders where changes have been detected and the last time they changed
     /// </summary>
-    internal BlockingCollection<Folder> FileOrFolderChanges { get; } = new();
+    internal BlockingCollection<FileSystemEntry> FileSystemChanges { get; } = new();
 
     /// <summary>
-    ///     These are the folders we will raise events on when they are old enough
+    ///     These are the directories we will raise events on when they are old enough
     /// </summary>
-    public BlockingCollection<Folder> FoldersToScan { get; } = new();
+    public BlockingCollection<FileSystemEntry> DirectoriesToScan { get; } = new();
 
     /// <summary>
     ///     If you change these after starting then we stop and start again
@@ -149,6 +146,9 @@ public class BackupFileSystemWatcher
         }
     }
 
+    /// <summary>
+    ///     True to monitor subdirectories as well
+    /// </summary>
     public bool IncludeSubdirectories
     {
         get => includeSubdirectories;
@@ -167,14 +167,20 @@ public class BackupFileSystemWatcher
     /// </summary>
     private void Restart()
     {
-        if (!started) return;
+        if (!Running) return;
 
         Stop();
-        started = Start();
+        Running = Start();
     }
 
+    /// <summary>
+    ///     Raised when the directories are ready to be scanned
+    /// </summary>
     public event EventHandler<BackupFileSystemWatcherEventArgs> ReadyToScan;
 
+    /// <summary>
+    ///     Raised when an error occurs
+    /// </summary>
     public event EventHandler<ErrorEventArgs> Error;
 
     private static void CheckPathValidity(string path)
@@ -195,15 +201,15 @@ public class BackupFileSystemWatcher
         Utils.TraceIn();
 
         // Check current paths are valid
-        foreach (var folder in FoldersToMonitor)
+        foreach (var directory in Directories)
         {
-            CheckPathValidity(folder);
+            CheckPathValidity(directory);
         }
         RemoveFileSystemWatchers();
 
-        foreach (var folder in FoldersToMonitor)
+        foreach (var directory in Directories)
         {
-            FileSystemWatcher watcher = new(folder)
+            FileSystemWatcher watcher = new(directory)
             {
                 EnableRaisingEvents = true,
                 Filter = Filter,
@@ -232,31 +238,33 @@ public class BackupFileSystemWatcher
         if (scanFoldersTimer == null)
         {
             scanFoldersTimer = new Timer();
-            scanFoldersTimer.Elapsed += ScanFoldersTimerElapsed;
+            scanFoldersTimer.Elapsed += ScanDirectoriesTimerElapsed;
         }
-        scanFoldersTimer.Interval = ScanTimerInterval * 1000;
+        scanFoldersTimer.Interval = ScanInterval * 1000;
         scanFoldersTimer.AutoReset = false;
         scanFoldersTimer.Enabled = true;
         return Utils.TraceOut(reset = true);
     }
 
     /// <summary>
-    ///     Starts monitoring the folders for changes.
+    ///     Starts monitoring the directories for changes.
     /// </summary>
     /// <returns>True if the monitoring has started now or was running already</returns>
     /// <exception cref="ArgumentNullException"></exception>
-    /// <exception cref="ArgumentException">If any of the folders to monitor do not exist</exception>
+    /// <exception cref="ArgumentException">If any of the directories to monitor do not exist</exception>
     public bool Start()
     {
         Utils.TraceIn();
-        if (started) return true;
+        if (Running) return Utils.TraceOut(Running = true);
 
-        if (!reset) Reset();
+        if (!reset)
+            if (!Reset())
+                return Utils.TraceOut(Running = false);
 
         // Check current paths are valid
-        foreach (var folder in FoldersToMonitor)
+        foreach (var directory in Directories)
         {
-            CheckPathValidity(folder);
+            CheckPathValidity(directory);
         }
 
         foreach (var watcher in watcherList)
@@ -265,18 +273,16 @@ public class BackupFileSystemWatcher
         }
         processChangesTimer?.Start();
         scanFoldersTimer?.Start();
-        return Utils.TraceOut(started = true);
+        return Utils.TraceOut(Running = true);
     }
 
     /// <summary>
-    ///     Stops monitoring the folders for any more changes. Events no longer raised
+    ///     Stops monitoring the directories for any more changes. Events no longer raised
     /// </summary>
     /// <returns>True if we've stopped successfully or were already stopped</returns>
-#pragma warning disable CA1822 // Mark members as static
     public bool Stop()
-#pragma warning restore CA1822 // Mark members as static
     {
-        if (!started) return true;
+        if (!Running) return true;
 
         processChangesTimer?.Stop();
         scanFoldersTimer?.Stop();
@@ -285,21 +291,21 @@ public class BackupFileSystemWatcher
         {
             watcher.EnableRaisingEvents = false;
         }
-        started = false;
+        Running = false;
         return Utils.TraceOut(true);
     }
 
     /// <summary>
-    ///     Clears the two collections of files and folders
+    ///     Clears the two collections of files and directories
     /// </summary>
     /// <returns>True if they were cleared correctly</returns>
-    public bool ResetFolderCollections()
+    public bool ResetCollections()
     {
         Utils.TraceIn();
 
-        while (FileOrFolderChanges.TryTake(out _)) { }
+        while (FileSystemChanges.TryTake(out _)) { }
 
-        while (FoldersToScan.TryTake(out _)) { }
+        while (DirectoriesToScan.TryTake(out _)) { }
         return Utils.TraceOut(true);
     }
 
@@ -315,22 +321,23 @@ public class BackupFileSystemWatcher
         }
 
         // add this changed folder/file to the list to potentially scan
-        FileOrFolderChanges.Add(new Folder(e.FullPath, DateTime.Now));
+        FileSystemChanges.Add(new FileSystemEntry(e.FullPath, DateTime.Now));
         Utils.TraceOut();
     }
 
-    private void ScanFoldersTimerElapsed(object sender, ElapsedEventArgs e)
+    private void ScanDirectoriesTimerElapsed(object sender, ElapsedEventArgs e)
     {
         Utils.TraceIn();
 
-        if (FoldersToScan.Count > 0 && FoldersToScan.Count(folderToScan => folderToScan.ModifiedDateTime.AddSeconds(MinimumAgeBeforeScanning) < DateTime.Now) ==
-            FoldersToScan.Count)
+        if (DirectoriesToScan.Count > 0 &&
+            DirectoriesToScan.Count(folderToScan => folderToScan.ModifiedDateTime.AddSeconds(MinimumAgeBeforeScanEventRaised) < DateTime.Now) ==
+            DirectoriesToScan.Count)
         {
             // All the folders are old enough so raise the ReadyToScan event
-            var args = new BackupFileSystemWatcherEventArgs(FoldersToScan);
+            var args = new BackupFileSystemWatcherEventArgs(DirectoriesToScan);
             OnThresholdReached(this, args);
         }
-        scanFoldersTimer.Start();
+        if (Running) scanFoldersTimer.Start();
         Utils.TraceOut();
     }
 
@@ -338,15 +345,15 @@ public class BackupFileSystemWatcher
     {
         Utils.TraceIn();
 
-        // Empty the FoldersToScan
-        while (FoldersToScan.TryTake(out _)) { }
+        // Empty the DirectoriesToScan
+        while (DirectoriesToScan.TryTake(out _)) { }
         var handler = ReadyToScan;
         handler?.Invoke(sender, e);
         Utils.TraceOut();
     }
 
     /// <summary>
-    ///     Static to prevent multiple threads blocking each other
+    ///     Processes the FileSystemEntries to see if we should scan them
     /// </summary>
     /// <param name="source"></param>
     /// <param name="e"></param>
@@ -355,14 +362,14 @@ public class BackupFileSystemWatcher
         Utils.TraceIn();
 
         // every few seconds we move through the changes List and put the folders we need to check in our other list
-        if (FileOrFolderChanges.Count == 0)
+        if (FileSystemChanges.Count == 0)
         {
-            if (started) processChangesTimer.Start();
+            if (Running) processChangesTimer.Start();
             Utils.TraceOut();
             return;
         }
 
-        foreach (var fileOrFolderChange in FileOrFolderChanges.GetConsumingEnumerable())
+        foreach (var fileOrFolderChange in FileSystemChanges.GetConsumingEnumerable())
         {
             Utils.Trace($"fileOrFolderChange.Path = {fileOrFolderChange.Path}");
 
@@ -372,32 +379,33 @@ public class BackupFileSystemWatcher
             // if its not an existing file check its a folder
             // if it is use its full path
             // if its not a folder either then use its full path and its parent
-            List<Folder> foldersToScan = new();
+            List<FileSystemEntry> foldersToScan = new();
 
             if (File.Exists(fileOrFolderChange.Path) || !Directory.Exists(fileOrFolderChange.Path))
-                foldersToScan.Add(new Folder(new FileInfo(fileOrFolderChange.Path).DirectoryName));
-            else if (Directory.Exists(fileOrFolderChange.Path) || !File.Exists(fileOrFolderChange.Path)) foldersToScan.Add(new Folder(fileOrFolderChange.Path));
+                foldersToScan.Add(new FileSystemEntry(new FileInfo(fileOrFolderChange.Path).DirectoryName));
+            else if (Directory.Exists(fileOrFolderChange.Path) || !File.Exists(fileOrFolderChange.Path))
+                foldersToScan.Add(new FileSystemEntry(fileOrFolderChange.Path));
 
             foreach (var folderToScan in foldersToScan)
             {
                 Utils.Trace($"folderToScan = {folderToScan}");
 
-                if (FoldersToScan.Any(f => f.Path == folderToScan.Path))
+                if (DirectoriesToScan.Any(f => f.Path == folderToScan.Path))
                 {
-                    var scannedFolder = FoldersToScan.First(f => f.Path == folderToScan.Path);
-                    if (fileOrFolderChange.ModifiedDateTime <= scannedFolder.ModifiedDateTime) continue;
+                    var fileSystemEntry = DirectoriesToScan.First(f => f.Path == folderToScan.Path);
+                    if (fileOrFolderChange.ModifiedDateTime <= fileSystemEntry.ModifiedDateTime) continue;
 
                     Utils.Trace($"Updating ModifiedDateTime to {fileOrFolderChange.ModifiedDateTime}");
-                    scannedFolder.ModifiedDateTime = fileOrFolderChange.ModifiedDateTime;
+                    fileSystemEntry.ModifiedDateTime = fileOrFolderChange.ModifiedDateTime;
                 }
                 else
                 {
                     Utils.Trace("Adding to collection");
-                    FoldersToScan.Add(new Folder(folderToScan.Path, fileOrFolderChange.ModifiedDateTime));
+                    DirectoriesToScan.Add(new FileSystemEntry(folderToScan.Path, fileOrFolderChange.ModifiedDateTime));
                 }
             }
         }
-        if (started) processChangesTimer.Start();
+        if (Running) processChangesTimer.Start();
         Utils.TraceOut();
     }
 
@@ -430,134 +438,20 @@ public class BackupFileSystemWatcher
         var handler = Error;
         handler?.Invoke(watcher, e);
     }
-
-    private sealed class NormalizedFilterCollection : Collection<string>
-    {
-        internal NormalizedFilterCollection() : base(new ImmutableStringList()) { }
-
-        protected override void InsertItem(int index, string item)
-        {
-            base.InsertItem(index, string.IsNullOrEmpty(item) || item == "*.*" ? "*" : item);
-        }
-
-        protected override void SetItem(int index, string item)
-        {
-            base.SetItem(index, string.IsNullOrEmpty(item) || item == "*.*" ? "*" : item);
-        }
-
-        internal string[] GetFilters()
-        {
-            return ((ImmutableStringList)Items).Items;
-        }
-
-        /// <summary>
-        ///     List that maintains its underlying data in an immutable array, such that the list
-        ///     will never modify an array returned from its Items property. This is to allow
-        ///     the array to be enumerated safely while another thread might be concurrently mutating
-        ///     the collection.
-        /// </summary>
-        private sealed class ImmutableStringList : IList<string>
-        {
-            public string[] Items = Array.Empty<string>();
-
-            public string this[int index]
-            {
-                get
-                {
-                    var items = Items;
-                    if ((uint)index >= (uint)items.Length) throw new ArgumentOutOfRangeException(nameof(index));
-
-                    return items[index];
-                }
-
-                set
-                {
-                    var clone = (string[])Items.Clone();
-                    clone[index] = value;
-                    Items = clone;
-                }
-            }
-
-            public int Count => Items.Length;
-
-            public bool IsReadOnly => false;
-
-            public void Add(string item)
-            {
-                // Collection<T> doesn't use this method.
-                throw new NotSupportedException();
-            }
-
-            public void Clear()
-            {
-                Items = Array.Empty<string>();
-            }
-
-            public bool Contains(string item)
-            {
-                return Array.IndexOf(Items, item) != -1;
-            }
-
-            public void CopyTo(string[] array, int arrayIndex)
-            {
-                Items.CopyTo(array, arrayIndex);
-            }
-
-            public IEnumerator<string> GetEnumerator()
-            {
-                return ((IEnumerable<string>)Items).GetEnumerator();
-            }
-
-            public int IndexOf(string item)
-            {
-                return Array.IndexOf(Items, item);
-            }
-
-            public void Insert(int index, string item)
-            {
-                var items = Items;
-                var newItems = new string[items.Length + 1];
-                items.AsSpan(0, index).CopyTo(newItems);
-                items.AsSpan(index).CopyTo(newItems.AsSpan(index + 1));
-                newItems[index] = item;
-                Items = newItems;
-            }
-
-            public bool Remove(string item)
-            {
-                // Collection<T> doesn't use this method.
-                throw new NotSupportedException();
-            }
-
-            public void RemoveAt(int index)
-            {
-                var items = Items;
-                var newItems = new string[items.Length - 1];
-                items.AsSpan(0, index).CopyTo(newItems);
-                items.AsSpan(index + 1).CopyTo(newItems.AsSpan(index));
-                Items = newItems;
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
-            }
-        }
-    }
 }
 
 public class BackupFileSystemWatcherEventArgs : EventArgs
 {
-    public BackupFileSystemWatcherEventArgs(BlockingCollection<Folder> foldersToScan)
+    public BackupFileSystemWatcherEventArgs(BlockingCollection<FileSystemEntry> foldersToScan)
     {
         Utils.TraceIn();
-        Folders = new Folder[foldersToScan.Count];
+        Folders = new FileSystemEntry[foldersToScan.Count];
         foldersToScan.CopyTo(Folders, 0);
         Utils.TraceOut();
     }
 
     /// <summary>
-    ///     An Array of Folders that have been changed
+    ///     An Array of FileSystemEntry that have been changed
     /// </summary>
-    public Folder[] Folders { get; }
+    public FileSystemEntry[] Folders { get; }
 }

@@ -56,7 +56,7 @@ public class BackupFile : IEquatable<BackupFile>
     public string IndexFolder { get; set; }
 
     /// <summary>
-    ///     This gets set to true for files no longer found in a Master Folder.
+    ///     This gets set to true for files no longer found in a MasterFolder.
     /// </summary>
     public bool Deleted { get; set; }
 

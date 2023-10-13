@@ -67,8 +67,9 @@ public partial class Main : Form
                     "myListener"));
 
             // ReSharper disable StringLiteralTypo
-            //backupDiskTextBox.Text = @"\\nas1\assets1\_Test\BackupDisks\backup 1001 parent";
-            backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
+            backupDiskTextBox.Text = @"\\nas1\assets1\_Test\BackupDisks\backup 1001 parent";
+
+            //backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
 
             // ReSharper restore StringLiteralTypo
 #else
@@ -899,8 +900,8 @@ public partial class Main : Form
     {
         // ReSharper disable once StringLiteralTypo
         timeToNextRunTextBox.Invoke(x => x.Text = trigger == null || !updateUITimer.Enabled ? string.Empty : trigger.TimeToNextTrigger().ToString("h'h 'mm'm'"));
-        foldersToScanTextBox.Invoke(x => x.Text = mediaBackup.Watcher.FoldersToScan.Count.ToString());
-        fileChangesDetectedTextBox.Invoke(x => x.Text = mediaBackup.Watcher.FileOrFolderChanges.Count.ToString());
+        foldersToScanTextBox.Invoke(x => x.Text = mediaBackup.Watcher.DirectoriesToScan.Count.ToString());
+        fileChangesDetectedTextBox.Invoke(x => x.Text = mediaBackup.Watcher.FileSystemChanges.Count.ToString());
     }
 
     private void FileWatcherButton_Click(object sender, EventArgs e)
@@ -943,7 +944,7 @@ public partial class Main : Form
                 Utils.TraceOut();
                 return;
             }
-            var folderList = new List<Folder>();
+            var folderList = new List<FileSystemEntry>();
             folderList.AddRange(e.Folders);
 
             for (var i = folderList.Count - 1; i >= 0; i--)
@@ -984,13 +985,13 @@ public partial class Main : Form
                     var filesNotOnBackupDiskCount = mediaBackup.GetBackupFilesWithDiskEmpty().Count();
 
                     var text =
-                        $"Folder scan completed. {fileCountInFolderBefore} files before and now {fileCountInFolderAfter} files. {markedAsDeletedFilesCount} marked as deleted and {removedFilesCount} removed. {filesNotOnBackupDiskCount} to backup.";
+                        $"Directory scan completed. {fileCountInFolderBefore} files before and now {fileCountInFolderAfter} files. {markedAsDeletedFilesCount} marked as deleted and {removedFilesCount} removed. {filesNotOnBackupDiskCount} to backup.";
                     Utils.Log(BackupAction.ScanFolders, text);
                     toSave = true;
                 }
                 else
                 {
-                    var text = $"Folder scan skipped. It will be scanned again in {Utils.FormatTimeFromSeconds(mediaBackup.Config.MasterFoldersScanTimer)}.";
+                    var text = $"Directory scan skipped. It will be scanned again in {Utils.FormatTimeFromSeconds(mediaBackup.Config.MasterFoldersScanTimer)}.";
                     Utils.LogWithPushover(BackupAction.ScanFolders, text);
                 }
             }
@@ -1010,7 +1011,7 @@ public partial class Main : Form
 
     private void Main_FormClosing(object sender, FormClosingEventArgs e)
     {
-        if (mediaBackup.Watcher.FoldersToScan.Count <= 0 && mediaBackup.Watcher.FileOrFolderChanges.Count <= 0) return;
+        if (mediaBackup.Watcher.DirectoriesToScan.Count <= 0 && mediaBackup.Watcher.FileSystemChanges.Count <= 0) return;
 
         // If file or folder changes were detected then save xml
         mediaBackup.Save();
@@ -1019,17 +1020,17 @@ public partial class Main : Form
     private void ListFoldersToScanButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        Utils.Log("Listing folderChanges detected");
+        Utils.Log("Listing FileSystemChanges detected");
 
-        foreach (var folderChange in mediaBackup.Watcher.FileOrFolderChanges)
+        foreach (var fileSystemEntry in mediaBackup.Watcher.FileSystemChanges)
         {
-            Utils.Log($"{folderChange.Path} changed at {folderChange.ModifiedDateTime}");
+            Utils.Log($"{fileSystemEntry.Path} changed at {fileSystemEntry.ModifiedDateTime}");
         }
-        Utils.Log("Listing FoldersToScan queued");
+        Utils.Log("Listing DirectoriesToScan queued");
 
-        foreach (var folderToScan in mediaBackup.Watcher.FoldersToScan)
+        foreach (var fileSystemEntry in mediaBackup.Watcher.DirectoriesToScan)
         {
-            Utils.Log($"{folderToScan.Path} changed at {folderToScan.ModifiedDateTime}");
+            Utils.Log($"{fileSystemEntry.Path} changed at {fileSystemEntry.ModifiedDateTime}");
         }
         Utils.TraceOut();
     }
@@ -1145,29 +1146,29 @@ public partial class Main : Form
     {
         Utils.TraceIn();
 
-        if (mediaBackup.Watcher == null || mediaBackup.Watcher.FoldersToMonitor.Length == 0)
+        if (mediaBackup.Watcher == null || mediaBackup.Watcher.Directories.Length == 0)
         {
             mediaBackup.Watcher = new BackupFileSystemWatcher
             {
                 NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName,
-                FoldersToMonitor = mediaBackup.Config.MasterFolders.ToArray(),
+                Directories = mediaBackup.Config.MasterFolders.ToArray(),
                 ProcessChangesInterval = mediaBackup.Config.MasterFoldersProcessChangesTimer,
-                ScanTimerInterval = mediaBackup.Config.MasterFoldersScanTimer,
+                ScanInterval = mediaBackup.Config.MasterFoldersScanTimer,
                 Filter = "*.*",
                 IncludeSubdirectories = true
             };
             mediaBackup.Watcher.ReadyToScan += FileSystemWatcher_ReadyToScan;
             mediaBackup.Watcher.Error += FileSystemWatcher_OnError;
-            mediaBackup.Watcher.MinimumAgeBeforeScanning = mediaBackup.Config.MasterFolderScanMinimumAgeBeforeScanning;
+            mediaBackup.Watcher.MinimumAgeBeforeScanEventRaised = mediaBackup.Config.MasterFolderScanMinimumAgeBeforeScanning;
 
             foreach (var item in mediaBackup.FileOrFolderChanges)
             {
-                mediaBackup.Watcher.FileOrFolderChanges.Add(new Folder(item.Path, item.ModifiedDateTime), ct);
+                mediaBackup.Watcher.FileSystemChanges.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime), ct);
             }
 
             foreach (var item in mediaBackup.FoldersToScan)
             {
-                mediaBackup.Watcher.FoldersToScan.Add(new Folder(item.Path, item.ModifiedDateTime), ct);
+                mediaBackup.Watcher.DirectoriesToScan.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime), ct);
             }
         }
         mediaBackup.Watcher.Start();

@@ -101,7 +101,7 @@ public static partial class Utils
     /// <summary>
     ///     We use this to pad our logging messages
     /// </summary>
-    private static int lengthOfLargestBackupActionEnumNames;
+    private static int _lengthOfLargestBackupActionEnumNames;
 
     /// <summary>
     ///     We start a new Process to Copy the files. Then we can safely Kill the process when cancelling is needed
@@ -111,25 +111,25 @@ public static partial class Utils
     /// <summary>
     ///     The MD5 Crypto Provider
     /// </summary>
-    private static readonly MD5 Md5 = MD5.Create();
+    private static readonly MD5 _md5 = MD5.Create();
 
 #if DEBUG
-    private static readonly string LogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Debug.log");
+    private static readonly string _logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Debug.log");
 #else
-    private static readonly string LogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager.log");
+    private static readonly string _logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager.log");
 #endif
 
     /// <summary>
     ///     We use this to track when we sent the messages. This allows us to delay between messages
     /// </summary>
-    private static DateTime timeLastPushoverMessageSent = DateTime.UtcNow.AddSeconds(-60);
+    private static DateTime _timeLastPushoverMessageSent = DateTime.UtcNow.AddSeconds(-60);
 
     /// <summary>
     ///     So we can get config values
     /// </summary>
     internal static Config Config;
 
-    private static bool alreadySendingPushoverMessage;
+    private static bool _alreadySendingPushoverMessage;
 
     #endregion
 
@@ -146,7 +146,7 @@ public static partial class Utils
 
         var destLogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups",
             $"BackupManager{suffix}_{timeLog}.log");
-        if (File.Exists(LogFile)) FileMove(LogFile, destLogFile);
+        if (File.Exists(_logFile)) FileMove(_logFile, destLogFile);
         var traceFiles = GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "*BackupManager_Trace.log", SearchOption.TopDirectoryOnly);
 
         foreach (var file in traceFiles)
@@ -310,7 +310,7 @@ public static partial class Utils
         Buffer.BlockCopy(firstByteArray, 0, byteArrayToHash, 0, firstByteArray.Length);
         if (secondByteArray != null) Buffer.BlockCopy(secondByteArray, 0, byteArrayToHash, firstByteArray.Length, secondByteArray.Length);
         if (thirdByteArray != null) Buffer.BlockCopy(thirdByteArray, 0, byteArrayToHash, thirdByteArrayDestinationOffset, thirdByteArray.Length);
-        return ByteArrayToString(Md5.ComputeHash(byteArrayToHash));
+        return ByteArrayToString(_md5.ComputeHash(byteArrayToHash));
     }
 
     /// <summary>
@@ -658,7 +658,7 @@ public static partial class Utils
                 if (expires != PushoverExpires.Immediately) parameters.Add("expire", Convert.ChangeType(expires, expires.GetTypeCode()).ToString());
 
                 // ensures there's a 1s gap between messages
-                while (DateTime.UtcNow < timeLastPushoverMessageSent.AddMilliseconds(TimeDelayOnPushoverMessages))
+                while (DateTime.UtcNow < _timeLastPushoverMessageSent.AddMilliseconds(TimeDelayOnPushoverMessages))
                 {
                     Task.Delay(TimeDelayOnPushoverMessages / 10).Wait();
                 }
@@ -678,15 +678,15 @@ public static partial class Utils
 
                     if (applicationLimitRemaining < Config.PushoverWarningMessagesRemaining)
                     {
-                        if (!alreadySendingPushoverMessage)
+                        if (!_alreadySendingPushoverMessage)
                         {
-                            alreadySendingPushoverMessage = true;
+                            _alreadySendingPushoverMessage = true;
                             SendPushoverMessage("Message Limit Warning", PushoverPriority.High, $"Application Limit Remaining is: {applicationLimitRemaining}");
-                            alreadySendingPushoverMessage = false;
+                            _alreadySendingPushoverMessage = false;
                         }
                     }
                 }
-                timeLastPushoverMessageSent = DateTime.UtcNow;
+                _timeLastPushoverMessageSent = DateTime.UtcNow;
             }
             catch (Exception ex)
             {
@@ -770,11 +770,11 @@ public static partial class Utils
 
     internal static void Log(BackupAction action, string message)
     {
-        if (lengthOfLargestBackupActionEnumNames == 0)
+        if (_lengthOfLargestBackupActionEnumNames == 0)
         {
             foreach (var enumName in Enum.GetNames(typeof(BackupAction)))
             {
-                if (enumName.Length > lengthOfLargestBackupActionEnumNames) lengthOfLargestBackupActionEnumNames = enumName.Length;
+                if (enumName.Length > _lengthOfLargestBackupActionEnumNames) _lengthOfLargestBackupActionEnumNames = enumName.Length;
             }
         }
         var actionText = Enum.GetName(typeof(BackupAction), action) + " ";
@@ -782,7 +782,7 @@ public static partial class Utils
 
         foreach (var line in textArrayToWrite)
         {
-            if (line.HasValue()) Log(actionText.PadRight(lengthOfLargestBackupActionEnumNames + 1) + line);
+            if (line.HasValue()) Log(actionText.PadRight(_lengthOfLargestBackupActionEnumNames + 1) + line);
         }
     }
 
@@ -801,10 +801,10 @@ public static partial class Utils
             var textToWrite = $"{DateTime.Now:dd-MM-yy HH:mm:ss} {line}";
             Console.WriteLine(textToWrite);
 
-            if (LogFile.HasValue())
+            if (_logFile.HasValue())
             {
-                EnsureDirectories(LogFile);
-                File.AppendAllLines(LogFile, new[] { textToWrite });
+                EnsureDirectories(_logFile);
+                File.AppendAllLines(_logFile, new[] { textToWrite });
             }
             Trace(text);
         }
@@ -935,7 +935,7 @@ public static partial class Utils
         var byteArrayToHash = endByteArray == null ? new byte[firstByteArray.Length] : new byte[firstByteArray.Length + endByteArray.Length];
         Buffer.BlockCopy(firstByteArray, 0, byteArrayToHash, 0, firstByteArray.Length);
         if (endByteArray != null) Buffer.BlockCopy(endByteArray, 0, byteArrayToHash, firstByteArray.Length, endByteArray.Length);
-        return ByteArrayToString(Md5.ComputeHash(byteArrayToHash));
+        return ByteArrayToString(_md5.ComputeHash(byteArrayToHash));
     }
 
     /// <summary>

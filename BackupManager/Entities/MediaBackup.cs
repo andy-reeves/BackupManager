@@ -39,8 +39,8 @@ public class MediaBackup
     {
         BackupFiles = new Collection<BackupFile>();
         BackupDisks = new Collection<BackupDisk>();
-        FoldersToScan = new Collection<Folder>();
-        FileOrFolderChanges = new Collection<Folder>();
+        FoldersToScan = new Collection<FileSystemEntry>();
+        FileOrFolderChanges = new Collection<FileSystemEntry>();
     }
 
     public MediaBackup(string mediaBackupPath)
@@ -54,13 +54,13 @@ public class MediaBackup
 
     [XmlArrayItem("BackupDisk")] public Collection<BackupDisk> BackupDisks { get; set; }
 
-    [XmlArrayItem("Folder")] public Collection<Folder> FoldersToScan { get; set; }
+    [XmlArrayItem("Folder")] public Collection<FileSystemEntry> FoldersToScan { get; set; }
 
     /// <summary>
     ///     We use this to save the xml. Its copied from the static property before saving and after loading
     /// </summary>
-    [XmlArrayItem("Folder")]
-    public Collection<Folder> FileOrFolderChanges { get; set; }
+    [XmlArrayItem("FileSystemEntry")]
+    public Collection<FileSystemEntry> FileOrFolderChanges { get; set; }
 
     public string MasterFoldersLastFullScan
     {
@@ -169,8 +169,8 @@ public class MediaBackup
     public void Save()
     {
         BackupMediaFile();
-        FileOrFolderChanges = new Collection<Folder>(Watcher.FileOrFolderChanges.ToList());
-        FoldersToScan = new Collection<Folder>(Watcher.FoldersToScan.ToList());
+        FileOrFolderChanges = new Collection<FileSystemEntry>(Watcher.FileSystemChanges.ToList());
+        FoldersToScan = new Collection<FileSystemEntry>(Watcher.DirectoriesToScan.ToList());
         XmlSerializer xmlSerializer = new(typeof(MediaBackup));
         if (File.Exists(mediaBackupPath)) File.SetAttributes(mediaBackupPath, FileAttributes.Normal);
         using StreamWriter streamWriter = new(mediaBackupPath);
