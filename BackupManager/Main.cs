@@ -1148,7 +1148,7 @@ public partial class Main : Form
 
         if (mediaBackup.Watcher == null || mediaBackup.Watcher.Directories.Length == 0)
         {
-            mediaBackup.Watcher = new BackupFileSystemWatcher
+            mediaBackup.Watcher = new FileSystemWatcher
             {
                 NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName,
                 Directories = mediaBackup.Config.MasterFolders.ToArray(),

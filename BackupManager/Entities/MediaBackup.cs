@@ -33,7 +33,7 @@ public class MediaBackup
 
     private string mediaBackupPath;
 
-    [XmlIgnore] public BackupFileSystemWatcher Watcher = new();
+    [XmlIgnore] public FileSystemWatcher Watcher = new();
 
     public MediaBackup()
     {
