@@ -1242,9 +1242,7 @@ public static partial class Utils
     {
         TraceIn(pathToDiskToTest, testFileSize, testIterations);
         var tempPath = Path.GetTempPath();
-        Trace("Starting read test");
         readSpeed = DiskSpeedTest(pathToDiskToTest, tempPath, testFileSize, testIterations);
-        Trace("Starting write test");
         writeSpeed = DiskSpeedTest(tempPath, pathToDiskToTest, testFileSize, testIterations);
         TraceOut();
     }
