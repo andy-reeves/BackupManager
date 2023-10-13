@@ -19,6 +19,13 @@ namespace BackupManager;
 
 public partial class Main : Form
 {
+    private static void FileSystemWatcher_OnError(object sender, ErrorEventArgs e)
+    {
+        var ex = e.GetException();
+        Utils.LogWithPushover(BackupAction.General, $"Message: {ex.Message}");
+        Utils.LogWithPushover(BackupAction.General, $"Stacktrace: {ex.StackTrace}");
+    }
+
     private void FileWatcherButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
