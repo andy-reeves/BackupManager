@@ -7,7 +7,6 @@ using System.Linq;
 using System.Runtime.Versioning;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using BackupManager.Entities;
@@ -225,132 +224,41 @@ partial class Main
         filesMarkedAsDeletedSizeTextBox.Invoke(x => x.Text = Utils.FormatSize(mediaBackup.GetBackupFilesMarkedAsDeleted().Sum(y => y.Length)));
     }
 
-    private void SetupDailyTrigger(bool addTrigger)
-    {
-        Utils.TraceIn();
-        updateUITimer.Enabled = true; // because we want to update the folder tracking every 1 min or so anyway
-
-        if (addTrigger)
-        {
-            trigger = new DailyTrigger(scheduledDateTimePicker.Value);
-            trigger.OnTimeTriggered += scheduledBackupAction;
-            Utils.Trace("SetupDailyTrigger OnTimeTriggered added");
-            UpdateUI_Tick(null, null);
-        }
-        else
-        {
-            if (trigger != null)
-            {
-                trigger.OnTimeTriggered -= scheduledBackupAction;
-                Utils.Trace("SetupDailyTrigger OnTimeTriggered removed");
-            }
-            timeToNextRunTextBox.Text = string.Empty;
-        }
-        Utils.TraceOut();
-    }
-
     private void StartFileSystemWatchers()
     {
         Utils.TraceIn();
-
-        if (mediaBackup.Watcher == null || mediaBackup.Watcher.Directories.Length == 0)
-        {
-            mediaBackup.Watcher = new FileSystemWatcher
-            {
-                NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName,
-                Directories = mediaBackup.Config.MasterFolders.ToArray(),
-                ProcessChangesInterval = mediaBackup.Config.MasterFoldersProcessChangesTimer,
-                ScanInterval = mediaBackup.Config.MasterFoldersScanTimer,
-                Filter = "*.*",
-                IncludeSubdirectories = true
-            };
-            mediaBackup.Watcher.ReadyToScan += FileSystemWatcher_ReadyToScan;
-            mediaBackup.Watcher.Error += FileSystemWatcher_OnError;
-            mediaBackup.Watcher.MinimumAgeBeforeScanEventRaised = mediaBackup.Config.MasterFolderScanMinimumAgeBeforeScanning;
-
-            foreach (var item in mediaBackup.FileOrFolderChanges)
-            {
-                mediaBackup.Watcher.FileSystemChanges.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime), ct);
-            }
-
-            foreach (var item in mediaBackup.FoldersToScan)
-            {
-                mediaBackup.Watcher.DirectoriesToScan.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime), ct);
-            }
-        }
+        if (mediaBackup.Watcher == null || mediaBackup.Watcher.Directories.Length == 0) mediaBackup.Watcher = SetupWatcher();
         mediaBackup.Watcher.Start();
         Utils.TraceOut();
     }
 
-    private void ScheduledBackup()
+    private FileSystemWatcher SetupWatcher()
     {
         Utils.TraceIn();
 
-        try
+        var watcher = new FileSystemWatcher
         {
-            // check the service monitor is running
-            // Take a copy of the current count of files we backup up last time
-            // Then ScanFolders
-            // If the new file count is less than x% lower then abort
-            // This happens if the server running the backup cannot connect to the nas devices sometimes
-            // It'll then delete everything off the connected backup disk as it doesn't think they're needed so this will prevent that
+            NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName,
+            Directories = mediaBackup.Config.MasterFolders.ToArray(),
+            ProcessChangesInterval = mediaBackup.Config.MasterFoldersProcessChangesTimer,
+            ScanInterval = mediaBackup.Config.MasterFoldersScanTimer,
+            Filter = "*.*",
+            IncludeSubdirectories = true
+        };
+        mediaBackup.Watcher.ReadyToScan += FileSystemWatcher_ReadyToScan;
+        mediaBackup.Watcher.Error += FileSystemWatcher_OnError;
+        mediaBackup.Watcher.MinimumAgeBeforeScanEventRaised = mediaBackup.Config.MasterFolderScanMinimumAgeBeforeScanning;
 
-            if (mediaBackup.Config.MonitoringOnOff)
-                Utils.LogWithPushover(BackupAction.General, $"Service monitoring is running every {mediaBackup.Config.MonitoringInterval} seconds");
-            else
-                Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, "Service monitoring is not running");
-            long oldFileCount = mediaBackup.BackupFiles.Count;
-            var doFullBackup = false;
-            _ = DateTime.TryParse(mediaBackup.MasterFoldersLastFullScan, out var backupFileDate);
-            if (backupFileDate.AddDays(mediaBackup.Config.MasterFoldersDaysBetweenFullScan) < DateTime.Now) doFullBackup = true;
-
-            // Update the master files if we've not been monitoring folders directly
-            if (!mediaBackup.Config.MasterFoldersFileChangeWatchersOnOff || doFullBackup)
-            {
-                ScanFolders();
-                UpdateSymbolicLinks();
-            }
-
-            if (mediaBackup.Config.BackupDiskDifferenceInFileCountAllowedPercentage != 0)
-            {
-                var minimumFileCountAllowed = oldFileCount - oldFileCount * mediaBackup.Config.BackupDiskDifferenceInFileCountAllowedPercentage / 100;
-                long newFileCount = mediaBackup.BackupFiles.Count;
-
-                if (newFileCount < minimumFileCountAllowed)
-                    throw new Exception("ERROR: The count of files to backup is too low. Check connections to nas drives");
-            }
-
-            // checks for backup disks not verified in > xx days
-            CheckForOldBackupDisks();
-
-            // Check the connected backup disk (removing any extra files we don't need)
-            _ = CheckConnectedDisk(true);
-
-            // Copy any files that need a backup
-            CopyFiles(true);
-        }
-        catch (OperationCanceledException) { }
-        catch (Exception ex)
+        foreach (var item in mediaBackup.FileOrFolderChanges)
         {
-            Utils.LogWithPushover(BackupAction.General, PushoverPriority.Emergency, $"Exception occurred {ex}");
+            mediaBackup.Watcher.FileSystemChanges.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime), ct);
         }
-        Utils.TraceOut();
-    }
 
-    private void ScheduledBackupAsync()
-    {
-        // This is so if the timer goes off to start and we're doing something else it's skipped
-        if (longRunningActionExecutingRightNow) return;
-
-        longRunningActionExecutingRightNow = true;
-        DisableControlsForAsyncTasks();
-        ScheduledBackup();
-
-        // reset the daily trigger
-        SetupDailyTrigger(mediaBackup.Config.ScheduledBackupOnOff);
-        Utils.Trace($"TriggerHour={trigger.TriggerHour}");
-        ResetAllControls();
-        longRunningActionExecutingRightNow = false;
+        foreach (var item in mediaBackup.FoldersToScan)
+        {
+            mediaBackup.Watcher.DirectoriesToScan.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime), ct);
+        }
+        return Utils.TraceOut(watcher);
     }
 
     private void CheckForOldBackupDisks()
@@ -428,67 +336,6 @@ partial class Main
         Utils.TraceOut();
     }
 
-    [SupportedOSPlatform("windows")]
-    private void MonitorServices()
-    {
-        foreach (var monitor in mediaBackup.Config.Monitors)
-        {
-            var result = monitor.Port > 0 ? Utils.ConnectionExists(monitor.Url, monitor.Port) : Utils.UrlExists(monitor.Url, monitor.Timeout * 1000);
-            if (result) continue;
-
-            // The monitor is down
-            monitor.UpdateFailures(DateTime.Now);
-            if (monitor.FailureRetryExceeded) continue;
-
-            var s = monitor.Failures.Count > 1 ? "s" : string.Empty;
-            var text = $"'{monitor.Name}' is down. {monitor.Failures.Count} failure{s} in the last {Utils.FormatTimeFromSeconds(monitor.FailureTimePeriod)}.";
-            Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High, text);
-
-            if (monitor.ProcessToKill.HasValue())
-            {
-                var processesToKill = monitor.ProcessToKill.Split(',');
-
-                foreach (var toKill in processesToKill)
-                {
-                    Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal, $"Stopping all '{toKill}' processes that match");
-                    _ = Utils.KillProcesses(toKill);
-                }
-            }
-
-            if (monitor.ApplicationToStart.HasValue())
-            {
-                text = $"Starting {monitor.ApplicationToStart}";
-                Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal, text);
-                var processToStart = Environment.ExpandEnvironmentVariables(monitor.ApplicationToStart);
-
-                if (File.Exists(processToStart))
-                {
-                    var newProcess = Process.Start(processToStart, monitor.ApplicationToStartArguments);
-
-                    if (newProcess == null)
-                        Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High, $"Failed to start the new process '{monitor.Name}'");
-                    else
-                        Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal, $"'{monitor.Name}' started");
-                }
-                else
-                {
-                    Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High,
-                        $"Failed to start the new process '{monitor.Name}' as its not found at {monitor.ApplicationToStart} (expanded to {processToStart})");
-                }
-            }
-            if (!monitor.ServiceToRestart.HasValue()) continue;
-
-            text = $"Restarting '{monitor.ServiceToRestart}'";
-            Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal, text);
-            result = Utils.RestartService(monitor.ServiceToRestart, monitor.Timeout * 1000);
-
-            if (result)
-                Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal, $"'{monitor.Name}' started");
-            else
-                Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High, $"Failed to restart the service '{monitor.Name}'");
-        }
-    }
-
     private void SpeedTestAllMasterFoldersAsync()
     {
         longRunningActionExecutingRightNow = true;
@@ -518,57 +365,6 @@ partial class Main
     private void UpdateEstimatedFinish(DateTime estimatedFinishDateTime)
     {
         estimatedFinishTimeTextBox.Invoke(x => x.Text = estimatedFinishDateTime.ToString("HH:mm"));
-    }
-
-    public void TaskWrapper(Action methodName)
-    {
-        if (methodName is null) throw new ArgumentNullException(nameof(methodName));
-
-        tokenSource = new CancellationTokenSource();
-        ct = tokenSource.Token;
-
-        Task.Run(methodName, ct).ContinueWith(u =>
-        {
-            if (u.Exception == null) return;
-
-            Utils.Log("Exception occurred. Cancelling operation.");
-            MessageBox.Show(string.Format(Resources.Main_TaskWrapperException, u.Exception));
-            CancelButton_Click(null, null);
-        }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
-    }
-
-    public void TaskWrapper(Action<bool> methodName, bool param1)
-    {
-        if (methodName is null) throw new ArgumentNullException(nameof(methodName));
-
-        tokenSource = new CancellationTokenSource();
-        ct = tokenSource.Token;
-
-        Task.Run(() => methodName(param1), ct).ContinueWith(u =>
-        {
-            if (u.Exception == null) return;
-
-            Utils.Log("Exception occurred. Cancelling operation.");
-            _ = MessageBox.Show(string.Format(Resources.Main_TaskWrapperException, u.Exception));
-            CancelButton_Click(null, null);
-        }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
-    }
-
-    public void TaskWrapper(Action<bool, bool> methodName, bool param1, bool param2)
-    {
-        if (methodName is null) throw new ArgumentNullException(nameof(methodName));
-
-        tokenSource = new CancellationTokenSource();
-        ct = tokenSource.Token;
-
-        Task.Run(() => methodName(param1, param2), ct).ContinueWith(u =>
-        {
-            if (u.Exception == null) return;
-
-            Utils.Log("Exception occurred. Cancelling operation.");
-            _ = MessageBox.Show(string.Format(Resources.Main_TaskWrapperException, u.Exception));
-            CancelButton_Click(null, null);
-        }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
     }
 
     private void DisableControlsForAsyncTasks()
@@ -621,23 +417,6 @@ partial class Main
         cancelButton.Invoke(x => x.Enabled = false);
         statusStrip.Invoke(_ => toolStripProgressBar.Visible = false);
         statusStrip.Invoke(_ => toolStripStatusLabel.Text = string.Empty);
-    }
-
-    /// <summary>
-    ///     Returns True if the file was deleted
-    /// </summary>
-    /// <param name="filePath"></param>
-    /// <returns></returns>
-    private bool CheckForFilesToDelete(string filePath)
-    {
-        var filters = mediaBackup.Config.FilesToDelete
-            .Select(filter => new { filter, replace = filter.Replace(".", @"\.").Replace("*", ".*").Replace("?", ".") }).Select(t => $"^{t.replace}$");
-        var fileName = new FileInfo(filePath).Name;
-        if (!filters.Any(pattern => Regex.IsMatch(fileName, pattern))) return false;
-
-        Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.Normal, $"File matches RegEx and so will be deleted {filePath}");
-        Utils.FileDelete(filePath);
-        return true;
     }
 
     private void UpdateStatusLabel(string text, int value = 0)

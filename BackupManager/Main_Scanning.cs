@@ -196,5 +196,22 @@ namespace BackupManager
             ResetAllControls();
             longRunningActionExecutingRightNow = false;
         }
+
+        /// <summary>
+        ///     Returns True if the file was deleted
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        private bool CheckForFilesToDelete(string filePath)
+        {
+            var filters = mediaBackup.Config.FilesToDelete
+                .Select(filter => new { filter, replace = filter.Replace(".", @"\.").Replace("*", ".*").Replace("?", ".") }).Select(t => $"^{t.replace}$");
+            var fileName = new FileInfo(filePath).Name;
+            if (!filters.Any(pattern => Regex.IsMatch(fileName, pattern))) return false;
+
+            Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.Normal, $"File matches RegEx and so will be deleted {filePath}");
+            Utils.FileDelete(filePath);
+            return true;
+        }
     }
 }
