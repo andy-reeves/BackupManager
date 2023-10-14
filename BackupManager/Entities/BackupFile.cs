@@ -25,9 +25,7 @@ public class BackupFile : IEquatable<BackupFile>
 
     private string fileName;
 
-    public BackupFile()
-    {
-    }
+    public BackupFile() { }
 
     /// <summary>
     /// </summary>
@@ -137,7 +135,6 @@ public class BackupFile : IEquatable<BackupFile>
         {
             // If you clear the DiskChecked then we automatically clear the Disk property too
             if (string.IsNullOrEmpty(value)) disk = null;
-
             diskChecked = value;
         }
     }
@@ -153,7 +150,6 @@ public class BackupFile : IEquatable<BackupFile>
         set
         {
             if (string.IsNullOrEmpty(value)) diskChecked = null;
-
             disk = value;
         }
     }
@@ -167,7 +163,6 @@ public class BackupFile : IEquatable<BackupFile>
         get
         {
             if (string.IsNullOrEmpty(fileName)) fileName = Path.GetFileName(FullPath);
-
             return fileName;
         }
     }
@@ -194,7 +189,6 @@ public class BackupFile : IEquatable<BackupFile>
     public void UpdateDiskChecked(string backupDisk)
     {
         if (backupDisk != Disk && Disk.HasValue()) Utils.Log($"{FullPath} was on {Disk} but now on {backupDisk}");
-
         disk = backupDisk;
         diskChecked = DateTime.Now.ToString("yyyy-MM-dd");
     }
@@ -213,10 +207,8 @@ public class BackupFile : IEquatable<BackupFile>
         if (!File.Exists(fullPath)) throw new FileNotFoundException();
 
         RelativePath = GetRelativePath(fullPath, masterFolder, indexFolder);
-
         MasterFolder = masterFolder;
         IndexFolder = indexFolder;
-
         UpdateContentsHash();
         UpdateLastWriteTime();
         UpdateFileLength();
@@ -292,14 +284,12 @@ public class BackupFile : IEquatable<BackupFile>
         if (!File.Exists(FullPath) || !Utils.IsFileAccessible(FullPath)) return false;
 
         var pathToBackupDiskFile = Path.Combine(backupDisk.BackupPath, IndexFolder, RelativePath);
-
         if (!File.Exists(pathToBackupDiskFile) || !Utils.IsFileAccessible(pathToBackupDiskFile)) return false;
 
         var hashFromSourceFile = Utils.GetShortMd5HashFromFile(FullPath);
         if (hashFromSourceFile == Utils.ZeroByteHash) throw new ApplicationException($"ERROR: {FullPath} has zero byte hashcode");
 
         ContentsHash = hashFromSourceFile;
-
         var hashFromBackupDiskFile = Utils.GetShortMd5HashFromFile(pathToBackupDiskFile);
         if (hashFromBackupDiskFile == Utils.ZeroByteHash) throw new ApplicationException($"ERROR: {hashFromBackupDiskFile} has zero byte hashcode");
 
@@ -310,7 +300,6 @@ public class BackupFile : IEquatable<BackupFile>
 
         // Hashes match so update it as checked and the backup checked date too
         UpdateDiskChecked(backupDisk.Name);
-
         return true;
     }
 

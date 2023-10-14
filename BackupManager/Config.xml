@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!-- ReSharper disable MarkupTextTypo -->
 <Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
- 
+
   <!-- After this many days the backup warns to check the disks again -->
   <BackupDiskDaysToReportSinceFilesChecked>90</BackupDiskDaysToReportSinceFilesChecked>
 
   <!-- A bigger percentage difference than this and the backup stops -->
   <BackupDiskDifferenceInFileCountAllowedPercentage>1</BackupDiskDifferenceInFileCountAllowedPercentage>
-  
+
   <!-- MinimumCriticalBackupDiskSpace in MB -->
   <BackupDiskMinimumCriticalSpace>250</BackupDiskMinimumCriticalSpace>
 
@@ -15,7 +16,7 @@
   <BackupDiskMinimumFreeSpaceToLeave>210</BackupDiskMinimumFreeSpaceToLeave>
 
   <MasterFoldersFileChangeWatchersOnOff>true</MasterFoldersFileChangeWatchersOnOff>
-  
+
   <!-- MinimumCriticalMasterFolderSpace in MB -->
   <MasterFolderMinimumCriticalSpace>200000</MasterFolderMinimumCriticalSpace>
 
@@ -46,7 +47,7 @@
 
   <!-- True to enable sending Pushover messages -->
   <PushoverOnOff>true</PushoverOnOff>
-  
+
   <PushoverSendLowOnOff>true</PushoverSendLowOnOff>
 
   <PushoverSendNormalOnOff>true</PushoverSendNormalOnOff>
@@ -59,10 +60,10 @@
 
   <!-- Sends a high priority message once this limit is passed -->
   <PushoverWarningMessagesRemaining>500</PushoverWarningMessagesRemaining>
- 
+
   <!-- When true a backup scan will run when scheduled -->
   <ScheduledBackupOnOff>true</ScheduledBackupOnOff>
-  
+
   <!-- When true a backup scan will run when the app starts -->
   <ScheduledBackupRunOnStartup>false</ScheduledBackupRunOnStartup>
 
@@ -90,7 +91,7 @@
       <MaximumFailures>10</MaximumFailures>
     </Monitor>
   </Monitors>
-  
+
   <MasterFolders>
     <!-- List each UNC path that you want to scan for files to backup here -->
     <MasterFolder>\\nas1\assets1\_Test</MasterFolder>

@@ -257,8 +257,9 @@ public class FileSystemWatcher
         if (Running) return Utils.TraceOut(Running = true);
 
         if (!reset)
-            if (!Reset())
-                return Utils.TraceOut(Running = false);
+        {
+            if (!Reset()) return Utils.TraceOut(Running = false);
+        }
 
         // Check current paths are valid
         foreach (var directory in Directories)

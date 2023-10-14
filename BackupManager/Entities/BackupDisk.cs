@@ -118,8 +118,7 @@ public class BackupDisk : IEquatable<BackupDisk>
 
         Free = availableSpace;
         Capacity = totalBytes;
-        var files = backupFiles.Where(p => p.Disk == Name);
-        TotalFiles = files.Count();
+        TotalFiles = backupFiles.Count(p => p.Disk == Name);
         return true;
     }
 

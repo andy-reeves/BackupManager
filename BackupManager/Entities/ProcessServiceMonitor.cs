@@ -83,14 +83,13 @@ public class ProcessServiceMonitor
             Utils.TraceOut("FailureRetry=TRUE");
             return;
         }
-
         Failures.Add(newFailure);
 
         for (var i = Failures.Count - 1; i >= 0; i--)
         {
             var a = Failures[i];
-
             if (a >= DateTime.Now.AddSeconds(-FailureTimePeriod)) continue;
+
             Utils.Trace("UpdateFailures removing old failure as expired");
             _ = Failures.Remove(a);
         }
@@ -100,7 +99,6 @@ public class ProcessServiceMonitor
             Utils.Trace("Setting FailureRetry=TRUE");
             FailureRetryExceeded = true;
         }
-
         Utils.TraceOut($"Failures.Count = {Failures.Count}");
     }
 }
