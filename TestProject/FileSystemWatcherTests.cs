@@ -15,6 +15,7 @@ using FileSystemWatcher = BackupManager.FileSystemWatcher;
 namespace TestProject;
 
 [SuppressMessage("ReSharper", "MemberCanBeFileLocal")]
+[SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
 public sealed class FileSystemWatcherTests
 {
     private const int WaitInSeconds = 4;

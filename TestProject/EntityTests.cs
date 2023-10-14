@@ -14,6 +14,7 @@ using BackupManager.Entities;
 
 namespace TestProject;
 
+[SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
 [SuppressMessage("ReSharper", "MemberCanBeFileLocal")]
 public sealed class EntityTests
 {

@@ -15,6 +15,7 @@ using BackupManager.Extensions;
 namespace TestProject;
 
 [SuppressMessage("ReSharper", "MemberCanBeFileLocal")]
+[SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
 public sealed class FileRulesUnitTest
 {
     private static readonly MediaBackup _mediaBackup;
