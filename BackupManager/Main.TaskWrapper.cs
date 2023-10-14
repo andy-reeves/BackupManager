@@ -1,4 +1,10 @@
-﻿using System;
+﻿// --------------------------------------------------------------------------------------------------------------------
+//  <copyright file="Main.TaskWrapper.cs" company="Andy Reeves">
+// 
+//  </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;

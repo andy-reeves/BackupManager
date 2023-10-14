@@ -1,8 +1,8 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 //  <copyright file="MediaBackup.cs" company="Andy Reeves">
-//
+// 
 //  </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -444,9 +444,8 @@ public class MediaBackup
         foreach (var backupFile in filesToRemove)
         {
             if (clearHashes)
-            {
-                if (indexFolderAndRelativePath.ContainsKey(backupFile.Hash)) _ = indexFolderAndRelativePath.Remove(backupFile.Hash);
-            }
+                if (indexFolderAndRelativePath.ContainsKey(backupFile.Hash))
+                    _ = indexFolderAndRelativePath.Remove(backupFile.Hash);
             if (BackupFiles.Contains(backupFile)) _ = BackupFiles.Remove(backupFile);
         }
     }

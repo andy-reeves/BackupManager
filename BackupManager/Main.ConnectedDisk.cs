@@ -1,4 +1,10 @@
-﻿using System.IO;
+﻿// --------------------------------------------------------------------------------------------------------------------
+//  <copyright file="Main.ConnectedDisk.cs" company="Andy Reeves">
+// 
+//  </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 

@@ -1,4 +1,10 @@
-﻿using System;
+﻿// --------------------------------------------------------------------------------------------------------------------
+//  <copyright file="Main.1.cs" company="Andy Reeves">
+// 
+//  </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;

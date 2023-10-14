@@ -1,4 +1,10 @@
-﻿using System;
+﻿// --------------------------------------------------------------------------------------------------------------------
+//  <copyright file="Main.Scanning.cs" company="Andy Reeves">
+// 
+//  </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+using System;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;

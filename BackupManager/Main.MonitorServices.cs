@@ -1,4 +1,10 @@
-﻿using System;
+﻿// --------------------------------------------------------------------------------------------------------------------
+//  <copyright file="Main.MonitorServices.cs" company="Andy Reeves">
+// 
+//  </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Versioning;
