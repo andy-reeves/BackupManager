@@ -14,7 +14,7 @@ using BackupManager.Properties;
 
 namespace BackupManager;
 
-partial class Main
+internal sealed partial class Main
 {
     private void CheckConnectedDiskAndCopyFilesAsync(bool deleteExtraFiles, bool copyFiles)
     {

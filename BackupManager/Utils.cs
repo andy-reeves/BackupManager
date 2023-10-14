@@ -35,11 +35,11 @@ namespace BackupManager;
 ///     Common Utility functions in a static class
 /// </summary>
 [SuppressMessage("ReSharper", "UnusedMember.Global")]
-public static partial class Utils
+internal static partial class Utils
 {
     [LibraryImport("kernel32.dll", EntryPoint = "GetDiskFreeSpaceExW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    internal static partial bool GetDiskFreeSpaceEx(string lpDirectoryName, out long lpFreeBytesAvailable, out long lpTotalNumberOfBytes,
+    private static partial bool GetDiskFreeSpaceEx(string lpDirectoryName, out long lpFreeBytesAvailable, out long lpTotalNumberOfBytes,
         out long lpTotalNumberOfFreeBytes);
 
     #region Constants
@@ -96,7 +96,7 @@ public static partial class Utils
     /// <summary>
     ///     This is the Hash for a file containing 48K of only zero bytes.
     /// </summary>
-    internal static readonly string ZeroByteHash = "f4f35d60b3cc18aaa6d8d92f0cd3708a";
+    internal const string ZeroByteHash = "f4f35d60b3cc18aaa6d8d92f0cd3708a";
 
     /// <summary>
     ///     We use this to pad our logging messages
@@ -249,7 +249,7 @@ public static partial class Utils
     /// <returns>
     ///     The <see cref="bool" />.
     /// </returns>
-    internal static bool AnyFlagSet(FileAttributes value, FileAttributes flagsToCheckFor)
+    private static bool AnyFlagSet(FileAttributes value, FileAttributes flagsToCheckFor)
     {
         return flagsToCheckFor != 0 && Enum.GetValues(typeof(FileAttributes)).Cast<Enum>().Where(flagsToCheckFor.HasFlag).Any(value.HasFlag);
     }
@@ -441,7 +441,7 @@ public static partial class Utils
     /// </param>
     /// <returns>
     /// </returns>
-    internal static string[] GetFiles(string path, string filters, SearchOption searchOption, FileAttributes directoryAttributesToIgnore,
+    private static string[] GetFiles(string path, string filters, SearchOption searchOption, FileAttributes directoryAttributesToIgnore,
         FileAttributes fileAttributesToIgnore)
     {
         var sw = Stopwatch.StartNew();
@@ -483,10 +483,9 @@ public static partial class Utils
                 }
             }
 
-            foreach (var filter in includeAsArray2)
+            foreach (var collection in includeAsArray2.Select(filter => Directory.GetFiles(dir, filter, SearchOption.TopDirectoryOnly))
+                         .Select(allFiles => excludeAsArray.Any() ? allFiles.Where(p => !excludeRegex.Match(p).Success) : allFiles))
             {
-                var allFiles = Directory.GetFiles(dir, filter, SearchOption.TopDirectoryOnly);
-                var collection = excludeAsArray.Any() ? allFiles.Where(p => !excludeRegex.Match(p).Success) : allFiles;
                 foundFiles.AddRange(collection.Where(p => !AnyFlagSet(new FileInfo(p).Attributes, fileAttributesToIgnore)));
             }
         }
@@ -633,12 +632,12 @@ public static partial class Utils
         return TraceOut(CreateHashForByteArray(startBlock, middleBlock, endBlock));
     }
 
-    internal static void SendPushoverMessage(string title, PushoverPriority priority, string message)
+    private static void SendPushoverMessage(string title, PushoverPriority priority, string message)
     {
         SendPushoverMessage(title, priority, PushoverRetry.None, PushoverExpires.Immediately, message);
     }
 
-    internal static void SendPushoverMessage(string title, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires, string message)
+    private static void SendPushoverMessage(string title, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires, string message)
     {
         TraceIn();
 
@@ -781,17 +780,17 @@ public static partial class Utils
     {
         if (_lengthOfLargestBackupActionEnumNames == 0)
         {
-            foreach (var enumName in Enum.GetNames(typeof(BackupAction)))
+            foreach (var enumName in Enum.GetNames(typeof(BackupAction)).Where(static enumName => enumName.Length > _lengthOfLargestBackupActionEnumNames))
             {
-                if (enumName.Length > _lengthOfLargestBackupActionEnumNames) _lengthOfLargestBackupActionEnumNames = enumName.Length;
+                _lengthOfLargestBackupActionEnumNames = enumName.Length;
             }
         }
         var actionText = Enum.GetName(typeof(BackupAction), action) + " ";
         var textArrayToWrite = message.Split('\n');
 
-        foreach (var line in textArrayToWrite)
+        foreach (var line in textArrayToWrite.Where(static line => line.HasValue()))
         {
-            if (line.HasValue()) Log(actionText.PadRight(_lengthOfLargestBackupActionEnumNames + 1) + line);
+            Log(actionText.PadRight(_lengthOfLargestBackupActionEnumNames + 1) + line);
         }
     }
 
@@ -803,11 +802,8 @@ public static partial class Utils
     {
         var textArrayToWrite = text.Split('\n');
 
-        foreach (var line in textArrayToWrite)
+        foreach (var textToWrite in from line in textArrayToWrite where line.HasValue() select $"{DateTime.Now:dd-MM-yy HH:mm:ss} {line}")
         {
-            if (!line.HasValue()) continue;
-
-            var textToWrite = $"{DateTime.Now:dd-MM-yy HH:mm:ss} {line}";
             Console.WriteLine(textToWrite);
 
             if (_logFile.HasValue())
@@ -898,12 +894,12 @@ public static partial class Utils
     /// </exception>
     /// <exception cref="ArgumentException">
     /// </exception>
-    private static string ByteArrayToString(byte[] value, int startIndex, int length)
+    private static string ByteArrayToString(IReadOnlyList<byte> value, int startIndex, int length)
     {
-        if (value == null) throw new ArgumentNullException(nameof(value));
-        if (startIndex < 0 || (startIndex >= value.Length && startIndex > 0)) throw new ArgumentOutOfRangeException(nameof(startIndex));
+        ArgumentNullException.ThrowIfNull(value);
+        if (startIndex < 0 || (startIndex >= value.Count && startIndex > 0)) throw new ArgumentOutOfRangeException(nameof(startIndex));
         if (length < 0) throw new ArgumentOutOfRangeException(nameof(length));
-        if (startIndex > value.Length - length) throw new ArgumentException(null, nameof(length));
+        if (startIndex > value.Count - length) throw new ArgumentException(null, nameof(length));
 
         switch (length)
         {
@@ -958,7 +954,7 @@ public static partial class Utils
     /// </returns>
     internal static string EnsurePathHasATerminatingSeparator(string path)
     {
-        return path.EndsWith(Path.DirectorySeparatorChar.ToString()) ? path : path + Path.DirectorySeparatorChar;
+        return path.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.InvariantCultureIgnoreCase) ? path : path + Path.DirectorySeparatorChar;
     }
 
     /// <summary>
@@ -1066,7 +1062,7 @@ public static partial class Utils
     {
         if (string.IsNullOrEmpty(folderName)) throw new ArgumentNullException(nameof(folderName));
 
-        if (!folderName.EndsWith("\\")) folderName += '\\';
+        if (!folderName.EndsWith("\\", StringComparison.InvariantCultureIgnoreCase)) folderName += '\\';
         return GetDiskFreeSpaceEx(folderName, out freeSpace, out totalBytes, out _);
     }
 
@@ -1120,7 +1116,7 @@ public static partial class Utils
     /// </summary>
     /// <param name="size"></param>
     /// <returns></returns>
-    internal static string RandomString(long size)
+    private static string RandomString(long size)
     {
         StringBuilder builder = new();
         Random random = new();
@@ -1155,7 +1151,7 @@ public static partial class Utils
     /// </summary>
     /// <param name="path"></param>
     /// <returns>True if its a symbolic Link with a target that exists otherwise False</returns>
-    internal static bool SymbolicLinkTargetExists(string path)
+    private static bool SymbolicLinkTargetExists(string path)
     {
         var linkTarget = new FileInfo(path).LinkTarget;
         return linkTarget != null && Directory.Exists(linkTarget);
@@ -1166,7 +1162,7 @@ public static partial class Utils
     /// </summary>
     /// <param name="path"></param>
     /// <returns>True if path is a symbolic link otherwise False</returns>
-    internal static bool IsSymbolicLink(string path)
+    private static bool IsSymbolicLink(string path)
     {
         FileInfo file = new(path);
         return file.LinkTarget != null;
@@ -1343,7 +1339,7 @@ public static partial class Utils
     /// <param name="testFileSize"></param>
     /// <param name="testIterations"></param>
     /// <returns>The bytes read/written in 1s</returns>
-    internal static long DiskSpeedTest(string sourcePath, string destinationPath, long testFileSize, int testIterations)
+    private static long DiskSpeedTest(string sourcePath, string destinationPath, long testFileSize, int testIterations)
     {
         TraceIn();
         const long randomStringSize = 500_000;
@@ -1386,7 +1382,7 @@ public static partial class Utils
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    internal static string GetFullyQualifiedCurrentMethodName()
+    private static string GetFullyQualifiedCurrentMethodName()
     {
         var sf = new StackTrace().GetFrame(2);
         if (sf == null) return string.Empty;
@@ -1467,9 +1463,9 @@ public static partial class Utils
     {
         var textArrayToWrite = value.Split('\n');
 
-        foreach (var line in textArrayToWrite)
+        foreach (var line in textArrayToWrite.Where(static line => line.HasValue()))
         {
-            if (line.HasValue()) System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {line}");
+            System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {line}");
         }
     }
 
@@ -1521,7 +1517,7 @@ public static partial class Utils
     /// <param name="directory">The directory to check</param>
     /// <exception cref="ArgumentException"></exception>
     /// <returns>An array of the directory paths that were removed</returns>
-    internal static string[] DeleteEmptyDirectories(string directory)
+    internal static IEnumerable<string> DeleteEmptyDirectories(string directory)
     {
         TraceIn();
         if (string.IsNullOrEmpty(directory)) throw new ArgumentException(Resources.Utils_DirectoryNameNullOrEmpty, nameof(directory));
@@ -1564,7 +1560,7 @@ public static partial class Utils
         TraceOut();
     }
 
-    internal static bool RegexPathFixer(Match m, ref string path, ref string pathToTarget)
+    internal static void RegexPathFixer(Match m, ref string path, ref string pathToTarget)
     {
         for (var i = 0; i < m.Groups.Count; i++)
         {
@@ -1574,7 +1570,6 @@ public static partial class Utils
             path = path.Replace($"${i}", g.Value);
             pathToTarget = pathToTarget.Replace($"${i}", g.Value);
         }
-        return true;
     }
 
     /// <summary>
@@ -1601,7 +1596,7 @@ public static partial class Utils
     /// <param name="includeRoot">True to include the root folder for deletion</param>
     /// <exception cref="ArgumentException"></exception>
     /// <returns>An array of the directory paths that were removed</returns>
-    internal static string[] DeleteBrokenSymbolicLinks(string directory, bool includeRoot)
+    internal static IEnumerable<string> DeleteBrokenSymbolicLinks(string directory, bool includeRoot)
     {
         TraceIn();
         if (string.IsNullOrEmpty(directory)) throw new ArgumentException(Resources.Utils_DirectoryNameNullOrEmpty, nameof(directory));

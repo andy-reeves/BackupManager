@@ -5,7 +5,8 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
@@ -14,11 +15,16 @@ using BackupManager.Extensions;
 
 namespace BackupManager.Entities;
 
-public class BackupDisk : IEquatable<BackupDisk>
+[SuppressMessage("ReSharper", "MemberCanBeInternal")]
+[SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
+[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
+[SuppressMessage("ReSharper", "UnusedMember.Global")]
+[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+public sealed class BackupDisk : IEquatable<BackupDisk>
 {
     public BackupDisk() { }
 
-    public BackupDisk(string diskName, string backupShare)
+    internal BackupDisk(string diskName, string backupShare)
     {
         Name = diskName;
         BackupShare = backupShare;
@@ -108,7 +114,7 @@ public class BackupDisk : IEquatable<BackupDisk>
     /// </summary>
     /// <param name="backupFiles"></param>
     /// <returns></returns>
-    public bool Update(Collection<BackupFile> backupFiles)
+    public bool Update(IEnumerable<BackupFile> backupFiles)
     {
         if (!CheckForValidBackupShare(BackupShare)) return false;
 
@@ -134,8 +140,8 @@ public class BackupDisk : IEquatable<BackupDisk>
         DirectoryInfo sharePathDirectoryInfo = new(path);
         if (!sharePathDirectoryInfo.Exists) return null;
 
-        var directoriesInRootDirectory = sharePathDirectoryInfo.GetDirectories()
-            .Where(file => ((file.Attributes & FileAttributes.Hidden) == 0) & ((file.Attributes & FileAttributes.System) == 0));
+        var directoriesInRootDirectory = sharePathDirectoryInfo.GetDirectories().Where(static file =>
+            ((file.Attributes & FileAttributes.Hidden) == 0) & ((file.Attributes & FileAttributes.System) == 0));
 
         // In here there should be 1 directory starting with 'backup '
         var inRootFolder = directoriesInRootDirectory as DirectoryInfo[] ?? directoriesInRootDirectory.ToArray();

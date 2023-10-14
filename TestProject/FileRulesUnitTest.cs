@@ -6,13 +6,16 @@
 
 #if DEBUG
 
+using System.Diagnostics.CodeAnalysis;
+
 using BackupManager;
 using BackupManager.Entities;
 using BackupManager.Extensions;
 
 namespace TestProject;
 
-public class FileRulesUnitTest
+[SuppressMessage("ReSharper", "MemberCanBeFileLocal")]
+public sealed class FileRulesUnitTest
 {
     private static readonly MediaBackup _mediaBackup;
 
@@ -27,15 +30,13 @@ public class FileRulesUnitTest
         var testsFromFile = File.ReadAllText(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)), "FileRuleTests.txt"));
         var lines = testsFromFile.Split('\n');
 
-        foreach (var line in lines)
+        foreach (var cols in lines.Select(static line => line.Split('|')))
         {
-            var cols = line.Split('|');
-
             for (var i = 0; i < cols.Length; i++)
             {
                 cols[i] = cols[i].TrimStart(' ', '"').TrimEnd(' ', '"', '\r', '\n');
             }
-            if (cols[0].StartsWith("#") || cols.Length != 4) continue;
+            if (cols[0].StartsWith("#", StringComparison.InvariantCultureIgnoreCase) || cols.Length != 4) continue;
 
             var ruleNumberTestNumber = cols[0];
             var a = ruleNumberTestNumber.Split(".");
@@ -47,7 +48,7 @@ public class FileRulesUnitTest
             var testPath = cols[3];
             var rule = _mediaBackup.Config.FileRules.SingleOrDefault(p => p.Number == ruleNumber);
             Assert.NotNull(rule);
-            var regEx = testOrDiscovery.StartsWith("T") ? rule.FileTestRegEx : rule.FileDiscoveryRegEx;
+            var regEx = testOrDiscovery.StartsWith("T", StringComparison.InvariantCulture) ? rule.FileTestRegEx : rule.FileDiscoveryRegEx;
 
             if (expectedResult)
                 Assert.True(testPath.IsMatch(regEx), $"Test {testNumber} of Rule {ruleNumber} {rule.Message} for {testPath}");

@@ -6,7 +6,7 @@
 
 namespace BackupManager;
 
-public enum PushoverPriority
+internal enum PushoverPriority
 {
     Lowest = -2,
 

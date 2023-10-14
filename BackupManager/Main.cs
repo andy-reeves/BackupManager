@@ -17,7 +17,7 @@ using BackupManager.Properties;
 
 namespace BackupManager;
 
-public partial class Main : Form
+internal sealed partial class Main : Form
 {
     private static void FileSystemWatcher_OnError(object sender, ErrorEventArgs e)
     {
@@ -168,7 +168,7 @@ public partial class Main : Form
                 return;
             }
             var targetMasterFolder = restoreMasterFolderComboBox.SelectedItem.ToString();
-            var files = mediaBackup.GetBackupFilesInMasterFolder(masterFolder).Where(p => p.Disk.HasValue());
+            var files = mediaBackup.GetBackupFilesInMasterFolder(masterFolder).Where(static p => p.Disk.HasValue());
             Utils.Log(BackupAction.Restore, $"Restoring files from master folder {masterFolder}");
             Utils.Log(BackupAction.Restore, $"Restoring files to target master folder {targetMasterFolder}");
             var backupShare = backupDiskTextBox.Text;
@@ -276,7 +276,7 @@ public partial class Main : Form
             else
                 allMovies.Add(movieId, file);
         }
-        var sortedList = backupFilesWithDuplicates.OrderBy(o => o.FileName).ToList();
+        var sortedList = backupFilesWithDuplicates.OrderBy(static o => o.FileName).ToList();
 
         foreach (var backupMovieDuplicate in sortedList)
         {
@@ -309,7 +309,7 @@ public partial class Main : Form
     private void ReportBackupDiskStatusButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        IEnumerable<BackupDisk> disks = mediaBackup.BackupDisks.OrderBy(p => p.Number);
+        IEnumerable<BackupDisk> disks = mediaBackup.BackupDisks.OrderBy(static p => p.Number);
         Utils.Log("Listing backup disk statuses");
 
         foreach (var disk in disks)
@@ -321,7 +321,7 @@ public partial class Main : Form
                 var d = DateTime.Parse(disk.Checked);
                 lastChecked = d.ToString("dd-MMM-yy");
             }
-            var totalSizeOfFilesFromSumOfFiles = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, false).Sum(p => p.Length);
+            var totalSizeOfFilesFromSumOfFiles = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, false).Sum(static p => p.Length);
 
             var deletedCount = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, true).Count() -
                                mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, false).Count();
@@ -333,11 +333,11 @@ public partial class Main : Form
             Utils.Log(
                 $"{disk.Name,-11} Checked: {lastChecked,-9} Capacity: {disk.CapacityFormatted,-8} Used: {Utils.FormatSize(sizeFromDiskAnalysis),-7} Free: {disk.FreeFormatted,-7} Sum of files: {Utils.FormatSize(totalSizeOfFilesFromSumOfFiles),-8} DeletedFiles: {deletedCount,-3} Diff: {Utils.FormatSize(difference),-8} {percentString}");
         }
-        var totalSizeFormatted = Utils.FormatSize(mediaBackup.BackupDisks.Sum(p => p.Capacity));
-        var totalFreeSpaceFormatted = Utils.FormatSize(mediaBackup.BackupDisks.Sum(p => p.Free));
+        var totalSizeFormatted = Utils.FormatSize(mediaBackup.BackupDisks.Sum(static p => p.Capacity));
+        var totalFreeSpaceFormatted = Utils.FormatSize(mediaBackup.BackupDisks.Sum(static p => p.Free));
 
         Utils.Log(
-            $"                         Total Capacity: {totalSizeFormatted,-22} Free: {totalFreeSpaceFormatted,-7} Sum of files: {Utils.FormatSize(mediaBackup.BackupFiles.Sum(p => p.Length))}");
+            $"                         Total Capacity: {totalSizeFormatted,-22} Free: {totalFreeSpaceFormatted,-7} Sum of files: {Utils.FormatSize(mediaBackup.BackupFiles.Sum(static p => p.Length))}");
         Utils.TraceOut();
     }
 
@@ -455,10 +455,8 @@ public partial class Main : Form
         Dictionary<string, BackupFile> allFilesUniqueContentsHash = new();
         List<BackupFile> backupFilesWithDuplicates = new();
 
-        foreach (var f in mediaBackup.BackupFiles)
+        foreach (var f in mediaBackup.BackupFiles.Where(static f => f.FullPath.Contains("_Movies") || f.FullPath.Contains("_TV")))
         {
-            if (!f.FullPath.Contains("_Movies") && !f.FullPath.Contains("_TV")) continue;
-
             if (allFilesUniqueContentsHash.TryGetValue(f.ContentsHash, out var originalFile))
             {
                 backupFilesWithDuplicates.Add(f);
@@ -572,7 +570,7 @@ public partial class Main : Form
         {
             Utils.Log($"{file.FullPath} at {Utils.FormatSize(file.Length)} on {file.Disk}");
         }
-        Utils.Log($"{backupFiles.Length} files at {Utils.FormatSize(backupFiles.Sum(p => p.Length))}");
+        Utils.Log($"{backupFiles.Length} files at {Utils.FormatSize(backupFiles.Sum(static p => p.Length))}");
         Utils.TraceOut();
     }
 
@@ -603,7 +601,9 @@ public partial class Main : Form
             {
                 var folderToScan = folderList[i];
                 mediaBackup.ClearFlags();
-                var fileCountInFolderBefore = mediaBackup.BackupFiles.Count(b => b.FullPath.StartsWith(folderToScan.Path));
+
+                var fileCountInFolderBefore =
+                    mediaBackup.BackupFiles.Count(b => b.FullPath.StartsWith(folderToScan.Path, StringComparison.InvariantCultureIgnoreCase));
 
                 if (ScanSingleFolder(folderToScan.Path, SearchOption.TopDirectoryOnly))
                 {
@@ -614,9 +614,10 @@ public partial class Main : Form
 
                     // instead of removing files that are no longer found in a folder we now flag them as deleted so we can report them later
                     // unless they aren't on a backup disk in which case they are removed now 
-                    var files = mediaBackup.BackupFiles.Where(b => !b.Flag).Where(b => b.FullPath.StartsWith(folderToScan.Path)).Where(b =>
-                        !b.FullPath.SubstringAfter(Utils.EnsurePathHasATerminatingSeparator(folderToScan.Path), StringComparison.CurrentCultureIgnoreCase)
-                            .Contains('\\')).ToList();
+                    var files = mediaBackup.BackupFiles.Where(static b => !b.Flag)
+                        .Where(b => b.FullPath.StartsWith(folderToScan.Path, StringComparison.InvariantCultureIgnoreCase)).Where(b =>
+                            !b.FullPath.SubstringAfter(Utils.EnsurePathHasATerminatingSeparator(folderToScan.Path), StringComparison.CurrentCultureIgnoreCase)
+                                .Contains('\\')).ToList();
 
                     for (var j = files.Count - 1; j >= 0; j--)
                     {
@@ -633,7 +634,9 @@ public partial class Main : Form
                             markedAsDeletedFilesCount++;
                         }
                     }
-                    var fileCountInFolderAfter = mediaBackup.BackupFiles.Count(b => b.FullPath.StartsWith(folderToScan.Path));
+
+                    var fileCountInFolderAfter =
+                        mediaBackup.BackupFiles.Count(b => b.FullPath.StartsWith(folderToScan.Path, StringComparison.InvariantCultureIgnoreCase));
                     var filesNotOnBackupDiskCount = mediaBackup.GetBackupFilesWithDiskEmpty().Count();
 
                     var text =
@@ -686,7 +689,7 @@ public partial class Main : Form
     private void ListFilesNotOnBackupDiskButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        IEnumerable<BackupFile> filesNotOnBackupDisk = mediaBackup.GetBackupFilesWithDiskEmpty().OrderByDescending(p => p.Length);
+        IEnumerable<BackupFile> filesNotOnBackupDisk = mediaBackup.GetBackupFilesWithDiskEmpty().OrderByDescending(static p => p.Length);
         Utils.Log("Listing files not on a backup disk");
         var notOnBackupDisk = filesNotOnBackupDisk.ToArray();
 
@@ -694,7 +697,7 @@ public partial class Main : Form
         {
             Utils.Log($"{file.FullPath} at {Utils.FormatSize(file.Length)}");
         }
-        Utils.Log($"{notOnBackupDisk.Length} files at {Utils.FormatSize(notOnBackupDisk.Sum(p => p.Length))}");
+        Utils.Log($"{notOnBackupDisk.Length} files at {Utils.FormatSize(notOnBackupDisk.Sum(static p => p.Length))}");
         Utils.TraceOut();
     }
 

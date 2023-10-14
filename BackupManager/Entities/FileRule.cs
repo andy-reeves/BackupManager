@@ -6,11 +6,19 @@
 
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Xml.Serialization;
 
 namespace BackupManager.Entities;
 
+[SuppressMessage("ReSharper", "MemberCanBeInternal")]
+[SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
+[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
+[SuppressMessage("ReSharper", "UnusedMember.Global")]
+[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+[SuppressMessage("ReSharper", "CollectionNeverUpdated.Global")]
 [DebuggerDisplay("Message = {Message}")]
+[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 public class FileRule : IEquatable<FileRule>
 {
     /// <summary>

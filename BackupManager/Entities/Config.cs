@@ -8,12 +8,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Xml.Serialization;
 
 namespace BackupManager.Entities;
 
-public class Config
+[SuppressMessage("ReSharper", "MemberCanBeInternal")]
+[SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
+[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
+[SuppressMessage("ReSharper", "UnusedMember.Global")]
+[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+[SuppressMessage("ReSharper", "CollectionNeverUpdated.Global")]
+public sealed class Config
 {
     [XmlArrayItem("MasterFolder")] public Collection<string> MasterFolders { get; set; } = new();
 

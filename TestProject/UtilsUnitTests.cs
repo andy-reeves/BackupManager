@@ -7,12 +7,15 @@
 #if DEBUG
 global using Xunit;
 
+using System.Diagnostics.CodeAnalysis;
+
 using BackupManager;
 using BackupManager.Entities;
 
 namespace TestProject;
 
-public class UtilsUnitTests
+[SuppressMessage("ReSharper", "MemberCanBeFileLocal")]
+public sealed class UtilsUnitTests
 {
     [Fact]
     public void FormatTimeSpanFromSeconds()

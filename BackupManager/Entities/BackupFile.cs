@@ -6,6 +6,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Xml.Serialization;
 
@@ -14,8 +15,13 @@ using BackupManager.Properties;
 
 namespace BackupManager.Entities;
 
+[SuppressMessage("ReSharper", "MemberCanBeInternal")]
+[SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
+[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
+[SuppressMessage("ReSharper", "UnusedMember.Global")]
+[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 [DebuggerDisplay("RelativePath = {RelativePath}")]
-public class BackupFile : IEquatable<BackupFile>
+public sealed class BackupFile : IEquatable<BackupFile>
 {
     private string contentsHash;
 
@@ -226,7 +232,7 @@ public class BackupFile : IEquatable<BackupFile>
     {
         var combinedPath = Path.Combine(masterFolder, indexFolder);
 
-        return !fullPath.StartsWith(combinedPath)
+        return !fullPath.StartsWith(combinedPath, StringComparison.CurrentCultureIgnoreCase)
             ? throw new ArgumentException(Resources.BackupFile_GetRelativePath_The_fullPathCorrect, nameof(fullPath))
             : fullPath.SubstringAfter(combinedPath, StringComparison.CurrentCultureIgnoreCase).TrimStart(new[] { '\\' });
     }
@@ -237,10 +243,12 @@ public class BackupFile : IEquatable<BackupFile>
     /// <exception cref="ApplicationException"></exception>
     private void UpdateContentsHash(string newContentsHash)
     {
-        if (newContentsHash == null) throw new ArgumentNullException(nameof(newContentsHash), Resources.BackupFile_HashCodeNotNull);
-        if (newContentsHash == Utils.ZeroByteHash) throw new ArgumentException(Resources.BackupFile_ZeroByteHashcode, nameof(newContentsHash));
-
-        contentsHash = newContentsHash;
+        contentsHash = newContentsHash switch
+        {
+            null => throw new ArgumentNullException(nameof(newContentsHash), Resources.BackupFile_HashCodeNotNull),
+            Utils.ZeroByteHash => throw new ArgumentException(Resources.BackupFile_ZeroByteHashcode, nameof(newContentsHash)),
+            _ => newContentsHash
+        };
     }
 
     /// <summary>

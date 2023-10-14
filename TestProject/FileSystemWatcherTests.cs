@@ -6,6 +6,7 @@
 
 #if DEBUG
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 using BackupManager;
 
@@ -13,7 +14,8 @@ using FileSystemWatcher = BackupManager.FileSystemWatcher;
 
 namespace TestProject;
 
-public class FileSystemWatcherTests
+[SuppressMessage("ReSharper", "MemberCanBeFileLocal")]
+public sealed class FileSystemWatcherTests
 {
     private const int WaitInSeconds = 4;
 
@@ -198,7 +200,7 @@ public class FileSystemWatcherTests
         Assert.True(watcher.Running);
         watcher.Stop();
         Assert.False(watcher.Running);
-        watcher.ResetCollections();
+        _ = watcher.ResetCollections();
         Assert.True(watcher.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));
         Assert.True(watcher.DirectoriesToScan.Count == 0, nameof(FileSystemWatcher.DirectoriesToScan.Count));
 

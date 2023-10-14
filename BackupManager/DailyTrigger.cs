@@ -13,7 +13,7 @@ namespace BackupManager;
 /// <summary>
 ///     Utility class for triggering an event every 24 hours at a specified time of day
 /// </summary>
-public class DailyTrigger : IDisposable
+internal sealed class DailyTrigger : IDisposable
 {
     public DailyTrigger(DateTime startTime) : this(startTime.Hour, startTime.Minute, startTime.Second) { }
 
@@ -23,7 +23,7 @@ public class DailyTrigger : IDisposable
     /// <param name="hour">The hour of the day to trigger</param>
     /// <param name="minute">The minute to trigger</param>
     /// <param name="second">The second to trigger</param>
-    public DailyTrigger(int hour, int minute = 0, int second = 0)
+    private DailyTrigger(int hour, int minute = 0, int second = 0)
     {
         Utils.TraceIn();
         TriggerHour = new TimeSpan(hour, minute, second);

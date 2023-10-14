@@ -13,7 +13,7 @@ using BackupManager.Extensions;
 
 namespace BackupManager;
 
-partial class Main
+internal sealed partial class Main
 {
     [SupportedOSPlatform("windows")]
     private void MonitorServices()

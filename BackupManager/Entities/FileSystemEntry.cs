@@ -5,13 +5,21 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace BackupManager.Entities;
 
 /// <summary>
 ///     This class allows us to keep a Collection of FileSystemEntry with the path and datetime it was last changed
 /// </summary>
-public class FileSystemEntry : IEquatable<FileSystemEntry>
+[SuppressMessage("ReSharper", "MemberCanBeInternal")]
+[SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
+[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
+[SuppressMessage("ReSharper", "UnusedMember.Global")]
+[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+[SuppressMessage("ReSharper", "CollectionNeverUpdated.Global")]
+[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
+public sealed class FileSystemEntry : IEquatable<FileSystemEntry>
 {
     public FileSystemEntry() { }
 

@@ -6,16 +6,24 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Xml.Serialization;
 
 namespace BackupManager.Entities;
 
+[SuppressMessage("ReSharper", "MemberCanBeInternal")]
+[SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
+[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
+[SuppressMessage("ReSharper", "UnusedMember.Global")]
+[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+[SuppressMessage("ReSharper", "CollectionNeverUpdated.Global")]
+[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 public class ProcessServiceMonitor
 {
     /// <summary>
     ///     The list of DateTimes of the last failures to occur
     /// </summary>
-    [XmlIgnore] internal List<DateTime> Failures = new();
+    [XmlIgnore] internal readonly List<DateTime> Failures = new();
 
     /// <summary>
     ///     The Url to monitor

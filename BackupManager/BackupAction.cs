@@ -6,7 +6,7 @@
 
 namespace BackupManager;
 
-public enum BackupAction
+internal enum BackupAction
 {
     General,
 

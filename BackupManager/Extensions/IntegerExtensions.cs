@@ -4,11 +4,13 @@
 //  </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 
 namespace BackupManager.Extensions;
 
 [SuppressMessage("ReSharper", "UnusedMember.Global")]
+[SuppressMessage("ReSharper", "UnusedType.Global")]
 public static class IntegerExtensions
 {
     /// <summary>
@@ -21,9 +23,10 @@ public static class IntegerExtensions
         var numberString = number.ToString();
 
         return number < 1 ? numberString :
-            numberString.EndsWith("11") || numberString.EndsWith("12") || numberString.EndsWith("13") ? numberString + "th" :
-            numberString.EndsWith("1") ? numberString + "st" :
-            numberString.EndsWith("2") ? numberString + "nd" :
-            numberString.EndsWith("3") ? numberString + "rd" : numberString + "th";
+            numberString.EndsWith("11", StringComparison.Ordinal) || numberString.EndsWith("12", StringComparison.Ordinal) ||
+            numberString.EndsWith("13", StringComparison.Ordinal) ? numberString + "th" :
+            numberString.EndsWith("1", StringComparison.Ordinal) ? numberString + "st" :
+            numberString.EndsWith("2", StringComparison.Ordinal) ? numberString + "nd" :
+            numberString.EndsWith("3", StringComparison.Ordinal) ? numberString + "rd" : numberString + "th";
     }
 }

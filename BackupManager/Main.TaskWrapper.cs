@@ -13,12 +13,11 @@ using BackupManager.Properties;
 
 namespace BackupManager;
 
-partial class Main
+internal sealed partial class Main
 {
-    public void TaskWrapper(Action methodName)
+    private void TaskWrapper(Action methodName)
     {
-        if (methodName is null) throw new ArgumentNullException(nameof(methodName));
-
+        ArgumentNullException.ThrowIfNull(methodName);
         tokenSource = new CancellationTokenSource();
         ct = tokenSource.Token;
 
@@ -32,10 +31,9 @@ partial class Main
         }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
     }
 
-    public void TaskWrapper(Action<bool> methodName, bool param1)
+    private void TaskWrapper(Action<bool> methodName, bool param1)
     {
-        if (methodName is null) throw new ArgumentNullException(nameof(methodName));
-
+        ArgumentNullException.ThrowIfNull(methodName);
         tokenSource = new CancellationTokenSource();
         ct = tokenSource.Token;
 
@@ -49,10 +47,9 @@ partial class Main
         }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
     }
 
-    public void TaskWrapper(Action<bool, bool> methodName, bool param1, bool param2)
+    private void TaskWrapper(Action<bool, bool> methodName, bool param1, bool param2)
     {
-        if (methodName is null) throw new ArgumentNullException(nameof(methodName));
-
+        ArgumentNullException.ThrowIfNull(methodName);
         tokenSource = new CancellationTokenSource();
         ct = tokenSource.Token;
 

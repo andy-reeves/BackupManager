@@ -14,7 +14,7 @@ using BackupManager.Extensions;
 
 namespace BackupManager;
 
-partial class Main
+internal sealed partial class Main
 {
     /// <summary>
     ///     Scan the folder provided.
@@ -43,10 +43,8 @@ partial class Main
             if (CheckForFilesToDelete(file)) continue;
 
             // RegEx file name rules
-            foreach (var rule in mediaBackup.Config.FileRules)
+            foreach (var rule in mediaBackup.Config.FileRules.Where(rule => Regex.IsMatch(file, rule.FileDiscoveryRegEx)))
             {
-                if (!Regex.IsMatch(file, rule.FileDiscoveryRegEx)) continue;
-
                 if (!rule.Matched)
                 {
                     Utils.Trace($"{rule.Name} matched file {file}");
@@ -149,13 +147,13 @@ partial class Main
         }
         UpdateStatusLabel("Scanning completed.");
 
-        foreach (var rule in mediaBackup.Config.FileRules)
+        foreach (var rule in mediaBackup.Config.FileRules.Where(static rule => !rule.Matched))
         {
-            if (!rule.Matched) Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High, $"{rule.Name} didn't match any files");
+            Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High, $"{rule.Name} didn't match any files");
         }
 
         // instead of removing files that are no longer found in Master Folders we now flag them as deleted so we can report them later
-        foreach (var backupFile in mediaBackup.BackupFiles.Where(backupFile => !backupFile.Flag && backupFile.DiskChecked.HasValue()))
+        foreach (var backupFile in mediaBackup.BackupFiles.Where(static backupFile => !backupFile.Flag && backupFile.DiskChecked.HasValue()))
         {
             backupFile.Deleted = true;
             backupFile.Flag = true;
@@ -166,10 +164,10 @@ partial class Main
         UpdateStatusLabel("Saved.");
         UpdateMediaFilesCountDisplay();
         var totalFiles = mediaBackup.BackupFiles.Count;
-        var totalFileSize = mediaBackup.BackupFiles.Sum(p => p.Length);
+        var totalFileSize = mediaBackup.BackupFiles.Sum(static p => p.Length);
         var filesNotOnBackupDisk = mediaBackup.GetBackupFilesWithDiskEmpty();
         var notOnBackupDisk = filesNotOnBackupDisk as BackupFile[] ?? filesNotOnBackupDisk.ToArray();
-        var fileSizeToCopy = notOnBackupDisk.Sum(p => p.Length);
+        var fileSizeToCopy = notOnBackupDisk.Sum(static p => p.Length);
         Utils.LogWithPushover(BackupAction.ScanFolders, $"{totalFiles:n0} files at {Utils.FormatSize(totalFileSize)}");
         var oldestFile = mediaBackup.GetOldestFile();
 
@@ -217,7 +215,8 @@ partial class Main
     private bool CheckForFilesToDelete(string filePath)
     {
         var filters = mediaBackup.Config.FilesToDelete
-            .Select(filter => new { filter, replace = filter.Replace(".", @"\.").Replace("*", ".*").Replace("?", ".") }).Select(t => $"^{t.replace}$");
+            .Select(static filter => new { filter, replace = filter.Replace(".", @"\.").Replace("*", ".*").Replace("?", ".") })
+            .Select(static t => $"^{t.replace}$");
         var fileName = new FileInfo(filePath).Name;
         if (!filters.Any(pattern => Regex.IsMatch(fileName, pattern))) return false;
 

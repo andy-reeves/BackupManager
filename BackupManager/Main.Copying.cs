@@ -14,7 +14,7 @@ using BackupManager.Entities;
 
 namespace BackupManager;
 
-partial class Main
+internal sealed partial class Main
 {
     private void CopyFiles(bool showCompletedMessage)
     {
@@ -22,9 +22,9 @@ partial class Main
         var disk = SetupBackupDisk();
         Utils.LogWithPushover(BackupAction.BackupFiles, "Started");
         UpdateStatusLabel("Copying");
-        IEnumerable<BackupFile> filesToBackup = mediaBackup.GetBackupFilesWithDiskEmpty().OrderByDescending(q => q.Length);
+        IEnumerable<BackupFile> filesToBackup = mediaBackup.GetBackupFilesWithDiskEmpty().OrderByDescending(static q => q.Length);
         var backupFiles = filesToBackup.ToArray();
-        var sizeOfFiles = backupFiles.Sum(x => x.Length);
+        var sizeOfFiles = backupFiles.Sum(static x => x.Length);
         var totalFileCount = backupFiles.Length;
         Utils.LogWithPushover(BackupAction.BackupFiles, $"{totalFileCount:n0} files to backup at {Utils.FormatSize(sizeOfFiles)}");
         var outOfDiskSpaceMessageSent = false;
@@ -183,7 +183,7 @@ partial class Main
 
         if (stillNotOnBackupDisk.Any())
         {
-            sizeOfFiles = stillNotOnBackupDisk.Sum(p => p.Length);
+            sizeOfFiles = stillNotOnBackupDisk.Sum(static p => p.Length);
             text = $"{stillNotOnBackupDisk.Length:n0} files still to backup at {Utils.FormatSize(sizeOfFiles)}.\n";
         }
         Utils.LogWithPushover(BackupAction.BackupFiles, text + $"{disk.FreeFormatted} free on backup disk");

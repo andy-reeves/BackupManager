@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
@@ -15,7 +16,14 @@ using BackupManager.Extensions;
 
 namespace BackupManager.Entities;
 
-public class MediaBackup
+[SuppressMessage("ReSharper", "MemberCanBeInternal")]
+[SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
+[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
+[SuppressMessage("ReSharper", "UnusedMember.Global")]
+[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+[SuppressMessage("ReSharper", "CollectionNeverUpdated.Global")]
+[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
+public sealed class MediaBackup
 {
     // We need to a hash of the index folder and relative path
     // we do this so we can look up files quickly by 
@@ -33,7 +41,7 @@ public class MediaBackup
 
     private string mediaBackupPath;
 
-    [XmlIgnore] public FileSystemWatcher Watcher = new();
+    [XmlIgnore] internal FileSystemWatcher Watcher = new();
 
     public MediaBackup()
     {
@@ -146,10 +154,10 @@ public class MediaBackup
         var pathWithTerminatingString = Utils.EnsurePathHasATerminatingSeparator(path);
 
         foreach (var master in Config.MasterFolders)
-        foreach (var index in Config.IndexFolders)
+        foreach (var index in Config.IndexFolders.Where(index =>
+                     pathWithTerminatingString.StartsWith(Utils.EnsurePathHasATerminatingSeparator(Path.Combine(master, index)),
+                         StringComparison.InvariantCultureIgnoreCase)))
         {
-            if (!pathWithTerminatingString.StartsWith(Utils.EnsurePathHasATerminatingSeparator(Path.Combine(master, index)))) continue;
-
             masterFolder = master;
             indexFolder = index;
             relativePath = BackupFile.GetRelativePath(path, masterFolder, indexFolder);
@@ -380,7 +388,7 @@ public class MediaBackup
     /// <returns></returns>
     public IEnumerable<BackupFile> GetBackupFilesInMasterFolder(string masterFolder)
     {
-        return BackupFiles.Where(p => p.MasterFolder == masterFolder).OrderBy(q => q.BackupDiskNumber);
+        return BackupFiles.Where(p => p.MasterFolder == masterFolder).OrderBy(static q => q.BackupDiskNumber);
     }
 
     /// <summary>
@@ -389,7 +397,7 @@ public class MediaBackup
     /// <returns></returns>
     public IEnumerable<BackupFile> GetBackupFilesMarkedAsDeleted()
     {
-        return BackupFiles.Where(p => p.Deleted).OrderBy(q => q.BackupDiskNumber);
+        return BackupFiles.Where(static p => p.Deleted).OrderBy(static q => q.BackupDiskNumber);
     }
 
     /// <summary>
@@ -398,7 +406,7 @@ public class MediaBackup
     /// <returns></returns>
     public IEnumerable<BackupFile> GetBackupFilesNotMarkedAsDeleted()
     {
-        return BackupFiles.Where(p => !p.Deleted);
+        return BackupFiles.Where(static p => !p.Deleted);
     }
 
     /// <summary>
@@ -407,7 +415,7 @@ public class MediaBackup
     /// <returns></returns>
     public IEnumerable<BackupFile> GetBackupFilesWithDiskEmpty()
     {
-        return BackupFiles.Where(p => string.IsNullOrEmpty(p.Disk) && !p.Deleted);
+        return BackupFiles.Where(static p => string.IsNullOrEmpty(p.Disk) && !p.Deleted);
     }
 
     /// <summary>

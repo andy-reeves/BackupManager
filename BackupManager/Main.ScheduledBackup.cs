@@ -8,7 +8,7 @@ using System;
 
 namespace BackupManager;
 
-partial class Main
+internal sealed partial class Main
 {
     private void ScheduledBackup()
     {

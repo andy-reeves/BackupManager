@@ -17,7 +17,7 @@ namespace BackupManager.Extensions;
 ///     Extension methods for the <see cref="string" /> class.
 /// </summary>
 [SuppressMessage("ReSharper", "UnusedMember.Global")]
-public static partial class StringExtensions
+internal static partial class StringExtensions
 {
     /// <summary>
     ///     Returns the TitleCase of the string but fixes 10Th to 10th etc.
@@ -27,7 +27,7 @@ public static partial class StringExtensions
     public static string ToTitleCaseIgnoreOrdinals(this string text)
     {
         var input = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(text);
-        var result = MyRegex().Replace(input, m => m.Captures[0].Value.ToLower());
+        var result = MyRegex().Replace(input, static m => m.Captures[0].Value.ToLower());
         return result;
     }
 

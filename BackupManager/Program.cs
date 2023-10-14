@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace BackupManager;
 
-internal static class Program
+file static class Program
 {
     /// <summary>
     ///     The main entry point for the application.

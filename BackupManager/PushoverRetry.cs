@@ -9,7 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace BackupManager;
 
 [SuppressMessage("ReSharper", "UnusedMember.Global")]
-public enum PushoverRetry
+internal enum PushoverRetry
 {
     None = 0,
 

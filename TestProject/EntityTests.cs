@@ -7,13 +7,15 @@
 #if DEBUG
 
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Xml.Serialization;
 
 using BackupManager.Entities;
 
 namespace TestProject;
 
-public class EntityTests
+[SuppressMessage("ReSharper", "MemberCanBeFileLocal")]
+public sealed class EntityTests
 {
     [Fact]
     public void Folder()

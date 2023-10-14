@@ -1,6 +1,6 @@
 ﻿namespace BackupManager
 {
-    partial class Main
+    internal sealed partial class Main
     {
         /// <summary>
         /// Required designer variable.

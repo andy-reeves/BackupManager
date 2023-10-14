@@ -6,6 +6,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
@@ -14,7 +15,14 @@ using BackupManager.Properties;
 
 namespace BackupManager.Entities;
 
-public class Rules
+[SuppressMessage("ReSharper", "MemberCanBeInternal")]
+[SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
+[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
+[SuppressMessage("ReSharper", "UnusedMember.Global")]
+[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+[SuppressMessage("ReSharper", "CollectionNeverUpdated.Global")]
+[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
+public sealed class Rules
 {
     [XmlArrayItem("FileRule")] public Collection<FileRule> FileRules { get; set; }
 
@@ -26,7 +34,7 @@ public class Rules
             using FileStream stream = new(path, FileMode.Open, FileAccess.Read);
             if (serializer.Deserialize(stream) is not Rules rules) return null;
 
-            if (rules.FileRules.Select(x => x.Number).Distinct().Count() != rules.FileRules.Count)
+            if (rules.FileRules.Select(static x => x.Number).Distinct().Count() != rules.FileRules.Count)
                 throw new ArgumentException(Resources.Rules_DuplicateRuleNumber, nameof(path));
 
             return rules;

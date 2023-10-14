@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Timers;
@@ -16,7 +17,7 @@ using BackupManager.Properties;
 
 namespace BackupManager;
 
-public class FileSystemWatcher
+internal sealed class FileSystemWatcher
 {
     private const int NotifyFiltersValidMask = (int)(NotifyFilters.Attributes | NotifyFilters.CreationTime | NotifyFilters.DirectoryName |
                                                      NotifyFilters.FileName | NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.Security |
@@ -42,12 +43,12 @@ public class FileSystemWatcher
 
     private int scanInterval = 60;
 
-    public bool Running { get; private set; }
+    internal bool Running { get; private set; }
 
     /// <summary>
     ///     The paths to the directories we will monitor.
     /// </summary>
-    public string[] Directories
+    internal string[] Directories
     {
         get => directories;
 
@@ -64,7 +65,7 @@ public class FileSystemWatcher
     ///     Minimum time in seconds since this directory or any items changed in the directory) was last changed before we will
     ///     raise any scan folders events. Default is 300 seconds.
     /// </summary>
-    public int MinimumAgeBeforeScanEventRaised { get; set; } = 300;
+    internal int MinimumAgeBeforeScanEventRaised { get; set; } = 300;
 
     /// <summary>
     ///     Time in seconds before we process the file system changes detected and put their directories in the
@@ -108,12 +109,13 @@ public class FileSystemWatcher
     /// <summary>
     ///     These are the directories we will raise events on when they are old enough.
     /// </summary>
-    public BlockingCollection<FileSystemEntry> DirectoriesToScan { get; } = new();
+    internal BlockingCollection<FileSystemEntry> DirectoriesToScan { get; } = new();
 
     /// <summary>
     ///     If you change these after starting then we stop and start again.
     /// </summary>
-    public NotifyFilters NotifyFilter
+    [SuppressMessage("ReSharper", "PropertyCanBeMadeInitOnly.Global")]
+    internal NotifyFilters NotifyFilter
     {
         get => notifyFilter;
 
@@ -206,16 +208,15 @@ public class FileSystemWatcher
         }
         RemoveFileSystemWatchers();
 
-        foreach (var directory in Directories)
+        foreach (var watcher in Directories.Select(directory => new System.IO.FileSystemWatcher(directory)
+                 {
+                     EnableRaisingEvents = true,
+                     Filter = Filter,
+                     IncludeSubdirectories = IncludeSubdirectories,
+                     InternalBufferSize = 48 * 1024,
+                     NotifyFilter = NotifyFilter
+                 }))
         {
-            System.IO.FileSystemWatcher watcher = new(directory)
-            {
-                EnableRaisingEvents = true,
-                Filter = Filter,
-                IncludeSubdirectories = IncludeSubdirectories,
-                InternalBufferSize = 48 * 1024,
-                NotifyFilter = NotifyFilter
-            };
             watcher.Error += OnError;
             watcher.Changed += OnSomethingHappened;
             watcher.Deleted += OnSomethingHappened;
@@ -251,7 +252,7 @@ public class FileSystemWatcher
     /// <returns>True if the monitoring has started now or was running already</returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentException">If any of the directories to monitor do not exist</exception>
-    public bool Start()
+    internal bool Start()
     {
         Utils.TraceIn();
         if (Running) return Utils.TraceOut(Running = true);
@@ -279,9 +280,9 @@ public class FileSystemWatcher
     ///     Stops monitoring the directories for any more changes. Events no longer raised.
     /// </summary>
     /// <returns>True if we've stopped successfully or were already stopped</returns>
-    public bool Stop()
+    public void Stop()
     {
-        if (!Running) return true;
+        if (!Running) return;
 
         processChangesTimer?.Stop();
         scanFoldersTimer?.Stop();
@@ -291,14 +292,14 @@ public class FileSystemWatcher
             watcher.EnableRaisingEvents = false;
         }
         Running = false;
-        return Utils.TraceOut(true);
+        Utils.TraceOut(true);
     }
 
     /// <summary>
     ///     Clears the two collections of files and directories.
     /// </summary>
     /// <returns>True if they were cleared correctly</returns>
-    public bool ResetCollections()
+    internal bool ResetCollections()
     {
         Utils.TraceIn();
 
@@ -345,7 +346,7 @@ public class FileSystemWatcher
         Utils.TraceOut();
     }
 
-    protected void OnThresholdReached(object sender, FileSystemWatcherEventArgs e)
+    private void OnThresholdReached(object sender, FileSystemWatcherEventArgs e)
     {
         Utils.TraceIn();
 
@@ -456,9 +457,9 @@ public class FileSystemWatcher
 /// <summary>
 ///     Used to pass the Folders changed to any events.
 /// </summary>
-public class FileSystemWatcherEventArgs : EventArgs
+internal sealed class FileSystemWatcherEventArgs : EventArgs
 {
-    public FileSystemWatcherEventArgs(BlockingCollection<FileSystemEntry> foldersToScan)
+    internal FileSystemWatcherEventArgs(BlockingCollection<FileSystemEntry> foldersToScan)
     {
         Utils.TraceIn();
         Folders = new FileSystemEntry[foldersToScan.Count];
@@ -469,5 +470,5 @@ public class FileSystemWatcherEventArgs : EventArgs
     /// <summary>
     ///     An Array of FileSystemEntry that have been changed
     /// </summary>
-    public FileSystemEntry[] Folders { get; }
+    internal FileSystemEntry[] Folders { get; }
 }

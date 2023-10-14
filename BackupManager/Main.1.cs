@@ -21,7 +21,7 @@ using BackupManager.Properties;
 
 namespace BackupManager;
 
-partial class Main
+internal sealed partial class Main
 {
     private readonly MediaBackup mediaBackup;
 
@@ -41,7 +41,7 @@ partial class Main
     private DailyTrigger trigger;
 
     [SupportedOSPlatform("windows")]
-    public Main()
+    internal Main()
     {
         try
         {
@@ -125,13 +125,6 @@ partial class Main
         }
     }
 
-    public sealed override string Text
-    {
-        get => base.Text;
-
-        set => base.Text = value;
-    }
-
     private void UpdateSymbolicLinksAsync()
     {
         longRunningActionExecutingRightNow = true;
@@ -148,16 +141,18 @@ partial class Main
         HashSet<string> hashSet = new();
 
         // HashSet of parent paths that match the RegEx's from config
-        foreach (var backupFile in mediaBackup.BackupFiles)
+        foreach (var folderPath in from backupFile in mediaBackup.BackupFiles
+                 select mediaBackup.GetParentFolder(backupFile.FullPath)
+                 into folderPath
+                 where folderPath != null
+                 where mediaBackup.Config.SymbolicLinks.Select(a => Regex.Match(folderPath, a.FileDiscoveryRegEx)).Any(static m => m.Success)
+                 select folderPath)
         {
-            var folderPath = mediaBackup.GetParentFolder(backupFile.FullPath);
-            if (folderPath == null) continue;
-
-            if (mediaBackup.Config.SymbolicLinks.Select(a => Regex.Match(folderPath, a.FileDiscoveryRegEx)).Any(m => m.Success)) hashSet.Add(folderPath);
+            hashSet.Add(folderPath);
         }
         UpdateStatusLabel("Checking for broken Symbolic Links");
 
-        var foldersToCheck = mediaBackup.Config.SymbolicLinks.Select(a => Path.Combine(a.RootFolder, Utils.RemoveRegexGroupsFromString(a.RelativePath)))
+        var foldersToCheck = mediaBackup.Config.SymbolicLinks.Select(static a => Path.Combine(a.RootFolder, Utils.RemoveRegexGroupsFromString(a.RelativePath)))
             .Where(Directory.Exists).SelectMany(Directory.EnumerateDirectories).ToList();
 
         // check the symbolic links root folders for any broken links
@@ -167,7 +162,12 @@ partial class Main
         {
             var folderToCheck = foldersToCheck[i];
             UpdateStatusLabel($"Checking {folderToCheck}", i);
-            Utils.DeleteBrokenSymbolicLinks(folderToCheck, true);
+            var linksDeleted = Utils.DeleteBrokenSymbolicLinks(folderToCheck, true);
+
+            foreach (var link in linksDeleted)
+            {
+                Utils.Log($"Symbolic link {link} deleted");
+            }
         }
         EnableProgressBar(0, 100);
         var fileCounter = 0;
@@ -223,11 +223,11 @@ partial class Main
     private void UpdateMediaFilesCountDisplay()
     {
         totalFilesTextBox.Invoke(x => x.Text = mediaBackup.GetBackupFilesNotMarkedAsDeleted().Count().ToString("N0"));
-        totalFilesSizeTextBox.Invoke(x => x.Text = Utils.FormatSize(mediaBackup.GetBackupFilesNotMarkedAsDeleted().Sum(y => y.Length)));
+        totalFilesSizeTextBox.Invoke(x => x.Text = Utils.FormatSize(mediaBackup.GetBackupFilesNotMarkedAsDeleted().Sum(static y => y.Length)));
         notOnABackupDiskTextBox.Invoke(x => x.Text = mediaBackup.GetBackupFilesWithDiskEmpty().Count().ToString("N0"));
-        notOnABackupDiskSizeTextBox.Invoke(x => x.Text = Utils.FormatSize(mediaBackup.GetBackupFilesWithDiskEmpty().Sum(y => y.Length)));
+        notOnABackupDiskSizeTextBox.Invoke(x => x.Text = Utils.FormatSize(mediaBackup.GetBackupFilesWithDiskEmpty().Sum(static y => y.Length)));
         filesMarkedAsDeletedTextBox.Invoke(x => x.Text = mediaBackup.GetBackupFilesMarkedAsDeleted().Count().ToString("N0"));
-        filesMarkedAsDeletedSizeTextBox.Invoke(x => x.Text = Utils.FormatSize(mediaBackup.GetBackupFilesMarkedAsDeleted().Sum(y => y.Length)));
+        filesMarkedAsDeletedSizeTextBox.Invoke(x => x.Text = Utils.FormatSize(mediaBackup.GetBackupFilesMarkedAsDeleted().Sum(static y => y.Length)));
     }
 
     private void StartFileSystemWatchers()
@@ -273,7 +273,7 @@ partial class Main
         var numberOfDays = mediaBackup.Config.BackupDiskDaysToReportSinceFilesChecked;
         var files = mediaBackup.BackupFiles.Where(p => p.DiskChecked.HasValue() && DateTime.Parse(p.DiskChecked).AddDays(numberOfDays) < DateTime.Today);
         var backupFiles = files as BackupFile[] ?? files.ToArray();
-        var disks = backupFiles.GroupBy(p => p.Disk).Select(p => p.First());
+        var disks = backupFiles.GroupBy(static p => p.Disk).Select(static p => p.First());
 
         foreach (var disk in disks)
         {
@@ -365,7 +365,7 @@ partial class Main
 
     private void UpdateEstimatedFinish()
     {
-        estimatedFinishTimeTextBox.Invoke(x => x.Text = string.Empty);
+        estimatedFinishTimeTextBox.Invoke(static x => x.Text = string.Empty);
     }
 
     private void UpdateEstimatedFinish(DateTime estimatedFinishDateTime)
@@ -377,33 +377,28 @@ partial class Main
     {
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
 
-        foreach (Control c in Controls)
+        foreach (var c in Controls.Cast<Control>().Where(static c => c is not StatusStrip))
         {
-            if (c is not StatusStrip) c.Invoke(x => x.Enabled = false);
+            c.Invoke(static x => x.Enabled = false);
         }
-        cancelButton.Invoke(x => x.Enabled = true);
-        testPushoverEmergencyButton.Invoke(x => x.Enabled = true);
-        testPushoverHighButton.Invoke(x => x.Enabled = true);
-        testPushoverNormalButton.Invoke(x => x.Enabled = true);
-        testPushoverLowButton.Invoke(x => x.Enabled = true);
-        listFilesInMasterFolderButton.Invoke(x => x.Enabled = true);
-        listFilesNotCheckedInXXButton.Invoke(x => x.Enabled = true);
-        listFilesNotOnBackupDiskButton.Invoke(x => x.Enabled = true);
-        listFilesOnBackupDiskButton.Invoke(x => x.Enabled = true);
-        listFilesWithDuplicateContentHashcodesButton.Invoke(x => x.Enabled = true);
-        listMoviesWithMultipleFilesButton.Invoke(x => x.Enabled = true);
-        processesGroupBox.Invoke(x => x.Enabled = true);
-        pushoverGroupBox.Invoke(x => x.Enabled = true);
-        listFilesGroupBox.Invoke(x => x.Enabled = true);
-        allBackupDisksGroupBox.Invoke(x => x.Enabled = true);
-        reportBackupDiskStatusButton.Invoke(x => x.Enabled = true);
-        listFilesInMasterFolderGroupBox.Invoke(x => x.Enabled = true);
-        checkAllBackupDisksButton.Invoke(x => x.Enabled = false);
-        checkDeleteAndCopyAllBackupDisksButton.Invoke(x => x.Enabled = false);
-        monitoringButton.Invoke(x => x.Enabled = true);
-        reportBackupDiskStatusButton.Invoke(x => x.Enabled = true);
-        listFilesInMasterFolderGroupBox.Invoke(x => x.Enabled = true);
-        listFilesOnBackupDiskGroupBox.Invoke(x => x.Enabled = true);
+
+        // ReSharper disable BadListLineBreaks
+        var controlsToEnable = new Control[]
+        {
+            cancelButton, testPushoverEmergencyButton, testPushoverHighButton, testPushoverNormalButton, testPushoverLowButton,
+            listFilesInMasterFolderButton, listFilesNotCheckedInXXButton, listFilesNotOnBackupDiskButton, listFilesOnBackupDiskButton,
+            listFilesWithDuplicateContentHashcodesButton, listMoviesWithMultipleFilesButton, processesGroupBox, pushoverGroupBox, listFilesGroupBox,
+            allBackupDisksGroupBox, reportBackupDiskStatusButton, listFilesInMasterFolderGroupBox, checkAllBackupDisksButton,
+            checkDeleteAndCopyAllBackupDisksButton, monitoringButton, reportBackupDiskStatusButton, listFilesInMasterFolderGroupBox,
+            listFilesOnBackupDiskGroupBox
+        };
+
+        // ReSharper restore BadListLineBreaks
+
+        foreach (var control in controlsToEnable)
+        {
+            control.Invoke(static x => x.Enabled = true);
+        }
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
     }
 
@@ -416,11 +411,11 @@ partial class Main
 
         foreach (Control c in Controls)
         {
-            c.Invoke(x => x.Enabled = true);
+            c.Invoke(static x => x.Enabled = true);
         }
-        checkAllBackupDisksButton.Invoke(x => x.Enabled = true);
-        checkDeleteAndCopyAllBackupDisksButton.Invoke(x => x.Enabled = true);
-        cancelButton.Invoke(x => x.Enabled = false);
+        checkAllBackupDisksButton.Invoke(static x => x.Enabled = true);
+        checkDeleteAndCopyAllBackupDisksButton.Invoke(static x => x.Enabled = true);
+        cancelButton.Invoke(static x => x.Enabled = false);
         statusStrip.Invoke(_ => toolStripProgressBar.Visible = false);
         statusStrip.Invoke(_ => toolStripStatusLabel.Text = string.Empty);
     }
@@ -444,7 +439,7 @@ partial class Main
         }
         else
         {
-            if (!text.EndsWith("...") && !text.EndsWith(".")) textToUse = text + "...";
+            if (!text.EndsWith("...", StringComparison.Ordinal) && !text.EndsWith(".", StringComparison.Ordinal)) textToUse = text + "...";
         }
         UpdateProgressBar(value);
         statusStrip.Invoke(_ => toolStripStatusLabel.Text = textToUse);
