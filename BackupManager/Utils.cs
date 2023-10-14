@@ -181,7 +181,7 @@ public static partial class Utils
     internal static void FileMove(string sourceFileName, string destFileName)
     {
         TraceIn(sourceFileName, destFileName);
-        EnsureDirectories(destFileName);
+        EnsureDirectoriesForFilePath(destFileName);
         File.Move(sourceFileName, destFileName);
         TraceOut();
     }
@@ -200,7 +200,7 @@ public static partial class Utils
 
         if (File.Exists(destFileName)) throw new NotSupportedException("Destination file already exists");
 
-        EnsureDirectories(destFileName);
+        EnsureDirectoriesForFilePath(destFileName);
 
         // ReSharper disable once CommentTypo
         // we create the destination file so xcopy knows its a file and can copy over it
@@ -334,14 +334,23 @@ public static partial class Utils
     }
 
     /// <summary>
-    ///     Ensures all the folders on the way to the file are created.
+    ///     Ensures all the directories on the way to the file are created.
     /// </summary>
     /// <param name="filePath">
     /// </param>
-    internal static void EnsureDirectories(string filePath)
+    internal static void EnsureDirectoriesForFilePath(string filePath)
     {
         var directoryName = new FileInfo(filePath).DirectoryName;
         if (directoryName != null) Directory.CreateDirectory(directoryName);
+    }
+
+    /// <summary>
+    ///     Ensures all directories in the directoryPath are created.
+    /// </summary>
+    /// <param name="directoryPath"></param>
+    internal static void EnsureDirectoriesForDirectoryPath(string directoryPath)
+    {
+        EnsureDirectoriesForFilePath(Path.Combine(directoryPath, "temp.txt"));
     }
 
     /// <summary>
@@ -803,7 +812,7 @@ public static partial class Utils
 
             if (_logFile.HasValue())
             {
-                EnsureDirectories(_logFile);
+                EnsureDirectoriesForFilePath(_logFile);
                 File.AppendAllLines(_logFile, new[] { textToWrite });
             }
             Trace(text);
@@ -1125,54 +1134,56 @@ public static partial class Utils
     }
 
     /// <summary>
-    ///     Checks to see if the folder specified is empty
+    ///     Checks to see if the directory specified is empty
     /// </summary>
-    /// <param name="folderPath">The folder to check</param>
+    /// <param name="path">The directory to check</param>
     /// <returns>
-    ///     True if the folder exists as a normal folder and its empty. If its a Symbolic link and the target is missing
-    ///     or the target is empty it returns True. Otherwise False
+    ///     True if the directory exists as a normal directory and it's empty. If its a Symbolic link and the target is missing
+    ///     or the target is empty it returns True. Otherwise False.
     /// </returns>
-    internal static bool IsDirectoryEmpty(string folderPath)
+    internal static bool IsDirectoryEmpty(string path)
     {
-        if (!Directory.Exists(folderPath)) return false;
-        if (!IsSymbolicLink(folderPath)) return !Directory.EnumerateFileSystemEntries(folderPath).Any();
+        if (!Directory.Exists(path)) return false;
+        if (!IsSymbolicLink(path)) return !Directory.EnumerateFileSystemEntries(path).Any();
 
-        var linkTarget = new FileInfo(folderPath).LinkTarget;
-        return linkTarget != null && (!SymbolicLinkTargetExists(folderPath) || !Directory.GetFileSystemEntries(linkTarget).Any());
+        var linkTarget = new FileInfo(path).LinkTarget;
+        return linkTarget != null && (!SymbolicLinkTargetExists(path) || !Directory.GetFileSystemEntries(linkTarget).Any());
     }
 
     /// <summary>
-    ///     Checks to see if the folder is a Symbolic link and its LinkTarget exists
+    ///     Checks to see if the directory is a Symbolic link and its LinkTarget exists
     /// </summary>
-    /// <param name="folderPath"></param>
+    /// <param name="path"></param>
     /// <returns>True if its a symbolic Link with a target that exists otherwise False</returns>
-    internal static bool SymbolicLinkTargetExists(string folderPath)
+    internal static bool SymbolicLinkTargetExists(string path)
     {
-        var linkTarget = new FileInfo(folderPath).LinkTarget;
+        var linkTarget = new FileInfo(path).LinkTarget;
         return linkTarget != null && Directory.Exists(linkTarget);
     }
 
     /// <summary>
-    ///     Checks to see if folderPath is a Symbolic link
+    ///     Checks to see if path is a Symbolic link
     /// </summary>
-    /// <param name="folderPath"></param>
-    /// <returns>True if folderPath is a symbolic link otherwise False</returns>
-    internal static bool IsSymbolicLink(string folderPath)
+    /// <param name="path"></param>
+    /// <returns>True if path is a symbolic link otherwise False</returns>
+    internal static bool IsSymbolicLink(string path)
     {
-        FileInfo file = new(folderPath);
+        FileInfo file = new(path);
         return file.LinkTarget != null;
     }
 
     /// <summary>
-    ///     Checks the folder is writable
+    ///     Checks the directory is writable
     /// </summary>
-    /// <param name="folderPath"></param>
+    /// <param name="path"></param>
     /// <returns>True if writable else False</returns>
-    internal static bool IsFolderWritable(string folderPath)
+    internal static bool IsDirectoryWritable(string path)
     {
         try
         {
-            using var fs = File.Create(Path.Combine(folderPath, Path.GetRandomFileName()), 1, FileOptions.DeleteOnClose);
+            if (!Directory.Exists(path)) return false;
+
+            using var fs = File.Create(Path.Combine(path, Path.GetRandomFileName()), 1, FileOptions.DeleteOnClose);
             return true;
         }
         catch
@@ -1375,7 +1386,7 @@ public static partial class Utils
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    internal static string GetFullyQualifiedGetCurrentMethodName()
+    internal static string GetFullyQualifiedCurrentMethodName()
     {
         var sf = new StackTrace().GetFrame(2);
         if (sf == null) return string.Empty;
@@ -1392,14 +1403,14 @@ public static partial class Utils
     [MethodImpl(MethodImplOptions.NoInlining)]
     internal static void TraceIn()
     {
-        var methodName = GetFullyQualifiedGetCurrentMethodName();
+        var methodName = GetFullyQualifiedCurrentMethodName();
         System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} enter");
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     internal static void TraceIn(params object[] parameters)
     {
-        var methodName = GetFullyQualifiedGetCurrentMethodName();
+        var methodName = GetFullyQualifiedCurrentMethodName();
         System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} enter");
 
         for (var index = 0; index < parameters.Length; index++)
@@ -1412,7 +1423,7 @@ public static partial class Utils
     [MethodImpl(MethodImplOptions.NoInlining)]
     internal static T TraceOut<T>(T t, string text = "")
     {
-        var methodName = GetFullyQualifiedGetCurrentMethodName();
+        var methodName = GetFullyQualifiedCurrentMethodName();
 
         if (t is IEnumerable array)
         {
@@ -1431,7 +1442,7 @@ public static partial class Utils
     [MethodImpl(MethodImplOptions.NoInlining)]
     internal static T TraceOut<T>(string text = "")
     {
-        var methodName = GetFullyQualifiedGetCurrentMethodName();
+        var methodName = GetFullyQualifiedCurrentMethodName();
         System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} exit {text}");
         return default;
     }
@@ -1439,7 +1450,7 @@ public static partial class Utils
     [MethodImpl(MethodImplOptions.NoInlining)]
     internal static string TraceOut(string value)
     {
-        var methodName = GetFullyQualifiedGetCurrentMethodName();
+        var methodName = GetFullyQualifiedCurrentMethodName();
         System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} exit {value}");
         return value;
     }
@@ -1447,7 +1458,7 @@ public static partial class Utils
     [MethodImpl(MethodImplOptions.NoInlining)]
     internal static void TraceOut()
     {
-        var methodName = GetFullyQualifiedGetCurrentMethodName();
+        var methodName = GetFullyQualifiedCurrentMethodName();
         System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} exit");
     }
 
@@ -1553,7 +1564,7 @@ public static partial class Utils
         TraceOut();
     }
 
-    internal static bool RegExPathFixer(Match m, ref string path, ref string pathToTarget)
+    internal static bool RegexPathFixer(Match m, ref string path, ref string pathToTarget)
     {
         for (var i = 0; i < m.Groups.Count; i++)
         {
@@ -1571,7 +1582,7 @@ public static partial class Utils
     /// </summary>
     /// <param name="input">The string to remove the $0 from</param>
     /// <returns>The string without the $ values</returns>
-    internal static string RemoveRegExGroupsFromString(string input)
+    internal static string RemoveRegexGroupsFromString(string input)
     {
         const int maxValueToCheck = 20;
         var newString = input;
@@ -1627,13 +1638,13 @@ public static partial class Utils
     /// <summary>
     ///     Returns True if FileName is accessible (not locked) by another process
     /// </summary>
-    /// <param name="fileName"></param>
+    /// <param name="path"></param>
     /// <returns>True if not locked or False if locked</returns>
-    internal static bool IsFileAccessible(string fileName)
+    internal static bool IsFileAccessible(string path)
     {
         try
         {
-            FileStream fileStream = new(fileName, FileMode.Open, FileAccess.Read);
+            FileStream fileStream = new(path, FileMode.Open, FileAccess.Read);
             fileStream.Close();
         }
         catch (IOException)

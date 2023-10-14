@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MediaBackup xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<MediaBackup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <BackupFiles />
-  <BackupDisks />
+  <BackupDisks>
+    <BackupDisk>
+      <Name>backup 1001</Name>
+      <Capacity>11995171454976</Capacity>
+      <TotalFiles>0</TotalFiles>
+      <Free>796295471104</Free>
+    </BackupDisk>
+  </BackupDisks>
+  <FoldersToScan>
+    <Folder>
+      <Path>\\nas1\assets1\_Test</Path>
+      <ModifiedDateTime>2023-10-13T17:58:13.8377793+01:00</ModifiedDateTime>
+    </Folder>
+  </FoldersToScan>
+  <FileOrFolderChanges />
   <MasterFoldersLastFullScan>2023-01-01</MasterFoldersLastFullScan>
 </MediaBackup>

@@ -36,8 +36,8 @@ public class FileSystemWatcherTests
         test1ExpectedEventFolderCount = 3;
         var monitoringPath1 = Path.Combine(Path.GetTempPath(), "MonitoringFolder1");
         var monitoringPath2 = Path.Combine(Path.GetTempPath(), "MonitoringFolder2");
-        EnsureFoldersForDirectoryPath(monitoringPath1);
-        EnsureFoldersForDirectoryPath(monitoringPath2);
+        Utils.EnsureDirectoriesForDirectoryPath(monitoringPath1);
+        Utils.EnsureDirectoriesForDirectoryPath(monitoringPath2);
         var watcher = new FileSystemWatcher();
         Assert.True(watcher.Filter == "*.*", nameof(watcher.Filter));
         Assert.True(watcher.IncludeSubdirectories == false, nameof(watcher.IncludeSubdirectories));
@@ -106,13 +106,8 @@ public class FileSystemWatcherTests
 
     private static void CreateFile(string filePath)
     {
-        Utils.EnsureDirectories(filePath);
+        Utils.EnsureDirectoriesForFilePath(filePath);
         File.AppendAllText(filePath, "test");
-    }
-
-    private static void EnsureFoldersForDirectoryPath(string directoryPath)
-    {
-        Utils.EnsureDirectories(Path.Combine(directoryPath, "temp.txt"));
     }
 
     [Fact]
@@ -122,9 +117,9 @@ public class FileSystemWatcherTests
         var monitoringPath1 = Path.Combine(Path.GetTempPath(), "MonitoringFolder1");
         var monitoringPath2 = Path.Combine(Path.GetTempPath(), "MonitoringFolder2");
         var monitoringPath3DeletedAfterABit = Path.Combine(Path.GetTempPath(), "MonitoringFolder3");
-        EnsureFoldersForDirectoryPath(monitoringPath1);
-        EnsureFoldersForDirectoryPath(monitoringPath2);
-        EnsureFoldersForDirectoryPath(monitoringPath3DeletedAfterABit);
+        Utils.EnsureDirectoriesForDirectoryPath(monitoringPath1);
+        Utils.EnsureDirectoriesForDirectoryPath(monitoringPath2);
+        Utils.EnsureDirectoriesForDirectoryPath(monitoringPath3DeletedAfterABit);
 
         var watcher = new FileSystemWatcher
         {
@@ -160,7 +155,7 @@ public class FileSystemWatcherTests
         Assert.Throws<ArgumentException>(() => watcher.Start());
 
         // now create the folder again and start
-        EnsureFoldersForDirectoryPath(monitoringPath3DeletedAfterABit);
+        Utils.EnsureDirectoriesForDirectoryPath(monitoringPath3DeletedAfterABit);
         Assert.False(watcher.Running);
         watcher.Start();
         Assert.True(watcher.Running);
@@ -188,7 +183,7 @@ public class FileSystemWatcherTests
         Assert.Throws<ArgumentException>(() => watcher.Start());
 
         // now create the folder again and start
-        EnsureFoldersForDirectoryPath(monitoringPath3DeletedAfterABit);
+        Utils.EnsureDirectoriesForDirectoryPath(monitoringPath3DeletedAfterABit);
         Assert.False(watcher.Running);
         watcher.Start();
         Assert.True(watcher.Running);
