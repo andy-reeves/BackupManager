@@ -89,8 +89,8 @@ public class FileSystemWatcherTests
         var monitoringPath2 = Path.Combine(Path.GetTempPath(), "MonitoringFolder2");
         var monitoringPath3Missing = Path.Combine(Path.GetTempPath(), "MonitoringFolder3");
         if (Directory.Exists(monitoringPath3Missing)) Directory.Delete(monitoringPath3Missing, true);
-        EnsureFoldersForDirectoryPath(monitoringPath1);
-        EnsureFoldersForDirectoryPath(monitoringPath2);
+        Utils.EnsureDirectoriesForDirectoryPath(monitoringPath1);
+        Utils.EnsureDirectoriesForDirectoryPath(monitoringPath2);
         var watcher = new FileSystemWatcher { Directories = new[] { monitoringPath1, monitoringPath2, monitoringPath3Missing } };
         watcher.ReadyToScan += FileSystemWatcher_ReadyToScan2;
         Assert.Throws<ArgumentException>(() => watcher.Start());
