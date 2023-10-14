@@ -264,7 +264,7 @@ partial class Main
         // user clicks 'Yes' inserted and then returns
         if (!BackupDisk.CheckForValidBackupShare(backupDiskTextBox.Text)) return false;
 
-        var currentConnectedBackupDiskName = BackupDisk.GetBackupFolderName(backupDiskTextBox.Text);
+        var currentConnectedBackupDiskName = BackupDisk.GetBackupDirectoryName(backupDiskTextBox.Text);
 
         while (currentConnectedBackupDiskName != backupDisk)
         {
@@ -279,7 +279,7 @@ partial class Main
                 case DialogResult.No:
                     return false;
                 case DialogResult.Yes:
-                    currentConnectedBackupDiskName = BackupDisk.GetBackupFolderName(backupDiskTextBox.Text);
+                    currentConnectedBackupDiskName = BackupDisk.GetBackupDirectoryName(backupDiskTextBox.Text);
                     break;
             }
         }

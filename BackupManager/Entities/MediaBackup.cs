@@ -335,7 +335,7 @@ public class MediaBackup
 
         // try and find a disk based on the disk name only
         // if more than 1 disk than return the first one
-        var diskName = BackupDisk.GetBackupFolderName(backupShare);
+        var diskName = BackupDisk.GetBackupDirectoryName(backupShare);
         if (string.IsNullOrEmpty(diskName)) return Utils.TraceOut<BackupDisk>();
 
         var backupDisk = BackupDisks.FirstOrDefault(x => x.Name == diskName);
