@@ -53,9 +53,8 @@ internal sealed partial class Main
                     "myListener"));
 
             // ReSharper disable StringLiteralTypo
-            backupDiskTextBox.Text = @"\\nas1\assets1\_Test\BackupDisks\backup 1001 parent";
-
-            //backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
+            //backupDiskTextBox.Text = @"\\nas1\assets1\_Test\BackupDisks\backup 1001 parent";
+            backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
 
             // ReSharper restore StringLiteralTypo
 #else

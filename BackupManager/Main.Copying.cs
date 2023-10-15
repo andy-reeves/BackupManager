@@ -25,17 +25,6 @@ internal sealed partial class Main
         IEnumerable<BackupFile> filesToBackup = mediaBackup.GetBackupFilesWithDiskEmpty().OrderByDescending(static q => q.Length);
         var backupFiles = filesToBackup.ToArray();
         var sizeOfFiles = backupFiles.Sum(static x => x.Length);
-        var totalFileCount = backupFiles.Length;
-        Utils.LogWithPushover(BackupAction.BackupFiles, $"{totalFileCount:n0} files to backup at {Utils.FormatSize(sizeOfFiles)}");
-        var outOfDiskSpaceMessageSent = false;
-        var fileCounter = 0;
-
-        // Start with a 30MB/s copy speed as a guess
-        var lastCopySpeed = Utils.ConvertMBtoBytes(30);
-        var remainingSizeOfFilesToCopy = sizeOfFiles;
-
-        // number of bytes copied so far so we can track the percentage complete
-        long copiedSoFar = 0;
         _ = Utils.GetDiskInfo(backupDiskTextBox.Text, out var availableSpace, out _);
         var remainingDiskSpace = availableSpace - Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave);
         var sizeOfCopy = remainingDiskSpace < sizeOfFiles ? remainingDiskSpace : sizeOfFiles;
@@ -47,16 +36,51 @@ internal sealed partial class Main
 
         // We use 100 as the max because the actual number of bytes could be far too large 
         EnableProgressBar(0, 100);
+        CopyFilesLoop(backupFiles, sizeOfCopy, disk);
+        UpdateMediaFilesCountDisplay();
 
-        foreach (var backupFile in backupFiles)
+        if (!UpdateCurrentBackupDiskInfo(disk))
+        {
+            Utils.LogWithPushover(BackupAction.BackupFiles, PushoverPriority.Emergency, $"Error updating info for backup disk {disk.Name}");
+            return;
+        }
+        mediaBackup.Save();
+        UpdateStatusLabel("Saved.");
+        var filesStillNotOnBackupDisk = mediaBackup.GetBackupFilesWithDiskEmpty();
+        var text = string.Empty;
+        var stillNotOnBackupDisk = filesStillNotOnBackupDisk as BackupFile[] ?? filesStillNotOnBackupDisk.ToArray();
+
+        if (stillNotOnBackupDisk.Any())
+        {
+            sizeOfFiles = stillNotOnBackupDisk.Sum(static p => p.Length);
+            text = $"{stillNotOnBackupDisk.Length:n0} files still to backup at {Utils.FormatSize(sizeOfFiles)}.\n";
+        }
+        Utils.LogWithPushover(BackupAction.BackupFiles, text + $"{disk.FreeFormatted} free on backup disk");
+        if (showCompletedMessage) Utils.LogWithPushover(BackupAction.BackupFiles, PushoverPriority.High, "Completed");
+        Utils.TraceOut();
+    }
+
+    private void CopyFilesLoop(IEnumerable<BackupFile> backupFiles, long sizeOfCopy, BackupDisk disk)
+    {
+        var outOfDiskSpaceMessageSent = false;
+        long copiedSoFar = 0;
+        var fileCounter = 0;
+        var files = backupFiles.ToList();
+        var remainingSizeOfFilesToCopy = files.Sum(static x => x.Length);
+        var totalFileCount = files.Count;
+        var sizeOfFiles = files.Sum(static x => x.Length);
+
+        // Start with a 30MB/s copy speed as a guess
+        var lastCopySpeed = Utils.ConvertMBtoBytes(30);
+        Utils.LogWithPushover(BackupAction.BackupFiles, $"{totalFileCount:n0} files to backup at {Utils.FormatSize(sizeOfFiles)}");
+
+        foreach (var backupFile in files)
         {
             try
             {
                 fileCounter++;
                 UpdateStatusLabel("Copying", Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
                 UpdateMediaFilesCountDisplay();
-                if (string.IsNullOrEmpty(backupFile.IndexFolder)) throw new ApplicationException("Index folder is empty");
-
                 var destinationFileName = backupFile.BackupDiskFullPath(disk.BackupPath);
 
                 // We use a temporary name for the copy first and then rename it after
@@ -66,27 +90,46 @@ internal sealed partial class Main
                 var sourceFileName = backupFile.FullPath;
                 FileInfo sourceFileInfo = new(sourceFileName);
                 var sourceFileSize = Utils.FormatSize(sourceFileInfo.Length);
+                var copyTheFile = false;
 
                 if (File.Exists(destinationFileName))
                 {
-                    Utils.LogWithPushover(BackupAction.BackupFiles,
-                        $"[{fileCounter}/{totalFileCount}]\nSkipping copy of {sourceFileName} as it exists already.");
-                    UpdateStatusLabel($"Skipping {Path.GetFileName(sourceFileName)}", Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
-
                     // it could be that the source file hash changed after we read it (we read the hash, updated the master file and then copied it)
                     // in which case check the source hash again and then check the copied file 
-                    if (!backupFile.CheckContentHashes(disk))
-
-                        // There was an error with the hash codes of the source file anf the file on the backup disk
+                    // if the hash has changed we check the ModifiedTime. If its been modified at source and its newer then we delete from the backup
+                    // disk and copy the new one
+                    if (backupFile.CheckContentHashes(disk))
                     {
-                        Utils.LogWithPushover(BackupAction.BackupFiles, PushoverPriority.High,
-                            $"There was an error with the hash codes on the source master folder and the backup disk. Its likely the source file has changed since the last backup of {backupFile.FullPath} to {destinationFileName}");
+                        UpdateStatusLabel($"Skipping {Path.GetFileName(sourceFileName)}", Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
+
+                        Utils.LogWithPushover(BackupAction.BackupFiles,
+                            $"[{fileCounter}/{totalFileCount}]\nSkipping copy of {sourceFileName} as it exists already.");
+                    }
+                    else
+                    {
+                        // check the modifiedTime and if its different copy it
+                        var sourceLastWriteTime = backupFile.LastWriteTime;
+                        var lastWriteTimeOfFileOnBackupDisk = Utils.GetFileLastWriteTime(destinationFileName);
+
+                        if (sourceLastWriteTime == lastWriteTimeOfFileOnBackupDisk)
+                        {
+                            Utils.LogWithPushover(BackupAction.BackupFiles, PushoverPriority.High,
+                                "There was an error with the hash codes on the source master folder and the backup disk.");
+                        }
+                        else
+                        {
+                            Utils.FileDelete(destinationFileName);
+                            copyTheFile = true;
+                        }
                     }
                 }
                 else
+                    copyTheFile = true;
+
+                if (copyTheFile)
                 {
                     UpdateStatusLabel($"Copying {Path.GetFileName(sourceFileName)}", Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
-                    _ = Utils.GetDiskInfo(backupDiskTextBox.Text, out availableSpace, out _);
+                    _ = Utils.GetDiskInfo(backupDiskTextBox.Text, out var availableSpace, out _);
 
                     if (availableSpace > Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave) + sourceFileInfo.Length)
                     {
@@ -95,10 +138,9 @@ internal sealed partial class Main
 
                         if (lastCopySpeed > 0)
                         {
-                            // copy speed is known
                             // remaining size is the smallest of remaining disk size-critical space to leave free OR
                             // size of remaining files to copy
-                            remainingDiskSpace = availableSpace - Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave);
+                            var remainingDiskSpace = availableSpace - Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave);
                             var sizeOfCopyRemaining = remainingDiskSpace < remainingSizeOfFilesToCopy ? remainingDiskSpace : remainingSizeOfFilesToCopy;
                             var numberOfSecondsOfCopyRemaining = sizeOfCopyRemaining / (double)lastCopySpeed;
                             var rightNow = DateTime.Now;
@@ -165,30 +207,9 @@ internal sealed partial class Main
                 // Sometimes during a copy we get this if we lose the connection to the source NAS drive
                 Utils.LogWithPushover(BackupAction.BackupFiles, PushoverPriority.Emergency, $"IOException during copy. Skipping file. Details {ex}");
             }
-            _ = UpdateCurrentBackupDiskInfo(disk);
+            UpdateCurrentBackupDiskInfo(disk);
             UpdateEstimatedFinish();
         }
-        UpdateMediaFilesCountDisplay();
-
-        if (!UpdateCurrentBackupDiskInfo(disk))
-        {
-            Utils.LogWithPushover(BackupAction.BackupFiles, PushoverPriority.Emergency, $"Error updating info for backup disk {disk.Name}");
-            return;
-        }
-        mediaBackup.Save();
-        UpdateStatusLabel("Saved.");
-        var filesStillNotOnBackupDisk = mediaBackup.GetBackupFilesWithDiskEmpty();
-        var text = string.Empty;
-        var stillNotOnBackupDisk = filesStillNotOnBackupDisk as BackupFile[] ?? filesStillNotOnBackupDisk.ToArray();
-
-        if (stillNotOnBackupDisk.Any())
-        {
-            sizeOfFiles = stillNotOnBackupDisk.Sum(static p => p.Length);
-            text = $"{stillNotOnBackupDisk.Length:n0} files still to backup at {Utils.FormatSize(sizeOfFiles)}.\n";
-        }
-        Utils.LogWithPushover(BackupAction.BackupFiles, text + $"{disk.FreeFormatted} free on backup disk");
-        if (showCompletedMessage) Utils.LogWithPushover(BackupAction.BackupFiles, PushoverPriority.High, "Completed");
-        Utils.TraceOut();
     }
 
     private void CopyFilesAsync(bool showCompletedMessage)
