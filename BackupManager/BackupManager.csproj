@@ -27,6 +27,9 @@
     <Content Include="MediaBackup.xml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Management" Version="7.0.2" />
@@ -61,7 +64,5 @@
   </ItemGroup>
   <Target Name="BeforeBuild" />
   <Target Name="AfterBuild">
-    <Copy SourceFiles="Rules.xml" DestinationFolder="$(OutputPath)" />
-    <Copy SourceFiles="Config.xml" DestinationFolder="$(OutputPath)" />
-  </Target>
+    </Target>
 </Project>

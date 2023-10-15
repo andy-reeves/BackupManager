@@ -12,6 +12,7 @@ using System.Linq;
 using System.Xml.Serialization;
 
 using BackupManager.Extensions;
+using BackupManager.Properties;
 
 namespace BackupManager.Entities;
 
@@ -166,7 +167,7 @@ public sealed class BackupDisk : IEquatable<BackupDisk>
     /// </summary>
     public void UpdateDiskChecked()
     {
-        Checked = DateTime.Now.ToString("yyyy-MM-dd");
+        Checked = DateTime.Now.ToString(Resources.BackupDisk_UpdateDiskChecked_yyyy_MM_dd);
     }
 
     /// <summary>

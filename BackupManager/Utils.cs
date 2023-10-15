@@ -110,11 +110,6 @@ internal static partial class Utils
     #region Static Fields
 
     /// <summary>
-    ///     This is the Hash for a file containing 48K of only zero bytes.
-    /// </summary>
-    internal const string ZeroByteHash = "f4f35d60b3cc18aaa6d8d92f0cd3708a";
-
-    /// <summary>
     ///     We use this to pad our logging messages
     /// </summary>
     private static int _lengthOfLargestBackupActionEnumNames;

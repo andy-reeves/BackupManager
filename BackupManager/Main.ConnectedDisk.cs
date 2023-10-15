@@ -30,7 +30,7 @@ internal sealed partial class Main
     {
         longRunningActionExecutingRightNow = true;
         DisableControlsForAsyncTasks();
-        const string nextDiskMessage = "Please insert the next backup disk now";
+        var nextDiskMessage = Resources.Main_CheckConnectedDiskAndCopyFilesRepeaterAsync_Please_insert_the_next_backup_disk_now;
 
         while (!ct.IsCancellationRequested)
         {
@@ -108,7 +108,7 @@ internal sealed partial class Main
             var diskTestSize = disk.Free > Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize)
                 ? Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize)
                 : disk.Free - Utils.BytesInOneKilobyte;
-            UpdateStatusLabel($"Speed testing {folderToCheck}");
+            UpdateStatusLabel(string.Format(Resources.Main_CheckConnectedDisk_Speed_testing__0_, folderToCheck));
             Utils.DiskSpeedTest(folderToCheck, diskTestSize, mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed);
             disk.UpdateSpeeds(readSpeed, writeSpeed);
         }
@@ -128,7 +128,7 @@ internal sealed partial class Main
             fileName.ClearDiskChecked();
         }
         UpdateMediaFilesCountDisplay();
-        UpdateStatusLabel($"Scanning {folderToCheck}");
+        UpdateStatusLabel(string.Format(Resources.Main_CheckConnectedDisk_Scanning__0_, folderToCheck));
         var backupDiskFiles = Utils.GetFiles(folderToCheck, "*", SearchOption.AllDirectories, FileAttributes.Hidden);
         EnableProgressBar(0, backupDiskFiles.Length);
 
@@ -136,7 +136,7 @@ internal sealed partial class Main
         {
             var backupFileFullPath = backupDiskFiles[i];
             var backupFileIndexFolderRelativePath = backupFileFullPath[(folderToCheck.Length + 1)..];
-            UpdateStatusLabel($"Scanning {folderToCheck}", i + 1);
+            UpdateStatusLabel(string.Format(Resources.Main_CheckConnectedDisk_Scanning__0_, folderToCheck), i + 1);
             UpdateMediaFilesCountDisplay();
 
             if (mediaBackup.Contains(backupFileIndexFolderRelativePath))
@@ -309,7 +309,7 @@ internal sealed partial class Main
     /// <returns></returns>
     private BackupDisk SetupBackupDisk()
     {
-        const string nextDiskMessage = "Please insert the next backup disk now";
+        var nextDiskMessage = Resources.Main_SetupBackupDisk_Please_insert_the_next_backup_disk_now;
         var disk = mediaBackup.GetBackupDisk(backupDiskTextBox.Text);
 
         while (disk == null)

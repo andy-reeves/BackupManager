@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 
 using BackupManager.Entities;
+using BackupManager.Properties;
 
 namespace BackupManager;
 
@@ -21,7 +22,7 @@ internal sealed partial class Main
         Utils.TraceIn();
         var disk = SetupBackupDisk();
         Utils.LogWithPushover(BackupAction.BackupFiles, "Started");
-        UpdateStatusLabel("Copying");
+        UpdateStatusLabel(Resources.Main_CopyFilesLoop_Copying);
         IEnumerable<BackupFile> filesToBackup = mediaBackup.GetBackupFilesWithDiskEmpty().OrderByDescending(static q => q.Length);
         var backupFiles = filesToBackup.ToArray();
         var sizeOfFiles = backupFiles.Sum(static x => x.Length);
@@ -79,7 +80,7 @@ internal sealed partial class Main
             try
             {
                 fileCounter++;
-                UpdateStatusLabel("Copying", Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
+                UpdateStatusLabel(Resources.Main_CopyFilesLoop_Copying, Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
                 UpdateMediaFilesCountDisplay();
 
                 // We use a temporary name for the copy first and then rename it after
@@ -127,7 +128,8 @@ internal sealed partial class Main
         // disk and copy the new one
         if (backupFile.CheckContentHashes(disk))
         {
-            UpdateStatusLabel($"Skipping {Path.GetFileName(sourceFileName)}", Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
+            UpdateStatusLabel(string.Format(Resources.Main_FileExistsInternal_Skipping__0_, Path.GetFileName(sourceFileName)),
+                Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
 
             Utils.LogWithPushover(BackupAction.BackupFiles,
                 $"[{fileCounter}/{totalFileCount}]\nSkipping copy of {sourceFileName} as it exists already.");
@@ -159,7 +161,9 @@ internal sealed partial class Main
         Utils.TraceIn();
         var destinationFileName = backupFile.BackupDiskFullPath(disk.BackupPath);
         var destinationFileNameTemp = destinationFileName + ".copying";
-        UpdateStatusLabel($"Copying {Path.GetFileName(sourceFileName)}", Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
+
+        UpdateStatusLabel(string.Format(Resources.Main_CopyFileInternal_Copying__0_, Path.GetFileName(sourceFileName)),
+            Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
         _ = Utils.GetDiskInfo(backupDiskTextBox.Text, out var availableSpace, out _);
 
         if (availableSpace > Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave) + sourceFileInfo.Length)
@@ -176,11 +180,14 @@ internal sealed partial class Main
                 var numberOfSecondsOfCopyRemaining = sizeOfCopyRemaining / (double)lastCopySpeed;
                 var rightNow = DateTime.Now;
                 var estimatedFinishDateTime = rightNow.AddSeconds(numberOfSecondsOfCopyRemaining);
-                formattedEndDateTime = ". Estimated finish by " + estimatedFinishDateTime.ToString("HH:mm");
+
+                formattedEndDateTime = Resources.Main_CopyFileInternal___Estimated_finish_by_ +
+                                       estimatedFinishDateTime.ToString(Resources.Main_CopyFileInternal_HH_mm);
 
                 // could be the following day
                 if (estimatedFinishDateTime.DayOfWeek != rightNow.DayOfWeek)
-                    formattedEndDateTime = ". Estimated finish by tomorrow at " + estimatedFinishDateTime.ToString("HH:mm");
+                    formattedEndDateTime = Resources.Main_CopyFileInternal___Estimated_finish_by_tomorrow_at_ +
+                                           estimatedFinishDateTime.ToString(Resources.Main_CopyFileInternal_HH_mm);
                 UpdateEstimatedFinish(estimatedFinishDateTime);
             }
 

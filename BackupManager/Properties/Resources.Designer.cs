@@ -61,6 +61,15 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to yyyy-MM-dd.
+        /// </summary>
+        internal static string BackupDisk_UpdateDiskChecked_yyyy_MM_dd {
+            get {
+                return ResourceManager.GetString("BackupDisk_UpdateDiskChecked_yyyy_MM_dd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The fullPath must start with the masterFolder and indexFolder.
         /// </summary>
         internal static string BackupFile_GetRelativePath_The_fullPathCorrect {
@@ -79,11 +88,38 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to yyyy-MM-dd.
+        /// </summary>
+        internal static string BackupFile_UpdateDiskChecked_yyyy_MM_dd {
+            get {
+                return ResourceManager.GetString("BackupFile_UpdateDiskChecked_yyyy_MM_dd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Zero byte Hashcode.
         /// </summary>
         internal static string BackupFile_ZeroByteHashcode {
             get {
                 return ResourceManager.GetString("BackupFile_ZeroByteHashcode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to load config.xml {0}.
+        /// </summary>
+        internal static string Config_Load_Unable_to_load_config_xml__0_ {
+            get {
+                return ResourceManager.GetString("Config_Load_Unable_to_load_config_xml__0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Directory {0} not found..
+        /// </summary>
+        internal static string FileSystemWatcher_OnError_Directory__0__not_found_ {
+            get {
+                return ResourceManager.GetString("FileSystemWatcher_OnError_Directory__0__not_found_", resourceCulture);
             }
         }
         
@@ -178,6 +214,79 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Scanning {0}.
+        /// </summary>
+        internal static string Main_CheckConnectedDisk_Scanning__0_ {
+            get {
+                return ResourceManager.GetString("Main_CheckConnectedDisk_Scanning__0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Speed testing {0}.
+        /// </summary>
+        internal static string Main_CheckConnectedDisk_Speed_testing__0_ {
+            get {
+                return ResourceManager.GetString("Main_CheckConnectedDisk_Speed_testing__0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please insert the next backup disk now.
+        /// </summary>
+        internal static string Main_CheckConnectedDiskAndCopyFilesRepeaterAsync_Please_insert_the_next_backup_disk_now {
+            get {
+                return ResourceManager.GetString("Main_CheckConnectedDiskAndCopyFilesRepeaterAsync_Please_insert_the_next_backup_di" +
+                        "sk_now", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to . Estimated finish by .
+        /// </summary>
+        internal static string Main_CopyFileInternal___Estimated_finish_by_ {
+            get {
+                return ResourceManager.GetString("Main_CopyFileInternal___Estimated_finish_by_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to . Estimated finish by tomorrow at .
+        /// </summary>
+        internal static string Main_CopyFileInternal___Estimated_finish_by_tomorrow_at_ {
+            get {
+                return ResourceManager.GetString("Main_CopyFileInternal___Estimated_finish_by_tomorrow_at_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copying {0}.
+        /// </summary>
+        internal static string Main_CopyFileInternal_Copying__0_ {
+            get {
+                return ResourceManager.GetString("Main_CopyFileInternal_Copying__0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HH:mm.
+        /// </summary>
+        internal static string Main_CopyFileInternal_HH_mm {
+            get {
+                return ResourceManager.GetString("Main_CopyFileInternal_HH_mm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copying.
+        /// </summary>
+        internal static string Main_CopyFilesLoop_Copying {
+            get {
+                return ResourceManager.GetString("Main_CopyFilesLoop_Copying", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete extra files.
         /// </summary>
         internal static string Main_DeleteExtraTitle {
@@ -196,11 +305,57 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Skipping {0}.
+        /// </summary>
+        internal static string Main_FileExistsInternal_Skipping__0_ {
+            get {
+                return ResourceManager.GetString("Main_FileExistsInternal_Skipping__0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Directory scan skipped. It will be scanned again in {0}..
+        /// </summary>
+        internal static string Main_FileSystemWatcher_ReadyToScan_Directory_scan_skipped__It_will_be_scanned_again_in__0__ {
+            get {
+                return ResourceManager.GetString("Main_FileSystemWatcher_ReadyToScan_Directory_scan_skipped__It_will_be_scanned_aga" +
+                        "in_in__0__", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Saved..
+        /// </summary>
+        internal static string Main_FileSystemWatcher_ReadyToScan_Saved_ {
+            get {
+                return ResourceManager.GetString("Main_FileSystemWatcher_ReadyToScan_Saved_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There are folders to scan queued. Would you like to scan them before closing?.
         /// </summary>
         internal static string Main_FoldersQueued {
             get {
                 return ResourceManager.GetString("Main_FoldersQueued", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OFF.
+        /// </summary>
+        internal static string Main_OFF {
+            get {
+                return ResourceManager.GetString("Main_OFF", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ON.
+        /// </summary>
+        internal static string Main_ON {
+            get {
+                return ResourceManager.GetString("Main_ON", resourceCulture);
             }
         }
         
@@ -228,6 +383,15 @@ namespace BackupManager.Properties {
         internal static string Main_RecreateAllSymbolicLinks {
             get {
                 return ResourceManager.GetString("Main_RecreateAllSymbolicLinks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to dd-MMM-yy.
+        /// </summary>
+        internal static string Main_ReportBackupDiskStatusButton_Click_dd_MMM_yy {
+            get {
+                return ResourceManager.GetString("Main_ReportBackupDiskStatusButton_Click_dd_MMM_yy", resourceCulture);
             }
         }
         
@@ -277,20 +441,20 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to File Watchers = OFF.
+        ///   Looks up a localized string similar to Please insert the next backup disk now.
         /// </summary>
-        internal static string Main_SetupFileWatchersOff {
+        internal static string Main_SetupBackupDisk_Please_insert_the_next_backup_disk_now {
             get {
-                return ResourceManager.GetString("Main_SetupFileWatchersOff", resourceCulture);
+                return ResourceManager.GetString("Main_SetupBackupDisk_Please_insert_the_next_backup_disk_now", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to File Watchers = ON.
+        ///   Looks up a localized string similar to File Watchers = {0}.
         /// </summary>
-        internal static string Main_SetupFileWatchersOn {
+        internal static string Main_SetupFileWatchers {
             get {
-                return ResourceManager.GetString("Main_SetupFileWatchersOn", resourceCulture);
+                return ResourceManager.GetString("Main_SetupFileWatchers", resourceCulture);
             }
         }
         
@@ -313,6 +477,15 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to HH:mm.
+        /// </summary>
+        internal static string Main_UpdateEstimatedFinish_HH_mm {
+            get {
+                return ResourceManager.GetString("Main_UpdateEstimatedFinish_HH_mm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Are you sure you want to rebuild the master list?.
         /// </summary>
         internal static string Main_UpdateMasterFiles {
@@ -331,11 +504,138 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Monitoring = {0}.
+        /// </summary>
+        internal static string Main_UpdateMonitoringButton_ {
+            get {
+                return ResourceManager.GetString("Main_UpdateMonitoringButton_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Backup = {0}.
+        /// </summary>
+        internal static string Main_UpdateScheduledBackupButton_ {
+            get {
+                return ResourceManager.GetString("Main_UpdateScheduledBackupButton_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sending = {0}.
+        /// </summary>
+        internal static string Main_UpdateSendingPushoverButton_ {
+            get {
+                return ResourceManager.GetString("Main_UpdateSendingPushoverButton_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Speed Test Disks = {0}.
+        /// </summary>
+        internal static string Main_UpdateSpeedTestDisksButton_ {
+            get {
+                return ResourceManager.GetString("Main_UpdateSpeedTestDisksButton_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Checking {0}.
+        /// </summary>
+        internal static string Main_UpdateSymbolicLinks_Checking__0_ {
+            get {
+                return ResourceManager.GetString("Main_UpdateSymbolicLinks_Checking__0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Completed..
+        /// </summary>
+        internal static string Main_UpdateSymbolicLinks_Completed_ {
+            get {
+                return ResourceManager.GetString("Main_UpdateSymbolicLinks_Completed_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to h&apos;h &apos;mm&apos;m&apos;.
+        /// </summary>
+        internal static string Main_UpdateUI_Tick_h_h__mm_m_ {
+            get {
+                return ResourceManager.GetString("Main_UpdateUI_Tick_h_h__mm_m_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IndexFolder or MasterFolder is empty. Not supported.
+        /// </summary>
+        internal static string MediaBackup_GetBackupFile_IndexFolder_or_MasterFolder_is_empty__Not_supported {
+            get {
+                return ResourceManager.GetString("MediaBackup_GetBackupFile_IndexFolder_or_MasterFolder_is_empty__Not_supported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to determine MasterFolder or IndexFolder..
+        /// </summary>
+        internal static string MediaBackup_GetBackupFile_Unable_to_determine_MasterFolder_or_IndexFolder_ {
+            get {
+                return ResourceManager.GetString("MediaBackup_GetBackupFile_Unable_to_determine_MasterFolder_or_IndexFolder_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to More than 1 file with same ContentsHashcode {0}.
+        /// </summary>
+        internal static string MediaBackup_GetBackupFileFromContentsHashcode_More_than_1_file_with_same_ContentsHashcode__0_ {
+            get {
+                return ResourceManager.GetString("MediaBackup_GetBackupFileFromContentsHashcode_More_than_1_file_with_same_Contents" +
+                        "Hashcode__0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duplicate hash found on load of {0}.
+        /// </summary>
+        internal static string MediaBackup_Load_Duplicate_hash_found_on_load_of__0_ {
+            get {
+                return ResourceManager.GetString("MediaBackup_Load_Duplicate_hash_found_on_load_of__0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to load MediaBackup.xml {0}.
+        /// </summary>
+        internal static string MediaBackup_Load_Unable_to_load_MediaBackup_xml__0_ {
+            get {
+                return ResourceManager.GetString("MediaBackup_Load_Unable_to_load_MediaBackup_xml__0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to yyyy-MM-dd.
+        /// </summary>
+        internal static string MediaBackup_UpdateLastFullScan_yyyy_MM_dd {
+            get {
+                return ResourceManager.GetString("MediaBackup_UpdateLastFullScan_yyyy_MM_dd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duplicate rule number detected in rules.xml.
         /// </summary>
         internal static string Rules_DuplicateRuleNumber {
             get {
                 return ResourceManager.GetString("Rules_DuplicateRuleNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to load Rules.xml {0}.
+        /// </summary>
+        internal static string Rules_Load_Unable_to_load_Rules_xml__0_ {
+            get {
+                return ResourceManager.GetString("Rules_Load_Unable_to_load_Rules_xml__0_", resourceCulture);
             }
         }
         

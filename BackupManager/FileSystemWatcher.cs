@@ -432,7 +432,8 @@ internal sealed class FileSystemWatcher
 
         if (!Directory.Exists(watcherPath))
         {
-            var ex = new DirectoryNotFoundException($"Directory {watcherPath} not found.", e.GetException());
+            var ex = new DirectoryNotFoundException(string.Format(Resources.FileSystemWatcher_OnError_Directory__0__not_found_, watcherPath),
+                e.GetException());
             e = new ErrorEventArgs(ex);
         }
 

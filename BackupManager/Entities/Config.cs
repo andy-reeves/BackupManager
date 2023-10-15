@@ -12,6 +12,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Xml.Serialization;
 
+using BackupManager.Properties;
+
 namespace BackupManager.Entities;
 
 [SuppressMessage("ReSharper", "MemberCanBeInternal")]
@@ -195,7 +197,7 @@ public sealed class Config
         }
         catch (InvalidOperationException ex)
         {
-            throw new ApplicationException($"Unable to load config.xml {ex}");
+            throw new ApplicationException(string.Format(Resources.Config_Load_Unable_to_load_config_xml__0_, ex));
         }
     }
 

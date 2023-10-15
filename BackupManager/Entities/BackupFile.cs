@@ -197,7 +197,7 @@ public sealed class BackupFile : IEquatable<BackupFile>
     {
         if (backupDisk != Disk && Disk.HasValue()) Utils.Log($"{FullPath} was on {Disk} but now on {backupDisk}");
         disk = backupDisk;
-        diskChecked = DateTime.Now.ToString("yyyy-MM-dd");
+        diskChecked = DateTime.Now.ToString(Resources.BackupFile_UpdateDiskChecked_yyyy_MM_dd);
     }
 
     /// <summary>
@@ -244,12 +244,7 @@ public sealed class BackupFile : IEquatable<BackupFile>
     /// <exception cref="ApplicationException"></exception>
     private void UpdateContentsHash(string newContentsHash)
     {
-        contentsHash = newContentsHash switch
-        {
-            null => throw new ArgumentNullException(nameof(newContentsHash), Resources.BackupFile_HashCodeNotNull),
-            Utils.ZeroByteHash => throw new ArgumentException(Resources.BackupFile_ZeroByteHashcode, nameof(newContentsHash)),
-            _ => newContentsHash
-        };
+        contentsHash = newContentsHash ?? throw new ArgumentNullException(nameof(newContentsHash), Resources.BackupFile_HashCodeNotNull);
     }
 
     /// <summary>
@@ -296,11 +291,8 @@ public sealed class BackupFile : IEquatable<BackupFile>
         if (!File.Exists(pathToBackupDiskFile) || !Utils.IsFileAccessible(pathToBackupDiskFile)) return false;
 
         var hashFromSourceFile = Utils.GetShortMd5HashFromFile(FullPath);
-        if (hashFromSourceFile == Utils.ZeroByteHash) throw new ApplicationException($"ERROR: {FullPath} has zero byte hashcode");
-
         ContentsHash = hashFromSourceFile;
         var hashFromBackupDiskFile = Utils.GetShortMd5HashFromFile(pathToBackupDiskFile);
-        if (hashFromBackupDiskFile == Utils.ZeroByteHash) throw new ApplicationException($"ERROR: {hashFromBackupDiskFile} has zero byte hashcode");
 
         if (hashFromBackupDiskFile != hashFromSourceFile)
 

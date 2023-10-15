@@ -52,7 +52,7 @@ internal sealed partial class Main
             CheckForOldBackupDisks();
 
             // Check the connected backup disk (removing any extra files we don't need)
-            _ = CheckConnectedDisk(true);
+            CheckConnectedDisk(true);
 
             // Copy any files that need a backup
             CopyFiles(true);

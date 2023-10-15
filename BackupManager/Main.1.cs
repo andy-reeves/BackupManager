@@ -162,7 +162,7 @@ internal sealed partial class Main
         for (var i = 0; i < foldersToCheck.Count; i++)
         {
             var folderToCheck = foldersToCheck[i];
-            UpdateStatusLabel($"Checking {folderToCheck}", i);
+            UpdateStatusLabel(string.Format(Resources.Main_UpdateSymbolicLinks_Checking__0_, folderToCheck), i);
             var linksDeleted = Utils.DeleteBrokenSymbolicLinks(folderToCheck, true);
 
             foreach (var link in linksDeleted)
@@ -176,10 +176,12 @@ internal sealed partial class Main
         foreach (var folderBackupFile in hashSet)
         {
             fileCounter++;
-            UpdateStatusLabel($"Checking {folderBackupFile}", Convert.ToInt32(fileCounter * 100 / hashSet.Count));
+
+            UpdateStatusLabel(string.Format(Resources.Main_UpdateSymbolicLinks_Checking__0_, folderBackupFile),
+                Convert.ToInt32(fileCounter * 100 / hashSet.Count));
             UpdateSymbolicLinkForFolder(folderBackupFile);
         }
-        UpdateStatusLabel("Completed.");
+        UpdateStatusLabel(Resources.Main_UpdateSymbolicLinks_Completed_);
         Utils.TraceOut();
     }
 
@@ -297,7 +299,9 @@ internal sealed partial class Main
     private void UpdateSendingPushoverButton()
     {
         Utils.TraceIn();
-        pushoverOnOffButton.Text = mediaBackup.Config.PushoverOnOff ? "Sending = ON" : "Sending = OFF";
+
+        pushoverOnOffButton.Text = string.Format(Resources.Main_UpdateSendingPushoverButton_,
+            mediaBackup.Config.PushoverOnOff ? Resources.Main_ON : Resources.Main_OFF);
         Utils.TraceOut();
     }
 
@@ -305,16 +309,13 @@ internal sealed partial class Main
     {
         Utils.TraceIn();
 
+        fileWatcherButton.Text = string.Format(Resources.Main_SetupFileWatchers,
+            mediaBackup.Config.MasterFoldersFileChangeWatchersOnOff ? Resources.Main_ON : Resources.Main_OFF);
+
         if (mediaBackup.Config.MasterFoldersFileChangeWatchersOnOff)
-        {
-            fileWatcherButton.Text = Resources.Main_SetupFileWatchersOn;
             StartFileSystemWatchers();
-        }
         else
-        {
-            fileWatcherButton.Text = Resources.Main_SetupFileWatchersOff;
             StopFileSystemWatchers();
-        }
     }
 
     private void StopFileSystemWatchers()
@@ -325,21 +326,28 @@ internal sealed partial class Main
     private void UpdateMonitoringButton()
     {
         Utils.TraceIn();
-        monitoringButton.Text = mediaBackup.Config.MonitoringOnOff ? "Monitoring = ON" : "Monitoring = OFF";
+
+        monitoringButton.Text = mediaBackup.Config.MonitoringOnOff
+            ? string.Format(Resources.Main_UpdateMonitoringButton_, Resources.Main_ON)
+            : string.Format(Resources.Main_UpdateMonitoringButton_, Resources.Main_OFF);
         Utils.TraceOut();
     }
 
     private void UpdateSpeedTestDisksButton()
     {
         Utils.TraceIn();
-        speedTestDisksButton.Text = mediaBackup.Config.SpeedTestOnOff ? "Speed Test Disks = ON" : "Speed Test Disks = OFF";
+
+        speedTestDisksButton.Text = string.Format(Resources.Main_UpdateSpeedTestDisksButton_,
+            mediaBackup.Config.SpeedTestOnOff ? Resources.Main_ON : Resources.Main_OFF);
         Utils.TraceOut();
     }
 
     private void UpdateScheduledBackupButton()
     {
         Utils.TraceIn();
-        scheduledBackupTimerButton.Text = mediaBackup.Config.ScheduledBackupOnOff ? "Backup = ON" : "Backup = OFF";
+
+        scheduledBackupTimerButton.Text = string.Format(Resources.Main_UpdateScheduledBackupButton_,
+            mediaBackup.Config.ScheduledBackupOnOff ? Resources.Main_ON : Resources.Main_OFF);
         Utils.TraceOut();
     }
 
@@ -371,7 +379,7 @@ internal sealed partial class Main
 
     private void UpdateEstimatedFinish(DateTime estimatedFinishDateTime)
     {
-        estimatedFinishTimeTextBox.Invoke(x => x.Text = estimatedFinishDateTime.ToString("HH:mm"));
+        estimatedFinishTimeTextBox.Invoke(x => x.Text = estimatedFinishDateTime.ToString(Resources.Main_UpdateEstimatedFinish_HH_mm));
     }
 
     private void DisableControlsForAsyncTasks()

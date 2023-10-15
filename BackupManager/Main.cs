@@ -235,8 +235,10 @@ internal sealed partial class Main : Form
                             if (file.ContentsHash == Utils.GetShortMd5HashFromFile(targetFilePath))
                                 file.MasterFolder = targetMasterFolder;
                             else
+                            {
                                 Utils.LogWithPushover(BackupAction.Restore, PushoverPriority.High,
                                     $"ERROR: '{targetFilePath}' has a different Hashcode");
+                            }
                         }
                     }
                 }
@@ -323,7 +325,7 @@ internal sealed partial class Main : Form
             if (disk.Checked.HasValue())
             {
                 var d = DateTime.Parse(disk.Checked);
-                lastChecked = d.ToString("dd-MMM-yy");
+                lastChecked = d.ToString(Resources.Main_ReportBackupDiskStatusButton_Click_dd_MMM_yy);
             }
             var totalSizeOfFilesFromSumOfFiles = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, false).Sum(static p => p.Length);
 
@@ -580,9 +582,10 @@ internal sealed partial class Main : Form
 
     private void UpdateUI_Tick(object sender, EventArgs e)
     {
-        // ReSharper disable once StringLiteralTypo
         timeToNextRunTextBox.Invoke(x =>
-            x.Text = trigger == null || !updateUITimer.Enabled ? string.Empty : trigger.TimeToNextTrigger().ToString("h'h 'mm'm'"));
+            x.Text = trigger == null || !updateUITimer.Enabled
+                ? string.Empty
+                : trigger.TimeToNextTrigger().ToString(Resources.Main_UpdateUI_Tick_h_h__mm_m_));
         foldersToScanTextBox.Invoke(x => x.Text = mediaBackup.Watcher.DirectoriesToScan.Count.ToString());
         fileChangesDetectedTextBox.Invoke(x => x.Text = mediaBackup.Watcher.FileSystemChanges.Count.ToString());
     }
@@ -651,8 +654,8 @@ internal sealed partial class Main : Form
                 }
                 else
                 {
-                    var text =
-                        $"Directory scan skipped. It will be scanned again in {Utils.FormatTimeFromSeconds(mediaBackup.Config.MasterFoldersScanTimer)}.";
+                    var text = string.Format(Resources.Main_FileSystemWatcher_ReadyToScan_Directory_scan_skipped__It_will_be_scanned_again_in__0__,
+                        Utils.FormatTimeFromSeconds(mediaBackup.Config.MasterFoldersScanTimer));
                     Utils.LogWithPushover(BackupAction.ScanFolders, text);
                 }
             }
@@ -660,12 +663,12 @@ internal sealed partial class Main : Form
             if (toSave)
             {
                 mediaBackup.Save();
-                UpdateStatusLabel("Saved.");
+                UpdateStatusLabel(Resources.Main_FileSystemWatcher_ReadyToScan_Saved_);
                 UpdateUI_Tick(null, null);
                 UpdateMediaFilesCountDisplay();
             }
             else
-                UpdateStatusLabel("");
+                UpdateStatusLabel(string.Empty);
         }
         Utils.TraceOut();
     }

@@ -144,12 +144,10 @@
   <data name="Main_Cancelling" xml:space="preserve">
     <value>Cancelling ...</value>
   </data>
-  <data name="Main_SetupFileWatchersOn" xml:space="preserve">
-    <value>File Watchers = ON</value>
+  <data name="Main_SetupFileWatchers" xml:space="preserve">
+    <value>File Watchers = {0}</value>
   </data>
-  <data name="Main_SetupFileWatchersOff" xml:space="preserve">
-    <value>File Watchers = OFF</value>
-  </data>
+ 
   <data name="Main_FoldersQueued" xml:space="preserve">
     <value>There are folders to scan queued. Would you like to scan them before closing?</value>
   </data>
@@ -215,5 +213,108 @@
   </data>
   <data name="InvalidEnumArgument" xml:space="preserve">
     <value>The value of argument '{0}'({1}) is invalid for Enum type '{2}'.</value>
+  </data>
+  <data name="MediaBackup_GetBackupFile_IndexFolder_or_MasterFolder_is_empty__Not_supported" xml:space="preserve">
+    <value>IndexFolder or MasterFolder is empty. Not supported</value>
+  </data>
+  <data name="MediaBackup_GetBackupFile_Unable_to_determine_MasterFolder_or_IndexFolder_" xml:space="preserve">
+    <value>Unable to determine MasterFolder or IndexFolder.</value>
+  </data>
+  <data name="MediaBackup_Load_Duplicate_hash_found_on_load_of__0_" xml:space="preserve">
+    <value>Duplicate hash found on load of {0}</value>
+  </data>
+  <data name="MediaBackup_Load_Unable_to_load_MediaBackup_xml__0_" xml:space="preserve">
+    <value>Unable to load MediaBackup.xml {0}</value>
+  </data>
+  <data name="MediaBackup_UpdateLastFullScan_yyyy_MM_dd" xml:space="preserve">
+    <value>yyyy-MM-dd</value>
+  </data>
+  <data name="MediaBackup_GetBackupFileFromContentsHashcode_More_than_1_file_with_same_ContentsHashcode__0_" xml:space="preserve">
+    <value>More than 1 file with same ContentsHashcode {0}</value>
+  </data>
+  <data name="BackupDisk_UpdateDiskChecked_yyyy_MM_dd" xml:space="preserve">
+    <value>yyyy-MM-dd</value>
+  </data>
+  <data name="BackupFile_UpdateDiskChecked_yyyy_MM_dd" xml:space="preserve">
+    <value>yyyy-MM-dd</value>
+  </data>
+  <data name="Config_Load_Unable_to_load_config_xml__0_" xml:space="preserve">
+    <value>Unable to load config.xml {0}</value>
+  </data>
+  <data name="Rules_Load_Unable_to_load_Rules_xml__0_" xml:space="preserve">
+    <value>Unable to load Rules.xml {0}</value>
+  </data>
+  <data name="FileSystemWatcher_OnError_Directory__0__not_found_" xml:space="preserve">
+    <value>Directory {0} not found.</value>
+  </data>
+  <data name="Main_ReportBackupDiskStatusButton_Click_dd_MMM_yy" xml:space="preserve">
+    <value>dd-MMM-yy</value>
+  </data>
+  <data name="Main_UpdateUI_Tick_h_h__mm_m_" xml:space="preserve">
+    <value>h'h 'mm'm'</value>
+  </data>
+  <data name="Main_FileSystemWatcher_ReadyToScan_Directory_scan_skipped__It_will_be_scanned_again_in__0__" xml:space="preserve">
+    <value>Directory scan skipped. It will be scanned again in {0}.</value>
+  </data>
+  <data name="Main_FileSystemWatcher_ReadyToScan_Saved_" xml:space="preserve">
+    <value>Saved.</value>
+  </data>
+  <data name="Main_UpdateSymbolicLinks_Checking__0_" xml:space="preserve">
+    <value>Checking {0}</value>
+  </data>
+  <data name="Main_UpdateSymbolicLinks_Completed_" xml:space="preserve">
+    <value>Completed.</value>
+  </data>
+  <data name="Main_UpdateSendingPushoverButton_" xml:space="preserve">
+    <value>Sending = {0}</value>
+  </data>
+ 
+  <data name="Main_UpdateMonitoringButton_" xml:space="preserve">
+    <value>Monitoring = {0}</value>
+  </data>
+  <data name="Main_UpdateSpeedTestDisksButton_" xml:space="preserve">
+    <value>Speed Test Disks = {0}</value>
+  </data>
+  <data name="Main_UpdateScheduledBackupButton_" xml:space="preserve">
+    <value>Backup = {0}</value>
+  </data>
+  <data name="Main_ON" xml:space="preserve">
+    <value>ON</value>
+  </data>
+  <data name="Main_OFF" xml:space="preserve">
+    <value>OFF</value>
+  </data>
+  <data name="Main_UpdateEstimatedFinish_HH_mm" xml:space="preserve">
+    <value>HH:mm</value>
+  </data>
+  <data name="Main_CheckConnectedDiskAndCopyFilesRepeaterAsync_Please_insert_the_next_backup_disk_now" xml:space="preserve">
+    <value>Please insert the next backup disk now</value>
+  </data>
+  <data name="Main_CheckConnectedDisk_Speed_testing__0_" xml:space="preserve">
+    <value>Speed testing {0}</value>
+  </data>
+  <data name="Main_CheckConnectedDisk_Scanning__0_" xml:space="preserve">
+    <value>Scanning {0}</value>
+  </data>
+  <data name="Main_SetupBackupDisk_Please_insert_the_next_backup_disk_now" xml:space="preserve">
+    <value>Please insert the next backup disk now</value>
+  </data>
+  <data name="Main_CopyFilesLoop_Copying" xml:space="preserve">
+    <value>Copying</value>
+  </data>
+  <data name="Main_FileExistsInternal_Skipping__0_" xml:space="preserve">
+    <value>Skipping {0}</value>
+  </data>
+  <data name="Main_CopyFileInternal_Copying__0_" xml:space="preserve">
+    <value>Copying {0}</value>
+  </data>
+  <data name="Main_CopyFileInternal___Estimated_finish_by_" xml:space="preserve">
+    <value>. Estimated finish by </value>
+  </data>
+  <data name="Main_CopyFileInternal_HH_mm" xml:space="preserve">
+    <value>HH:mm</value>
+  </data>
+  <data name="Main_CopyFileInternal___Estimated_finish_by_tomorrow_at_" xml:space="preserve">
+    <value>. Estimated finish by tomorrow at </value>
   </data>
 </root>

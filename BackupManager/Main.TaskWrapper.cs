@@ -58,7 +58,7 @@ internal sealed partial class Main
             if (u.Exception == null) return;
 
             Utils.Log("Exception occurred. Cancelling operation.");
-            _ = MessageBox.Show(string.Format(Resources.Main_TaskWrapperException, u.Exception));
+            MessageBox.Show(string.Format(Resources.Main_TaskWrapperException, u.Exception));
             CancelButton_Click(null, null);
         }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
     }
