@@ -126,7 +126,7 @@ public sealed class MediaBackup
                     throw new ApplicationException(string.Format(Resources.MediaBackup_Load_Duplicate_hash_found_on_load_of__0_,
                         backupFile.FileName));
 
-                if (!backupFile.DiskChecked.HasValue() || !backupFile.Disk.HasValue()) backupFile.ClearDiskChecked();
+                if (!backupFile.DiskChecked.HasValue() || !backupFile.Disk.HasValue() backupFile.ClearDiskChecked();}
             }
             var directoryName = new FileInfo(path).DirectoryName;
             if (directoryName == null) return null;
