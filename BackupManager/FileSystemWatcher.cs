@@ -273,8 +273,8 @@ internal sealed class FileSystemWatcher
         {
             watcher.EnableRaisingEvents = true;
         }
-        processChangesTimer?.Start();
-        scanFoldersTimer?.Start();
+        if (FileSystemChanges.Count > 0) processChangesTimer?.Start();
+        if (DirectoriesToScan.Count > 0) scanFoldersTimer?.Start();
         return Utils.TraceOut(Running = true);
     }
 
@@ -315,6 +315,17 @@ internal sealed class FileSystemWatcher
 
         // add this changed folder/file to the list to potentially scan
         FileSystemChanges.Add(new FileSystemEntry(e.FullPath, DateTime.Now));
+
+        // As soon as there's something changed we start our event timers
+        StartTimers();
+        Utils.TraceOut();
+    }
+
+    private void StartTimers()
+    {
+        Utils.TraceIn();
+        processChangesTimer.Start();
+        scanFoldersTimer.Start();
         Utils.TraceOut();
     }
 
@@ -328,20 +339,11 @@ internal sealed class FileSystemWatcher
         {
             // All the folders are old enough so raise the ReadyToScan event
             var args = new FileSystemWatcherEventArgs(DirectoriesToScan);
-            OnThresholdReached(this, args);
+            var handler = ReadyToScan;
+            handler?.Invoke(this, args);
         }
-        if (Running) scanFoldersTimer.Start();
-        Utils.TraceOut();
-    }
 
-    private void OnThresholdReached(object sender, FileSystemWatcherEventArgs e)
-    {
-        Utils.TraceIn();
-
-        // Empty the DirectoriesToScan
-        while (DirectoriesToScan.TryTake(out _)) { }
-        var handler = ReadyToScan;
-        handler?.Invoke(sender, e);
+        //if (Running) scanFoldersTimer.Start();
         Utils.TraceOut();
     }
 
@@ -358,7 +360,7 @@ internal sealed class FileSystemWatcher
         // every few seconds we move through the changes List and put the folders we need to check in our other list
         if (FileSystemChanges.Count == 0)
         {
-            if (Running) processChangesTimer.Start();
+            //if (Running) processChangesTimer.Start();
             Utils.TraceOut();
             return;
         }
@@ -399,7 +401,8 @@ internal sealed class FileSystemWatcher
                 }
             }
         }
-        if (Running) processChangesTimer.Start();
+
+        //if (Running) processChangesTimer.Start();
         Utils.TraceOut();
     }
 
@@ -447,11 +450,14 @@ internal sealed class FileSystemWatcher
 /// </summary>
 internal sealed class FileSystemWatcherEventArgs : EventArgs
 {
-    internal FileSystemWatcherEventArgs(BlockingCollection<FileSystemEntry> foldersToScan)
+    internal FileSystemWatcherEventArgs(BlockingCollection<FileSystemEntry> directoriesToScan)
     {
         Utils.TraceIn();
-        Folders = new FileSystemEntry[foldersToScan.Count];
-        foldersToScan.CopyTo(Folders, 0);
+        Folders = new FileSystemEntry[directoriesToScan.Count];
+        directoriesToScan.CopyTo(Folders, 0);
+
+        // Empty the DirectoriesToScan because we've copied it into the array to return
+        while (directoriesToScan.TryTake(out _)) { }
         Utils.TraceOut();
     }
 
