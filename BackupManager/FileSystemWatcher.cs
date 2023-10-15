@@ -342,8 +342,7 @@ internal sealed class FileSystemWatcher
             var handler = ReadyToScan;
             handler?.Invoke(this, args);
         }
-
-        //if (Running) scanFoldersTimer.Start();
+        if (DirectoriesToScan.Count > 0) scanFoldersTimer.Start();
         Utils.TraceOut();
     }
 
@@ -360,7 +359,6 @@ internal sealed class FileSystemWatcher
         // every few seconds we move through the changes List and put the folders we need to check in our other list
         if (FileSystemChanges.Count == 0)
         {
-            //if (Running) processChangesTimer.Start();
             Utils.TraceOut();
             return;
         }
@@ -400,6 +398,7 @@ internal sealed class FileSystemWatcher
                     DirectoriesToScan.Add(new FileSystemEntry(folderToScan.Path, fileOrFolderChange.ModifiedDateTime));
                 }
             }
+            if (DirectoriesToScan.Count > 0) scanFoldersTimer.Start();
         }
 
         //if (Running) processChangesTimer.Start();
