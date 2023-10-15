@@ -35,14 +35,14 @@ public sealed class MediaBackup
     // This happened with The Porridge movie which is also stored as a Tv episode.
     private readonly Dictionary<string, BackupFile> indexFolderAndRelativePath = new(StringComparer.CurrentCultureIgnoreCase);
 
+    internal readonly FileSystemWatcher Watcher = new();
+
     /// <summary>
     ///     The DateTime of the last full Master Folders scan
     /// </summary>
     private string masterFoldersLastFullScan;
 
     private string mediaBackupPath;
-
-    internal readonly FileSystemWatcher Watcher = new();
 
     public MediaBackup()
     {
@@ -95,7 +95,9 @@ public sealed class MediaBackup
         do
         {
             var destinationFileName = "MediaBackup-" + DateTime.Now.ToString("yy-MM-dd-HH-mm-ss.ff") + ".xml";
-            destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups", destinationFileName);
+
+            destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups",
+                destinationFileName);
         } while (File.Exists(destinationPath));
         return destinationPath;
     }
@@ -453,8 +455,9 @@ public sealed class MediaBackup
         foreach (var backupFile in filesToRemove)
         {
             if (clearHashes)
-                if (indexFolderAndRelativePath.ContainsKey(backupFile.Hash))
-                    _ = indexFolderAndRelativePath.Remove(backupFile.Hash);
+            {
+                if (indexFolderAndRelativePath.ContainsKey(backupFile.Hash)) _ = indexFolderAndRelativePath.Remove(backupFile.Hash);
+            }
             if (BackupFiles.Contains(backupFile)) _ = BackupFiles.Remove(backupFile);
         }
     }

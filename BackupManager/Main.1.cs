@@ -48,14 +48,15 @@ internal sealed partial class Main
             InitializeComponent();
             TraceConfiguration.Register();
 #if DEBUG
-            Trace.Listeners.Add(
-                new TextWriterTraceListener(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"),
-                    "myListener"));
+            Trace.Listeners.Add(new TextWriterTraceListener(
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"), "myListener"));
 
             // ReSharper disable StringLiteralTypo
-            //backupDiskTextBox.Text = @"\\nas1\assets1\_Test\BackupDisks\backup 1001 parent";
+            // ReSharper disable CommentTypo
+            // backupDiskTextBox.Text = @"\\nas1\assets1\_Test\BackupDisks\backup 1001 parent";
             backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
 
+            // ReSharper restore CommentTypo
             // ReSharper restore StringLiteralTypo
 #else
             backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
@@ -151,8 +152,9 @@ internal sealed partial class Main
         }
         UpdateStatusLabel("Checking for broken Symbolic Links");
 
-        var foldersToCheck = mediaBackup.Config.SymbolicLinks.Select(static a => Path.Combine(a.RootFolder, Utils.RemoveRegexGroupsFromString(a.RelativePath)))
-            .Where(Directory.Exists).SelectMany(Directory.EnumerateDirectories).ToList();
+        var foldersToCheck = mediaBackup.Config.SymbolicLinks
+            .Select(static a => Path.Combine(a.RootFolder, Utils.RemoveRegexGroupsFromString(a.RelativePath))).Where(Directory.Exists)
+            .SelectMany(Directory.EnumerateDirectories).ToList();
 
         // check the symbolic links root folders for any broken links
         EnableProgressBar(0, foldersToCheck.Count);
@@ -267,7 +269,9 @@ internal sealed partial class Main
     {
         Utils.TraceIn();
         var numberOfDays = mediaBackup.Config.BackupDiskDaysToReportSinceFilesChecked;
-        var files = mediaBackup.BackupFiles.Where(p => p.DiskChecked.HasValue() && DateTime.Parse(p.DiskChecked).AddDays(numberOfDays) < DateTime.Today);
+
+        var files = mediaBackup.BackupFiles.Where(p =>
+            p.DiskChecked.HasValue() && DateTime.Parse(p.DiskChecked).AddDays(numberOfDays) < DateTime.Today);
         var backupFiles = files as BackupFile[] ?? files.ToArray();
         var disks = backupFiles.GroupBy(static p => p.Disk).Select(static p => p.First());
 
@@ -383,8 +387,8 @@ internal sealed partial class Main
         {
             cancelButton, testPushoverEmergencyButton, testPushoverHighButton, testPushoverNormalButton, testPushoverLowButton,
             listFilesInMasterFolderButton, listFilesNotCheckedInXXButton, listFilesNotOnBackupDiskButton, listFilesOnBackupDiskButton,
-            listFilesWithDuplicateContentHashcodesButton, listMoviesWithMultipleFilesButton, processesGroupBox, pushoverGroupBox, listFilesGroupBox,
-            allBackupDisksGroupBox, reportBackupDiskStatusButton, listFilesInMasterFolderGroupBox, checkAllBackupDisksButton,
+            listFilesWithDuplicateContentHashcodesButton, listMoviesWithMultipleFilesButton, processesGroupBox, pushoverGroupBox,
+            listFilesGroupBox, allBackupDisksGroupBox, reportBackupDiskStatusButton, listFilesInMasterFolderGroupBox, checkAllBackupDisksButton,
             checkDeleteAndCopyAllBackupDisksButton, monitoringButton, reportBackupDiskStatusButton, listFilesInMasterFolderGroupBox,
             listFilesOnBackupDiskGroupBox
         };

@@ -80,7 +80,9 @@ internal sealed partial class Main
         foreach (var masterFolder in mediaBackup.Config.MasterFolders)
         {
             UpdateStatusLabel($"Scanning {masterFolder}");
-            if (!Directory.Exists(masterFolder)) Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High, $"{masterFolder} is not available");
+
+            if (!Directory.Exists(masterFolder))
+                Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High, $"{masterFolder} is not available");
 
             if (Directory.Exists(masterFolder))
             {
@@ -92,8 +94,8 @@ internal sealed partial class Main
                 {
                     UpdateStatusLabel($"Speed testing {masterFolder}");
 
-                    Utils.DiskSpeedTest(masterFolder, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations,
-                        out readSpeed, out writeSpeed);
+                    Utils.DiskSpeedTest(masterFolder, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize),
+                        mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed);
                 }
                 var totalBytesOnMasterFolderDiskFormatted = Utils.FormatSize(totalBytesOnMasterFolderDisk);
                 var freeSpaceOnCurrentMasterFolderFormatted = Utils.FormatSize(freeSpaceOnCurrentMasterFolder);
@@ -139,7 +141,8 @@ internal sealed partial class Main
                     CheckForFilesToDelete(file);
                 }
 
-                if (mediaBackup.Config.IndexFolders.Any(indexFolder => !ScanSingleFolder(Path.Combine(masterFolder, indexFolder), SearchOption.AllDirectories)))
+                if (mediaBackup.Config.IndexFolders.Any(indexFolder =>
+                        !ScanSingleFolder(Path.Combine(masterFolder, indexFolder), SearchOption.AllDirectories)))
                     return false;
             }
             else

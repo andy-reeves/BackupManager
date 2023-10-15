@@ -28,7 +28,9 @@ internal sealed partial class Main
             if (monitor.FailureRetryExceeded) continue;
 
             var s = monitor.Failures.Count > 1 ? "s" : string.Empty;
-            var text = $"'{monitor.Name}' is down. {monitor.Failures.Count} failure{s} in the last {Utils.FormatTimeFromSeconds(monitor.FailureTimePeriod)}.";
+
+            var text =
+                $"'{monitor.Name}' is down. {monitor.Failures.Count} failure{s} in the last {Utils.FormatTimeFromSeconds(monitor.FailureTimePeriod)}.";
             Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High, text);
 
             if (monitor.ProcessToKill.HasValue())

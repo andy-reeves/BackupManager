@@ -20,8 +20,8 @@ namespace BackupManager;
 internal sealed class FileSystemWatcher
 {
     private const int NotifyFiltersValidMask = (int)(NotifyFilters.Attributes | NotifyFilters.CreationTime | NotifyFilters.DirectoryName |
-                                                     NotifyFilters.FileName | NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.Security |
-                                                     NotifyFilters.Size);
+                                                     NotifyFilters.FileName | NotifyFilters.LastAccess | NotifyFilters.LastWrite |
+                                                     NotifyFilters.Security | NotifyFilters.Size);
 
     private readonly List<System.IO.FileSystemWatcher> watcherList = new();
 
@@ -115,6 +115,8 @@ internal sealed class FileSystemWatcher
     ///     If you change these after starting then we stop and start again.
     /// </summary>
     [SuppressMessage("ReSharper", "PropertyCanBeMadeInitOnly.Global")]
+    [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
+
     internal NotifyFilters NotifyFilter
     {
         get => notifyFilter;
@@ -258,8 +260,9 @@ internal sealed class FileSystemWatcher
         if (Running) return Utils.TraceOut(Running = true);
 
         if (!reset)
-            if (!Reset())
-                return Utils.TraceOut(Running = false);
+        {
+            if (!Reset()) return Utils.TraceOut(Running = false);
+        }
 
         // Check current paths are valid
         foreach (var directory in Directories)

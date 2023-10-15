@@ -46,7 +46,9 @@ public sealed class FileSystemWatcherTests
         Assert.True(watcher.IncludeSubdirectories == false, nameof(watcher.IncludeSubdirectories));
         Assert.True(watcher.ScanInterval == 60, nameof(watcher.ScanInterval));
         Assert.True(watcher.Directories.Length == 0, nameof(watcher.Directories.Length));
-        Assert.True(watcher.NotifyFilter == (NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName), nameof(watcher.NotifyFilter));
+
+        Assert.True(watcher.NotifyFilter == (NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName),
+            nameof(watcher.NotifyFilter));
         Assert.True(watcher.ProcessChangesInterval == 30, nameof(watcher.ProcessChangesInterval));
         Assert.True(watcher.DirectoriesToScan.Count == 0, nameof(FileSystemWatcher.DirectoriesToScan.Count));
         Assert.True(watcher.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));

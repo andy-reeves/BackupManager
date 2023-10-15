@@ -219,7 +219,8 @@ internal sealed partial class Main : Form
                         {
                             if (File.Exists(sourceFileFullPath))
                             {
-                                Utils.LogWithPushover(BackupAction.Restore, $"[{fileCounter}/{countOfFiles}] Copying {sourceFileFullPath} as {targetFilePath}");
+                                Utils.LogWithPushover(BackupAction.Restore,
+                                    $"[{fileCounter}/{countOfFiles}] Copying {sourceFileFullPath} as {targetFilePath}");
                                 _ = Utils.FileCopy(sourceFileFullPath, targetFilePath);
                             }
                             else
@@ -234,7 +235,8 @@ internal sealed partial class Main : Form
                             if (file.ContentsHash == Utils.GetShortMd5HashFromFile(targetFilePath))
                                 file.MasterFolder = targetMasterFolder;
                             else
-                                Utils.LogWithPushover(BackupAction.Restore, PushoverPriority.High, $"ERROR: '{targetFilePath}' has a different Hashcode");
+                                Utils.LogWithPushover(BackupAction.Restore, PushoverPriority.High,
+                                    $"ERROR: '{targetFilePath}' has a different Hashcode");
                         }
                     }
                 }
@@ -302,7 +304,9 @@ internal sealed partial class Main : Form
     private void TestPushoverEmergencyButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        Utils.LogWithPushover(BackupAction.General, PushoverPriority.Emergency, PushoverRetry.OneMinute, PushoverExpires.OneHour, "Emergency priority test");
+
+        Utils.LogWithPushover(BackupAction.General, PushoverPriority.Emergency, PushoverRetry.OneMinute, PushoverExpires.OneHour,
+            "Emergency priority test");
         Utils.TraceOut();
     }
 
@@ -577,7 +581,8 @@ internal sealed partial class Main : Form
     private void UpdateUI_Tick(object sender, EventArgs e)
     {
         // ReSharper disable once StringLiteralTypo
-        timeToNextRunTextBox.Invoke(x => x.Text = trigger == null || !updateUITimer.Enabled ? string.Empty : trigger.TimeToNextTrigger().ToString("h'h 'mm'm'"));
+        timeToNextRunTextBox.Invoke(x =>
+            x.Text = trigger == null || !updateUITimer.Enabled ? string.Empty : trigger.TimeToNextTrigger().ToString("h'h 'mm'm'"));
         foldersToScanTextBox.Invoke(x => x.Text = mediaBackup.Watcher.DirectoriesToScan.Count.ToString());
         fileChangesDetectedTextBox.Invoke(x => x.Text = mediaBackup.Watcher.FileSystemChanges.Count.ToString());
     }
@@ -616,8 +621,8 @@ internal sealed partial class Main : Form
                     // unless they aren't on a backup disk in which case they are removed now 
                     var files = mediaBackup.BackupFiles.Where(static b => !b.Flag)
                         .Where(b => b.FullPath.StartsWith(folderToScan.Path, StringComparison.InvariantCultureIgnoreCase)).Where(b =>
-                            !b.FullPath.SubstringAfter(Utils.EnsurePathHasATerminatingSeparator(folderToScan.Path), StringComparison.CurrentCultureIgnoreCase)
-                                .Contains('\\')).ToList();
+                            !b.FullPath.SubstringAfter(Utils.EnsurePathHasATerminatingSeparator(folderToScan.Path),
+                                StringComparison.CurrentCultureIgnoreCase).Contains('\\')).ToList();
 
                     for (var j = files.Count - 1; j >= 0; j--)
                     {
@@ -635,8 +640,8 @@ internal sealed partial class Main : Form
                         }
                     }
 
-                    var fileCountInFolderAfter =
-                        mediaBackup.BackupFiles.Count(b => b.FullPath.StartsWith(folderToScan.Path, StringComparison.InvariantCultureIgnoreCase));
+                    var fileCountInFolderAfter = mediaBackup.BackupFiles.Count(b =>
+                        b.FullPath.StartsWith(folderToScan.Path, StringComparison.InvariantCultureIgnoreCase));
                     var filesNotOnBackupDiskCount = mediaBackup.GetBackupFilesWithDiskEmpty().Count();
 
                     var text =
@@ -646,7 +651,8 @@ internal sealed partial class Main : Form
                 }
                 else
                 {
-                    var text = $"Directory scan skipped. It will be scanned again in {Utils.FormatTimeFromSeconds(mediaBackup.Config.MasterFoldersScanTimer)}.";
+                    var text =
+                        $"Directory scan skipped. It will be scanned again in {Utils.FormatTimeFromSeconds(mediaBackup.Config.MasterFoldersScanTimer)}.";
                     Utils.LogWithPushover(BackupAction.ScanFolders, text);
                 }
             }
@@ -705,7 +711,8 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
 
-        if (MessageBox.Show(Resources.Main_RecalculateAllHashes, Resources.Main_RecalculateAllHashesTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
+        if (MessageBox.Show(Resources.Main_RecalculateAllHashes, Resources.Main_RecalculateAllHashesTitle, MessageBoxButtons.YesNo) ==
+            DialogResult.Yes)
         {
             foreach (var backupFile in mediaBackup.BackupFiles)
             {

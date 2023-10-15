@@ -119,7 +119,8 @@ internal sealed partial class Main
         Utils.LogWithPushover(BackupAction.CheckBackupDisk, text);
 
         if (disk.Free < Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumCriticalSpace))
-            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, $"{disk.FreeFormatted} free is very low. Prepare new backup disk");
+            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
+                $"{disk.FreeFormatted} free is very low. Prepare new backup disk");
         var filesToReset = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, true);
 
         foreach (var fileName in filesToReset)
@@ -276,8 +277,8 @@ internal sealed partial class Main
         {
             Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, $"Connect new backup drive to restore from {backupDisk}");
 
-            var answer = MessageBox.Show(string.Format(Resources.Main_BackupDiskConnectCorrectDisk2, backupDisk), Resources.Main_BackupDiskConnectCorrectDisk,
-                MessageBoxButtons.YesNo);
+            var answer = MessageBox.Show(string.Format(Resources.Main_BackupDiskConnectCorrectDisk2, backupDisk),
+                Resources.Main_BackupDiskConnectCorrectDisk, MessageBoxButtons.YesNo);
 
             // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
             switch (answer)

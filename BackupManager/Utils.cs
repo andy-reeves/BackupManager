@@ -114,7 +114,8 @@ internal static partial class Utils
     private static readonly MD5 _md5 = MD5.Create();
 
 #if DEBUG
-    private static readonly string _logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Debug.log");
+    private static readonly string _logFile =
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Debug.log");
 #else
     private static readonly string _logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager.log");
 #endif
@@ -147,7 +148,9 @@ internal static partial class Utils
         var destLogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups",
             $"BackupManager{suffix}_{timeLog}.log");
         if (File.Exists(_logFile)) FileMove(_logFile, destLogFile);
-        var traceFiles = GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "*BackupManager_Trace.log", SearchOption.TopDirectoryOnly);
+
+        var traceFiles = GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "*BackupManager_Trace.log",
+            SearchOption.TopDirectoryOnly);
 
         foreach (var file in traceFiles)
         {
@@ -454,7 +457,9 @@ internal static partial class Utils
         DirectoryInfo directoryInfo = new(path);
         if (directoryInfo.Parent != null && AnyFlagSet(directoryInfo.Attributes, directoryAttributesToIgnore)) return TraceOut(Array.Empty<string>());
 
-        var include = from filter in filters.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries) where filter.Trim().HasValue() select filter.Trim();
+        var include = from filter in filters.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+            where filter.Trim().HasValue()
+            select filter.Trim();
         var includeAsArray = include as string[] ?? include.ToArray();
         var exclude = from filter in includeAsArray where filter.Contains('!') select filter;
         var excludeAsArray = exclude as string[] ?? exclude.ToArray();
@@ -681,7 +686,9 @@ internal static partial class Utils
                     var response = task.Result;
                     _ = response.EnsureSuccessStatusCode();
                     var applicationLimitRemaining = 0;
-                    if (response.Headers.TryGetValues("X-Limit-App-Remaining", out var values)) applicationLimitRemaining = Convert.ToInt32(values.First());
+
+                    if (response.Headers.TryGetValues("X-Limit-App-Remaining", out var values))
+                        applicationLimitRemaining = Convert.ToInt32(values.First());
                     Trace($"Pushover messages remaining: {applicationLimitRemaining}");
 
                     if (applicationLimitRemaining < Config.PushoverWarningMessagesRemaining)
@@ -689,7 +696,9 @@ internal static partial class Utils
                         if (!_alreadySendingPushoverMessage)
                         {
                             _alreadySendingPushoverMessage = true;
-                            SendPushoverMessage("Message Limit Warning", PushoverPriority.High, $"Application Limit Remaining is: {applicationLimitRemaining}");
+
+                            SendPushoverMessage("Message Limit Warning", PushoverPriority.High,
+                                $"Application Limit Remaining is: {applicationLimitRemaining}");
                             _alreadySendingPushoverMessage = false;
                         }
                     }
@@ -780,7 +789,8 @@ internal static partial class Utils
     {
         if (_lengthOfLargestBackupActionEnumNames == 0)
         {
-            foreach (var enumName in Enum.GetNames(typeof(BackupAction)).Where(static enumName => enumName.Length > _lengthOfLargestBackupActionEnumNames))
+            foreach (var enumName in Enum.GetNames(typeof(BackupAction))
+                         .Where(static enumName => enumName.Length > _lengthOfLargestBackupActionEnumNames))
             {
                 _lengthOfLargestBackupActionEnumNames = enumName.Length;
             }
@@ -847,7 +857,8 @@ internal static partial class Utils
     /// <param name="retry"></param>
     /// <param name="expires"></param>
     /// <param name="text"></param>
-    internal static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires, string text)
+    internal static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires,
+        string text)
     {
         Log(backupAction, text);
         if (Config.PushoverAppToken.HasValue()) SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, text);
@@ -954,7 +965,9 @@ internal static partial class Utils
     /// </returns>
     internal static string EnsurePathHasATerminatingSeparator(string path)
     {
-        return path.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.InvariantCultureIgnoreCase) ? path : path + Path.DirectorySeparatorChar;
+        return path.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.InvariantCultureIgnoreCase)
+            ? path
+            : path + Path.DirectorySeparatorChar;
     }
 
     /// <summary>
