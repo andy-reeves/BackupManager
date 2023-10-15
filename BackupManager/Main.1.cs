@@ -233,38 +233,35 @@ internal sealed partial class Main
     private void StartFileSystemWatchers()
     {
         Utils.TraceIn();
-        if (mediaBackup.Watcher == null || mediaBackup.Watcher.Directories.Length == 0) mediaBackup.Watcher = SetupWatcher();
+        if (mediaBackup.Watcher.Directories.Length == 0) SetupWatcher();
         mediaBackup.Watcher.Start();
         Utils.TraceOut();
     }
 
-    private FileSystemWatcher SetupWatcher()
+    private void SetupWatcher()
     {
         Utils.TraceIn();
-
-        var watcher = new FileSystemWatcher
-        {
-            NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName,
-            Directories = mediaBackup.Config.MasterFolders.ToArray(),
-            ProcessChangesInterval = mediaBackup.Config.MasterFoldersProcessChangesTimer,
-            ScanInterval = mediaBackup.Config.MasterFoldersScanTimer,
-            Filter = "*.*",
-            IncludeSubdirectories = true
-        };
-        mediaBackup.Watcher.ReadyToScan += FileSystemWatcher_ReadyToScan;
-        mediaBackup.Watcher.Error += FileSystemWatcher_OnError;
-        mediaBackup.Watcher.MinimumAgeBeforeScanEventRaised = mediaBackup.Config.MasterFolderScanMinimumAgeBeforeScanning;
+        var watcher = mediaBackup.Watcher;
+        watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName;
+        watcher.Directories = mediaBackup.Config.MasterFolders.ToArray();
+        watcher.ProcessChangesInterval = mediaBackup.Config.MasterFoldersProcessChangesTimer;
+        watcher.ScanInterval = mediaBackup.Config.MasterFoldersScanTimer;
+        watcher.Filter = "*.*";
+        watcher.IncludeSubdirectories = true;
+        watcher.ReadyToScan += FileSystemWatcher_ReadyToScan;
+        watcher.Error += FileSystemWatcher_OnError;
+        watcher.MinimumAgeBeforeScanEventRaised = mediaBackup.Config.MasterFolderScanMinimumAgeBeforeScanning;
 
         foreach (var item in mediaBackup.FileOrFolderChanges)
         {
-            mediaBackup.Watcher.FileSystemChanges.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime), ct);
+            watcher.FileSystemChanges.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime), ct);
         }
 
         foreach (var item in mediaBackup.FoldersToScan)
         {
-            mediaBackup.Watcher.DirectoriesToScan.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime), ct);
+            watcher.DirectoriesToScan.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime), ct);
         }
-        return Utils.TraceOut(watcher);
+        Utils.TraceOut();
     }
 
     private void CheckForOldBackupDisks()
