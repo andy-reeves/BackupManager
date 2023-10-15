@@ -44,6 +44,7 @@ internal static partial class Utils
 
     #region Constants
 
+#if DEBUG
     /// <summary>
     ///     The end block size.
     /// </summary>
@@ -58,7 +59,22 @@ internal static partial class Utils
     ///     The start block size.
     /// </summary>
     internal const int StartBlockSize = 16 * BytesInOneKilobyte; // 16K
+#else
+    /// <summary>
+    ///     The end block size.
+    /// </summary>
+    private const int EndBlockSize = 16 * BytesInOneKilobyte; // 16K
 
+    /// <summary>
+    ///     The middle block size.
+    /// </summary>
+    private const int MiddleBlockSize = 16 * BytesInOneKilobyte; // 16K
+
+    /// <summary>
+    ///     The start block size.
+    /// </summary>
+    private const int StartBlockSize = 16 * BytesInOneKilobyte; // 16K
+#endif
     /// <summary>
     ///     The number of bytes in one Terabyte. 2^40 bytes.
     /// </summary>
@@ -295,7 +311,11 @@ internal static partial class Utils
     /// <returns>
     ///     A String of the hash.
     /// </returns>
+#if DEBUG
     internal static string CreateHashForByteArray(byte[] firstByteArray, byte[] secondByteArray, byte[] thirdByteArray)
+#else
+    private static string CreateHashForByteArray(byte[] firstByteArray, byte[] secondByteArray, byte[] thirdByteArray)
+#endif
     {
         var newSize = 0;
         newSize += firstByteArray.Length;
@@ -341,7 +361,11 @@ internal static partial class Utils
     /// </summary>
     /// <param name="filePath">
     /// </param>
+#if DEBUG
     internal static void EnsureDirectoriesForFilePath(string filePath)
+#else
+    private static void EnsureDirectoriesForFilePath(string filePath)
+#endif
     {
         var directoryName = new FileInfo(filePath).DirectoryName;
         if (directoryName != null) Directory.CreateDirectory(directoryName);
@@ -985,7 +1009,11 @@ internal static partial class Utils
     /// <returns>
     ///     The byte[]
     /// </returns>
+#if DEBUG
     private static byte[] GetLocalFileByteArray(Stream stream, long offset, long byteCountToReturn)
+#else
+    private static byte[] GetLocalFileByteArray(Stream stream, long offset, long byteCountToReturn)
+#endif
     {
         stream.Seek(offset, SeekOrigin.Begin);
         var buffer = new byte[byteCountToReturn];
@@ -1019,7 +1047,11 @@ internal static partial class Utils
     /// <returns>
     ///     The byte[]
     /// </returns>
+#if DEBUG
     internal static byte[] GetLocalFileByteArray(string fileName, long offset, long byteCountToReturn)
+#else
+    private static byte[] GetLocalFileByteArray(string fileName, long offset, long byteCountToReturn)
+#endif
     {
         byte[] buffer;
         FileStream fileStream = new(fileName, FileMode.Open, FileAccess.Read);

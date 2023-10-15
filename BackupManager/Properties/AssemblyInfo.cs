@@ -6,8 +6,10 @@
 
 using System.Reflection;
 using System.Resources;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+#if DEBUG
+using System.Runtime.CompilerServices;
+#endif
 
 [assembly: AssemblyTitle("BackupManager")]
 [assembly: AssemblyDescription("")]

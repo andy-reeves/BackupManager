@@ -236,6 +236,7 @@ internal sealed partial class Main
         Utils.TraceIn();
         if (mediaBackup.Watcher.Directories.Length == 0) SetupWatcher();
         mediaBackup.Watcher.Start();
+        Utils.Trace($" mediaBackup.Watcher.Running = {mediaBackup.Watcher.Running}");
         Utils.TraceOut();
     }
 

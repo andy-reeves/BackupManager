@@ -203,7 +203,6 @@ public sealed class FileSystemWatcherTests
         Assert.True(watcher.Running);
         watcher.Stop();
         Assert.False(watcher.Running);
-        _ = watcher.ResetCollections();
         Assert.True(watcher.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));
         Assert.True(watcher.DirectoriesToScan.Count == 0, nameof(FileSystemWatcher.DirectoriesToScan.Count));
 

@@ -20,6 +20,7 @@ namespace BackupManager.Entities;
 [SuppressMessage("ReSharper", "UnusedMember.Global")]
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 [SuppressMessage("ReSharper", "CollectionNeverUpdated.Global")]
+[SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
 public sealed class Config
 {
     [XmlArrayItem("MasterFolder")] public Collection<string> MasterFolders { get; set; } = new();

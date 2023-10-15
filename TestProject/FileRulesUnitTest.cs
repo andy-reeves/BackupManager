@@ -5,7 +5,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 #if DEBUG
-
 using System.Diagnostics.CodeAnalysis;
 
 using BackupManager;

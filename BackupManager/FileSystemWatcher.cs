@@ -299,20 +299,6 @@ internal sealed class FileSystemWatcher
     }
 
     /// <summary>
-    ///     Clears the two collections of files and directories.
-    /// </summary>
-    /// <returns>True if they were cleared correctly</returns>
-    internal bool ResetCollections()
-    {
-        Utils.TraceIn();
-
-        while (FileSystemChanges.TryTake(out _)) { }
-
-        while (DirectoriesToScan.TryTake(out _)) { }
-        return Utils.TraceOut(true);
-    }
-
-    /// <summary>
     ///     Executes when any changes to items in the monitored directories are detected.
     /// </summary>
     /// <param name="sender"></param>
