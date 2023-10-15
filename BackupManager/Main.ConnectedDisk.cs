@@ -30,7 +30,7 @@ internal sealed partial class Main
     {
         longRunningActionExecutingRightNow = true;
         DisableControlsForAsyncTasks();
-        var nextDiskMessage = Resources.Main_CheckConnectedDiskAndCopyFilesRepeaterAsync_Please_insert_the_next_backup_disk_now;
+        var nextDiskMessage = Resources.Main_Please_insert_the_next_backup_disk_now;
 
         while (!ct.IsCancellationRequested)
         {
@@ -108,7 +108,7 @@ internal sealed partial class Main
             var diskTestSize = disk.Free > Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize)
                 ? Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize)
                 : disk.Free - Utils.BytesInOneKilobyte;
-            UpdateStatusLabel(string.Format(Resources.Main_CheckConnectedDisk_Speed_testing__0_, folderToCheck));
+            UpdateStatusLabel(string.Format(Resources.Main_SpeedTesting, folderToCheck));
             Utils.DiskSpeedTest(folderToCheck, diskTestSize, mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed);
             disk.UpdateSpeeds(readSpeed, writeSpeed);
         }
@@ -119,8 +119,10 @@ internal sealed partial class Main
         Utils.LogWithPushover(BackupAction.CheckBackupDisk, text);
 
         if (disk.Free < Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumCriticalSpace))
+        {
             Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
                 $"{disk.FreeFormatted} free is very low. Prepare new backup disk");
+        }
         var filesToReset = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, true);
 
         foreach (var fileName in filesToReset)
@@ -128,7 +130,7 @@ internal sealed partial class Main
             fileName.ClearDiskChecked();
         }
         UpdateMediaFilesCountDisplay();
-        UpdateStatusLabel(string.Format(Resources.Main_CheckConnectedDisk_Scanning__0_, folderToCheck));
+        UpdateStatusLabel(string.Format(Resources.Main_Scanning, folderToCheck));
         var backupDiskFiles = Utils.GetFiles(folderToCheck, "*", SearchOption.AllDirectories, FileAttributes.Hidden);
         EnableProgressBar(0, backupDiskFiles.Length);
 
@@ -136,7 +138,7 @@ internal sealed partial class Main
         {
             var backupFileFullPath = backupDiskFiles[i];
             var backupFileIndexFolderRelativePath = backupFileFullPath[(folderToCheck.Length + 1)..];
-            UpdateStatusLabel(string.Format(Resources.Main_CheckConnectedDisk_Scanning__0_, folderToCheck), i + 1);
+            UpdateStatusLabel(string.Format(Resources.Main_Scanning, folderToCheck), i + 1);
             UpdateMediaFilesCountDisplay();
 
             if (mediaBackup.Contains(backupFileIndexFolderRelativePath))
@@ -309,7 +311,7 @@ internal sealed partial class Main
     /// <returns></returns>
     private BackupDisk SetupBackupDisk()
     {
-        var nextDiskMessage = Resources.Main_SetupBackupDisk_Please_insert_the_next_backup_disk_now;
+        var nextDiskMessage = Resources.Main_Please_insert_the_next_backup_disk_now;
         var disk = mediaBackup.GetBackupDisk(backupDiskTextBox.Text);
 
         while (disk == null)

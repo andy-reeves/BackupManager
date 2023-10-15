@@ -325,7 +325,7 @@ internal sealed partial class Main : Form
             if (disk.Checked.HasValue())
             {
                 var d = DateTime.Parse(disk.Checked);
-                lastChecked = d.ToString(Resources.Main_ReportBackupDiskStatusButton_Click_dd_MMM_yy);
+                lastChecked = d.ToString(Resources.DateTime_ddMMMyy);
             }
             var totalSizeOfFilesFromSumOfFiles = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, false).Sum(static p => p.Length);
 
@@ -583,9 +583,7 @@ internal sealed partial class Main : Form
     private void UpdateUI_Tick(object sender, EventArgs e)
     {
         timeToNextRunTextBox.Invoke(x =>
-            x.Text = trigger == null || !updateUITimer.Enabled
-                ? string.Empty
-                : trigger.TimeToNextTrigger().ToString(Resources.Main_UpdateUI_Tick_h_h__mm_m_));
+            x.Text = trigger == null || !updateUITimer.Enabled ? string.Empty : trigger.TimeToNextTrigger().ToString(Resources.DateTime_TimeFormat));
         foldersToScanTextBox.Invoke(x => x.Text = mediaBackup.Watcher.DirectoriesToScan.Count.ToString());
         fileChangesDetectedTextBox.Invoke(x => x.Text = mediaBackup.Watcher.FileSystemChanges.Count.ToString());
     }
@@ -654,7 +652,7 @@ internal sealed partial class Main : Form
                 }
                 else
                 {
-                    var text = string.Format(Resources.Main_FileSystemWatcher_ReadyToScan_Directory_scan_skipped__It_will_be_scanned_again_in__0__,
+                    var text = string.Format(Resources.Main_Directory_scan_skipped,
                         Utils.FormatTimeFromSeconds(mediaBackup.Config.MasterFoldersScanTimer));
                     Utils.LogWithPushover(BackupAction.ScanFolders, text);
                 }
@@ -663,7 +661,7 @@ internal sealed partial class Main : Form
             if (toSave)
             {
                 mediaBackup.Save();
-                UpdateStatusLabel(Resources.Main_FileSystemWatcher_ReadyToScan_Saved_);
+                UpdateStatusLabel(Resources.Main_Saved);
                 UpdateUI_Tick(null, null);
                 UpdateMediaFilesCountDisplay();
             }

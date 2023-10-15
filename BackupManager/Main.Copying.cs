@@ -22,7 +22,7 @@ internal sealed partial class Main
         Utils.TraceIn();
         var disk = SetupBackupDisk();
         Utils.LogWithPushover(BackupAction.BackupFiles, "Started");
-        UpdateStatusLabel(Resources.Main_CopyFilesLoop_Copying);
+        UpdateStatusLabel(string.Format(Resources.Main_Copying, string.Empty));
         IEnumerable<BackupFile> filesToBackup = mediaBackup.GetBackupFilesWithDiskEmpty().OrderByDescending(static q => q.Length);
         var backupFiles = filesToBackup.ToArray();
         var sizeOfFiles = backupFiles.Sum(static x => x.Length);
@@ -46,7 +46,7 @@ internal sealed partial class Main
             return;
         }
         mediaBackup.Save();
-        UpdateStatusLabel("Saved.");
+        UpdateStatusLabel(Resources.Main_Saved);
         var filesStillNotOnBackupDisk = mediaBackup.GetBackupFilesWithDiskEmpty();
         var text = string.Empty;
         var stillNotOnBackupDisk = filesStillNotOnBackupDisk as BackupFile[] ?? filesStillNotOnBackupDisk.ToArray();
@@ -80,7 +80,7 @@ internal sealed partial class Main
             try
             {
                 fileCounter++;
-                UpdateStatusLabel(Resources.Main_CopyFilesLoop_Copying, Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
+                UpdateStatusLabel(string.Format(Resources.Main_Copying, string.Empty), Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
                 UpdateMediaFilesCountDisplay();
 
                 // We use a temporary name for the copy first and then rename it after
@@ -128,7 +128,7 @@ internal sealed partial class Main
         // disk and copy the new one
         if (backupFile.CheckContentHashes(disk))
         {
-            UpdateStatusLabel(string.Format(Resources.Main_FileExistsInternal_Skipping__0_, Path.GetFileName(sourceFileName)),
+            UpdateStatusLabel(string.Format(Resources.Main_Skipping, Path.GetFileName(sourceFileName)),
                 Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
 
             Utils.LogWithPushover(BackupAction.BackupFiles,
@@ -161,10 +161,8 @@ internal sealed partial class Main
         Utils.TraceIn();
         var destinationFileName = backupFile.BackupDiskFullPath(disk.BackupPath);
         var destinationFileNameTemp = destinationFileName + ".copying";
-
-        UpdateStatusLabel(string.Format(Resources.Main_CopyFileInternal_Copying__0_, Path.GetFileName(sourceFileName)),
-            Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
-        _ = Utils.GetDiskInfo(backupDiskTextBox.Text, out var availableSpace, out _);
+        UpdateStatusLabel(string.Format(Resources.Main_Copying, Path.GetFileName(sourceFileName)), Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
+        Utils.GetDiskInfo(backupDiskTextBox.Text, out var availableSpace, out _);
 
         if (availableSpace > Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave) + sourceFileInfo.Length)
         {
@@ -180,14 +178,14 @@ internal sealed partial class Main
                 var numberOfSecondsOfCopyRemaining = sizeOfCopyRemaining / (double)lastCopySpeed;
                 var rightNow = DateTime.Now;
                 var estimatedFinishDateTime = rightNow.AddSeconds(numberOfSecondsOfCopyRemaining);
-
-                formattedEndDateTime = Resources.Main_CopyFileInternal___Estimated_finish_by_ +
-                                       estimatedFinishDateTime.ToString(Resources.Main_CopyFileInternal_HH_mm);
+                formattedEndDateTime = Resources.Main_Estimated_finish_by_ + estimatedFinishDateTime.ToString(Resources.DateTime_HHmm);
 
                 // could be the following day
                 if (estimatedFinishDateTime.DayOfWeek != rightNow.DayOfWeek)
-                    formattedEndDateTime = Resources.Main_CopyFileInternal___Estimated_finish_by_tomorrow_at_ +
-                                           estimatedFinishDateTime.ToString(Resources.Main_CopyFileInternal_HH_mm);
+                {
+                    formattedEndDateTime = Resources.Main_Estimated_finish_by_tomorrow_at_ +
+                                           estimatedFinishDateTime.ToString(Resources.DateTime_HHmm);
+                }
                 UpdateEstimatedFinish(estimatedFinishDateTime);
             }
 

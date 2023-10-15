@@ -167,7 +167,7 @@ public sealed class BackupDisk : IEquatable<BackupDisk>
     /// </summary>
     public void UpdateDiskChecked()
     {
-        Checked = DateTime.Now.ToString(Resources.BackupDisk_UpdateDiskChecked_yyyy_MM_dd);
+        Checked = DateTime.Now.ToString(Resources.DateTime_yyyyMMdd);
     }
 
     /// <summary>

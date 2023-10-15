@@ -41,7 +41,7 @@ public sealed class Rules
         }
         catch (InvalidOperationException ex)
         {
-            throw new ApplicationException(string.Format(Resources.Rules_Load_Unable_to_load_Rules_xml__0_, ex));
+            throw new ApplicationException(string.Format(Resources.UnableToLoadXml, "Rules.xml", ex));
         }
     }
 }

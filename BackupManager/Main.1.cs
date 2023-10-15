@@ -162,7 +162,7 @@ internal sealed partial class Main
         for (var i = 0; i < foldersToCheck.Count; i++)
         {
             var folderToCheck = foldersToCheck[i];
-            UpdateStatusLabel(string.Format(Resources.Main_UpdateSymbolicLinks_Checking__0_, folderToCheck), i);
+            UpdateStatusLabel(string.Format(Resources.Main_Checking, folderToCheck), i);
             var linksDeleted = Utils.DeleteBrokenSymbolicLinks(folderToCheck, true);
 
             foreach (var link in linksDeleted)
@@ -176,12 +176,10 @@ internal sealed partial class Main
         foreach (var folderBackupFile in hashSet)
         {
             fileCounter++;
-
-            UpdateStatusLabel(string.Format(Resources.Main_UpdateSymbolicLinks_Checking__0_, folderBackupFile),
-                Convert.ToInt32(fileCounter * 100 / hashSet.Count));
+            UpdateStatusLabel(string.Format(Resources.Main_Checking, folderBackupFile), Convert.ToInt32(fileCounter * 100 / hashSet.Count));
             UpdateSymbolicLinkForFolder(folderBackupFile);
         }
-        UpdateStatusLabel(Resources.Main_UpdateSymbolicLinks_Completed_);
+        UpdateStatusLabel(Resources.Main_Completed);
         Utils.TraceOut();
     }
 
@@ -300,7 +298,7 @@ internal sealed partial class Main
     {
         Utils.TraceIn();
 
-        pushoverOnOffButton.Text = string.Format(Resources.Main_UpdateSendingPushoverButton_,
+        pushoverOnOffButton.Text = string.Format(Resources.Main_SendingPushoverButton,
             mediaBackup.Config.PushoverOnOff ? Resources.Main_ON : Resources.Main_OFF);
         Utils.TraceOut();
     }
@@ -309,7 +307,7 @@ internal sealed partial class Main
     {
         Utils.TraceIn();
 
-        fileWatcherButton.Text = string.Format(Resources.Main_SetupFileWatchers,
+        fileWatcherButton.Text = string.Format(Resources.Main_FileWatchersButton,
             mediaBackup.Config.MasterFoldersFileChangeWatchersOnOff ? Resources.Main_ON : Resources.Main_OFF);
 
         if (mediaBackup.Config.MasterFoldersFileChangeWatchersOnOff)
@@ -328,8 +326,8 @@ internal sealed partial class Main
         Utils.TraceIn();
 
         monitoringButton.Text = mediaBackup.Config.MonitoringOnOff
-            ? string.Format(Resources.Main_UpdateMonitoringButton_, Resources.Main_ON)
-            : string.Format(Resources.Main_UpdateMonitoringButton_, Resources.Main_OFF);
+            ? string.Format(Resources.Main_MonitoringButton, Resources.Main_ON)
+            : string.Format(Resources.Main_MonitoringButton, Resources.Main_OFF);
         Utils.TraceOut();
     }
 
@@ -337,7 +335,7 @@ internal sealed partial class Main
     {
         Utils.TraceIn();
 
-        speedTestDisksButton.Text = string.Format(Resources.Main_UpdateSpeedTestDisksButton_,
+        speedTestDisksButton.Text = string.Format(Resources.Main_SpeedTestDisksButton,
             mediaBackup.Config.SpeedTestOnOff ? Resources.Main_ON : Resources.Main_OFF);
         Utils.TraceOut();
     }
@@ -346,7 +344,7 @@ internal sealed partial class Main
     {
         Utils.TraceIn();
 
-        scheduledBackupTimerButton.Text = string.Format(Resources.Main_UpdateScheduledBackupButton_,
+        scheduledBackupTimerButton.Text = string.Format(Resources.Main_UpdateScheduledBackupButton,
             mediaBackup.Config.ScheduledBackupOnOff ? Resources.Main_ON : Resources.Main_OFF);
         Utils.TraceOut();
     }
@@ -379,7 +377,7 @@ internal sealed partial class Main
 
     private void UpdateEstimatedFinish(DateTime estimatedFinishDateTime)
     {
-        estimatedFinishTimeTextBox.Invoke(x => x.Text = estimatedFinishDateTime.ToString(Resources.Main_UpdateEstimatedFinish_HH_mm));
+        estimatedFinishTimeTextBox.Invoke(x => x.Text = estimatedFinishDateTime.ToString(Resources.DateTime_HHmm));
     }
 
     private void DisableControlsForAsyncTasks()

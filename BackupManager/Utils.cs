@@ -1560,7 +1560,7 @@ internal static partial class Utils
     internal static IEnumerable<string> DeleteEmptyDirectories(string directory)
     {
         TraceIn();
-        if (string.IsNullOrEmpty(directory)) throw new ArgumentException(Resources.Utils_DirectoryNameNullOrEmpty, nameof(directory));
+        if (string.IsNullOrEmpty(directory)) throw new ArgumentException(Resources.DirectoryNameNullOrEmpty, nameof(directory));
 
         List<string> listOfDirectoriesDeleted = new();
         DeleteEmptyDirectories(directory, listOfDirectoriesDeleted, directory);
@@ -1639,7 +1639,7 @@ internal static partial class Utils
     internal static IEnumerable<string> DeleteBrokenSymbolicLinks(string directory, bool includeRoot)
     {
         TraceIn();
-        if (string.IsNullOrEmpty(directory)) throw new ArgumentException(Resources.Utils_DirectoryNameNullOrEmpty, nameof(directory));
+        if (string.IsNullOrEmpty(directory)) throw new ArgumentException(Resources.DirectoryNameNullOrEmpty, nameof(directory));
 
         List<string> listOfDirectoriesDeleted = new();
         DeleteBrokenSymbolicLinks(directory, includeRoot, listOfDirectoriesDeleted, directory);

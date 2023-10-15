@@ -123,10 +123,9 @@ public sealed class MediaBackup
                 if (!mediaBackup.indexFolderAndRelativePath.ContainsKey(backupFile.Hash))
                     mediaBackup.indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
                 else
-                    throw new ApplicationException(string.Format(Resources.MediaBackup_Load_Duplicate_hash_found_on_load_of__0_,
-                        backupFile.FileName));
+                    throw new ApplicationException(string.Format(Resources.DuplicateContentsHashCode, backupFile.FileName));
 
-                if (!backupFile.DiskChecked.HasValue() || !backupFile.Disk.HasValue() backupFile.ClearDiskChecked();}
+                if (!backupFile.DiskChecked.HasValue() || !backupFile.Disk.HasValue()) backupFile.ClearDiskChecked();
             }
             var directoryName = new FileInfo(path).DirectoryName;
             if (directoryName == null) return null;
@@ -137,7 +136,7 @@ public sealed class MediaBackup
         }
         catch (InvalidOperationException ex)
         {
-            throw new ApplicationException(string.Format(Resources.MediaBackup_Load_Unable_to_load_MediaBackup_xml__0_, ex));
+            throw new ApplicationException(string.Format(Resources.UnableToLoadXml, "MediaBackup.xml", ex));
         }
     }
 
@@ -174,7 +173,7 @@ public sealed class MediaBackup
     /// </summary>
     public void UpdateLastFullScan()
     {
-        masterFoldersLastFullScan = DateTime.Now.ToString(Resources.MediaBackup_UpdateLastFullScan_yyyy_MM_dd);
+        masterFoldersLastFullScan = DateTime.Now.ToString(Resources.DateTime_yyyyMMdd);
     }
 
     public void Save()
@@ -203,8 +202,7 @@ public sealed class MediaBackup
             case 0:
                 return Utils.TraceOut<BackupFile>("exit1");
             case > 1:
-                Utils.Trace(string.Format(Resources.MediaBackup_GetBackupFileFromContentsHashcode_More_than_1_file_with_same_ContentsHashcode__0_,
-                    value));
+                Utils.Trace(string.Format(Resources.DuplicateContentsHashCode, value));
                 return Utils.TraceOut<BackupFile>("exit2");
         }
         var file = BackupFiles.First(q => q.ContentsHash == value);
@@ -222,10 +220,10 @@ public sealed class MediaBackup
         if (!File.Exists(fullPath) || !Utils.IsFileAccessible(fullPath)) return null;
 
         if (!GetFoldersForPath(fullPath, out var masterFolder, out var indexFolder, out var relativePath))
-            throw new ArgumentException(Resources.MediaBackup_GetBackupFile_Unable_to_determine_MasterFolder_or_IndexFolder_, nameof(fullPath));
+            throw new ArgumentException(Resources.MediaBackup_UnableToDetermineMasterFolderIndexFolder, nameof(fullPath));
 
         if (string.IsNullOrEmpty(indexFolder) || string.IsNullOrEmpty(masterFolder))
-            throw new ArgumentException(Resources.MediaBackup_GetBackupFile_IndexFolder_or_MasterFolder_is_empty__Not_supported);
+            throw new ArgumentException(Resources.IndexFolderOrMasterFolderEmpty);
 
         // we hash the path of the file so we can look it up quickly
         // then we check the ModifiedTime and size

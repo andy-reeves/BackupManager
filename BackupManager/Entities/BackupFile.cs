@@ -197,7 +197,7 @@ public sealed class BackupFile : IEquatable<BackupFile>
     {
         if (backupDisk != Disk && Disk.HasValue()) Utils.Log($"{FullPath} was on {Disk} but now on {backupDisk}");
         disk = backupDisk;
-        diskChecked = DateTime.Now.ToString(Resources.BackupFile_UpdateDiskChecked_yyyy_MM_dd);
+        diskChecked = DateTime.Now.ToString(Resources.DateTime_yyyyMMdd);
     }
 
     /// <summary>
@@ -234,7 +234,7 @@ public sealed class BackupFile : IEquatable<BackupFile>
         var combinedPath = Path.Combine(masterFolder, indexFolder);
 
         return !fullPath.StartsWith(combinedPath, StringComparison.CurrentCultureIgnoreCase)
-            ? throw new ArgumentException(Resources.BackupFile_GetRelativePath_The_fullPathCorrect, nameof(fullPath))
+            ? throw new ArgumentException(Resources.BackupFile_The_fullPathNotCorrect, nameof(fullPath))
             : fullPath.SubstringAfter(combinedPath, StringComparison.CurrentCultureIgnoreCase).TrimStart(new[] { '\\' });
     }
 

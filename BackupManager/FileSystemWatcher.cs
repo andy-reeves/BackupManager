@@ -192,7 +192,7 @@ internal sealed class FileSystemWatcher
 
         // Early check for directory parameter so that an exception can be thrown as early as possible
         if (path.Length == 0) throw new ArgumentException(string.Format(Resources.InvalidDirName, path), nameof(path));
-        if (!Directory.Exists(path)) throw new ArgumentException(string.Format(Resources.InvalidDirName_NotExists, path), nameof(path));
+        if (!Directory.Exists(path)) throw new ArgumentException(string.Format(Resources.InvalidDirNameNotExists, path), nameof(path));
     }
 
     /// <summary>
@@ -260,9 +260,8 @@ internal sealed class FileSystemWatcher
         if (Running) return Utils.TraceOut(Running = true);
 
         if (!reset)
-        {
-            if (!Reset()) return Utils.TraceOut(Running = false);
-        }
+            if (!Reset())
+                return Utils.TraceOut(Running = false);
 
         // Check current paths are valid
         foreach (var directory in Directories)
@@ -432,8 +431,7 @@ internal sealed class FileSystemWatcher
 
         if (!Directory.Exists(watcherPath))
         {
-            var ex = new DirectoryNotFoundException(string.Format(Resources.FileSystemWatcher_OnError_Directory__0__not_found_, watcherPath),
-                e.GetException());
+            var ex = new DirectoryNotFoundException(string.Format(Resources.DirectoryNotFound, watcherPath), e.GetException());
             e = new ErrorEventArgs(ex);
         }
 

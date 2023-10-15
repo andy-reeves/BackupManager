@@ -197,7 +197,7 @@ public sealed class Config
         }
         catch (InvalidOperationException ex)
         {
-            throw new ApplicationException(string.Format(Resources.Config_Load_Unable_to_load_config_xml__0_, ex));
+            throw new ApplicationException(string.Format(Resources.UnableToLoadXml, "Config.xml", ex));
         }
     }
 
@@ -241,8 +241,10 @@ public sealed class Config
                 else
                 {
                     if (property.PropertyType.IsGenericType)
+                    {
                         Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
                             $"Unknown Config parameter type detected: {property.Name}");
+                    }
                     else
                     {
                         parameterText = myType.Name == "String" ? $"{obj}\n" : $"{myType.Name}.{property.Name} : {property.GetValue(obj)}\n";
