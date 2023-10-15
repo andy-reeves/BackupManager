@@ -23,6 +23,7 @@ namespace BackupManager.Entities;
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 [SuppressMessage("ReSharper", "CollectionNeverUpdated.Global")]
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
+[SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
 public sealed class MediaBackup
 {
     // We need to a hash of the index folder and relative path
@@ -41,7 +42,7 @@ public sealed class MediaBackup
 
     private string mediaBackupPath;
 
-    [XmlIgnore] internal FileSystemWatcher Watcher = new();
+    internal readonly FileSystemWatcher Watcher = new();
 
     public MediaBackup()
     {
