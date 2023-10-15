@@ -400,8 +400,6 @@ internal sealed class FileSystemWatcher
             }
             if (DirectoriesToScan.Count > 0) scanFoldersTimer.Start();
         }
-
-        //if (Running) processChangesTimer.Start();
         Utils.TraceOut();
     }
 
