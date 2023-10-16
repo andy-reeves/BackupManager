@@ -1071,10 +1071,10 @@
             // label14
             // 
             label14.AutoSize = true;
-            label14.Location = new System.Drawing.Point(632, 363);
+            label14.Location = new System.Drawing.Point(615, 363);
             label14.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label14.Name = "label14";
-            label14.Size = new System.Drawing.Size(86, 15);
+            label14.Size = new System.Drawing.Size(104, 15);
             label14.TabIndex = 89;
             label14.Text = "Directories to scan";
             // 
@@ -1090,7 +1090,7 @@
             // label15
             // 
             label15.AutoSize = true;
-            label15.Location = new System.Drawing.Point(593, 329);
+            label15.Location = new System.Drawing.Point(598, 329);
             label15.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label15.Name = "label15";
             label15.Size = new System.Drawing.Size(121, 15);
