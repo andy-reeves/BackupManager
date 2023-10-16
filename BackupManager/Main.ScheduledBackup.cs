@@ -18,7 +18,7 @@ internal sealed partial class Main
         {
             // check the service monitor is running
             // Take a copy of the current count of files we backup up last time
-            // Then ScanFolders
+            // Then ScanDirectory
             // If the new file count is less than x% lower then abort
             // This happens if the server running the backup cannot connect to the nas devices sometimes
             // It'll then delete everything off the connected backup disk as it doesn't think they're needed so this will prevent that

@@ -153,10 +153,10 @@
   <data name="Main_ScanFoldersTitle" xml:space="preserve">
     <value>Scan folders</value>
   </data>
-  <data name="Main_BackupDiskConnectCorrectDisk2" xml:space="preserve">
+  <data name="Main_CorrectDiskPrompt" xml:space="preserve">
     <value>Please connect backup disk {0} so we can continue restoring files. Have you connected this disk now?</value>
   </data>
-  <data name="Main_BackupDiskConnectCorrectDisk" xml:space="preserve">
+  <data name="Main_CorrectDiskTitle" xml:space="preserve">
     <value>Connect correct backup disk</value>
   </data>
   <data name="Main_RecalculateAllHashes" xml:space="preserve">
@@ -202,13 +202,13 @@
     <value>Duplicate rule number detected in rules.xml</value>
   </data>
   <data name="InvalidDirName" xml:space="preserve">
-    <value>The directory name {0} is invalid.</value>
+    <value>The directory name {0} is invalid</value>
   </data>
   <data name="InvalidDirNameNotExists" xml:space="preserve">
-    <value>The directory name '{0}' does not exist.</value>
+    <value>The directory name '{0}' does not exist</value>
   </data>
   <data name="InvalidEnumArgument" xml:space="preserve">
-    <value>The value of argument '{0}'({1}) is invalid for Enum type '{2}'.</value>
+    <value>The value of argument '{0}'({1}) is invalid for Enum type '{2}'</value>
   </data>
   <data name="IndexFolderOrMasterFolderEmpty" xml:space="preserve">
     <value>IndexFolder or MasterFolder is empty. Not supported</value>
@@ -229,7 +229,7 @@
     <value>Unable to load {0} {1}</value>
   </data>
   <data name="DirectoryNotFound" xml:space="preserve">
-    <value>Directory {0} not found.</value>
+    <value>Directory {0} not found</value>
   </data>
   <data name="DateTime_ddMMMyy" xml:space="preserve">
     <value>dd-MMM-yy</value>
@@ -247,7 +247,7 @@
     <value>Checking {0}</value>
   </data>
   <data name="Main_Completed" xml:space="preserve">
-    <value>Completed</value>
+    <value>Completed.</value>
   </data>
   <data name="Main_SendingPushoverButton" xml:space="preserve">
     <value>Sending = {0}</value>
@@ -290,5 +290,8 @@
   </data>
   <data name="Main_Estimated_finish_by_tomorrow_at_" xml:space="preserve">
     <value>. Estimated finish by tomorrow at </value>
+  </data>
+  <data name="Main_ScanFolders_Deleting_empty_folders_in__0_" xml:space="preserve">
+    <value>Deleting empty folders in {0}</value>
   </data>
 </root>

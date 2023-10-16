@@ -443,15 +443,15 @@ internal sealed class FileSystemWatcher
 }
 
 /// <summary>
-///     Used to pass the Folders changed to any events.
+///     Used to pass the Directories changed to any events.
 /// </summary>
 internal sealed class FileSystemWatcherEventArgs : EventArgs
 {
     internal FileSystemWatcherEventArgs(BlockingCollection<FileSystemEntry> directoriesToScan)
     {
         Utils.TraceIn();
-        Folders = new FileSystemEntry[directoriesToScan.Count];
-        directoriesToScan.CopyTo(Folders, 0);
+        Directories = new FileSystemEntry[directoriesToScan.Count];
+        directoriesToScan.CopyTo(Directories, 0);
 
         // Empty the DirectoriesToScan because we've copied it into the array to return
         while (directoriesToScan.TryTake(out _)) { }
@@ -461,5 +461,5 @@ internal sealed class FileSystemWatcherEventArgs : EventArgs
     /// <summary>
     ///     An Array of FileSystemEntry that have been changed
     /// </summary>
-    internal FileSystemEntry[] Folders { get; }
+    internal FileSystemEntry[] Directories { get; }
 }

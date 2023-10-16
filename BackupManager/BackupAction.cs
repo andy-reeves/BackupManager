@@ -10,7 +10,7 @@ internal enum BackupAction
 {
     General,
 
-    ScanFolders,
+    ScanDirectory,
 
     BackupFiles,
 

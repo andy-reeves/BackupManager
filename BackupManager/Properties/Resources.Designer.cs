@@ -124,7 +124,7 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Directory {0} not found..
+        ///   Looks up a localized string similar to Directory {0} not found.
         /// </summary>
         internal static string DirectoryNotFound {
             get {
@@ -160,7 +160,7 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The directory name {0} is invalid..
+        ///   Looks up a localized string similar to The directory name {0} is invalid.
         /// </summary>
         internal static string InvalidDirName {
             get {
@@ -169,7 +169,7 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The directory name &apos;{0}&apos; does not exist..
+        ///   Looks up a localized string similar to The directory name &apos;{0}&apos; does not exist.
         /// </summary>
         internal static string InvalidDirNameNotExists {
             get {
@@ -178,7 +178,7 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The value of argument &apos;{0}&apos;({1}) is invalid for Enum type &apos;{2}&apos;..
+        ///   Looks up a localized string similar to The value of argument &apos;{0}&apos;({1}) is invalid for Enum type &apos;{2}&apos;.
         /// </summary>
         internal static string InvalidEnumArgument {
             get {
@@ -201,24 +201,6 @@ namespace BackupManager.Properties {
         internal static string Main_AreYouSureDelete {
             get {
                 return ResourceManager.GetString("Main_AreYouSureDelete", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Connect correct backup disk.
-        /// </summary>
-        internal static string Main_BackupDiskConnectCorrectDisk {
-            get {
-                return ResourceManager.GetString("Main_BackupDiskConnectCorrectDisk", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Please connect backup disk {0} so we can continue restoring files. Have you connected this disk now?.
-        /// </summary>
-        internal static string Main_BackupDiskConnectCorrectDisk2 {
-            get {
-                return ResourceManager.GetString("Main_BackupDiskConnectCorrectDisk2", resourceCulture);
             }
         }
         
@@ -259,7 +241,7 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Completed.
+        ///   Looks up a localized string similar to Completed..
         /// </summary>
         internal static string Main_Completed {
             get {
@@ -273,6 +255,24 @@ namespace BackupManager.Properties {
         internal static string Main_Copying {
             get {
                 return ResourceManager.GetString("Main_Copying", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please connect backup disk {0} so we can continue restoring files. Have you connected this disk now?.
+        /// </summary>
+        internal static string Main_CorrectDiskPrompt {
+            get {
+                return ResourceManager.GetString("Main_CorrectDiskPrompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connect correct backup disk.
+        /// </summary>
+        internal static string Main_CorrectDiskTitle {
+            get {
+                return ResourceManager.GetString("Main_CorrectDiskTitle", resourceCulture);
             }
         }
         
@@ -444,6 +444,15 @@ namespace BackupManager.Properties {
         internal static string Main_Saved {
             get {
                 return ResourceManager.GetString("Main_Saved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deleting empty folders in {0}.
+        /// </summary>
+        internal static string Main_ScanFolders_Deleting_empty_folders_in__0_ {
+            get {
+                return ResourceManager.GetString("Main_ScanFolders_Deleting_empty_folders_in__0_", resourceCulture);
             }
         }
         

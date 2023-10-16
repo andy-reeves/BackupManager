@@ -177,13 +177,13 @@ internal sealed partial class Main
         {
             fileCounter++;
             UpdateStatusLabel(string.Format(Resources.Main_Checking, folderBackupFile), Convert.ToInt32(fileCounter * 100 / hashSet.Count));
-            UpdateSymbolicLinkForFolder(folderBackupFile);
+            UpdateSymbolicLinkForDirectory(folderBackupFile);
         }
         UpdateStatusLabel(Resources.Main_Completed);
         Utils.TraceOut();
     }
 
-    private void UpdateSymbolicLinkForFolder(string folderPath)
+    private void UpdateSymbolicLinkForDirectory(string folderPath)
     {
         Utils.TraceIn(folderPath);
 
@@ -427,9 +427,10 @@ internal sealed partial class Main
         statusStrip.Invoke(_ => toolStripStatusLabel.Text = string.Empty);
     }
 
-    private void UpdateStatusLabel(string text, int value = 0)
+    private void UpdateStatusLabel(string text = "", int value = 0)
     {
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+        text = text.Trim();
         var textToUse = string.Empty;
 
         if (value > 0)

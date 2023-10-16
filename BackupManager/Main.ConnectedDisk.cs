@@ -253,7 +253,7 @@ internal sealed partial class Main
         }
         UpdateMediaFilesCountDisplay();
         mediaBackup.Save();
-        UpdateStatusLabel("Saved.");
+        UpdateStatusLabel(Resources.Main_Saved);
 
         if (!diskInfoMessageWasTheLastSent)
         {
@@ -279,8 +279,8 @@ internal sealed partial class Main
         {
             Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, $"Connect new backup drive to restore from {backupDisk}");
 
-            var answer = MessageBox.Show(string.Format(Resources.Main_BackupDiskConnectCorrectDisk2, backupDisk),
-                Resources.Main_BackupDiskConnectCorrectDisk, MessageBoxButtons.YesNo);
+            var answer = MessageBox.Show(string.Format(Resources.Main_CorrectDiskPrompt, backupDisk), Resources.Main_CorrectDiskTitle,
+                MessageBoxButtons.YesNo);
 
             // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
             switch (answer)

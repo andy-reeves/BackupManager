@@ -184,7 +184,7 @@ internal sealed partial class Main : Form
                     //we need to check the correct disk is connected and prompt if not
                     if (!EnsureConnectedBackupDisk(file.Disk))
                     {
-                        _ = MessageBox.Show(Resources.Main_BackupDiskConnectCorrectDisk, Resources.Main_RestoreFilesTitle, MessageBoxButtons.OK);
+                        _ = MessageBox.Show(Resources.Main_CorrectDiskTitle, Resources.Main_RestoreFilesTitle, MessageBoxButtons.OK);
                         return;
                     }
 
@@ -590,39 +590,39 @@ internal sealed partial class Main : Form
 
     private void FileSystemWatcher_ReadyToScan(object sender, FileSystemWatcherEventArgs e)
     {
-        Utils.TraceIn($"e.Folders = {e.Folders.Length}");
+        Utils.TraceIn($"e.Directories = {e.Directories.Length}");
         var toSave = false;
 
         if (!longRunningActionExecutingRightNow)
         {
-            if (!e.Folders.Any())
+            if (!e.Directories.Any())
             {
                 Utils.TraceOut();
                 return;
             }
-            var folderList = new List<FileSystemEntry>();
-            folderList.AddRange(e.Folders);
+            var directoryList = new List<FileSystemEntry>();
+            directoryList.AddRange(e.Directories);
 
-            for (var i = folderList.Count - 1; i >= 0; i--)
+            for (var i = directoryList.Count - 1; i >= 0; i--)
             {
-                var folderToScan = folderList[i];
+                var directoryToScan = directoryList[i];
                 mediaBackup.ClearFlags();
 
-                var fileCountInFolderBefore =
-                    mediaBackup.BackupFiles.Count(b => b.FullPath.StartsWith(folderToScan.Path, StringComparison.InvariantCultureIgnoreCase));
+                var fileCountInFolderBefore = mediaBackup.BackupFiles.Count(b =>
+                    b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase));
 
-                if (ScanSingleFolder(folderToScan.Path, SearchOption.TopDirectoryOnly))
+                if (ScanSingleDirectory(directoryToScan.Path, SearchOption.TopDirectoryOnly))
                 {
                     var removedFilesCount = 0;
                     var markedAsDeletedFilesCount = 0;
-                    folderList.Remove(folderToScan);
-                    UpdateSymbolicLinkForFolder(folderToScan.Path);
+                    directoryList.Remove(directoryToScan);
+                    UpdateSymbolicLinkForDirectory(directoryToScan.Path);
 
                     // instead of removing files that are no longer found in a folder we now flag them as deleted so we can report them later
                     // unless they aren't on a backup disk in which case they are removed now 
                     var files = mediaBackup.BackupFiles.Where(static b => !b.Flag)
-                        .Where(b => b.FullPath.StartsWith(folderToScan.Path, StringComparison.InvariantCultureIgnoreCase)).Where(b =>
-                            !b.FullPath.SubstringAfter(Utils.EnsurePathHasATerminatingSeparator(folderToScan.Path),
+                        .Where(b => b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase)).Where(b =>
+                            !b.FullPath.SubstringAfter(Utils.EnsurePathHasATerminatingSeparator(directoryToScan.Path),
                                 StringComparison.CurrentCultureIgnoreCase).Contains('\\')).ToList();
 
                     for (var j = files.Count - 1; j >= 0; j--)
@@ -641,20 +641,20 @@ internal sealed partial class Main : Form
                         }
                     }
 
-                    var fileCountInFolderAfter = mediaBackup.BackupFiles.Count(b =>
-                        b.FullPath.StartsWith(folderToScan.Path, StringComparison.InvariantCultureIgnoreCase));
+                    var fileCountAfter = mediaBackup.BackupFiles.Count(b =>
+                        b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase));
                     var filesNotOnBackupDiskCount = mediaBackup.GetBackupFilesWithDiskEmpty().Count();
 
                     var text =
-                        $"Directory scan completed. {fileCountInFolderBefore} files before and now {fileCountInFolderAfter} files. {markedAsDeletedFilesCount} marked as deleted and {removedFilesCount} removed. {filesNotOnBackupDiskCount} to backup.";
-                    Utils.Log(BackupAction.ScanFolders, text);
+                        $"Directory scan completed. {fileCountInFolderBefore} files before and now {fileCountAfter} files. {markedAsDeletedFilesCount} marked as deleted and {removedFilesCount} removed. {filesNotOnBackupDiskCount} to backup.";
+                    Utils.Log(BackupAction.ScanDirectory, text);
                     toSave = true;
                 }
                 else
                 {
                     var text = string.Format(Resources.Main_Directory_scan_skipped,
                         Utils.FormatTimeFromSeconds(mediaBackup.Config.MasterFoldersScanTimer));
-                    Utils.LogWithPushover(BackupAction.ScanFolders, text);
+                    Utils.LogWithPushover(BackupAction.ScanDirectory, text);
                 }
             }
 
@@ -666,7 +666,7 @@ internal sealed partial class Main : Form
                 UpdateMediaFilesCountDisplay();
             }
             else
-                UpdateStatusLabel(string.Empty);
+                UpdateStatusLabel();
         }
         Utils.TraceOut();
     }

@@ -11,6 +11,7 @@ using System.Text.RegularExpressions;
 
 using BackupManager.Entities;
 using BackupManager.Extensions;
+using BackupManager.Properties;
 
 namespace BackupManager;
 
@@ -22,15 +23,15 @@ internal sealed partial class Main
     /// <param name="folderToCheck">The full path to scan</param>
     /// <param name="searchOption">Whether to search subfolders</param>
     /// <returns>True if the scan was successful otherwise False. Returns True if the folder doesn't exist</returns>
-    private bool ScanSingleFolder(string folderToCheck, SearchOption searchOption)
+    private bool ScanSingleDirectory(string folderToCheck, SearchOption searchOption)
     {
         Utils.TraceIn(folderToCheck, searchOption);
         if (!Directory.Exists(folderToCheck)) return Utils.TraceOut(true);
 
         var subFolderText = searchOption == SearchOption.TopDirectoryOnly ? "folder only" : "and subfolders";
-        Utils.LogWithPushover(BackupAction.ScanFolders, $"{folderToCheck}");
+        Utils.LogWithPushover(BackupAction.ScanDirectory, $"{folderToCheck}");
         Utils.Trace($"{folderToCheck} {subFolderText}");
-        UpdateStatusLabel($"Scanning {folderToCheck}");
+        UpdateStatusLabel(string.Format(Resources.Main_Scanning, folderToCheck));
         var filters = mediaBackup.GetFilters();
         var files = Utils.GetFiles(folderToCheck, filters, searchOption);
         EnableProgressBar(0, files.Length);
@@ -39,7 +40,7 @@ internal sealed partial class Main
         {
             var file = files[i];
             Utils.Trace($"Checking {file}");
-            UpdateStatusLabel($"Scanning {folderToCheck}", i + 1);
+            UpdateStatusLabel(string.Format(Resources.Main_Scanning, folderToCheck), i + 1);
             if (CheckForFilesToDelete(file)) continue;
 
             // RegEx file name rules
@@ -55,7 +56,7 @@ internal sealed partial class Main
                 if (Regex.IsMatch(file, rule.FileTestRegEx)) continue;
 
                 Utils.Trace($"File {file} matched by {rule.FileDiscoveryRegEx} but doesn't match {rule.FileTestRegEx}");
-                Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High, $"{rule.Name} {rule.Message} {file}");
+                Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"{rule.Name} {rule.Message} {file}");
             }
             if (!mediaBackup.EnsureFile(file)) return Utils.TraceOut(false);
 
@@ -74,25 +75,25 @@ internal sealed partial class Main
         var filters = mediaBackup.GetFilters();
         long readSpeed = 0, writeSpeed = 0;
         mediaBackup.ClearFlags();
-        Utils.LogWithPushover(BackupAction.ScanFolders, "Started");
-        UpdateStatusLabel("Started");
+        Utils.LogWithPushover(BackupAction.ScanDirectory, "Started");
+        UpdateStatusLabel(string.Format(Resources.Main_Scanning, string.Empty));
 
         foreach (var masterFolder in mediaBackup.Config.MasterFolders)
         {
-            UpdateStatusLabel($"Scanning {masterFolder}");
+            UpdateStatusLabel(string.Format(Resources.Main_Scanning, masterFolder));
 
             if (!Directory.Exists(masterFolder))
-                Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High, $"{masterFolder} is not available");
+                Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"{masterFolder} is not available");
 
             if (Directory.Exists(masterFolder))
             {
                 if (!Utils.IsDirectoryWritable(masterFolder))
-                    Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High, $"{masterFolder} is not writable");
+                    Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"{masterFolder} is not writable");
                 _ = Utils.GetDiskInfo(masterFolder, out var freeSpaceOnCurrentMasterFolder, out var totalBytesOnMasterFolderDisk);
 
                 if (mediaBackup.Config.SpeedTestOnOff)
                 {
-                    UpdateStatusLabel($"Speed testing {masterFolder}");
+                    UpdateStatusLabel(string.Format(Resources.Main_SpeedTesting, masterFolder));
 
                     Utils.DiskSpeedTest(masterFolder, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize),
                         mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed);
@@ -104,33 +105,33 @@ internal sealed partial class Main
 
                 var text =
                     $"{masterFolder}\nTotal: {totalBytesOnMasterFolderDiskFormatted}\nFree: {freeSpaceOnCurrentMasterFolderFormatted}\nRead: {readSpeedFormatted}\nWrite: {writeSpeedFormatted}";
-                Utils.LogWithPushover(BackupAction.ScanFolders, text);
+                Utils.LogWithPushover(BackupAction.ScanDirectory, text);
 
                 if (mediaBackup.Config.SpeedTestOnOff)
                 {
                     if (readSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumReadSpeed))
                     {
-                        Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High,
+                        Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High,
                             $"Read speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumReadSpeed))}");
                     }
 
                     if (writeSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumWriteSpeed))
                     {
-                        Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High,
+                        Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High,
                             $"Write speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumWriteSpeed))}");
                     }
                 }
 
                 if (freeSpaceOnCurrentMasterFolder < Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumCriticalSpace))
-                    Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High, $"Free space on {masterFolder} is too low");
-                UpdateStatusLabel($"Deleting empty folders in {masterFolder}");
+                    Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"Free space on {masterFolder} is too low");
+                UpdateStatusLabel(string.Format(Resources.Main_ScanFolders_Deleting_empty_folders_in__0_, masterFolder));
                 var directoriesDeleted = Utils.DeleteEmptyDirectories(masterFolder);
 
                 foreach (var directory in directoriesDeleted)
                 {
-                    Utils.Log(BackupAction.ScanFolders, $"Deleted empty folder {directory}");
+                    Utils.Log(BackupAction.ScanDirectory, $"Deleted empty folder {directory}");
                 }
-                UpdateStatusLabel($"Scanning {masterFolder}");
+                UpdateStatusLabel(string.Format(Resources.Main_Scanning, masterFolder));
 
                 // Check for files in the root of the master folder alongside te index folders
                 var filesInRootOfMasterFolder = Utils.GetFiles(masterFolder, filters, SearchOption.TopDirectoryOnly);
@@ -142,20 +143,20 @@ internal sealed partial class Main
                 }
 
                 if (mediaBackup.Config.IndexFolders.Any(indexFolder =>
-                        !ScanSingleFolder(Path.Combine(masterFolder, indexFolder), SearchOption.AllDirectories)))
+                        !ScanSingleDirectory(Path.Combine(masterFolder, indexFolder), SearchOption.AllDirectories)))
                     return false;
             }
             else
-                Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High, $"{masterFolder} doesn't exist");
+                Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"{masterFolder} doesn't exist");
         }
-        UpdateStatusLabel("Scanning completed.");
+        UpdateStatusLabel(Resources.Main_Completed);
 
         foreach (var rule in mediaBackup.Config.FileRules.Where(static rule => !rule.Matched))
         {
-            Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.High, $"{rule.Name} didn't match any files");
+            Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"{rule.Name} didn't match any files");
         }
 
-        // instead of removing files that are no longer found in Master Folders we now flag them as deleted so we can report them later
+        // instead of removing files that are no longer found in Master Directories we now flag them as deleted so we can report them later
         foreach (var backupFile in mediaBackup.BackupFiles.Where(static backupFile => !backupFile.Flag && backupFile.DiskChecked.HasValue()))
         {
             backupFile.Deleted = true;
@@ -164,14 +165,14 @@ internal sealed partial class Main
         mediaBackup.RemoveFilesWithFlag(false, true);
         mediaBackup.UpdateLastFullScan();
         mediaBackup.Save();
-        UpdateStatusLabel("Saved.");
+        UpdateStatusLabel(Resources.Main_Saved);
         UpdateMediaFilesCountDisplay();
         var totalFiles = mediaBackup.BackupFiles.Count;
         var totalFileSize = mediaBackup.BackupFiles.Sum(static p => p.Length);
         var filesNotOnBackupDisk = mediaBackup.GetBackupFilesWithDiskEmpty();
         var notOnBackupDisk = filesNotOnBackupDisk as BackupFile[] ?? filesNotOnBackupDisk.ToArray();
         var fileSizeToCopy = notOnBackupDisk.Sum(static p => p.Length);
-        Utils.LogWithPushover(BackupAction.ScanFolders, $"{totalFiles:n0} files at {Utils.FormatSize(totalFileSize)}");
+        Utils.LogWithPushover(BackupAction.ScanDirectory, $"{totalFiles:n0} files at {Utils.FormatSize(totalFileSize)}");
         var oldestFile = mediaBackup.GetOldestFile();
 
         if (oldestFile != null)
@@ -180,11 +181,11 @@ internal sealed partial class Main
             var days = DateTime.Today.Subtract(oldestFileDate).Days;
             var daysText = days == 1 ? string.Empty : "(s)";
 
-            Utils.LogWithPushover(BackupAction.ScanFolders,
+            Utils.LogWithPushover(BackupAction.ScanDirectory,
                 $"Oldest backup date is {days:n0} day{daysText} ago on {oldestFileDate.ToShortDateString()} on {oldestFile.Disk}");
         }
-        Utils.LogWithPushover(BackupAction.ScanFolders, $"{notOnBackupDisk.Length:n0} files to backup at {Utils.FormatSize(fileSizeToCopy)}");
-        Utils.LogWithPushover(BackupAction.ScanFolders, "Completed");
+        Utils.LogWithPushover(BackupAction.ScanDirectory, $"{notOnBackupDisk.Length:n0} files to backup at {Utils.FormatSize(fileSizeToCopy)}");
+        Utils.LogWithPushover(BackupAction.ScanDirectory, "Completed");
         return Utils.TraceOut(true);
     }
 
@@ -223,7 +224,7 @@ internal sealed partial class Main
         var fileName = new FileInfo(filePath).Name;
         if (!filters.Any(pattern => Regex.IsMatch(fileName, pattern))) return false;
 
-        Utils.LogWithPushover(BackupAction.ScanFolders, PushoverPriority.Normal, $"File matches RegEx and so will be deleted {filePath}");
+        Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, $"File matches RegEx and so will be deleted {filePath}");
         Utils.FileDelete(filePath);
         return true;
     }

@@ -1076,7 +1076,7 @@
             label14.Name = "label14";
             label14.Size = new System.Drawing.Size(86, 15);
             label14.TabIndex = 89;
-            label14.Text = "Folders to scan";
+            label14.Text = "Directories to scan";
             // 
             // fileChangesDetectedTextBox
             // 

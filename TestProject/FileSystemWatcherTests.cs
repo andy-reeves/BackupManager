@@ -234,11 +234,11 @@ public sealed class FileSystemWatcherTests
     {
         if (sender is not FileSystemWatcher watcher) return;
 
-        foreach (var folder in e.Folders)
+        foreach (var folder in e.Directories)
         {
             Utils.Trace($"{folder.Path} at {folder.ModifiedDateTime}");
         }
-        Assert.True(e.Folders.Length == test1ExpectedEventFolderCount, nameof(e.Folders.Length));
+        Assert.True(e.Directories.Length == test1ExpectedEventFolderCount, nameof(e.Directories.Length));
         Assert.True(watcher.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));
         Assert.True(watcher.DirectoriesToScan.Count == 0, nameof(FileSystemWatcher.DirectoriesToScan.Count));
         test1EventsCounter += 1;
@@ -248,11 +248,11 @@ public sealed class FileSystemWatcherTests
     {
         if (sender is not FileSystemWatcher watcher) return;
 
-        foreach (var folder in e.Folders)
+        foreach (var folder in e.Directories)
         {
             Utils.Trace($"{folder.Path} at {folder.ModifiedDateTime}");
         }
-        Assert.True(e.Folders.Length == test2ExpectedEventFolderCount, nameof(e.Folders.Length));
+        Assert.True(e.Directories.Length == test2ExpectedEventFolderCount, nameof(e.Directories.Length));
         Assert.True(watcher.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));
         Assert.True(watcher.DirectoriesToScan.Count == 0, nameof(FileSystemWatcher.DirectoriesToScan.Count));
     }
@@ -261,11 +261,11 @@ public sealed class FileSystemWatcherTests
     {
         if (sender is not FileSystemWatcher watcher) return;
 
-        foreach (var folder in e.Folders)
+        foreach (var folder in e.Directories)
         {
             Utils.Trace($"{folder.Path} at {folder.ModifiedDateTime}");
         }
-        Assert.True(e.Folders.Length == test3ExpectedEventFolderCount, nameof(e.Folders.Length));
+        Assert.True(e.Directories.Length == test3ExpectedEventFolderCount, nameof(e.Directories.Length));
         Assert.True(watcher.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));
         Assert.True(watcher.DirectoriesToScan.Count == 0, nameof(FileSystemWatcher.DirectoriesToScan.Count));
         test3EventsCounter++;
