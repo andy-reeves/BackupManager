@@ -80,8 +80,6 @@ internal sealed partial class Main
 
         foreach (var directory in mediaBackup.Config.Directories)
         {
-            //foreach (var masterFolder in mediaBackup.Config.MasterFolders)
-            //{
             UpdateStatusLabel(string.Format(Resources.Main_Scanning, directory));
 
             if (Directory.Exists(directory))

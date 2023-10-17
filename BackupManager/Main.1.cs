@@ -429,6 +429,7 @@ internal sealed partial class Main
 
     private void UpdateStatusLabel(string text = "", int value = 0)
     {
+        Utils.TraceIn(value);
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
         text = text.Trim();
         var textToUse = string.Empty;
@@ -452,6 +453,7 @@ internal sealed partial class Main
         UpdateProgressBar(value);
         statusStrip.Invoke(_ => toolStripStatusLabel.Text = textToUse);
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+        Utils.TraceOut();
     }
 
     private void EnableProgressBar(int minimum, int maximum)
