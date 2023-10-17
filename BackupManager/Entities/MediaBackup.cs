@@ -447,10 +447,7 @@ public sealed class MediaBackup
 
         foreach (var backupFile in filesToRemove)
         {
-            if (clearHashes)
-            {
-                if (indexFolderAndRelativePath.ContainsKey(backupFile.Hash)) _ = indexFolderAndRelativePath.Remove(backupFile.Hash);
-            }
+            if (clearHashes) indexFolderAndRelativePath.Remove(backupFile.Hash);
             if (BackupFiles.Contains(backupFile)) _ = BackupFiles.Remove(backupFile);
         }
     }

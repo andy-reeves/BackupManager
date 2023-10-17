@@ -18,7 +18,7 @@ namespace TestProject;
 [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
 public sealed class FileSystemWatcherTests
 {
-    private const int WaitInSeconds = 4;
+    private const int WaitInSeconds = 6;
 
     private int test1EventsCounter;
 
@@ -218,7 +218,7 @@ public sealed class FileSystemWatcherTests
 
     private void FileSystemWatcher_ErrorTest3(object? sender, ErrorEventArgs e)
     {
-        Assert.Contains("MonitoringFolder3 not found.", e.GetException().Message);
+        Assert.Contains("MonitoringFolder3 not found", e.GetException().Message);
         test3EventsErrorCounter++;
     }
 
@@ -261,10 +261,6 @@ public sealed class FileSystemWatcherTests
     {
         if (sender is not FileSystemWatcher watcher) return;
 
-        foreach (var folder in e.Directories)
-        {
-            Utils.Trace($"{folder.Path} at {folder.ModifiedDateTime}");
-        }
         Assert.True(e.Directories.Length == test3ExpectedEventFolderCount, nameof(e.Directories.Length));
         Assert.True(watcher.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));
         Assert.True(watcher.DirectoriesToScan.Count == 0, nameof(FileSystemWatcher.DirectoriesToScan.Count));

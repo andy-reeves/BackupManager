@@ -28,6 +28,7 @@ public sealed class UtilsUnitTests
     }
 
     [Fact]
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
     public void GetMasterFolder()
     {
         var a = Utils.GetMasterFolder(@"\\nas1\assets1\_TV");
@@ -36,6 +37,7 @@ public sealed class UtilsUnitTests
     }
 
     [Fact]
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
     public void GetIndexFolder()
     {
         var a = Utils.GetIndexFolder(@"\\nas1\assets1\_TV");
