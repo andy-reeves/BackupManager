@@ -498,6 +498,7 @@ internal sealed partial class Main : Form
 
     private void CancelButton_Click(object sender, EventArgs e)
     {
+        Utils.TraceIn();
         tokenSource.Cancel();
         toolStripStatusLabel.Text = Resources.Main_Cancelling;
         if (Utils.CopyProcess != null && !Utils.CopyProcess.HasExited) Utils.CopyProcess?.Kill();
@@ -506,6 +507,7 @@ internal sealed partial class Main : Form
         ResetAllControls();
         UpdateMediaFilesCountDisplay();
         tokenSource = null;
+        Utils.TraceOut();
     }
 
     private void CheckAllBackupDisksButton_Click(object sender, EventArgs e)
