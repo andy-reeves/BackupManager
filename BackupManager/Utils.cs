@@ -103,7 +103,7 @@ internal static partial class Utils
     /// <summary>
     ///     Delay between Pushover messages in milliseconds
     /// </summary>
-    private const int TimeDelayOnPushoverMessages = 1;
+    private const int TimeDelayOnPushoverMessages = 1000;
 
     #endregion
 
@@ -1627,6 +1627,18 @@ internal static partial class Utils
             newString = newString.Replace($"${i}", "");
         }
         return newString;
+    }
+
+    internal static string GetIndexFolder(string path)
+    {
+        var a = new DirectoryInfo(path);
+        return a.Name;
+    }
+
+    internal static string GetMasterFolder(string path)
+    {
+        var directoryInfo = new FileInfo(path).Directory;
+        return directoryInfo?.Name;
     }
 
     /// <summary>

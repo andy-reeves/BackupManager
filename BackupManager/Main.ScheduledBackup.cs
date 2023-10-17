@@ -24,7 +24,8 @@ internal sealed partial class Main
             // It'll then delete everything off the connected backup disk as it doesn't think they're needed so this will prevent that
 
             if (mediaBackup.Config.MonitoringOnOff)
-                Utils.LogWithPushover(BackupAction.General, $"Service monitoring is running every {mediaBackup.Config.MonitoringInterval} seconds");
+                Utils.LogWithPushover(BackupAction.General,
+                    $"Service monitoring is running every {Utils.FormatTimeFromSeconds(mediaBackup.Config.MonitoringInterval)}");
             else
                 Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, "Service monitoring is not running");
             long oldFileCount = mediaBackup.BackupFiles.Count;

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Versioning;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using BackupManager.Entities;
@@ -19,11 +20,15 @@ namespace BackupManager;
 
 internal sealed partial class Main : Form
 {
-    private static void FileSystemWatcher_OnError(object sender, ErrorEventArgs e)
+    private void FileSystemWatcher_OnError(object sender, ErrorEventArgs e)
     {
         var ex = e.GetException();
-        Utils.LogWithPushover(BackupAction.General, $"Message: {ex.Message}");
-        Utils.LogWithPushover(BackupAction.General, $"Stacktrace: {ex.StackTrace}");
+        Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, $"Message: {ex.Message}");
+
+        // the most common is DirectoryNotFound for a network path
+        // for now wait a bit and then restart the watcher
+        Task.Delay(60000, ct).Wait(ct);
+        mediaBackup.Watcher.Start();
     }
 
     private void FileWatcherButton_Click(object sender, EventArgs e)
@@ -167,10 +172,10 @@ internal sealed partial class Main : Form
                 _ = MessageBox.Show(Resources.Main_RestoreFilesMasterFolderToRestoreTo, Resources.Main_RestoreFilesTitle, MessageBoxButtons.OK);
                 return;
             }
-            var targetMasterFolder = restoreMasterFolderComboBox.SelectedItem.ToString();
+            var targetDirectory = restoreMasterFolderComboBox.SelectedItem.ToString();
             var files = mediaBackup.GetBackupFilesInMasterFolder(masterFolder).Where(static p => p.Disk.HasValue());
             Utils.Log(BackupAction.Restore, $"Restoring files from master folder {masterFolder}");
-            Utils.Log(BackupAction.Restore, $"Restoring files to target master folder {targetMasterFolder}");
+            Utils.Log(BackupAction.Restore, $"Restoring files to target master folder {targetDirectory}");
             var backupShare = backupDiskTextBox.Text;
             var lastBackupDisk = string.Empty;
             var fileCounter = 0;
@@ -207,11 +212,11 @@ internal sealed partial class Main : Form
 
                     // calculate the source path
                     // calculate the destination path
-                    var sourceFileFullPath = Path.Combine(backupShare, file.Disk, file.IndexFolder, file.RelativePath);
+                    var sourceFileFullPath = Path.Combine(backupShare, file.Disk, Utils.GetIndexFolder(file.Directory), file.RelativePath);
 
-                    if (targetMasterFolder != null)
+                    if (targetDirectory != null)
                     {
-                        var targetFilePath = Path.Combine(targetMasterFolder, file.IndexFolder, file.RelativePath);
+                        var targetFilePath = Path.Combine(targetDirectory, file.RelativePath);
 
                         if (File.Exists(targetFilePath))
                             Utils.LogWithPushover(BackupAction.Restore, $"[{fileCounter}/{countOfFiles}] {targetFilePath} Already exists");
@@ -233,7 +238,7 @@ internal sealed partial class Main : Form
                         if (File.Exists(targetFilePath))
                         {
                             if (file.ContentsHash == Utils.GetShortMd5HashFromFile(targetFilePath))
-                                file.MasterFolder = targetMasterFolder;
+                                file.Directory = targetDirectory;
                             else
                             {
                                 Utils.LogWithPushover(BackupAction.Restore, PushoverPriority.High,
@@ -665,8 +670,7 @@ internal sealed partial class Main : Form
                 UpdateUI_Tick(null, null);
                 UpdateMediaFilesCountDisplay();
             }
-            else
-                UpdateStatusLabel();
+            UpdateStatusLabel();
         }
         Utils.TraceOut();
     }

@@ -141,28 +141,24 @@ public sealed class MediaBackup
     }
 
     /// <summary>
-    ///     Returns the MasterFolder, IndexFolder and RelativePath for the path provided.
+    ///     Returns the Directory, and RelativePath for the path provided.
     /// </summary>
     /// <param name="path">Full path to the file</param>
-    /// <param name="masterFolder"></param>
-    /// <param name="indexFolder"></param>
+    /// <param name="directory"></param>
     /// <param name="relativePath"></param>
     /// <returns>False if the MasterFolder or IndexFolder cannot be found.</returns>
-    public bool GetFoldersForPath(string path, out string masterFolder, out string indexFolder, out string relativePath)
+    public bool GetFoldersForPath(string path, out string directory, out string relativePath)
     {
-        masterFolder = null;
-        indexFolder = null;
+        directory = null;
         relativePath = null;
         var pathWithTerminatingString = Utils.EnsurePathHasATerminatingSeparator(path);
 
-        foreach (var master in Config.MasterFolders)
-        foreach (var index in Config.IndexFolders.Where(index =>
-                     pathWithTerminatingString.StartsWith(Utils.EnsurePathHasATerminatingSeparator(Path.Combine(master, index)),
+        foreach (var masterDirectory in Config.Directories.Where(masterDirectory =>
+                     pathWithTerminatingString.StartsWith(Utils.EnsurePathHasATerminatingSeparator(masterDirectory),
                          StringComparison.InvariantCultureIgnoreCase)))
         {
-            masterFolder = master;
-            indexFolder = index;
-            relativePath = BackupFile.GetRelativePath(path, masterFolder, indexFolder);
+            relativePath = BackupFile.GetRelativePath(path, masterDirectory);
+            directory = masterDirectory;
             return true;
         }
         return false;
@@ -219,18 +215,16 @@ public sealed class MediaBackup
         Utils.TraceIn(fullPath);
         if (!File.Exists(fullPath) || !Utils.IsFileAccessible(fullPath)) return null;
 
-        if (!GetFoldersForPath(fullPath, out var masterFolder, out var indexFolder, out var relativePath))
+        if (!GetFoldersForPath(fullPath, out var directory, out var relativePath))
             throw new ArgumentException(Resources.MediaBackup_UnableToDetermineMasterFolderIndexFolder, nameof(fullPath));
-
-        if (string.IsNullOrEmpty(indexFolder) || string.IsNullOrEmpty(masterFolder))
-            throw new ArgumentException(Resources.IndexFolderOrMasterFolderEmpty);
+        if (string.IsNullOrEmpty(directory)) throw new ArgumentException(Resources.IndexFolderOrMasterFolderEmpty);
 
         // we hash the path of the file so we can look it up quickly
         // then we check the ModifiedTime and size
         // if these have changed we redo the hash
         // files with same hash are allowed (Porridge TV ep and movie)
         // files can't have same hash and same filename though
-        var hashKey = Path.Combine(indexFolder, relativePath);
+        var hashKey = Path.Combine(Utils.GetIndexFolder(directory), relativePath);
 
         // if this path is already added then return it
         if (indexFolderAndRelativePath.TryGetValue(hashKey, out var backupFile))
@@ -239,7 +233,7 @@ public sealed class MediaBackup
             // this has same index folder and path but its a different file
             string hashOfContents;
 
-            if (backupFile.MasterFolder != masterFolder)
+            if (backupFile.Directory != directory)
             {
                 // This is similar file in different master folders
                 // This also happens if a file is moved from 1 masterFolder to another
@@ -252,8 +246,8 @@ public sealed class MediaBackup
 
                 if (hashOfContents == backupFile.ContentsHash)
                 {
-                    Utils.Trace($"Changing masterFolder on {backupFile.FullPath} to {masterFolder}");
-                    backupFile.MasterFolder = masterFolder;
+                    Utils.Trace($"Changing Directory on {backupFile.FullPath} to {directory}");
+                    backupFile.Directory = directory;
                 }
                 else
                 {
@@ -287,10 +281,10 @@ public sealed class MediaBackup
 
             // Now we check the full path has not changed the UPPER or lowercase anywhere
             // we're not case sensitive but we want it to match the casing on the master folder
-            if (fullPath != backupFile.FullPath) backupFile.SetFullPath(fullPath, masterFolder, indexFolder);
+            if (fullPath != backupFile.FullPath) backupFile.SetFullPath(fullPath, directory);
             return Utils.TraceOut(backupFile);
         }
-        backupFile = new BackupFile(fullPath, masterFolder, indexFolder);
+        backupFile = new BackupFile(fullPath, directory);
         Utils.Trace($"Adding backup file {backupFile.RelativePath}");
         BackupFiles.Add(backupFile);
         indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
@@ -314,16 +308,16 @@ public sealed class MediaBackup
     }
 
     /// <summary>
-    ///     Returns the path to the parent folder of the file provided. That's the path to the first folder after an index
-    ///     folder
+    ///     Returns the path to the parent folder of the file provided. That's the path to the first folder after a backup
+    ///     directory
     /// </summary>
     /// <param name="path"></param>
-    /// <returns>Null if the Path doesn't contain an IndexFolder or if its in the root of the IndexFolder</returns>
+    /// <returns>Null if the Path doesn't contain a backup Directory or if its in the root of the backup directory</returns>
     public string GetParentFolder(string path)
     {
-        return (from indexFolder in Config.IndexFolders
-            where path.Contains(indexFolder + "\\")
-            select path.SubstringAfter(indexFolder + "\\", StringComparison.CurrentCultureIgnoreCase)
+        return (from directory in Config.Directories
+            where path.Contains(directory + "\\")
+            select path.SubstringAfter(directory + "\\", StringComparison.CurrentCultureIgnoreCase)
             into pathAfterSlash
             let lastSlashLocation = pathAfterSlash.IndexOf('\\')
             select lastSlashLocation < 0 ? null : path[..(lastSlashLocation + (path.Length - pathAfterSlash.Length))]).FirstOrDefault();
@@ -384,13 +378,13 @@ public sealed class MediaBackup
     }
 
     /// <summary>
-    ///     Get BackupFiles that are in the MasterFolder provided. Includes files marked as Deleted
+    ///     Get BackupFiles that are in the Directory provided. Includes files marked as Deleted
     /// </summary>
-    /// <param name="masterFolder"></param>
+    /// <param name="directory"></param>
     /// <returns></returns>
-    public IEnumerable<BackupFile> GetBackupFilesInMasterFolder(string masterFolder)
+    public IEnumerable<BackupFile> GetBackupFilesInMasterFolder(string directory)
     {
-        return BackupFiles.Where(p => p.MasterFolder == masterFolder).OrderBy(static q => q.BackupDiskNumber);
+        return BackupFiles.Where(p => p.Directory == directory).OrderBy(static q => q.BackupDiskNumber);
     }
 
     /// <summary>

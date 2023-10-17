@@ -28,6 +28,22 @@ public sealed class UtilsUnitTests
     }
 
     [Fact]
+    public void GetMasterFolder()
+    {
+        var a = Utils.GetMasterFolder(@"\\nas1\assets1\_TV");
+        Assert.NotNull(a);
+        Assert.True(a == @"\\nas1\assets1");
+    }
+
+    [Fact]
+    public void GetIndexFolder()
+    {
+        var a = Utils.GetIndexFolder(@"\\nas1\assets1\_TV");
+        Assert.NotNull(a);
+        Assert.True(a == "_TV");
+    }
+
+    [Fact]
     public void FormatTimeFromSeconds()
     {
         var a = Utils.FormatTimeFromSeconds(300);

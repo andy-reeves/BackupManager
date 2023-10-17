@@ -5,6 +5,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -72,82 +73,36 @@ internal sealed partial class Main
     private bool ScanFolders()
     {
         Utils.TraceIn();
-        var filters = mediaBackup.GetFilters();
-        long readSpeed = 0, writeSpeed = 0;
+        var masterFoldersChecked = new HashSet<string>();
         mediaBackup.ClearFlags();
         Utils.LogWithPushover(BackupAction.ScanDirectory, "Started");
         UpdateStatusLabel(string.Format(Resources.Main_Scanning, string.Empty));
 
-        foreach (var masterFolder in mediaBackup.Config.MasterFolders)
+        foreach (var directory in mediaBackup.Config.Directories)
         {
-            UpdateStatusLabel(string.Format(Resources.Main_Scanning, masterFolder));
+            //foreach (var masterFolder in mediaBackup.Config.MasterFolders)
+            //{
+            UpdateStatusLabel(string.Format(Resources.Main_Scanning, directory));
 
-            if (!Directory.Exists(masterFolder))
-                Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"{masterFolder} is not available");
-
-            if (Directory.Exists(masterFolder))
+            if (Directory.Exists(directory))
             {
-                if (!Utils.IsDirectoryWritable(masterFolder))
-                    Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"{masterFolder} is not writable");
-                _ = Utils.GetDiskInfo(masterFolder, out var freeSpaceOnCurrentMasterFolder, out var totalBytesOnMasterFolderDisk);
-
-                if (mediaBackup.Config.SpeedTestOnOff)
+                if (Utils.IsDirectoryWritable(directory))
                 {
-                    UpdateStatusLabel(string.Format(Resources.Main_SpeedTesting, masterFolder));
+                    //We only want to check each masterfolder once so keep a Hashset of those we've already done
+                    var masterFolder = Utils.GetMasterFolder(directory);
 
-                    Utils.DiskSpeedTest(masterFolder, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize),
-                        mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed);
-                }
-                var totalBytesOnMasterFolderDiskFormatted = Utils.FormatSize(totalBytesOnMasterFolderDisk);
-                var freeSpaceOnCurrentMasterFolderFormatted = Utils.FormatSize(freeSpaceOnCurrentMasterFolder);
-                var readSpeedFormatted = Utils.FormatSpeed(readSpeed);
-                var writeSpeedFormatted = Utils.FormatSpeed(writeSpeed);
-
-                var text =
-                    $"{masterFolder}\nTotal: {totalBytesOnMasterFolderDiskFormatted}\nFree: {freeSpaceOnCurrentMasterFolderFormatted}\nRead: {readSpeedFormatted}\nWrite: {writeSpeedFormatted}";
-                Utils.LogWithPushover(BackupAction.ScanDirectory, text);
-
-                if (mediaBackup.Config.SpeedTestOnOff)
-                {
-                    if (readSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumReadSpeed))
+                    if (!masterFoldersChecked.Contains(masterFolder))
                     {
-                        Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High,
-                            $"Read speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumReadSpeed))}");
+                        MasterFolderChecks(masterFolder);
+                        masterFoldersChecked.Add(masterFolder);
                     }
-
-                    if (writeSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumWriteSpeed))
-                    {
-                        Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High,
-                            $"Write speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumWriteSpeed))}");
-                    }
+                    if (!ScanSingleDirectory(directory, SearchOption.AllDirectories)) return false;
                 }
-
-                if (freeSpaceOnCurrentMasterFolder < Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumCriticalSpace))
-                    Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"Free space on {masterFolder} is too low");
-                UpdateStatusLabel(string.Format(Resources.Main_ScanFolders_Deleting_empty_folders_in__0_, masterFolder));
-                var directoriesDeleted = Utils.DeleteEmptyDirectories(masterFolder);
-
-                foreach (var directory in directoriesDeleted)
-                {
-                    Utils.Log(BackupAction.ScanDirectory, $"Deleted empty folder {directory}");
-                }
-                UpdateStatusLabel(string.Format(Resources.Main_Scanning, masterFolder));
-
-                // Check for files in the root of the master folder alongside te index folders
-                var filesInRootOfMasterFolder = Utils.GetFiles(masterFolder, filters, SearchOption.TopDirectoryOnly);
-
-                foreach (var file in filesInRootOfMasterFolder)
-                {
-                    Utils.Trace($"Checking {file}");
-                    CheckForFilesToDelete(file);
-                }
-
-                if (mediaBackup.Config.IndexFolders.Any(indexFolder =>
-                        !ScanSingleDirectory(Path.Combine(masterFolder, indexFolder), SearchOption.AllDirectories)))
-                    return false;
+                else
+                    Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"{directory} is not writable");
             }
             else
-                Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"{masterFolder} doesn't exist");
+                Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"{directory} doesn't exist");
         }
         UpdateStatusLabel(Resources.Main_Completed);
 
@@ -187,6 +142,65 @@ internal sealed partial class Main
         Utils.LogWithPushover(BackupAction.ScanDirectory, $"{notOnBackupDisk.Length:n0} files to backup at {Utils.FormatSize(fileSizeToCopy)}");
         Utils.LogWithPushover(BackupAction.ScanDirectory, "Completed");
         return Utils.TraceOut(true);
+    }
+
+    private void MasterFolderChecks(string masterFolder)
+    {
+        long readSpeed = 0;
+        long writeSpeed = 0;
+        var filters = mediaBackup.GetFilters();
+        _ = Utils.GetDiskInfo(masterFolder, out var freeSpaceOnCurrentMasterFolder, out var totalBytesOnMasterFolderDisk);
+
+        if (mediaBackup.Config.SpeedTestOnOff)
+        {
+            UpdateStatusLabel(string.Format(Resources.Main_SpeedTesting, masterFolder));
+
+            Utils.DiskSpeedTest(masterFolder, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations,
+                out readSpeed, out writeSpeed);
+        }
+        var totalBytesOnMasterFolderDiskFormatted = Utils.FormatSize(totalBytesOnMasterFolderDisk);
+        var freeSpaceOnCurrentMasterFolderFormatted = Utils.FormatSize(freeSpaceOnCurrentMasterFolder);
+        var readSpeedFormatted = Utils.FormatSpeed(readSpeed);
+        var writeSpeedFormatted = Utils.FormatSpeed(writeSpeed);
+
+        var text =
+            $"{masterFolder}\nTotal: {totalBytesOnMasterFolderDiskFormatted}\nFree: {freeSpaceOnCurrentMasterFolderFormatted}\nRead: {readSpeedFormatted}\nWrite: {writeSpeedFormatted}";
+        Utils.LogWithPushover(BackupAction.ScanDirectory, text);
+
+        if (mediaBackup.Config.SpeedTestOnOff)
+        {
+            if (readSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumReadSpeed))
+            {
+                Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High,
+                    $"Read speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumReadSpeed))}");
+            }
+
+            if (writeSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumWriteSpeed))
+            {
+                Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High,
+                    $"Write speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumWriteSpeed))}");
+            }
+        }
+
+        if (freeSpaceOnCurrentMasterFolder < Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumCriticalSpace))
+            Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"Free space on {masterFolder} is too low");
+        UpdateStatusLabel(string.Format(Resources.Main_ScanFolders_Deleting_empty_folders_in__0_, masterFolder));
+        var directoriesDeleted = Utils.DeleteEmptyDirectories(masterFolder);
+
+        foreach (var directory2 in directoriesDeleted)
+        {
+            Utils.Log(BackupAction.ScanDirectory, $"Deleted empty folder {directory2}");
+        }
+        UpdateStatusLabel(string.Format(Resources.Main_Scanning, masterFolder));
+
+        // Check for files in the root of the master folder alongside te index folders
+        var filesInRootOfMasterFolder = Utils.GetFiles(masterFolder, filters, SearchOption.TopDirectoryOnly);
+
+        foreach (var file in filesInRootOfMasterFolder)
+        {
+            Utils.Trace($"Checking {file}");
+            CheckForFilesToDelete(file);
+        }
     }
 
     [GeneratedRegex(

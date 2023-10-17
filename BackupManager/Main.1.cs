@@ -71,10 +71,10 @@ internal sealed partial class Main
 
             // Log the parameters after setting the Pushover keys in the Utils class
             mediaBackup.Config.LogParameters();
-            var masterFoldersArray = mediaBackup.Config.MasterFolders.ToArray();
-            listMasterFoldersComboBox.Items.AddRange(masterFoldersArray.ToArray<object>());
-            masterFoldersComboBox.Items.AddRange(masterFoldersArray.ToArray<object>());
-            restoreMasterFolderComboBox.Items.AddRange(masterFoldersArray.ToArray<object>());
+            var directoriesArray = mediaBackup.Config.Directories.ToArray();
+            listMasterFoldersComboBox.Items.AddRange(directoriesArray.ToArray<object>());
+            masterFoldersComboBox.Items.AddRange(directoriesArray.ToArray<object>());
+            restoreMasterFolderComboBox.Items.AddRange(directoriesArray.ToArray<object>());
 
             foreach (var disk in mediaBackup.BackupDisks)
             {
@@ -245,7 +245,7 @@ internal sealed partial class Main
         Utils.TraceIn();
         var watcher = mediaBackup.Watcher;
         watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName;
-        watcher.Directories = mediaBackup.Config.MasterFolders.ToArray();
+        watcher.Directories = mediaBackup.Config.Directories.ToArray();
         watcher.ProcessChangesInterval = mediaBackup.Config.MasterFoldersProcessChangesTimer;
         watcher.ScanInterval = mediaBackup.Config.MasterFoldersScanTimer;
         watcher.Filter = "*.*";
@@ -354,17 +354,17 @@ internal sealed partial class Main
         longRunningActionExecutingRightNow = true;
         DisableControlsForAsyncTasks();
         Utils.Log("Speed testing all master folders");
-        EnableProgressBar(0, mediaBackup.Config.MasterFolders.Count);
+        EnableProgressBar(0, mediaBackup.Config.Directories.Count);
 
-        for (var i = 0; i < mediaBackup.Config.MasterFolders.Count; i++)
+        for (var i = 0; i < mediaBackup.Config.Directories.Count; i++)
         {
-            var masterFolder = mediaBackup.Config.MasterFolders[i];
-            UpdateStatusLabel($"Speed testing {masterFolder}", i + 1);
-            if (!Utils.IsDirectoryWritable(masterFolder)) continue;
+            var directory = mediaBackup.Config.Directories[i];
+            UpdateStatusLabel($"Speed testing {directory}", i + 1);
+            if (!Utils.IsDirectoryWritable(directory)) continue;
 
-            Utils.DiskSpeedTest(masterFolder, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations,
+            Utils.DiskSpeedTest(directory, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations,
                 out var readSpeed, out var writeSpeed);
-            Utils.Log($"testing {masterFolder}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
+            Utils.Log($"testing {directory}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
         }
         ResetAllControls();
         longRunningActionExecutingRightNow = false;

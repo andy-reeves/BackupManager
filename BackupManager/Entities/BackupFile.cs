@@ -37,33 +37,27 @@ public sealed class BackupFile : IEquatable<BackupFile>
     /// <summary>
     /// </summary>
     /// <param name="fullPath"></param>
-    /// <param name="masterFolder"></param>
-    /// <param name="indexFolder"></param>
-    public BackupFile(string fullPath, string masterFolder, string indexFolder)
+    /// <param name="directory"></param>
+    public BackupFile(string fullPath, string directory)
     {
-        SetFullPath(fullPath, masterFolder, indexFolder);
+        SetFullPath(fullPath, directory);
     }
 
     /// <summary>
-    ///     The relative path of the file. Doesn't include MasterFolder or IndexFolder.
+    ///     The relative path of the file. Doesn't include Directory.
     /// </summary>
     [XmlElement("Path")]
     public string RelativePath { get; set; }
 
     /// <summary>
-    ///     The MasterFolder this file is located at. Like '//nas1/assets1'
-    /// </summary>
-    public string MasterFolder { get; set; }
-
-    /// <summary>
-    ///     The IndexFolder this file is located at. Like _Movies or _TV
-    /// </summary>
-    public string IndexFolder { get; set; }
-
-    /// <summary>
-    ///     This gets set to true for files no longer found in a MasterFolder.
+    ///     This gets set to true for files no longer found.
     /// </summary>
     public bool Deleted { get; set; }
+
+    /// <summary>
+    ///     The Directory this file is located at. Like '//nas1/assets1/_Movies'
+    /// </summary>
+    public string Directory { get; set; }
 
     /// <summary>
     ///     The MD5 hash of the file contents.
@@ -102,10 +96,10 @@ public sealed class BackupFile : IEquatable<BackupFile>
     {
         get
         {
-            // always calculate the FullPath in case the MasterFolder, IndexFolder or RelativePath properties have been changed.
-            if (MasterFolder == null || IndexFolder == null || RelativePath == null) return string.Empty;
+            // always calculate the FullPath in case theDirectory or RelativePath properties have been changed.
+            if (Directory == null || RelativePath == null) return string.Empty;
 
-            return Path.Combine(MasterFolder, IndexFolder, RelativePath);
+            return Path.Combine(Directory, RelativePath);
         }
     }
 
@@ -128,7 +122,7 @@ public sealed class BackupFile : IEquatable<BackupFile>
     ///     This is a combination key of index folder and relative path.
     /// </summary>
     [XmlIgnore]
-    public string Hash => Path.Combine(IndexFolder, RelativePath);
+    public string Hash => Path.Combine(Utils.GetIndexFolder(Directory), RelativePath);
 
     /// <summary>
     ///     A date/time this file was last checked. If this is cleared then the Disk is automatically set to null also. Returns
@@ -185,8 +179,8 @@ public sealed class BackupFile : IEquatable<BackupFile>
     /// <param name="backupPath">The path to the current backup disk.</param>
     public string BackupDiskFullPath(string backupPath)
     {
-        // always calculate path in case the IndexFolder or RelativePath properties have been changed.
-        return Path.Combine(backupPath, IndexFolder, RelativePath);
+        // always calculate path in case the Directory or RelativePath properties have been changed.
+        return Path.Combine(backupPath, Utils.GetIndexFolder(Directory), RelativePath);
     }
 
     /// <summary>
@@ -209,33 +203,29 @@ public sealed class BackupFile : IEquatable<BackupFile>
         diskChecked = null;
     }
 
-    public void SetFullPath(string fullPath, string masterFolder, string indexFolder)
+    public void SetFullPath(string fullPath, string directory)
     {
         if (!File.Exists(fullPath)) throw new FileNotFoundException();
 
-        RelativePath = GetRelativePath(fullPath, masterFolder, indexFolder);
-        MasterFolder = masterFolder;
-        IndexFolder = indexFolder;
+        RelativePath = GetRelativePath(fullPath, directory);
+        Directory = directory;
         UpdateContentsHash();
         UpdateLastWriteTime();
         UpdateFileLength();
     }
 
     /// <summary>
-    ///     Returns the remaining path from fullPath after masterFolder and indexFolder
+    ///     Returns the remaining path from fullPath after directory
     /// </summary>
     /// <param name="fullPath"></param>
-    /// <param name="masterFolder"></param>
-    /// <param name="indexFolder"></param>
+    /// <param name="directory"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
-    internal static string GetRelativePath(string fullPath, string masterFolder, string indexFolder)
+    internal static string GetRelativePath(string fullPath, string directory)
     {
-        var combinedPath = Path.Combine(masterFolder, indexFolder);
-
-        return !fullPath.StartsWith(combinedPath, StringComparison.CurrentCultureIgnoreCase)
+        return !fullPath.StartsWith(directory, StringComparison.CurrentCultureIgnoreCase)
             ? throw new ArgumentException(Resources.BackupFile_The_fullPathNotCorrect, nameof(fullPath))
-            : fullPath.SubstringAfter(combinedPath, StringComparison.CurrentCultureIgnoreCase).TrimStart(new[] { '\\' });
+            : fullPath.SubstringAfter(directory, StringComparison.CurrentCultureIgnoreCase).TrimStart(new[] { '\\' });
     }
 
     /// <summary>
@@ -287,7 +277,7 @@ public sealed class BackupFile : IEquatable<BackupFile>
     {
         if (!File.Exists(FullPath) || !Utils.IsFileAccessible(FullPath)) return false;
 
-        var pathToBackupDiskFile = Path.Combine(backupDisk.BackupPath, IndexFolder, RelativePath);
+        var pathToBackupDiskFile = Path.Combine(backupDisk.BackupPath, Utils.GetIndexFolder(Directory), RelativePath);
         if (!File.Exists(pathToBackupDiskFile) || !Utils.IsFileAccessible(pathToBackupDiskFile)) return false;
 
         var hashFromSourceFile = Utils.GetShortMd5HashFromFile(FullPath);

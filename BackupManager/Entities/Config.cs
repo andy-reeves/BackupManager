@@ -25,9 +25,7 @@ namespace BackupManager.Entities;
 [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
 public sealed class Config
 {
-    [XmlArrayItem("MasterFolder")] public Collection<string> MasterFolders { get; set; } = new();
-
-    [XmlArrayItem("IndexFolder")] public Collection<string> IndexFolders { get; set; } = new();
+    [XmlArrayItem("Directory")] public Collection<string> Directories { get; set; } = new();
 
     [XmlArrayItem("FilterRegEx")] public Collection<string> Filters { get; set; } = new();
 
