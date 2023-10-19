@@ -259,9 +259,15 @@ internal sealed class FileSystemWatcher
         Utils.TraceIn();
         if (Running) return Utils.TraceOut(Running = true);
 
+        // if we've not run reset before then do it now
         if (!reset)
+        {
             if (!Reset())
+            {
+                // if reset fails set running=false and return
                 return Utils.TraceOut(Running = false);
+            }
+        }
 
         // Check current paths are valid
         foreach (var directory in Directories)

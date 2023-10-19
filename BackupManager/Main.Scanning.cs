@@ -218,7 +218,7 @@ internal sealed partial class Main
     {
         longRunningActionExecutingRightNow = true;
         DisableControlsForAsyncTasks();
-        _ = ScanFolders();
+        ScanFolders();
         ResetAllControls();
         longRunningActionExecutingRightNow = false;
     }

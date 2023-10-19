@@ -36,7 +36,7 @@ internal sealed partial class Main
     /// </summary>
     private bool longRunningActionExecutingRightNow;
 
-    private CancellationTokenSource tokenSource = new();
+    private CancellationTokenSource tokenSource;
 
     private DailyTrigger trigger;
 
@@ -448,7 +448,7 @@ internal sealed partial class Main
         }
         else
         {
-            if (!text.EndsWith("...", StringComparison.Ordinal) && !text.EndsWith(".", StringComparison.Ordinal)) textToUse = text + "...";
+            if (!text.EndsWith("...", StringComparison.Ordinal) && !text.EndsWith(".", StringComparison.Ordinal)) textToUse = text + " ...";
         }
         UpdateProgressBar(value);
         statusStrip.Invoke(_ => toolStripStatusLabel.Text = textToUse);

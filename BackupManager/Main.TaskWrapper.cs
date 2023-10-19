@@ -7,7 +7,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 using BackupManager.Properties;
 
@@ -18,6 +17,7 @@ internal sealed partial class Main
     private void TaskWrapper(Action methodName)
     {
         ArgumentNullException.ThrowIfNull(methodName);
+        tokenSource?.Dispose();
         tokenSource = new CancellationTokenSource();
         ct = tokenSource.Token;
 
@@ -25,15 +25,17 @@ internal sealed partial class Main
         {
             if (u.Exception == null) return;
 
-            Utils.Log("Exception occurred. Cancelling operation.");
-            MessageBox.Show(string.Format(Resources.Main_TaskWrapperException, u.Exception));
+            Utils.Trace("Exception in the TaskWrapper");
+            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, string.Format(Resources.Main_TaskWrapperException, u.Exception));
             CancelButton_Click(null, null);
+            Utils.Trace("CancelButton_Click done");
         }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
     }
 
     private void TaskWrapper(Action<bool> methodName, bool param1)
     {
         ArgumentNullException.ThrowIfNull(methodName);
+        tokenSource?.Dispose();
         tokenSource = new CancellationTokenSource();
         ct = tokenSource.Token;
 
@@ -41,15 +43,17 @@ internal sealed partial class Main
         {
             if (u.Exception == null) return;
 
-            Utils.Log("Exception occurred. Cancelling operation.");
-            _ = MessageBox.Show(string.Format(Resources.Main_TaskWrapperException, u.Exception));
+            Utils.Trace("Exception in the TaskWrapper");
+            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, string.Format(Resources.Main_TaskWrapperException, u.Exception));
             CancelButton_Click(null, null);
+            Utils.Trace("CancelButton_Click done");
         }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
     }
 
     private void TaskWrapper(Action<bool, bool> methodName, bool param1, bool param2)
     {
         ArgumentNullException.ThrowIfNull(methodName);
+        tokenSource?.Dispose();
         tokenSource = new CancellationTokenSource();
         ct = tokenSource.Token;
 
@@ -57,9 +61,10 @@ internal sealed partial class Main
         {
             if (u.Exception == null) return;
 
-            Utils.Log("Exception occurred. Cancelling operation.");
-            MessageBox.Show(string.Format(Resources.Main_TaskWrapperException, u.Exception));
+            Utils.Trace("Exception in the TaskWrapper");
+            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, string.Format(Resources.Main_TaskWrapperException, u.Exception));
             CancelButton_Click(null, null);
+            Utils.Trace("CancelButton_Click done");
         }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
     }
 }
