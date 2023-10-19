@@ -23,6 +23,7 @@ using System.Security.Principal;
 using System.ServiceProcess;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 using BackupManager.Entities;
@@ -125,8 +126,7 @@ internal static partial class Utils
     private static readonly MD5 _md5 = MD5.Create();
 
 #if DEBUG
-    private static readonly string _logFile =
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Debug.log");
+    private static readonly string _logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Debug.log");
 #else
     private static readonly string _logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager.log");
 #endif
@@ -1215,16 +1215,20 @@ internal static partial class Utils
     /// <returns>True if writable else False</returns>
     internal static bool IsDirectoryWritable(string path)
     {
+        TraceIn(path);
+
         try
         {
             if (!Directory.Exists(path)) return false;
 
-            using var fs = File.Create(Path.Combine(path, Path.GetRandomFileName()), 1, FileOptions.DeleteOnClose);
-            return true;
+            var randomFileName = Path.GetRandomFileName();
+            Trace(randomFileName);
+            using var fs = File.Create(Path.Combine(path, randomFileName, ".tmp"), 1, FileOptions.DeleteOnClose);
+            return TraceOut(true);
         }
         catch
         {
-            return false;
+            return TraceOut(false);
         }
     }
 
@@ -1285,12 +1289,13 @@ internal static partial class Utils
     /// <param name="readSpeed">in bytes per second</param>
     /// <param name="writeSpeed">in bytes per second</param>
     /// <param name="testFileSize"></param>
-    internal static void DiskSpeedTest(string pathToDiskToTest, long testFileSize, int testIterations, out long readSpeed, out long writeSpeed)
+    internal static void DiskSpeedTest(string pathToDiskToTest, long testFileSize, int testIterations, out long readSpeed, out long writeSpeed,
+        CancellationToken ct)
     {
         TraceIn(pathToDiskToTest, testFileSize, testIterations);
         var tempPath = Path.GetTempPath();
-        readSpeed = DiskSpeedTest(pathToDiskToTest, tempPath, testFileSize, testIterations);
-        writeSpeed = DiskSpeedTest(tempPath, pathToDiskToTest, testFileSize, testIterations);
+        readSpeed = DiskSpeedTest(pathToDiskToTest, tempPath, testFileSize, testIterations, ct);
+        writeSpeed = DiskSpeedTest(tempPath, pathToDiskToTest, testFileSize, testIterations, ct);
         TraceOut();
     }
 
@@ -1379,9 +1384,10 @@ internal static partial class Utils
     /// <param name="testFileSize"></param>
     /// <param name="testIterations"></param>
     /// <returns>The bytes read/written in 1s</returns>
-    private static long DiskSpeedTest(string sourcePath, string destinationPath, long testFileSize, int testIterations)
+    private static long DiskSpeedTest(string sourcePath, string destinationPath, long testFileSize, int testIterations, CancellationToken ct)
     {
         TraceIn();
+        if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
         const long randomStringSize = 500_000;
         const int streamWriteBufferSize = 20 * BytesInOneMegabyte;
         var randomText = RandomString(randomStringSize);
@@ -1390,6 +1396,7 @@ internal static partial class Utils
 
         for (var j = 1; j <= testIterations; j++)
         {
+            if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
             var firstPathFilename = sourcePath + "\\" + j + "test.tmp";
             var secondPathFilename = destinationPath + "\\" + j + "test.tmp";
             if (File.Exists(firstPathFilename)) File.Delete(firstPathFilename);
@@ -1404,6 +1411,7 @@ internal static partial class Utils
             }
             Trace($"{firstPathFilename} created");
             testFileSize = GetFileLength(firstPathFilename);
+            if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
             var sw = Stopwatch.StartNew();
             File.Copy(firstPathFilename, secondPathFilename);
             Trace($"{firstPathFilename} copied as {secondPathFilename}");

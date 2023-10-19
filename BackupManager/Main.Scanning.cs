@@ -144,6 +144,7 @@ internal sealed partial class Main
 
     private void MasterFolderChecks(string masterFolder)
     {
+        Utils.TraceIn(masterFolder);
         long readSpeed = 0;
         long writeSpeed = 0;
         var filters = mediaBackup.GetFilters();
@@ -154,7 +155,7 @@ internal sealed partial class Main
             UpdateStatusLabel(string.Format(Resources.Main_SpeedTesting, masterFolder));
 
             Utils.DiskSpeedTest(masterFolder, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations,
-                out readSpeed, out writeSpeed);
+                out readSpeed, out writeSpeed, ct);
         }
         var totalBytesOnMasterFolderDiskFormatted = Utils.FormatSize(totalBytesOnMasterFolderDisk);
         var freeSpaceOnCurrentMasterFolderFormatted = Utils.FormatSize(freeSpaceOnCurrentMasterFolder);
@@ -185,9 +186,9 @@ internal sealed partial class Main
         UpdateStatusLabel(string.Format(Resources.Main_ScanFolders_Deleting_empty_folders_in__0_, masterFolder));
         var directoriesDeleted = Utils.DeleteEmptyDirectories(masterFolder);
 
-        foreach (var directory2 in directoriesDeleted)
+        foreach (var directory in directoriesDeleted)
         {
-            Utils.Log(BackupAction.ScanDirectory, $"Deleted empty folder {directory2}");
+            Utils.Log(BackupAction.ScanDirectory, $"Deleted empty folder {directory}");
         }
         UpdateStatusLabel(string.Format(Resources.Main_Scanning, masterFolder));
 
@@ -199,6 +200,7 @@ internal sealed partial class Main
             Utils.Trace($"Checking {file}");
             CheckForFilesToDelete(file);
         }
+        Utils.TraceOut();
     }
 
     [GeneratedRegex(

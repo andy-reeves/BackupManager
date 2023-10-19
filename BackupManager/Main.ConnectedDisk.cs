@@ -109,7 +109,7 @@ internal sealed partial class Main
                 ? Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize)
                 : disk.Free - Utils.BytesInOneKilobyte;
             UpdateStatusLabel(string.Format(Resources.Main_SpeedTesting, folderToCheck));
-            Utils.DiskSpeedTest(folderToCheck, diskTestSize, mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed);
+            Utils.DiskSpeedTest(folderToCheck, diskTestSize, mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed, ct);
             disk.UpdateSpeeds(readSpeed, writeSpeed);
         }
 

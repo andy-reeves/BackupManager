@@ -10,9 +10,11 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Timers;
 
 using BackupManager.Entities;
+using BackupManager.Extensions;
 using BackupManager.Properties;
 
 namespace BackupManager;
@@ -42,6 +44,8 @@ internal sealed class FileSystemWatcher
     private Timer scanFoldersTimer;
 
     private int scanInterval = 60;
+
+    private string regExFilter;
 
     internal bool Running { get; private set; }
 
@@ -145,6 +149,24 @@ internal sealed class FileSystemWatcher
             if (filter == value) return;
 
             filter = value;
+            Restart();
+        }
+    }
+
+    /// <summary>
+    ///     Gets or sets the RegexFilter string, used to determine what files are monitored in a directory. They match the
+    ///     Filter first and then this.
+    ///     Use .*(?&lt;!\.tmp)$ to match everything accept *.tmp files for example
+    /// </summary>
+    public string RegexFilter
+    {
+        get => regExFilter;
+
+        set
+        {
+            if (regExFilter == value) return;
+
+            regExFilter = value;
             Restart();
         }
     }
@@ -372,6 +394,12 @@ internal sealed class FileSystemWatcher
         foreach (var fileOrFolderChange in FileSystemChanges.GetConsumingEnumerable())
         {
             Utils.Trace($"fileOrFolderChange.Path = {fileOrFolderChange.Path}");
+
+            // check the Regex to filter more
+            if (RegexFilter.HasValue())
+            {
+                if (!Regex.IsMatch(fileOrFolderChange.Path, RegexFilter)) continue;
+            }
 
             // What about deleted files and folders?
             // Check to see if the path exists as a file 

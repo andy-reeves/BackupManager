@@ -48,8 +48,7 @@ internal sealed partial class Main
             InitializeComponent();
             TraceConfiguration.Register();
 #if DEBUG
-            Trace.Listeners.Add(new TextWriterTraceListener(
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"), "myListener"));
+            Trace.Listeners.Add(new TextWriterTraceListener(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"), "myListener"));
 
             // ReSharper disable StringLiteralTypo
             // ReSharper disable CommentTypo
@@ -249,6 +248,7 @@ internal sealed partial class Main
         watcher.ProcessChangesInterval = mediaBackup.Config.MasterFoldersProcessChangesTimer;
         watcher.ScanInterval = mediaBackup.Config.MasterFoldersScanTimer;
         watcher.Filter = "*.*";
+        watcher.RegexFilter = @".*(?<!\.tmp)$"; // match all files except *.tmp
         watcher.IncludeSubdirectories = true;
         watcher.ReadyToScan += FileSystemWatcher_ReadyToScan;
         watcher.Error += FileSystemWatcher_OnError;
@@ -363,7 +363,7 @@ internal sealed partial class Main
             if (!Utils.IsDirectoryWritable(directory)) continue;
 
             Utils.DiskSpeedTest(directory, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations,
-                out var readSpeed, out var writeSpeed);
+                out var readSpeed, out var writeSpeed, ct);
             Utils.Log($"testing {directory}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
         }
         ResetAllControls();

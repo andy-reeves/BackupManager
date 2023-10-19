@@ -137,7 +137,7 @@ internal sealed partial class Main : Form
         if (mediaBackup.Config.SpeedTestOnOff)
         {
             Utils.DiskSpeedTest(masterFolder, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations,
-                out var readSpeed, out var writeSpeed);
+                out var readSpeed, out var writeSpeed, ct);
             Utils.Log($"Testing {masterFolder}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
         }
 
