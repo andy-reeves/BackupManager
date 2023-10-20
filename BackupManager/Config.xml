@@ -22,6 +22,7 @@
 
   <MasterFoldersDaysBetweenFullScan>7</MasterFoldersDaysBetweenFullScan>
 
+  <MasterFolderFilterRegEx>.*(?&lt;!\.tmp)$</MasterFolderFilterRegEx>
   <!-- Minimum read speed in MB/s -->
   <MasterFolderMinimumReadSpeed>30</MasterFolderMinimumReadSpeed>
 

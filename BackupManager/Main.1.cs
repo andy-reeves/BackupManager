@@ -235,7 +235,7 @@ internal sealed partial class Main
         Utils.TraceIn();
         if (mediaBackup.Watcher.Directories.Length == 0) SetupWatcher();
         mediaBackup.Watcher.Start();
-        Utils.Trace($" mediaBackup.Watcher.Running = {mediaBackup.Watcher.Running}");
+        Utils.Trace($"mediaBackup.Watcher.Running = {mediaBackup.Watcher.Running}");
         Utils.TraceOut();
     }
 
@@ -248,7 +248,7 @@ internal sealed partial class Main
         watcher.ProcessChangesInterval = mediaBackup.Config.MasterFoldersProcessChangesTimer;
         watcher.ScanInterval = mediaBackup.Config.MasterFoldersScanTimer;
         watcher.Filter = "*.*";
-        watcher.RegexFilter = @".*(?<!\.tmp)$"; // match all files except *.tmp
+        watcher.RegexFilter = mediaBackup.Config.MasterFolderFilterRegEx; // @".*(?<!\.tmp)$"; match all files except *.tmp
         watcher.IncludeSubdirectories = true;
         watcher.ReadyToScan += FileSystemWatcher_ReadyToScan;
         watcher.Error += FileSystemWatcher_OnError;

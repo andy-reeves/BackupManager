@@ -344,9 +344,9 @@ internal sealed class FileSystemWatcher
         // check the Regex to filter more
         if (!RegexFilter.HasValue() || Regex.IsMatch(e.FullPath, RegexFilter))
         {
-            var andy = new FileSystemEntry(e.FullPath, DateTime.Now);
+            var entry = new FileSystemEntry(e.FullPath, DateTime.Now);
 
-            if (FileSystemChanges.Contains(andy))
+            if (FileSystemChanges.Contains(entry))
             {
                 Utils.Trace("Updating ModifiedTime");
                 var fileSystemEntry = FileSystemChanges.First(f => f.Path == e.FullPath);
@@ -355,8 +355,6 @@ internal sealed class FileSystemWatcher
             else
             {
                 Utils.Trace("Adding");
-
-                // add this changed folder/file to the list to potentially scan
                 FileSystemChanges.Add(new FileSystemEntry(e.FullPath, DateTime.Now));
             }
 

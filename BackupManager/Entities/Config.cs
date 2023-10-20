@@ -80,6 +80,11 @@ public sealed class Config
     public int MasterFolderMinimumReadSpeed { get; set; }
 
     /// <summary>
+    ///     THe Regex used to filter file changes in the FileSystemWatcher
+    /// </summary>
+    public string MasterFolderFilterRegEx { get; set; }
+
+    /// <summary>
     ///     Config.MinimumMasterFolderWriteSpeed in MB/s
     /// </summary>
     public int MasterFolderMinimumWriteSpeed { get; set; }
