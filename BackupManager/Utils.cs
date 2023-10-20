@@ -1221,9 +1221,8 @@ internal static partial class Utils
         {
             if (!Directory.Exists(path)) return false;
 
-            var randomFileName = Path.GetRandomFileName();
-            Trace(randomFileName);
-            using var fs = File.Create(Path.Combine(path, randomFileName, ".tmp"), 1, FileOptions.DeleteOnClose);
+            var tempFile = Path.GetFileNameWithoutExtension(Path.GetRandomFileName()) + ".tmp";
+            using var fs = File.Create(Path.Combine(path, tempFile), 1, FileOptions.DeleteOnClose);
             return TraceOut(true);
         }
         catch

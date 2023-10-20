@@ -39,13 +39,13 @@ internal sealed class FileSystemWatcher
 
     private Timer processChangesTimer;
 
+    private string regExFilter;
+
     private bool reset;
 
     private Timer scanFoldersTimer;
 
     private int scanInterval = 60;
-
-    private string regExFilter;
 
     internal bool Running { get; private set; }
 
@@ -341,11 +341,28 @@ internal sealed class FileSystemWatcher
             return;
         }
 
-        // add this changed folder/file to the list to potentially scan
-        FileSystemChanges.Add(new FileSystemEntry(e.FullPath, DateTime.Now));
+        // check the Regex to filter more
+        if (!RegexFilter.HasValue() || Regex.IsMatch(e.FullPath, RegexFilter))
+        {
+            var andy = new FileSystemEntry(e.FullPath, DateTime.Now);
 
-        // As soon as there's something changed we start our event timers
-        StartTimers();
+            if (FileSystemChanges.Contains(andy))
+            {
+                Utils.Trace("Updating ModifiedTime");
+                var fileSystemEntry = FileSystemChanges.First(f => f.Path == e.FullPath);
+                fileSystemEntry.ModifiedDateTime = DateTime.Now;
+            }
+            else
+            {
+                Utils.Trace("Adding");
+
+                // add this changed folder/file to the list to potentially scan
+                FileSystemChanges.Add(new FileSystemEntry(e.FullPath, DateTime.Now));
+            }
+
+            // As soon as there's something changed we start our event timers
+            StartTimers();
+        }
         Utils.TraceOut();
     }
 
@@ -395,12 +412,6 @@ internal sealed class FileSystemWatcher
         {
             Utils.Trace($"fileOrFolderChange.Path = {fileOrFolderChange.Path}");
 
-            // check the Regex to filter more
-            if (RegexFilter.HasValue())
-            {
-                if (!Regex.IsMatch(fileOrFolderChange.Path, RegexFilter)) continue;
-            }
-
             // What about deleted files and folders?
             // Check to see if the path exists as a file 
             // if it does use the parent folder
@@ -432,8 +443,10 @@ internal sealed class FileSystemWatcher
                     DirectoriesToScan.Add(new FileSystemEntry(folderToScan.Path, fileOrFolderChange.ModifiedDateTime));
                 }
             }
-            if (DirectoriesToScan.Count > 0) scanFoldersTimer.Start();
         }
+        if (DirectoriesToScan.Count > 0) scanFoldersTimer.Start();
+        Utils.Trace($"FileSystemChanges.Count = {FileSystemChanges.Count}");
+        Utils.Trace($"DirectoriesToScan.Count = {DirectoriesToScan.Count}");
         Utils.TraceOut();
     }
 
