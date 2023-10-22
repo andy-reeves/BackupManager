@@ -165,10 +165,19 @@ internal sealed partial class Main
 
                         if (!returnValue)
                         {
-                            // There was an error with the hash codes of the source file anf the file on the backup disk
-                            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
-                                $"There was an error with the hash codes on the source and backup disk. It's likely the source file has changed since the last backup of {backupFile.FullPath}. It could be that the source file or destination file are corrupted or in use by another process.");
-                            diskInfoMessageWasTheLastSent = false;
+                            // check the modifiedTime and if its different copy it
+                            var sourceLastWriteTime = backupFile.LastWriteTime;
+                            var lastWriteTimeOfFileOnBackupDisk = Utils.GetFileLastWriteTime(backupFileFullPath);
+
+                            if (sourceLastWriteTime == lastWriteTimeOfFileOnBackupDisk)
+                            {
+                                // There was an error with the hash codes of the source file anf the file on the backup disk
+                                Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
+                                    $"There was an error with the hash codes on the source and backup disk. It's likely the source file has changed since the last backup of {backupFile.FullPath}. It could be that the source file or destination file are corrupted or in use by another process.");
+                                diskInfoMessageWasTheLastSent = false;
+                            }
+                            else
+                                Utils.FileDelete(backupFileFullPath);
                         }
                         continue;
                     }
