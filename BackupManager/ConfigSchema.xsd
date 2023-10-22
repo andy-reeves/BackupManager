@@ -1,0 +1,198 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<xs:schema id="ConfigSchema" attributeFormDefault="unqualified"
+           xmlns="http://tempuri.org/ConfigSchema.xsd"
+           targetNamespace="http://tempuri.org/ConfigSchema.xsd"
+           elementFormDefault="qualified" xmlns:mstns="http://tempuri.org/ConfigSchema.xsd"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Config">
+    <xs:annotation>
+      <xs:documentation> ReSharper disable MarkupTextTypo </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element type="xs:byte" name="BackupDiskDaysToReportSinceFilesChecked">
+          <xs:annotation>
+            <xs:documentation> After this many days the backup warns to check the disks again </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element type="xs:byte" name="BackupDiskDifferenceInFileCountAllowedPercentage">
+          <xs:annotation>
+            <xs:documentation> A bigger percentage difference than this and the backup stops </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element type="xs:short" name="BackupDiskMinimumCriticalSpace">
+          <xs:annotation>
+            <xs:documentation> MinimumCriticalBackupDiskSpace in MB </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element type="xs:short" name="BackupDiskMinimumFreeSpaceToLeave">
+          <xs:annotation>
+            <xs:documentation> MinimumFreeSpaceToLeaveOnBackupDisk in MB </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element type="xs:byte" name="DirectoriesDaysBetweenFullScan" />
+        <xs:element type="xs:boolean" name="DirectoriesFileChangeWatchersOnOff" />
+        <xs:element type="xs:string" name="DirectoriesFilterRegEx">
+          <xs:annotation>
+            <xs:documentation> Only files matching this filter are used for File System scanning </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element type="xs:byte" name="DirectoriesMinimumAgeBeforeScanning">
+          <xs:annotation>
+            <xs:documentation> in seconds </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element type="xs:int" name="DirectoriesMinimumCriticalSpace">
+          <xs:annotation>
+            <xs:documentation> Minimum critical space in MB </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element type="xs:byte" name="DirectoriesMinimumReadSpeed">
+          <xs:annotation>
+            <xs:documentation> Minimum read speed in MB/s </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element type="xs:byte" name="DirectoriesMinimumWriteSpeed">
+          <xs:annotation>
+            <xs:documentation> Minimum write speed in MB/s </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element type="xs:byte" name="DirectoriesProcessChangesTimer">
+          <xs:annotation>
+            <xs:documentation> in seconds </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element type="xs:byte" name="DirectoriesScanTimer">
+          <xs:annotation>
+            <xs:documentation> in seconds </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element type="xs:byte" name="MonitoringInterval">
+          <xs:annotation>
+            <xs:documentation> Monitor interval in seconds </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element type="xs:boolean" name="MonitoringOnOff">
+          <xs:annotation>
+            <xs:documentation> When true the service monitoring starts when the app starts </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element type="xs:string" name="PushoverAppToken" />
+        <xs:element type="xs:boolean" name="PushoverOnOff">
+          <xs:annotation>
+            <xs:documentation> True to enable sending Pushover messages </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element type="xs:boolean" name="PushoverSendLowOnOff" />
+        <xs:element type="xs:boolean" name="PushoverSendNormalOnOff" />
+        <xs:element type="xs:boolean" name="PushoverSendHighOnOff" />
+        <xs:element type="xs:boolean" name="PushoverSendEmergencyOnOff" />
+        <xs:element type="xs:string" name="PushoverUserKey" />
+        <xs:element type="xs:short" name="PushoverWarningMessagesRemaining">
+          <xs:annotation>
+            <xs:documentation> Sends a high priority message once this limit is passed </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element type="xs:boolean" name="ScheduledBackupOnOff">
+          <xs:annotation>
+            <xs:documentation> When true a backup scan will run when scheduled </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element type="xs:boolean" name="ScheduledBackupRunOnStartup">
+          <xs:annotation>
+            <xs:documentation> When true a backup scan will run when the app starts </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element type="xs:string" name="ScheduledBackupStartTime">
+          <xs:annotation>
+            <xs:documentation>  ScheduledBackupStartTime as hh:mm </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element type="xs:short" name="SpeedTestFileSize">
+          <xs:annotation>
+            <xs:documentation> Size of disk speed test file in MB </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element type="xs:byte" name="SpeedTestIterations">
+          <xs:annotation>
+            <xs:documentation> Number of disk speed test iterations to run </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element type="xs:boolean" name="SpeedTestOnOff">
+          <xs:annotation>
+            <xs:documentation> If True we test the speed of the disks </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="Monitors">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Monitor">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="Url" />
+                    <xs:element type="xs:byte" name="Timeout" />
+                    <xs:element type="xs:string" name="ProcessToKill" />
+                    <xs:element type="xs:string" name="ApplicationToStart" />
+                    <xs:element type="xs:string" name="Name" />
+                    <xs:element type="xs:byte" name="Port" />
+                    <xs:element type="xs:byte" name="FailureTimePeriod" />
+                    <xs:element type="xs:byte" name="MaximumFailures" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Directories">
+          <xs:annotation>
+            <xs:documentation> List each UNC path that you want to scan for files to backup here </xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:choice maxOccurs="unbounded" minOccurs="0">
+              <xs:element type="xs:string" name="Directory" />
+            </xs:choice>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Filters">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="xs:string" name="FilterRegEx">
+                <xs:annotation>
+                  <xs:documentation> RegEx's of file to ignore when executing a scan </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="FilesToDelete">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="xs:string" name="FilesToDeleteRegEx" maxOccurs="unbounded" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element type="xs:string" name="DisksToSkipOnRestore" />
+        <xs:element name="SymbolicLinks">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="SymbolicLink" maxOccurs="unbounded" minOccurs="0">
+                <xs:annotation>
+                  <xs:documentation> we need to capture the path up to and including the movie name and also the movieName </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="RootDirectory" />
+                    <xs:element type="xs:string" name="FileDiscoveryRegEx" />
+                    <xs:element type="xs:string" name="RelativePath" />
+                    <xs:element type="xs:string" name="PathToTarget" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

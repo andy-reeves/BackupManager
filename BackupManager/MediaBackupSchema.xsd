@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<xs:schema id="MediaBackupSchema" targetNamespace="http://tempuri.org/MediaBackupSchema.xsd"
+           xmlns="http://tempuri.org/MediaBackupSchema.xsd"
+           xmlns:mstns="http://tempuri.org/MediaBackupSchema.xsd"
+           attributeFormDefault="unqualified" elementFormDefault="qualified"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="MediaBackup">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="BackupFiles">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="BackupFile" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="Path" />
+                    <xs:element type="xs:string" name="Deleted" />
+                    <xs:element type="xs:string" name="Directory" />
+                    <xs:element type="xs:string" name="Hash" />
+                    <xs:element type="xs:dateTime" name="LastWriteTime" />
+                    <xs:element type="xs:int" name="Length" />
+                    <xs:element type="xs:date" name="DiskChecked" />
+                    <xs:element type="xs:string" name="Disk" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="BackupDisks">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="BackupDisk" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="Name" />
+                    <xs:element type="xs:date" name="Checked" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="xs:long" name="Capacity" />
+                    <xs:element type="xs:short" name="TotalFiles" />
+                    <xs:element type="xs:long" name="Free" />
+                    <xs:element type="xs:string" name="LastReadSpeed" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="xs:string" name="LastWriteSpeed" maxOccurs="1" minOccurs="0" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="DirectoriesToScan">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Directory" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="Path" />
+                    <xs:element type="xs:dateTime" name="ModifiedDateTime" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="DirectoryChanges">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="FileSystemEntry" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="Path" />
+                    <xs:element type="xs:dateTime" name="ModifiedDateTime" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element type="xs:date" name="DirectoriesLastFullScan" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
