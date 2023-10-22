@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!-- ReSharper disable MarkupTextTypo -->
 <Config xmlns="http://tempuri.org/ConfigSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-
+                                                 xmlns:xsd="http://www.w3.org/2001/XMLSchema">  
+ 
   <!-- After this many days the backup warns to check the disks again -->
   <BackupDiskDaysToReportSinceFilesChecked>90</BackupDiskDaysToReportSinceFilesChecked>
 
@@ -11,38 +10,40 @@
   <BackupDiskDifferenceInFileCountAllowedPercentage>1</BackupDiskDifferenceInFileCountAllowedPercentage>
 
   <!-- MinimumCriticalBackupDiskSpace in MB -->
-  <BackupDiskMinimumCriticalSpace>250</BackupDiskMinimumCriticalSpace>
+  <BackupDiskMinimumCriticalSpace>210</BackupDiskMinimumCriticalSpace>
 
   <!-- MinimumFreeSpaceToLeaveOnBackupDisk in MB -->
-  <BackupDiskMinimumFreeSpaceToLeave>210</BackupDiskMinimumFreeSpaceToLeave>
+  <BackupDiskMinimumFreeSpaceToLeave>201</BackupDiskMinimumFreeSpaceToLeave>
 
+  <!-- number of days before the next scan will be a full scan of the Master Folders --> 
   <DirectoriesDaysBetweenFullScan>7</DirectoriesDaysBetweenFullScan>
 
+  <!-- True and the Directories are monitored for changes and not scanned fully each day -->
   <DirectoriesFileChangeWatchersOnOff>true</DirectoriesFileChangeWatchersOnOff>
 
   <!-- Only files matching this filter are used for File System scanning -->
   <DirectoriesFilterRegEx>(.*(?&lt;!\.tmp)|.*\\_Backup\\.*)$</DirectoriesFilterRegEx>
 
-  <!-- in seconds -->
+  <!-- Minimum age of the last change to a folder before we will scan it in seconds (250) -->
   <DirectoriesMinimumAgeBeforeScanning>20</DirectoriesMinimumAgeBeforeScanning>
 
-  <!-- Minimum critical space in MB -->
-  <DirectoriesMinimumCriticalSpace>200000</DirectoriesMinimumCriticalSpace>
+  <!-- Minimum critical directory space in MB -->
+  <DirectoriesMinimumCriticalSpace>150000</DirectoriesMinimumCriticalSpace>
 
   <!-- Minimum read speed in MB/s -->
-  <DirectoriesMinimumReadSpeed>30</DirectoriesMinimumReadSpeed>
+  <DirectoriesMinimumReadSpeed>20</DirectoriesMinimumReadSpeed>
 
   <!-- Minimum write speed in MB/s -->
-  <DirectoriesMinimumWriteSpeed>30</DirectoriesMinimumWriteSpeed>
+  <DirectoriesMinimumWriteSpeed>20</DirectoriesMinimumWriteSpeed>
 
-  <!-- in seconds -->
-  <DirectoriesProcessChangesTimer>5</DirectoriesProcessChangesTimer>
+  <!-- Number of seconds between checking all the changed file notifications for folders to scan later (180) -->
+  <DirectoriesProcessChangesTimer>10</DirectoriesProcessChangesTimer>
 
-  <!-- in seconds -->
-  <DirectoriesScanTimer>10</DirectoriesScanTimer>
+  <!-- Number of seconds between checking all the directories ready to scan to see if they are old enough now (300) -->
+  <DirectoriesScanTimer>20</DirectoriesScanTimer>
 
   <!-- Monitor interval in seconds -->
-  <MonitoringInterval>30</MonitoringInterval>
+  <MonitoringInterval>180</MonitoringInterval>
 
   <!-- When true the service monitoring starts when the app starts -->
   <MonitoringOnOff>false</MonitoringOnOff>
@@ -75,11 +76,11 @@
   <ScheduledBackupStartTime>11:30</ScheduledBackupStartTime>
 
   <!-- Size of disk speed test file in MB -->
-  <SpeedTestFileSize>200</SpeedTestFileSize>
+  <SpeedTestFileSize>100</SpeedTestFileSize>
 
   <!-- Number of disk speed test iterations to run -->
   <SpeedTestIterations>1</SpeedTestIterations>
-
+ 
   <!-- If True we test the speed of the disks -->
   <SpeedTestOnOff>false</SpeedTestOnOff>
 
@@ -101,7 +102,7 @@
     <Directory>\\nas1\assets1\_Test\_Movies</Directory>
     <Directory>\\nas1\assets1\_Test\_TV</Directory>
   </Directories>
-
+  
   <Filters>
     <!-- RegEx's of file to ignore when executing a scan -->
     <FilterRegEx>!*.bup</FilterRegEx>
@@ -112,19 +113,19 @@
   </FilesToDelete>
   <DisksToSkipOnRestore />
   <SymbolicLinks>
-    <!-- we need to capture the path up to and including the movie name and also the movieName -->
-    <SymbolicLink>
-      <RootDirectory>J:\</RootDirectory>
-      <FileDiscoveryRegEx>^(.*\\_Movies(?:\s\(non-tvdb\))?\\(.*?))(?:$|\\)</FileDiscoveryRegEx>
-      <RelativePath>_Movies\$2</RelativePath>
-      <PathToTarget>$1</PathToTarget>
-    </SymbolicLink>
-    <SymbolicLink>
-      <RootDirectory>J:\</RootDirectory>
-      <FileDiscoveryRegEx>^(.*\\_TV(?:\s\(non-tvdb\))?\\(.*?))(?:$|\\)</FileDiscoveryRegEx>
-      <RelativePath>_TV\$2</RelativePath>
-      <PathToTarget>$1</PathToTarget>
-    </SymbolicLink>
+   <!-- we need to capture the path up to and including the movie name and also the movieName -->
+   <SymbolicLink>
+     <RootDirectory>J:\</RootDirectory>
+     <FileDiscoveryRegEx>^(.*\\_Movies(?:\s\(non-tmdb\))?\\(.*?))(?:$|\\)</FileDiscoveryRegEx>
+     <RelativePath>_Movies\$2</RelativePath>
+     <PathToTarget>$1</PathToTarget>
+   </SymbolicLink>
+   <SymbolicLink>
+     <RootDirectory>J:\</RootDirectory>
+     <FileDiscoveryRegEx>^(.*\\_TV(?:\s\(non-tvdb\))?\\(.*?))(?:$|\\)</FileDiscoveryRegEx>
+     <RelativePath>_TV\$2</RelativePath>
+     <PathToTarget>$1</PathToTarget>
+   </SymbolicLink>
   </SymbolicLinks>
 </Config>
 <!-- ReSharper restore MarkupTextTypo -->
