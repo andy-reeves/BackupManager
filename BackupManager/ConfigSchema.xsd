@@ -68,7 +68,7 @@
             <xs:documentation> in seconds </xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element type="xs:byte" name="MonitoringInterval">
+        <xs:element type="xs:int" name="MonitoringInterval">
           <xs:annotation>
             <xs:documentation> Monitor interval in seconds </xs:documentation>
           </xs:annotation>

@@ -19,7 +19,7 @@
                     <xs:element type="xs:string" name="Directory" />
                     <xs:element type="xs:string" name="Hash" />
                     <xs:element type="xs:dateTime" name="LastWriteTime" />
-                    <xs:element type="xs:int" name="Length" />
+                    <xs:element type="xs:long" name="Length" />
                     <xs:element type="xs:date" name="DiskChecked" />
                     <xs:element type="xs:string" name="Disk" />
                   </xs:sequence>
