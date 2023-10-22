@@ -182,8 +182,9 @@ public sealed class Config
     {
         try
         {
+            var xRoot = new XmlRootAttribute { ElementName = "Config", Namespace = "http://tempuri.org/ConfigSchema.xsd", IsNullable = true };
             Config config;
-            XmlSerializer serializer = new(typeof(Config));
+            XmlSerializer serializer = new(typeof(Config), xRoot);
 
             using (FileStream stream = new(path, FileMode.Open, FileAccess.Read))
             {

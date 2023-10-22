@@ -25,6 +25,10 @@ namespace BackupManager.Entities;
 [SuppressMessage("ReSharper", "CollectionNeverUpdated.Global")]
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
+
+//[XmlRoot(Namespace = "www.contoso.com", ElementName = "MediaBackup", DataType = "string", IsNullable = true)]
+[Serializable]
+[XmlRoot("MediaBackup")]
 public sealed class MediaBackup
 {
     // We need to a hash of the index folder and relative path
@@ -107,8 +111,12 @@ public sealed class MediaBackup
     {
         try
         {
+            var xRoot = new XmlRootAttribute
+            {
+                ElementName = "MediaBackup", Namespace = "http://tempuri.org/MediaBackupSchema.xsd", IsNullable = true
+            };
             MediaBackup mediaBackup;
-            XmlSerializer serializer = new(typeof(MediaBackup));
+            XmlSerializer serializer = new(typeof(MediaBackup), xRoot);
 
             using (FileStream stream = new(path, FileMode.Open, FileAccess.Read))
             {

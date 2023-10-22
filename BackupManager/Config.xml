@@ -4,7 +4,6 @@
 <Config xmlns="http://tempuri.org/ConfigSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 
-
   <!-- After this many days the backup warns to check the disks again -->
   <BackupDiskDaysToReportSinceFilesChecked>90</BackupDiskDaysToReportSinceFilesChecked>
 

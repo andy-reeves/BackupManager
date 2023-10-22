@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<MediaBackup xmlns="http://tempuri.org/MediaBackupSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<MediaBackup  xmlns="http://tempuri.org/MediaBackupSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <BackupFiles />
   <BackupDisks>
     <BackupDisk>
