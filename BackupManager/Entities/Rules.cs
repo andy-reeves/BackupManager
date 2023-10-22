@@ -30,7 +30,8 @@ public sealed class Rules
     {
         try
         {
-            XmlSerializer serializer = new(typeof(Rules));
+            var xRoot = new XmlRootAttribute { ElementName = "Rules", Namespace = "http://tempuri.org/RulesSchema.xsd", IsNullable = true };
+            XmlSerializer serializer = new(typeof(Rules), xRoot);
             using FileStream stream = new(path, FileMode.Open, FileAccess.Read);
             if (serializer.Deserialize(stream) is not Rules rules) return null;
 
