@@ -290,11 +290,13 @@ internal sealed class FileSystemWatcher
                 return Utils.TraceOut(Running = false);
             }
         }
-
-        // Check current paths are valid
-        foreach (var directory in Directories)
+        else
         {
-            CheckPathValidity(directory);
+            // Check current paths are valid
+            foreach (var directory in Directories)
+            {
+                CheckPathValidity(directory);
+            }
         }
 
         foreach (var watcher in watcherList)

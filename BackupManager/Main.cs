@@ -34,7 +34,7 @@ internal sealed partial class Main : Form
     private void FileWatcherButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        mediaBackup.Config.MasterFoldersFileChangeWatchersOnOff = !mediaBackup.Config.MasterFoldersFileChangeWatchersOnOff;
+        mediaBackup.Config.DirectoriesFileChangeWatchersOnOff = !mediaBackup.Config.DirectoriesFileChangeWatchersOnOff;
         SetupFileWatchers();
     }
 
@@ -660,7 +660,7 @@ internal sealed partial class Main : Form
                 else
                 {
                     var text = string.Format(Resources.Main_Directory_scan_skipped,
-                        Utils.FormatTimeFromSeconds(mediaBackup.Config.MasterFoldersScanTimer));
+                        Utils.FormatTimeFromSeconds(mediaBackup.Config.DirectoriesScanTimer));
                     Utils.LogWithPushover(BackupAction.ScanDirectory, text);
                 }
             }

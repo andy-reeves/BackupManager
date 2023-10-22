@@ -48,7 +48,8 @@ internal sealed partial class Main
             InitializeComponent();
             TraceConfiguration.Register();
 #if DEBUG
-            Trace.Listeners.Add(new TextWriterTraceListener(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"), "myListener"));
+            Trace.Listeners.Add(new TextWriterTraceListener(
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"), "myListener"));
 
             // ReSharper disable StringLiteralTypo
             // ReSharper disable CommentTypo
@@ -245,14 +246,16 @@ internal sealed partial class Main
         var watcher = mediaBackup.Watcher;
         watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName;
         watcher.Directories = mediaBackup.Config.Directories.ToArray();
-        watcher.ProcessChangesInterval = mediaBackup.Config.MasterFoldersProcessChangesTimer;
-        watcher.ScanInterval = mediaBackup.Config.MasterFoldersScanTimer;
+        watcher.ProcessChangesInterval = mediaBackup.Config.DirectoriesProcessChangesTimer;
+        watcher.ScanInterval = mediaBackup.Config.DirectoriesScanTimer;
         watcher.Filter = "*.*";
-        watcher.RegexFilter = mediaBackup.Config.MasterFolderFilterRegEx; // @".*(?<!\.tmp)$"; match all files except *.tmp
+
+        watcher.RegexFilter =
+            mediaBackup.Config.DirectoriesFilterRegEx; // @".*(?<!\.tmp)$"; match all files except *.tmp (.*(?<!\.tmp)|.*\\_Backup\\.*)$
         watcher.IncludeSubdirectories = true;
         watcher.ReadyToScan += FileSystemWatcher_ReadyToScan;
         watcher.Error += FileSystemWatcher_OnError;
-        watcher.MinimumAgeBeforeScanEventRaised = mediaBackup.Config.MasterFolderScanMinimumAgeBeforeScanning;
+        watcher.MinimumAgeBeforeScanEventRaised = mediaBackup.Config.DirectoriesMinimumAgeBeforeScanning;
 
         foreach (var item in mediaBackup.FileOrFolderChanges)
         {
@@ -308,9 +311,9 @@ internal sealed partial class Main
         Utils.TraceIn();
 
         fileWatcherButton.Text = string.Format(Resources.Main_FileWatchersButton,
-            mediaBackup.Config.MasterFoldersFileChangeWatchersOnOff ? Resources.Main_ON : Resources.Main_OFF);
+            mediaBackup.Config.DirectoriesFileChangeWatchersOnOff ? Resources.Main_ON : Resources.Main_OFF);
 
-        if (mediaBackup.Config.MasterFoldersFileChangeWatchersOnOff)
+        if (mediaBackup.Config.DirectoriesFileChangeWatchersOnOff)
             StartFileSystemWatchers();
         else
             StopFileSystemWatchers();

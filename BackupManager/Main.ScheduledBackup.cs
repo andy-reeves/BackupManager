@@ -33,10 +33,10 @@ internal sealed partial class Main
             long oldFileCount = mediaBackup.BackupFiles.Count;
             var doFullBackup = false;
             _ = DateTime.TryParse(mediaBackup.MasterFoldersLastFullScan, out var backupFileDate);
-            if (backupFileDate.AddDays(mediaBackup.Config.MasterFoldersDaysBetweenFullScan) < DateTime.Now) doFullBackup = true;
+            if (backupFileDate.AddDays(mediaBackup.Config.DirectoriesDaysBetweenFullScan) < DateTime.Now) doFullBackup = true;
 
             // Update the master files if we've not been monitoring folders directly
-            if (!mediaBackup.Config.MasterFoldersFileChangeWatchersOnOff || doFullBackup)
+            if (!mediaBackup.Config.DirectoriesFileChangeWatchersOnOff || doFullBackup)
             {
                 ScanFolders();
                 UpdateSymbolicLinks();

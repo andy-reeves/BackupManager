@@ -62,47 +62,47 @@ public sealed class Config
     /// <summary>
     ///     True and the Master Folders are monitored for changes
     /// </summary>
-    public bool MasterFoldersFileChangeWatchersOnOff { get; set; }
+    public bool DirectoriesFileChangeWatchersOnOff { get; set; }
 
     /// <summary>
     ///     Number of days before running a full master folder scan
     /// </summary>
-    public int MasterFoldersDaysBetweenFullScan { get; set; }
+    public int DirectoriesDaysBetweenFullScan { get; set; }
 
     /// <summary>
     ///     Minimum space before we throw a critical Disk space message in MB for  Config.MasterFolders
     /// </summary>
-    public long MasterFolderMinimumCriticalSpace { get; set; }
+    public long DirectoriesMinimumCriticalSpace { get; set; }
 
     /// <summary>
     ///     Config.MinimumMasterFolderReadSpeed in MB/s
     /// </summary>
-    public int MasterFolderMinimumReadSpeed { get; set; }
+    public int DirectoriesMinimumReadSpeed { get; set; }
 
     /// <summary>
     ///     THe Regex used to filter file changes in the FileSystemWatcher
     /// </summary>
-    public string MasterFolderFilterRegEx { get; set; }
+    public string DirectoriesFilterRegEx { get; set; }
 
     /// <summary>
     ///     Config.MinimumMasterFolderWriteSpeed in MB/s
     /// </summary>
-    public int MasterFolderMinimumWriteSpeed { get; set; }
+    public int DirectoriesMinimumWriteSpeed { get; set; }
 
     /// <summary>
     ///     How often we process the detected folder changes in seconds
     /// </summary>
-    public int MasterFoldersProcessChangesTimer { get; set; }
+    public int DirectoriesProcessChangesTimer { get; set; }
 
     /// <summary>
     ///     How often we scan the folders we've detected changes on in seconds
     /// </summary>
-    public int MasterFoldersScanTimer { get; set; }
+    public int DirectoriesScanTimer { get; set; }
 
     /// <summary>
     ///     The minimum age of changes in folders before we schedule a scan in seconds
     /// </summary>
-    public int MasterFolderScanMinimumAgeBeforeScanning { get; set; }
+    public int DirectoriesMinimumAgeBeforeScanning { get; set; }
 
     /// <summary>
     ///     Interval in seconds

@@ -126,7 +126,8 @@ internal static partial class Utils
     private static readonly MD5 _md5 = MD5.Create();
 
 #if DEBUG
-    private static readonly string _logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Debug.log");
+    private static readonly string _logFile =
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Debug.log");
 #else
     private static readonly string _logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager.log");
 #endif
@@ -1288,6 +1289,7 @@ internal static partial class Utils
     /// <param name="readSpeed">in bytes per second</param>
     /// <param name="writeSpeed">in bytes per second</param>
     /// <param name="testFileSize"></param>
+    /// <param name="ct">A cancellation token so we can act on cancelling</param>
     internal static void DiskSpeedTest(string pathToDiskToTest, long testFileSize, int testIterations, out long readSpeed, out long writeSpeed,
         CancellationToken ct)
     {
@@ -1382,6 +1384,7 @@ internal static partial class Utils
     /// <param name="destinationPath"></param>
     /// <param name="testFileSize"></param>
     /// <param name="testIterations"></param>
+    /// <param name="ct">A cancellation token so we can act on cancelling</param>
     /// <returns>The bytes read/written in 1s</returns>
     private static long DiskSpeedTest(string sourcePath, string destinationPath, long testFileSize, int testIterations, CancellationToken ct)
     {

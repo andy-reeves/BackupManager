@@ -15,28 +15,30 @@
   <!-- MinimumFreeSpaceToLeaveOnBackupDisk in MB -->
   <BackupDiskMinimumFreeSpaceToLeave>210</BackupDiskMinimumFreeSpaceToLeave>
 
-  <MasterFoldersFileChangeWatchersOnOff>true</MasterFoldersFileChangeWatchersOnOff>
+  <DirectoriesDaysBetweenFullScan>7</DirectoriesDaysBetweenFullScan>
+
+  <DirectoriesFileChangeWatchersOnOff>true</DirectoriesFileChangeWatchersOnOff>
+
+  <!-- Only files matching this filter are used for File System scanning -->
+  <DirectoriesFilterRegEx>(.*(?&lt;!\.tmp)|.*\\_Backup\\.*)$</DirectoriesFilterRegEx>
+
+  <!-- in seconds -->
+  <DirectoriesMinimumAgeBeforeScanning>20</DirectoriesMinimumAgeBeforeScanning>
 
   <!-- MinimumCriticalMasterFolderSpace in MB -->
-  <MasterFolderMinimumCriticalSpace>200000</MasterFolderMinimumCriticalSpace>
+  <DirectoriesMinimumCriticalSpace>200000</DirectoriesMinimumCriticalSpace>
 
-  <MasterFoldersDaysBetweenFullScan>7</MasterFoldersDaysBetweenFullScan>
-
-  <MasterFolderFilterRegEx>.*(?&lt;!\.tmp)$</MasterFolderFilterRegEx>
   <!-- Minimum read speed in MB/s -->
-  <MasterFolderMinimumReadSpeed>30</MasterFolderMinimumReadSpeed>
+  <DirectoriesMinimumReadSpeed>30</DirectoriesMinimumReadSpeed>
 
   <!-- Minimum write speed in MB/s -->
-  <MasterFolderMinimumWriteSpeed>30</MasterFolderMinimumWriteSpeed>
+  <DirectoriesMinimumWriteSpeed>30</DirectoriesMinimumWriteSpeed>
 
   <!-- in seconds -->
-  <MasterFoldersProcessChangesTimer>5</MasterFoldersProcessChangesTimer>
+  <DirectoriesProcessChangesTimer>5</DirectoriesProcessChangesTimer>
 
   <!-- in seconds -->
-  <MasterFoldersScanTimer>10</MasterFoldersScanTimer>
-
-  <!-- in seconds -->
-  <MasterFolderScanMinimumAgeBeforeScanning>20</MasterFolderScanMinimumAgeBeforeScanning>
+  <DirectoriesScanTimer>10</DirectoriesScanTimer>
 
   <!-- Monitor interval in seconds -->
   <MonitoringInterval>30</MonitoringInterval>
@@ -93,33 +95,11 @@
     </Monitor>
   </Monitors>
 
-  <MasterFolders>
-    <!-- List each UNC path that you want to scan for files to backup here -->
-    <MasterFolder>\\nas1\assets1\_Test</MasterFolder>
-  </MasterFolders>
-
-  <IndexFolders>
-    <!-- These are the subfolders that will be searched in the shares above -->
-    <IndexFolder>_Audio Books</IndexFolder>
-    <IndexFolder>_Backup</IndexFolder>
-    <IndexFolder>_Comedy</IndexFolder>
-    <IndexFolder>_Comedy (non-tmdb)</IndexFolder>
-    <IndexFolder>_Concerts</IndexFolder>
-    <IndexFolder>_Concerts (non-tmdb)</IndexFolder>
-    <IndexFolder>_From Mum</IndexFolder>
-    <IndexFolder>_MMA</IndexFolder>
-    <IndexFolder>_Movies</IndexFolder>
-    <IndexFolder>_Movies (non-tmdb)</IndexFolder>
-    <IndexFolder>_Music</IndexFolder>
-    <IndexFolder>_Other</IndexFolder>
-    <IndexFolder>_Pictures</IndexFolder>
-    <IndexFolder>_Playlists</IndexFolder>
-    <IndexFolder>_Software</IndexFolder>
-    <IndexFolder>_Sport</IndexFolder>
-    <IndexFolder>_TV</IndexFolder>
-    <IndexFolder>_TV (non-tvdb)</IndexFolder>
-    <IndexFolder>_Videos</IndexFolder>
-  </IndexFolders>
+  <!-- List each UNC path that you want to scan for files to backup here -->
+  <Directories>
+    <Directory>\\nas1\assets1\_Test\_Movies</Directory>
+    <Directory>\\nas1\assets1\_Test\_TV</Directory>
+  </Directories>
 
   <Filters>
     <!-- RegEx's of file to ignore when executing a scan -->

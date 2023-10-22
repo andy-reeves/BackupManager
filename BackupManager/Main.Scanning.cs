@@ -67,7 +67,7 @@ internal sealed partial class Main
     }
 
     /// <summary>
-    ///     Scans all MasterFolders and IndexFolders
+    ///     Scans all Directories
     /// </summary>
     /// <returns>True if successful otherwise False</returns>
     private bool ScanFolders()
@@ -168,20 +168,20 @@ internal sealed partial class Main
 
         if (mediaBackup.Config.SpeedTestOnOff)
         {
-            if (readSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumReadSpeed))
+            if (readSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumReadSpeed))
             {
                 Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High,
-                    $"Read speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumReadSpeed))}");
+                    $"Read speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumReadSpeed))}");
             }
 
-            if (writeSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumWriteSpeed))
+            if (writeSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumWriteSpeed))
             {
                 Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High,
-                    $"Write speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumWriteSpeed))}");
+                    $"Write speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumWriteSpeed))}");
             }
         }
 
-        if (freeSpaceOnCurrentMasterFolder < Utils.ConvertMBtoBytes(mediaBackup.Config.MasterFolderMinimumCriticalSpace))
+        if (freeSpaceOnCurrentMasterFolder < Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumCriticalSpace))
             Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"Free space on {masterFolder} is too low");
         UpdateStatusLabel(string.Format(Resources.Main_ScanFolders_Deleting_empty_folders_in__0_, masterFolder));
         var directoriesDeleted = Utils.DeleteEmptyDirectories(masterFolder);
@@ -220,7 +220,9 @@ internal sealed partial class Main
     {
         longRunningActionExecutingRightNow = true;
         DisableControlsForAsyncTasks();
-        ScanFolders();
+
+        if (!ScanFolders())
+            Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, Resources.Main_ScanFolderAsync_Scan_Folders_failed);
         ResetAllControls();
         longRunningActionExecutingRightNow = false;
     }

@@ -448,6 +448,15 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Scan Folders failed.
+        /// </summary>
+        internal static string Main_ScanFolderAsync_Scan_Folders_failed {
+            get {
+                return ResourceManager.GetString("Main_ScanFolderAsync_Scan_Folders_failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Deleting empty folders in {0}.
         /// </summary>
         internal static string Main_ScanFolders_Deleting_empty_folders_in__0_ {
