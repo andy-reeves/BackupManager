@@ -43,7 +43,7 @@ internal sealed class FileSystemWatcher
 
     private bool reset;
 
-    private Timer scanFoldersTimer;
+    private Timer scanDirectoriesTimer;
 
     private int scanInterval = 60;
 
@@ -67,7 +67,7 @@ internal sealed class FileSystemWatcher
 
     /// <summary>
     ///     Minimum time in seconds since this directory or any items changed in the directory) was last changed before we will
-    ///     raise any scan folders events. Default is 300 seconds.
+    ///     raise any scan directories events. Default is 300 seconds.
     /// </summary>
     internal int MinimumAgeBeforeScanEventRaised { get; set; } = 300;
 
@@ -90,7 +90,7 @@ internal sealed class FileSystemWatcher
     }
 
     /// <summary>
-    ///     Interval in seconds between scan folder events being raised. Default is 60 seconds.
+    ///     Interval in seconds between scan directory events being raised. Default is 60 seconds.
     /// </summary>
     public int ScanInterval
     {
@@ -101,12 +101,12 @@ internal sealed class FileSystemWatcher
             if (scanInterval == value) return;
 
             scanInterval = value;
-            if (scanFoldersTimer != null) scanFoldersTimer.Interval = value * 1000;
+            if (scanDirectoriesTimer != null) scanDirectoriesTimer.Interval = value * 1000;
         }
     }
 
     /// <summary>
-    ///     This is a Collection of files/folders where changes have been detected and the last time they changed.
+    ///     This is a Collection of files/directories where changes have been detected and the last time they changed.
     /// </summary>
     internal BlockingCollection<FileSystemEntry> FileSystemChanges { get; } = new();
 
@@ -259,14 +259,14 @@ internal sealed class FileSystemWatcher
         processChangesTimer.AutoReset = false;
         processChangesTimer.Enabled = true;
 
-        if (scanFoldersTimer == null)
+        if (scanDirectoriesTimer == null)
         {
-            scanFoldersTimer = new Timer();
-            scanFoldersTimer.Elapsed += ScanDirectoriesTimerElapsed;
+            scanDirectoriesTimer = new Timer();
+            scanDirectoriesTimer.Elapsed += ScanDirectoriesTimerElapsed;
         }
-        scanFoldersTimer.Interval = ScanInterval * 1000;
-        scanFoldersTimer.AutoReset = false;
-        scanFoldersTimer.Enabled = true;
+        scanDirectoriesTimer.Interval = ScanInterval * 1000;
+        scanDirectoriesTimer.AutoReset = false;
+        scanDirectoriesTimer.Enabled = true;
         return Utils.TraceOut(reset = true);
     }
 
@@ -304,7 +304,7 @@ internal sealed class FileSystemWatcher
             watcher.EnableRaisingEvents = true;
         }
         if (FileSystemChanges.Count > 0) processChangesTimer?.Start();
-        if (DirectoriesToScan.Count > 0) scanFoldersTimer?.Start();
+        if (DirectoriesToScan.Count > 0) scanDirectoriesTimer?.Start();
         return Utils.TraceOut(Running = true);
     }
 
@@ -317,7 +317,7 @@ internal sealed class FileSystemWatcher
         if (!Running) return;
 
         processChangesTimer?.Stop();
-        scanFoldersTimer?.Stop();
+        scanDirectoriesTimer?.Stop();
 
         foreach (var watcher in watcherList)
         {
@@ -370,7 +370,7 @@ internal sealed class FileSystemWatcher
     {
         Utils.TraceIn();
         processChangesTimer.Start();
-        scanFoldersTimer.Start();
+        scanDirectoriesTimer.Start();
         Utils.TraceOut();
     }
 
@@ -379,15 +379,15 @@ internal sealed class FileSystemWatcher
         Utils.TraceIn();
 
         if (DirectoriesToScan.Count > 0 &&
-            DirectoriesToScan.Count(folderToScan => folderToScan.ModifiedDateTime.AddSeconds(MinimumAgeBeforeScanEventRaised) < DateTime.Now) ==
+            DirectoriesToScan.Count(directoryToScan => directoryToScan.ModifiedDateTime.AddSeconds(MinimumAgeBeforeScanEventRaised) < DateTime.Now) ==
             DirectoriesToScan.Count)
         {
-            // All the folders are old enough so raise the ReadyToScan event
+            // All the directories are old enough so raise the ReadyToScan event
             var args = new FileSystemWatcherEventArgs(DirectoriesToScan);
             var handler = ReadyToScan;
             handler?.Invoke(this, args);
         }
-        if (DirectoriesToScan.Count > 0) scanFoldersTimer.Start();
+        if (DirectoriesToScan.Count > 0) scanDirectoriesTimer.Start();
         Utils.TraceOut();
     }
 
@@ -401,50 +401,50 @@ internal sealed class FileSystemWatcher
     {
         Utils.TraceIn();
 
-        // every few seconds we move through the changes List and put the folders we need to check in our other list
+        // every few seconds we move through the changes List and put the directories we need to check in our other list
         if (FileSystemChanges.Count == 0)
         {
             Utils.TraceOut();
             return;
         }
 
-        foreach (var fileOrFolderChange in FileSystemChanges.GetConsumingEnumerable())
+        foreach (var fileOrDirectoryChange in FileSystemChanges.GetConsumingEnumerable())
         {
-            Utils.Trace($"fileOrFolderChange.Path = {fileOrFolderChange.Path}");
+            Utils.Trace($"fileOrFolderChange.Path = {fileOrDirectoryChange.Path}");
 
-            // What about deleted files and folders?
+            // What about deleted files and directories?
             // Check to see if the path exists as a file 
-            // if it does use the parent folder
-            // if its not an existing file check its a folder
+            // if it does use the parent directory
+            // if its not an existing file check its a directory
             // if it is use its full path
-            // if its not a folder either then use its full path and its parent
-            List<FileSystemEntry> foldersToScan = new();
+            // if its not a directory either then use its full path and its parent
+            List<FileSystemEntry> directoriesToScan = new();
 
-            if (File.Exists(fileOrFolderChange.Path) || !Directory.Exists(fileOrFolderChange.Path))
-                foldersToScan.Add(new FileSystemEntry(new FileInfo(fileOrFolderChange.Path).DirectoryName));
-            else if (Directory.Exists(fileOrFolderChange.Path) || !File.Exists(fileOrFolderChange.Path))
-                foldersToScan.Add(new FileSystemEntry(fileOrFolderChange.Path));
+            if (File.Exists(fileOrDirectoryChange.Path) || !Directory.Exists(fileOrDirectoryChange.Path))
+                directoriesToScan.Add(new FileSystemEntry(new FileInfo(fileOrDirectoryChange.Path).DirectoryName));
+            else if (Directory.Exists(fileOrDirectoryChange.Path) || !File.Exists(fileOrDirectoryChange.Path))
+                directoriesToScan.Add(new FileSystemEntry(fileOrDirectoryChange.Path));
 
-            foreach (var folderToScan in foldersToScan)
+            foreach (var directoryToScan in directoriesToScan)
             {
-                Utils.Trace($"folderToScan = {folderToScan}");
+                Utils.Trace($"directoryToScan = {directoryToScan}");
 
-                if (DirectoriesToScan.Any(f => f.Path == folderToScan.Path))
+                if (DirectoriesToScan.Any(f => f.Path == directoryToScan.Path))
                 {
-                    var fileSystemEntry = DirectoriesToScan.First(f => f.Path == folderToScan.Path);
-                    if (fileOrFolderChange.ModifiedDateTime <= fileSystemEntry.ModifiedDateTime) continue;
+                    var fileSystemEntry = DirectoriesToScan.First(f => f.Path == directoryToScan.Path);
+                    if (fileOrDirectoryChange.ModifiedDateTime <= fileSystemEntry.ModifiedDateTime) continue;
 
-                    Utils.Trace($"Updating ModifiedDateTime to {fileOrFolderChange.ModifiedDateTime}");
-                    fileSystemEntry.ModifiedDateTime = fileOrFolderChange.ModifiedDateTime;
+                    Utils.Trace($"Updating ModifiedDateTime to {fileOrDirectoryChange.ModifiedDateTime}");
+                    fileSystemEntry.ModifiedDateTime = fileOrDirectoryChange.ModifiedDateTime;
                 }
                 else
                 {
                     Utils.Trace("Adding to collection");
-                    DirectoriesToScan.Add(new FileSystemEntry(folderToScan.Path, fileOrFolderChange.ModifiedDateTime));
+                    DirectoriesToScan.Add(new FileSystemEntry(directoryToScan.Path, fileOrDirectoryChange.ModifiedDateTime));
                 }
             }
         }
-        if (DirectoriesToScan.Count > 0) scanFoldersTimer.Start();
+        if (DirectoriesToScan.Count > 0) scanDirectoriesTimer.Start();
         Utils.Trace($"FileSystemChanges.Count = {FileSystemChanges.Count}");
         Utils.Trace($"DirectoriesToScan.Count = {DirectoriesToScan.Count}");
         Utils.TraceOut();

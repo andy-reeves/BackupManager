@@ -72,9 +72,9 @@ internal sealed partial class Main
             // Log the parameters after setting the Pushover keys in the Utils class
             mediaBackup.Config.LogParameters();
             var directoriesArray = mediaBackup.Config.Directories.ToArray();
-            listMasterFoldersComboBox.Items.AddRange(directoriesArray.ToArray<object>());
-            masterFoldersComboBox.Items.AddRange(directoriesArray.ToArray<object>());
-            restoreMasterFolderComboBox.Items.AddRange(directoriesArray.ToArray<object>());
+            listDirectoriesComboBox.Items.AddRange(directoriesArray.ToArray<object>());
+            directoriesComboBox.Items.AddRange(directoriesArray.ToArray<object>());
+            restoreDirectoryComboBox.Items.AddRange(directoriesArray.ToArray<object>());
 
             foreach (var disk in mediaBackup.BackupDisks)
             {
@@ -141,29 +141,29 @@ internal sealed partial class Main
         HashSet<string> hashSet = new();
 
         // HashSet of parent paths that match the RegEx's from config
-        foreach (var folderPath in from backupFile in mediaBackup.BackupFiles
-                 select mediaBackup.GetParentFolder(backupFile.FullPath)
-                 into folderPath
-                 where folderPath != null
-                 where mediaBackup.Config.SymbolicLinks.Select(a => Regex.Match(folderPath, a.FileDiscoveryRegEx)).Any(static m => m.Success)
-                 select folderPath)
+        foreach (var path in from backupFile in mediaBackup.BackupFiles
+                 select mediaBackup.GetParentPath(backupFile.FullPath)
+                 into directoryPath
+                 where directoryPath != null
+                 where mediaBackup.Config.SymbolicLinks.Select(a => Regex.Match(directoryPath, a.FileDiscoveryRegEx)).Any(static m => m.Success)
+                 select directoryPath)
         {
-            hashSet.Add(folderPath);
+            hashSet.Add(path);
         }
         UpdateStatusLabel("Checking for broken Symbolic Links");
 
-        var foldersToCheck = mediaBackup.Config.SymbolicLinks
-            .Select(static a => Path.Combine(a.RootFolder, Utils.RemoveRegexGroupsFromString(a.RelativePath))).Where(Directory.Exists)
+        var directoriesToCheck = mediaBackup.Config.SymbolicLinks
+            .Select(static a => Path.Combine(a.RootDirectory, Utils.RemoveRegexGroupsFromString(a.RelativePath))).Where(Directory.Exists)
             .SelectMany(Directory.EnumerateDirectories).ToList();
 
         // check the symbolic links root folders for any broken links
-        EnableProgressBar(0, foldersToCheck.Count);
+        EnableProgressBar(0, directoriesToCheck.Count);
 
-        for (var i = 0; i < foldersToCheck.Count; i++)
+        for (var i = 0; i < directoriesToCheck.Count; i++)
         {
-            var folderToCheck = foldersToCheck[i];
-            UpdateStatusLabel(string.Format(Resources.Main_Checking, folderToCheck), i);
-            var linksDeleted = Utils.DeleteBrokenSymbolicLinks(folderToCheck, true);
+            var directoryToCheck = directoriesToCheck[i];
+            UpdateStatusLabel(string.Format(Resources.Main_Checking, directoryToCheck), i);
+            var linksDeleted = Utils.DeleteBrokenSymbolicLinks(directoryToCheck, true);
 
             foreach (var link in linksDeleted)
             {
@@ -173,21 +173,21 @@ internal sealed partial class Main
         EnableProgressBar(0, 100);
         var fileCounter = 0;
 
-        foreach (var folderBackupFile in hashSet)
+        foreach (var path in hashSet)
         {
             fileCounter++;
-            UpdateStatusLabel(string.Format(Resources.Main_Checking, folderBackupFile), Convert.ToInt32(fileCounter * 100 / hashSet.Count));
-            UpdateSymbolicLinkForDirectory(folderBackupFile);
+            UpdateStatusLabel(string.Format(Resources.Main_Checking, path), Convert.ToInt32(fileCounter * 100 / hashSet.Count));
+            UpdateSymbolicLinkForDirectory(path);
         }
         UpdateStatusLabel(Resources.Main_Completed);
         Utils.TraceOut();
     }
 
-    private void UpdateSymbolicLinkForDirectory(string folderPath)
+    private void UpdateSymbolicLinkForDirectory(string symbolicLinkPath)
     {
-        Utils.TraceIn(folderPath);
+        Utils.TraceIn(symbolicLinkPath);
 
-        if (!Directory.Exists(folderPath))
+        if (!Directory.Exists(symbolicLinkPath))
         {
             Utils.TraceOut();
             return;
@@ -195,10 +195,10 @@ internal sealed partial class Main
 
         foreach (var a in mediaBackup.Config.SymbolicLinks)
         {
-            var m = Regex.Match(folderPath, a.FileDiscoveryRegEx);
+            var m = Regex.Match(symbolicLinkPath, a.FileDiscoveryRegEx);
             if (!m.Success) continue;
 
-            var path = Path.Combine(a.RootFolder, a.RelativePath);
+            var path = Path.Combine(a.RootDirectory, a.RelativePath);
             var pathToTarget = a.PathToTarget;
             Utils.RegexPathFixer(m, ref path, ref pathToTarget);
 
@@ -257,12 +257,12 @@ internal sealed partial class Main
         watcher.Error += FileSystemWatcher_OnError;
         watcher.MinimumAgeBeforeScanEventRaised = mediaBackup.Config.DirectoriesMinimumAgeBeforeScanning;
 
-        foreach (var item in mediaBackup.FileOrFolderChanges)
+        foreach (var item in mediaBackup.DirectoryChanges)
         {
             watcher.FileSystemChanges.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime), ct);
         }
 
-        foreach (var item in mediaBackup.FoldersToScan)
+        foreach (var item in mediaBackup.DirectoriesToScan)
         {
             watcher.DirectoriesToScan.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime), ct);
         }
@@ -352,11 +352,11 @@ internal sealed partial class Main
         Utils.TraceOut();
     }
 
-    private void SpeedTestAllMasterFoldersAsync()
+    private void SpeedTestAllDirectoriesAsync()
     {
         longRunningActionExecutingRightNow = true;
         DisableControlsForAsyncTasks();
-        Utils.Log("Speed testing all master folders");
+        Utils.Log("Speed testing all directories");
         EnableProgressBar(0, mediaBackup.Config.Directories.Count);
 
         for (var i = 0; i < mediaBackup.Config.Directories.Count; i++)
@@ -396,10 +396,10 @@ internal sealed partial class Main
         var controlsToEnable = new Control[]
         {
             cancelButton, testPushoverEmergencyButton, testPushoverHighButton, testPushoverNormalButton, testPushoverLowButton,
-            listFilesInMasterFolderButton, listFilesNotCheckedInXXButton, listFilesNotOnBackupDiskButton, listFilesOnBackupDiskButton,
+            listFilesInDirectoryButton, listFilesNotCheckedInXXButton, listFilesNotOnBackupDiskButton, listFilesOnBackupDiskButton,
             listFilesWithDuplicateContentHashcodesButton, listMoviesWithMultipleFilesButton, processesGroupBox, pushoverGroupBox,
-            listFilesGroupBox, allBackupDisksGroupBox, reportBackupDiskStatusButton, listFilesInMasterFolderGroupBox, checkAllBackupDisksButton,
-            checkDeleteAndCopyAllBackupDisksButton, monitoringButton, reportBackupDiskStatusButton, listFilesInMasterFolderGroupBox,
+            listFilesGroupBox, allBackupDisksGroupBox, reportBackupDiskStatusButton, listFilesInDirectoryGroupBox, checkAllBackupDisksButton,
+            checkDeleteAndCopyAllBackupDisksButton, monitoringButton, reportBackupDiskStatusButton, listFilesInDirectoryGroupBox,
             listFilesOnBackupDiskGroupBox
         };
 

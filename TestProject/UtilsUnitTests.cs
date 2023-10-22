@@ -29,11 +29,32 @@ public sealed class UtilsUnitTests
 
     [Fact]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
-    public void GetMasterFolder()
+    public void GetRootPath()
     {
-        var a = Utils.GetMasterFolder(@"\\nas1\assets1\_TV");
+        var a = Utils.GetRootPath(@"\\nas1\assets1\_TV");
         Assert.NotNull(a);
         Assert.True(a == @"\\nas1\assets1");
+        a = Utils.GetRootPath(@"\\nas1\assets1\_TV\Show1\Season 1\Episode1.mkv");
+        Assert.NotNull(a);
+        Assert.True(a == @"\\nas1\assets1");
+        var path = Path.Combine(Path.GetTempPath(), "Folder1");
+        Utils.EnsureDirectoriesForDirectoryPath(path);
+        var file1 = Path.Combine(path, "test.tmp");
+        CreateFile(file1);
+        a = Utils.GetRootPath(path);
+        Assert.NotNull(a);
+        Assert.True(a == @"C:\");
+        a = Utils.GetRootPath(file1);
+        Assert.NotNull(a);
+        Assert.True(a == @"C:\");
+        File.Delete(file1);
+        Directory.Delete(path);
+    }
+
+    private static void CreateFile(string filePath)
+    {
+        Utils.EnsureDirectoriesForFilePath(filePath);
+        File.AppendAllText(filePath, "test");
     }
 
     [Fact]

@@ -32,13 +32,13 @@ internal sealed partial class Main
                 Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, "Service monitoring is not running");
             long oldFileCount = mediaBackup.BackupFiles.Count;
             var doFullBackup = false;
-            _ = DateTime.TryParse(mediaBackup.MasterFoldersLastFullScan, out var backupFileDate);
+            _ = DateTime.TryParse(mediaBackup.DirectoriesLastFullScan, out var backupFileDate);
             if (backupFileDate.AddDays(mediaBackup.Config.DirectoriesDaysBetweenFullScan) < DateTime.Now) doFullBackup = true;
 
-            // Update the master files if we've not been monitoring folders directly
+            // Update the master files if we've not been monitoring directories directly
             if (!mediaBackup.Config.DirectoriesFileChangeWatchersOnOff || doFullBackup)
             {
-                ScanFolders();
+                ScanDirectories();
                 UpdateSymbolicLinks();
             }
 
@@ -71,7 +71,7 @@ internal sealed partial class Main
     private void SetupDailyTrigger(bool addTrigger)
     {
         Utils.TraceIn();
-        updateUITimer.Enabled = true; // because we want to update the folder tracking every 1 min or so anyway
+        updateUITimer.Enabled = true; // because we want to update the directory tracking every 1 min or so anyway
 
         if (addTrigger)
         {

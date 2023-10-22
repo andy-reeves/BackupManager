@@ -17,7 +17,7 @@ namespace BackupManager.Entities;
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 public class SymbolicLink
 {
-    public string RootFolder { get; set; }
+    public string RootDirectory { get; set; }
 
     public string FileDiscoveryRegEx { get; set; }
 

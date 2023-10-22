@@ -119,7 +119,7 @@ public sealed class BackupFile : IEquatable<BackupFile>
     }
 
     /// <summary>
-    ///     This is a combination key of index folder and relative path.
+    ///     This is a combination key of index directory and relative path.
     /// </summary>
     [XmlIgnore]
     public string Hash => Path.Combine(Utils.GetIndexFolder(Directory), RelativePath);

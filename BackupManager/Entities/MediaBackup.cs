@@ -39,9 +39,9 @@ public sealed class MediaBackup
     internal readonly FileSystemWatcher Watcher = new();
 
     /// <summary>
-    ///     The DateTime of the last full Master Folders scan
+    ///     The DateTime of the last full directories scan
     /// </summary>
-    private string masterFoldersLastFullScan;
+    private string directoriesLastFullScan;
 
     private string mediaBackupPath;
 
@@ -49,8 +49,8 @@ public sealed class MediaBackup
     {
         BackupFiles = new Collection<BackupFile>();
         BackupDisks = new Collection<BackupDisk>();
-        FoldersToScan = new Collection<FileSystemEntry>();
-        FileOrFolderChanges = new Collection<FileSystemEntry>();
+        DirectoriesToScan = new Collection<FileSystemEntry>();
+        DirectoryChanges = new Collection<FileSystemEntry>();
     }
 
     public MediaBackup(string mediaBackupPath)
@@ -64,19 +64,19 @@ public sealed class MediaBackup
 
     [XmlArrayItem("BackupDisk")] public Collection<BackupDisk> BackupDisks { get; set; }
 
-    [XmlArrayItem("Folder")] public Collection<FileSystemEntry> FoldersToScan { get; set; }
+    [XmlArrayItem("Directory")] public Collection<FileSystemEntry> DirectoriesToScan { get; set; }
 
     /// <summary>
     ///     We use this to save the xml. Its copied from the static property before saving and after loading
     /// </summary>
     [XmlArrayItem("FileSystemEntry")]
-    public Collection<FileSystemEntry> FileOrFolderChanges { get; set; }
+    public Collection<FileSystemEntry> DirectoryChanges { get; set; }
 
-    public string MasterFoldersLastFullScan
+    public string DirectoriesLastFullScan
     {
-        get => string.IsNullOrEmpty(masterFoldersLastFullScan) ? string.Empty : masterFoldersLastFullScan;
+        get => string.IsNullOrEmpty(directoriesLastFullScan) ? string.Empty : directoriesLastFullScan;
 
-        set => masterFoldersLastFullScan = value;
+        set => directoriesLastFullScan = value;
     }
 
     /// <summary>
@@ -165,18 +165,18 @@ public sealed class MediaBackup
     }
 
     /// <summary>
-    ///     Updates the DateTime of the last full Master Folders scan.
+    ///     Updates the DateTime of the last full directories scan.
     /// </summary>
     public void UpdateLastFullScan()
     {
-        masterFoldersLastFullScan = DateTime.Now.ToString(Resources.DateTime_yyyyMMdd);
+        directoriesLastFullScan = DateTime.Now.ToString(Resources.DateTime_yyyyMMdd);
     }
 
     public void Save()
     {
         BackupMediaFile();
-        FileOrFolderChanges = new Collection<FileSystemEntry>(Watcher.FileSystemChanges.ToList());
-        FoldersToScan = new Collection<FileSystemEntry>(Watcher.DirectoriesToScan.ToList());
+        DirectoryChanges = new Collection<FileSystemEntry>(Watcher.FileSystemChanges.ToList());
+        DirectoriesToScan = new Collection<FileSystemEntry>(Watcher.DirectoriesToScan.ToList());
         XmlSerializer xmlSerializer = new(typeof(MediaBackup));
         if (File.Exists(mediaBackupPath)) File.SetAttributes(mediaBackupPath, FileAttributes.Normal);
         using StreamWriter streamWriter = new(mediaBackupPath);
@@ -216,8 +216,8 @@ public sealed class MediaBackup
         if (!File.Exists(fullPath) || !Utils.IsFileAccessible(fullPath)) return null;
 
         if (!GetFoldersForPath(fullPath, out var directory, out var relativePath))
-            throw new ArgumentException(Resources.MediaBackup_UnableToDetermineMasterFolderIndexFolder, nameof(fullPath));
-        if (string.IsNullOrEmpty(directory)) throw new ArgumentException(Resources.IndexFolderOrMasterFolderEmpty);
+            throw new ArgumentException(Resources.MediaBackup_UnableToDetermineDirectoryOrRelativePath, nameof(fullPath));
+        if (string.IsNullOrEmpty(directory)) throw new ArgumentException(Resources.DirectoryEmpty);
 
         // we hash the path of the file so we can look it up quickly
         // then we check the ModifiedTime and size
@@ -235,8 +235,8 @@ public sealed class MediaBackup
 
             if (backupFile.Directory != directory)
             {
-                // This is similar file in different master folders
-                // This also happens if a file is moved from 1 masterFolder to another
+                // This is similar file in different directories
+                // This also happens if a file is moved from 1 directory to another
                 // its old location is still in the xml but the new location will be found on disk
                 Utils.Trace($"Duplicate file detected at {fullPath} and {backupFile.FullPath}");
 
@@ -280,7 +280,7 @@ public sealed class MediaBackup
             }
 
             // Now we check the full path has not changed the UPPER or lowercase anywhere
-            // we're not case sensitive but we want it to match the casing on the master folder
+            // we're not case sensitive but we want it to match the casing in the directory
             if (fullPath != backupFile.FullPath) backupFile.SetFullPath(fullPath, directory);
             return Utils.TraceOut(backupFile);
         }
@@ -294,7 +294,7 @@ public sealed class MediaBackup
     /// <summary>
     ///     Ensures the BackupFile exists and sets the Flag=TRUE. Sets Deleted=FALSE.
     /// </summary>
-    /// <param name="path">Full path to the path in the MasterFolder</param>
+    /// <param name="path">Full path to the file in the directory</param>
     /// <returns>Null is the file  was locked or an error occurred</returns>
     internal bool EnsureFile(string path)
     {
@@ -308,12 +308,13 @@ public sealed class MediaBackup
     }
 
     /// <summary>
-    ///     Returns the path to the parent folder of the file provided. That's the path to the first folder after a backup
+    ///     Returns the path to the parent directory of the file provided. That's the path to the first directory after a
+    ///     backup
     ///     directory
     /// </summary>
     /// <param name="path"></param>
     /// <returns>Null if the Path doesn't contain a backup Directory or if its in the root of the backup directory</returns>
-    public string GetParentFolder(string path)
+    public string GetParentPath(string path)
     {
         return (from directory in Config.Directories
             where path.Contains(directory + "\\")
@@ -382,7 +383,7 @@ public sealed class MediaBackup
     /// </summary>
     /// <param name="directory"></param>
     /// <returns></returns>
-    public IEnumerable<BackupFile> GetBackupFilesInMasterFolder(string directory)
+    public IEnumerable<BackupFile> GetBackupFilesInDirectory(string directory)
     {
         return BackupFiles.Where(p => p.Directory == directory).OrderBy(static q => q.BackupDiskNumber);
     }

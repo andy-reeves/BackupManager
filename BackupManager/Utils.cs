@@ -30,6 +30,8 @@ using BackupManager.Entities;
 using BackupManager.Extensions;
 using BackupManager.Properties;
 
+using Microsoft.Win32.SafeHandles;
+
 namespace BackupManager;
 
 /// <summary>
@@ -42,6 +44,23 @@ internal static partial class Utils
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool GetDiskFreeSpaceEx(string lpDirectoryName, out long lpFreeBytesAvailable, out long lpTotalNumberOfBytes,
         out long lpTotalNumberOfFreeBytes);
+
+    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    private static extern SafeFileHandle CreateFile(string fileName, uint dwDesiredAccess, FileShare dwShareMode, IntPtr securityAttrsMustBeZero,
+        FileMode dwCreationDisposition, uint dwFlagsAndAttributes, IntPtr hTemplateFileMustBeZero);
+
+    [LibraryImport("kernel32.dll", EntryPoint = "SetFileTime", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool SetFileTime(SafeFileHandle hFile, IntPtr lpCreationTimeUnused, IntPtr lpLastAccessTimeUnused,
+        ref long lpLastWriteTime);
+
+    private const uint FileAccessGenericRead = 0x80000000;
+
+    private const uint FileAccessGenericWrite = 0x40000000;
+
+    private const int FileFlagBackupSemantics = 0x02000000;
+
+    private const int OpenExisting = 3;
 
     #region Constants
 
@@ -1094,17 +1113,17 @@ internal static partial class Utils
 
     /// <summary>
     /// </summary>
-    /// <param name="folderName"></param>
+    /// <param name="path"></param>
     /// <param name="freeSpace">in bytes</param>
     /// <param name="totalBytes">in bytes</param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    internal static bool GetDiskInfo(string folderName, out long freeSpace, out long totalBytes)
+    internal static bool GetDiskInfo(string path, out long freeSpace, out long totalBytes)
     {
-        if (string.IsNullOrEmpty(folderName)) throw new ArgumentNullException(nameof(folderName));
+        if (string.IsNullOrEmpty(path)) throw new ArgumentNullException(nameof(path));
 
-        if (!folderName.EndsWith("\\", StringComparison.InvariantCultureIgnoreCase)) folderName += '\\';
-        return GetDiskFreeSpaceEx(folderName, out freeSpace, out totalBytes, out _);
+        if (!path.EndsWith("\\", StringComparison.InvariantCultureIgnoreCase)) path += '\\';
+        return GetDiskFreeSpaceEx(path, out freeSpace, out totalBytes, out _);
     }
 
     /// <summary>
@@ -1217,19 +1236,27 @@ internal static partial class Utils
     internal static bool IsDirectoryWritable(string path)
     {
         TraceIn(path);
+        if (!Directory.Exists(path)) return TraceOut(false);
 
         try
         {
-            if (!Directory.Exists(path)) return false;
-
+            var lastWriteDate = Directory.GetLastWriteTimeUtc(path);
             var tempFile = Path.GetFileNameWithoutExtension(Path.GetRandomFileName()) + ".tmp";
             using var fs = File.Create(Path.Combine(path, tempFile), 1, FileOptions.DeleteOnClose);
-            return TraceOut(true);
+            return TraceOut(SetDirectoryLastWriteUtc(path, lastWriteDate));
         }
         catch
         {
             return TraceOut(false);
         }
+    }
+
+    private static bool SetDirectoryLastWriteUtc(string dirPath, DateTime lastWriteDate)
+    {
+        using var hDir = CreateFile(dirPath, FileAccessGenericRead | FileAccessGenericWrite, FileShare.ReadWrite, IntPtr.Zero, (FileMode)OpenExisting,
+            FileFlagBackupSemantics, IntPtr.Zero);
+        var lastWriteTime = lastWriteDate.ToFileTime();
+        return SetFileTime(hDir, IntPtr.Zero, IntPtr.Zero, ref lastWriteTime);
     }
 
     /// <summary>
@@ -1548,7 +1575,7 @@ internal static partial class Utils
                 {
                     if (directory != rootDirectory)
                     {
-                        Trace($"Deleting empty folder {directory}");
+                        Trace($"Deleting empty directory {directory}");
                         list.Add(directory);
                         Directory.Delete(directory);
                     }
@@ -1589,7 +1616,7 @@ internal static partial class Utils
                 {
                     if (includeRoot || directory != rootDirectory)
                     {
-                        Trace($"Deleting broken symbolic link folder {directory}");
+                        Trace($"Deleting broken symbolic link directory {directory}");
                         list.Add(directory);
                         Directory.Delete(directory);
                     }
@@ -1645,10 +1672,18 @@ internal static partial class Utils
         return a.Name;
     }
 
-    internal static string GetMasterFolder(string path)
+    /// <summary>
+    ///     Returns the path to the topmost directory in the path provided
+    /// </summary>
+    /// <param name="path">The full path to a file or directory</param>
+    /// <returns>The path to the topmost writable folder or null if no folders are writable</returns>
+    internal static string GetRootPath(string path)
     {
+        // consider \\nas1.local/assets1/_TV or \\nas1/assets1/_TV/Show1/Season 1/Episode1.mkv or c:\folder1\folder2
+        // first we need to process UNC paths differently to local paths
         var directoryInfo = new FileInfo(path).Directory;
-        return directoryInfo?.Name;
+        var fullName = directoryInfo?.Root.FullName;
+        return IsDirectoryWritable(fullName) ? fullName : null;
     }
 
     /// <summary>

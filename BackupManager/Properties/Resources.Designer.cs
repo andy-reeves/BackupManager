@@ -115,6 +115,15 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Directory is empty. Not supported.
+        /// </summary>
+        internal static string DirectoryEmpty {
+            get {
+                return ResourceManager.GetString("DirectoryEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Directory is a null reference or an empty string.
         /// </summary>
         internal static string DirectoryNameNullOrEmpty {
@@ -147,15 +156,6 @@ namespace BackupManager.Properties {
         internal static string DuplicateHashCode {
             get {
                 return ResourceManager.GetString("DuplicateHashCode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to IndexFolder or MasterFolder is empty. Not supported.
-        /// </summary>
-        internal static string IndexFolderOrMasterFolderEmpty {
-            get {
-                return ResourceManager.GetString("IndexFolderOrMasterFolderEmpty", resourceCulture);
             }
         }
         
@@ -403,7 +403,7 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Are you sure you want to copy files from multiple backup disks to the new master folder location?.
+        ///   Looks up a localized string similar to Are you sure you want to copy files from multiple backup disks to the new directory location?.
         /// </summary>
         internal static string Main_RestoreFiles {
             get {
@@ -412,20 +412,20 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You must select a master folder that you&apos;d files the files from backup copied to. This is typically a new drive that will replace the failing drive.
+        ///   Looks up a localized string similar to You must select a directory that you&apos;d like files from backup copied to. This is typically a new drive that will replace the failing drive.
         /// </summary>
-        internal static string Main_RestoreFilesMasterFolderToRestoreTo {
+        internal static string Main_RestoreFilesDirectoryToRestoreTo {
             get {
-                return ResourceManager.GetString("Main_RestoreFilesMasterFolderToRestoreTo", resourceCulture);
+                return ResourceManager.GetString("Main_RestoreFilesDirectoryToRestoreTo", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You must select a master folder that you&apos;d files the files from backup disks restored for. This is typically the drive that is now failing.
+        ///   Looks up a localized string similar to You must select a directory that you&apos;d like from backup disks restored for. This is typically the drive that is now failing.
         /// </summary>
-        internal static string Main_RestoreFilesSelectAMasterFolder {
+        internal static string Main_RestoreFilesSelectDirectory {
             get {
-                return ResourceManager.GetString("Main_RestoreFilesSelectAMasterFolder", resourceCulture);
+                return ResourceManager.GetString("Main_RestoreFilesSelectDirectory", resourceCulture);
             }
         }
         
@@ -450,9 +450,9 @@ namespace BackupManager.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Scan Folders failed.
         /// </summary>
-        internal static string Main_ScanFolderAsync_Scan_Folders_failed {
+        internal static string Main_ScanDirectoriesAsync_Scan_Directories_failed {
             get {
-                return ResourceManager.GetString("Main_ScanFolderAsync_Scan_Folders_failed", resourceCulture);
+                return ResourceManager.GetString("Main_ScanDirectoriesAsync_Scan_Directories_failed", resourceCulture);
             }
         }
         
@@ -565,11 +565,11 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to determine MasterFolder or IndexFolder.
+        ///   Looks up a localized string similar to Unable to determine Directory or Relative Path.
         /// </summary>
-        internal static string MediaBackup_UnableToDetermineMasterFolderIndexFolder {
+        internal static string MediaBackup_UnableToDetermineDirectoryOrRelativePath {
             get {
-                return ResourceManager.GetString("MediaBackup_UnableToDetermineMasterFolderIndexFolder", resourceCulture);
+                return ResourceManager.GetString("MediaBackup_UnableToDetermineDirectoryOrRelativePath", resourceCulture);
             }
         }
         

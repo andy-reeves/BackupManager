@@ -19,29 +19,29 @@ namespace BackupManager;
 internal sealed partial class Main
 {
     /// <summary>
-    ///     Scan the folder provided.
+    ///     Scan the directory provided.
     /// </summary>
-    /// <param name="folderToCheck">The full path to scan</param>
-    /// <param name="searchOption">Whether to search subfolders</param>
-    /// <returns>True if the scan was successful otherwise False. Returns True if the folder doesn't exist</returns>
-    private bool ScanSingleDirectory(string folderToCheck, SearchOption searchOption)
+    /// <param name="directoryToCheck">The full path to scan</param>
+    /// <param name="searchOption">Whether to search subdirectories</param>
+    /// <returns>True if the scan was successful otherwise False. Returns True if the directory doesn't exist</returns>
+    private bool ScanSingleDirectory(string directoryToCheck, SearchOption searchOption)
     {
-        Utils.TraceIn(folderToCheck, searchOption);
-        if (!Directory.Exists(folderToCheck)) return Utils.TraceOut(true);
+        Utils.TraceIn(directoryToCheck, searchOption);
+        if (!Directory.Exists(directoryToCheck)) return Utils.TraceOut(true);
 
-        var subFolderText = searchOption == SearchOption.TopDirectoryOnly ? "folder only" : "and subfolders";
-        Utils.LogWithPushover(BackupAction.ScanDirectory, $"{folderToCheck}");
-        Utils.Trace($"{folderToCheck} {subFolderText}");
-        UpdateStatusLabel(string.Format(Resources.Main_Scanning, folderToCheck));
+        var subDirectoryText = searchOption == SearchOption.TopDirectoryOnly ? "directory only" : "and subdirectories";
+        Utils.LogWithPushover(BackupAction.ScanDirectory, $"{directoryToCheck}");
+        Utils.Trace($"{directoryToCheck} {subDirectoryText}");
+        UpdateStatusLabel(string.Format(Resources.Main_Scanning, directoryToCheck));
         var filters = mediaBackup.GetFilters();
-        var files = Utils.GetFiles(folderToCheck, filters, searchOption);
+        var files = Utils.GetFiles(directoryToCheck, filters, searchOption);
         EnableProgressBar(0, files.Length);
 
         for (var i = 0; i < files.Length; i++)
         {
             var file = files[i];
             Utils.Trace($"Checking {file}");
-            UpdateStatusLabel(string.Format(Resources.Main_Scanning, folderToCheck), i + 1);
+            UpdateStatusLabel(string.Format(Resources.Main_Scanning, directoryToCheck), i + 1);
             if (CheckForFilesToDelete(file)) continue;
 
             // RegEx file name rules
@@ -70,10 +70,10 @@ internal sealed partial class Main
     ///     Scans all Directories
     /// </summary>
     /// <returns>True if successful otherwise False</returns>
-    private bool ScanFolders()
+    private bool ScanDirectories()
     {
         Utils.TraceIn();
-        var masterFoldersChecked = new HashSet<string>();
+        var directoriesChecked = new HashSet<string>();
         mediaBackup.ClearFlags();
         Utils.LogWithPushover(BackupAction.ScanDirectory, "Started");
         UpdateStatusLabel(string.Format(Resources.Main_Scanning, string.Empty));
@@ -86,13 +86,13 @@ internal sealed partial class Main
             {
                 if (Utils.IsDirectoryWritable(directory))
                 {
-                    //We only want to check each masterfolder once so keep a Hashset of those we've already done
-                    var masterFolder = Utils.GetMasterFolder(directory);
+                    //We only want to check each directory once so keep a Hashset of those we've already done
+                    var masterDirectory = Utils.GetRootPath(directory);
 
-                    if (!masterFoldersChecked.Contains(masterFolder))
+                    if (!directoriesChecked.Contains(masterDirectory))
                     {
-                        MasterFolderChecks(masterFolder);
-                        masterFoldersChecked.Add(masterFolder);
+                        MasterFolderChecks(masterDirectory);
+                        directoriesChecked.Add(masterDirectory);
                     }
                     if (!ScanSingleDirectory(directory, SearchOption.AllDirectories)) return false;
                 }
@@ -216,13 +216,13 @@ internal sealed partial class Main
     // ReSharper restore StringLiteralTypo
     private static partial Regex MoviesFilenameRegex();
 
-    private void ScanFolderAsync()
+    private void ScanDirectoryAsync()
     {
         longRunningActionExecutingRightNow = true;
         DisableControlsForAsyncTasks();
 
-        if (!ScanFolders())
-            Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, Resources.Main_ScanFolderAsync_Scan_Folders_failed);
+        if (!ScanDirectories())
+            Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, Resources.Main_ScanDirectoriesAsync_Scan_Directories_failed);
         ResetAllControls();
         longRunningActionExecutingRightNow = false;
     }

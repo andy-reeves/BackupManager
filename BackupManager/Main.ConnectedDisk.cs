@@ -93,14 +93,14 @@ internal sealed partial class Main
         // Scans the connected backup disk and finds all its files
         // for each for found calculate the hash from the backup disk
         // find that hash in the backup data file
-        // rebuilds the source filename from MasterFolder+IndexFolder+Path
+        // rebuilds the source filename from Directory+Path
         // checks the file still exists there
         // if it does compare the hash codes and update results
         // force a recalculation of both the hashes to check the files can both be read correctly
         var disk = SetupBackupDisk();
-        var folderToCheck = disk.BackupPath;
-        Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Started checking backup disk {folderToCheck}");
-        UpdateStatusLabel($"Checking backup disk {folderToCheck}");
+        var directoryToCheck = disk.BackupPath;
+        Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Started checking backup disk {directoryToCheck}");
+        UpdateStatusLabel($"Checking backup disk {directoryToCheck}");
         long readSpeed = 0, writeSpeed = 0;
 
         if (mediaBackup.Config.SpeedTestOnOff)
@@ -108,8 +108,8 @@ internal sealed partial class Main
             var diskTestSize = disk.Free > Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize)
                 ? Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize)
                 : disk.Free - Utils.BytesInOneKilobyte;
-            UpdateStatusLabel(string.Format(Resources.Main_SpeedTesting, folderToCheck));
-            Utils.DiskSpeedTest(folderToCheck, diskTestSize, mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed, ct);
+            UpdateStatusLabel(string.Format(Resources.Main_SpeedTesting, directoryToCheck));
+            Utils.DiskSpeedTest(directoryToCheck, diskTestSize, mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed, ct);
             disk.UpdateSpeeds(readSpeed, writeSpeed);
         }
 
@@ -130,15 +130,15 @@ internal sealed partial class Main
             fileName.ClearDiskChecked();
         }
         UpdateMediaFilesCountDisplay();
-        UpdateStatusLabel(string.Format(Resources.Main_Scanning, folderToCheck));
-        var backupDiskFiles = Utils.GetFiles(folderToCheck, "*", SearchOption.AllDirectories, FileAttributes.Hidden);
+        UpdateStatusLabel(string.Format(Resources.Main_Scanning, directoryToCheck));
+        var backupDiskFiles = Utils.GetFiles(directoryToCheck, "*", SearchOption.AllDirectories, FileAttributes.Hidden);
         EnableProgressBar(0, backupDiskFiles.Length);
 
         for (var i = 0; i < backupDiskFiles.Length; i++)
         {
             var backupFileFullPath = backupDiskFiles[i];
-            var backupFileIndexFolderRelativePath = backupFileFullPath[(folderToCheck.Length + 1)..];
-            UpdateStatusLabel(string.Format(Resources.Main_Scanning, folderToCheck), i + 1);
+            var backupFileIndexFolderRelativePath = backupFileFullPath[(directoryToCheck.Length + 1)..];
+            UpdateStatusLabel(string.Format(Resources.Main_Scanning, directoryToCheck), i + 1);
             UpdateMediaFilesCountDisplay();
 
             if (mediaBackup.Contains(backupFileIndexFolderRelativePath))
@@ -175,15 +175,15 @@ internal sealed partial class Main
                 }
                 else
                 {
-                    // Backup doesn't exist in the master folder anymore
+                    // Backup doesn't exist in the directory anymore
                     // so delete it
                     mediaBackup.RemoveFile(backupFile);
                 }
             }
             else
             {
-                // The file on the backup disk isn't found in the masterfolder anymore
-                // it could be that we've renamed it in the master folder
+                // The file on the backup disk isn't found in the directory anymore
+                // it could be that we've renamed it in the directory
                 // We could just let it get deleted off the backup disk and copied again next time
                 // Alternatively, find it by the contents hashcode as that's (almost guaranteed unique)
                 // and then rename it 
@@ -237,12 +237,12 @@ internal sealed partial class Main
                 diskInfoMessageWasTheLastSent = false;
             }
         }
-        UpdateStatusLabel($"Deleting {folderToCheck} empty folders");
-        var directoriesDeleted = Utils.DeleteEmptyDirectories(folderToCheck);
+        UpdateStatusLabel($"Deleting {directoryToCheck} empty folders");
+        var directoriesDeleted = Utils.DeleteEmptyDirectories(directoryToCheck);
 
         foreach (var directory in directoriesDeleted)
         {
-            Utils.Log(BackupAction.CheckBackupDisk, $"Deleted empty folder {directory}");
+            Utils.Log(BackupAction.CheckBackupDisk, $"Deleted empty directory {directory}");
         }
         disk.UpdateDiskChecked();
 

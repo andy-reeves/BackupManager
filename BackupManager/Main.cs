@@ -68,7 +68,7 @@ internal sealed partial class Main : Form
         if (!longRunningActionExecutingRightNow)
         {
             if (MessageBox.Show(Resources.Main_UpdateMasterFiles, Resources.Main_UpdateMasterFilesTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
-                TaskWrapper(ScanFolderAsync);
+                TaskWrapper(ScanDirectoryAsync);
         }
         Utils.TraceOut();
     }
@@ -91,7 +91,7 @@ internal sealed partial class Main : Form
         Utils.TraceOut();
     }
 
-    private void ListFoldersToScanButton_Click(object sender, EventArgs e)
+    private void ListDirectoriesToScanButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
         Utils.Log("Listing FileSystemChanges detected");
@@ -127,18 +127,18 @@ internal sealed partial class Main : Form
         Utils.TraceOut();
     }
 
-    private void ListFilesInMasterFolderButton_Click(object sender, EventArgs e)
+    private void ListFilesInDirectoryButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        var masterFolder = listMasterFoldersComboBox.SelectedItem.ToString();
-        var files = mediaBackup.GetBackupFilesInMasterFolder(masterFolder);
-        Utils.Log($"Listing files in master folder {masterFolder}");
+        var directory = listDirectoriesComboBox.SelectedItem.ToString();
+        var files = mediaBackup.GetBackupFilesInDirectory(directory);
+        Utils.Log($"Listing files in directory {directory}");
 
         if (mediaBackup.Config.SpeedTestOnOff)
         {
-            Utils.DiskSpeedTest(masterFolder, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations,
+            Utils.DiskSpeedTest(directory, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations,
                 out var readSpeed, out var writeSpeed, ct);
-            Utils.Log($"Testing {masterFolder}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
+            Utils.Log($"Testing {directory}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
         }
 
         foreach (var file in files)
@@ -153,29 +153,29 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
 
-        // loop through all the files looking for the master folder specified in the top drop down and copy to the bottom drop down 
+        // loop through all the files looking for the directory specified in the top drop down and copy to the bottom drop down 
         // for each file order by backup disk
         // prompt for the back up disk to be inserted 
         // check we have it inserted
         // copy any files off this disk until we're all done to the new disk that we specified
         if (MessageBox.Show(Resources.Main_RestoreFiles, Resources.Main_RestoreFilesTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
         {
-            if (masterFoldersComboBox.SelectedItem == null)
+            if (directoriesComboBox.SelectedItem == null)
             {
-                _ = MessageBox.Show(Resources.Main_RestoreFilesSelectAMasterFolder, Resources.Main_RestoreFilesTitle, MessageBoxButtons.OK);
+                _ = MessageBox.Show(Resources.Main_RestoreFilesSelectDirectory, Resources.Main_RestoreFilesTitle, MessageBoxButtons.OK);
                 return;
             }
-            var masterFolder = masterFoldersComboBox.SelectedItem.ToString();
+            var directory = directoriesComboBox.SelectedItem.ToString();
 
-            if (restoreMasterFolderComboBox.SelectedItem == null)
+            if (restoreDirectoryComboBox.SelectedItem == null)
             {
-                _ = MessageBox.Show(Resources.Main_RestoreFilesMasterFolderToRestoreTo, Resources.Main_RestoreFilesTitle, MessageBoxButtons.OK);
+                _ = MessageBox.Show(Resources.Main_RestoreFilesDirectoryToRestoreTo, Resources.Main_RestoreFilesTitle, MessageBoxButtons.OK);
                 return;
             }
-            var targetDirectory = restoreMasterFolderComboBox.SelectedItem.ToString();
-            var files = mediaBackup.GetBackupFilesInMasterFolder(masterFolder).Where(static p => p.Disk.HasValue());
-            Utils.Log(BackupAction.Restore, $"Restoring files from master folder {masterFolder}");
-            Utils.Log(BackupAction.Restore, $"Restoring files to target master folder {targetDirectory}");
+            var targetDirectory = restoreDirectoryComboBox.SelectedItem.ToString();
+            var files = mediaBackup.GetBackupFilesInDirectory(directory).Where(static p => p.Disk.HasValue());
+            Utils.Log(BackupAction.Restore, $"Restoring files from directory {directory}");
+            Utils.Log(BackupAction.Restore, $"Restoring files to target directory {targetDirectory}");
             var backupShare = backupDiskTextBox.Text;
             var lastBackupDisk = string.Empty;
             var fileCounter = 0;
@@ -266,7 +266,7 @@ internal sealed partial class Main : Form
     private void ListMoviesWithMultipleFilesButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        Utils.Log("Listing movies with multiple files in folder");
+        Utils.Log("Listing movies with multiple files in directory");
         Dictionary<string, BackupFile> allMovies = new();
         List<BackupFile> backupFilesWithDuplicates = new();
 
@@ -355,7 +355,7 @@ internal sealed partial class Main : Form
     private void SpeedTestButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        TaskWrapper(SpeedTestAllMasterFoldersAsync);
+        TaskWrapper(SpeedTestAllDirectoriesAsync);
         Utils.TraceOut();
     }
 
@@ -591,7 +591,7 @@ internal sealed partial class Main : Form
     {
         timeToNextRunTextBox.Invoke(x =>
             x.Text = trigger == null || !updateUITimer.Enabled ? string.Empty : trigger.TimeToNextTrigger().ToString(Resources.DateTime_TimeFormat));
-        foldersToScanTextBox.Invoke(x => x.Text = mediaBackup.Watcher.DirectoriesToScan.Count.ToString());
+        directoriesToScanTextBox.Invoke(x => x.Text = mediaBackup.Watcher.DirectoriesToScan.Count.ToString());
         fileChangesDetectedTextBox.Invoke(x => x.Text = mediaBackup.Watcher.FileSystemChanges.Count.ToString());
     }
 
@@ -615,7 +615,7 @@ internal sealed partial class Main : Form
                 var directoryToScan = directoryList[i];
                 mediaBackup.ClearFlags();
 
-                var fileCountInFolderBefore = mediaBackup.BackupFiles.Count(b =>
+                var fileCountInDirectoryBefore = mediaBackup.BackupFiles.Count(b =>
                     b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase));
 
                 if (ScanSingleDirectory(directoryToScan.Path, SearchOption.TopDirectoryOnly))
@@ -625,7 +625,7 @@ internal sealed partial class Main : Form
                     directoryList.Remove(directoryToScan);
                     UpdateSymbolicLinkForDirectory(directoryToScan.Path);
 
-                    // instead of removing files that are no longer found in a folder we now flag them as deleted so we can report them later
+                    // instead of removing files that are no longer found in a directory we now flag them as deleted so we can report them later
                     // unless they aren't on a backup disk in which case they are removed now 
                     var files = mediaBackup.BackupFiles.Where(static b => !b.Flag)
                         .Where(b => b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase)).Where(b =>
@@ -653,7 +653,7 @@ internal sealed partial class Main : Form
                     var filesNotOnBackupDiskCount = mediaBackup.GetBackupFilesWithDiskEmpty().Count();
 
                     var text =
-                        $"Directory scan completed. {fileCountInFolderBefore} files before and now {fileCountAfter} files. {markedAsDeletedFilesCount} marked as deleted and {removedFilesCount} removed. {filesNotOnBackupDiskCount} to backup.";
+                        $"Directory scan completed. {fileCountInDirectoryBefore} files before and now {fileCountAfter} files. {markedAsDeletedFilesCount} marked as deleted and {removedFilesCount} removed. {filesNotOnBackupDiskCount} to backup.";
                     Utils.Log(BackupAction.ScanDirectory, text);
                     toSave = true;
                 }
@@ -681,7 +681,7 @@ internal sealed partial class Main : Form
     {
         if (mediaBackup.Watcher.DirectoriesToScan.Count <= 0 && mediaBackup.Watcher.FileSystemChanges.Count <= 0) return;
 
-        // If file or folder changes were detected then save xml
+        // If file or directory changes were detected so save xml
         mediaBackup.Save();
     }
 

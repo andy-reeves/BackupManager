@@ -130,16 +130,16 @@
     <value>Delete extra files</value>
   </data>
   <data name="Main_RestoreFiles" xml:space="preserve">
-    <value>Are you sure you want to copy files from multiple backup disks to the new master folder location?</value>
+    <value>Are you sure you want to copy files from multiple backup disks to the new directory location?</value>
   </data>
   <data name="Main_RestoreFilesTitle" xml:space="preserve">
     <value>Restore backup files</value>
   </data>
-  <data name="Main_RestoreFilesSelectAMasterFolder" xml:space="preserve">
-    <value>You must select a master folder that you'd files the files from backup disks restored for. This is typically the drive that is now failing</value>
+  <data name="Main_RestoreFilesSelectDirectory" xml:space="preserve">
+    <value>You must select a directory that you'd like from backup disks restored for. This is typically the drive that is now failing</value>
   </data>
-  <data name="Main_RestoreFilesMasterFolderToRestoreTo" xml:space="preserve">
-    <value>You must select a master folder that you'd files the files from backup copied to. This is typically a new drive that will replace the failing drive</value>
+  <data name="Main_RestoreFilesDirectoryToRestoreTo" xml:space="preserve">
+    <value>You must select a directory that you'd like files from backup copied to. This is typically a new drive that will replace the failing drive</value>
   </data>
   <data name="Main_Cancelling" xml:space="preserve">
     <value>Cancelling</value>
@@ -210,11 +210,11 @@
   <data name="InvalidEnumArgument" xml:space="preserve">
     <value>The value of argument '{0}'({1}) is invalid for Enum type '{2}'</value>
   </data>
-  <data name="IndexFolderOrMasterFolderEmpty" xml:space="preserve">
-    <value>IndexFolder or MasterFolder is empty. Not supported</value>
+  <data name="DirectoryEmpty" xml:space="preserve">
+    <value>Directory is empty. Not supported</value>
   </data>
-  <data name="MediaBackup_UnableToDetermineMasterFolderIndexFolder" xml:space="preserve">
-    <value>Unable to determine MasterFolder or IndexFolder</value>
+  <data name="MediaBackup_UnableToDetermineDirectoryOrRelativePath" xml:space="preserve">
+    <value>Unable to determine Directory or Relative Path</value>
   </data>
   <data name="DuplicateHashCode" xml:space="preserve">
     <value>Duplicate hash found on load of {0}</value>
@@ -294,7 +294,7 @@
   <data name="Main_ScanFolders_Deleting_empty_folders_in__0_" xml:space="preserve">
     <value>Deleting empty folders in {0}</value>
   </data>
-  <data name="Main_ScanFolderAsync_Scan_Folders_failed" xml:space="preserve">
+  <data name="Main_ScanDirectoriesAsync_Scan_Directories_failed" xml:space="preserve">
     <value>Scan Folders failed</value>
   </data>
 </root>

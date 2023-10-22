@@ -25,7 +25,7 @@
   <!-- in seconds -->
   <DirectoriesMinimumAgeBeforeScanning>20</DirectoriesMinimumAgeBeforeScanning>
 
-  <!-- MinimumCriticalMasterFolderSpace in MB -->
+  <!-- Minimum critical space in MB -->
   <DirectoriesMinimumCriticalSpace>200000</DirectoriesMinimumCriticalSpace>
 
   <!-- Minimum read speed in MB/s -->
@@ -113,13 +113,13 @@
   <SymbolicLinks>
     <!-- we need to capture the path up to and including the movie name and also the movieName -->
     <SymbolicLink>
-      <RootFolder>J:\</RootFolder>
+      <RootDirectory>J:\</RootDirectory>
       <FileDiscoveryRegEx>^(.*\\_Movies(?:\s\(non-tvdb\))?\\(.*?))(?:$|\\)</FileDiscoveryRegEx>
       <RelativePath>_Movies\$2</RelativePath>
       <PathToTarget>$1</PathToTarget>
     </SymbolicLink>
     <SymbolicLink>
-      <RootFolder>J:\</RootFolder>
+      <RootDirectory>J:\</RootDirectory>
       <FileDiscoveryRegEx>^(.*\\_TV(?:\s\(non-tvdb\))?\\(.*?))(?:$|\\)</FileDiscoveryRegEx>
       <RelativePath>_TV\$2</RelativePath>
       <PathToTarget>$1</PathToTarget>

@@ -51,15 +51,15 @@
             refreshBackupDiskButton = new System.Windows.Forms.Button();
             listFilesMarkedAsDeletedButton = new System.Windows.Forms.Button();
             fileWatcherButton = new System.Windows.Forms.Button();
-            listFoldersToScanButton = new System.Windows.Forms.Button();
+            listDirectoriesToScanButton = new System.Windows.Forms.Button();
             recreateAllMkLinksButton = new System.Windows.Forms.Button();
             scheduledBackupTimerButton = new System.Windows.Forms.Button();
             listFilesOnBackupDiskButton = new System.Windows.Forms.Button();
-            listFilesInMasterFolderButton = new System.Windows.Forms.Button();
-            masterFoldersComboBox = new System.Windows.Forms.ComboBox();
+            listFilesInDirectoryButton = new System.Windows.Forms.Button();
+            directoriesComboBox = new System.Windows.Forms.ComboBox();
             listFilesNotCheckedInXXButton = new System.Windows.Forms.Button();
-            restoreFilesToMasterFolderButton = new System.Windows.Forms.Button();
-            restoreMasterFolderComboBox = new System.Windows.Forms.ComboBox();
+            restoreFilesToDirectoryButton = new System.Windows.Forms.Button();
+            restoreDirectoryComboBox = new System.Windows.Forms.ComboBox();
             testPushoverHighButton = new System.Windows.Forms.Button();
             testPushoverNormalButton = new System.Windows.Forms.Button();
             label3 = new System.Windows.Forms.Label();
@@ -69,7 +69,7 @@
             label5 = new System.Windows.Forms.Label();
             monitoringTimer = new System.Windows.Forms.Timer(components);
             killProcessesButton = new System.Windows.Forms.Button();
-            listMasterFoldersComboBox = new System.Windows.Forms.ComboBox();
+            listDirectoriesComboBox = new System.Windows.Forms.ComboBox();
             pushoverGroupBox = new System.Windows.Forms.GroupBox();
             pushoverEmergencyCheckBox = new System.Windows.Forms.CheckBox();
             pushoverHighCheckBox = new System.Windows.Forms.CheckBox();
@@ -78,7 +78,7 @@
             pushoverOnOffButton = new System.Windows.Forms.Button();
             testPushoverLowButton = new System.Windows.Forms.Button();
             groupBox2 = new System.Windows.Forms.GroupBox();
-            listFilesInMasterFolderGroupBox = new System.Windows.Forms.GroupBox();
+            listFilesInDirectoryGroupBox = new System.Windows.Forms.GroupBox();
             listFilesOnBackupDiskGroupBox = new System.Windows.Forms.GroupBox();
             listFilesComboBox = new System.Windows.Forms.ComboBox();
             groupBox5 = new System.Windows.Forms.GroupBox();
@@ -118,10 +118,10 @@
             label14 = new System.Windows.Forms.Label();
             fileChangesDetectedTextBox = new System.Windows.Forms.TextBox();
             label15 = new System.Windows.Forms.Label();
-            foldersToScanTextBox = new System.Windows.Forms.TextBox();
+            directoriesToScanTextBox = new System.Windows.Forms.TextBox();
             pushoverGroupBox.SuspendLayout();
             groupBox2.SuspendLayout();
-            listFilesInMasterFolderGroupBox.SuspendLayout();
+            listFilesInDirectoryGroupBox.SuspendLayout();
             listFilesOnBackupDiskGroupBox.SuspendLayout();
             groupBox5.SuspendLayout();
             processesGroupBox.SuspendLayout();
@@ -243,7 +243,7 @@
             listMoviesWithMultipleFilesButton.Size = new System.Drawing.Size(232, 27);
             listMoviesWithMultipleFilesButton.TabIndex = 37;
             listMoviesWithMultipleFilesButton.Text = "... with multiple movie files";
-            toolTip.SetToolTip(listMoviesWithMultipleFilesButton, "Lists any movies that have multiple video files in the same folder");
+            toolTip.SetToolTip(listMoviesWithMultipleFilesButton, "Lists any movies that have multiple video files in the same directory");
             listMoviesWithMultipleFilesButton.UseVisualStyleBackColor = true;
             listMoviesWithMultipleFilesButton.Click += ListMoviesWithMultipleFilesButton_Click;
             // 
@@ -267,7 +267,7 @@
             speedTestButton.Size = new System.Drawing.Size(234, 27);
             speedTestButton.TabIndex = 44;
             speedTestButton.Text = "Speed test";
-            toolTip.SetToolTip(speedTestButton, "Runs the speed test on all master folders");
+            toolTip.SetToolTip(speedTestButton, "Runs the speed test on all directories");
             speedTestButton.UseVisualStyleBackColor = true;
             speedTestButton.Click += SpeedTestButton_Click;
             // 
@@ -351,7 +351,7 @@
             listFilesMarkedAsDeletedButton.Size = new System.Drawing.Size(232, 27);
             listFilesMarkedAsDeletedButton.TabIndex = 62;
             listFilesMarkedAsDeletedButton.Text = "... marked as Deleted";
-            toolTip.SetToolTip(listFilesMarkedAsDeletedButton, "Outputs files that are marked as Deleted because they cannot be found in the master folder anymore");
+            toolTip.SetToolTip(listFilesMarkedAsDeletedButton, "Outputs files that are marked as Deleted because they cannot be found in the directories anymore");
             listFilesMarkedAsDeletedButton.UseVisualStyleBackColor = true;
             listFilesMarkedAsDeletedButton.Click += ListFilesMarkedAsDeletedButton_Click;
             // 
@@ -367,17 +367,17 @@
             fileWatcherButton.UseVisualStyleBackColor = true;
             fileWatcherButton.Click += FileWatcherButton_Click;
             // 
-            // listFoldersToScanButton
+            // listDirectoriesToScanButton
             // 
-            listFoldersToScanButton.Location = new System.Drawing.Point(7, 185);
-            listFoldersToScanButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            listFoldersToScanButton.Name = "listFoldersToScanButton";
-            listFoldersToScanButton.Size = new System.Drawing.Size(232, 29);
-            listFoldersToScanButton.TabIndex = 90;
-            listFoldersToScanButton.Text = "... changes found and directories to scan";
-            toolTip.SetToolTip(listFoldersToScanButton, "Outputs lists of folders that we've detected changes in and that will be scanned next");
-            listFoldersToScanButton.UseVisualStyleBackColor = true;
-            listFoldersToScanButton.Click += ListFoldersToScanButton_Click;
+            listDirectoriesToScanButton.Location = new System.Drawing.Point(7, 185);
+            listDirectoriesToScanButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            listDirectoriesToScanButton.Name = "listDirectoriesToScanButton";
+            listDirectoriesToScanButton.Size = new System.Drawing.Size(232, 29);
+            listDirectoriesToScanButton.TabIndex = 90;
+            listDirectoriesToScanButton.Text = "... changes found and directories to scan";
+            toolTip.SetToolTip(listDirectoriesToScanButton, "Outputs lists of directories that we've detected changes in and that will be scanned next");
+            listDirectoriesToScanButton.UseVisualStyleBackColor = true;
+            listDirectoriesToScanButton.Click += ListDirectoriesToScanButton_Click;
             // 
             // recreateAllMkLinksButton
             // 
@@ -413,27 +413,27 @@
             listFilesOnBackupDiskButton.UseVisualStyleBackColor = true;
             listFilesOnBackupDiskButton.Click += ListFilesOnBackupDiskButton_Click;
             // 
-            // listFilesInMasterFolderButton
+            // listFilesInDirectoryButton
             // 
-            listFilesInMasterFolderButton.Location = new System.Drawing.Point(196, 19);
-            listFilesInMasterFolderButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            listFilesInMasterFolderButton.Name = "listFilesInMasterFolderButton";
-            listFilesInMasterFolderButton.Size = new System.Drawing.Size(45, 27);
-            listFilesInMasterFolderButton.TabIndex = 26;
-            listFilesInMasterFolderButton.Text = "List";
-            listFilesInMasterFolderButton.UseVisualStyleBackColor = true;
-            listFilesInMasterFolderButton.Click += ListFilesInMasterFolderButton_Click;
+            listFilesInDirectoryButton.Location = new System.Drawing.Point(196, 19);
+            listFilesInDirectoryButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            listFilesInDirectoryButton.Name = "listFilesInDirectoryButton";
+            listFilesInDirectoryButton.Size = new System.Drawing.Size(45, 27);
+            listFilesInDirectoryButton.TabIndex = 26;
+            listFilesInDirectoryButton.Text = "List";
+            listFilesInDirectoryButton.UseVisualStyleBackColor = true;
+            listFilesInDirectoryButton.Click += ListFilesInDirectoryButton_Click;
             // 
-            // masterFoldersComboBox
+            // directoriesComboBox
             // 
-            masterFoldersComboBox.BackColor = System.Drawing.SystemColors.Window;
-            masterFoldersComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            masterFoldersComboBox.FormattingEnabled = true;
-            masterFoldersComboBox.Location = new System.Drawing.Point(78, 23);
-            masterFoldersComboBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            masterFoldersComboBox.Name = "masterFoldersComboBox";
-            masterFoldersComboBox.Size = new System.Drawing.Size(163, 23);
-            masterFoldersComboBox.TabIndex = 29;
+            directoriesComboBox.BackColor = System.Drawing.SystemColors.Window;
+            directoriesComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            directoriesComboBox.FormattingEnabled = true;
+            directoriesComboBox.Location = new System.Drawing.Point(78, 23);
+            directoriesComboBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            directoriesComboBox.Name = "directoriesComboBox";
+            directoriesComboBox.Size = new System.Drawing.Size(163, 23);
+            directoriesComboBox.TabIndex = 29;
             // 
             // listFilesNotCheckedInXXButton
             // 
@@ -446,27 +446,27 @@
             listFilesNotCheckedInXXButton.UseVisualStyleBackColor = true;
             listFilesNotCheckedInXXButton.Click += CheckForOldBackupDisks_Click;
             // 
-            // restoreFilesToMasterFolderButton
+            // restoreFilesToDirectoryButton
             // 
-            restoreFilesToMasterFolderButton.Location = new System.Drawing.Point(161, 84);
-            restoreFilesToMasterFolderButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            restoreFilesToMasterFolderButton.Name = "restoreFilesToMasterFolderButton";
-            restoreFilesToMasterFolderButton.Size = new System.Drawing.Size(80, 27);
-            restoreFilesToMasterFolderButton.TabIndex = 31;
-            restoreFilesToMasterFolderButton.Text = "Restore";
-            restoreFilesToMasterFolderButton.UseVisualStyleBackColor = true;
-            restoreFilesToMasterFolderButton.Click += RestoreFilesButton_Click;
+            restoreFilesToDirectoryButton.Location = new System.Drawing.Point(161, 84);
+            restoreFilesToDirectoryButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            restoreFilesToDirectoryButton.Name = "restoreFilesToDirectoryButton";
+            restoreFilesToDirectoryButton.Size = new System.Drawing.Size(80, 27);
+            restoreFilesToDirectoryButton.TabIndex = 31;
+            restoreFilesToDirectoryButton.Text = "Restore";
+            restoreFilesToDirectoryButton.UseVisualStyleBackColor = true;
+            restoreFilesToDirectoryButton.Click += RestoreFilesButton_Click;
             // 
-            // restoreMasterFolderComboBox
+            // restoreDirectoryComboBox
             // 
-            restoreMasterFolderComboBox.BackColor = System.Drawing.SystemColors.Window;
-            restoreMasterFolderComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            restoreMasterFolderComboBox.FormattingEnabled = true;
-            restoreMasterFolderComboBox.Location = new System.Drawing.Point(78, 53);
-            restoreMasterFolderComboBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            restoreMasterFolderComboBox.Name = "restoreMasterFolderComboBox";
-            restoreMasterFolderComboBox.Size = new System.Drawing.Size(163, 23);
-            restoreMasterFolderComboBox.TabIndex = 32;
+            restoreDirectoryComboBox.BackColor = System.Drawing.SystemColors.Window;
+            restoreDirectoryComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            restoreDirectoryComboBox.FormattingEnabled = true;
+            restoreDirectoryComboBox.Location = new System.Drawing.Point(78, 53);
+            restoreDirectoryComboBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            restoreDirectoryComboBox.Name = "restoreDirectoryComboBox";
+            restoreDirectoryComboBox.Size = new System.Drawing.Size(163, 23);
+            restoreDirectoryComboBox.TabIndex = 32;
             // 
             // testPushoverHighButton
             // 
@@ -561,16 +561,16 @@
             killProcessesButton.UseVisualStyleBackColor = true;
             killProcessesButton.Click += KillProcessesButton_Click;
             // 
-            // listMasterFoldersComboBox
+            // listDirectoriesComboBox
             // 
-            listMasterFoldersComboBox.BackColor = System.Drawing.SystemColors.Window;
-            listMasterFoldersComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            listMasterFoldersComboBox.FormattingEnabled = true;
-            listMasterFoldersComboBox.Location = new System.Drawing.Point(7, 22);
-            listMasterFoldersComboBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            listMasterFoldersComboBox.Name = "listMasterFoldersComboBox";
-            listMasterFoldersComboBox.Size = new System.Drawing.Size(181, 23);
-            listMasterFoldersComboBox.TabIndex = 52;
+            listDirectoriesComboBox.BackColor = System.Drawing.SystemColors.Window;
+            listDirectoriesComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            listDirectoriesComboBox.FormattingEnabled = true;
+            listDirectoriesComboBox.Location = new System.Drawing.Point(7, 22);
+            listDirectoriesComboBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            listDirectoriesComboBox.Name = "listDirectoriesComboBox";
+            listDirectoriesComboBox.Size = new System.Drawing.Size(181, 23);
+            listDirectoriesComboBox.TabIndex = 52;
             // 
             // pushoverGroupBox
             // 
@@ -660,9 +660,9 @@
             // 
             // groupBox2
             // 
-            groupBox2.Controls.Add(restoreFilesToMasterFolderButton);
-            groupBox2.Controls.Add(masterFoldersComboBox);
-            groupBox2.Controls.Add(restoreMasterFolderComboBox);
+            groupBox2.Controls.Add(restoreFilesToDirectoryButton);
+            groupBox2.Controls.Add(directoriesComboBox);
+            groupBox2.Controls.Add(restoreDirectoryComboBox);
             groupBox2.Controls.Add(label3);
             groupBox2.Controls.Add(label4);
             groupBox2.Location = new System.Drawing.Point(865, 14);
@@ -674,18 +674,18 @@
             groupBox2.TabStop = false;
             groupBox2.Text = "Restore from Backup";
             // 
-            // listFilesInMasterFolderGroupBox
+            // listFilesInDirectoryGroupBox
             // 
-            listFilesInMasterFolderGroupBox.Controls.Add(listFilesInMasterFolderButton);
-            listFilesInMasterFolderGroupBox.Controls.Add(listMasterFoldersComboBox);
-            listFilesInMasterFolderGroupBox.Location = new System.Drawing.Point(305, 250);
-            listFilesInMasterFolderGroupBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            listFilesInMasterFolderGroupBox.Name = "listFilesInMasterFolderGroupBox";
-            listFilesInMasterFolderGroupBox.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            listFilesInMasterFolderGroupBox.Size = new System.Drawing.Size(253, 57);
-            listFilesInMasterFolderGroupBox.TabIndex = 56;
-            listFilesInMasterFolderGroupBox.TabStop = false;
-            listFilesInMasterFolderGroupBox.Text = "List files in master directory";
+            listFilesInDirectoryGroupBox.Controls.Add(listFilesInDirectoryButton);
+            listFilesInDirectoryGroupBox.Controls.Add(listDirectoriesComboBox);
+            listFilesInDirectoryGroupBox.Location = new System.Drawing.Point(305, 250);
+            listFilesInDirectoryGroupBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            listFilesInDirectoryGroupBox.Name = "listFilesInDirectoryGroupBox";
+            listFilesInDirectoryGroupBox.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            listFilesInDirectoryGroupBox.Size = new System.Drawing.Size(253, 57);
+            listFilesInDirectoryGroupBox.TabIndex = 56;
+            listFilesInDirectoryGroupBox.TabStop = false;
+            listFilesInDirectoryGroupBox.Text = "List files in master directory";
             // 
             // listFilesOnBackupDiskGroupBox
             // 
@@ -875,7 +875,7 @@
             // 
             listFilesGroupBox.Controls.Add(listFilesMarkedAsDeletedButton);
             listFilesGroupBox.Controls.Add(listFilesNotOnBackupDiskButton);
-            listFilesGroupBox.Controls.Add(listFoldersToScanButton);
+            listFilesGroupBox.Controls.Add(listDirectoriesToScanButton);
             listFilesGroupBox.Controls.Add(listFilesNotCheckedInXXButton);
             listFilesGroupBox.Controls.Add(listMoviesWithMultipleFilesButton);
             listFilesGroupBox.Controls.Add(listFilesWithDuplicateContentHashcodesButton);
@@ -1097,21 +1097,21 @@
             label15.TabIndex = 91;
             label15.Text = "File changes detected";
             // 
-            // foldersToScanTextBox
+            // directoriesToScanTextBox
             // 
-            foldersToScanTextBox.Location = new System.Drawing.Point(729, 361);
-            foldersToScanTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            foldersToScanTextBox.Name = "foldersToScanTextBox";
-            foldersToScanTextBox.ReadOnly = true;
-            foldersToScanTextBox.Size = new System.Drawing.Size(78, 23);
-            foldersToScanTextBox.TabIndex = 93;
+            directoriesToScanTextBox.Location = new System.Drawing.Point(729, 361);
+            directoriesToScanTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            directoriesToScanTextBox.Name = "directoriesToScanTextBox";
+            directoriesToScanTextBox.ReadOnly = true;
+            directoriesToScanTextBox.Size = new System.Drawing.Size(78, 23);
+            directoriesToScanTextBox.TabIndex = 93;
             // 
             // Main
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1416, 468);
-            Controls.Add(foldersToScanTextBox);
+            Controls.Add(directoriesToScanTextBox);
             Controls.Add(fileChangesDetectedTextBox);
             Controls.Add(label15);
             Controls.Add(label14);
@@ -1144,7 +1144,7 @@
             Controls.Add(processesGroupBox);
             Controls.Add(groupBox5);
             Controls.Add(listFilesOnBackupDiskGroupBox);
-            Controls.Add(listFilesInMasterFolderGroupBox);
+            Controls.Add(listFilesInDirectoryGroupBox);
             Controls.Add(groupBox2);
             Controls.Add(pushoverGroupBox);
             Controls.Add(backupDiskTextBox);
@@ -1165,7 +1165,7 @@
             pushoverGroupBox.PerformLayout();
             groupBox2.ResumeLayout(false);
             groupBox2.PerformLayout();
-            listFilesInMasterFolderGroupBox.ResumeLayout(false);
+            listFilesInDirectoryGroupBox.ResumeLayout(false);
             listFilesOnBackupDiskGroupBox.ResumeLayout(false);
             groupBox5.ResumeLayout(false);
             groupBox5.PerformLayout();
@@ -1193,11 +1193,11 @@
         private System.Windows.Forms.Button checkDiskAndDeleteButton;
         private System.Windows.Forms.Button scheduledBackupTimerButton;
         private System.Windows.Forms.Button listFilesOnBackupDiskButton;
-        private System.Windows.Forms.Button listFilesInMasterFolderButton;
-        private System.Windows.Forms.ComboBox masterFoldersComboBox;
+        private System.Windows.Forms.Button listFilesInDirectoryButton;
+        private System.Windows.Forms.ComboBox directoriesComboBox;
         private System.Windows.Forms.Button listFilesNotCheckedInXXButton;
-        private System.Windows.Forms.Button restoreFilesToMasterFolderButton;
-        private System.Windows.Forms.ComboBox restoreMasterFolderComboBox;
+        private System.Windows.Forms.Button restoreFilesToDirectoryButton;
+        private System.Windows.Forms.ComboBox restoreDirectoryComboBox;
         private System.Windows.Forms.Button checkBackupDeleteAndCopyButton;
         private System.Windows.Forms.Button listMoviesWithMultipleFilesButton;
         private System.Windows.Forms.Button testPushoverHighButton;
@@ -1212,10 +1212,10 @@
         private System.Windows.Forms.Button monitoringButton;
         private System.Windows.Forms.Timer monitoringTimer;
         private System.Windows.Forms.Button killProcessesButton;
-        private System.Windows.Forms.ComboBox listMasterFoldersComboBox;
+        private System.Windows.Forms.ComboBox listDirectoriesComboBox;
         private System.Windows.Forms.GroupBox pushoverGroupBox;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.GroupBox listFilesInMasterFolderGroupBox;
+        private System.Windows.Forms.GroupBox listFilesInDirectoryGroupBox;
         private System.Windows.Forms.GroupBox listFilesOnBackupDiskGroupBox;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.Button testPushoverLowButton;
@@ -1268,8 +1268,8 @@
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.TextBox fileChangesDetectedTextBox;
         private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.Button listFoldersToScanButton;
-        private System.Windows.Forms.TextBox foldersToScanTextBox;
+        private System.Windows.Forms.Button listDirectoriesToScanButton;
+        private System.Windows.Forms.TextBox directoriesToScanTextBox;
         private System.Windows.Forms.Button recreateAllMkLinksButton;
     }
 }

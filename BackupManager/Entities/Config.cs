@@ -60,22 +60,22 @@ public sealed class Config
     public long BackupDiskMinimumFreeSpaceToLeave { get; set; }
 
     /// <summary>
-    ///     True and the Master Folders are monitored for changes
+    ///     True and the Directories are monitored for changes
     /// </summary>
     public bool DirectoriesFileChangeWatchersOnOff { get; set; }
 
     /// <summary>
-    ///     Number of days before running a full master folder scan
+    ///     Number of days before running a full directories scan
     /// </summary>
     public int DirectoriesDaysBetweenFullScan { get; set; }
 
     /// <summary>
-    ///     Minimum space before we throw a critical Disk space message in MB for  Config.MasterFolders
+    ///     Minimum space before we throw a critical Disk space message in MB for directories
     /// </summary>
     public long DirectoriesMinimumCriticalSpace { get; set; }
 
     /// <summary>
-    ///     Config.MinimumMasterFolderReadSpeed in MB/s
+    ///     Minimum Read Speed in MB/s
     /// </summary>
     public int DirectoriesMinimumReadSpeed { get; set; }
 
@@ -85,22 +85,22 @@ public sealed class Config
     public string DirectoriesFilterRegEx { get; set; }
 
     /// <summary>
-    ///     Config.MinimumMasterFolderWriteSpeed in MB/s
+    ///     Minimum Write Speed in MB/s
     /// </summary>
     public int DirectoriesMinimumWriteSpeed { get; set; }
 
     /// <summary>
-    ///     How often we process the detected folder changes in seconds
+    ///     How often we process the detected directory changes in seconds
     /// </summary>
     public int DirectoriesProcessChangesTimer { get; set; }
 
     /// <summary>
-    ///     How often we scan the folders we've detected changes on in seconds
+    ///     How often we scan the directories we've detected changes on in seconds
     /// </summary>
     public int DirectoriesScanTimer { get; set; }
 
     /// <summary>
-    ///     The minimum age of changes in folders before we schedule a scan in seconds
+    ///     The minimum age of changes in directories before we schedule a scan in seconds
     /// </summary>
     public int DirectoriesMinimumAgeBeforeScanning { get; set; }
 

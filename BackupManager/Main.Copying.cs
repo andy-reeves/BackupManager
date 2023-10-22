@@ -143,7 +143,7 @@ internal sealed partial class Main
             if (sourceLastWriteTime == lastWriteTimeOfFileOnBackupDisk)
             {
                 Utils.LogWithPushover(BackupAction.BackupFiles, PushoverPriority.High,
-                    "There was an error with the hash codes on the source master folder and the backup disk.");
+                    "There was an error with the hash codes on the source directory and the backup disk.");
             }
             else
             {

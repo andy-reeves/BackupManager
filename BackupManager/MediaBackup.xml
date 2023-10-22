@@ -10,12 +10,7 @@
       <Free>796295471104</Free>
     </BackupDisk>
   </BackupDisks>
-  <FoldersToScan>
-    <Folder>
-      <Path>\\nas1\assets1\_Test</Path>
-      <ModifiedDateTime>2023-10-13T17:58:13.8377793+01:00</ModifiedDateTime>
-    </Folder>
-  </FoldersToScan>
-  <FileOrFolderChanges />
-  <MasterFoldersLastFullScan>2023-01-01</MasterFoldersLastFullScan>
+  <DirectoriesToScan />
+  <DirectoryChanges />
+  <DirectoriesLastFullScan>2023-01-01</DirectoriesLastFullScan>
 </MediaBackup>

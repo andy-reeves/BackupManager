@@ -33,7 +33,7 @@ public sealed class BackupDisk : IEquatable<BackupDisk>
     }
 
     /// <summary>
-    ///     The name of the backup disk and the main folder on the disk. Typically like 'backup 23'
+    ///     The name of the backup disk and the main directory on the disk. Typically like 'backup 23'
     /// </summary>
     public string Name { get; set; }
 
@@ -64,7 +64,7 @@ public sealed class BackupDisk : IEquatable<BackupDisk>
     public string BackupShare { get; set; }
 
     /// <summary>
-    ///     The full path to the main backup folder. Typically like '//media/backup/backup23'
+    ///     The full path to the main backup directory. Typically like '//media/backup/backup23'
     /// </summary>
     [XmlIgnore]
     public string BackupPath => Path.Combine(BackupShare, Name);
@@ -145,18 +145,18 @@ public sealed class BackupDisk : IEquatable<BackupDisk>
             ((file.Attributes & FileAttributes.Hidden) == 0) & ((file.Attributes & FileAttributes.System) == 0));
 
         // In here there should be 1 directory starting with 'backup '
-        var inRootFolder = directoriesInRootDirectory as DirectoryInfo[] ?? directoriesInRootDirectory.ToArray();
-        if (inRootFolder.Length != 1) return null;
+        var inRootDirectory = directoriesInRootDirectory as DirectoryInfo[] ?? directoriesInRootDirectory.ToArray();
+        if (inRootDirectory.Length != 1) return null;
 
-        var firstDirectory = inRootFolder.Single();
+        var firstDirectory = inRootDirectory.Single();
         return !firstDirectory.Name.StartsWith("backup ", StringComparison.CurrentCultureIgnoreCase) ? null : firstDirectory.Name;
     }
 
     /// <summary>
-    ///     Returns True if the path contains a valid backup folder like 'backup 23'.
+    ///     Returns True if the path contains a valid backup directory like 'backup 23'.
     /// </summary>
-    /// <param name="sharePath">The path to the backup share folder</param>
-    /// <returns>False is the path doesn't contain a valid folder.</returns>
+    /// <param name="sharePath">The path to the backup share directory</param>
+    /// <returns>False is the path doesn't contain a valid directory.</returns>
     public static bool CheckForValidBackupShare(string sharePath)
     {
         return !string.IsNullOrEmpty(GetBackupDirectoryName(sharePath));
