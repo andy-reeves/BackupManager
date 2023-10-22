@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<xs:schema id="RulesSchema" xmlns="http://tempuri.org/RulesSchema.xsd"
+           targetNamespace="http://tempuri.org/RulesSchema.xsd"
+           xmlns:mstns="http://tempuri.org/RulesSchema.xsd"
+
+           attributeFormDefault="unqualified" elementFormDefault="qualified"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Rules">
+    <xs:annotation>
+      <xs:documentation> ReSharper disable MarkupTextTypo </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="FileRules">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="FileRule" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="FileDiscoveryRegEx" />
+                    <xs:element type="xs:string" name="FileTestRegEx">
+                      <xs:annotation>
+                        <xs:documentation> &lt;FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$&lt;/FileDiscoveryRegEx> </xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element type="xs:string" name="Message" />
+                    <xs:element type="xs:string" name="Name" />
+                    <xs:element type="xs:byte" name="Number" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
