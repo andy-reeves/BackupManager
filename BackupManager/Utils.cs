@@ -195,6 +195,19 @@ internal static partial class Utils
         }
     }
 
+    internal static string GetVersionNumber(string applicationPath)
+    {
+        if (applicationPath.Contains("Bazarr"))
+        {
+            var a = File.ReadAllText(applicationPath);
+            var b = a.Trim().TrimStart('v');
+            return b;
+        }
+        var versionInfo = FileVersionInfo.GetVersionInfo(applicationPath);
+        var version = versionInfo.FileVersion;
+        return version;
+    }
+
     /// <summary>
     ///     Returns TRUE if we're running as Admin
     /// </summary>

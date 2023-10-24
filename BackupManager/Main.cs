@@ -27,7 +27,8 @@ internal sealed partial class Main : Form
 
         // the most common is DirectoryNotFound for a network path
         // for now wait a bit and then restart the watcher
-        Task.Delay(60000, ct).Wait(ct);
+        Task.Delay(120000, ct).Wait(ct);
+        mediaBackup.Watcher.Reset();
         mediaBackup.Watcher.Start();
     }
 

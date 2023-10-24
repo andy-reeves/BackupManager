@@ -19,6 +19,17 @@ namespace TestProject;
 public sealed class UtilsUnitTests
 {
     [Fact]
+    public void GetVersionNumber()
+    {
+        // var a = Utils.GetVersionNumber(@"C:\Program Files\Plex\Plex Media Server\Plex Media Server.exe");
+        //  var b = Utils.GetVersionNumber(@"C:\ProgramData\Radarr\bin\Radarr.exe");
+        //  var c = Utils.GetVersionNumber(@"C:\ProgramData\Sonarr\bin\Sonarr.exe");
+        //  var d = Utils.GetVersionNumber(@"C:\ProgramData\Prowlarr\bin\Prowlarr.exe");
+        //  var e = Utils.GetVersionNumber(@"C:\Program Files\SABnzbd\SABnzbd.exe");
+        var f = Utils.GetVersionNumber(@"C:\Bazarr\Version");
+    }
+
+    [Fact]
     public void FormatTimeSpanFromSeconds()
     {
         var a = Utils.FormatTimeSpan(new TimeSpan(0, 0, 300));

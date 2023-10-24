@@ -221,7 +221,7 @@ internal sealed class FileSystemWatcher
     ///     If any properties change then we need to call Reset.
     /// </summary>
     /// <returns>True if Reset was successful</returns>
-    private bool Reset()
+    public bool Reset()
     {
         Utils.TraceIn();
 
