@@ -8,37 +8,53 @@
   <xs:element name="MediaBackup">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="BackupFiles">
+        <xs:element name="BackupFiles" maxOccurs="1" minOccurs="0">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="BackupFile" maxOccurs="unbounded" minOccurs="0">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element type="xs:string" name="Path" />
-                    <xs:element type="xs:string" name="Deleted" />
-                    <xs:element type="xs:string" name="Directory" />
-                    <xs:element type="xs:string" name="Hash" />
-                    <xs:element type="xs:dateTime" name="LastWriteTime" />
-                    <xs:element type="xs:long" name="Length" />
-                    <xs:element type="xs:date" name="DiskChecked" />
-                    <xs:element type="xs:string" name="Disk" />
+                    <xs:element type="xs:string" name="Path" maxOccurs="1" minOccurs="1" />
+                    <xs:element type="xs:string" name="Deleted" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="xs:string" name="Directory" maxOccurs="1" minOccurs="1"/>
+                    <xs:element type="xs:string" name="Hash" maxOccurs="1" minOccurs="1"/>
+                    <xs:element type="xs:dateTime" name="LastWriteTime" maxOccurs="1" minOccurs="1"/>
+                    <xs:element type="xs:long" name="Length" maxOccurs="1" minOccurs="1"/>
+                    <xs:element name="DiskChecked" maxOccurs="1" minOccurs="0" nillable="true">
+                      <xs:simpleType>
+                        <xs:union>
+                          <xs:simpleType>
+                            <xs:restriction base="xs:date">
+                              <xs:minInclusive value="1900-01-01"/>
+                            </xs:restriction>
+                          </xs:simpleType>
+                          <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                              <xs:whiteSpace value="collapse" />
+                              <xs:length value="0" />
+                            </xs:restriction>
+                          </xs:simpleType>
+                        </xs:union>
+                      </xs:simpleType>
+                    </xs:element>
+                    <xs:element type="xs:string" name="Disk" maxOccurs="1" minOccurs="0" />
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="BackupDisks">
+        <xs:element name="BackupDisks" maxOccurs="1" minOccurs="0">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="BackupDisk" maxOccurs="unbounded" minOccurs="0">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element type="xs:string" name="Name" />
+                    <xs:element type="xs:string" name="Name" maxOccurs="1" minOccurs="1" />
                     <xs:element type="xs:date" name="Checked" maxOccurs="1" minOccurs="0" />
-                    <xs:element type="xs:long" name="Capacity" />
-                    <xs:element type="xs:short" name="TotalFiles" />
-                    <xs:element type="xs:long" name="Free" />
+                    <xs:element type="xs:long" name="Capacity" maxOccurs="1" minOccurs="0"/>
+                    <xs:element type="xs:long" name="TotalFiles" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="xs:long" name="Free" maxOccurs="1" minOccurs="0" />
                     <xs:element type="xs:string" name="LastReadSpeed" maxOccurs="1" minOccurs="0" />
                     <xs:element type="xs:string" name="LastWriteSpeed" maxOccurs="1" minOccurs="0" />
                   </xs:sequence>
@@ -53,8 +69,8 @@
               <xs:element name="Directory" maxOccurs="unbounded" minOccurs="0">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element type="xs:string" name="Path" />
-                    <xs:element type="xs:dateTime" name="ModifiedDateTime" />
+                    <xs:element type="xs:string" name="Path" maxOccurs="1" minOccurs="1" />
+                    <xs:element type="xs:dateTime" name="ModifiedDateTime" maxOccurs="1" minOccurs="1"/>
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
@@ -67,15 +83,15 @@
               <xs:element name="FileSystemEntry" maxOccurs="unbounded" minOccurs="0">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element type="xs:string" name="Path" />
-                    <xs:element type="xs:dateTime" name="ModifiedDateTime" />
+                    <xs:element type="xs:string" name="Path" maxOccurs="1" minOccurs="1"/>
+                    <xs:element type="xs:dateTime" name="ModifiedDateTime" maxOccurs="1" minOccurs="1" />
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element type="xs:date" name="DirectoriesLastFullScan" />
+        <xs:element type="xs:date" name="DirectoriesLastFullScan" maxOccurs="1" minOccurs="0" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>

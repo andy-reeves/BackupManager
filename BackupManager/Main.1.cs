@@ -450,7 +450,7 @@ internal sealed partial class Main
         }
         else
         {
-            if (!text.EndsWith("...", StringComparison.Ordinal) && !text.EndsWith(".", StringComparison.Ordinal)) textToUse = text + " ...";
+            if (text != string.Empty && !text.EndsWith(".", StringComparison.Ordinal)) textToUse = text + " ...";
         }
         UpdateProgressBar(value);
         statusStrip.Invoke(_ => toolStripStatusLabel.Text = textToUse);

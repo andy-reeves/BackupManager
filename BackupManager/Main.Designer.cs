@@ -119,6 +119,7 @@
             fileChangesDetectedTextBox = new System.Windows.Forms.TextBox();
             label15 = new System.Windows.Forms.Label();
             directoriesToScanTextBox = new System.Windows.Forms.TextBox();
+            button1 = new System.Windows.Forms.Button();
             pushoverGroupBox.SuspendLayout();
             groupBox2.SuspendLayout();
             listFilesInDirectoryGroupBox.SuspendLayout();
@@ -1106,11 +1107,24 @@
             directoriesToScanTextBox.Size = new System.Drawing.Size(78, 23);
             directoriesToScanTextBox.TabIndex = 93;
             // 
+            // button1
+            // 
+            button1.Location = new System.Drawing.Point(679, 401);
+            button1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            button1.Name = "button1";
+            button1.Size = new System.Drawing.Size(232, 27);
+            button1.TabIndex = 94;
+            button1.Text = "Version Numbers";
+            toolTip.SetToolTip(button1, "Starts the file watchers");
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
+            // 
             // Main
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1416, 468);
+            Controls.Add(button1);
             Controls.Add(directoriesToScanTextBox);
             Controls.Add(fileChangesDetectedTextBox);
             Controls.Add(label15);
@@ -1271,6 +1285,7 @@
         private System.Windows.Forms.Button listDirectoriesToScanButton;
         private System.Windows.Forms.TextBox directoriesToScanTextBox;
         private System.Windows.Forms.Button recreateAllMkLinksButton;
+        private System.Windows.Forms.Button button1;
     }
 }
 

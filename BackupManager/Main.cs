@@ -25,11 +25,18 @@ internal sealed partial class Main : Form
         var ex = e.GetException();
         Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, $"Message: {ex.Message}");
 
-        // the most common is DirectoryNotFound for a network path
-        // for now wait a bit and then restart the watcher
-        Task.Delay(120000, ct).Wait(ct);
-        mediaBackup.Watcher.Reset();
-        mediaBackup.Watcher.Start();
+        try
+        {
+            // the most common is DirectoryNotFound for a network path
+            // for now wait a bit and then restart the watcher
+            Task.Delay(120000, ct).Wait(ct);
+            mediaBackup.Watcher.Reset();
+            mediaBackup.Watcher.Start();
+        }
+        catch (Exception exc)
+        {
+            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, $"Unable to Reset FileSystemWatcher {exc}");
+        }
     }
 
     private void FileWatcherButton_Click(object sender, EventArgs e)
@@ -729,5 +736,11 @@ internal sealed partial class Main : Form
             mediaBackup.Save();
         }
         Utils.TraceOut();
+    }
+
+    private void button1_Click(object sender, EventArgs e)
+    {
+        var a = Utils.GetApplicationVersionNumber(Utils.Application.Plex);
+        MessageBox.Show($"Plex version is {a}");
     }
 }

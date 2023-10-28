@@ -10,78 +10,78 @@
       <xs:documentation> ReSharper disable MarkupTextTypo </xs:documentation>
     </xs:annotation>
     <xs:complexType>
-      <xs:sequence>
-        <xs:element type="xs:byte" name="BackupDiskDaysToReportSinceFilesChecked">
+      <xs:all>
+        <xs:element type="xs:int" name="BackupDiskDaysToReportSinceFilesChecked" maxOccurs="1" minOccurs="0">
           <xs:annotation>
-            <xs:documentation> After this many days the backup warns to check the disks again </xs:documentation>
+            <xs:documentation>After this many days the backup warns to check the disks again</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element type="xs:byte" name="BackupDiskDifferenceInFileCountAllowedPercentage">
+        <xs:element type="xs:int" name="BackupDiskDifferenceInFileCountAllowedPercentage" maxOccurs="1" minOccurs="0">
           <xs:annotation>
-            <xs:documentation> A bigger percentage difference than this and the backup stops </xs:documentation>
+            <xs:documentation>A bigger percentage difference than this and the backup stops</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element type="xs:short" name="BackupDiskMinimumCriticalSpace">
+        <xs:element type="xs:long" name="BackupDiskMinimumCriticalSpace" maxOccurs="1" minOccurs="0">
           <xs:annotation>
-            <xs:documentation> MinimumCriticalBackupDiskSpace in MB </xs:documentation>
+            <xs:documentation>MinimumCriticalBackupDiskSpace in MB</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element type="xs:short" name="BackupDiskMinimumFreeSpaceToLeave">
+        <xs:element type="xs:long" name="BackupDiskMinimumFreeSpaceToLeave" maxOccurs="1" minOccurs="0">
           <xs:annotation>
-            <xs:documentation> MinimumFreeSpaceToLeaveOnBackupDisk in MB </xs:documentation>
+            <xs:documentation>MinimumFreeSpaceToLeaveOnBackupDisk in MB</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element type="xs:byte" name="DirectoriesDaysBetweenFullScan" />
-        <xs:element type="xs:boolean" name="DirectoriesFileChangeWatchersOnOff" />
-        <xs:element type="xs:string" name="DirectoriesFilterRegEx">
+        <xs:element type="xs:int" name="DirectoriesDaysBetweenFullScan" maxOccurs="1" minOccurs="0" />
+        <xs:element type="xs:boolean" name="DirectoriesFileChangeWatchersOnOff" maxOccurs="1" minOccurs="0" />
+        <xs:element type="xs:string" name="DirectoriesFilterRegEx" maxOccurs="1" minOccurs="0">
           <xs:annotation>
-            <xs:documentation> Only files matching this filter are used for File System scanning </xs:documentation>
+            <xs:documentation>Only files matching this filter are used for File System scanning</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element type="xs:byte" name="DirectoriesMinimumAgeBeforeScanning">
+        <xs:element type="xs:int" name="DirectoriesMinimumAgeBeforeScanning" maxOccurs="1" minOccurs="0">
           <xs:annotation>
-            <xs:documentation> in seconds </xs:documentation>
+            <xs:documentation>in seconds</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element type="xs:int" name="DirectoriesMinimumCriticalSpace">
+        <xs:element type="xs:long" name="DirectoriesMinimumCriticalSpace" maxOccurs="1" minOccurs="0">
           <xs:annotation>
-            <xs:documentation> Minimum critical space in MB </xs:documentation>
+            <xs:documentation>Minimum critical space in MB</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element type="xs:byte" name="DirectoriesMinimumReadSpeed">
+        <xs:element type="xs:int" name="DirectoriesMinimumReadSpeed" maxOccurs="1" minOccurs="0">
           <xs:annotation>
-            <xs:documentation> Minimum read speed in MB/s </xs:documentation>
+            <xs:documentation>Minimum read speed in MB/s</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element type="xs:byte" name="DirectoriesMinimumWriteSpeed">
+        <xs:element type="xs:int" name="DirectoriesMinimumWriteSpeed" maxOccurs="1" minOccurs="0">
           <xs:annotation>
-            <xs:documentation> Minimum write speed in MB/s </xs:documentation>
+            <xs:documentation>Minimum write speed in MB/s</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element type="xs:byte" name="DirectoriesProcessChangesTimer">
+        <xs:element type="xs:int" name="DirectoriesProcessChangesTimer" maxOccurs="1" minOccurs="0">
           <xs:annotation>
-            <xs:documentation> in seconds </xs:documentation>
+            <xs:documentation>in seconds</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element type="xs:byte" name="DirectoriesScanTimer">
+        <xs:element type="xs:int" name="DirectoriesScanTimer" maxOccurs="1" minOccurs="0">
           <xs:annotation>
-            <xs:documentation> in seconds </xs:documentation>
+            <xs:documentation>in seconds</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element type="xs:int" name="MonitoringInterval">
+        <xs:element type="xs:unsignedShort" name="MonitoringInterval" maxOccurs="1" minOccurs="0">
           <xs:annotation>
-            <xs:documentation> Monitor interval in seconds </xs:documentation>
+            <xs:documentation>Monitor interval in seconds</xs:documentation>
           </xs:annotation>
         </xs:element>
         <xs:element type="xs:boolean" name="MonitoringOnOff">
           <xs:annotation>
-            <xs:documentation> When true the service monitoring starts when the app starts </xs:documentation>
+            <xs:documentation>When true the service monitoring starts when the app starts</xs:documentation>
           </xs:annotation>
         </xs:element>
         <xs:element type="xs:string" name="PushoverAppToken" />
         <xs:element type="xs:boolean" name="PushoverOnOff">
           <xs:annotation>
-            <xs:documentation> True to enable sending Pushover messages </xs:documentation>
+            <xs:documentation>True to enable sending Pushover messages</xs:documentation>
           </xs:annotation>
         </xs:element>
         <xs:element type="xs:boolean" name="PushoverSendLowOnOff" />
@@ -89,110 +89,118 @@
         <xs:element type="xs:boolean" name="PushoverSendHighOnOff" />
         <xs:element type="xs:boolean" name="PushoverSendEmergencyOnOff" />
         <xs:element type="xs:string" name="PushoverUserKey" />
-        <xs:element type="xs:short" name="PushoverWarningMessagesRemaining">
+        <xs:element type="xs:int" name="PushoverWarningMessagesRemaining" maxOccurs="1" minOccurs="0">
           <xs:annotation>
-            <xs:documentation> Sends a high priority message once this limit is passed </xs:documentation>
+            <xs:documentation>Sends a high priority message once this limit is passed</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element type="xs:boolean" name="ScheduledBackupOnOff">
+        <xs:element type="xs:boolean" name="ScheduledBackupOnOff" maxOccurs="1" minOccurs="0">
           <xs:annotation>
-            <xs:documentation> When true a backup scan will run when scheduled </xs:documentation>
+            <xs:documentation>When true a backup scan will run when scheduled</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element type="xs:boolean" name="ScheduledBackupRunOnStartup">
+        <xs:element type="xs:boolean" name="ScheduledBackupRunOnStartup" maxOccurs="1" minOccurs="0">
           <xs:annotation>
-            <xs:documentation> When true a backup scan will run when the app starts </xs:documentation>
+            <xs:documentation>When true a backup scan will run when the app starts</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element type="xs:string" name="ScheduledBackupStartTime">
+        <xs:element type="xs:time" name="ScheduledBackupStartTime" maxOccurs="1" minOccurs="0">
           <xs:annotation>
-            <xs:documentation>  ScheduledBackupStartTime as hh:mm </xs:documentation>
+            <xs:documentation>ScheduledBackupStartTime as hh:mm:ss</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element type="xs:short" name="SpeedTestFileSize">
+        <xs:element type="xs:int" name="SpeedTestFileSize" maxOccurs="1" minOccurs="0">
           <xs:annotation>
-            <xs:documentation> Size of disk speed test file in MB </xs:documentation>
+            <xs:documentation>Size of disk speed test file in MB</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element type="xs:byte" name="SpeedTestIterations">
+        <xs:element type="xs:int" name="SpeedTestIterations" maxOccurs="1" minOccurs="0">
           <xs:annotation>
-            <xs:documentation> Number of disk speed test iterations to run </xs:documentation>
+            <xs:documentation>Number of disk speed test iterations to run</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element type="xs:boolean" name="SpeedTestOnOff">
+        <xs:element type="xs:boolean" name="SpeedTestOnOff" maxOccurs="1" minOccurs="0">
           <xs:annotation>
-            <xs:documentation> If True we test the speed of the disks </xs:documentation>
+            <xs:documentation>If True we test the speed of the disks</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="Monitors">
+        <xs:element name="Monitors" maxOccurs="1" minOccurs="0">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="Monitor">
+              <xs:element name="Monitor" maxOccurs="unbounded" minOccurs="0">
                 <xs:complexType>
-                  <xs:sequence>
-                    <xs:element type="xs:string" name="Url" />
-                    <xs:element type="xs:byte" name="Timeout" />
-                    <xs:element type="xs:string" name="ProcessToKill" />
-                    <xs:element type="xs:string" name="ApplicationToStart" />
-                    <xs:element type="xs:string" name="Name" />
-                    <xs:element type="xs:byte" name="Port" />
-                    <xs:element type="xs:byte" name="FailureTimePeriod" />
-                    <xs:element type="xs:byte" name="MaximumFailures" />
-                  </xs:sequence>
+                  <xs:all>
+                    <xs:element type="xs:string" name="Url" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="xs:int" name="Timeout" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="xs:string" name="ProcessToKill" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="xs:string" name="ApplicationToStart" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="xs:string" name="ApplicationToStartArguments" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="xs:int" name="MaximumFailures" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="xs:string" name="Name" maxOccurs="1" minOccurs="1" />
+                    <xs:element type="xs:int" name="Port" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="xs:string" name="ServiceToRestart" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="xs:int" name="FailureTimePeriod" maxOccurs="1" minOccurs="0" />
+                  </xs:all>
                 </xs:complexType>
               </xs:element>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="Directories">
+        <xs:element name="Directories" maxOccurs="1" minOccurs="0">
           <xs:annotation>
-            <xs:documentation> List each UNC path that you want to scan for files to backup here </xs:documentation>
+            <xs:documentation>List each UNC path that you want to scan for files to backup here</xs:documentation>
           </xs:annotation>
           <xs:complexType>
-            <xs:choice maxOccurs="unbounded" minOccurs="0">
-              <xs:element type="xs:string" name="Directory" />
-            </xs:choice>
+            <xs:sequence>
+              <xs:element type="xs:string" name="Directory" maxOccurs="unbounded" minOccurs="0" />
+            </xs:sequence>
           </xs:complexType>
         </xs:element>
         <xs:element name="Filters">
           <xs:complexType>
             <xs:sequence>
-              <xs:element type="xs:string" name="FilterRegEx">
+              <xs:element type="xs:string" name="FilterRegEx" maxOccurs="1" minOccurs="0">
                 <xs:annotation>
-                  <xs:documentation> RegEx's of file to ignore when executing a scan </xs:documentation>
+                  <xs:documentation>RegEx's of file to ignore when executing a scan</xs:documentation>
                 </xs:annotation>
               </xs:element>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="FilesToDelete">
+        <xs:element name="FilesToDelete" maxOccurs="1" minOccurs="0">
           <xs:complexType>
             <xs:sequence>
               <xs:element type="xs:string" name="FilesToDeleteRegEx" maxOccurs="unbounded" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element type="xs:string" name="DisksToSkipOnRestore" />
-        <xs:element name="SymbolicLinks">
+        <xs:element name="SymbolicLinks" maxOccurs="1" minOccurs="0">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="SymbolicLink" maxOccurs="unbounded" minOccurs="0">
                 <xs:annotation>
-                  <xs:documentation> we need to capture the path up to and including the movie name and also the movieName </xs:documentation>
+                  <xs:documentation>Matches for the Regex are processed and created if required</xs:documentation>
                 </xs:annotation>
                 <xs:complexType>
-                  <xs:sequence>
-                    <xs:element type="xs:string" name="RootDirectory" />
-                    <xs:element type="xs:string" name="FileDiscoveryRegEx" />
-                    <xs:element type="xs:string" name="RelativePath" />
-                    <xs:element type="xs:string" name="PathToTarget" />
-                  </xs:sequence>
+                  <xs:all>
+                    <xs:element type="xs:string" name="RootDirectory" maxOccurs="1" minOccurs="1" />
+                    <xs:element type="xs:string" name="FileDiscoveryRegEx" maxOccurs="1" minOccurs="1" />
+                    <xs:element type="xs:string" name="RelativePath" maxOccurs="1" minOccurs="1" />
+                    <xs:element type="xs:string" name="PathToTarget" maxOccurs="1" minOccurs="1" />
+                  </xs:all>
                 </xs:complexType>
               </xs:element>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-      </xs:sequence>
+        <xs:element name="DisksToSkipOnRestore" maxOccurs="1" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="xs:string" name="Disks" maxOccurs="unbounded" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:all>
     </xs:complexType>
   </xs:element>
 </xs:schema>

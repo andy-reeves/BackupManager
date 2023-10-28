@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Xml.Schema;
 using System.Xml.Serialization;
 
 using BackupManager.Properties;
@@ -30,6 +31,9 @@ public sealed class Rules
     {
         try
         {
+            var xsdPath = Path.Combine(Path.GetDirectoryName(path) ?? throw new InvalidOperationException(), "RulesSchema.xsd");
+            if (!Utils.ValidateXml(path, xsdPath)) throw new XmlSchemaValidationException("Rules.xml failed validation");
+
             var xRoot = new XmlRootAttribute { ElementName = "Rules", Namespace = "http://tempuri.org/RulesSchema.xsd", IsNullable = true };
             XmlSerializer serializer = new(typeof(Rules), xRoot);
             using FileStream stream = new(path, FileMode.Open, FileAccess.Read);
@@ -43,6 +47,10 @@ public sealed class Rules
         catch (InvalidOperationException ex)
         {
             throw new ApplicationException(string.Format(Resources.UnableToLoadXml, "Rules.xml", ex));
+        }
+        catch (XmlSchemaValidationException ex)
+        {
+            throw new ApplicationException(string.Format(Resources.UnableToLoadXml, "Rules.xml failed validation", ex));
         }
     }
 }

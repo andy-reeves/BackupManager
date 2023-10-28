@@ -25,6 +25,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Schema;
 
 using BackupManager.Entities;
 using BackupManager.Extensions;
@@ -145,7 +147,8 @@ internal static partial class Utils
     private static readonly MD5 _md5 = MD5.Create();
 
 #if DEBUG
-    private static readonly string _logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Debug.log");
+    private static readonly string _logFile =
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Debug.log");
 #else
     private static readonly string _logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager.log");
 #endif
@@ -195,14 +198,53 @@ internal static partial class Utils
         }
     }
 
-    internal static string GetVersionNumber(string applicationPath)
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
+    internal static string GetApplicationVersionNumber(Application applicationName)
     {
-        if (applicationPath.Contains("Bazarr"))
+        if (!Enum.IsDefined(applicationName)) throw new ArgumentOutOfRangeException(nameof(applicationName), "Not a valid application name");
+
+        string applicationPath;
+        /*
+           ProgramData=C:\ProgramData
+           ProgramFiles=C:\Program Files
+           ProgramFiles(x86)=C:\Program Files (x86)
+           ProgramW6432=C:\Program Files
+        */
+        Trace($"%ProgramData% = {Environment.GetEnvironmentVariable("ProgramData")}");
+        Trace($"%ProgramFiles% = {Environment.GetEnvironmentVariable("ProgramFiles")}");
+        Trace($"%ProgramFiles(x86)% = {Environment.GetEnvironmentVariable("ProgramFiles(x86)")}");
+        Trace($"%ProgramW6432% = {Environment.GetEnvironmentVariable("ProgramW6432")}");
+        Trace($"%SystemDrive% = {Environment.GetEnvironmentVariable("SystemDrive")}");
+        Trace($"%PROCESSOR_ARCHITECTURE% = {Environment.GetEnvironmentVariable("PROCESSOR_ARCHITECTURE")}");
+
+        switch (applicationName)
         {
-            var a = File.ReadAllText(applicationPath);
-            var b = a.Trim().TrimStart('v');
-            return b;
+            case Application.Plex:
+                //applicationPath = @"C:\Program Files\Plex\Plex Media Server\Plex Media Server.exe";
+                applicationPath = @"%ProgramW6432%\Plex\Plex Media Server\Plex Media Server.exe";
+                break;
+            case Application.Prowlarr:
+                applicationPath = @"%ProgramData%\Prowlarr\bin\Prowlarr.exe";
+                break;
+            case Application.Radarr:
+                applicationPath = @"%ProgramData%\Radarr\bin\Radarr.exe";
+                break;
+            case Application.SABnzbd:
+                applicationPath = @"%ProgramW6432%\SABnzbd\SABnzbd.exe";
+                break;
+            case Application.Sonarr:
+                applicationPath = @"%ProgramData%\Sonarr\bin\Sonarr.exe";
+                break;
+            case Application.Bazarr:
+            {
+                applicationPath = @"%SystemDrive%\Bazarr\Version";
+                applicationPath = Environment.ExpandEnvironmentVariables(applicationPath);
+                return File.ReadAllText(applicationPath).Trim().TrimStart('v');
+            }
+            default:
+                throw new ArgumentOutOfRangeException(nameof(applicationName), applicationName, null);
         }
+        applicationPath = Environment.ExpandEnvironmentVariables(applicationPath);
         var versionInfo = FileVersionInfo.GetVersionInfo(applicationPath);
         var version = versionInfo.FileVersion;
         return version;
@@ -1418,6 +1460,29 @@ internal static partial class Utils
     }
 
     /// <summary>
+    ///     Validates the xml provided against the xsd provided.
+    /// </summary>
+    /// <param name="xmlPath"></param>
+    /// <param name="xsdPath"></param>
+    /// <returns>True is the xml is valid</returns>
+    internal static bool ValidateXml(string xmlPath, string xsdPath)
+    {
+        var xml = new XmlDocument();
+        xml.Load(xmlPath);
+        xml.Schemas.Add(null, xsdPath);
+
+        try
+        {
+            xml.Validate(null);
+        }
+        catch (XmlSchemaValidationException)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    /// <summary>
     /// </summary>
     /// <param name="sourcePath"></param>
     /// <param name="destinationPath"></param>
@@ -1756,5 +1821,20 @@ internal static partial class Utils
             return false;
         }
         return true;
+    }
+
+    public enum Application
+    {
+        Plex = 1,
+
+        SABnzbd = 2,
+
+        Sonarr = 3,
+
+        Radarr = 4,
+
+        Bazarr = 5,
+
+        Prowlarr = 6
     }
 }

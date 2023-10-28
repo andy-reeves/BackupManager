@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Xml.Schema;
 using System.Xml.Serialization;
 
 using BackupManager.Extensions;
@@ -111,6 +112,9 @@ public sealed class MediaBackup
     {
         try
         {
+            var xsdPath = Path.Combine(Path.GetDirectoryName(path) ?? throw new InvalidOperationException(), "MediaBackupSchema.xsd");
+            if (!Utils.ValidateXml(path, xsdPath)) throw new XmlSchemaValidationException("MediaBackup.xml failed validation");
+
             var xRoot = new XmlRootAttribute
             {
                 ElementName = "MediaBackup", Namespace = "http://tempuri.org/MediaBackupSchema.xsd", IsNullable = true
@@ -145,6 +149,10 @@ public sealed class MediaBackup
         catch (InvalidOperationException ex)
         {
             throw new ApplicationException(string.Format(Resources.UnableToLoadXml, "MediaBackup.xml", ex));
+        }
+        catch (XmlSchemaValidationException ex)
+        {
+            throw new ApplicationException(string.Format(Resources.UnableToLoadXml, "MediaBackup.xml failed validation", ex));
         }
     }
 

@@ -49,11 +49,11 @@ public class FileRule : IEquatable<FileRule>
     /// <summary>
     ///     The number of the rule. Must be unique
     /// </summary>
-    public string Number { get; set; }
+    public int Number { get; set; }
 
     private string InternalName => Name;
 
-    private string InternalNumber => Number;
+    private int InternalNumber => Number;
 
     public bool Equals(FileRule other)
     {

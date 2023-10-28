@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Xml.Schema;
 using System.Xml.Serialization;
 
 using BackupManager.Properties;
@@ -182,6 +183,9 @@ public sealed class Config
     {
         try
         {
+            var xsdPath = Path.Combine(Path.GetDirectoryName(path) ?? throw new InvalidOperationException(), "ConfigSchema.xsd");
+            if (!Utils.ValidateXml(path, xsdPath)) throw new XmlSchemaValidationException("Config.xml failed validation");
+
             var xRoot = new XmlRootAttribute { ElementName = "Config", Namespace = "http://tempuri.org/ConfigSchema.xsd", IsNullable = true };
             Config config;
             XmlSerializer serializer = new(typeof(Config), xRoot);
@@ -202,6 +206,10 @@ public sealed class Config
         catch (InvalidOperationException ex)
         {
             throw new ApplicationException(string.Format(Resources.UnableToLoadXml, "Config.xml", ex));
+        }
+        catch (XmlSchemaValidationException ex)
+        {
+            throw new ApplicationException(string.Format(Resources.UnableToLoadXml, "Config.xml failed validation", ex));
         }
     }
 

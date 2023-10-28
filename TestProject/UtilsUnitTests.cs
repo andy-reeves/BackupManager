@@ -19,14 +19,51 @@ namespace TestProject;
 public sealed class UtilsUnitTests
 {
     [Fact]
+    [SuppressMessage("ReSharper", "IdentifierTypo")]
     public void GetVersionNumber()
     {
-        // var a = Utils.GetVersionNumber(@"C:\Program Files\Plex\Plex Media Server\Plex Media Server.exe");
-        //  var b = Utils.GetVersionNumber(@"C:\ProgramData\Radarr\bin\Radarr.exe");
-        //  var c = Utils.GetVersionNumber(@"C:\ProgramData\Sonarr\bin\Sonarr.exe");
-        //  var d = Utils.GetVersionNumber(@"C:\ProgramData\Prowlarr\bin\Prowlarr.exe");
-        //  var e = Utils.GetVersionNumber(@"C:\Program Files\SABnzbd\SABnzbd.exe");
-        var f = Utils.GetVersionNumber(@"C:\Bazarr\Version");
+        const string bazarrVersion = "1.3.1";
+        Assert.Equal(bazarrVersion, Utils.GetApplicationVersionNumber(Utils.Application.Bazarr));
+        const string plexVersion = "1.32.7.7571";
+        Assert.Equal(plexVersion, Utils.GetApplicationVersionNumber(Utils.Application.Plex));
+        const string sonarrVersion = "3.0.10.1567";
+        Assert.Equal(sonarrVersion, Utils.GetApplicationVersionNumber(Utils.Application.Sonarr));
+        const string radarrVersion = "5.1.1.8195";
+        Assert.Equal(radarrVersion, Utils.GetApplicationVersionNumber(Utils.Application.Radarr));
+        const string prowlarrVersion = "1.10.0.4047";
+        Assert.Equal(prowlarrVersion, Utils.GetApplicationVersionNumber(Utils.Application.Prowlarr));
+        const string sabnzbVersion = "4.1.0";
+        Assert.Equal(sabnzbVersion, Utils.GetApplicationVersionNumber(Utils.Application.SABnzbd));
+    }
+
+    [Fact]
+    public void ValidateXml()
+    {
+        /*
+            xs:int          int
+            xs:integer      BigInteger
+            xs:long         long
+            xs:boolean      bool
+            xs:double       double
+            xs:float        float
+            xs:short        short
+            xs:string       string
+            xs:date         string (but a date)
+            xs:dateTime     DateTime
+        */
+        var path = Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)), "..\\BackupManager\\");
+        var xmlPath = Path.Combine(path, "Config.xml");
+        var xsdPath = Path.Combine(path, "ConfigSchema.xsd");
+        var result = Utils.ValidateXml(xmlPath, xsdPath);
+        Assert.True(result, "Config.xml is not valid");
+        xmlPath = Path.Combine(path, "MediaBackup.xml");
+        xsdPath = Path.Combine(path, "MediaBackupSchema.xsd");
+        result = Utils.ValidateXml(xmlPath, xsdPath);
+        Assert.True(result, "MediaBackup.xml is not valid");
+        xmlPath = Path.Combine(path, "Rules.xml");
+        xsdPath = Path.Combine(path, "RulesSchema.xsd");
+        result = Utils.ValidateXml(xmlPath, xsdPath);
+        Assert.True(result, "Rules.xml is not valid");
     }
 
     [Fact]
