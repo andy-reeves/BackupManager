@@ -737,5 +737,4 @@ internal sealed partial class Main : Form
         }
         Utils.TraceOut();
     }
-   
 }
