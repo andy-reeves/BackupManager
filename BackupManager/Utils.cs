@@ -199,6 +199,18 @@ internal static partial class Utils
         }
     }
 
+    private static string GitHubVersionNumberParser(string versionUrl, string startsWith, string splitOn, int indexToReturn)
+    {
+        HttpClient client = new();
+        var task = Task.Run(() => client.GetStringAsync(versionUrl));
+        task.Wait();
+        var response = task.Result;
+        var lines = response.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+
+        return lines.Where(line => line.Trim().StartsWith(startsWith, StringComparison.CurrentCultureIgnoreCase))
+            .Select(line => line.Split(splitOn)[indexToReturn].Replace("'", "").Replace("\"", "").Trim()).FirstOrDefault();
+    }
+
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     internal static string GetLatestApplicationVersionNumber(Application applicationName, string branchName = "master")
     {
@@ -225,66 +237,21 @@ internal static partial class Utils
                     var node = JsonNode.Parse(response);
                     return node?["computer"]?["Windows"]?["version"]?.ToString().SubstringBefore('-');
                 case Application.SABnzbd:
-                    task = Task.Run(() =>
-                        client.GetStringAsync($"https://raw.githubusercontent.com/sabnzbd/sabnzbd/{branchName}/sabnzbd/version.py"));
-                    task.Wait();
-                    response = task.Result;
-                    var lines = response.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-
-                    foreach (var line in lines.Where(static line => line.StartsWith("__version__", StringComparison.CurrentCultureIgnoreCase)))
-                    {
-                        return line.Split("=")[1].Replace("\"", "").Trim();
-                    }
-                    return null;
+                    return GitHubVersionNumberParser($"https://raw.githubusercontent.com/sabnzbd/sabnzbd/{branchName}/sabnzbd/version.py",
+                        "__version__", "=", 1);
                 case Application.Sonarr:
-                    task = Task.Run(() => client.GetStringAsync($"https://raw.githubusercontent.com/Sonarr/Sonarr/{branchName}/version.sh"));
-                    task.Wait();
-                    response = task.Result;
-                    lines = response.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-
-                    foreach (var line in lines.Where(static line => line.StartsWith("packageVersion=", StringComparison.CurrentCultureIgnoreCase)))
-                    {
-                        return line.Split("=")[1].Replace("'", "").Trim();
-                    }
-                    return null;
+                    return GitHubVersionNumberParser($"https://raw.githubusercontent.com/Sonarr/Sonarr/{branchName}/version.sh", "packageVersion=",
+                        "=", 1);
                 case Application.Radarr:
-                    task = Task.Run(() => client.GetStringAsync($"https://raw.githubusercontent.com/Radarr/Radarr/{branchName}/azure-pipelines.yml"));
-                    task.Wait();
-                    response = task.Result;
-                    lines = response.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-
-                    foreach (var line in lines.Where(
-                                 static line => line.Trim().StartsWith("majorVersion:", StringComparison.CurrentCultureIgnoreCase)))
-                    {
-                        return line.Split(":")[1].Replace("'", "").Trim();
-                    }
-                    return null;
+                    return GitHubVersionNumberParser($"https://raw.githubusercontent.com/Radarr/Radarr/{branchName}/azure-pipelines.yml",
+                        "majorVersion:", ":", 1);
                 case Application.Prowlarr:
-                    task = Task.Run(() =>
-                        client.GetStringAsync($"https://raw.githubusercontent.com/Prowlarr/Prowlarr/{branchName}/azure-pipelines.yml"));
-                    task.Wait();
-                    response = task.Result;
-                    lines = response.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-
-                    foreach (var line in lines.Where(
-                                 static line => line.Trim().StartsWith("majorVersion:", StringComparison.CurrentCultureIgnoreCase)))
-                    {
-                        return line.Split(":")[1].Replace("'", "").Trim();
-                    }
-                    return null;
+                    return GitHubVersionNumberParser($"https://raw.githubusercontent.com/Prowlarr/Prowlarr/{branchName}/azure-pipelines.yml",
+                        "majorVersion:", ":", 1);
                 case Application.Bazarr:
-                    task = Task.Run(() =>
-                        client.GetStringAsync(
-                            $"https://raw.githubusercontent.com/morpheus65535/bazarr/{branchName}/libs/requests_oauthlib/__init__.py"));
-                    task.Wait();
-                    response = task.Result;
-                    lines = response.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-
-                    foreach (var line in lines.Where(static line => line.StartsWith("__version__", StringComparison.CurrentCultureIgnoreCase)))
-                    {
-                        return line.Split("=")[1].Replace("\"", "").Trim();
-                    }
-                    return null;
+                    return GitHubVersionNumberParser(
+                        $"https://raw.githubusercontent.com/morpheus65535/bazarr/{branchName}/libs/requests_oauthlib/__init__.py", "__version__", "=",
+                        1);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(applicationName), applicationName, null);
             }

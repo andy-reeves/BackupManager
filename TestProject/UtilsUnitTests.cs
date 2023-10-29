@@ -39,11 +39,12 @@ public sealed class UtilsUnitTests
         Assert.Equal("5.0.3", Utils.GetLatestApplicationVersionNumber(Utils.Application.Radarr));
         Assert.Equal("4.1.0", Utils.GetLatestApplicationVersionNumber(Utils.Application.SABnzbd));
         Assert.Equal("3.0.10", Utils.GetLatestApplicationVersionNumber(Utils.Application.Sonarr, "v3"));
-
-        // Assert.Equal("3.0.9", Utils.GetLatestApplicationVersionNumber(Utils.Application.Sonarr));
-        // Assert.Equal("1.32.6.7557", Utils.GetLatestApplicationVersionNumber(Utils.Application.Plex));
-        // Assert.Equal("1.10.2", Utils.GetLatestApplicationVersionNumber(Utils.Application.Prowlarr, "develop"));
-        // Assert.Equal("5.1.3", Utils.GetLatestApplicationVersionNumber(Utils.Application.Radarr, "develop"));
+        /*
+        Assert.Equal("3.0.9", Utils.GetLatestApplicationVersionNumber(Utils.Application.Sonarr));
+        Assert.Equal("1.32.6.7557", Utils.GetLatestApplicationVersionNumber(Utils.Application.Plex));
+        Assert.Equal("1.10.2", Utils.GetLatestApplicationVersionNumber(Utils.Application.Prowlarr, "develop"));
+        Assert.Equal("5.1.3", Utils.GetLatestApplicationVersionNumber(Utils.Application.Radarr, "develop"));
+        */
     }
 
     [Fact]
