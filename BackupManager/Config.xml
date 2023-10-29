@@ -72,8 +72,8 @@
   <!-- When true a backup scan will run when the app starts -->
   <ScheduledBackupRunOnStartup>false</ScheduledBackupRunOnStartup>
 
-  <!--  ScheduledBackupStartTime as hh:mm -->
-  <ScheduledBackupStartTime>11:30</ScheduledBackupStartTime>
+  <!--  ScheduledBackupStartTime as hh:mm:ss -->
+  <ScheduledBackupStartTime>11:30:00</ScheduledBackupStartTime>
 
   <!-- Size of disk speed test file in MB -->
   <SpeedTestFileSize>100</SpeedTestFileSize>

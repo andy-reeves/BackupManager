@@ -22,18 +22,28 @@ public sealed class UtilsUnitTests
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     public void GetVersionNumber()
     {
-        const string bazarrVersion = "1.3.1";
-        Assert.Equal(bazarrVersion, Utils.GetApplicationVersionNumber(Utils.Application.Bazarr));
-        const string plexVersion = "1.32.7.7571";
-        Assert.Equal(plexVersion, Utils.GetApplicationVersionNumber(Utils.Application.Plex));
-        const string sonarrVersion = "3.0.10.1567";
-        Assert.Equal(sonarrVersion, Utils.GetApplicationVersionNumber(Utils.Application.Sonarr));
-        const string radarrVersion = "5.1.1.8195";
-        Assert.Equal(radarrVersion, Utils.GetApplicationVersionNumber(Utils.Application.Radarr));
-        const string prowlarrVersion = "1.10.0.4047";
-        Assert.Equal(prowlarrVersion, Utils.GetApplicationVersionNumber(Utils.Application.Prowlarr));
-        const string sabnzbVersion = "4.1.0";
-        Assert.Equal(sabnzbVersion, Utils.GetApplicationVersionNumber(Utils.Application.SABnzbd));
+        Assert.Equal("1.3.1", Utils.GetApplicationVersionNumber(Utils.Application.Bazarr));
+        Assert.Equal("1.32.7.7571", Utils.GetApplicationVersionNumber(Utils.Application.PlexPass));
+        Assert.Equal("1.9.4.4039", Utils.GetApplicationVersionNumber(Utils.Application.Prowlarr));
+        Assert.Equal("5.0.3.8127", Utils.GetApplicationVersionNumber(Utils.Application.Radarr));
+        Assert.Equal("4.1.0", Utils.GetApplicationVersionNumber(Utils.Application.SABnzbd));
+        Assert.Equal("3.0.10.1567", Utils.GetApplicationVersionNumber(Utils.Application.Sonarr));
+    }
+
+    [Fact]
+    public void GetLatestApplicationVersionNumber()
+    {
+        Assert.Equal("1.3.1", Utils.GetLatestApplicationVersionNumber(Utils.Application.Bazarr));
+        Assert.Equal("1.32.7.7621", Utils.GetLatestApplicationVersionNumber(Utils.Application.PlexPass));
+        Assert.Equal("1.9.4", Utils.GetLatestApplicationVersionNumber(Utils.Application.Prowlarr));
+        Assert.Equal("5.0.3", Utils.GetLatestApplicationVersionNumber(Utils.Application.Radarr));
+        Assert.Equal("4.1.0", Utils.GetLatestApplicationVersionNumber(Utils.Application.SABnzbd));
+        Assert.Equal("3.0.10", Utils.GetLatestApplicationVersionNumber(Utils.Application.Sonarr, "v3"));
+
+        // Assert.Equal("3.0.9", Utils.GetLatestApplicationVersionNumber(Utils.Application.Sonarr));
+        // Assert.Equal("1.32.6.7557", Utils.GetLatestApplicationVersionNumber(Utils.Application.Plex));
+        // Assert.Equal("1.10.2", Utils.GetLatestApplicationVersionNumber(Utils.Application.Prowlarr, "develop"));
+        // Assert.Equal("5.1.3", Utils.GetLatestApplicationVersionNumber(Utils.Application.Radarr, "develop"));
     }
 
     [Fact]

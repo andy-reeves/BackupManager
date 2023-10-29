@@ -742,5 +742,11 @@ internal sealed partial class Main : Form
     {
         var a = Utils.GetApplicationVersionNumber(Utils.Application.Plex);
         MessageBox.Show($"Plex version is {a}");
+        var b = Utils.GetLatestApplicationVersionNumber(Utils.Application.Plex);
+        MessageBox.Show($"Plex latest available version is {b}");
+        var c = Utils.GetLatestApplicationVersionNumber(Utils.Application.PlexPass);
+        MessageBox.Show($"PlexPass latest available version is {c}");
+        var d = Utils.GetLatestApplicationVersionNumber(Utils.Application.SABnzbd);
+        MessageBox.Show($"SabNzbd latest available version is {d}");
     }
 }

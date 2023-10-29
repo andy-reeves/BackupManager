@@ -22,6 +22,7 @@ using System.Security.Cryptography;
 using System.Security.Principal;
 using System.ServiceProcess;
 using System.Text;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -199,6 +200,102 @@ internal static partial class Utils
     }
 
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
+    internal static string GetLatestApplicationVersionNumber(Application applicationName, string branchName = "master")
+    {
+        if (!Enum.IsDefined(applicationName)) throw new ArgumentOutOfRangeException(nameof(applicationName), "Not a valid application name");
+
+        try
+        {
+            HttpClient client = new();
+            var parameters = string.Empty;
+
+            if (applicationName == Application.PlexPass)
+            {
+                parameters = "?channel=plexpass";
+                client.DefaultRequestHeaders.Add("x-plex-token", "df_s2aZXWFiAmvJU-QFM");
+            }
+
+            switch (applicationName)
+            {
+                case Application.Plex:
+                case Application.PlexPass:
+                    var task = Task.Run(() => client.GetStringAsync("https://plex.tv/api/downloads/5.json" + parameters));
+                    task.Wait();
+                    var response = task.Result;
+                    var node = JsonNode.Parse(response);
+                    return node?["computer"]?["Windows"]?["version"]?.ToString().SubstringBefore('-');
+                case Application.SABnzbd:
+                    task = Task.Run(() =>
+                        client.GetStringAsync($"https://raw.githubusercontent.com/sabnzbd/sabnzbd/{branchName}/sabnzbd/version.py"));
+                    task.Wait();
+                    response = task.Result;
+                    var lines = response.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+
+                    foreach (var line in lines.Where(static line => line.StartsWith("__version__", StringComparison.CurrentCultureIgnoreCase)))
+                    {
+                        return line.Split("=")[1].Replace("\"", "").Trim();
+                    }
+                    return null;
+                case Application.Sonarr:
+                    task = Task.Run(() => client.GetStringAsync($"https://raw.githubusercontent.com/Sonarr/Sonarr/{branchName}/version.sh"));
+                    task.Wait();
+                    response = task.Result;
+                    lines = response.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+
+                    foreach (var line in lines.Where(static line => line.StartsWith("packageVersion=", StringComparison.CurrentCultureIgnoreCase)))
+                    {
+                        return line.Split("=")[1].Replace("'", "").Trim();
+                    }
+                    return null;
+                case Application.Radarr:
+                    task = Task.Run(() => client.GetStringAsync($"https://raw.githubusercontent.com/Radarr/Radarr/{branchName}/azure-pipelines.yml"));
+                    task.Wait();
+                    response = task.Result;
+                    lines = response.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+
+                    foreach (var line in lines.Where(
+                                 static line => line.Trim().StartsWith("majorVersion:", StringComparison.CurrentCultureIgnoreCase)))
+                    {
+                        return line.Split(":")[1].Replace("'", "").Trim();
+                    }
+                    return null;
+                case Application.Prowlarr:
+                    task = Task.Run(() =>
+                        client.GetStringAsync($"https://raw.githubusercontent.com/Prowlarr/Prowlarr/{branchName}/azure-pipelines.yml"));
+                    task.Wait();
+                    response = task.Result;
+                    lines = response.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+
+                    foreach (var line in lines.Where(
+                                 static line => line.Trim().StartsWith("majorVersion:", StringComparison.CurrentCultureIgnoreCase)))
+                    {
+                        return line.Split(":")[1].Replace("'", "").Trim();
+                    }
+                    return null;
+                case Application.Bazarr:
+                    task = Task.Run(() =>
+                        client.GetStringAsync(
+                            $"https://raw.githubusercontent.com/morpheus65535/bazarr/{branchName}/libs/requests_oauthlib/__init__.py"));
+                    task.Wait();
+                    response = task.Result;
+                    lines = response.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+
+                    foreach (var line in lines.Where(static line => line.StartsWith("__version__", StringComparison.CurrentCultureIgnoreCase)))
+                    {
+                        return line.Split("=")[1].Replace("\"", "").Trim();
+                    }
+                    return null;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(applicationName), applicationName, null);
+            }
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
     internal static string GetApplicationVersionNumber(Application applicationName)
     {
         if (!Enum.IsDefined(applicationName)) throw new ArgumentOutOfRangeException(nameof(applicationName), "Not a valid application name");
@@ -220,7 +317,7 @@ internal static partial class Utils
         switch (applicationName)
         {
             case Application.Plex:
-                //applicationPath = @"C:\Program Files\Plex\Plex Media Server\Plex Media Server.exe";
+            case Application.PlexPass:
                 applicationPath = @"%ProgramW6432%\Plex\Plex Media Server\Plex Media Server.exe";
                 break;
             case Application.Prowlarr:
@@ -1823,18 +1920,22 @@ internal static partial class Utils
         return true;
     }
 
+    [SuppressMessage("ReSharper", "IdentifierTypo")]
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public enum Application
     {
         Plex = 1,
 
-        SABnzbd = 2,
+        PlexPass = 2,
 
-        Sonarr = 3,
+        SABnzbd = 3,
 
-        Radarr = 4,
+        Sonarr = 4,
 
-        Bazarr = 5,
+        Radarr = 5,
 
-        Prowlarr = 6
+        Bazarr = 6,
+
+        Prowlarr = 7
     }
 }
