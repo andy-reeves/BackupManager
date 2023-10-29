@@ -19,6 +19,10 @@ internal sealed partial class Main
     [SupportedOSPlatform("windows")]
     private void MonitorServices()
     {
+        if (monitoringExecutingRightNow) return;
+
+        monitoringExecutingRightNow = true;
+
         foreach (var monitor in mediaBackup.Config.Monitors.Where(static monitor =>
                      monitor.Port > 0 ? !Utils.ConnectionExists(monitor.Url, monitor.Port) : !Utils.UrlExists(monitor.Url, monitor.Timeout * 1000)))
         {
@@ -30,6 +34,25 @@ internal sealed partial class Main
 
             Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High,
                 $"'{monitor.Name}' is down. {monitor.Failures.Count} failure{s} in the last {Utils.FormatTimeFromSeconds(monitor.FailureTimePeriod)}.");
+
+            // check the latest version of this service available against the version running
+            // if a newer version is available then send a message but do not stop/start the services
+
+            if (monitor.ApplicationType > 0)
+            {
+                Utils.Trace($"ApplicationType is {monitor.ApplicationType}");
+                var installedVersion = Utils.GetApplicationVersionNumber(monitor.ApplicationType);
+                var availableVersion = Utils.GetLatestApplicationVersionNumber(monitor.ApplicationType);
+                Utils.Trace($"Installed is {installedVersion}");
+                Utils.Trace($"Available is {availableVersion}");
+
+                if (installedVersion != string.Empty && Utils.VersionIsNewer(installedVersion, availableVersion))
+                {
+                    Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High,
+                        $"Newer version of service {monitor.ApplicationType} available so not stopping/starting service. Version {installedVersion} is installed and {availableVersion} is available.");
+                    continue;
+                }
+            }
 
             if (monitor.ProcessToKill.HasValue())
             {
@@ -71,5 +94,6 @@ internal sealed partial class Main
             else
                 Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High, $"Failed to restart the service '{monitor.Name}'");
         }
+        monitoringExecutingRightNow = false;
     }
 }

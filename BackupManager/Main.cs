@@ -391,7 +391,7 @@ internal sealed partial class Main : Form
 
     private void MonitoringTimer_Tick(object sender, EventArgs e)
     {
-        TaskWrapper(monitoringAction);
+        if (!monitoringExecutingRightNow) TaskWrapper(monitoringAction);
     }
 
     [SupportedOSPlatform("windows")]
@@ -737,16 +737,5 @@ internal sealed partial class Main : Form
         }
         Utils.TraceOut();
     }
-
-    private void button1_Click(object sender, EventArgs e)
-    {
-        var a = Utils.GetApplicationVersionNumber(Utils.Application.Plex);
-        MessageBox.Show($"Plex version is {a}");
-        var b = Utils.GetLatestApplicationVersionNumber(Utils.Application.Plex);
-        MessageBox.Show($"Plex latest available version is {b}");
-        var c = Utils.GetLatestApplicationVersionNumber(Utils.Application.PlexPass);
-        MessageBox.Show($"PlexPass latest available version is {c}");
-        var d = Utils.GetLatestApplicationVersionNumber(Utils.Application.SABnzbd);
-        MessageBox.Show($"SabNzbd latest available version is {d}");
-    }
+   
 }

@@ -212,48 +212,48 @@ internal static partial class Utils
     }
 
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
-    internal static string GetLatestApplicationVersionNumber(Application applicationName, string branchName = "master")
+    internal static string GetLatestApplicationVersionNumber(ApplicationType applicationTypeName, string branchName = "master")
     {
-        if (!Enum.IsDefined(applicationName)) throw new ArgumentOutOfRangeException(nameof(applicationName), "Not a valid application name");
+        if (!Enum.IsDefined(applicationTypeName)) throw new ArgumentOutOfRangeException(nameof(applicationTypeName), "Not a valid application name");
 
         try
         {
             HttpClient client = new();
             var parameters = string.Empty;
 
-            if (applicationName == Application.PlexPass)
+            if (applicationTypeName == ApplicationType.PlexPass)
             {
                 parameters = "?channel=plexpass";
                 client.DefaultRequestHeaders.Add("x-plex-token", "df_s2aZXWFiAmvJU-QFM");
             }
 
-            switch (applicationName)
+            switch (applicationTypeName)
             {
-                case Application.Plex:
-                case Application.PlexPass:
+                case ApplicationType.Plex:
+                case ApplicationType.PlexPass:
                     var task = Task.Run(() => client.GetStringAsync("https://plex.tv/api/downloads/5.json" + parameters));
                     task.Wait();
                     var response = task.Result;
                     var node = JsonNode.Parse(response);
                     return node?["computer"]?["Windows"]?["version"]?.ToString().SubstringBefore('-');
-                case Application.SABnzbd:
+                case ApplicationType.SABnzbd:
                     return GitHubVersionNumberParser($"https://raw.githubusercontent.com/sabnzbd/sabnzbd/{branchName}/sabnzbd/version.py",
                         "__version__", "=", 1);
-                case Application.Sonarr:
+                case ApplicationType.Sonarr:
                     return GitHubVersionNumberParser($"https://raw.githubusercontent.com/Sonarr/Sonarr/{branchName}/version.sh", "packageVersion=",
                         "=", 1);
-                case Application.Radarr:
+                case ApplicationType.Radarr:
                     return GitHubVersionNumberParser($"https://raw.githubusercontent.com/Radarr/Radarr/{branchName}/azure-pipelines.yml",
                         "majorVersion:", ":", 1);
-                case Application.Prowlarr:
+                case ApplicationType.Prowlarr:
                     return GitHubVersionNumberParser($"https://raw.githubusercontent.com/Prowlarr/Prowlarr/{branchName}/azure-pipelines.yml",
                         "majorVersion:", ":", 1);
-                case Application.Bazarr:
+                case ApplicationType.Bazarr:
                     return GitHubVersionNumberParser(
                         $"https://raw.githubusercontent.com/morpheus65535/bazarr/{branchName}/libs/requests_oauthlib/__init__.py", "__version__", "=",
                         1);
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(applicationName), applicationName, null);
+                    throw new ArgumentOutOfRangeException(nameof(applicationTypeName), applicationTypeName, null);
             }
         }
         catch
@@ -263,9 +263,9 @@ internal static partial class Utils
     }
 
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
-    internal static string GetApplicationVersionNumber(Application applicationName)
+    internal static string GetApplicationVersionNumber(ApplicationType applicationTypeName)
     {
-        if (!Enum.IsDefined(applicationName)) throw new ArgumentOutOfRangeException(nameof(applicationName), "Not a valid application name");
+        if (!Enum.IsDefined(applicationTypeName)) throw new ArgumentOutOfRangeException(nameof(applicationTypeName), "Not a valid application name");
 
         string applicationPath;
         /*
@@ -281,32 +281,32 @@ internal static partial class Utils
         Trace($"%SystemDrive% = {Environment.GetEnvironmentVariable("SystemDrive")}");
         Trace($"%PROCESSOR_ARCHITECTURE% = {Environment.GetEnvironmentVariable("PROCESSOR_ARCHITECTURE")}");
 
-        switch (applicationName)
+        switch (applicationTypeName)
         {
-            case Application.Plex:
-            case Application.PlexPass:
+            case ApplicationType.Plex:
+            case ApplicationType.PlexPass:
                 applicationPath = @"%ProgramW6432%\Plex\Plex Media Server\Plex Media Server.exe";
                 break;
-            case Application.Prowlarr:
+            case ApplicationType.Prowlarr:
                 applicationPath = @"%ProgramData%\Prowlarr\bin\Prowlarr.exe";
                 break;
-            case Application.Radarr:
+            case ApplicationType.Radarr:
                 applicationPath = @"%ProgramData%\Radarr\bin\Radarr.exe";
                 break;
-            case Application.SABnzbd:
+            case ApplicationType.SABnzbd:
                 applicationPath = @"%ProgramW6432%\SABnzbd\SABnzbd.exe";
                 break;
-            case Application.Sonarr:
+            case ApplicationType.Sonarr:
                 applicationPath = @"%ProgramData%\Sonarr\bin\Sonarr.exe";
                 break;
-            case Application.Bazarr:
+            case ApplicationType.Bazarr:
             {
                 applicationPath = @"%SystemDrive%\Bazarr\Version";
                 applicationPath = Environment.ExpandEnvironmentVariables(applicationPath);
                 return File.ReadAllText(applicationPath).Trim().TrimStart('v');
             }
             default:
-                throw new ArgumentOutOfRangeException(nameof(applicationName), applicationName, null);
+                throw new ArgumentOutOfRangeException(nameof(applicationTypeName), applicationTypeName, null);
         }
         applicationPath = Environment.ExpandEnvironmentVariables(applicationPath);
         var versionInfo = FileVersionInfo.GetVersionInfo(applicationPath);
@@ -855,7 +855,7 @@ internal static partial class Utils
                             _alreadySendingPushoverMessage = true;
 
                             SendPushoverMessage("Message Limit Warning", PushoverPriority.High,
-                                $"Application Limit Remaining is: {applicationLimitRemaining}");
+                                $"ApplicationType Limit Remaining is: {applicationLimitRemaining}");
                             _alreadySendingPushoverMessage = false;
                         }
                     }
@@ -1887,22 +1887,16 @@ internal static partial class Utils
         return true;
     }
 
-    [SuppressMessage("ReSharper", "IdentifierTypo")]
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
-    public enum Application
+    /// <summary>
+    ///     Compares version numbers and returns True if the available version is newer than installed
+    /// </summary>
+    /// <param name="installedVersion"></param>
+    /// <param name="availableVersion"></param>
+    /// <returns></returns>
+    internal static bool VersionIsNewer(string installedVersion, string availableVersion)
     {
-        Plex = 1,
-
-        PlexPass = 2,
-
-        SABnzbd = 3,
-
-        Sonarr = 4,
-
-        Radarr = 5,
-
-        Bazarr = 6,
-
-        Prowlarr = 7
+        var installed = new Version(installedVersion);
+        var available = new Version(availableVersion);
+        return installed.CompareTo(available) < 0;
     }
 }

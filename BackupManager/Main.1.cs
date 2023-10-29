@@ -36,6 +36,8 @@ internal sealed partial class Main
     /// </summary>
     private bool longRunningActionExecutingRightNow;
 
+    private bool monitoringExecutingRightNow;
+
     private CancellationTokenSource tokenSource;
 
     private DailyTrigger trigger;

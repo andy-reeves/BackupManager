@@ -139,6 +139,7 @@
                     <xs:element type="xs:string" name="Name" maxOccurs="1" minOccurs="1" />
                     <xs:element type="xs:int" name="Port" maxOccurs="1" minOccurs="0" />
                     <xs:element type="xs:string" name="ServiceToRestart" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="xs:string" name="ApplicationType" maxOccurs="1" minOccurs="0" />
                     <xs:element type="xs:int" name="FailureTimePeriod" maxOccurs="1" minOccurs="0" />
                   </xs:all>
                 </xs:complexType>

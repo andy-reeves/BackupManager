@@ -94,6 +94,7 @@
       <Port>0</Port>
       <FailureTimePeriod>30</FailureTimePeriod>
       <MaximumFailures>10</MaximumFailures>
+      <ApplicationType>PlexPass</ApplicationType>
     </Monitor>
   </Monitors>
 

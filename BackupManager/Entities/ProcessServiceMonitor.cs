@@ -25,6 +25,8 @@ public class ProcessServiceMonitor
     /// </summary>
     [XmlIgnore] internal readonly List<DateTime> Failures = new();
 
+    public ApplicationType ApplicationType { get; set; }
+
     /// <summary>
     ///     The Url to monitor
     /// </summary>
