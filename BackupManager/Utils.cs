@@ -1585,10 +1585,7 @@ internal static partial class Utils
             {
                 for (long i = 1; i <= appendIterations; i++)
                 {
-                    while (!ct.IsCancellationRequested)
-                    {
-                        sWriter.Write(randomText);
-                    }
+                    if (!ct.IsCancellationRequested) sWriter.Write(randomText);
                 }
             }
             Trace($"{firstPathFilename} created");
