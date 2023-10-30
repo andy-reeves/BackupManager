@@ -37,8 +37,8 @@ public sealed class UtilsUnitTests
         var tokenSource = new CancellationTokenSource();
         var ct = tokenSource.Token;
 
-        Task.Run(() => Utils.DiskSpeedTest(@"c:\speedtest", 1000000000, 1, out var readSpeed, out var writeSpeed, ct), ct)
-            .ContinueWith(static u => { }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
+        Task.Run(() => Utils.DiskSpeedTest(@"c:\speedtest", 1000000000, 1, out _, out _, ct), ct).ContinueWith(static _ => { }, default,
+            TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
         Utils.Wait(1);
         tokenSource.Cancel();
         Utils.Wait(3);
