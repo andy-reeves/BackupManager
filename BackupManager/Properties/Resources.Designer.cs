@@ -599,5 +599,14 @@ namespace BackupManager.Properties {
                 return ResourceManager.GetString("UnableToLoadXml", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not a valid application name.
+        /// </summary>
+        internal static string Utils_Not_a_valid_application_name {
+            get {
+                return ResourceManager.GetString("Utils_Not_a_valid_application_name", resourceCulture);
+            }
+        }
     }
 }

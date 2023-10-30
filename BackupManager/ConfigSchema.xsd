@@ -38,6 +38,12 @@
             <xs:documentation>Only files matching this filter are used for File System scanning</xs:documentation>
           </xs:annotation>
         </xs:element>
+        <!-- ReSharper disable once MarkupAttributeTypo -->
+        <xs:element type="xs:string" name="PlexToken" maxOccurs="1" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>A valid PlexPass token</xs:documentation>
+          </xs:annotation>
+        </xs:element>
         <xs:element type="xs:int" name="DirectoriesMinimumAgeBeforeScanning" maxOccurs="1" minOccurs="0">
           <xs:annotation>
             <xs:documentation>in seconds</xs:documentation>

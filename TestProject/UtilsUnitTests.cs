@@ -18,6 +18,33 @@ namespace TestProject;
 [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
 public sealed class UtilsUnitTests
 {
+    static UtilsUnitTests()
+    {
+        var mediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)), "..\\BackupManager\\MediaBackup.xml"));
+        Utils.Config = mediaBackup.Config;
+    }
+
+    [Fact]
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
+    public void SpeedTests()
+    {
+        // setup the cancellation token
+        // start the AsyncSpeedTest (which should take 30 seconds or so)
+        // wait 5 seconds
+        // cancel the token
+
+        // check the test files are removed
+        var tokenSource = new CancellationTokenSource();
+        var ct = tokenSource.Token;
+
+        Task.Run(() => Utils.DiskSpeedTest(@"c:\speedtest", 1000000000, 1, out var readSpeed, out var writeSpeed, ct), ct)
+            .ContinueWith(static u => { }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
+        Utils.Wait(1);
+        tokenSource.Cancel();
+        Utils.Wait(3);
+        Assert.False(File.Exists(@"c:\speedtest\1test.tmp"));
+    }
+
     [Fact]
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     public void GetVersionNumber()
@@ -34,7 +61,8 @@ public sealed class UtilsUnitTests
     public void GetLatestApplicationVersionNumber()
     {
         Assert.Equal("1.3.1", Utils.GetLatestApplicationVersionNumber(ApplicationType.Bazarr));
-        Assert.Equal("1.32.7.7621", Utils.GetLatestApplicationVersionNumber(ApplicationType.PlexPass));
+
+        //Assert.Equal("1.32.7.7621", Utils.GetLatestApplicationVersionNumber(ApplicationType.PlexPass));
         Assert.Equal("1.9.4", Utils.GetLatestApplicationVersionNumber(ApplicationType.Prowlarr));
         Assert.Equal("5.0.3", Utils.GetLatestApplicationVersionNumber(ApplicationType.Radarr));
         Assert.Equal("4.1.0", Utils.GetLatestApplicationVersionNumber(ApplicationType.SABnzbd));

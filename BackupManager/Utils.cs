@@ -214,7 +214,8 @@ internal static partial class Utils
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     internal static string GetLatestApplicationVersionNumber(ApplicationType applicationTypeName, string branchName = "master")
     {
-        if (!Enum.IsDefined(applicationTypeName)) throw new ArgumentOutOfRangeException(nameof(applicationTypeName), "Not a valid application name");
+        if (!Enum.IsDefined(applicationTypeName))
+            throw new ArgumentOutOfRangeException(nameof(applicationTypeName), Resources.Utils_Not_a_valid_application_name);
 
         try
         {
@@ -224,7 +225,7 @@ internal static partial class Utils
             if (applicationTypeName == ApplicationType.PlexPass)
             {
                 parameters = "?channel=plexpass";
-                client.DefaultRequestHeaders.Add("x-plex-token", "df_s2aZXWFiAmvJU-QFM");
+                client.DefaultRequestHeaders.Add("x-plex-token", Config.PlexToken);
             }
 
             switch (applicationTypeName)
@@ -265,7 +266,8 @@ internal static partial class Utils
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     internal static string GetApplicationVersionNumber(ApplicationType applicationTypeName)
     {
-        if (!Enum.IsDefined(applicationTypeName)) throw new ArgumentOutOfRangeException(nameof(applicationTypeName), "Not a valid application name");
+        if (!Enum.IsDefined(applicationTypeName))
+            throw new ArgumentOutOfRangeException(nameof(applicationTypeName), Resources.Utils_Not_a_valid_application_name);
 
         string applicationPath;
         /*
@@ -797,6 +799,14 @@ internal static partial class Utils
     private static void SendPushoverMessage(string title, PushoverPriority priority, string message)
     {
         SendPushoverMessage(title, priority, PushoverRetry.None, PushoverExpires.Immediately, message);
+    }
+
+    internal static void Wait(int howManySecondsToWait)
+    {
+        var howLongToWait = new TimeSpan(0, 0, howManySecondsToWait);
+        var sw = Stopwatch.StartNew();
+
+        while (sw.Elapsed < howLongToWait) { }
     }
 
     private static void SendPushoverMessage(string title, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires, string message)
@@ -1566,28 +1576,43 @@ internal static partial class Utils
 
         for (var j = 1; j <= testIterations; j++)
         {
-            if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
             var firstPathFilename = sourcePath + "\\" + j + "test.tmp";
             var secondPathFilename = destinationPath + "\\" + j + "test.tmp";
-            if (File.Exists(firstPathFilename)) File.Delete(firstPathFilename);
-            if (File.Exists(secondPathFilename)) File.Delete(secondPathFilename);
+            if (File.Exists(firstPathFilename)) FileDelete(firstPathFilename);
+            if (File.Exists(secondPathFilename)) FileDelete(secondPathFilename);
 
             using (StreamWriter sWriter = new(firstPathFilename, true, Encoding.UTF8, streamWriteBufferSize))
             {
                 for (long i = 1; i <= appendIterations; i++)
                 {
-                    sWriter.Write(randomText);
+                    while (!ct.IsCancellationRequested)
+                    {
+                        sWriter.Write(randomText);
+                    }
                 }
             }
             Trace($"{firstPathFilename} created");
             testFileSize = GetFileLength(firstPathFilename);
-            if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+
+            if (ct.IsCancellationRequested)
+            {
+                if (File.Exists(firstPathFilename)) FileDelete(firstPathFilename);
+                if (File.Exists(secondPathFilename)) FileDelete(secondPathFilename);
+                ct.ThrowIfCancellationRequested();
+            }
             var sw = Stopwatch.StartNew();
             File.Copy(firstPathFilename, secondPathFilename);
+
+            if (ct.IsCancellationRequested)
+            {
+                if (File.Exists(firstPathFilename)) FileDelete(firstPathFilename);
+                if (File.Exists(secondPathFilename)) FileDelete(secondPathFilename);
+                ct.ThrowIfCancellationRequested();
+            }
             Trace($"{firstPathFilename} copied as {secondPathFilename}");
             var interval = sw.Elapsed;
-            File.Delete(firstPathFilename);
-            File.Delete(secondPathFilename);
+            if (File.Exists(firstPathFilename)) FileDelete(firstPathFilename);
+            if (File.Exists(secondPathFilename)) FileDelete(secondPathFilename);
             Trace($"testFileSize: {testFileSize}, interval.TotalSeconds: {interval.TotalSeconds}");
             totalPerf += testFileSize / interval.TotalSeconds;
         }

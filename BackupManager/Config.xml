@@ -48,6 +48,8 @@
   <!-- When true the service monitoring starts when the app starts -->
   <MonitoringOnOff>false</MonitoringOnOff>
 
+  <PlexToken>InsertYourPlexPassTokenHere</PlexToken>
+
   <PushoverAppToken>InsertYourPushoverAppTokenHere</PushoverAppToken>
 
   <!-- True to enable sending Pushover messages -->

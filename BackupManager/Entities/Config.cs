@@ -24,6 +24,8 @@ namespace BackupManager.Entities;
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 [SuppressMessage("ReSharper", "CollectionNeverUpdated.Global")]
 [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
+[SuppressMessage("ReSharper", "IdentifierTypo")]
+[SuppressMessage("ReSharper", "CommentTypo")]
 public sealed class Config
 {
     [XmlArrayItem("Directory")] public Collection<string> Directories { get; set; } = new();
@@ -81,9 +83,14 @@ public sealed class Config
     public int DirectoriesMinimumReadSpeed { get; set; }
 
     /// <summary>
-    ///     THe Regex used to filter file changes in the FileSystemWatcher
+    ///     The Regex used to filter file changes in the FileSystemWatcher
     /// </summary>
     public string DirectoriesFilterRegEx { get; set; }
+
+    /// <summary>
+    ///     A PlexPass token
+    /// </summary>
+    public string PlexToken { get; set; }
 
     /// <summary>
     ///     Minimum Write Speed in MB/s

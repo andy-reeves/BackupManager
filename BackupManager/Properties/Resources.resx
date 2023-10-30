@@ -297,4 +297,7 @@
   <data name="Main_ScanDirectoriesAsync_Scan_Directories_failed" xml:space="preserve">
     <value>Scan Folders failed</value>
   </data>
+  <data name="Utils_Not_a_valid_application_name" xml:space="preserve">
+    <value>Not a valid application name</value>
+  </data>
 </root>
