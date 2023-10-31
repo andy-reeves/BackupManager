@@ -244,28 +244,27 @@ internal sealed partial class Main
     private void SetupWatcher()
     {
         Utils.TraceIn();
-        var watcher = mediaBackup.Watcher;
-        watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName; // | NotifyFilters.DirectoryName;
-        watcher.Directories = mediaBackup.Config.Directories.ToArray();
-        watcher.ProcessChangesInterval = mediaBackup.Config.DirectoriesProcessChangesTimer;
-        watcher.ScanInterval = mediaBackup.Config.DirectoriesScanTimer;
-        watcher.Filter = "*.*";
+        mediaBackup.Watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName; // | NotifyFilters.DirectoryName;
+        mediaBackup.Watcher.Directories = mediaBackup.Config.Directories.ToArray();
+        mediaBackup.Watcher.ProcessChangesInterval = mediaBackup.Config.DirectoriesProcessChangesTimer;
+        mediaBackup.Watcher.ScanInterval = mediaBackup.Config.DirectoriesScanTimer;
+        mediaBackup.Watcher.Filter = "*.*";
 
-        watcher.RegexFilter =
+        mediaBackup.Watcher.RegexFilter =
             mediaBackup.Config.DirectoriesFilterRegEx; // @".*(?<!\.tmp)$"; match all files except *.tmp (.*(?<!\.tmp)|.*\\_Backup\\.*)$
-        watcher.IncludeSubdirectories = true;
-        watcher.ReadyToScan += FileSystemWatcher_ReadyToScan;
-        watcher.Error += FileSystemWatcher_OnError;
-        watcher.MinimumAgeBeforeScanEventRaised = mediaBackup.Config.DirectoriesMinimumAgeBeforeScanning;
+        mediaBackup.Watcher.IncludeSubdirectories = true;
+        mediaBackup.Watcher.ReadyToScan += FileSystemWatcher_ReadyToScan;
+        mediaBackup.Watcher.Error += FileSystemWatcher_OnError;
+        mediaBackup.Watcher.MinimumAgeBeforeScanEventRaised = mediaBackup.Config.DirectoriesMinimumAgeBeforeScanning;
 
         foreach (var item in mediaBackup.DirectoryChanges)
         {
-            watcher.FileSystemChanges.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime), ct);
+            mediaBackup.Watcher.FileSystemChanges.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime), ct);
         }
 
         foreach (var item in mediaBackup.DirectoriesToScan)
         {
-            watcher.DirectoriesToScan.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime), ct);
+            mediaBackup.Watcher.DirectoriesToScan.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime), ct);
         }
         Utils.TraceOut();
     }
