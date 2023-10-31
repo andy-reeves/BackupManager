@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -231,6 +232,7 @@ internal sealed class FileSystemWatcher
             CheckPathValidity(directory);
         }
         RemoveFileSystemWatchers();
+        var sw = Stopwatch.StartNew();
 
         foreach (var watcher in Directories.Select(directory => new System.IO.FileSystemWatcher(directory)
                  {
@@ -248,6 +250,7 @@ internal sealed class FileSystemWatcher
             watcher.Created += OnSomethingHappened;
             watcherList.Add(watcher);
         }
+        Utils.Trace($"Creating FSW took {sw.Elapsed}");
 
         // Setup the timers
         if (processChangesTimer == null)
@@ -464,6 +467,7 @@ internal sealed class FileSystemWatcher
     private void RemoveFileSystemWatchers()
     {
         Utils.TraceIn();
+        Utils.Trace($"watcherList count = {watcherList.Count}");
 
         foreach (var watcher in watcherList)
         {

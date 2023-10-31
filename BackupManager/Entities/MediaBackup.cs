@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -112,8 +113,12 @@ public sealed class MediaBackup
     {
         try
         {
+            var sw = Stopwatch.StartNew();
             var xsdPath = Path.Combine(Path.GetDirectoryName(path) ?? throw new InvalidOperationException(), "MediaBackupSchema.xsd");
             if (!Utils.ValidateXml(path, xsdPath)) throw new XmlSchemaValidationException("MediaBackup.xml failed validation");
+
+            Utils.Trace($"Time to validate xml was {sw.Elapsed}");
+            sw.Restart();
 
             var xRoot = new XmlRootAttribute
             {
@@ -126,6 +131,7 @@ public sealed class MediaBackup
             {
                 mediaBackup = serializer.Deserialize(stream) as MediaBackup;
             }
+            Utils.Trace($"Time to Deserialize xml was {sw.Elapsed}");
             if (mediaBackup == null) return null;
 
             mediaBackup.mediaBackupPath = path;
