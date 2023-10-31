@@ -390,12 +390,7 @@ internal sealed class FileSystemWatcher
             var handler = ReadyToScan;
             handler?.Invoke(this, args);
         }
-
-        //if (DirectoriesToScan.Count > 0)
-        // {
-        scanDirectoriesTimer.Start();
-
-        // }
+        if (DirectoriesToScan.Count > 0 || FileSystemChanges.Count > 0) scanDirectoriesTimer.Start();
         Utils.TraceOut();
     }
 
@@ -428,8 +423,6 @@ internal sealed class FileSystemWatcher
 
             // WE DON'T do this now - if its not a directory either then use its full path and its parent
             List<FileSystemEntry> directoriesToScan = new();
-
-            // TODO This logic needs checking 
 
             if (File.Exists(fileOrDirectoryChange.Path) || !Directory.Exists(fileOrDirectoryChange.Path))
                 directoriesToScan.Add(new FileSystemEntry(new FileInfo(fileOrDirectoryChange.Path).DirectoryName));
