@@ -350,13 +350,13 @@ internal sealed class FileSystemWatcher
 
             if (FileSystemChanges.Contains(entry))
             {
-                Utils.Trace("Updating ModifiedTime");
+                Utils.Trace($"Updating ModifiedTime for {e.FullPath}");
                 var fileSystemEntry = FileSystemChanges.First(f => f.Path == e.FullPath);
                 fileSystemEntry.ModifiedDateTime = DateTime.Now;
             }
             else
             {
-                Utils.Trace("Adding");
+                Utils.Trace($"Adding {e.FullPath}");
                 FileSystemChanges.Add(new FileSystemEntry(e.FullPath, DateTime.Now));
             }
 
@@ -417,12 +417,13 @@ internal sealed class FileSystemWatcher
         {
             Utils.Trace($"fileOrFolderChange.Path = {fileOrDirectoryChange.Path}");
 
-            // What about deleted files and directories?
-            // Check to see if the path exists as a file 
-            // if it does use the parent directory
-            // if its not an existing file check its a directory
-            // if it is use its full path
-            // if its not a directory either then use its full path and its parent
+            // if its a file or NOT a directory
+            // Add its directory path
+            // OR
+            // if its a directory or NOT a file
+            // add the directory path
+
+            // WE DON'T do this now - if its not a directory either then use its full path and its parent
             List<FileSystemEntry> directoriesToScan = new();
 
             // TODO This logic needs checking 

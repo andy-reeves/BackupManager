@@ -245,7 +245,7 @@ internal sealed partial class Main
     {
         Utils.TraceIn();
         var watcher = mediaBackup.Watcher;
-        watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName;
+        watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName; // | NotifyFilters.DirectoryName;
         watcher.Directories = mediaBackup.Config.Directories.ToArray();
         watcher.ProcessChangesInterval = mediaBackup.Config.DirectoriesProcessChangesTimer;
         watcher.ScanInterval = mediaBackup.Config.DirectoriesScanTimer;
