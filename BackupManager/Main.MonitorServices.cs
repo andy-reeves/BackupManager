@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Versioning;
 
+using BackupManager.Entities;
 using BackupManager.Extensions;
 
 namespace BackupManager;
@@ -38,11 +39,12 @@ internal sealed partial class Main
             // check the latest version of this service available against the version running
             // if a newer version is available then send a message but do not stop/start the services
 
-            if (monitor.ApplicationType > 0)
+            if (monitor.ApplicationType > ApplicationType.Unknown)
             {
                 Utils.Trace($"ApplicationType is {monitor.ApplicationType}");
+                Utils.Trace($"BranchName is {monitor.BranchName}");
                 var installedVersion = Utils.GetApplicationVersionNumber(monitor.ApplicationType);
-                var availableVersion = Utils.GetLatestApplicationVersionNumber(monitor.ApplicationType);
+                var availableVersion = Utils.GetLatestApplicationVersionNumber(monitor.ApplicationType, monitor.BranchName);
                 Utils.Trace($"Installed is {installedVersion}");
                 Utils.Trace($"Available is {availableVersion}");
 

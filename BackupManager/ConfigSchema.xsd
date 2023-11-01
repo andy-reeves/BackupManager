@@ -148,6 +148,8 @@
                     <xs:element name="ApplicationType" maxOccurs="1" minOccurs="0">
                       <xs:simpleType>
                         <xs:restriction base="xs:string">
+                          <!-- ReSharper disable MarkupAttributeTypo -->
+                          <xs:enumeration value="Unknown" />
                           <xs:enumeration value="Plex" />
                           <xs:enumeration value="PlexPass" />
                           <xs:enumeration value="SABnzbd" />
@@ -155,6 +157,16 @@
                           <xs:enumeration value="Radarr" />
                           <xs:enumeration value="Bazarr" />
                           <xs:enumeration value="Prowlarr" />
+                          <!-- ReSharper restore MarkupAttributeTypo -->
+                        </xs:restriction>
+                      </xs:simpleType>
+                    </xs:element>
+                    <xs:element name="BranchName" maxOccurs="1" minOccurs="0">
+                      <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                          <xs:enumeration value="master" />
+                          <xs:enumeration value="develop" />
+                          <xs:enumeration value="v3" /> 
                         </xs:restriction>
                       </xs:simpleType>
                     </xs:element>

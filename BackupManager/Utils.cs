@@ -212,7 +212,7 @@ internal static partial class Utils
     }
 
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
-    internal static string GetLatestApplicationVersionNumber(ApplicationType applicationTypeName, string branchName = "master")
+    internal static string GetLatestApplicationVersionNumber(ApplicationType applicationTypeName, string branchName)
     {
         if (!Enum.IsDefined(applicationTypeName))
             throw new ArgumentOutOfRangeException(nameof(applicationTypeName), Resources.Utils_Not_a_valid_application_name);

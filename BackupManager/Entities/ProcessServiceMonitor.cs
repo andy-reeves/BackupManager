@@ -28,6 +28,11 @@ public class ProcessServiceMonitor
     public ApplicationType ApplicationType { get; set; }
 
     /// <summary>
+    ///     The branch name to use to check the current available version. Defaults to 'master'.
+    /// </summary>
+    public string BranchName { get; set; } = "master";
+
+    /// <summary>
     ///     The Url to monitor
     /// </summary>
     public string Url { get; set; }
