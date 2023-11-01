@@ -300,4 +300,7 @@
   <data name="Utils_Not_a_valid_application_name" xml:space="preserve">
     <value>Not a valid application name</value>
   </data>
+  <data name="Main_UpdateOldestBackupDiskNDaysAgo" xml:space="preserve">
+    <value>{0:n0} day{1} ago</value>
+  </data>
 </root>

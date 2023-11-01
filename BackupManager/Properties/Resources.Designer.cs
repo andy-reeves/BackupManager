@@ -556,6 +556,15 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0:n0} day{1} ago.
+        /// </summary>
+        internal static string Main_UpdateOldestBackupDiskNDaysAgo {
+            get {
+                return ResourceManager.GetString("Main_UpdateOldestBackupDiskNDaysAgo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Backup = {0}.
         /// </summary>
         internal static string Main_UpdateScheduledBackupButton {
