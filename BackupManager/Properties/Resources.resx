@@ -241,7 +241,7 @@
     <value>Directory scan skipped. It will be scanned again in {0}</value>
   </data>
   <data name="Main_Saved" xml:space="preserve">
-    <value>Saved</value>
+    <value>Saved.</value>
   </data>
   <data name="Main_Checking" xml:space="preserve">
     <value>Checking {0}</value>

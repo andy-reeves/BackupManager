@@ -447,7 +447,7 @@ internal sealed partial class Main
                 > 99 => 99,
                 _ => progress
             };
-            textToUse = $"{text}     {progress}%";
+            textToUse = $"{text} - {progress}%";
         }
         else
         {

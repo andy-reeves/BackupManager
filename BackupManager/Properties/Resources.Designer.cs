@@ -439,7 +439,7 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Saved.
+        ///   Looks up a localized string similar to Saved..
         /// </summary>
         internal static string Main_Saved {
             get {
