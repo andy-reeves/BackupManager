@@ -1640,14 +1640,14 @@ internal static partial class Utils
     internal static void TraceIn()
     {
         var methodName = GetFullyQualifiedCurrentMethodName();
-        System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} enter");
+        Trace($"{methodName} enter");
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     internal static void TraceIn(params object[] parameters)
     {
         var methodName = GetFullyQualifiedCurrentMethodName();
-        System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} enter");
+        Trace($"{methodName} enter");
 
         for (var index = 0; index < parameters.Length; index++)
         {
@@ -1663,15 +1663,15 @@ internal static partial class Utils
 
         if (t is IEnumerable array)
         {
-            System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} exit {text}");
+            Trace($"{methodName} exit {text}");
 
             foreach (var value in array)
             {
-                System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} exit {value}");
+                Trace($"{methodName} exit {value}");
             }
         }
         else
-            System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} exit {t} {text}");
+            Trace($"{methodName} exit {t} {text}");
         return t;
     }
 
@@ -1679,7 +1679,7 @@ internal static partial class Utils
     internal static T TraceOut<T>(string text = "")
     {
         var methodName = GetFullyQualifiedCurrentMethodName();
-        System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} exit {text}");
+        Trace($"{methodName} exit {text}");
         return default;
     }
 
@@ -1687,7 +1687,7 @@ internal static partial class Utils
     internal static string TraceOut(string value)
     {
         var methodName = GetFullyQualifiedCurrentMethodName();
-        System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} exit {value}");
+        Trace($"{methodName} exit {value}");
         return value;
     }
 
@@ -1695,17 +1695,18 @@ internal static partial class Utils
     internal static void TraceOut()
     {
         var methodName = GetFullyQualifiedCurrentMethodName();
-        System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} exit");
+        Trace($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} exit");
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     internal static void Trace(string value)
     {
         var textArrayToWrite = value.Split('\n');
+        var threadId = Environment.CurrentManagedThreadId;
 
         foreach (var line in textArrayToWrite.Where(static line => line.HasValue()))
         {
-            System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {line}");
+            System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {threadId} : {line}");
         }
     }
 
