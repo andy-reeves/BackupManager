@@ -116,7 +116,6 @@ internal sealed partial class Main
             }
             SetupDailyTrigger(mediaBackup.Config.ScheduledBackupOnOff);
             SetupFileWatchers();
-            UpdateOldestBackupDisk();
             UpdateUI_Tick(null, null);
             Utils.TraceOut();
         }

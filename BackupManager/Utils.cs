@@ -212,7 +212,7 @@ internal static partial class Utils
     }
 
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
-    internal static string GetLatestApplicationVersionNumber(ApplicationType applicationTypeName, string branchName)
+    internal static string GetLatestApplicationVersionNumber(ApplicationType applicationTypeName, string branchName = "master")
     {
         if (!Enum.IsDefined(applicationTypeName))
             throw new ArgumentOutOfRangeException(nameof(applicationTypeName), Resources.Utils_Not_a_valid_application_name);
@@ -253,6 +253,7 @@ internal static partial class Utils
                     return GitHubVersionNumberParser(
                         $"https://raw.githubusercontent.com/morpheus65535/bazarr/{branchName}/libs/requests_oauthlib/__init__.py", "__version__", "=",
                         1);
+                case ApplicationType.Unknown:
                 default:
                     throw new ArgumentOutOfRangeException(nameof(applicationTypeName), applicationTypeName, null);
             }

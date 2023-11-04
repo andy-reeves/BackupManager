@@ -601,6 +601,7 @@ internal sealed partial class Main : Form
             x.Text = trigger == null || !updateUITimer.Enabled ? string.Empty : trigger.TimeToNextTrigger().ToString(Resources.DateTime_TimeFormat));
         directoriesToScanTextBox.Invoke(x => x.Text = mediaBackup.Watcher.DirectoriesToScan.Count.ToString());
         fileChangesDetectedTextBox.Invoke(x => x.Text = mediaBackup.Watcher.FileSystemChanges.Count.ToString());
+        UpdateOldestBackupDisk();
     }
 
     private void FileSystemWatcher_ReadyToScan(object sender, FileSystemWatcherEventArgs e)

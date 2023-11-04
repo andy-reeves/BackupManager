@@ -137,7 +137,6 @@ internal sealed partial class Main
             Utils.LogWithPushover(BackupAction.ScanDirectory,
                 $"Oldest backup date is {days:n0} day{daysText} ago on {oldestFileDate.ToShortDateString()} on {oldestFile.Disk}");
         }
-        UpdateOldestBackupDisk();
         Utils.LogWithPushover(BackupAction.ScanDirectory, $"{notOnBackupDisk.Length:n0} files to backup at {Utils.FormatSize(fileSizeToCopy)}");
         Utils.LogWithPushover(BackupAction.ScanDirectory, "Completed");
         return Utils.TraceOut(true);
@@ -149,8 +148,10 @@ internal sealed partial class Main
         if (oldestFile == null) return;
 
         var days = DateTime.Today.Subtract(DateTime.Parse(oldestFile.DiskChecked)).Days;
-        oldestBackupDiskTextBox.Text = oldestFile.Disk;
-        oldestBackupDiskAgeTextBox.Text = string.Format(Resources.Main_UpdateOldestBackupDiskNDaysAgo, days, days == 1 ? string.Empty : "s");
+        oldestBackupDiskTextBox.Invoke(x => x.Text = oldestFile.Disk);
+
+        oldestBackupDiskAgeTextBox.Invoke(x =>
+            x.Text = string.Format(Resources.Main_UpdateOldestBackupDiskNDaysAgo, days, days == 1 ? string.Empty : "s"));
     }
 
     private void RootDirectoryChecks(string rootDirectory)
