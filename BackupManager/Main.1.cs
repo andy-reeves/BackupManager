@@ -98,14 +98,9 @@ internal sealed partial class Main
             UpdateScheduledBackupButton();
             UpdateSpeedTestDisksButton();
 
-            if (mediaBackup.Config.MonitoringOnOff)
-            {
-                // we switch it off and force the button to be clicked to turn it on again
-                mediaBackup.Config.MonitoringOnOff = false;
-#if !DEBUG
-                MonitoringButton_Click(null, null);
-#endif
-            }
+            // we switch it off and force the button to be clicked to turn it on again
+            mediaBackup.Config.MonitoringOnOff = !mediaBackup.Config.MonitoringOnOff;
+            MonitoringButton_Click(null, null);
             UpdateCurrentBackupDiskInfo(mediaBackup.GetBackupDisk(backupDiskTextBox.Text));
 
             if (mediaBackup.Config.ScheduledBackupRunOnStartup)
