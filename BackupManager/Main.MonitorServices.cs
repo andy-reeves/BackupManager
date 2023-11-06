@@ -100,6 +100,8 @@ internal sealed partial class Main
         // all services checked so now just check for new versions and report
         foreach (var monitor in mediaBackup.Config.Monitors)
         {
+            if (monitor.ApplicationType == ApplicationType.Unknown) continue;
+
             var installedVersion = Utils.GetApplicationVersionNumber(monitor.ApplicationType);
             var availableVersion = Utils.GetLatestApplicationVersionNumber(monitor.ApplicationType);
 
