@@ -310,6 +310,9 @@ internal static partial class Utils
                 applicationPath = Environment.ExpandEnvironmentVariables(applicationPath);
                 return File.ReadAllText(applicationPath).Trim().TrimStart('v');
             }
+
+            // ReSharper disable once RedundantEnumCaseLabelForDefaultSection
+            case ApplicationType.Unknown:
             default:
                 throw new ArgumentOutOfRangeException(nameof(applicationTypeName), applicationTypeName, null);
         }

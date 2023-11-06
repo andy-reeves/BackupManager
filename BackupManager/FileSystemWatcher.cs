@@ -420,32 +420,26 @@ internal sealed class FileSystemWatcher
             // OR
             // if its a directory or NOT a file
             // add the directory path
-
-            // WE DON'T do this now - if its not a directory either then use its full path and its parent
-            List<FileSystemEntry> directoriesToScan = new();
+            var directoryToScan = string.Empty;
 
             if (File.Exists(fileOrDirectoryChange.Path) || !Directory.Exists(fileOrDirectoryChange.Path))
-                directoriesToScan.Add(new FileSystemEntry(new FileInfo(fileOrDirectoryChange.Path).DirectoryName));
+                directoryToScan = new FileInfo(fileOrDirectoryChange.Path).DirectoryName;
             else if (Directory.Exists(fileOrDirectoryChange.Path) || !File.Exists(fileOrDirectoryChange.Path))
-                directoriesToScan.Add(new FileSystemEntry(fileOrDirectoryChange.Path));
+                directoryToScan = fileOrDirectoryChange.Path;
+            Utils.Trace($"directoryToScan = {directoryToScan}");
 
-            foreach (var directoryToScan in directoriesToScan)
+            if (DirectoriesToScan.Any(f => f.Path == directoryToScan))
             {
-                Utils.Trace($"directoryToScan = {directoryToScan}");
+                var fileSystemEntry = DirectoriesToScan.First(f => f.Path == directoryToScan);
+                if (fileOrDirectoryChange.ModifiedDateTime <= fileSystemEntry.ModifiedDateTime) continue;
 
-                if (DirectoriesToScan.Any(f => f.Path == directoryToScan.Path))
-                {
-                    var fileSystemEntry = DirectoriesToScan.First(f => f.Path == directoryToScan.Path);
-                    if (fileOrDirectoryChange.ModifiedDateTime <= fileSystemEntry.ModifiedDateTime) continue;
-
-                    Utils.Trace($"Updating ModifiedDateTime to {fileOrDirectoryChange.ModifiedDateTime}");
-                    fileSystemEntry.ModifiedDateTime = fileOrDirectoryChange.ModifiedDateTime;
-                }
-                else
-                {
-                    Utils.Trace("Adding to collection");
-                    DirectoriesToScan.Add(new FileSystemEntry(directoryToScan.Path, fileOrDirectoryChange.ModifiedDateTime));
-                }
+                Utils.Trace($"Updating ModifiedDateTime to {fileOrDirectoryChange.ModifiedDateTime}");
+                fileSystemEntry.ModifiedDateTime = fileOrDirectoryChange.ModifiedDateTime;
+            }
+            else
+            {
+                Utils.Trace("Adding to collection");
+                DirectoriesToScan.Add(new FileSystemEntry(directoryToScan, fileOrDirectoryChange.ModifiedDateTime));
             }
         }
         if (DirectoriesToScan.Count > 0) scanDirectoriesTimer.Start();
