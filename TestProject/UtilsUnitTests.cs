@@ -50,7 +50,7 @@ public sealed class UtilsUnitTests
     public void GetVersionNumber()
     {
         Assert.Equal("1.3.1", Utils.GetApplicationVersionNumber(ApplicationType.Bazarr));
-        Assert.Equal("1.32.7.7621", Utils.GetApplicationVersionNumber(ApplicationType.PlexPass));
+        Assert.Equal("1.32.8.7639", Utils.GetApplicationVersionNumber(ApplicationType.PlexPass));
         Assert.Equal("1.9.4.4039", Utils.GetApplicationVersionNumber(ApplicationType.Prowlarr));
         Assert.Equal("5.0.3.8127", Utils.GetApplicationVersionNumber(ApplicationType.Radarr));
         Assert.Equal("4.1.0", Utils.GetApplicationVersionNumber(ApplicationType.SABnzbd));

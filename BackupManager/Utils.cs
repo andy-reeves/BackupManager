@@ -253,6 +253,8 @@ internal static partial class Utils
                     return GitHubVersionNumberParser(
                         $"https://raw.githubusercontent.com/morpheus65535/bazarr/{branchName}/libs/requests_oauthlib/__init__.py", "__version__", "=",
                         1);
+
+                // ReSharper disable once RedundantEnumCaseLabelForDefaultSection
                 case ApplicationType.Unknown:
                 default:
                     throw new ArgumentOutOfRangeException(nameof(applicationTypeName), applicationTypeName, null);
@@ -1916,9 +1918,11 @@ internal static partial class Utils
     /// </summary>
     /// <param name="installedVersion"></param>
     /// <param name="availableVersion"></param>
-    /// <returns></returns>
+    /// <returns>False if either are Null</returns>
     internal static bool VersionIsNewer(string installedVersion, string availableVersion)
     {
+        if (string.IsNullOrEmpty(installedVersion) || string.IsNullOrEmpty(availableVersion)) return false;
+
         var installed = new Version(installedVersion);
         var available = new Version(availableVersion);
         return installed.CompareTo(available) < 0;
