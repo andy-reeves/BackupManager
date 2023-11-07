@@ -279,12 +279,6 @@ internal static partial class Utils
            ProgramFiles(x86)=C:\Program Files (x86)
            ProgramW6432=C:\Program Files
         */
-        Trace($"%ProgramData% = {Environment.GetEnvironmentVariable("ProgramData")}");
-        Trace($"%ProgramFiles% = {Environment.GetEnvironmentVariable("ProgramFiles")}");
-        Trace($"%ProgramFiles(x86)% = {Environment.GetEnvironmentVariable("ProgramFiles(x86)")}");
-        Trace($"%ProgramW6432% = {Environment.GetEnvironmentVariable("ProgramW6432")}");
-        Trace($"%SystemDrive% = {Environment.GetEnvironmentVariable("SystemDrive")}");
-        Trace($"%PROCESSOR_ARCHITECTURE% = {Environment.GetEnvironmentVariable("PROCESSOR_ARCHITECTURE")}");
 
         switch (applicationTypeName)
         {
@@ -1701,7 +1695,7 @@ internal static partial class Utils
     internal static void TraceOut()
     {
         var methodName = GetFullyQualifiedCurrentMethodName();
-        Trace($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {methodName} exit");
+        Trace($"{methodName} exit");
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
