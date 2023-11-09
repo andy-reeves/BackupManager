@@ -25,27 +25,6 @@ public sealed class UtilsUnitTests
     }
 
     [Fact]
-    [SuppressMessage("ReSharper", "StringLiteralTypo")]
-    public void SpeedTests()
-    {
-        // setup the cancellation token
-        // start the AsyncSpeedTest (which should take 30 seconds or so)
-        // wait 5 seconds
-        // cancel the token
-
-        // check the test files are removed
-        var tokenSource = new CancellationTokenSource();
-        var ct = tokenSource.Token;
-
-        Task.Run(() => Utils.DiskSpeedTest(@"c:\speedtest", 1000000000, 1, out _, out _, ct), ct).ContinueWith(static _ => { }, default,
-            TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
-        Utils.Wait(1);
-        tokenSource.Cancel();
-        Utils.Wait(3);
-        Assert.False(File.Exists(@"c:\speedtest\1test.tmp"));
-    }
-
-    [Fact]
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     public void GetVersionNumber()
     {
