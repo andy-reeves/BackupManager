@@ -88,9 +88,9 @@ public sealed class UtilsUnitTests
     public void FormatTimeSpanFromSeconds()
     {
         var a = Utils.FormatTimeSpan(new TimeSpan(0, 0, 300));
-        Assert.True(a == "5 minutes");
+        Assert.Equal("5 minutes", a);
         a = Utils.FormatTimeSpan(new TimeSpan(0, 0, 90000));
-        Assert.True(a == "a day or so");
+        Assert.Equal("a day or so", a);
     }
 
     [Fact]
@@ -99,20 +99,20 @@ public sealed class UtilsUnitTests
     {
         var a = Utils.GetRootPath(@"\\nas1\assets1\_TV");
         Assert.NotNull(a);
-        Assert.True(a == @"\\nas1\assets1");
+        Assert.Equal(@"\\nas1\assets1", a);
         a = Utils.GetRootPath(@"\\nas1\assets1\_TV\Show1\Season 1\Episode1.mkv");
         Assert.NotNull(a);
-        Assert.True(a == @"\\nas1\assets1");
+        Assert.Equal(@"\\nas1\assets1", a);
         var path = Path.Combine(Path.GetTempPath(), "Folder1");
         Utils.EnsureDirectoriesForDirectoryPath(path);
         var file1 = Path.Combine(path, "test.tmp");
         CreateFile(file1);
         a = Utils.GetRootPath(path);
         Assert.NotNull(a);
-        Assert.True(a == @"C:\");
+        Assert.Equal(@"C:\", a);
         a = Utils.GetRootPath(file1);
         Assert.NotNull(a);
-        Assert.True(a == @"C:\");
+        Assert.Equal(@"C:\", a);
         File.Delete(file1);
         Directory.Delete(path);
     }
@@ -129,22 +129,50 @@ public sealed class UtilsUnitTests
     {
         var a = Utils.GetIndexFolder(@"\\nas1\assets1\_TV");
         Assert.NotNull(a);
-        Assert.True(a == "_TV");
+        Assert.Equal("_TV", a);
     }
 
     [Fact]
     public void FormatTimeFromSeconds()
     {
         var a = Utils.FormatTimeFromSeconds(300);
-        Assert.True(a == "5 minutes");
+        Assert.Equal("5-6 minutes", a);
         a = Utils.FormatTimeFromSeconds(100);
-        Assert.True(a == "100 seconds");
+        Assert.Equal("1-2 minutes", a);
         a = Utils.FormatTimeFromSeconds(306);
-        Assert.True(a == "5 minutes");
+        Assert.Equal("5-6 minutes", a);
         a = Utils.FormatTimeFromSeconds(3900);
-        Assert.True(a == "1 hour");
+        Assert.Equal("1-2 hours", a);
         a = Utils.FormatTimeFromSeconds(90000);
-        Assert.True(a == "a day or so");
+        Assert.Equal("a day or more", a);
+        a = Utils.FormatTimeFromSeconds(42);
+        Assert.Equal("42 seconds", a);
+        a = Utils.FormatTimeFromSeconds(1);
+        Assert.Equal("1 second", a);
+        a = Utils.FormatTimeFromSeconds(61);
+        Assert.Equal("1-2 minutes", a);
+        a = Utils.FormatTimeFromSeconds(110);
+        Assert.Equal("1-2 minutes", a);
+        a = Utils.FormatTimeFromSeconds(60 * 60 * 1);
+        Assert.Equal("1-2 hours", a);
+        a = Utils.FormatTimeFromSeconds(60 * 60 * 2);
+        Assert.Equal("2-3 hours", a);
+        a = Utils.FormatTimeFromSeconds(60 * 60 * 3);
+        Assert.Equal("3-4 hours", a);
+        a = Utils.FormatTimeFromSeconds(60 * 60 * 4);
+        Assert.Equal("4-5 hours", a);
+        a = Utils.FormatTimeFromSeconds(60 * 60 * 5);
+        Assert.Equal("5-6 hours", a);
+        a = Utils.FormatTimeFromSeconds(60 * 60 * 6);
+        Assert.Equal("6-7 hours", a);
+        a = Utils.FormatTimeFromSeconds(60 * 60 * 7);
+        Assert.Equal("7-8 hours", a);
+        a = Utils.FormatTimeFromSeconds(60 * 60 * 10);
+        Assert.Equal("10-11 hours", a);
+        a = Utils.FormatTimeFromSeconds(60 * 60 * 15);
+        Assert.Equal("15-16 hours", a);
+        a = Utils.FormatTimeFromSeconds(60 * 60 * 24);
+        Assert.Equal("a day or more", a);
     }
 
     [Fact]

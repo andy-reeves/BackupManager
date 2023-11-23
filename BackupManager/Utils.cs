@@ -1394,13 +1394,69 @@ internal static partial class Utils
     /// <returns>A formatted time ready for display with a suffix</returns>
     internal static string FormatTimeFromSeconds(int seconds)
     {
+        /*
+           xx seconds
+           <60 "xx minutes"
+           <120 "1-2 hours"
+           <240 "3-4 hours"
+           <300 "4-5 hours"
+           <360 "5-6 hours"
+           <420 "6-7 hours"
+           <480 "7-8 hours"
+           "more than 10 hours"
+           "more than 15 hours"
+           "more than a day"
+
+ var a = Utils.FormatTimeFromSeconds(300);
+           Assert.True(a == "5 minutes");
+           a = Utils.FormatTimeFromSeconds(100);
+           Assert.True(a == "100 seconds");
+           a = Utils.FormatTimeFromSeconds(306);
+           Assert.True(a == "5 minutes");
+           a = Utils.FormatTimeFromSeconds(3900);
+           Assert.True(a == "1 hour");
+           a = Utils.FormatTimeFromSeconds(90000);
+           Assert.True(a == "a day or so");
+           a = Utils.FormatTimeFromSeconds(42);
+           Assert.True(a == "42 seconds");
+           a = Utils.FormatTimeFromSeconds(1);
+           Assert.True(a == "1 second");
+           a = Utils.FormatTimeFromSeconds(61);
+           Assert.True(a == "1-2 minutes");
+           a = Utils.FormatTimeFromSeconds(110);
+           Assert.True(a == "1-2 minutes");
+           a = Utils.FormatTimeFromSeconds(60 * 60 * 1);
+           Assert.True(a == "1-2 hours");
+           a = Utils.FormatTimeFromSeconds(60 * 60 * 2);
+           Assert.True(a == "2-3 hours");
+           a = Utils.FormatTimeFromSeconds(60 * 60 * 3);
+           Assert.True(a == "3-4 hours");
+           a = Utils.FormatTimeFromSeconds(60 * 60 * 4);
+           Assert.True(a == "4-5 hours");
+           a = Utils.FormatTimeFromSeconds(60 * 60 * 5);
+           Assert.True(a == "5-6 hours");
+           a = Utils.FormatTimeFromSeconds(60 * 60 * 6);
+           Assert.True(a == "6-7 hours");
+           a = Utils.FormatTimeFromSeconds(60 * 60 * 7);
+           Assert.True(a == "7-8 hours");
+           a = Utils.FormatTimeFromSeconds(60 * 60 * 10);
+           Assert.True(a == "more than 10 hours");
+           a = Utils.FormatTimeFromSeconds(60 * 60 * 15);
+           Assert.True(a == "more than 15 hours");
+
+
+
+         */
+
         return seconds switch
         {
-            < 120 => $"{seconds} seconds",
-            < 3600 => $"{seconds / 60} minutes",
-            < 4000 => "1 hour",
-            < 86400 => $"{seconds / 3600} hours",
-            _ => "a day or so"
+            < 1 => "0 seconds",
+            < 2 => "1 second",
+            < 60 => $"{seconds} seconds",
+            < 61 => "1 minute",
+            < 3600 => $"{seconds / 60}-{seconds / 60 + 1} minutes",
+            < 86400 => $"{seconds / 3600}-{seconds / 3600 + 1} hours",
+            _ => "a day or more"
         };
     }
 
