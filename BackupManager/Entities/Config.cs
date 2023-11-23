@@ -84,6 +84,11 @@ public sealed class Config
     public string DirectoriesFilterRegEx { get; set; }
 
     /// <summary>
+    ///     The minimum age of changes in directories before we schedule a scan in seconds
+    /// </summary>
+    public int DirectoriesMinimumAgeBeforeScanning { get; set; }
+
+    /// <summary>
     ///     Minimum space before we throw a critical Disk space message in MB for directories
     /// </summary>
     public long DirectoriesMinimumCriticalSpace { get; set; }
@@ -102,11 +107,6 @@ public sealed class Config
     ///     How often we process the detected directory changes in seconds
     /// </summary>
     public int DirectoriesProcessChangesTimer { get; set; }
-
-    /// <summary>
-    ///     The minimum age of changes in directories before we schedule a scan in seconds
-    /// </summary>
-    public int DirectoriesMinimumAgeBeforeScanning { get; set; }
 
     /// <summary>
     ///     How often we scan the directories we've detected changes on in seconds
