@@ -574,6 +574,15 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Version Checking = {0}.
+        /// </summary>
+        internal static string Main_VersionCheckingButton_Click_ {
+            get {
+                return ResourceManager.GetString("Main_VersionCheckingButton_Click_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to determine Directory or Relative Path.
         /// </summary>
         internal static string MediaBackup_UnableToDetermineDirectoryOrRelativePath {

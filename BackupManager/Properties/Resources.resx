@@ -303,4 +303,7 @@
   <data name="Main_UpdateOldestBackupDiskNDaysAgo" xml:space="preserve">
     <value>{0:n0} day{1} ago</value>
   </data>
+  <data name="Main_VersionCheckingButton_Click_" xml:space="preserve">
+    <value>Version Checking = {0}</value>
+  </data>
 </root>

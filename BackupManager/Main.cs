@@ -738,4 +738,13 @@ internal sealed partial class Main : Form
         }
         Utils.TraceOut();
     }
+
+    private void VersionCheckingButton_Click(object sender, EventArgs e)
+    {
+        Utils.TraceIn();
+        mediaBackup.Config.MonitoringCheckLatestVersions = !mediaBackup.Config.MonitoringCheckLatestVersions;
+
+        versionCheckingButton.Text = string.Format(Resources.Main_VersionCheckingButton_Click_,
+            mediaBackup.Config.MonitoringCheckLatestVersions ? Resources.Main_ON : Resources.Main_OFF);
+    }
 }

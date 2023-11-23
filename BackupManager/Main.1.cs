@@ -112,6 +112,10 @@ internal sealed partial class Main
             SetupDailyTrigger(mediaBackup.Config.ScheduledBackupOnOff);
             SetupFileWatchers();
             UpdateUI_Tick(null, null);
+
+            // we switch it off and force the button to be clicked to turn it on again
+            mediaBackup.Config.MonitoringCheckLatestVersions = !mediaBackup.Config.MonitoringCheckLatestVersions;
+            VersionCheckingButton_Click(null, null);
             Utils.TraceOut();
         }
         catch (Exception ex)

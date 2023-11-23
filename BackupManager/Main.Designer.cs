@@ -122,6 +122,7 @@
             oldestBackupDiskAgeTextBox = new System.Windows.Forms.TextBox();
             oldestBackupDiskTextBox = new System.Windows.Forms.TextBox();
             label16 = new System.Windows.Forms.Label();
+            versionCheckingButton = new System.Windows.Forms.Button();
             pushoverGroupBox.SuspendLayout();
             groupBox2.SuspendLayout();
             listFilesInDirectoryGroupBox.SuspendLayout();
@@ -1137,11 +1138,24 @@
             label16.TabIndex = 94;
             label16.Text = "Oldest backup disk";
             // 
+            // versionCheckingButton
+            // 
+            versionCheckingButton.Location = new System.Drawing.Point(872, 395);
+            versionCheckingButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            versionCheckingButton.Name = "versionCheckingButton";
+            versionCheckingButton.Size = new System.Drawing.Size(232, 27);
+            versionCheckingButton.TabIndex = 97;
+            versionCheckingButton.Text = "Version Checking = OFF";
+            toolTip.SetToolTip(versionCheckingButton, "Starts the file watchers");
+            versionCheckingButton.UseVisualStyleBackColor = true;
+            versionCheckingButton.Click += VersionCheckingButton_Click;
+            // 
             // Main
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1416, 479);
+            Controls.Add(versionCheckingButton);
             Controls.Add(oldestBackupDiskAgeTextBox);
             Controls.Add(oldestBackupDiskTextBox);
             Controls.Add(label16);
@@ -1308,6 +1322,7 @@
         private System.Windows.Forms.TextBox oldestBackupDiskAgeTextBox;
         private System.Windows.Forms.TextBox oldestBackupDiskTextBox;
         private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Button versionCheckingButton;
     }
 }
 
