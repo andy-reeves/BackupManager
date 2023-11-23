@@ -19,7 +19,10 @@
   <DirectoriesDaysBetweenFullScan>7</DirectoriesDaysBetweenFullScan>
 
   <!-- True and the Directories are monitored for changes and not scanned fully each day -->
-  <DirectoriesFileChangeWatchersOnOff>true</DirectoriesFileChangeWatchersOnOff>
+  <DirectoriesFileChangeWatcherOnOff>true</DirectoriesFileChangeWatcherOnOff>
+  
+  <!-- If an error occurs whilst monitoring Directories we wait for this long before attempting to Reset the Watcher in seconds (120) -->
+  <DirectoriesFileChangeWatcherRestartDelay>120</DirectoriesFileChangeWatcherRestartDelay>
 
   <!-- Only files matching this filter are used for File System scanning -->
   <DirectoriesFilterRegEx>(.*(?&lt;!\.tmp)|.*\\_Backup\\.*)$</DirectoriesFilterRegEx>

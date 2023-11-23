@@ -105,8 +105,10 @@ internal sealed partial class Main
             var installedVersion = Utils.GetApplicationVersionNumber(monitor.ApplicationType);
             var availableVersion = Utils.GetLatestApplicationVersionNumber(monitor.ApplicationType);
 
-            if (installedVersion != string.Empty && Utils.VersionIsNewer(installedVersion, availableVersion))
+            if (monitor.LogIssues && installedVersion != string.Empty && Utils.VersionIsNewer(installedVersion, availableVersion))
             {
+                monitor.LogIssues = false;
+
                 Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High,
                     $"Newer version of service {monitor.ApplicationType} is available. Version {installedVersion} is installed and {availableVersion} is available.");
             }

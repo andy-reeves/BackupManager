@@ -44,7 +44,7 @@ public sealed class FileSystemWatcherTests4
             Filter = "*.*",
             IncludeSubdirectories = true,
             ScanInterval = 1,
-            NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName, // | NotifyFilters.DirectoryName,
+            NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName,
             Directories = new[] { monitoringPath1, monitoringPath2 },
             ProcessChangesInterval = 1,
             MinimumAgeBeforeScanEventRaised = 1

@@ -73,6 +73,12 @@ public sealed class Config
     public int DirectoriesDaysBetweenFullScan { get; set; }
 
     /// <summary>
+    ///     If an error occurs whilst monitoring Directories we wait for this long before attempting to Reset the Watcher in
+    ///     seconds (120)
+    /// </summary>
+    public int DirectoriesFileChangeWatcherRestartDelay { get; set; }
+
+    /// <summary>
     ///     Minimum space before we throw a critical Disk space message in MB for directories
     /// </summary>
     public long DirectoriesMinimumCriticalSpace { get; set; }

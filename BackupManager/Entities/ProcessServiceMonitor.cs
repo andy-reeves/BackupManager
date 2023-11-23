@@ -25,6 +25,8 @@ public class ProcessServiceMonitor
     /// </summary>
     [XmlIgnore] internal readonly List<DateTime> Failures = new();
 
+    [XmlIgnore] internal bool LogIssues = true;
+
     public ApplicationType ApplicationType { get; set; }
 
     /// <summary>
