@@ -135,31 +135,33 @@ public sealed class UtilsUnitTests
     [Fact]
     public void FormatTimeFromSeconds()
     {
-        var a = Utils.FormatTimeFromSeconds(300);
-        Assert.Equal("5-6 minutes", a);
-        a = Utils.FormatTimeFromSeconds(100);
-        Assert.Equal("1-2 minutes", a);
-        a = Utils.FormatTimeFromSeconds(306);
-        Assert.Equal("5-6 minutes", a);
-        a = Utils.FormatTimeFromSeconds(3900);
-        Assert.Equal("1-2 hours", a);
-        a = Utils.FormatTimeFromSeconds(3600);
-        Assert.Equal("1 hour", a);
-        a = Utils.FormatTimeFromSeconds(90000);
-        Assert.Equal("a day or more", a);
-        a = Utils.FormatTimeFromSeconds(42);
-        Assert.Equal("42 seconds", a);
+        var a = Utils.FormatTimeFromSeconds(0);
+        Assert.Equal("0 seconds", a);
         a = Utils.FormatTimeFromSeconds(1);
         Assert.Equal("1 second", a);
+        a = Utils.FormatTimeFromSeconds(42);
+        Assert.Equal("42 seconds", a);
         a = Utils.FormatTimeFromSeconds(60);
         Assert.Equal("1 minute", a);
-        a = Utils.FormatTimeFromSeconds(0);
-        Assert.Equal("0 seconds", a);
         a = Utils.FormatTimeFromSeconds(61);
+        Assert.Equal("1-2 minutes", a);
+        a = Utils.FormatTimeFromSeconds(100);
         Assert.Equal("1-2 minutes", a);
         a = Utils.FormatTimeFromSeconds(110);
         Assert.Equal("1-2 minutes", a);
-        a = Utils.FormatTimeFromSeconds(60 * 60 * 1 + 1);
+        a = Utils.FormatTimeFromSeconds(300);
+        Assert.Equal("5-6 minutes", a);
+        a = Utils.FormatTimeFromSeconds(306);
+        Assert.Equal("5-6 minutes", a);
+        a = Utils.FormatTimeFromSeconds(3600);
+        Assert.Equal("1 hour", a);
+        a = Utils.FormatTimeFromSeconds(60 * 60 + 1);
+        Assert.Equal("60-61 minutes", a);
+        a = Utils.FormatTimeFromSeconds(3900);
+        Assert.Equal("65-66 minutes", a);
+        a = Utils.FormatTimeFromSeconds(89 * 60);
+        Assert.Equal("89-90 minutes", a);
+        a = Utils.FormatTimeFromSeconds(90 * 60);
         Assert.Equal("1-2 hours", a);
         a = Utils.FormatTimeFromSeconds(60 * 60 * 2);
         Assert.Equal("2-3 hours", a);
@@ -178,6 +180,8 @@ public sealed class UtilsUnitTests
         a = Utils.FormatTimeFromSeconds(60 * 60 * 15);
         Assert.Equal("15-16 hours", a);
         a = Utils.FormatTimeFromSeconds(60 * 60 * 24);
+        Assert.Equal("a day or more", a);
+        a = Utils.FormatTimeFromSeconds(90000);
         Assert.Equal("a day or more", a);
     }
 

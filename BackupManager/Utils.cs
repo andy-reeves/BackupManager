@@ -1402,6 +1402,7 @@ internal static partial class Utils
             < 61 => "1 minute",
             < 3600 => $"{seconds / 60}-{seconds / 60 + 1} minutes",
             < 3601 => "1 hour",
+            < 5400 => $"{seconds / 60}-{seconds / 60 + 1} minutes",
             < 86400 => $"{seconds / 3600}-{seconds / 3600 + 1} hours",
             _ => "a day or more"
         };
