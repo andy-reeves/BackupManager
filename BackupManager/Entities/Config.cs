@@ -63,20 +63,25 @@ public sealed class Config
     public long BackupDiskMinimumFreeSpaceToLeave { get; set; }
 
     /// <summary>
-    ///     True and the Directories are monitored for changes
-    /// </summary>
-    public bool DirectoriesFileChangeWatcherOnOff { get; set; }
-
-    /// <summary>
     ///     Number of days before running a full directories scan
     /// </summary>
     public int DirectoriesDaysBetweenFullScan { get; set; }
+
+    /// <summary>
+    ///     True and the Directories are monitored for changes
+    /// </summary>
+    public bool DirectoriesFileChangeWatcherOnOff { get; set; }
 
     /// <summary>
     ///     If an error occurs whilst monitoring Directories we wait for this long before attempting to Reset the Watcher in
     ///     seconds (120)
     /// </summary>
     public int DirectoriesFileChangeWatcherRestartDelay { get; set; }
+
+    /// <summary>
+    ///     The Regex used to filter file changes in the FileSystemWatcher
+    /// </summary>
+    public string DirectoriesFilterRegEx { get; set; }
 
     /// <summary>
     ///     Minimum space before we throw a critical Disk space message in MB for directories
@@ -89,16 +94,6 @@ public sealed class Config
     public int DirectoriesMinimumReadSpeed { get; set; }
 
     /// <summary>
-    ///     The Regex used to filter file changes in the FileSystemWatcher
-    /// </summary>
-    public string DirectoriesFilterRegEx { get; set; }
-
-    /// <summary>
-    ///     A PlexPass token
-    /// </summary>
-    public string PlexToken { get; set; }
-
-    /// <summary>
     ///     Minimum Write Speed in MB/s
     /// </summary>
     public int DirectoriesMinimumWriteSpeed { get; set; }
@@ -109,14 +104,14 @@ public sealed class Config
     public int DirectoriesProcessChangesTimer { get; set; }
 
     /// <summary>
-    ///     How often we scan the directories we've detected changes on in seconds
-    /// </summary>
-    public int DirectoriesScanTimer { get; set; }
-
-    /// <summary>
     ///     The minimum age of changes in directories before we schedule a scan in seconds
     /// </summary>
     public int DirectoriesMinimumAgeBeforeScanning { get; set; }
+
+    /// <summary>
+    ///     How often we scan the directories we've detected changes on in seconds
+    /// </summary>
+    public int DirectoriesScanTimer { get; set; }
 
     /// <summary>
     ///     When true check for latest versions of applications
@@ -132,6 +127,11 @@ public sealed class Config
     ///     If True the service monitoring will start when the application starts
     /// </summary>
     public bool MonitoringOnOff { get; set; }
+
+    /// <summary>
+    ///     A PlexPass token
+    /// </summary>
+    public string PlexToken { get; set; }
 
     public string PushoverAppToken { get; set; }
 
