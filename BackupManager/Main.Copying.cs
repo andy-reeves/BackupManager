@@ -180,14 +180,14 @@ internal sealed partial class Main
                 var estimatedFinishDateTime = rightNow.AddSeconds(numberOfSecondsOfCopyRemaining);
 
                 formattedEndDateTime = Resources.Main_Estimated_finish_by_ + estimatedFinishDateTime.ToString(Resources.DateTime_HHmm) +
-                                       $"in {Utils.FormatTimeFromSeconds(Convert.ToInt32(numberOfSecondsOfCopyRemaining))}";
+                                       $" in {Utils.FormatTimeFromSeconds(Convert.ToInt32(numberOfSecondsOfCopyRemaining))}";
 
                 // could be the following day
                 if (estimatedFinishDateTime.DayOfWeek != rightNow.DayOfWeek)
                 {
                     formattedEndDateTime = Resources.Main_Estimated_finish_by_tomorrow_at_ +
                                            estimatedFinishDateTime.ToString(Resources.DateTime_HHmm) +
-                                           $"in {Utils.FormatTimeFromSeconds(Convert.ToInt32(numberOfSecondsOfCopyRemaining))}";
+                                           $" in {Utils.FormatTimeFromSeconds(Convert.ToInt32(numberOfSecondsOfCopyRemaining))}";
                 }
                 UpdateEstimatedFinish(estimatedFinishDateTime);
             }
