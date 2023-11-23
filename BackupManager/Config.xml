@@ -44,13 +44,16 @@
 
   <!-- Number of seconds between checking all the directories ready to scan to see if they are old enough now (300) -->
   <DirectoriesScanTimer>20</DirectoriesScanTimer>
+   
+  <!-- When true check for latest versions of applications -->
+  <MonitoringCheckLatestVersions>true</MonitoringCheckLatestVersions>
 
   <!-- Monitor interval in seconds -->
   <MonitoringInterval>180</MonitoringInterval>
 
   <!-- When true the service monitoring starts when the app starts -->
   <MonitoringOnOff>false</MonitoringOnOff>
-
+ 
   <PlexToken>InsertYourPlexPassTokenHere</PlexToken>
 
   <PushoverAppToken>InsertYourPushoverAppTokenHere</PushoverAppToken>

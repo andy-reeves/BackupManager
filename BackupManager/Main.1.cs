@@ -423,6 +423,7 @@ internal sealed partial class Main
         cancelButton.Invoke(static x => x.Enabled = false);
         statusStrip.Invoke(_ => toolStripProgressBar.Visible = false);
         statusStrip.Invoke(_ => toolStripStatusLabel.Text = string.Empty);
+        UpdateEstimatedFinish();
     }
 
     private void UpdateStatusLabel(string text = "", int value = 0)

@@ -68,6 +68,11 @@ public sealed class Config
     public bool DirectoriesFileChangeWatcherOnOff { get; set; }
 
     /// <summary>
+    ///     When true check for latest versions of applications
+    /// </summary>
+    public bool MonitoringCheckLatestVersions { get; set; }
+
+    /// <summary>
     ///     Number of days before running a full directories scan
     /// </summary>
     public int DirectoriesDaysBetweenFullScan { get; set; }

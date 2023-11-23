@@ -97,16 +97,17 @@ internal sealed partial class Main
                 Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High, $"Failed to restart the service '{monitor.Name}'");
         }
 
-        // all services checked so now just check for new versions and report
-        foreach (var monitor in mediaBackup.Config.Monitors)
+        if (mediaBackup.Config.MonitoringCheckLatestVersions)
         {
-            if (monitor.ApplicationType == ApplicationType.Unknown) continue;
-
-            var installedVersion = Utils.GetApplicationVersionNumber(monitor.ApplicationType);
-            var availableVersion = Utils.GetLatestApplicationVersionNumber(monitor.ApplicationType);
-
-            if (monitor.LogIssues && installedVersion != string.Empty && Utils.VersionIsNewer(installedVersion, availableVersion))
+            // all services checked so now just check for new versions and report
+            foreach (var monitor in mediaBackup.Config.Monitors)
             {
+                if (monitor.ApplicationType == ApplicationType.Unknown) continue;
+
+                var installedVersion = Utils.GetApplicationVersionNumber(monitor.ApplicationType);
+                var availableVersion = Utils.GetLatestApplicationVersionNumber(monitor.ApplicationType);
+                if (!monitor.LogIssues || installedVersion == string.Empty || !Utils.VersionIsNewer(installedVersion, availableVersion)) continue;
+
                 monitor.LogIssues = false;
 
                 Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High,
