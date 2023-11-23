@@ -42,7 +42,7 @@ internal sealed partial class Main : Form
     private void FileWatcherButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        mediaBackup.Config.DirectoriesFileChangeWatchersOnOff = !mediaBackup.Config.DirectoriesFileChangeWatchersOnOff;
+        mediaBackup.Config.DirectoriesFileChangeWatcherOnOff = !mediaBackup.Config.DirectoriesFileChangeWatcherOnOff;
         SetupFileWatchers();
     }
 

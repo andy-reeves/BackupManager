@@ -36,7 +36,7 @@ internal sealed partial class Main
             if (backupFileDate.AddDays(mediaBackup.Config.DirectoriesDaysBetweenFullScan) < DateTime.Now) doFullBackup = true;
 
             // Update the master files if we've not been monitoring directories directly
-            if (!mediaBackup.Config.DirectoriesFileChangeWatchersOnOff || doFullBackup)
+            if (!mediaBackup.Config.DirectoriesFileChangeWatcherOnOff || doFullBackup)
             {
                 ScanDirectories();
                 UpdateSymbolicLinks();

@@ -65,7 +65,7 @@ public sealed class Config
     /// <summary>
     ///     True and the Directories are monitored for changes
     /// </summary>
-    public bool DirectoriesFileChangeWatchersOnOff { get; set; }
+    public bool DirectoriesFileChangeWatcherOnOff { get; set; }
 
     /// <summary>
     ///     Number of days before running a full directories scan

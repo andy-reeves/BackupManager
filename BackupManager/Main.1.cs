@@ -306,9 +306,9 @@ internal sealed partial class Main
         Utils.TraceIn();
 
         fileWatcherButton.Text = string.Format(Resources.Main_FileWatchersButton,
-            mediaBackup.Config.DirectoriesFileChangeWatchersOnOff ? Resources.Main_ON : Resources.Main_OFF);
+            mediaBackup.Config.DirectoriesFileChangeWatcherOnOff ? Resources.Main_ON : Resources.Main_OFF);
 
-        if (mediaBackup.Config.DirectoriesFileChangeWatchersOnOff)
+        if (mediaBackup.Config.DirectoriesFileChangeWatcherOnOff)
             StartFileSystemWatchers();
         else
             StopFileSystemWatchers();
