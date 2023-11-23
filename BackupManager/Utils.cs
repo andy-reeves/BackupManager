@@ -1396,9 +1396,7 @@ internal static partial class Utils
     {
         return seconds switch
         {
-            < 1 => "0 seconds",
-            < 2 => "1 second",
-            < 60 => $"{seconds} seconds",
+            < 60 => "less than 1 minute",
             < 61 => "1 minute",
             < 3600 => $"{seconds / 60}-{seconds / 60 + 1} minutes",
             < 3601 => "1 hour",

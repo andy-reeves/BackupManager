@@ -136,11 +136,11 @@ public sealed class UtilsUnitTests
     public void FormatTimeFromSeconds()
     {
         var a = Utils.FormatTimeFromSeconds(0);
-        Assert.Equal("0 seconds", a);
+        Assert.Equal("less than 1 minute", a);
         a = Utils.FormatTimeFromSeconds(1);
-        Assert.Equal("1 second", a);
+        Assert.Equal("less than 1 minute", a);
         a = Utils.FormatTimeFromSeconds(42);
-        Assert.Equal("42 seconds", a);
+        Assert.Equal("less than 1 minute", a);
         a = Utils.FormatTimeFromSeconds(60);
         Assert.Equal("1 minute", a);
         a = Utils.FormatTimeFromSeconds(61);
