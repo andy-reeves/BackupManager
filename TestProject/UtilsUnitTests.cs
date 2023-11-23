@@ -88,9 +88,9 @@ public sealed class UtilsUnitTests
     public void FormatTimeSpanFromSeconds()
     {
         var a = Utils.FormatTimeSpan(new TimeSpan(0, 0, 300));
-        Assert.Equal("5 minutes", a);
+        Assert.Equal("5-6 minutes", a);
         a = Utils.FormatTimeSpan(new TimeSpan(0, 0, 90000));
-        Assert.Equal("a day or so", a);
+        Assert.Equal("a day or more", a);
     }
 
     [Fact]
@@ -143,6 +143,8 @@ public sealed class UtilsUnitTests
         Assert.Equal("5-6 minutes", a);
         a = Utils.FormatTimeFromSeconds(3900);
         Assert.Equal("1-2 hours", a);
+        a = Utils.FormatTimeFromSeconds(3600);
+        Assert.Equal("1 hour", a);
         a = Utils.FormatTimeFromSeconds(90000);
         Assert.Equal("a day or more", a);
         a = Utils.FormatTimeFromSeconds(42);
@@ -157,7 +159,7 @@ public sealed class UtilsUnitTests
         Assert.Equal("1-2 minutes", a);
         a = Utils.FormatTimeFromSeconds(110);
         Assert.Equal("1-2 minutes", a);
-        a = Utils.FormatTimeFromSeconds(60 * 60 * 1);
+        a = Utils.FormatTimeFromSeconds(60 * 60 * 1 + 1);
         Assert.Equal("1-2 hours", a);
         a = Utils.FormatTimeFromSeconds(60 * 60 * 2);
         Assert.Equal("2-3 hours", a);
