@@ -1423,19 +1423,22 @@ internal static partial class Utils
     /// <returns>a string like x.yTB/s, xGB/s, xMB/s or xKB/s or bytes/s depending on speed</returns>
     internal static string FormatSpeed(long value)
     {
-        // if disk speed greater than 1TB/s return x.yTB/s
-        // if disk speed greater than 25GB/s return xGB/s
-        // if disk speed greater than 1GB/s return x.yGB/s
-        // if disk speed greater than 25MB/s return x.yMB/s
-        // if disk speed greater than 1MB/s return x.yyMB/s
-        // if disk speed greater than 1KB/s return xKB/s
-        // else return bytes/s
-        return value > BytesInOneTerabyte ? $"{(decimal)value / BytesInOneTerabyte:0.#} TB/s" :
-            value > 25 * (long)BytesInOneGigabyte ? $"{value / BytesInOneGigabyte:n0} GB/s" :
-            value > BytesInOneGigabyte ? $"{(decimal)value / BytesInOneGigabyte:0.#} GB/s" :
-            value > 25 * BytesInOneMegabyte ? $"{value / BytesInOneMegabyte:n0} MB/s" :
-            value > BytesInOneMegabyte ? $"{(decimal)value / BytesInOneMegabyte:0.#} MB/s" :
-            value > BytesInOneKilobyte ? $"{value / BytesInOneKilobyte:n0} KB/s" : $"{value:n0} bytes/s";
+        return value switch
+        {
+            // if disk speed greater than 1TB/s return x.yTB/s
+            // if disk speed greater than 25GB/s return xGB/s
+            // if disk speed greater than 1GB/s return x.yGB/s
+            // if disk speed greater than 25MB/s return x.yMB/s
+            // if disk speed greater than 1MB/s return x.yyMB/s
+            // if disk speed greater than 1KB/s return xKB/s
+            // else return bytes/s
+            > BytesInOneTerabyte => $"{(decimal)value / BytesInOneTerabyte:0.#} TB/s",
+            > 25 * (long)BytesInOneGigabyte => $"{value / BytesInOneGigabyte:n0} GB/s",
+            > BytesInOneGigabyte => $"{(decimal)value / BytesInOneGigabyte:0.#} GB/s",
+            > 25 * BytesInOneMegabyte => $"{value / BytesInOneMegabyte:n0} MB/s",
+            > BytesInOneMegabyte => $"{(decimal)value / BytesInOneMegabyte:0.#} MB/s",
+            _ => value > BytesInOneKilobyte ? $"{value / BytesInOneKilobyte:n0} KB/s" : $"{value:n0} bytes/s"
+        };
     }
 
     /// <summary>

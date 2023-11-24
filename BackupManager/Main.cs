@@ -746,5 +746,6 @@ internal sealed partial class Main : Form
 
         versionCheckingButton.Text = string.Format(Resources.Main_VersionCheckingButton_Click_,
             mediaBackup.Config.MonitoringCheckLatestVersions ? Resources.Main_ON : Resources.Main_OFF);
+        Utils.TraceOut();
     }
 }
