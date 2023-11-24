@@ -110,8 +110,8 @@
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$</FileDiscoveryRegEx>
-      <FileTestRegEx>(?&lt;!\.)\.(m(kv|p(4|e?g))|ts|avi|srt)$</FileTestRegEx>
-      <Message>Movies, Comedy, Concerts and TV files must not have double '.' before the extension</Message>
+      <FileTestRegEx>^(?!.*\.\.)</FileTestRegEx>
+      <Message>Movies, Comedy, Concerts and TV files must not have double '.'</Message>
       <Name>Rule 16</Name>
       <Number>16</Number>
     </FileRule>
