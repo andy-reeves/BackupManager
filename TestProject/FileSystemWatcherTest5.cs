@@ -101,15 +101,13 @@ public sealed class FileSystemWatcherTest5
     {
         Assert.Contains("MonitoringFolder3 not found", e.GetException().Message);
         test5EventsErrorCounter++;
+        if (watcher == null) return;
 
-        if (watcher != null)
-        {
-            Utils.EnsureDirectoriesForDirectoryPath(monitoringPath3DeletedAfterABit);
-            Assert.True(watcher.Reset());
-            watcher.Start();
-            Assert.True(watcher.Running);
-            test5EventsErrorCounter++;
-        }
+        Utils.EnsureDirectoriesForDirectoryPath(monitoringPath3DeletedAfterABit);
+        Assert.True(watcher.Reset());
+        watcher.Start();
+        Assert.True(watcher.Running);
+        test5EventsErrorCounter++;
     }
 
     private void FileSystemWatcher_ReadyToScan3(object? sender, FileSystemWatcherEventArgs e)

@@ -20,7 +20,7 @@ namespace BackupManager.Entities;
 [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
 [SuppressMessage("ReSharper", "UnusedMember.Global")]
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
-[DebuggerDisplay("RelativePath = {RelativePath}")]
+[DebuggerDisplay("RelativePath = {" + nameof(RelativePath) + "}")]
 [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
 public sealed class BackupFile : IEquatable<BackupFile>
 {

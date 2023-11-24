@@ -17,7 +17,7 @@ namespace BackupManager.Entities;
 [SuppressMessage("ReSharper", "UnusedMember.Global")]
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 [SuppressMessage("ReSharper", "CollectionNeverUpdated.Global")]
-[DebuggerDisplay("Message = {Message}")]
+[DebuggerDisplay("Message = {" + nameof(Message) + "}")]
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 public class FileRule : IEquatable<FileRule>
 {
