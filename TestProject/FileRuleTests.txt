@@ -180,7 +180,7 @@
 15.14 | D | False | "X:\_Music\Blood Brothers (1989)\Example 1-behindscenes.mkv"
     
 
-# Movies, Comedy, Concerts and TV files must not have double '.'
+# Movies, Comedy, Concerts and TV files must not have double '.' unless they ar ea special feature
 
 16.1  | T | False | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]..mkv"
 16.2  | T | False | "X:\_Movies\12 Angry Men (1957)\12 Angry Men [Remux-1080p]..mkv"
@@ -190,7 +190,7 @@
 16.6  | T | False | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]..mkv"
 16.7  | T | False | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].."
 16.8  | T | False | "X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1..0][h264].mkv"
-16.9  | T | False | "\\nas1\assets1\_TV\Mr Benn {tvdb-72516}\As If By Magic...The Story Behind Mr Benn-featurette.mkv"
+16.9  | T | True  | "\\nas1\assets1\_TV\Mr Benn {tvdb-72516}\As If By Magic...The Story Behind Mr Benn-featurette.mkv"
 16.10 | T | True  | "X:\_Movies\Beck 12 The Loner (2002)\Beck 12 The Loner (2002) {tmdb-263120} [WEBRip-1080p][AAC 2.0][h264].es.srt"
 16.11 | D | True  | "X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
 16.12 | D | True  | "X:\_TV (non-tvdb)\Blood Brothers (1989)\Example 1-behindscenes.mkv"
@@ -314,4 +314,4 @@
 20.5  | T | True  | "\\nas2\assets3\_Music\ABBA\More ABBA Gold\folder.jpg" 
 20.6  | T | False | "\\nas2\assets3\_Music\ABBA\More ABBA Gold\01-01 Summer Night City.mp3" 
 20.7  | T | True  | "\\nas2\assets3\_Music\ABBA\More ABBA Gold\01-101- Summer Night City.mp3" 
-
+20.8  | T | True  | "\\nas2\assets3\_Music\ABBA\More ABBA Gold\01-101- Summer Night City.m4a"

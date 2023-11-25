@@ -139,7 +139,7 @@
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_Music\\.*$</FileDiscoveryRegEx>
-      <FileTestRegEx>^.*\\(\d\d-\d{2,3}-\s.*\.mp3|(folder|back).jpg)$</FileTestRegEx>
+      <FileTestRegEx>^.*\\(\d\d-\d{2,3}-\s.*\.m(p3|4a)|(folder|back).jpg)$</FileTestRegEx>
       <Message>Music files must be named correctly</Message>
       <Name>Rule 20</Name>
       <Number>20</Number>
