@@ -110,8 +110,8 @@
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$</FileDiscoveryRegEx>
-      <FileTestRegEx>^(?!.*\.\.)</FileTestRegEx>
-      <Message>Movies, Comedy, Concerts and TV files must not have double '.'</Message>
+      <FileTestRegEx>^(?!.*\.\.)|.*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer)\.(m(kv|p(4|e?g))|avi)$</FileTestRegEx>
+      <Message>Movies, Comedy, Concerts and TV files must not have double '.' if they are not a special feature</Message>
       <Name>Rule 16</Name>
       <Number>16</Number>
     </FileRule>
