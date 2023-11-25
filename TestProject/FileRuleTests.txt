@@ -303,3 +303,15 @@
 19.20 | T | False | "\\nas2\assets4\_TV\Episodes {tvdb-123581}\Season 3\Episodes s03e08 Episode 308 [Raw-HD].ts"
 19.21 | T | False | "\\nas2\assets1\_TV\The Grand Tour {tvdb-314087}\Season 5\The Grand Tour (2016) s05e01 A Scandi Flick [WEBDL-720p].mkv"
 19.22 | T | False | "\\nas5\assets4\_TV\3rd Rock from the Sun {tvdb-72389}\Specials\3rd Rock from the Sun s00e02 Behind the Scenes [DVD].ts"
+
+
+# Music files must be named correctly
+
+20.1  | D | True  | "\\nas2\assets3\_Music\ABBA\More ABBA Gold\01-01- Summer Night City.mp3"
+20.2  | D | False | "\\nas5\assets4\_TV\3rd Rock from the Sun {tvdb-72389}\Specials\3rd Rock from the Sun s00e02 Behind the Scenes [DVD].ts"
+20.3  | T | True  | "\\nas2\assets3\_Music\ABBA\More ABBA Gold\01-01- Summer Night City.mp3"          
+20.4  | T | False | "\\nas2\assets3\_Music\ABBA\More ABBA Gold\Folder.jpg" 
+20.5  | T | True  | "\\nas2\assets3\_Music\ABBA\More ABBA Gold\folder.jpg" 
+20.6  | T | False | "\\nas2\assets3\_Music\ABBA\More ABBA Gold\01-01 Summer Night City.mp3" 
+20.7  | T | True  | "\\nas2\assets3\_Music\ABBA\More ABBA Gold\01-101- Summer Night City.mp3" 
+

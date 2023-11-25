@@ -137,6 +137,13 @@
       <Name>Rule 19</Name>
       <Number>19</Number>
     </FileRule>
+    <FileRule>
+      <FileDiscoveryRegEx>^.*\\_Music\\.*$</FileDiscoveryRegEx>
+      <FileTestRegEx>^.*\\(\d\d-\d{2,3}-\s.*\.mp3|folder.jpg)$</FileTestRegEx>
+      <Message>Nusic files must be named correctly</Message>
+      <Name>Rule 20</Name>
+      <Number>20</Number>
+    </FileRule>
   </FileRules>
 </Rules>
 <!-- ReSharper restore MarkupTextTypo -->
