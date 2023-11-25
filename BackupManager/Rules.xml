@@ -140,7 +140,7 @@
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_Music\\.*$</FileDiscoveryRegEx>
       <FileTestRegEx>^.*\\(\d\d-\d{2,3}-\s.*\.mp3|folder.jpg)$</FileTestRegEx>
-      <Message>Nusic files must be named correctly</Message>
+      <Message>Music files must be named correctly</Message>
       <Name>Rule 20</Name>
       <Number>20</Number>
     </FileRule>
