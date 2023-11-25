@@ -88,7 +88,7 @@ public sealed class UtilsUnitTests
     public void FormatTimeSpanFromSeconds()
     {
         var a = Utils.FormatTimeSpan(new TimeSpan(0, 0, 300));
-        Assert.Equal("5-6 minutes", a);
+        Assert.Equal("5 minutes", a);
         a = Utils.FormatTimeSpan(new TimeSpan(0, 0, 90000));
         Assert.Equal("a day or more", a);
     }

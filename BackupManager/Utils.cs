@@ -1394,18 +1394,19 @@ internal static partial class Utils
     /// <returns>A formatted time ready for display with a suffix</returns>
     internal static string FormatTimeFromSeconds(int seconds)
     {
-        if (seconds == 3600) return "1 hour";
-        if (seconds < 5400 && seconds > 60 && seconds % 60 == 0) return $"{seconds / 60} minutes";
-
         return seconds switch
         {
-            < 60 => "less than 1 minute",
-            < 61 => "1 minute",
-            < 3600 => $"{seconds / 60}-{seconds / 60 + 1} minutes",
-            < 3601 => "1 hour",
-            < 5400 => $"{seconds / 60}-{seconds / 60 + 1} minutes",
-            < 86400 => $"{seconds / 3600}-{seconds / 3600 + 1} hours",
-            _ => "a day or more"
+            3600 => "1 hour",
+            < 5400 and > 60 when seconds % 60 == 0 => $"{seconds / 60} minutes",
+            _ => seconds switch
+            {
+                < 60 => "less than 1 minute",
+                < 61 => "1 minute",
+                < 3600 => $"{seconds / 60}-{seconds / 60 + 1} minutes",
+                < 5400 => $"{seconds / 60}-{seconds / 60 + 1} minutes",
+                < 86400 => $"{seconds / 3600}-{seconds / 3600 + 1} hours",
+                _ => "a day or more"
+            }
         };
     }
 
