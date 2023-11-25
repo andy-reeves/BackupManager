@@ -1394,6 +1394,9 @@ internal static partial class Utils
     /// <returns>A formatted time ready for display with a suffix</returns>
     internal static string FormatTimeFromSeconds(int seconds)
     {
+        if (seconds == 3600) return "1 hour";
+        if (seconds < 5400 && seconds > 60 && seconds % 60 == 0) return $"{seconds / 60} minutes";
+
         return seconds switch
         {
             < 60 => "less than 1 minute",
