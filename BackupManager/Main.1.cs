@@ -245,8 +245,8 @@ internal sealed partial class Main
         Utils.TraceIn();
         mediaBackup.Watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName;
         mediaBackup.Watcher.Directories = mediaBackup.Config.Directories.ToArray();
-        mediaBackup.Watcher.ProcessChangesInterval = mediaBackup.Config.DirectoriesProcessChangesTimer;
-        mediaBackup.Watcher.ScanInterval = mediaBackup.Config.DirectoriesScanTimer;
+        mediaBackup.Watcher.ProcessChangesInterval = mediaBackup.Config.DirectoriesProcessChangesTimer * 1000;
+        mediaBackup.Watcher.ScanInterval = mediaBackup.Config.DirectoriesScanTimer * 1000;
         mediaBackup.Watcher.Filter = "*.*";
 
         mediaBackup.Watcher.RegexFilter =

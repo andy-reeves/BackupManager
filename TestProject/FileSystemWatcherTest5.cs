@@ -37,7 +37,7 @@ public sealed class FileSystemWatcherTest5
     public void FileSystemWatcherTest()
     {
         test5EventsCounter = 0;
-        const int waitInSeconds = 3; //3 works
+        const int waitInMilliseconds = 250;
         var monitoringPath1 = Path.Combine(Path.GetTempPath(), "Test5MonitoringFolder1");
         var monitoringPath2 = Path.Combine(Path.GetTempPath(), "Test5MonitoringFolder2");
         Utils.EnsureDirectoriesForDirectoryPath(monitoringPath1);
@@ -48,11 +48,11 @@ public sealed class FileSystemWatcherTest5
         {
             Filter = "*.*",
             IncludeSubdirectories = true,
-            ScanInterval = 1,
+            ScanInterval = 50,
             NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName,
             Directories = new[] { monitoringPath1, monitoringPath2, monitoringPath3DeletedAfterABit },
-            ProcessChangesInterval = 1,
-            MinimumAgeBeforeScanEventRaised = 1
+            ProcessChangesInterval = 50,
+            MinimumAgeBeforeScanEventRaised = 50
         };
         watcher.ReadyToScan += FileSystemWatcher_ReadyToScan3;
         watcher.Error += FileSystemWatcher_ErrorTest3;
@@ -68,7 +68,7 @@ public sealed class FileSystemWatcherTest5
         CreateFile(Path.Combine(monitoringPath1, "test1.txt"));
         CreateFile(Path.Combine(monitoringPath2, "test2.txt"));
         CreateFile(Path.Combine(monitoringPath2, "subFolder", "test3.txt"));
-        Utils.Wait(waitInSeconds);
+        Utils.Wait(waitInMilliseconds);
         Assert.True(test5EventsErrorCounter == 2);
         Assert.True(watcher.Running);
         test5ExpectedEventFolderCount = 4;
@@ -76,7 +76,7 @@ public sealed class FileSystemWatcherTest5
         CreateFile(Path.Combine(monitoringPath2, "test2.txt"));
         CreateFile(Path.Combine(monitoringPath2, "subFolder", "test3.txt"));
         CreateFile(Path.Combine(monitoringPath3DeletedAfterABit, "test4.txt"));
-        Utils.Wait(waitInSeconds);
+        Utils.Wait(waitInMilliseconds);
         Assert.True(test5EventsCounter == 1);
         Assert.True(test5EventsErrorCounter == 2);
         Assert.True(watcher.Running);

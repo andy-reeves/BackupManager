@@ -801,9 +801,9 @@ internal static partial class Utils
         SendPushoverMessage(title, priority, PushoverRetry.None, PushoverExpires.Immediately, message);
     }
 
-    internal static void Wait(int howManySecondsToWait)
+    internal static void Wait(int howManyMillisecondsToWait)
     {
-        var howLongToWait = new TimeSpan(0, 0, howManySecondsToWait);
+        var howLongToWait = TimeSpan.FromMilliseconds(howManyMillisecondsToWait);
         var sw = Stopwatch.StartNew();
 
         while (sw.Elapsed < howLongToWait) { }

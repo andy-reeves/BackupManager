@@ -28,7 +28,7 @@ public sealed class FileSystemWatcherTests
     {
         test1EventsCounter = 0;
         test1ExpectedEventFolderCount = 3;
-        const int waitInSeconds = 5;
+        const int waitInMilliseconds = 250;
         var monitoringPath1 = Path.Combine(Path.GetTempPath(), "Test1MonitoringFolder1");
         var monitoringPath2 = Path.Combine(Path.GetTempPath(), "Test1MonitoringFolder2");
         Utils.EnsureDirectoriesForDirectoryPath(monitoringPath1);
@@ -36,18 +36,18 @@ public sealed class FileSystemWatcherTests
         var watcher = new FileSystemWatcher();
         Assert.True(watcher.Filter == "*.*", nameof(watcher.Filter));
         Assert.True(watcher.IncludeSubdirectories == false, nameof(watcher.IncludeSubdirectories));
-        Assert.True(watcher.ScanInterval == 60, nameof(watcher.ScanInterval));
+        Assert.True(watcher.ScanInterval == 60_000, nameof(watcher.ScanInterval));
         Assert.True(watcher.Directories.Length == 0, nameof(watcher.Directories.Length));
         Assert.True(watcher.NotifyFilter == (NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName), nameof(watcher.NotifyFilter));
-        Assert.True(watcher.ProcessChangesInterval == 30, nameof(watcher.ProcessChangesInterval));
+        Assert.True(watcher.ProcessChangesInterval == 30_000, nameof(watcher.ProcessChangesInterval));
         Assert.True(watcher.DirectoriesToScan.Count == 0, nameof(FileSystemWatcher.DirectoriesToScan.Count));
         Assert.True(watcher.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));
         watcher.Filter = "*.*";
         watcher.IncludeSubdirectories = true;
-        watcher.ScanInterval = 1;
-        watcher.MinimumAgeBeforeScanEventRaised = 1;
+        watcher.ScanInterval = 50;
+        watcher.MinimumAgeBeforeScanEventRaised = 50;
         watcher.Directories = new[] { monitoringPath1, monitoringPath2 };
-        watcher.ProcessChangesInterval = 1;
+        watcher.ProcessChangesInterval = 50;
         watcher.ReadyToScan += FileSystemWatcher_ReadyToScan1;
         Assert.True(watcher.DirectoriesToScan.Count == 0, nameof(FileSystemWatcher.DirectoriesToScan.Count));
         Assert.True(watcher.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));
@@ -57,7 +57,7 @@ public sealed class FileSystemWatcherTests
         CreateFile(Path.Combine(monitoringPath1, "test1.txt"));
         CreateFile(Path.Combine(monitoringPath2, "test2.txt"));
         CreateFile(Path.Combine(monitoringPath2, "subFolder", "test3.txt"));
-        Utils.Wait(waitInSeconds);
+        Utils.Wait(waitInMilliseconds);
         Assert.True(test1EventsCounter == 1);
         Assert.True(watcher.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));
         Assert.True(watcher.DirectoriesToScan.Count == 0, nameof(FileSystemWatcher.DirectoriesToScan.Count));

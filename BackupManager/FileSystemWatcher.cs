@@ -36,7 +36,7 @@ internal sealed class FileSystemWatcher
 
     private NotifyFilters notifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName;
 
-    private int processChangesInterval = 30;
+    private int processChangesInterval = 30_000;
 
     private Timer processChangesTimer;
 
@@ -46,7 +46,7 @@ internal sealed class FileSystemWatcher
 
     private Timer scanDirectoriesTimer;
 
-    private int scanInterval = 60;
+    private int scanInterval = 60_000;
 
     internal bool Running { get; private set; }
 
@@ -67,13 +67,14 @@ internal sealed class FileSystemWatcher
     }
 
     /// <summary>
-    ///     Minimum time in seconds since this directory or any items changed in the directory) was last changed before we will
+    ///     Minimum time in milliseconds since this directory or any items changed in the directory) was last changed before we
+    ///     will
     ///     raise any scan directories events. Default is 300 seconds.
     /// </summary>
-    internal int MinimumAgeBeforeScanEventRaised { get; set; } = 300;
+    internal int MinimumAgeBeforeScanEventRaised { get; set; } = 300_000;
 
     /// <summary>
-    ///     Time in seconds before we process the file system changes detected and put their directories in the
+    ///     Time in milliseconds before we process the file system changes detected and put their directories in the
     ///     DirectoriesToScan collection.
     ///     many seconds. Default is 30 seconds.
     /// </summary>
@@ -86,12 +87,12 @@ internal sealed class FileSystemWatcher
             if (processChangesInterval == value) return;
 
             processChangesInterval = value;
-            if (processChangesTimer != null) processChangesTimer.Interval = value * 1000;
+            if (processChangesTimer != null) processChangesTimer.Interval = value;
         }
     }
 
     /// <summary>
-    ///     Interval in seconds between scan directory events being raised. Default is 60 seconds.
+    ///     Interval in milliseconds between scan directory events being raised. Default is 60 seconds.
     /// </summary>
     public int ScanInterval
     {
@@ -102,7 +103,7 @@ internal sealed class FileSystemWatcher
             if (scanInterval == value) return;
 
             scanInterval = value;
-            if (scanDirectoriesTimer != null) scanDirectoriesTimer.Interval = value * 1000;
+            if (scanDirectoriesTimer != null) scanDirectoriesTimer.Interval = value;
         }
     }
 
@@ -258,7 +259,7 @@ internal sealed class FileSystemWatcher
             processChangesTimer = new Timer();
             processChangesTimer.Elapsed += ProcessChangesTimerElapsed;
         }
-        processChangesTimer.Interval = ProcessChangesInterval * 1000;
+        processChangesTimer.Interval = ProcessChangesInterval;
         processChangesTimer.AutoReset = false;
         processChangesTimer.Enabled = true;
 
@@ -267,7 +268,7 @@ internal sealed class FileSystemWatcher
             scanDirectoriesTimer = new Timer();
             scanDirectoriesTimer.Elapsed += ScanDirectoriesTimerElapsed;
         }
-        scanDirectoriesTimer.Interval = ScanInterval * 1000;
+        scanDirectoriesTimer.Interval = ScanInterval;
         scanDirectoriesTimer.AutoReset = false;
         scanDirectoriesTimer.Enabled = true;
         return Utils.TraceOut(reset = true);
@@ -382,8 +383,8 @@ internal sealed class FileSystemWatcher
         Utils.TraceIn();
 
         if (DirectoriesToScan.Count > 0 &&
-            DirectoriesToScan.Count(directoryToScan => directoryToScan.ModifiedDateTime.AddSeconds(MinimumAgeBeforeScanEventRaised) < DateTime.Now) ==
-            DirectoriesToScan.Count)
+            DirectoriesToScan.Count(directoryToScan =>
+                directoryToScan.ModifiedDateTime.AddMilliseconds(MinimumAgeBeforeScanEventRaised) < DateTime.Now) == DirectoriesToScan.Count)
         {
             // All the directories are old enough so raise the ReadyToScan event
             var args = new FileSystemWatcherEventArgs(DirectoriesToScan);

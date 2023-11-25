@@ -31,7 +31,7 @@ public sealed class FileSystemWatcherTests4
     public void FileSystemWatcherTest4()
     {
         test4EventsCounter = 0;
-        const int waitInSeconds = 4; //4,5, 8 works
+        const int waitInMilliseconds = 250;
         var monitoringPath1 = Path.Combine(Path.GetTempPath(), "Test4MonitoringFolder1");
         var monitoringPath2 = Path.Combine(Path.GetTempPath(), "Test4MonitoringFolder2");
         Utils.EnsureDirectoriesForDirectoryPath(monitoringPath1);
@@ -43,11 +43,11 @@ public sealed class FileSystemWatcherTests4
         {
             Filter = "*.*",
             IncludeSubdirectories = true,
-            ScanInterval = 1,
+            ScanInterval = 50,
             NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName,
             Directories = new[] { monitoringPath1, monitoringPath2 },
-            ProcessChangesInterval = 1,
-            MinimumAgeBeforeScanEventRaised = 1
+            ProcessChangesInterval = 50,
+            MinimumAgeBeforeScanEventRaised = 50
         };
         watcher.ReadyToScan += FileSystemWatcher_ReadyToScan4;
         Assert.False(watcher.Running);
@@ -58,7 +58,7 @@ public sealed class FileSystemWatcherTests4
         test4ExpectedEventFolderCount = 2;
         CreateFile(Path.Combine(firstFileDirectoryPath, "test1.txt"));
         CreateFile(Path.Combine(secondFileDirectoryPath, "test2.txt"));
-        Utils.Wait(waitInSeconds);
+        Utils.Wait(waitInMilliseconds);
         Assert.Equal(1, test4EventsCounter);
         Assert.True(watcher.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));
         Assert.True(watcher.DirectoriesToScan.Count == 0, nameof(FileSystemWatcher.DirectoriesToScan.Count));
@@ -67,14 +67,14 @@ public sealed class FileSystemWatcherTests4
         test4ExpectedEventFolderCount = 2;
         CreateFile(Path.Combine(monitoringPath1, "NewFolder", "test1.txt"));
         CreateFile(Path.Combine(monitoringPath2, "subFolder", "test2.txt"));
-        Utils.Wait(waitInSeconds);
+        Utils.Wait(waitInMilliseconds);
         Assert.True(test4EventsCounter == 2);
         test4ExpectedEventFolderCount = 2;
 
         // now delete the files 
         Utils.FileDelete(Path.Combine(monitoringPath1, "NewFolder", "test1.txt"));
         Utils.FileDelete(Path.Combine(monitoringPath2, "subFolder", "test2.txt"));
-        Utils.Wait(waitInSeconds);
+        Utils.Wait(waitInMilliseconds);
         Assert.True(test4EventsCounter == 3);
         watcher.Stop();
         Assert.False(watcher.Running);
