@@ -101,17 +101,17 @@ internal static partial class Utils
     /// <summary>
     ///     The number of bytes in one Terabyte. 2^40 bytes.
     /// </summary>
-    private const long BytesInOneTerabyte = 1_099_511_627_776;
+    internal const long BytesInOneTerabyte = 1_099_511_627_776;
 
     /// <summary>
     ///     The number of bytes in one Gigabyte. 2^30 bytes.
     /// </summary>
-    private const int BytesInOneGigabyte = 1_073_741_824;
+    internal const int BytesInOneGigabyte = 1_073_741_824;
 
     /// <summary>
     ///     The number of bytes in one Megabyte. 2^20 bytes.
     /// </summary>
-    private const int BytesInOneMegabyte = 1_048_576;
+    internal const int BytesInOneMegabyte = 1_048_576;
 
     /// <summary>
     ///     The number of bytes in one Kilobyte. 2^10 bytes.
@@ -1331,7 +1331,8 @@ internal static partial class Utils
         if (!IsSymbolicLink(path)) return !Directory.EnumerateFileSystemEntries(path).Any();
 
         var linkTarget = new FileInfo(path).LinkTarget;
-        return linkTarget != null && (!SymbolicLinkTargetExists(path) || !Directory.GetFileSystemEntries(linkTarget).Any());
+        Debug.Assert(linkTarget != null, nameof(linkTarget) + " != null");
+        return !SymbolicLinkTargetExists(path) || !Directory.GetFileSystemEntries(linkTarget).Any();
     }
 
     /// <summary>
@@ -1342,7 +1343,8 @@ internal static partial class Utils
     private static bool SymbolicLinkTargetExists(string path)
     {
         var linkTarget = new FileInfo(path).LinkTarget;
-        return linkTarget != null && Directory.Exists(linkTarget);
+        Debug.Assert(linkTarget != null, nameof(linkTarget) + " != null");
+        return Directory.Exists(linkTarget);
     }
 
     /// <summary>

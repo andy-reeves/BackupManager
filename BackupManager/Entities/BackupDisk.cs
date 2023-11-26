@@ -125,7 +125,7 @@ public sealed class BackupDisk : IEquatable<BackupDisk>
 
         Free = availableSpace;
         Capacity = totalBytes;
-        TotalFiles = backupFiles.Count(p => p.Disk == Name);
+        TotalFiles = backupFiles?.Count(p => p.Disk == Name) ?? 0;
         return true;
     }
 

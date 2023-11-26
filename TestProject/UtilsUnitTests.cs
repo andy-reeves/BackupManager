@@ -8,6 +8,7 @@
 global using Xunit;
 
 using System.Diagnostics.CodeAnalysis;
+using System.Security.Cryptography;
 
 using BackupManager;
 using BackupManager.Entities;
@@ -22,6 +23,167 @@ public sealed class UtilsUnitTests
     {
         var mediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)), "..\\BackupManager\\MediaBackup.xml"));
         Utils.Config = mediaBackup.Config;
+    }
+
+    [Fact]
+    public void FileMove()
+    {
+        var path1 = Path.Combine(Path.GetTempPath(), "FileMove");
+        if (Directory.Exists(path1)) Directory.Delete(path1, true);
+        var file1 = Path.Combine(path1, "test1.txt");
+        var file2 = Path.Combine(path1, "test2.txt");
+        Utils.EnsureDirectoriesForDirectoryPath(path1);
+        CreateFile(file1);
+        Utils.FileMove(file1, file2);
+        Assert.False(File.Exists(file1));
+        Assert.True(File.Exists(file2));
+
+        // Delete the folders we created
+        if (Directory.Exists(path1)) Directory.Delete(path1, true);
+    }
+
+    [Fact]
+    public void FileCopy()
+    {
+        var path1 = Path.Combine(Path.GetTempPath(), "FileCopy");
+        if (Directory.Exists(path1)) Directory.Delete(path1, true);
+        var file1 = Path.Combine(path1, "test1.txt");
+        var file2 = Path.Combine(path1, "test2.txt");
+        Utils.EnsureDirectoriesForDirectoryPath(path1);
+        CreateFile(file1);
+        var result = Utils.FileCopy(file1, file2);
+        Assert.True(result);
+        Assert.True(File.Exists(file2));
+
+        // Delete the folders we created
+        if (Directory.Exists(path1)) Directory.Delete(path1, true);
+    }
+
+    [Fact]
+    public void ConvertMBtoByte()
+    {
+        Assert.Equal(23 * 1024 * 1024, Utils.ConvertMBtoBytes(23));
+    }
+
+    [Fact]
+    public void IsDirectoryEmpty()
+    {
+        var path1 = Path.Combine(Path.GetTempPath(), "IsDirectoryEmpty");
+        var path2 = Path.Combine(Path.GetTempPath(), "IsDirectoryEmpty2");
+        if (Directory.Exists(path1)) Directory.Delete(path1, true);
+        if (Directory.Exists(path2)) Directory.Delete(path2, true);
+        var file1 = Path.Combine(path1, "test1.txt");
+        Utils.EnsureDirectoriesForDirectoryPath(path1);
+        Assert.True(Utils.IsDirectoryEmpty(path1));
+        Assert.False(Utils.IsDirectoryEmpty(path1 + "bob"));
+        CreateFile(file1);
+        Directory.CreateSymbolicLink(path2, path1);
+        Assert.False(Utils.IsDirectoryEmpty(path1));
+        Assert.False(Utils.IsDirectoryEmpty(path2));
+
+        // Delete the folders we created
+        if (Directory.Exists(path1)) Directory.Delete(path1, true);
+        Assert.True(Utils.IsDirectoryEmpty(path2));
+        if (Directory.Exists(path2)) Directory.Delete(path2, true);
+    }
+
+    [Fact]
+    public void ConvertGBtoByte()
+    {
+        Assert.Equal(24_696_061_952, Utils.ConvertGBtoBytes(23));
+    }
+
+    [Fact]
+    public void FormatSize()
+    {
+        Assert.Equal("22.3 MB", Utils.FormatSize(23424234));
+        Assert.Equal("2130.4 TB", Utils.FormatSize(2342423232323234));
+        Assert.Equal("25 GB", Utils.FormatSize(25 * (long)Utils.BytesInOneGigabyte + 1));
+        Assert.Equal("1 GB", Utils.FormatSize(Utils.BytesInOneGigabyte + 1));
+        Assert.Equal("25 MB", Utils.FormatSize(25 * Utils.BytesInOneMegabyte + 1));
+        Assert.Equal("1 MB", Utils.FormatSize(Utils.BytesInOneMegabyte + 1));
+        Assert.Equal("1 KB", Utils.FormatSize(Utils.BytesInOneKilobyte + 1));
+        Assert.Equal("1,014 bytes", Utils.FormatSize(Utils.BytesInOneKilobyte - 10));
+    }
+
+    [Fact]
+    public void IsRunningAsAdmin()
+    {
+        Assert.True(Utils.IsRunningAsAdmin());
+    }
+
+    [Fact]
+    public void GetRemoteFileByteArray()
+    {
+        var path1 = Path.Combine(Path.GetTempPath(), "GetRemoteFileByteArray");
+        if (Directory.Exists(path1)) Directory.Delete(path1, true);
+        var file1 = Path.Combine(path1, "test1.txt");
+        Utils.EnsureDirectoriesForDirectoryPath(path1);
+        CreateFile(file1);
+
+        using (BufferedStream stream = new(File.OpenRead(file1), Utils.BytesInOneMegabyte))
+        {
+            var byteArray = Utils.GetRemoteFileByteArray(stream, Utils.BytesInOneMegabyte);
+            Assert.Equal(4, byteArray.Length);
+        }
+
+        // Delete the folders we created
+        if (Directory.Exists(path1)) Directory.Delete(path1, true);
+    }
+
+    [Fact]
+    public void GetShortMd5HashFromFile()
+    {
+        var path1 = Path.Combine(Path.GetTempPath(), "GetShortMd5HashFromFile");
+        if (Directory.Exists(path1)) Directory.Delete(path1, true);
+        var file1 = Path.Combine(path1, "test1.txt");
+        Utils.EnsureDirectoriesForDirectoryPath(path1);
+        CreateFile(file1);
+
+        using (var stream = File.OpenRead(file1))
+        {
+            Assert.Equal("098f6bcd4621d373cade4e832627b4f6", Utils.GetShortMd5HashFromFile(stream, Utils.BytesInOneMegabyte));
+        }
+        Assert.Equal("098f6bcd4621d373cade4e832627b4f6", Utils.GetShortMd5HashFromFile(file1));
+
+        // Delete the folders we created
+        if (Directory.Exists(path1)) Directory.Delete(path1, true);
+    }
+
+    [Fact]
+    public void GetHashFromFile()
+    {
+        var path1 = Path.Combine(Path.GetTempPath(), "GetHashFromFile");
+        var file1 = Path.Combine(path1, "test1.txt");
+        Utils.EnsureDirectoriesForDirectoryPath(path1);
+        CreateFile(file1);
+        var md5 = MD5.Create();
+        var hash = Utils.GetHashFromFile(file1, md5);
+        Assert.Equal("098f6bcd4621d373cade4e832627b4f6", hash);
+
+        // Delete the folders we created
+        if (Directory.Exists(path1)) Directory.Delete(path1, true);
+    }
+
+    [Fact]
+    public void GetFiles()
+    {
+        var path1 = Path.Combine(Path.GetTempPath(), "TestGetFilesFolder");
+        var file1 = Path.Combine(path1, "test1.txt");
+        CreateFile(Path.Combine(path1, "test1.txt"));
+        var files = Utils.GetFiles(path1);
+        Assert.Single(files, file1);
+        files = Utils.GetFiles(path1, "*.txt");
+        Assert.Single(files, file1);
+        files = Utils.GetFiles(path1, "*.txt", SearchOption.AllDirectories);
+        Assert.Single(files, file1);
+        files = Utils.GetFiles(path1, "*.txt", SearchOption.AllDirectories, FileAttributes.Hidden);
+        Assert.Single(files, file1);
+
+        // Delete the folders we created
+        if (Directory.Exists(path1)) Directory.Delete(path1, true);
+        files = Utils.GetFiles(path1 + "bob", "*.txt", SearchOption.AllDirectories, FileAttributes.Hidden);
+        Assert.Empty(files);
     }
 
     [Fact]
@@ -51,7 +213,7 @@ public sealed class UtilsUnitTests
         Assert.Equal("3.0.9", Utils.GetLatestApplicationVersionNumber(ApplicationType.Sonarr, "develop"));
         Assert.Equal("3.0.9", Utils.GetLatestApplicationVersionNumber(ApplicationType.Sonarr));
         Assert.Equal("1.10.5", Utils.GetLatestApplicationVersionNumber(ApplicationType.Prowlarr, "develop"));
-        Assert.Equal("5.2.3", Utils.GetLatestApplicationVersionNumber(ApplicationType.Radarr, "develop"));
+        Assert.Equal("5.2.4", Utils.GetLatestApplicationVersionNumber(ApplicationType.Radarr, "develop"));
     }
 
     [Fact]
@@ -117,6 +279,10 @@ public sealed class UtilsUnitTests
         Directory.Delete(path);
     }
 
+    /// <summary>
+    ///     This file has a hash of 098f6bcd4621d373cade4e832627b4f6 and length of 4
+    /// </summary>
+    /// <param name="filePath"></param>
     private static void CreateFile(string filePath)
     {
         Utils.EnsureDirectoriesForFilePath(filePath);

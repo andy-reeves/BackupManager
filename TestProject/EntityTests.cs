@@ -18,6 +18,36 @@ namespace TestProject;
 public sealed class EntityTests
 {
     [Fact]
+    public void BackupDisk()
+    {
+        var backupShareName = Path.Combine(@"\\", Environment.MachineName, "backup");
+        const string backupDiskName = "backup 45";
+        var backupDisk = new BackupDisk(backupDiskName, backupShareName);
+        Assert.Equal(Path.Combine(backupShareName, backupDiskName), backupDisk.BackupPath);
+        Assert.Null(backupDisk.Checked);
+        Assert.Equal(45, backupDisk.Number);
+        backupDisk.UpdateDiskChecked();
+        Assert.NotNull(backupDisk.Checked);
+        Assert.Equal(45, backupDisk.GetHashCode());
+        Assert.Equal(backupDiskName, backupDisk.ToString());
+        backupDisk.Update(null);
+        Assert.NotEqual(0, backupDisk.Capacity);
+        Assert.NotEqual(string.Empty, backupDisk.CapacityFormatted);
+        Assert.NotEqual(0, backupDisk.Free);
+        Assert.NotEqual(string.Empty, backupDisk.FreeFormatted);
+        Assert.NotEqual(string.Empty, backupDisk.LastReadSpeed);
+        Assert.NotEqual(string.Empty, backupDisk.LastWriteSpeed);
+        var backupDisk2 = new BackupDisk(backupDiskName, backupShareName);
+        Assert.Equal(backupDisk2, backupDisk);
+        Assert.False(backupDisk.Equals(null));
+        object obj = backupDisk;
+        Assert.True(obj.Equals(backupDisk2));
+        backupDisk.UpdateSpeeds(25, 30);
+        Assert.Equal("25 bytes/s", backupDisk.LastReadSpeed);
+        Assert.Equal("30 bytes/s", backupDisk.LastWriteSpeed);
+    }
+
+    [Fact]
     public void Folder()
     {
         var path = Path.GetTempFileName();
