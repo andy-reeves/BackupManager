@@ -33,7 +33,7 @@ public sealed class FileSystemWatcherTests3
     public void FileSystemWatcherTest3()
     {
         test3EventsCounter = 0;
-        const int waitInMilliseconds = 250;
+        const int waitInMilliseconds = 150;
         var monitoringPath1 = Path.Combine(Path.GetTempPath(), "Test3MonitoringFolder1");
         var monitoringPath2 = Path.Combine(Path.GetTempPath(), "Test3MonitoringFolder2");
         var monitoringPath3DeletedAfterABit = Path.Combine(Path.GetTempPath(), "Test3MonitoringFolder3");

@@ -36,8 +36,8 @@ public sealed class BackupFile : IEquatable<BackupFile>
 
     /// <summary>
     /// </summary>
-    /// <param name="fullPath"></param>
-    /// <param name="directory"></param>
+    /// <param name="fullPath">The full path to the file.</param>
+    /// <param name="directory">The directory the file is in.</param>
     public BackupFile(string fullPath, string directory)
     {
         SetFullPath(fullPath, directory);
