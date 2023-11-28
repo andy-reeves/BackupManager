@@ -31,22 +31,27 @@ public sealed class EntityTests
     [Fact]
     public void BackupFile()
     {
-        var path1 = Path.Combine(Path.GetTempPath(), "BackupFile1");
-        var path2 = Path.Combine(Path.GetTempPath(), "BackupFile2");
-        var path3 = Path.Combine(path1, "_Movies");
-        var path4 = Path.Combine(path2, "_TV");
-        if (Directory.Exists(path1)) Directory.Delete(path1, true);
-        if (Directory.Exists(path2)) Directory.Delete(path2, true);
-        var file1 = Path.Combine(path3, "test1.txt");
-        var file2 = Path.Combine(path4, "test2.txt");
-        Utils.EnsureDirectoriesForDirectoryPath(path3);
-        Utils.EnsureDirectoriesForDirectoryPath(path4);
-        CreateFile(file1);
-        CreateFile(file2);
-        var backupFile1 = new BackupFile(file1, path1);
-        Assert.Equal("_Movies\\test1.txt", backupFile1.RelativePath);
+        var pathToFiles = Path.Combine(Path.GetTempPath(), "BackupFile1");
+        var pathToBackupFile2 = Path.Combine(Path.GetTempPath(), "BackupFile2");
+        var pathToBackupShare = Path.Combine(Path.GetTempPath(), "BackupFile3");
+        var pathToBackupDisk = Path.Combine(pathToBackupShare, "backup 1000");
+        var pathToMovies = Path.Combine(pathToFiles, "_Movies");
+        var pathToTv = Path.Combine(pathToBackupFile2, "_TV");
+        var pathToMoviesOnBackupDisk = Path.Combine(pathToBackupDisk, "_Movies");
+        if (Directory.Exists(pathToFiles)) Directory.Delete(pathToFiles, true);
+        if (Directory.Exists(pathToBackupFile2)) Directory.Delete(pathToBackupFile2, true);
+        if (Directory.Exists(pathToBackupShare)) Directory.Delete(pathToBackupShare, true);
+        var pathToFile1 = Path.Combine(pathToMovies, "test1.txt");
+        var pathToFile2 = Path.Combine(pathToTv, "test2.txt");
+        var pathToFile1OnBackupDisk = Path.Combine(pathToMoviesOnBackupDisk, "test1.txt");
+        Utils.EnsureDirectoriesForDirectoryPath(pathToMovies);
+        Utils.EnsureDirectoriesForDirectoryPath(pathToTv);
+        CreateFile(pathToFile1);
+        CreateFile(pathToFile2);
+        var backupFile1 = new BackupFile(pathToFile1, pathToMovies);
+        Assert.Equal("test1.txt", backupFile1.RelativePath);
         Assert.Equal(4, backupFile1.Length);
-        var backupFile2 = new BackupFile(file2, path2);
+        var backupFile2 = new BackupFile(pathToFile2, pathToTv);
         Assert.NotEqual(backupFile2, backupFile1);
         Assert.False(backupFile1.Equals(null));
         object obj = backupFile1;
@@ -60,7 +65,7 @@ public sealed class EntityTests
         backupFile1.Flag = true;
         Assert.True(backupFile1.Flag);
         Assert.Equal(0, backupFile1.BackupDiskNumber);
-        Assert.Equal("BackupFile1\\_Movies\\test1.txt", backupFile1.Hash);
+        Assert.Equal("_Movies\\test1.txt", backupFile1.Hash);
         Assert.Equal("", backupFile1.DiskChecked);
         Assert.Equal("", backupFile1.Disk);
         backupFile1.Disk = "backup 45";
@@ -73,12 +78,18 @@ public sealed class EntityTests
         backupFile1.UpdateDiskChecked("backup 45");
         Assert.NotEqual("", backupFile1.DiskChecked);
         Assert.Equal("test1.txt", backupFile1.FileName);
-        Assert.Equal("\\\\media\\Backup\\BackupFile1\\_Movies\\test1.txt", backupFile1.BackupDiskFullPath(@"\\media\Backup"));
+        Assert.Equal(pathToFile1OnBackupDisk, backupFile1.BackupDiskFullPath(pathToBackupDisk));
         backupFile1.ClearDiskChecked();
         Assert.Equal("", backupFile1.DiskChecked);
         Assert.NotEqual(0, backupFile1.GetHashCode());
-        if (Directory.Exists(path1)) Directory.Delete(path1, true);
-        if (Directory.Exists(path2)) Directory.Delete(path2, true);
+        Utils.FileCopy(pathToFile1, pathToFile1OnBackupDisk);
+        var backupDisk = new BackupDisk("backup 1000", pathToBackupShare);
+        Assert.True(backupFile1.CheckContentHashes(backupDisk));
+        File.AppendAllText(pathToFile1OnBackupDisk, "test");
+        Assert.False(backupFile1.CheckContentHashes(backupDisk));
+        if (Directory.Exists(pathToFiles)) Directory.Delete(pathToFiles, true);
+        if (Directory.Exists(pathToBackupFile2)) Directory.Delete(pathToBackupFile2, true);
+        if (Directory.Exists(pathToBackupShare)) Directory.Delete(pathToBackupShare, true);
     }
 
     [Fact]

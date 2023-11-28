@@ -27,8 +27,6 @@ namespace BackupManager.Entities;
 [SuppressMessage("ReSharper", "CollectionNeverUpdated.Global")]
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
-
-//[XmlRoot(Namespace = "www.contoso.com", ElementName = "MediaBackup", DataType = "string", IsNullable = true)]
 [Serializable]
 [XmlRoot("MediaBackup")]
 public sealed class MediaBackup
