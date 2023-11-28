@@ -29,6 +29,75 @@ public sealed class EntityTests
     }
 
     [Fact]
+    public void MediaBackup()
+    {
+        var pathToFiles = Path.Combine(Path.GetTempPath(), "BackupFile1");
+        var pathToBackupFile2 = Path.Combine(Path.GetTempPath(), "BackupFile2");
+        var pathToBackupShare = Path.Combine(Path.GetTempPath(), "BackupFile3");
+        var pathToBackupDisk = Path.Combine(pathToBackupShare, "backup 1000");
+        var pathToMovies = Path.Combine(pathToFiles, "_Movies");
+        var pathToTv = Path.Combine(pathToBackupFile2, "_TV");
+        if (Directory.Exists(pathToFiles)) Directory.Delete(pathToFiles, true);
+        if (Directory.Exists(pathToBackupFile2)) Directory.Delete(pathToBackupFile2, true);
+        if (Directory.Exists(pathToBackupShare)) Directory.Delete(pathToBackupShare, true);
+        var pathToFile1 = Path.Combine(pathToMovies, "test1.txt");
+        var pathToFile2 = Path.Combine(pathToTv, "test2.txt");
+        Utils.EnsureDirectoriesForDirectoryPath(pathToMovies);
+        Utils.EnsureDirectoriesForDirectoryPath(pathToTv);
+        Utils.EnsureDirectoriesForDirectoryPath(pathToBackupDisk);
+        CreateFile(pathToFile1);
+        CreateFile(pathToFile2);
+
+        var mediaBackup =
+            BackupManager.Entities.MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)),
+                "..\\BackupManager\\MediaBackup.xml"));
+        mediaBackup.BackupMediaFile();
+        mediaBackup.Config.Directories.Add(pathToMovies);
+        mediaBackup.Config.Directories.Add(pathToTv);
+        Assert.True(mediaBackup.GetFoldersForPath(pathToFile1, out var directory, out var relativePath));
+        Assert.Equal(pathToMovies, directory);
+        Assert.Equal("test1.txt", relativePath);
+        var backupFile = mediaBackup.GetBackupFile(pathToFile1);
+        Assert.Equal("test1.txt", backupFile.RelativePath);
+        var f1 = mediaBackup.GetBackupFileFromContentsHashcode("098f6bcd4621d373cade4e832627b4f6");
+        Assert.Equal("test1.txt", f1.RelativePath);
+        var backupFile2 = mediaBackup.GetBackupFile(pathToFile1);
+        Assert.Equal("test1.txt", backupFile2.RelativePath);
+        backupFile2.Directory = pathToFile2;
+        var backupFile3 = mediaBackup.GetBackupFile(pathToFile2);
+        Assert.Equal("test2.txt", backupFile3.RelativePath);
+        Assert.True(mediaBackup.EnsureFile(pathToFile2));
+        Assert.Null(mediaBackup.GetParentPath(pathToFile1));
+        Assert.Equal("!*.bup", mediaBackup.GetFilters());
+        var disk = mediaBackup.GetBackupDisk(pathToBackupShare);
+        Assert.Equal("backup 1000", disk.Name);
+        disk = mediaBackup.GetBackupDisk(pathToBackupShare);
+        Assert.Equal("backup 1000", disk.Name);
+        Assert.NotNull(mediaBackup.GetBackupFileFromHashKey(@"_Movies\test1.txt"));
+        var backupFiles = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, false);
+        Assert.NotNull(backupFiles);
+        Assert.Empty(backupFiles);
+        backupFile.Disk = "backup 1000";
+        backupFiles = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, false);
+        Assert.NotNull(backupFiles);
+        Assert.Single(backupFiles);
+        var b = mediaBackup.GetOldestFile();
+        Assert.Null(b);
+        backupFile.UpdateDiskChecked("backup 1000");
+        b = mediaBackup.GetOldestFile();
+        Assert.NotNull(b);
+        mediaBackup.RemoveFile(backupFile);
+        Assert.Single(mediaBackup.BackupFiles);
+        mediaBackup.RemoveFilesWithFlag(true, false);
+        Assert.Empty(mediaBackup.BackupFiles);
+
+        // Tidy up folders
+        if (Directory.Exists(pathToFiles)) Directory.Delete(pathToFiles, true);
+        if (Directory.Exists(pathToBackupFile2)) Directory.Delete(pathToBackupFile2, true);
+        if (Directory.Exists(pathToBackupShare)) Directory.Delete(pathToBackupShare, true);
+    }
+
+    [Fact]
     public void BackupFile()
     {
         var pathToFiles = Path.Combine(Path.GetTempPath(), "BackupFile1");

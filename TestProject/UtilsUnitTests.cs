@@ -52,6 +52,7 @@ public sealed class UtilsUnitTests
         Utils.EnsureDirectoriesForDirectoryPath(path1);
         CreateFile(file1);
         var result = Utils.FileCopy(file1, file2);
+        Utils.Wait(500);
         Assert.True(result);
         Assert.True(File.Exists(file2));
 
@@ -190,7 +191,7 @@ public sealed class UtilsUnitTests
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     public void GetVersionNumber()
     {
-        Assert.Equal("1.3.1", Utils.GetApplicationVersionNumber(ApplicationType.Bazarr));
+        Assert.Equal("1.4.0", Utils.GetApplicationVersionNumber(ApplicationType.Bazarr));
         Assert.Equal("1.32.8.7639", Utils.GetApplicationVersionNumber(ApplicationType.PlexPass));
         Assert.Equal("1.10.5.4116", Utils.GetApplicationVersionNumber(ApplicationType.Prowlarr));
         Assert.Equal("5.1.3.8246", Utils.GetApplicationVersionNumber(ApplicationType.Radarr));

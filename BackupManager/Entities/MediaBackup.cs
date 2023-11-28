@@ -330,8 +330,7 @@ public sealed class MediaBackup
 
     /// <summary>
     ///     Returns the path to the parent directory of the file provided. That's the path to the first directory after a
-    ///     backup
-    ///     directory
+    ///     backup directory
     /// </summary>
     /// <param name="path"></param>
     /// <returns>Null if the Path doesn't contain a backup Directory or if its in the root of the backup directory</returns>
@@ -488,7 +487,7 @@ public sealed class MediaBackup
             if (!backupFile.DiskChecked.HasValue()) continue;
 
             var backupFileDate = DateTime.Parse(backupFile.DiskChecked);
-            if (backupFileDate >= oldestFileDate) continue;
+            if (backupFileDate >= oldestFileDate && oldestFile != null) continue;
 
             oldestFileDate = backupFileDate;
             oldestFile = backupFile;

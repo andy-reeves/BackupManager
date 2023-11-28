@@ -376,6 +376,12 @@ internal static partial class Utils
         {
             // We wait because otherwise lots of copy processes will start at once
             CopyProcess.WaitForExit();
+
+            // WaitForExit sometimes returns too early (especially for small files)
+            while (CopyProcess is { HasExited: false })
+            {
+                Wait(5);
+            }
         }
         else
             return TraceOut(false);

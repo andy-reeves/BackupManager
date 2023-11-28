@@ -11,14 +11,14 @@ namespace BackupManager.Extensions;
 
 [SuppressMessage("ReSharper", "UnusedMember.Global")]
 [SuppressMessage("ReSharper", "UnusedType.Global")]
-public static class IntegerExtensions
+internal static class IntegerExtensions
 {
     /// <summary>
     ///     Returns an ordinal string of the number.
     /// </summary>
     /// <param name="number">The number.</param>
     /// <returns>Ordinal value of positive integers, or just a string of the number if less than 1.</returns>
-    public static string ToOrdinalString(this int number)
+    internal static string ToOrdinalString(this int number)
     {
         var numberString = number.ToString();
 
