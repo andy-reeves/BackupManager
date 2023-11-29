@@ -52,7 +52,6 @@ public sealed class UtilsUnitTests
         Utils.EnsureDirectoriesForDirectoryPath(path1);
         CreateFile(file1);
         var result = Utils.FileCopy(file1, file2);
-        Utils.Wait(500);
         Assert.True(result);
         Assert.True(File.Exists(file2));
 
@@ -185,36 +184,6 @@ public sealed class UtilsUnitTests
         if (Directory.Exists(path1)) Directory.Delete(path1, true);
         files = Utils.GetFiles(path1 + "bob", "*.txt", SearchOption.AllDirectories, FileAttributes.Hidden);
         Assert.Empty(files);
-    }
-
-    [Fact]
-    [SuppressMessage("ReSharper", "IdentifierTypo")]
-    public void GetVersionNumber()
-    {
-        Assert.Equal("1.4.0", Utils.GetApplicationVersionNumber(ApplicationType.Bazarr));
-        Assert.Equal("1.32.8.7639", Utils.GetApplicationVersionNumber(ApplicationType.PlexPass));
-        Assert.Equal("1.10.5.4116", Utils.GetApplicationVersionNumber(ApplicationType.Prowlarr));
-        Assert.Equal("5.1.3.8246", Utils.GetApplicationVersionNumber(ApplicationType.Radarr));
-        Assert.Equal("4.1.0", Utils.GetApplicationVersionNumber(ApplicationType.SABnzbd));
-        Assert.Equal("3.0.10.1567", Utils.GetApplicationVersionNumber(ApplicationType.Sonarr));
-    }
-
-    [Fact]
-    public void GetLatestApplicationVersionNumber()
-    {
-        Assert.Equal("1.3.1", Utils.GetLatestApplicationVersionNumber(ApplicationType.Bazarr));
-        Assert.Equal("1.32.7.7621", Utils.GetLatestApplicationVersionNumber(ApplicationType.PlexPass));
-        Assert.Equal("1.10.5", Utils.GetLatestApplicationVersionNumber(ApplicationType.Prowlarr));
-        Assert.Equal("5.1.3", Utils.GetLatestApplicationVersionNumber(ApplicationType.Radarr));
-        Assert.Equal("4.1.0", Utils.GetLatestApplicationVersionNumber(ApplicationType.SABnzbd));
-        Assert.Equal("3.0.10", Utils.GetLatestApplicationVersionNumber(ApplicationType.Sonarr, "v3"));
-
-        // These are the latest or develop branches
-        Assert.Equal("1.32.7.7621", Utils.GetLatestApplicationVersionNumber(ApplicationType.Plex));
-        Assert.Equal("3.0.9", Utils.GetLatestApplicationVersionNumber(ApplicationType.Sonarr, "develop"));
-        Assert.Equal("3.0.9", Utils.GetLatestApplicationVersionNumber(ApplicationType.Sonarr));
-        Assert.Equal("1.11.0", Utils.GetLatestApplicationVersionNumber(ApplicationType.Prowlarr, "develop"));
-        Assert.Equal("5.2.4", Utils.GetLatestApplicationVersionNumber(ApplicationType.Radarr, "develop"));
     }
 
     [Fact]

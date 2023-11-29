@@ -38,9 +38,9 @@ public sealed class UtilsSpeedTests
 
         Task.Run(() => Utils.DiskSpeedTest(@"c:\speedtest", 1000000000, 1, out _, out _, ct), ct).ContinueWith(static _ => { }, default,
             TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
-        Utils.Wait(150);
+        Utils.Wait(100);
         tokenSource.Cancel();
-        Utils.Wait(250);
+        Utils.Wait(200);
         Assert.False(File.Exists(@"c:\speedtest\1test.tmp"));
     }
 }

@@ -370,12 +370,12 @@ internal static partial class Utils
                 Arguments = $"/H /Y \"{sourceFileName}\" \"{destFileName}\""
             }
         };
-        var returnValue = CopyProcess.Start();
+        if (!CopyProcess.Start()) return TraceOut(false);
 
-        if (returnValue)
+        try
         {
             // We wait because otherwise lots of copy processes will start at once
-            CopyProcess.WaitForExit();
+            CopyProcess?.WaitForExit();
 
             // WaitForExit sometimes returns too early (especially for small files)
             while (CopyProcess is { HasExited: false })
@@ -383,10 +383,13 @@ internal static partial class Utils
                 Wait(5);
             }
         }
-        else
-            return TraceOut(false);
 
-        return TraceOut(CopyProcess.ExitCode == 0);
+        // Occasionally the CopyProcess throws this
+        catch (InvalidOperationException)
+        {
+            return TraceOut(false);
+        }
+        return TraceOut(CopyProcess is { ExitCode: 0 });
     }
 
     /// <summary>

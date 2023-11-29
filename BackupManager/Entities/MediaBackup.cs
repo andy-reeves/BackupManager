@@ -250,7 +250,7 @@ public sealed class MediaBackup
         // if this path is already added then return it
         if (indexFolderAndRelativePath.TryGetValue(hashKey, out var backupFile))
         {
-            // consider a file a.txt that's on //nas1/assets1 in indexFolder _TV and on //nas1/assets4 in _TV too
+            // consider a file a.txt that's on //nas1/assets1/_TV and on //nas1/assets4/_TV too
             // this has same index folder and path but its a different file
             string hashOfContents;
 
