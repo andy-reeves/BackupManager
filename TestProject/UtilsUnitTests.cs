@@ -52,8 +52,8 @@ public sealed class UtilsUnitTests
         Utils.EnsureDirectoriesForDirectoryPath(path1);
         CreateFile(file1);
         var result = Utils.FileCopy(file1, file2);
-        Assert.True(result);
         Assert.True(File.Exists(file2));
+        Assert.True(result);
 
         // Delete the folders we created
         if (Directory.Exists(path1)) Directory.Delete(path1, true);
