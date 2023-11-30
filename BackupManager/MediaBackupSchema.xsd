@@ -1,13 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-
-<xs:schema id="MediaBackupSchema" targetNamespace="http://tempuri.org/MediaBackupSchema.xsd"
-           xmlns="http://tempuri.org/MediaBackupSchema.xsd"
-           xmlns:mstns="http://tempuri.org/MediaBackupSchema.xsd"
+<xs:schema id="MediaBackupSchema" targetNamespace="MediaBackupSchema.xsd"
+           xmlns="MediaBackupSchema.xsd"
+           xmlns:mstns="MediaBackupSchema.xsd"
            attributeFormDefault="unqualified" elementFormDefault="qualified"
            xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="MediaBackup">
     <xs:complexType>
-      <xs:sequence>
+      <xs:all>
         <xs:element name="BackupFiles" maxOccurs="1" minOccurs="0">
           <xs:complexType>
             <xs:sequence>
@@ -63,6 +62,21 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
+        <xs:element name="DirectoryScans">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="DirectoryScan" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="Path" maxOccurs="1" minOccurs="1" />
+                    <xs:element type="xs:dateTime" name="StartDateTime" maxOccurs="1" minOccurs="1"/>
+                    <xs:element type="xs:dateTime" name="EndDateTime" maxOccurs="1" minOccurs="1"/>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
         <xs:element name="DirectoriesToScan">
           <xs:complexType>
             <xs:sequence>
@@ -92,7 +106,7 @@
           </xs:complexType>
         </xs:element>
         <xs:element type="xs:date" name="DirectoriesLastFullScan" maxOccurs="1" minOccurs="0" />
-      </xs:sequence>
+      </xs:all>
     </xs:complexType>
   </xs:element>
 </xs:schema>

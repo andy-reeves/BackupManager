@@ -80,6 +80,7 @@ internal sealed partial class Main
 
         foreach (var directory in mediaBackup.Config.Directories)
         {
+            var scanInfo = new DirectoryScan(directory, DateTime.Now);
             UpdateStatusLabel(string.Format(Resources.Main_Scanning, directory));
 
             if (Directory.Exists(directory))
@@ -94,7 +95,9 @@ internal sealed partial class Main
                         RootDirectoryChecks(rootPath);
                         directoriesChecked.Add(rootPath);
                     }
-                    if (!ScanSingleDirectory(directory, SearchOption.AllDirectories)) return false;
+                    ScanSingleDirectory(directory, SearchOption.AllDirectories);
+                    scanInfo.EndDateTime = DateTime.Now;
+                    mediaBackup.DirectoryScans.Add(scanInfo);
                 }
                 else
                     Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"{directory} is not writable");
@@ -157,6 +160,7 @@ internal sealed partial class Main
     private void RootDirectoryChecks(string rootDirectory)
     {
         Utils.TraceIn(rootDirectory);
+#if !DEBUG
         long readSpeed = 0;
         long writeSpeed = 0;
         var filters = mediaBackup.GetFilters();
@@ -212,6 +216,7 @@ internal sealed partial class Main
             Utils.Trace($"Checking {file}");
             CheckForFilesToDelete(file);
         }
+#endif
         Utils.TraceOut();
     }
 

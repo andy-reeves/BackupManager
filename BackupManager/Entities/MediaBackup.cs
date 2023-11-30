@@ -71,10 +71,16 @@ public sealed class MediaBackup
     [XmlArrayItem("Directory")] public Collection<FileSystemEntry> DirectoriesToScan { get; set; }
 
     /// <summary>
-    ///     We use this to save the xml. Its copied from the static property before saving and after loading
+    ///     The Directories that have been changed
     /// </summary>
     [XmlArrayItem("FileSystemEntry")]
     public Collection<FileSystemEntry> DirectoryChanges { get; set; }
+
+    /// <summary>
+    ///     The Directory Scan history
+    /// </summary>
+    [XmlArrayItem("DirectoryScan")]
+    public Collection<DirectoryScan> DirectoryScans { get; set; }
 
     public string DirectoriesLastFullScan
     {
@@ -117,11 +123,7 @@ public sealed class MediaBackup
 
             Utils.Trace($"Time to validate xml was {sw.Elapsed}");
             sw.Restart();
-
-            var xRoot = new XmlRootAttribute
-            {
-                ElementName = "MediaBackup", Namespace = "http://tempuri.org/MediaBackupSchema.xsd", IsNullable = true
-            };
+            var xRoot = new XmlRootAttribute { ElementName = "MediaBackup", Namespace = "MediaBackupSchema.xsd", IsNullable = true };
             MediaBackup mediaBackup;
             XmlSerializer serializer = new(typeof(MediaBackup), xRoot);
 

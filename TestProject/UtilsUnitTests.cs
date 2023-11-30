@@ -26,6 +26,12 @@ public sealed class UtilsUnitTests
     }
 
     [Fact]
+    public void Config()
+    {
+        Utils.Config.LogParameters();
+    }
+
+    [Fact]
     public void FileMove()
     {
         var path1 = Path.Combine(Path.GetTempPath(), "FileMove");

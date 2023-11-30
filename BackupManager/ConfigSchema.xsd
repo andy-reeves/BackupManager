@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 
 <xs:schema id="ConfigSchema" attributeFormDefault="unqualified"
-           xmlns="http://tempuri.org/ConfigSchema.xsd"
-           targetNamespace="http://tempuri.org/ConfigSchema.xsd"
-           elementFormDefault="qualified" xmlns:mstns="http://tempuri.org/ConfigSchema.xsd"
+           xmlns="ConfigSchema.xsd"
+           targetNamespace="ConfigSchema.xsd"
+           elementFormDefault="qualified" xmlns:mstns="ConfigSchema.xsd"
            xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="Config">
     <xs:annotation>

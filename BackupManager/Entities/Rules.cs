@@ -34,7 +34,7 @@ public sealed class Rules
             var xsdPath = Path.Combine(Path.GetDirectoryName(path) ?? throw new InvalidOperationException(), "RulesSchema.xsd");
             if (!Utils.ValidateXml(path, xsdPath)) throw new XmlSchemaValidationException("Rules.xml failed validation");
 
-            var xRoot = new XmlRootAttribute { ElementName = "Rules", Namespace = "http://tempuri.org/RulesSchema.xsd", IsNullable = true };
+            var xRoot = new XmlRootAttribute { ElementName = "Rules", Namespace = "RulesSchema.xsd", IsNullable = true };
             XmlSerializer serializer = new(typeof(Rules), xRoot);
             using FileStream stream = new(path, FileMode.Open, FileAccess.Read);
             if (serializer.Deserialize(stream) is not Rules rules) return null;
