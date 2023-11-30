@@ -21,12 +21,6 @@ public sealed class FileSystemWatcherTests4
 
     private int test4ExpectedEventFolderCount;
 
-    private static void CreateFile(string filePath)
-    {
-        Utils.EnsureDirectoriesForFilePath(filePath);
-        File.AppendAllText(filePath, "test");
-    }
-
     [Fact]
     public void FileSystemWatcherTest4()
     {
@@ -56,8 +50,8 @@ public sealed class FileSystemWatcherTests4
 
         // Create a file in a subfolder of a monitored folder that already exists
         test4ExpectedEventFolderCount = 2;
-        CreateFile(Path.Combine(firstFileDirectoryPath, "test1.txt"));
-        CreateFile(Path.Combine(secondFileDirectoryPath, "test2.txt"));
+        Utils.CreateFile(Path.Combine(firstFileDirectoryPath, "test1.txt"));
+        Utils.CreateFile(Path.Combine(secondFileDirectoryPath, "test2.txt"));
         Utils.Wait(waitInMilliseconds);
         Assert.Equal(1, test4EventsCounter);
         Assert.True(watcher.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));
@@ -65,8 +59,8 @@ public sealed class FileSystemWatcherTests4
 
         // Create a file in a subfolder of a monitored folder that is a folder created after the monitor started
         test4ExpectedEventFolderCount = 2;
-        CreateFile(Path.Combine(monitoringPath1, "NewFolder", "test1.txt"));
-        CreateFile(Path.Combine(monitoringPath2, "subFolder", "test2.txt"));
+        Utils.CreateFile(Path.Combine(monitoringPath1, "NewFolder", "test1.txt"));
+        Utils.CreateFile(Path.Combine(monitoringPath2, "subFolder", "test2.txt"));
         Utils.Wait(waitInMilliseconds);
         Assert.True(test4EventsCounter == 2);
         test4ExpectedEventFolderCount = 2;

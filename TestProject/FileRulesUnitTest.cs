@@ -25,16 +25,6 @@ public sealed class FileRulesUnitTest
         _mediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)), "..\\BackupManager\\MediaBackup.xml"));
     }
 
-    /// <summary>
-    ///     This file has a hash of 098f6bcd4621d373cade4e832627b4f6 and length of 4
-    /// </summary>
-    /// <param name="filePath"></param>
-    private static void CreateFile(string filePath)
-    {
-        Utils.EnsureDirectoriesForFilePath(filePath);
-        File.AppendAllText(filePath, "test");
-    }
-
     [Fact]
     public void FileRuleTests3()
     {
@@ -57,7 +47,7 @@ public sealed class FileRulesUnitTest
         if (Directory.Exists(path1)) Directory.Delete(path1, true);
         var file1 = Path.Combine(path1, "test1.txt");
         Utils.EnsureDirectoriesForDirectoryPath(path1);
-        CreateFile(file1);
+        Utils.CreateFile(file1);
         Assert.Throws<ApplicationException>(static () => Rules.Load(null));
         Assert.Throws<XmlException>(() => Rules.Load(file1));
 

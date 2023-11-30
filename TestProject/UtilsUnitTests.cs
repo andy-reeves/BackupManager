@@ -33,7 +33,7 @@ public sealed class UtilsUnitTests
         var file1 = Path.Combine(path1, "test1.txt");
         var file2 = Path.Combine(path1, "test2.txt");
         Utils.EnsureDirectoriesForDirectoryPath(path1);
-        CreateFile(file1);
+        Utils.CreateFile(file1);
         Utils.FileMove(file1, file2);
         Assert.False(File.Exists(file1));
         Assert.True(File.Exists(file2));
@@ -54,7 +54,7 @@ public sealed class UtilsUnitTests
             var file2 = Path.Combine(path1, "test2.txt");
             Utils.EnsureDirectoriesForDirectoryPath(path1);
             Assert.False(File.Exists(file2));
-            CreateFile(file1);
+            Utils.CreateFile(file1);
             Assert.Equal("098f6bcd4621d373cade4e832627b4f6", Utils.GetShortMd5HashFromFile(file1));
             Assert.True(Utils.FileCopy(file1, file2));
             Assert.True(File.Exists(file2));
@@ -82,7 +82,7 @@ public sealed class UtilsUnitTests
         Utils.EnsureDirectoriesForDirectoryPath(path1);
         Assert.True(Utils.IsDirectoryEmpty(path1));
         Assert.False(Utils.IsDirectoryEmpty(path1 + "bob"));
-        CreateFile(file1);
+        Utils.CreateFile(file1);
         Directory.CreateSymbolicLink(path2, path1);
         Assert.False(Utils.IsDirectoryEmpty(path1));
         Assert.False(Utils.IsDirectoryEmpty(path2));
@@ -125,7 +125,7 @@ public sealed class UtilsUnitTests
         if (Directory.Exists(path1)) Directory.Delete(path1, true);
         var file1 = Path.Combine(path1, "test1.txt");
         Utils.EnsureDirectoriesForDirectoryPath(path1);
-        CreateFile(file1);
+        Utils.CreateFile(file1);
 
         using (BufferedStream stream = new(File.OpenRead(file1), Utils.BytesInOneMegabyte))
         {
@@ -144,7 +144,7 @@ public sealed class UtilsUnitTests
         if (Directory.Exists(path1)) Directory.Delete(path1, true);
         var file1 = Path.Combine(path1, "test1.txt");
         Utils.EnsureDirectoriesForDirectoryPath(path1);
-        CreateFile(file1);
+        Utils.CreateFile(file1);
 
         using (var stream = File.OpenRead(file1))
         {
@@ -162,7 +162,7 @@ public sealed class UtilsUnitTests
         var path1 = Path.Combine(Path.GetTempPath(), "GetHashFromFile");
         var file1 = Path.Combine(path1, "test1.txt");
         Utils.EnsureDirectoriesForDirectoryPath(path1);
-        CreateFile(file1);
+        Utils.CreateFile(file1);
         var md5 = MD5.Create();
         var hash = Utils.GetHashFromFile(file1, md5);
         Assert.Equal("098f6bcd4621d373cade4e832627b4f6", hash);
@@ -176,7 +176,7 @@ public sealed class UtilsUnitTests
     {
         var path1 = Path.Combine(Path.GetTempPath(), "TestGetFilesFolder");
         var file1 = Path.Combine(path1, "test1.txt");
-        CreateFile(Path.Combine(path1, "test1.txt"));
+        Utils.CreateFile(Path.Combine(path1, "test1.txt"));
         var files = Utils.GetFiles(path1);
         Assert.Single(files, file1);
         files = Utils.GetFiles(path1, "*.txt");
@@ -244,7 +244,7 @@ public sealed class UtilsUnitTests
         var path = Path.Combine(Path.GetTempPath(), "Folder1");
         Utils.EnsureDirectoriesForDirectoryPath(path);
         var file1 = Path.Combine(path, "test.tmp");
-        CreateFile(file1);
+        Utils.CreateFile(file1);
         a = Utils.GetRootPath(path);
         Assert.NotNull(a);
         Assert.Equal(@"C:\", a);
@@ -253,16 +253,6 @@ public sealed class UtilsUnitTests
         Assert.Equal(@"C:\", a);
         File.Delete(file1);
         Directory.Delete(path);
-    }
-
-    /// <summary>
-    ///     This file has a hash of 098f6bcd4621d373cade4e832627b4f6 and length of 4
-    /// </summary>
-    /// <param name="filePath"></param>
-    private static void CreateFile(string filePath)
-    {
-        Utils.EnsureDirectoriesForFilePath(filePath);
-        File.AppendAllText(filePath, "test");
     }
 
     [Fact]

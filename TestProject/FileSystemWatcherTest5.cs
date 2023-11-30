@@ -27,12 +27,6 @@ public sealed class FileSystemWatcherTest5
 
     private readonly string monitoringPath3DeletedAfterABit = Path.Combine(Path.GetTempPath(), "Test5MonitoringFolder3");
 
-    private static void CreateFile(string filePath)
-    {
-        Utils.EnsureDirectoriesForFilePath(filePath);
-        File.AppendAllText(filePath, "test");
-    }
-
     [Fact]
     public void FileSystemWatcherTest()
     {
@@ -65,17 +59,17 @@ public sealed class FileSystemWatcherTest5
         test5ExpectedEventFolderCount = 3;
 
         // now create the folders and file again
-        CreateFile(Path.Combine(monitoringPath1, "test1.txt"));
-        CreateFile(Path.Combine(monitoringPath2, "test2.txt"));
-        CreateFile(Path.Combine(monitoringPath2, "subFolder", "test3.txt"));
+        Utils.CreateFile(Path.Combine(monitoringPath1, "test1.txt"));
+        Utils.CreateFile(Path.Combine(monitoringPath2, "test2.txt"));
+        Utils.CreateFile(Path.Combine(monitoringPath2, "subFolder", "test3.txt"));
         Utils.Wait(waitInMilliseconds);
         Assert.True(test5EventsErrorCounter == 2);
         Assert.True(watcher.Running);
         test5ExpectedEventFolderCount = 4;
-        CreateFile(Path.Combine(monitoringPath1, "test1.txt"));
-        CreateFile(Path.Combine(monitoringPath2, "test2.txt"));
-        CreateFile(Path.Combine(monitoringPath2, "subFolder", "test3.txt"));
-        CreateFile(Path.Combine(monitoringPath3DeletedAfterABit, "test4.txt"));
+        Utils.CreateFile(Path.Combine(monitoringPath1, "test1.txt"));
+        Utils.CreateFile(Path.Combine(monitoringPath2, "test2.txt"));
+        Utils.CreateFile(Path.Combine(monitoringPath2, "subFolder", "test3.txt"));
+        Utils.CreateFile(Path.Combine(monitoringPath3DeletedAfterABit, "test4.txt"));
         Utils.Wait(waitInMilliseconds);
         Assert.True(test5EventsCounter == 1);
         Assert.True(test5EventsErrorCounter == 2);

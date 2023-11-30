@@ -18,16 +18,6 @@ namespace TestProject;
 [SuppressMessage("ReSharper", "MemberCanBeFileLocal")]
 public sealed class EntityTests
 {
-    /// <summary>
-    ///     This file has a hash of 098f6bcd4621d373cade4e832627b4f6 and length of 4
-    /// </summary>
-    /// <param name="filePath"></param>
-    private static void CreateFile(string filePath)
-    {
-        Utils.EnsureDirectoriesForFilePath(filePath);
-        File.AppendAllText(filePath, "test");
-    }
-
     [Fact]
     public void MediaBackup()
     {
@@ -47,9 +37,9 @@ public sealed class EntityTests
         Utils.EnsureDirectoriesForDirectoryPath(pathToMovies);
         Utils.EnsureDirectoriesForDirectoryPath(pathToTv);
         Utils.EnsureDirectoriesForDirectoryPath(pathToBackupDisk);
-        CreateFile(pathToFile1);
-        CreateFile(pathToFile2);
-        CreateFile(pathToFile3);
+        Utils.CreateFile(pathToFile1);
+        Utils.CreateFile(pathToFile2);
+        Utils.CreateFile(pathToFile3);
 
         var mediaBackup =
             BackupManager.Entities.MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)),
@@ -191,8 +181,8 @@ public sealed class EntityTests
         var pathToFile1OnBackupDisk = Path.Combine(pathToMoviesOnBackupDisk, "test1.txt");
         Utils.EnsureDirectoriesForDirectoryPath(pathToMovies);
         Utils.EnsureDirectoriesForDirectoryPath(pathToTv);
-        CreateFile(pathToFile1);
-        CreateFile(pathToFile2);
+        Utils.CreateFile(pathToFile1);
+        Utils.CreateFile(pathToFile2);
         var backupFile1 = new BackupFile(pathToFile1, pathToMovies);
         Assert.Equal("test1.txt", backupFile1.RelativePath);
         Assert.Equal(4, backupFile1.Length);

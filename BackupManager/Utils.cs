@@ -48,7 +48,7 @@ internal static partial class Utils
     private static partial bool GetDiskFreeSpaceEx(string lpDirectoryName, out long lpFreeBytesAvailable, out long lpTotalNumberOfBytes,
         out long lpTotalNumberOfFreeBytes);
 
-    [LibraryImport("kernel32.dll", EntryPoint = "CreateFileW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
+    [LibraryImport("kernel32.dll", EntryPoint = "Utils.CreateFileW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
     private static partial SafeFileHandle CreateFile(string fileName, uint dwDesiredAccess, FileShare dwShareMode, IntPtr securityAttrsMustBeZero,
         FileMode dwCreationDisposition, uint dwFlagsAndAttributes, IntPtr hTemplateFileMustBeZero);
 
@@ -164,6 +164,18 @@ internal static partial class Utils
     #endregion
 
     #region internal Methods and Operators
+
+#if DEBUG
+    /// <summary>
+    ///     This file has a hash of 098f6bcd4621d373cade4e832627b4f6 and length of 4 containing the text 'test'
+    /// </summary>
+    /// <param name="filePath"></param>
+    internal static void CreateFile(string filePath)
+    {
+        EnsureDirectoriesForFilePath(filePath);
+        File.AppendAllText(filePath, "test");
+    }
+#endif
 
     internal static void BackupLogFile()
     {

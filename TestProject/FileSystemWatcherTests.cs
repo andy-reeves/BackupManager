@@ -54,9 +54,9 @@ public sealed class FileSystemWatcherTests
         Assert.False(watcher.Running);
         watcher.Start();
         Assert.True(watcher.Running);
-        CreateFile(Path.Combine(monitoringPath1, "test1.txt"));
-        CreateFile(Path.Combine(monitoringPath2, "test2.txt"));
-        CreateFile(Path.Combine(monitoringPath2, "subFolder", "test3.txt"));
+        Utils.CreateFile(Path.Combine(monitoringPath1, "test1.txt"));
+        Utils.CreateFile(Path.Combine(monitoringPath2, "test2.txt"));
+        Utils.CreateFile(Path.Combine(monitoringPath2, "subFolder", "test3.txt"));
         Utils.Wait(waitInMilliseconds);
         Assert.True(test1EventsCounter == 1);
         Assert.True(watcher.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));
@@ -102,12 +102,6 @@ public sealed class FileSystemWatcherTests
         // Delete the folders we created
         if (Directory.Exists(monitoringPath1)) Directory.Delete(monitoringPath1, true);
         if (Directory.Exists(monitoringPath2)) Directory.Delete(monitoringPath2, true);
-    }
-
-    private static void CreateFile(string filePath)
-    {
-        Utils.EnsureDirectoriesForFilePath(filePath);
-        File.AppendAllText(filePath, "test");
     }
 
     private void FileSystemWatcher_ReadyToScan1(object? sender, FileSystemWatcherEventArgs e)
