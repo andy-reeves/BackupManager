@@ -142,11 +142,6 @@ internal static partial class Utils
     /// </summary>
     internal static Process CopyProcess;
 
-    /// <summary>
-    ///     The MD5 Crypto Provider
-    /// </summary>
-    private static readonly MD5 _md5 = MD5.Create();
-
 #if DEBUG
     private static readonly string _logFile =
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Debug.log");
@@ -358,7 +353,7 @@ internal static partial class Utils
 
         // ReSharper disable once CommentTypo
         // we create the destination file so xcopy knows its a file and can copy over it
-        File.WriteAllText(destFileName, "Temp file");
+        File.WriteAllText(destFileName, "Temp file"); // hash of this is 88f85bbea58fbff062050bcb2d2aafcf
 
         CopyProcess = new Process
         {
@@ -374,22 +369,39 @@ internal static partial class Utils
 
         try
         {
+            var processId = CopyProcess.Id;
+
+            // CopyProcess may be null here already if the file was very small
+            CopyProcess.WaitForExit();
+
             // We wait because otherwise lots of copy processes will start at once
-            CopyProcess?.WaitForExit();
-
             // WaitForExit sometimes returns too early (especially for small files)
-            while (CopyProcess is { HasExited: false })
-            {
-                Wait(5);
-            }
-        }
+            // So we then wait until the processID has gone completely
+            // This will throw ArgumentException if the process has stopped already
 
-        // Occasionally the CopyProcess throws this
-        catch (InvalidOperationException)
-        {
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            while (Process.GetProcessById(processId) != null)
+            {
+                Wait(1);
+            }
+
+            // We never exit here
             return TraceOut(false);
         }
-        return TraceOut(CopyProcess is { ExitCode: 0 });
+
+        // ArgumentException is thrown when the process actually stops
+        // Then we wait until the file is actually not locked anymore and the hash codes match
+        // InvalidOperationException is thrown if we access the Process and its already completed
+        catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
+        {
+            var hashSource = GetShortMd5HashFromFile(sourceFileName);
+
+            while (!IsFileAccessible(destFileName) || GetShortMd5HashFromFile(destFileName) != hashSource)
+            {
+                Wait(1);
+            }
+            return TraceOut(true);
+        }
     }
 
     /// <summary>
@@ -477,7 +489,7 @@ internal static partial class Utils
         Buffer.BlockCopy(firstByteArray, 0, byteArrayToHash, 0, firstByteArray.Length);
         if (secondByteArray != null) Buffer.BlockCopy(secondByteArray, 0, byteArrayToHash, firstByteArray.Length, secondByteArray.Length);
         if (thirdByteArray != null) Buffer.BlockCopy(thirdByteArray, 0, byteArrayToHash, thirdByteArrayDestinationOffset, thirdByteArray.Length);
-        return ByteArrayToString(_md5.ComputeHash(byteArrayToHash));
+        return ByteArrayToString(MD5.HashData(byteArrayToHash));
     }
 
     /// <summary>
@@ -783,7 +795,7 @@ internal static partial class Utils
     internal static string GetShortMd5HashFromFile(string path)
     {
         TraceIn(path);
-        if (string.IsNullOrEmpty(path) || !File.Exists(path)) return null;
+        if (string.IsNullOrEmpty(path) || !File.Exists(path) || !IsFileAccessible(path)) return null;
 
         var size = new FileInfo(path).Length;
         if (size == 0) return string.Empty;
@@ -1127,7 +1139,7 @@ internal static partial class Utils
         var byteArrayToHash = endByteArray == null ? new byte[firstByteArray.Length] : new byte[firstByteArray.Length + endByteArray.Length];
         Buffer.BlockCopy(firstByteArray, 0, byteArrayToHash, 0, firstByteArray.Length);
         if (endByteArray != null) Buffer.BlockCopy(endByteArray, 0, byteArrayToHash, firstByteArray.Length, endByteArray.Length);
-        return ByteArrayToString(_md5.ComputeHash(byteArrayToHash));
+        return ByteArrayToString(MD5.HashData(byteArrayToHash));
     }
 
     /// <summary>

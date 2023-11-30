@@ -33,7 +33,7 @@ public sealed class FileSystemWatcherTests3
     public void FileSystemWatcherTest3()
     {
         test3EventsCounter = 0;
-        const int waitInMilliseconds = 100;
+        const int waitInMilliseconds = 50;
         var monitoringPath1 = Path.Combine(Path.GetTempPath(), "Test3MonitoringFolder1");
         var monitoringPath2 = Path.Combine(Path.GetTempPath(), "Test3MonitoringFolder2");
         var monitoringPath3DeletedAfterABit = Path.Combine(Path.GetTempPath(), "Test3MonitoringFolder3");
@@ -45,11 +45,11 @@ public sealed class FileSystemWatcherTests3
         {
             Filter = "*.*",
             IncludeSubdirectories = true,
-            ScanInterval = 10,
+            ScanInterval = 5,
             NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName,
             Directories = new[] { monitoringPath1, monitoringPath2, monitoringPath3DeletedAfterABit },
-            ProcessChangesInterval = 10,
-            MinimumAgeBeforeScanEventRaised = 10
+            ProcessChangesInterval = 5,
+            MinimumAgeBeforeScanEventRaised = 5
         };
         watcher.ReadyToScan += FileSystemWatcher_ReadyToScan3;
         watcher.Error += FileSystemWatcher_ErrorTest3;

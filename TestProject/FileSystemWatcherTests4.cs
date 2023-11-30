@@ -31,7 +31,7 @@ public sealed class FileSystemWatcherTests4
     public void FileSystemWatcherTest4()
     {
         test4EventsCounter = 0;
-        const int waitInMilliseconds = 150;
+        const int waitInMilliseconds = 100;
         var monitoringPath1 = Path.Combine(Path.GetTempPath(), "Test4MonitoringFolder1");
         var monitoringPath2 = Path.Combine(Path.GetTempPath(), "Test4MonitoringFolder2");
         Utils.EnsureDirectoriesForDirectoryPath(monitoringPath1);
@@ -43,11 +43,11 @@ public sealed class FileSystemWatcherTests4
         {
             Filter = "*.*",
             IncludeSubdirectories = true,
-            ScanInterval = 50,
+            ScanInterval = 5,
             NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName,
             Directories = new[] { monitoringPath1, monitoringPath2 },
-            ProcessChangesInterval = 50,
-            MinimumAgeBeforeScanEventRaised = 50
+            ProcessChangesInterval = 5,
+            MinimumAgeBeforeScanEventRaised = 5
         };
         watcher.ReadyToScan += FileSystemWatcher_ReadyToScan4;
         Assert.False(watcher.Running);

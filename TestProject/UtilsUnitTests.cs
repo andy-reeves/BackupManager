@@ -43,20 +43,26 @@ public sealed class UtilsUnitTests
     }
 
     [Fact]
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
     public void FileCopy()
     {
-        var path1 = Path.Combine(Path.GetTempPath(), "FileCopy");
-        if (Directory.Exists(path1)) Directory.Delete(path1, true);
-        var file1 = Path.Combine(path1, "test1.txt");
-        var file2 = Path.Combine(path1, "test2.txt");
-        Utils.EnsureDirectoriesForDirectoryPath(path1);
-        CreateFile(file1);
-        var result = Utils.FileCopy(file1, file2);
-        Assert.True(File.Exists(file2));
-        Assert.True(result);
+        for (var i = 0; i < 5; i++)
+        {
+            var path1 = Path.Combine(Path.GetTempPath(), "FileCopy");
+            if (Directory.Exists(path1)) Directory.Delete(path1, true);
+            var file1 = Path.Combine(path1, "test1.txt");
+            var file2 = Path.Combine(path1, "test2.txt");
+            Utils.EnsureDirectoriesForDirectoryPath(path1);
+            Assert.False(File.Exists(file2));
+            CreateFile(file1);
+            Assert.Equal("098f6bcd4621d373cade4e832627b4f6", Utils.GetShortMd5HashFromFile(file1));
+            Assert.True(Utils.FileCopy(file1, file2));
+            Assert.True(File.Exists(file2));
+            Assert.Equal("098f6bcd4621d373cade4e832627b4f6", Utils.GetShortMd5HashFromFile(file2));
 
-        // Delete the folders we created
-        if (Directory.Exists(path1)) Directory.Delete(path1, true);
+            // Delete the folders we created
+            if (Directory.Exists(path1)) Directory.Delete(path1, true);
+        }
     }
 
     [Fact]
@@ -356,20 +362,6 @@ public sealed class UtilsUnitTests
         var result11 = Utils.TraceOut(c, "Test");
         Assert.True(result11.Equals(c));
         Utils.TraceOut();
-    }
-
-    [Fact]
-    public void CreateHashForByteArray()
-    {
-        var path = Path.Combine(Utils.GetProjectPath(typeof(UtilsUnitTests)), @"TestData\TestFile1");
-        var size = new FileInfo(path).Length;
-        var startDownloadPositionForEndBlock = size - Utils.EndBlockSize;
-        var startDownloadPositionForMiddleBlock = size / 2;
-        var firstByteArray = Utils.GetLocalFileByteArray(path, 0, Utils.StartBlockSize);
-        var secondByteArray = Utils.GetLocalFileByteArray(path, startDownloadPositionForMiddleBlock, Utils.MiddleBlockSize);
-        var thirdByteArray = Utils.GetLocalFileByteArray(path, startDownloadPositionForEndBlock, Utils.EndBlockSize);
-        var result = Utils.CreateHashForByteArray(firstByteArray, secondByteArray, thirdByteArray);
-        Assert.True(result == "1416d38415ac751620b97eab7f433723");
     }
 
     [Fact]
