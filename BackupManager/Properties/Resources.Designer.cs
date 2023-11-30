@@ -592,6 +592,15 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to BackManager is already running.
+        /// </summary>
+        internal static string Program_Main_BackManager_is_already_running {
+            get {
+                return ResourceManager.GetString("Program_Main_BackManager_is_already_running", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duplicate rule number detected in rules.xml.
         /// </summary>
         internal static string Rules_DuplicateRuleNumber {

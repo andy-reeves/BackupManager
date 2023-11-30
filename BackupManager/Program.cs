@@ -5,14 +5,27 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Threading;
 using System.Windows.Forms;
+
+using BackupManager.Properties;
 
 namespace BackupManager;
 
 file static class Program
 {
+    private static readonly string _appGuid = ((GuidAttribute)Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(GuidAttribute), true)[0])
+        .Value;
+
+#if DEBUG
+    private static readonly Mutex _singleton = new(true, _appGuid + "DEBUG");
+#else
+    private static readonly Mutex _singleton = new(true, _appGuid);
+#endif
+
     /// <summary>
     ///     The main entry point for the application.
     /// </summary>
@@ -20,6 +33,14 @@ file static class Program
     [STAThread]
     private static void Main()
     {
+        if (!_singleton.WaitOne(TimeSpan.Zero, true))
+        {
+            //there is already another instance running!
+            //Application.Exit();
+            MessageBox.Show(Resources.Program_Main_BackManager_is_already_running);
+            Environment.Exit(-1);
+        }
+
         // Add handler to handle the exception raised by main threads
         Application.ThreadException += Application_ThreadException;
 
