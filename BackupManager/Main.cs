@@ -748,4 +748,23 @@ internal sealed partial class Main : Form
             mediaBackup.Config.MonitoringCheckLatestVersions ? Resources.Main_ON : Resources.Main_OFF);
         Utils.TraceOut();
     }
+
+    private void DirectoriesScanReportButton_Click(object sender, EventArgs e)
+    {
+        var bob = mediaBackup.DirectoryScans.Distinct();
+
+        foreach (var directory in bob)
+        {
+            var scans = mediaBackup.DirectoryScans.Where(scan => scan.Path == directory.Path).OrderBy(static scan => scan.EndDateTime).ToList();
+            var textLine = $"{directory.Path,40}";
+            var maxValue = scans.Count < 10 ? scans.Count : 10;
+
+            for (var i = 0; i < maxValue; i++)
+            {
+                var backup = scans[i];
+                textLine += $"{Utils.FormatTimeSpanMinutesOnly(backup.ScanDuration),5}";
+            }
+            Utils.Log(textLine);
+        }
+    }
 }

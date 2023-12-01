@@ -199,7 +199,7 @@ public sealed class MediaBackup
         BackupMediaFile();
         DirectoryChanges = new Collection<FileSystemEntry>(Watcher.FileSystemChanges.ToList());
         DirectoriesToScan = new Collection<FileSystemEntry>(Watcher.DirectoriesToScan.ToList());
-        var xRoot = new XmlRootAttribute { ElementName = "MediaBackup", Namespace = "http://tempuri.org/MediaBackupSchema.xsd", IsNullable = true };
+        var xRoot = new XmlRootAttribute { ElementName = "MediaBackup", Namespace = "MediaBackupSchema.xsd", IsNullable = true };
         XmlSerializer xmlSerializer = new(typeof(MediaBackup), xRoot);
         if (File.Exists(mediaBackupPath)) File.SetAttributes(mediaBackupPath, FileAttributes.Normal);
         using StreamWriter streamWriter = new(mediaBackupPath);

@@ -53,6 +53,8 @@
             fileWatcherButton = new System.Windows.Forms.Button();
             listDirectoriesToScanButton = new System.Windows.Forms.Button();
             recreateAllMkLinksButton = new System.Windows.Forms.Button();
+            versionCheckingButton = new System.Windows.Forms.Button();
+            button1 = new System.Windows.Forms.Button();
             scheduledBackupTimerButton = new System.Windows.Forms.Button();
             listFilesOnBackupDiskButton = new System.Windows.Forms.Button();
             listFilesInDirectoryButton = new System.Windows.Forms.Button();
@@ -122,7 +124,6 @@
             oldestBackupDiskAgeTextBox = new System.Windows.Forms.TextBox();
             oldestBackupDiskTextBox = new System.Windows.Forms.TextBox();
             label16 = new System.Windows.Forms.Label();
-            versionCheckingButton = new System.Windows.Forms.Button();
             pushoverGroupBox.SuspendLayout();
             groupBox2.SuspendLayout();
             listFilesInDirectoryGroupBox.SuspendLayout();
@@ -143,8 +144,8 @@
             updateMasterFilesButton.Name = "updateMasterFilesButton";
             updateMasterFilesButton.Size = new System.Drawing.Size(234, 27);
             updateMasterFilesButton.TabIndex = 0;
-            updateMasterFilesButton.Text = "Update file list";
-            toolTip.SetToolTip(updateMasterFilesButton, "Resets the entire collection of backup files. Extra entries are removed if no longer there.");
+            updateMasterFilesButton.Text = "Scan directories";
+            toolTip.SetToolTip(updateMasterFilesButton, "Scans all the directories and marks files as deleted as required.");
             updateMasterFilesButton.UseVisualStyleBackColor = true;
             updateMasterFilesButton.Click += UpdateMasterFilesButton_Click;
             // 
@@ -283,7 +284,7 @@
             monitoringButton.Size = new System.Drawing.Size(114, 27);
             monitoringButton.TabIndex = 50;
             monitoringButton.Text = "Monitoring = OFF";
-            toolTip.SetToolTip(monitoringButton, "Starts the service monitoring");
+            toolTip.SetToolTip(monitoringButton, "Starts/Stops the service monitoring");
             monitoringButton.UseVisualStyleBackColor = true;
             monitoringButton.Click += MonitoringButton_Click;
             // 
@@ -331,7 +332,7 @@
             speedTestDisksButton.Size = new System.Drawing.Size(232, 27);
             speedTestDisksButton.TabIndex = 60;
             speedTestDisksButton.Text = "Speed Test Disks = OFF";
-            toolTip.SetToolTip(speedTestDisksButton, "Starts the service monitoring");
+            toolTip.SetToolTip(speedTestDisksButton, "Starts/Stops the disk speed testing");
             speedTestDisksButton.UseVisualStyleBackColor = true;
             speedTestDisksButton.Click += SpeedTestDisksButton_Click;
             // 
@@ -367,7 +368,7 @@
             fileWatcherButton.Size = new System.Drawing.Size(232, 27);
             fileWatcherButton.TabIndex = 88;
             fileWatcherButton.Text = "File Watchers = OFF";
-            toolTip.SetToolTip(fileWatcherButton, "Starts the file watchers");
+            toolTip.SetToolTip(fileWatcherButton, "Starts/Stops the file watchers");
             fileWatcherButton.UseVisualStyleBackColor = true;
             fileWatcherButton.Click += FileWatcherButton_Click;
             // 
@@ -394,6 +395,30 @@
             toolTip.SetToolTip(recreateAllMkLinksButton, "Checks all the symbolic links with the RegEx in config");
             recreateAllMkLinksButton.UseVisualStyleBackColor = true;
             recreateAllMkLinksButton.Click += CheckAllSymbolicLinksButton_Click;
+            // 
+            // versionCheckingButton
+            // 
+            versionCheckingButton.Location = new System.Drawing.Point(872, 395);
+            versionCheckingButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            versionCheckingButton.Name = "versionCheckingButton";
+            versionCheckingButton.Size = new System.Drawing.Size(232, 27);
+            versionCheckingButton.TabIndex = 97;
+            versionCheckingButton.Text = "Version Checking = OFF";
+            toolTip.SetToolTip(versionCheckingButton, "Starts/Stops the service version checking");
+            versionCheckingButton.UseVisualStyleBackColor = true;
+            versionCheckingButton.Click += VersionCheckingButton_Click;
+            // 
+            // button1
+            // 
+            button1.Location = new System.Drawing.Point(312, 395);
+            button1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            button1.Name = "button1";
+            button1.Size = new System.Drawing.Size(234, 27);
+            button1.TabIndex = 66;
+            button1.Text = "Scan report";
+            toolTip.SetToolTip(button1, "Reports the latest scan times for the directories");
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += DirectoriesScanReportButton_Click;
             // 
             // scheduledBackupTimerButton
             // 
@@ -1138,23 +1163,12 @@
             label16.TabIndex = 94;
             label16.Text = "Oldest backup disk";
             // 
-            // versionCheckingButton
-            // 
-            versionCheckingButton.Location = new System.Drawing.Point(872, 395);
-            versionCheckingButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            versionCheckingButton.Name = "versionCheckingButton";
-            versionCheckingButton.Size = new System.Drawing.Size(232, 27);
-            versionCheckingButton.TabIndex = 97;
-            versionCheckingButton.Text = "Version Checking = OFF";
-            toolTip.SetToolTip(versionCheckingButton, "Starts the file watchers");
-            versionCheckingButton.UseVisualStyleBackColor = true;
-            versionCheckingButton.Click += VersionCheckingButton_Click;
-            // 
             // Main
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1416, 479);
+            Controls.Add(button1);
             Controls.Add(versionCheckingButton);
             Controls.Add(oldestBackupDiskAgeTextBox);
             Controls.Add(oldestBackupDiskTextBox);
@@ -1323,6 +1337,7 @@
         private System.Windows.Forms.TextBox oldestBackupDiskTextBox;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Button versionCheckingButton;
+        private System.Windows.Forms.Button button1;
     }
 }
 

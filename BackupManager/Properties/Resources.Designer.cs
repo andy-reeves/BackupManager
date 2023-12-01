@@ -331,7 +331,7 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There are folders to scan queued. Would you like to scan them before closing?.
+        ///   Looks up a localized string similar to There are directories to scan queued. Would you like to scan them before closing?.
         /// </summary>
         internal static string Main_FoldersQueued {
             get {
@@ -448,7 +448,7 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Scan Folders failed.
+        ///   Looks up a localized string similar to Scan Directories Failed.
         /// </summary>
         internal static string Main_ScanDirectoriesAsync_Scan_Directories_failed {
             get {
@@ -457,7 +457,7 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Deleting empty folders in {0}.
+        ///   Looks up a localized string similar to Deleting empty directories in {0}.
         /// </summary>
         internal static string Main_ScanFolders_Deleting_empty_folders_in__0_ {
             get {
@@ -466,7 +466,7 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Scan folders.
+        ///   Looks up a localized string similar to Scan directories.
         /// </summary>
         internal static string Main_ScanFoldersTitle {
             get {
@@ -538,7 +538,7 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Are you sure you want to rebuild the master list?.
+        ///   Looks up a localized string similar to Are you sure you want to scan all the directories?.
         /// </summary>
         internal static string Main_UpdateMasterFiles {
             get {
@@ -592,7 +592,7 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to BackManager is already running.
+        ///   Looks up a localized string similar to BackupManager is already running.
         /// </summary>
         internal static string Program_Main_BackManager_is_already_running {
             get {

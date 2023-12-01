@@ -1452,6 +1452,17 @@ internal static partial class Utils
     }
 
     /// <summary>
+    ///     Formats a TimeSpan for display in minutes only
+    /// </summary>
+    /// <param name="timeSpan"></param>
+    /// <returns></returns>
+    internal static string FormatTimeSpanMinutesOnly(TimeSpan timeSpan)
+    {
+        var seconds = Convert.ToInt32(timeSpan.TotalMinutes);
+        return $"{seconds}m";
+    }
+
+    /// <summary>
     ///     Formats a string containing a speed with a suitable suffix
     /// </summary>
     /// <param name="value">in bytes per second</param>

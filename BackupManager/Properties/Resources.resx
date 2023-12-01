@@ -148,10 +148,10 @@
     <value>File Watchers = {0}</value>
   </data>
   <data name="Main_FoldersQueued" xml:space="preserve">
-    <value>There are folders to scan queued. Would you like to scan them before closing?</value>
+    <value>There are directories to scan queued. Would you like to scan them before closing?</value>
   </data>
   <data name="Main_ScanFoldersTitle" xml:space="preserve">
-    <value>Scan folders</value>
+    <value>Scan directories</value>
   </data>
   <data name="Main_CorrectDiskPrompt" xml:space="preserve">
     <value>Please connect backup disk {0} so we can continue restoring files. Have you connected this disk now?</value>
@@ -175,7 +175,7 @@
     <value>Exception occurred. Cancelling operation. {0}</value>
   </data>
   <data name="Main_UpdateMasterFiles" xml:space="preserve">
-    <value>Are you sure you want to rebuild the master list?</value>
+    <value>Are you sure you want to scan all the directories?</value>
   </data>
   <data name="Main_UpdateMasterFilesTitle" xml:space="preserve">
     <value>Rebuild master list</value>
@@ -292,10 +292,10 @@
     <value>. Estimated finish by tomorrow at </value>
   </data>
   <data name="Main_ScanFolders_Deleting_empty_folders_in__0_" xml:space="preserve">
-    <value>Deleting empty folders in {0}</value>
+    <value>Deleting empty directories in {0}</value>
   </data>
   <data name="Main_ScanDirectoriesAsync_Scan_Directories_failed" xml:space="preserve">
-    <value>Scan Folders failed</value>
+    <value>Scan Directories Failed</value>
   </data>
   <data name="Utils_Not_a_valid_application_name" xml:space="preserve">
     <value>Not a valid application name</value>
@@ -307,6 +307,6 @@
     <value>Version Checking = {0}</value>
   </data>
   <data name="Program_Main_BackManager_is_already_running" xml:space="preserve">
-    <value>BackManager is already running</value>
+    <value>BackupManager is already running</value>
   </data>
 </root>
