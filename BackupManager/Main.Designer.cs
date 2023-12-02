@@ -54,7 +54,8 @@
             listDirectoriesToScanButton = new System.Windows.Forms.Button();
             recreateAllMkLinksButton = new System.Windows.Forms.Button();
             versionCheckingButton = new System.Windows.Forms.Button();
-            button1 = new System.Windows.Forms.Button();
+            directoryScanReportButton = new System.Windows.Forms.Button();
+            openLogFileButton = new System.Windows.Forms.Button();
             scheduledBackupTimerButton = new System.Windows.Forms.Button();
             listFilesOnBackupDiskButton = new System.Windows.Forms.Button();
             listFilesInDirectoryButton = new System.Windows.Forms.Button();
@@ -168,7 +169,7 @@
             copyFilesToBackupDiskButton.Name = "copyFilesToBackupDiskButton";
             copyFilesToBackupDiskButton.Size = new System.Drawing.Size(234, 27);
             copyFilesToBackupDiskButton.TabIndex = 5;
-            copyFilesToBackupDiskButton.Text = "Copy files from master";
+            copyFilesToBackupDiskButton.Text = "Copy files from directories";
             toolTip.SetToolTip(copyFilesToBackupDiskButton, "Copies any files without a Backup disk set to a connected Backup drive.");
             copyFilesToBackupDiskButton.UseVisualStyleBackColor = true;
             copyFilesToBackupDiskButton.Click += CopyFilesToBackupDiskButton_Click;
@@ -199,7 +200,7 @@
             listFilesNotOnBackupDiskButton.Name = "listFilesNotOnBackupDiskButton";
             listFilesNotOnBackupDiskButton.Size = new System.Drawing.Size(232, 27);
             listFilesNotOnBackupDiskButton.TabIndex = 11;
-            listFilesNotOnBackupDiskButton.Text = "... not on a Backup disk";
+            listFilesNotOnBackupDiskButton.Text = "... not on a backup disk";
             toolTip.SetToolTip(listFilesNotOnBackupDiskButton, "Outputs files that are not yet on a Backup drive.");
             listFilesNotOnBackupDiskButton.UseVisualStyleBackColor = true;
             listFilesNotOnBackupDiskButton.Click += ListFilesNotOnBackupDiskButton_Click;
@@ -211,7 +212,7 @@
             recalculateAllHashesButton.Name = "recalculateAllHashesButton";
             recalculateAllHashesButton.Size = new System.Drawing.Size(234, 27);
             recalculateAllHashesButton.TabIndex = 16;
-            recalculateAllHashesButton.Text = "Recalculate all Hashes";
+            recalculateAllHashesButton.Text = "Recalculate all hashes";
             toolTip.SetToolTip(recalculateAllHashesButton, "Recalculates all the Hashcodes from the Master Files. Only use this is the hash algorithm has been changed.");
             recalculateAllHashesButton.UseVisualStyleBackColor = true;
             recalculateAllHashesButton.Click += RecalculateAllHashesButton_Click;
@@ -295,7 +296,7 @@
             listFilesWithDuplicateContentHashcodesButton.Name = "listFilesWithDuplicateContentHashcodesButton";
             listFilesWithDuplicateContentHashcodesButton.Size = new System.Drawing.Size(232, 27);
             listFilesWithDuplicateContentHashcodesButton.TabIndex = 61;
-            listFilesWithDuplicateContentHashcodesButton.Text = "... with duplicate content hashcodes";
+            listFilesWithDuplicateContentHashcodesButton.Text = "... with duplicate content hash codes";
             toolTip.SetToolTip(listFilesWithDuplicateContentHashcodesButton, "List files with duplicate content hashcodes");
             listFilesWithDuplicateContentHashcodesButton.UseVisualStyleBackColor = true;
             listFilesWithDuplicateContentHashcodesButton.Click += ListFilesWithDuplicateContentHashCodesButton_Click;
@@ -355,7 +356,7 @@
             listFilesMarkedAsDeletedButton.Name = "listFilesMarkedAsDeletedButton";
             listFilesMarkedAsDeletedButton.Size = new System.Drawing.Size(232, 27);
             listFilesMarkedAsDeletedButton.TabIndex = 62;
-            listFilesMarkedAsDeletedButton.Text = "... marked as Deleted";
+            listFilesMarkedAsDeletedButton.Text = "... marked as deleted";
             toolTip.SetToolTip(listFilesMarkedAsDeletedButton, "Outputs files that are marked as Deleted because they cannot be found in the directories anymore");
             listFilesMarkedAsDeletedButton.UseVisualStyleBackColor = true;
             listFilesMarkedAsDeletedButton.Click += ListFilesMarkedAsDeletedButton_Click;
@@ -408,17 +409,29 @@
             versionCheckingButton.UseVisualStyleBackColor = true;
             versionCheckingButton.Click += VersionCheckingButton_Click;
             // 
-            // button1
+            // directoryScanReportButton
             // 
-            button1.Location = new System.Drawing.Point(312, 395);
-            button1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            button1.Name = "button1";
-            button1.Size = new System.Drawing.Size(234, 27);
-            button1.TabIndex = 66;
-            button1.Text = "Scan report";
-            toolTip.SetToolTip(button1, "Reports the latest scan times for the directories");
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += DirectoriesScanReportButton_Click;
+            directoryScanReportButton.Location = new System.Drawing.Point(312, 395);
+            directoryScanReportButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            directoryScanReportButton.Name = "directoryScanReportButton";
+            directoryScanReportButton.Size = new System.Drawing.Size(234, 27);
+            directoryScanReportButton.TabIndex = 66;
+            directoryScanReportButton.Text = "Directory scan report";
+            toolTip.SetToolTip(directoryScanReportButton, "Reports the latest scan times for the directories");
+            directoryScanReportButton.UseVisualStyleBackColor = true;
+            directoryScanReportButton.Click += DirectoriesScanReportButton_Click;
+            // 
+            // openLogFileButton
+            // 
+            openLogFileButton.Location = new System.Drawing.Point(589, 395);
+            openLogFileButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            openLogFileButton.Name = "openLogFileButton";
+            openLogFileButton.Size = new System.Drawing.Size(234, 27);
+            openLogFileButton.TabIndex = 98;
+            openLogFileButton.Text = "Open log file";
+            toolTip.SetToolTip(openLogFileButton, "Opens the log file");
+            openLogFileButton.UseVisualStyleBackColor = true;
+            openLogFileButton.Click += OpenLogFileButton_Click;
             // 
             // scheduledBackupTimerButton
             // 
@@ -471,7 +484,7 @@
             listFilesNotCheckedInXXButton.Name = "listFilesNotCheckedInXXButton";
             listFilesNotCheckedInXXButton.Size = new System.Drawing.Size(232, 27);
             listFilesNotCheckedInXXButton.TabIndex = 30;
-            listFilesNotCheckedInXXButton.Text = "... on old Backup disks";
+            listFilesNotCheckedInXXButton.Text = "... on old backup disks";
             listFilesNotCheckedInXXButton.UseVisualStyleBackColor = true;
             listFilesNotCheckedInXXButton.Click += CheckForOldBackupDisks_Click;
             // 
@@ -522,23 +535,23 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new System.Drawing.Point(8, 27);
+            label3.Location = new System.Drawing.Point(30, 27);
             label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label3.Name = "label3";
-            label3.Size = new System.Drawing.Size(62, 15);
+            label3.Size = new System.Drawing.Size(40, 15);
             label3.TabIndex = 40;
-            label3.Text = "Src master";
+            label3.Text = "Src dir";
             label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new System.Drawing.Point(8, 57);
+            label4.Location = new System.Drawing.Point(23, 56);
             label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label4.Name = "label4";
-            label4.Size = new System.Drawing.Size(69, 15);
+            label4.Size = new System.Drawing.Size(47, 15);
             label4.TabIndex = 41;
-            label4.Text = "Dest master";
+            label4.Text = "Dest dir";
             label4.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // testPushoverEmergencyButton
@@ -701,7 +714,7 @@
             groupBox2.Size = new System.Drawing.Size(253, 126);
             groupBox2.TabIndex = 55;
             groupBox2.TabStop = false;
-            groupBox2.Text = "Restore from Backup";
+            groupBox2.Text = "Restore from backup";
             // 
             // listFilesInDirectoryGroupBox
             // 
@@ -714,7 +727,7 @@
             listFilesInDirectoryGroupBox.Size = new System.Drawing.Size(253, 57);
             listFilesInDirectoryGroupBox.TabIndex = 56;
             listFilesInDirectoryGroupBox.TabStop = false;
-            listFilesInDirectoryGroupBox.Text = "List files in master directory";
+            listFilesInDirectoryGroupBox.Text = "List files in directory";
             // 
             // listFilesOnBackupDiskGroupBox
             // 
@@ -727,7 +740,7 @@
             listFilesOnBackupDiskGroupBox.Size = new System.Drawing.Size(253, 62);
             listFilesOnBackupDiskGroupBox.TabIndex = 57;
             listFilesOnBackupDiskGroupBox.TabStop = false;
-            listFilesOnBackupDiskGroupBox.Text = "List files on Backup disk";
+            listFilesOnBackupDiskGroupBox.Text = "List files on backup disk";
             // 
             // listFilesComboBox
             // 
@@ -898,7 +911,7 @@
             groupBox1.Size = new System.Drawing.Size(253, 155);
             groupBox1.TabIndex = 68;
             groupBox1.TabStop = false;
-            groupBox1.Text = "Connected Backup disk";
+            groupBox1.Text = "Connected backup disk";
             // 
             // listFilesGroupBox
             // 
@@ -930,17 +943,17 @@
             groupBox4.Size = new System.Drawing.Size(253, 168);
             groupBox4.TabIndex = 70;
             groupBox4.TabStop = false;
-            groupBox4.Text = "All Master folders";
+            groupBox4.Text = "All scan directories";
             // 
             // label6
             // 
             label6.AutoSize = true;
-            label6.Location = new System.Drawing.Point(33, 48);
+            label6.Location = new System.Drawing.Point(3, 45);
             label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label6.Name = "label6";
-            label6.Size = new System.Drawing.Size(70, 15);
+            label6.Size = new System.Drawing.Size(103, 15);
             label6.TabIndex = 71;
-            label6.Text = "Backup disk";
+            label6.Text = "Backup disk name";
             // 
             // currentBackupDiskTextBox
             // 
@@ -1088,9 +1101,9 @@
             label12.Location = new System.Drawing.Point(15, 391);
             label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label12.Name = "label12";
-            label12.Size = new System.Drawing.Size(104, 15);
+            label12.Size = new System.Drawing.Size(103, 15);
             label12.TabIndex = 85;
-            label12.Text = "Marked as Deleted";
+            label12.Text = "Marked as deleted";
             // 
             // updateUITimer
             // 
@@ -1168,7 +1181,8 @@
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1416, 479);
-            Controls.Add(button1);
+            Controls.Add(openLogFileButton);
+            Controls.Add(directoryScanReportButton);
             Controls.Add(versionCheckingButton);
             Controls.Add(oldestBackupDiskAgeTextBox);
             Controls.Add(oldestBackupDiskTextBox);
@@ -1337,7 +1351,8 @@
         private System.Windows.Forms.TextBox oldestBackupDiskTextBox;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Button versionCheckingButton;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button directoryScanReportButton;
+        private System.Windows.Forms.Button openLogFileButton;
     }
 }
 

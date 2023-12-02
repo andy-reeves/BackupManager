@@ -169,32 +169,21 @@ internal sealed partial class Main
         if (mediaBackup.Config.SpeedTestOnOff)
         {
             UpdateStatusLabel(string.Format(Resources.Main_SpeedTesting, rootDirectory));
-
-            Utils.DiskSpeedTest(rootDirectory, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations,
-                out readSpeed, out writeSpeed, ct);
+            Utils.DiskSpeedTest(rootDirectory, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed, ct);
         }
         var totalBytesOnRootDirectoryDiskFormatted = Utils.FormatSize(totalBytesOnRootDirectoryDisk);
         var freeSpaceOnRootDirectoryDiskFormatted = Utils.FormatSize(freeSpaceOnRootDirectoryDisk);
         var readSpeedFormatted = Utils.FormatSpeed(readSpeed);
         var writeSpeedFormatted = Utils.FormatSpeed(writeSpeed);
-
-        var text =
-            $"{rootDirectory}\nTotal: {totalBytesOnRootDirectoryDiskFormatted}\nFree: {freeSpaceOnRootDirectoryDiskFormatted}\nRead: {readSpeedFormatted}\nWrite: {writeSpeedFormatted}";
+        var text = $"{rootDirectory}\nTotal: {totalBytesOnRootDirectoryDiskFormatted}\nFree: {freeSpaceOnRootDirectoryDiskFormatted}\nRead: {readSpeedFormatted}\nWrite: {writeSpeedFormatted}";
         Utils.LogWithPushover(BackupAction.ScanDirectory, text);
 
         if (mediaBackup.Config.SpeedTestOnOff)
         {
-            if (readSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumReadSpeed))
-                Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High,
-                    $"Read speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumReadSpeed))}");
-
-            if (writeSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumWriteSpeed))
-                Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High,
-                    $"Write speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumWriteSpeed))}");
+            if (readSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumReadSpeed)) Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"Read speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumReadSpeed))}");
+            if (writeSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumWriteSpeed)) Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"Write speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumWriteSpeed))}");
         }
-
-        if (freeSpaceOnRootDirectoryDisk < Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumCriticalSpace))
-            Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"Free space on {rootDirectory} is too low");
+        if (freeSpaceOnRootDirectoryDisk < Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumCriticalSpace)) Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"Free space on {rootDirectory} is too low");
         UpdateStatusLabel(string.Format(Resources.Main_ScanFolders_Deleting_empty_folders_in__0_, rootDirectory));
         var directoriesDeleted = Utils.DeleteEmptyDirectories(rootDirectory);
 

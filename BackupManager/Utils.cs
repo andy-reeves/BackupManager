@@ -142,9 +142,12 @@ internal static partial class Utils
     /// </summary>
     internal static Process CopyProcess;
 
+    /// <summary>
+    ///     The path to the Log file
+    /// </summary>
 #if DEBUG
-    private static readonly string _logFile =
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Debug.log");
+    private static readonly string _logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+        "BackupManager_Debug.log");
 #else
     private static readonly string _logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager.log");
 #endif
@@ -176,6 +179,15 @@ internal static partial class Utils
         File.AppendAllText(filePath, "test");
     }
 #endif
+
+    internal static void OpenLogFile()
+    {
+        using var process = new Process();
+        process.StartInfo.FileName = "cmd";
+        var notePadPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "notepad.exe");
+        process.StartInfo.Arguments = $"/c start /max \"{notePadPath}\" \"{_logFile}\"";
+        process.Start();
+    }
 
     internal static void BackupLogFile()
     {

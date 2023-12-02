@@ -795,4 +795,14 @@ internal sealed partial class Main : Form
         }
         Utils.Log(totalLine);
     }
+
+    /// <summary>
+    ///     Opens the current log file in Notepad
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void OpenLogFileButton_Click(object sender, EventArgs e)
+    {
+        Utils.OpenLogFile();
+    }
 }
