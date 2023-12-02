@@ -125,6 +125,8 @@
             oldestBackupDiskAgeTextBox = new System.Windows.Forms.TextBox();
             oldestBackupDiskTextBox = new System.Windows.Forms.TextBox();
             label16 = new System.Windows.Forms.Label();
+            scanDirectoriesComboBox = new System.Windows.Forms.ComboBox();
+            scanDirectoryButton = new System.Windows.Forms.Button();
             pushoverGroupBox.SuspendLayout();
             groupBox2.SuspendLayout();
             listFilesInDirectoryGroupBox.SuspendLayout();
@@ -943,7 +945,7 @@
             groupBox4.Size = new System.Drawing.Size(253, 168);
             groupBox4.TabIndex = 70;
             groupBox4.TabStop = false;
-            groupBox4.Text = "All scan directories";
+            groupBox4.Text = "All directories";
             // 
             // label6
             // 
@@ -1176,11 +1178,35 @@
             label16.TabIndex = 94;
             label16.Text = "Oldest backup disk";
             // 
+            // scanDirectoriesComboBox
+            // 
+            scanDirectoriesComboBox.BackColor = System.Drawing.SystemColors.Window;
+            scanDirectoriesComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            scanDirectoriesComboBox.FormattingEnabled = true;
+            scanDirectoriesComboBox.Location = new System.Drawing.Point(1153, 310);
+            scanDirectoriesComboBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            scanDirectoriesComboBox.Name = "scanDirectoriesComboBox";
+            scanDirectoriesComboBox.Size = new System.Drawing.Size(163, 23);
+            scanDirectoriesComboBox.TabIndex = 42;
+            // 
+            // scanDirectoryButton
+            // 
+            scanDirectoryButton.Location = new System.Drawing.Point(1329, 307);
+            scanDirectoryButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            scanDirectoryButton.Name = "scanDirectoryButton";
+            scanDirectoryButton.Size = new System.Drawing.Size(80, 27);
+            scanDirectoryButton.TabIndex = 42;
+            scanDirectoryButton.Text = "Scan";
+            scanDirectoryButton.UseVisualStyleBackColor = true;
+            scanDirectoryButton.Click += ScanDirectoriesButton_Click;
+            // 
             // Main
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1416, 479);
+            Controls.Add(scanDirectoryButton);
+            Controls.Add(scanDirectoriesComboBox);
             Controls.Add(openLogFileButton);
             Controls.Add(directoryScanReportButton);
             Controls.Add(versionCheckingButton);
@@ -1353,6 +1379,8 @@
         private System.Windows.Forms.Button versionCheckingButton;
         private System.Windows.Forms.Button directoryScanReportButton;
         private System.Windows.Forms.Button openLogFileButton;
+        private System.Windows.Forms.ComboBox scanDirectoriesComboBox;
+        private System.Windows.Forms.Button scanDirectoryButton;
     }
 }
 

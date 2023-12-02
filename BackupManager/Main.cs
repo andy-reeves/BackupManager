@@ -805,4 +805,15 @@ internal sealed partial class Main : Form
     {
         Utils.OpenLogFile();
     }
+
+    private void ScanDirectoriesButton_Click(object sender, EventArgs e)
+    {
+        Utils.TraceIn();
+
+        if (scanDirectoriesComboBox.SelectedIndex > -1)
+        {
+            if (!longRunningActionExecutingRightNow) TaskWrapper(ScanSelectedDirectoryAsync, scanDirectoriesComboBox.Text);
+        }
+        Utils.TraceOut();
+    }
 }
