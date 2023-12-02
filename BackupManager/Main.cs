@@ -751,20 +751,48 @@ internal sealed partial class Main : Form
 
     private void DirectoriesScanReportButton_Click(object sender, EventArgs e)
     {
-        var bob = mediaBackup.DirectoryScans.Distinct();
+        var distinctDirectories = mediaBackup.DirectoryScans.Distinct().ToList();
+        var longestDirectoryLength = mediaBackup.DirectoryScans.Select(static d => d.Path.Length).Max();
+        var headerLineDone = false;
+        var headerLine = string.Empty.PadRight(longestDirectoryLength + 2);
+        var totalLine = string.Empty.PadRight(longestDirectoryLength + 1);
+        var totals = new TimeSpan[10];
 
-        foreach (var directory in bob)
+        foreach (var directory in distinctDirectories)
         {
             var scans = mediaBackup.DirectoryScans.Where(scan => scan.Path == directory.Path).OrderBy(static scan => scan.EndDateTime).ToList();
-            var textLine = $"{directory.Path,40}";
+            var textLine = $"{directory.Path.PadRight(longestDirectoryLength + 1)}";
             var maxValue = scans.Count < 10 ? scans.Count : 10;
 
             for (var i = 0; i < maxValue; i++)
             {
                 var backup = scans[i];
-                textLine += $"{Utils.FormatTimeSpanMinutesOnly(backup.ScanDuration),5}";
+
+                if (!headerLineDone)
+                {
+                    // build the line of scan dates like 30.11 01.12 etc
+                    var d = backup.StartDateTime.ToString("dd.MM ");
+                    headerLine += d;
+                }
+                totals[i] += backup.ScanDuration;
+                textLine += $"{Utils.FormatTimeSpanMinutesOnly(backup.ScanDuration),6}";
+            }
+
+            if (!headerLineDone)
+            {
+                Utils.Log(headerLine);
+                headerLineDone = true;
             }
             Utils.Log(textLine);
         }
+
+        foreach (var aTotal in totals)
+        {
+            if (aTotal < TimeSpan.FromSeconds(60))
+                totalLine += string.Empty.PadRight(6);
+            else
+                totalLine += $"{Utils.FormatTimeSpanMinutesOnly(aTotal),6}";
+        }
+        Utils.Log(totalLine);
     }
 }
