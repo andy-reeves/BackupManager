@@ -87,7 +87,7 @@ public sealed class FileSystemWatcherTests4
     {
         if (sender is not FileSystemWatcher watcher) return;
 
-        Assert.True(e.Directories.Count == test4ExpectedEventFolderCount, nameof(e.Directories.Count));
+        Assert.True(e.Directories.Length == test4ExpectedEventFolderCount, nameof(e.Directories.Length));
 
         foreach (var directory in e.Directories)
         {

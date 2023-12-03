@@ -615,7 +615,7 @@ internal sealed partial class Main : Form
 
     private void ReadyToScan(FileSystemWatcherEventArgs e, SearchOption searchOption)
     {
-        Utils.TraceIn($"e.Directories = {e.Directories.Count}");
+        Utils.TraceIn($"e.Directories = {e.Directories.Length}");
         var toSave = false;
 
         if (!e.Directories.Any())
@@ -624,7 +624,7 @@ internal sealed partial class Main : Form
             return;
         }
 
-        for (var i = e.Directories.Count - 1; i >= 0; i--)
+        for (var i = e.Directories.Length - 1; i >= 0; i--)
         {
             var directoryToScan = e.Directories[i];
             mediaBackup.ClearFlags();
@@ -636,7 +636,6 @@ internal sealed partial class Main : Form
             {
                 var removedFilesCount = 0;
                 var markedAsDeletedFilesCount = 0;
-                e.Directories.Remove(directoryToScan);
                 UpdateSymbolicLinkForDirectory(directoryToScan.Path);
 
                 // instead of removing files that are no longer found in a directory we now flag them as deleted so we can report them later
