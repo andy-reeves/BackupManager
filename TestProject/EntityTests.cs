@@ -109,7 +109,7 @@ public sealed class EntityTests
         backupFile.Deleted = true;
 
         // GetBackupFilesMarkedAsDeleted
-        var b = mediaBackup.GetBackupFilesMarkedAsDeleted();
+        var b = mediaBackup.GetBackupFilesMarkedAsDeleted(false);
         Assert.NotNull(b);
         Assert.Single(b);
 

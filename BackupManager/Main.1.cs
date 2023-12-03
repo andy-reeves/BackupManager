@@ -464,7 +464,7 @@ internal sealed partial class Main
             if (text != string.Empty && !text.EndsWith(".", StringComparison.Ordinal)) textToUse = text + " ...";
         }
         UpdateProgressBar(value);
-        statusStrip.Invoke(_ => toolStripStatusLabel.Text = textToUse);
+        if (toolStripStatusLabel.Text != textToUse) statusStrip.Invoke(_ => toolStripStatusLabel.Text = textToUse);
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
         Utils.TraceOut();
     }
@@ -484,13 +484,12 @@ internal sealed partial class Main
         if (value > 0)
         {
             if (value >= toolStripProgressBar.Maximum) value = toolStripProgressBar.Maximum - 1;
-            statusStrip.Invoke(_ => toolStripProgressBar.Visible = true);
-            statusStrip.Invoke(_ => toolStripProgressBar.Value = value);
+            if (toolStripProgressBar.Value != value) statusStrip.Invoke(_ => toolStripProgressBar.Value = value);
+            if (!toolStripProgressBar.Visible) statusStrip.Invoke(_ => toolStripProgressBar.Visible = true);
         }
         else
         {
-            statusStrip.Invoke(_ => toolStripProgressBar.Value = toolStripProgressBar.Minimum);
-            statusStrip.Invoke(_ => toolStripProgressBar.Visible = false);
+            if (toolStripProgressBar.Visible) statusStrip.Invoke(_ => toolStripProgressBar.Visible = false);
         }
     }
 }

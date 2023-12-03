@@ -260,7 +260,8 @@ public sealed class BackupFile : IEquatable<BackupFile>
     /// </summary>
     public void UpdateFileLength()
     {
-        Length = Utils.GetFileLength(FullPath);
+        var newLength = Utils.GetFileLength(FullPath);
+        if (Length != newLength) Length = newLength;
     }
 
     /// <summary>

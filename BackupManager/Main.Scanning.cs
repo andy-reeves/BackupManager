@@ -34,6 +34,10 @@ internal sealed partial class Main
         Utils.Trace($"{directoryToCheck} {subDirectoryText}");
         UpdateStatusLabel(string.Format(Resources.Main_Scanning, directoryToCheck));
         var filters = mediaBackup.GetFilters();
+
+        var filtersToDelete = mediaBackup.Config.FilesToDelete
+            .Select(static filter => new { filter, replace = filter.Replace(".", @"\.").Replace("*", ".*").Replace("?", ".") })
+            .Select(static t => $"^{t.replace}$").ToArray();
         var files = Utils.GetFiles(directoryToCheck, filters, searchOption);
         EnableProgressBar(0, files.Length);
 
@@ -42,7 +46,7 @@ internal sealed partial class Main
             var file = files[i];
             Utils.Trace($"Checking {file}");
             UpdateStatusLabel(string.Format(Resources.Main_Scanning, directoryToCheck), i + 1);
-            if (CheckForFilesToDelete(file)) continue;
+            if (CheckForFilesToDelete(file, filtersToDelete)) continue;
 
             // RegEx file name rules
             foreach (var rule in mediaBackup.Config.FileRules.Where(rule => Regex.IsMatch(file, rule.FileDiscoveryRegEx)))
@@ -195,10 +199,14 @@ internal sealed partial class Main
         // Check for files in this root directory 
         var files = Utils.GetFiles(rootDirectory, filters, SearchOption.TopDirectoryOnly);
 
+        var filtersToDelete = mediaBackup.Config.FilesToDelete
+            .Select(static filter => new { filter, replace = filter.Replace(".", @"\.").Replace("*", ".*").Replace("?", ".") })
+            .Select(static t => $"^{t.replace}$").ToArray();
+
         foreach (var file in files)
         {
             Utils.Trace($"Checking {file}");
-            CheckForFilesToDelete(file);
+            CheckForFilesToDelete(file, filtersToDelete);
         }
 #endif
         Utils.TraceOut();
@@ -241,12 +249,10 @@ internal sealed partial class Main
     ///     Returns True if the file was deleted
     /// </summary>
     /// <param name="filePath"></param>
+    /// <param name="filters">The filters to find files to delete</param>
     /// <returns></returns>
-    private bool CheckForFilesToDelete(string filePath)
+    private static bool CheckForFilesToDelete(string filePath, IEnumerable<string> filters)
     {
-        var filters = mediaBackup.Config.FilesToDelete
-            .Select(static filter => new { filter, replace = filter.Replace(".", @"\.").Replace("*", ".*").Replace("?", ".") })
-            .Select(static t => $"^{t.replace}$");
         var fileName = new FileInfo(filePath).Name;
         if (!filters.Any(pattern => Regex.IsMatch(fileName, pattern))) return false;
 
