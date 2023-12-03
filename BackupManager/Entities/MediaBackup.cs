@@ -401,31 +401,36 @@ public sealed class MediaBackup
     }
 
     /// <summary>
-    ///     Get BackupFiles that are in the Directory provided. Includes files marked as Deleted
+    ///     Get BackupFiles that are in the Directory provided.
     /// </summary>
     /// <param name="directory"></param>
+    /// <param name="includeDeletedFiles">True to include files marked Deleted</param>
     /// <returns></returns>
-    public IEnumerable<BackupFile> GetBackupFilesInDirectory(string directory)
+    public IEnumerable<BackupFile> GetBackupFilesInDirectory(string directory, bool includeDeletedFiles)
     {
-        return BackupFiles.Where(p => p.Directory == directory).OrderBy(static q => q.BackupDiskNumber);
+        return includeDeletedFiles
+            ? BackupFiles.Where(p => p.Directory == directory)
+            : BackupFiles.Where(p => p.Directory == directory && !p.Deleted);
     }
 
     /// <summary>
-    ///     Get BackupFiles that are marked as Deleted
+    ///     Get BackupFiles. Either all of them or just those not Deleted.
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerable<BackupFile> GetBackupFiles(bool includeDeletedFiles)
+    {
+        return includeDeletedFiles
+            ? BackupFiles.OrderBy(static q => q.BackupDiskNumber)
+            : BackupFiles.Where(static p => !p.Deleted).OrderBy(static q => q.BackupDiskNumber);
+    }
+
+    /// <summary>
+    ///     Get BackupFiles that are marked as Deleted only
     /// </summary>
     /// <returns></returns>
     public IEnumerable<BackupFile> GetBackupFilesMarkedAsDeleted()
     {
         return BackupFiles.Where(static p => p.Deleted).OrderBy(static q => q.BackupDiskNumber);
-    }
-
-    /// <summary>
-    ///     Get BackupFiles that are NOT marked as Deleted
-    /// </summary>
-    /// <returns></returns>
-    public IEnumerable<BackupFile> GetBackupFilesNotMarkedAsDeleted()
-    {
-        return BackupFiles.Where(static p => !p.Deleted);
     }
 
     /// <summary>

@@ -112,7 +112,7 @@ public sealed class FileSystemWatcherTests
         {
             Utils.Trace($"{folder.Path} at {folder.ModifiedDateTime}");
         }
-        Assert.True(e.Directories.Length == test1ExpectedEventFolderCount, nameof(e.Directories.Length));
+        Assert.True(e.Directories.Count == test1ExpectedEventFolderCount, nameof(e.Directories.Count));
         Assert.True(watcher.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));
         Assert.True(watcher.DirectoriesToScan.Count == 0, nameof(FileSystemWatcher.DirectoriesToScan.Count));
         test1EventsCounter += 1;
@@ -126,7 +126,7 @@ public sealed class FileSystemWatcherTests
         {
             Utils.Trace($"{folder.Path} at {folder.ModifiedDateTime}");
         }
-        Assert.True(e.Directories.Length == test2ExpectedEventFolderCount, nameof(e.Directories.Length));
+        Assert.True(e.Directories.Count == test2ExpectedEventFolderCount, nameof(e.Directories.Count));
         Assert.True(watcher.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));
         Assert.True(watcher.DirectoriesToScan.Count == 0, nameof(FileSystemWatcher.DirectoriesToScan.Count));
     }

@@ -225,8 +225,8 @@ internal sealed partial class Main
 
     private void UpdateMediaFilesCountDisplay()
     {
-        totalFilesTextBox.Invoke(x => x.Text = mediaBackup.GetBackupFilesNotMarkedAsDeleted().Count().ToString("N0"));
-        totalFilesSizeTextBox.Invoke(x => x.Text = Utils.FormatSize(mediaBackup.GetBackupFilesNotMarkedAsDeleted().Sum(static y => y.Length)));
+        totalFilesTextBox.Invoke(x => x.Text = mediaBackup.GetBackupFiles(false).Count().ToString("N0"));
+        totalFilesSizeTextBox.Invoke(x => x.Text = Utils.FormatSize(mediaBackup.GetBackupFiles(false).Sum(static y => y.Length)));
         notOnABackupDiskTextBox.Invoke(x => x.Text = mediaBackup.GetBackupFilesWithDiskEmpty().Count().ToString("N0"));
         notOnABackupDiskSizeTextBox.Invoke(x => x.Text = Utils.FormatSize(mediaBackup.GetBackupFilesWithDiskEmpty().Sum(static y => y.Length)));
         filesMarkedAsDeletedTextBox.Invoke(x => x.Text = mediaBackup.GetBackupFilesMarkedAsDeleted().Count().ToString("N0"));
@@ -401,7 +401,7 @@ internal sealed partial class Main
             listFilesWithDuplicateContentHashcodesButton, listMoviesWithMultipleFilesButton, processesGroupBox, pushoverGroupBox,
             listFilesGroupBox, allBackupDisksGroupBox, reportBackupDiskStatusButton, listFilesInDirectoryGroupBox, checkAllBackupDisksButton,
             checkDeleteAndCopyAllBackupDisksButton, monitoringButton, reportBackupDiskStatusButton, listFilesInDirectoryGroupBox,
-            listFilesOnBackupDiskGroupBox
+            listFilesOnBackupDiskGroupBox, openLogFileButton
         };
 
         // ReSharper restore BadListLineBreaks

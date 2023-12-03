@@ -494,13 +494,22 @@ internal sealed class FileSystemWatcher
 /// </summary>
 internal sealed class FileSystemWatcherEventArgs : EventArgs
 {
+    internal FileSystemWatcherEventArgs(string directory)
+    {
+        Directories = new List<FileSystemEntry>(1) { new(directory) };
+    }
+
+    internal FileSystemWatcherEventArgs(List<FileSystemEntry> directories)
+    {
+        Directories = directories;
+    }
+
     internal FileSystemWatcherEventArgs(BlockingCollection<FileSystemEntry> directoriesToScan)
     {
         Utils.TraceIn();
-        Directories = new FileSystemEntry[directoriesToScan.Count];
-        directoriesToScan.CopyTo(Directories, 0);
+        Directories = directoriesToScan.ToList();
 
-        // Empty the DirectoriesToScan because we've copied it into the array to return
+        // Empty the DirectoriesToScan because we've copied it into the List to return
         while (directoriesToScan.TryTake(out _)) { }
         Utils.TraceOut();
     }
@@ -508,5 +517,5 @@ internal sealed class FileSystemWatcherEventArgs : EventArgs
     /// <summary>
     ///     An Array of FileSystemEntry that have been changed
     /// </summary>
-    internal FileSystemEntry[] Directories { get; }
+    internal List<FileSystemEntry> Directories { get; }
 }

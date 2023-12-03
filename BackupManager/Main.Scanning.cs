@@ -60,9 +60,8 @@ internal sealed partial class Main
                 Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"{rule.Name} {rule.Message} {file}");
             }
             if (!mediaBackup.EnsureFile(file)) return Utils.TraceOut(false);
-
-            UpdateMediaFilesCountDisplay();
         }
+        UpdateMediaFilesCountDisplay();
         return Utils.TraceOut(true);
     }
 
@@ -79,84 +78,6 @@ internal sealed partial class Main
         UpdateStatusLabel(string.Format(Resources.Main_Scanning, string.Empty));
 
         foreach (var directory in mediaBackup.Config.Directories)
-        {
-            var scanInfo = new DirectoryScan(directory, DateTime.Now);
-            UpdateStatusLabel(string.Format(Resources.Main_Scanning, directory));
-
-            if (Directory.Exists(directory))
-            {
-                if (Utils.IsDirectoryWritable(directory))
-                {
-                    //We only want to check each root directory once so keep a Hashset of those we've already done
-                    var rootPath = Utils.GetRootPath(directory);
-
-                    if (!directoriesChecked.Contains(rootPath))
-                    {
-                        RootDirectoryChecks(rootPath);
-                        directoriesChecked.Add(rootPath);
-                    }
-                    ScanSingleDirectory(directory, SearchOption.AllDirectories);
-                    scanInfo.EndDateTime = DateTime.Now;
-                    mediaBackup.DirectoryScans.Add(scanInfo);
-                }
-                else
-                    Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"{directory} is not writable");
-            }
-            else
-                Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"{directory} doesn't exist");
-        }
-        UpdateStatusLabel(Resources.Main_Completed);
-
-        foreach (var rule in mediaBackup.Config.FileRules.Where(static rule => !rule.Matched))
-        {
-            Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"{rule.Name} didn't match any files");
-        }
-
-        // instead of removing files that are no longer found in Master Directories we now flag them as deleted so we can report them later
-        foreach (var backupFile in mediaBackup.BackupFiles.Where(static backupFile => !backupFile.Flag && backupFile.DiskChecked.HasValue()))
-        {
-            backupFile.Deleted = true;
-            backupFile.Flag = true;
-        }
-        mediaBackup.RemoveFilesWithFlag(false, true);
-        mediaBackup.UpdateLastFullScan();
-        mediaBackup.Save();
-        UpdateStatusLabel(Resources.Main_Saved);
-        UpdateMediaFilesCountDisplay();
-        var totalFiles = mediaBackup.BackupFiles.Count;
-        var totalFileSize = mediaBackup.BackupFiles.Sum(static p => p.Length);
-        var filesNotOnBackupDisk = mediaBackup.GetBackupFilesWithDiskEmpty();
-        var notOnBackupDisk = filesNotOnBackupDisk as BackupFile[] ?? filesNotOnBackupDisk.ToArray();
-        var fileSizeToCopy = notOnBackupDisk.Sum(static p => p.Length);
-        Utils.LogWithPushover(BackupAction.ScanDirectory, $"{totalFiles:n0} files at {Utils.FormatSize(totalFileSize)}");
-        var oldestFile = mediaBackup.GetOldestFile();
-
-        if (oldestFile != null)
-        {
-            var oldestFileDate = DateTime.Parse(oldestFile.DiskChecked);
-            var days = DateTime.Today.Subtract(oldestFileDate).Days;
-            var daysText = days == 1 ? string.Empty : "s";
-
-            Utils.LogWithPushover(BackupAction.ScanDirectory,
-                $"Oldest backup date is {days:n0} day{daysText} ago on {oldestFileDate.ToShortDateString()} on {oldestFile.Disk}");
-        }
-        Utils.LogWithPushover(BackupAction.ScanDirectory, $"{notOnBackupDisk.Length:n0} files to backup at {Utils.FormatSize(fileSizeToCopy)}");
-        Utils.LogWithPushover(BackupAction.ScanDirectory, "Completed");
-        return Utils.TraceOut(true);
-    }
-
-    /// <summary>
-    ///     Scans selected Directories
-    /// </summary>
-    /// <returns>True if successful otherwise False</returns>
-    private bool ScanSelectedDirectory(string directory)
-    {
-        Utils.TraceIn();
-        var directoriesChecked = new HashSet<string>();
-        mediaBackup.ClearFlags();
-        Utils.LogWithPushover(BackupAction.ScanDirectory, "Started");
-        UpdateStatusLabel(string.Format(Resources.Main_Scanning, string.Empty));
-
         {
             var scanInfo = new DirectoryScan(directory, DateTime.Now);
             UpdateStatusLabel(string.Format(Resources.Main_Scanning, directory));
@@ -311,9 +232,7 @@ internal sealed partial class Main
     {
         longRunningActionExecutingRightNow = true;
         DisableControlsForAsyncTasks();
-
-        if (!ScanSelectedDirectory(directory))
-            Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, Resources.Main_ScanDirectoriesAsync_Scan_Directories_failed);
+        ReadyToScan(new FileSystemWatcherEventArgs(directory), SearchOption.AllDirectories);
         ResetAllControls();
         longRunningActionExecutingRightNow = false;
     }

@@ -108,7 +108,7 @@ public sealed class FileSystemWatcherTest5
     {
         if (sender is not FileSystemWatcher watcher2) return;
 
-        Assert.True(e.Directories.Length == test5ExpectedEventFolderCount, nameof(e.Directories.Length));
+        Assert.True(e.Directories.Count == test5ExpectedEventFolderCount, nameof(e.Directories.Count));
         Assert.True(watcher2.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));
         Assert.True(watcher2.DirectoriesToScan.Count == 0, nameof(FileSystemWatcher.DirectoriesToScan.Count));
         test5EventsCounter++;

@@ -98,12 +98,12 @@ public sealed class EntityTests
         Assert.NotNull(mediaBackup.GetOldestFile());
 
         // GetBackupFilesInDirectory
-        var a = mediaBackup.GetBackupFilesInDirectory(pathToMovies);
+        var a = mediaBackup.GetBackupFilesInDirectory(pathToMovies, true);
         Assert.NotNull(a);
         Assert.Single(a);
 
         // GetBackupFilesNotMarkedAsDeleted
-        var c = mediaBackup.GetBackupFilesNotMarkedAsDeleted();
+        var c = mediaBackup.GetBackupFiles(false);
         Assert.NotNull(c);
         Assert.Equal(2, c.Count());
         backupFile.Deleted = true;

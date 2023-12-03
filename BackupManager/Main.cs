@@ -139,7 +139,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         var directory = listDirectoriesComboBox.SelectedItem.ToString();
-        var files = mediaBackup.GetBackupFilesInDirectory(directory);
+        var files = mediaBackup.GetBackupFilesInDirectory(directory, false);
         Utils.Log($"Listing files in directory {directory}");
 
         if (mediaBackup.Config.SpeedTestOnOff)
@@ -181,7 +181,7 @@ internal sealed partial class Main : Form
                 return;
             }
             var targetDirectory = restoreDirectoryComboBox.SelectedItem.ToString();
-            var files = mediaBackup.GetBackupFilesInDirectory(directory).Where(static p => p.Disk.HasValue());
+            var files = mediaBackup.GetBackupFilesInDirectory(directory, false).Where(static p => p.Disk.HasValue());
             Utils.Log(BackupAction.Restore, $"Restoring files from directory {directory}");
             Utils.Log(BackupAction.Restore, $"Restoring files to target directory {targetDirectory}");
             var backupShare = backupDiskTextBox.Text;
@@ -606,83 +606,86 @@ internal sealed partial class Main : Form
 
     private void FileSystemWatcher_ReadyToScan(object sender, FileSystemWatcherEventArgs e)
     {
-        Utils.TraceIn($"e.Directories = {e.Directories.Length}");
+        if (longRunningActionExecutingRightNow) return;
+
+        longRunningActionExecutingRightNow = true;
+        ReadyToScan(e, SearchOption.TopDirectoryOnly);
+        longRunningActionExecutingRightNow = false;
+    }
+
+    private void ReadyToScan(FileSystemWatcherEventArgs e, SearchOption searchOption)
+    {
+        Utils.TraceIn($"e.Directories = {e.Directories.Count}");
         var toSave = false;
 
-        if (!longRunningActionExecutingRightNow)
+        if (!e.Directories.Any())
         {
-            if (!e.Directories.Any())
-            {
-                Utils.TraceOut();
-                return;
-            }
-            var directoryList = new List<FileSystemEntry>();
-            directoryList.AddRange(e.Directories);
-
-            for (var i = directoryList.Count - 1; i >= 0; i--)
-            {
-                var directoryToScan = directoryList[i];
-                mediaBackup.ClearFlags();
-
-                var fileCountInDirectoryBefore = mediaBackup.BackupFiles.Count(b =>
-                    b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase));
-
-                if (ScanSingleDirectory(directoryToScan.Path, SearchOption.TopDirectoryOnly))
-                {
-                    var removedFilesCount = 0;
-                    var markedAsDeletedFilesCount = 0;
-                    directoryList.Remove(directoryToScan);
-                    UpdateSymbolicLinkForDirectory(directoryToScan.Path);
-
-                    // instead of removing files that are no longer found in a directory we now flag them as deleted so we can report them later
-                    // unless they aren't on a backup disk in which case they are removed now 
-                    var files = mediaBackup.BackupFiles.Where(static b => !b.Flag)
-                        .Where(b => b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase)).Where(b =>
-                            !b.FullPath.SubstringAfter(Utils.EnsurePathHasATerminatingSeparator(directoryToScan.Path),
-                                StringComparison.CurrentCultureIgnoreCase).Contains('\\')).ToList();
-
-                    for (var j = files.Count - 1; j >= 0; j--)
-                    {
-                        var backupFile = files[j];
-
-                        if (string.IsNullOrEmpty(backupFile.Disk))
-                        {
-                            mediaBackup.RemoveFile(backupFile);
-                            removedFilesCount++;
-                        }
-                        else
-                        {
-                            backupFile.Deleted = true;
-                            markedAsDeletedFilesCount++;
-                        }
-                    }
-
-                    var fileCountAfter = mediaBackup.BackupFiles.Count(b =>
-                        b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase));
-                    var filesNotOnBackupDiskCount = mediaBackup.GetBackupFilesWithDiskEmpty().Count();
-
-                    var text =
-                        $"Directory scan completed. {fileCountInDirectoryBefore} files before and now {fileCountAfter} files. {markedAsDeletedFilesCount} marked as deleted and {removedFilesCount} removed. {filesNotOnBackupDiskCount} to backup.";
-                    Utils.Log(BackupAction.ScanDirectory, text);
-                    toSave = true;
-                }
-                else
-                {
-                    var text = string.Format(Resources.Main_Directory_scan_skipped,
-                        Utils.FormatTimeFromSeconds(mediaBackup.Config.DirectoriesScanTimer));
-                    Utils.LogWithPushover(BackupAction.ScanDirectory, text);
-                }
-            }
-
-            if (toSave)
-            {
-                mediaBackup.Save();
-                UpdateStatusLabel(Resources.Main_Saved);
-                UpdateUI_Tick(null, null);
-                UpdateMediaFilesCountDisplay();
-            }
-            UpdateStatusLabel();
+            Utils.TraceOut();
+            return;
         }
+
+        for (var i = e.Directories.Count - 1; i >= 0; i--)
+        {
+            var directoryToScan = e.Directories[i];
+            mediaBackup.ClearFlags();
+
+            var fileCountInDirectoryBefore = mediaBackup.BackupFiles.Count(b =>
+                b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase));
+
+            if (ScanSingleDirectory(directoryToScan.Path, searchOption))
+            {
+                var removedFilesCount = 0;
+                var markedAsDeletedFilesCount = 0;
+                e.Directories.Remove(directoryToScan);
+                UpdateSymbolicLinkForDirectory(directoryToScan.Path);
+
+                // instead of removing files that are no longer found in a directory we now flag them as deleted so we can report them later
+                // unless they aren't on a backup disk in which case they are removed now 
+                var files = mediaBackup.BackupFiles.Where(static b => !b.Flag)
+                    .Where(b => b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase)).Where(b =>
+                        !b.FullPath.SubstringAfter(Utils.EnsurePathHasATerminatingSeparator(directoryToScan.Path),
+                            StringComparison.CurrentCultureIgnoreCase).Contains('\\')).ToList();
+
+                for (var j = files.Count - 1; j >= 0; j--)
+                {
+                    var backupFile = files[j];
+
+                    if (string.IsNullOrEmpty(backupFile.Disk))
+                    {
+                        mediaBackup.RemoveFile(backupFile);
+                        removedFilesCount++;
+                    }
+                    else
+                    {
+                        backupFile.Deleted = true;
+                        markedAsDeletedFilesCount++;
+                    }
+                }
+
+                var fileCountAfter = mediaBackup.BackupFiles.Count(b =>
+                    b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase));
+                var filesNotOnBackupDiskCount = mediaBackup.GetBackupFilesWithDiskEmpty().Count();
+
+                var text =
+                    $"Directory scan completed. {fileCountInDirectoryBefore} files before and now {fileCountAfter} files. {markedAsDeletedFilesCount} marked as deleted and {removedFilesCount} removed. {filesNotOnBackupDiskCount} to backup.";
+                Utils.Log(BackupAction.ScanDirectory, text);
+                toSave = true;
+            }
+            else
+            {
+                var text = string.Format(Resources.Main_Directory_scan_skipped, Utils.FormatTimeFromSeconds(mediaBackup.Config.DirectoriesScanTimer));
+                Utils.LogWithPushover(BackupAction.ScanDirectory, text);
+            }
+        }
+
+        if (toSave)
+        {
+            mediaBackup.Save();
+            UpdateStatusLabel(Resources.Main_Saved);
+            UpdateUI_Tick(null, null);
+            UpdateMediaFilesCountDisplay();
+        }
+        UpdateStatusLabel();
         Utils.TraceOut();
     }
 
@@ -754,14 +757,15 @@ internal sealed partial class Main : Form
         var distinctDirectories = mediaBackup.DirectoryScans.Distinct().ToList();
         var longestDirectoryLength = mediaBackup.DirectoryScans.Select(static d => d.Path.Length).Max();
         var headerLineDone = false;
-        var headerLine = string.Empty.PadRight(longestDirectoryLength + 2);
-        var totalLine = string.Empty.PadRight(longestDirectoryLength + 1);
+        var headerLine = string.Empty.PadRight(longestDirectoryLength + 10);
+        var totalLine = string.Empty.PadRight(longestDirectoryLength + 8);
         var totals = new TimeSpan[10];
 
         foreach (var directory in distinctDirectories)
         {
             var scans = mediaBackup.DirectoryScans.Where(scan => scan.Path == directory.Path).OrderBy(static scan => scan.EndDateTime).ToList();
-            var textLine = $"{directory.Path.PadRight(longestDirectoryLength + 1)}";
+            var fileCount = mediaBackup.GetBackupFilesInDirectory(directory.Path, false).Count();
+            var textLine = $"{directory.Path.PadRight(longestDirectoryLength + 1)} {fileCount,6:n0}";
             var maxValue = scans.Count < 10 ? scans.Count : 10;
 
             for (var i = 0; i < maxValue; i++)
@@ -811,9 +815,8 @@ internal sealed partial class Main : Form
         Utils.TraceIn();
 
         if (scanDirectoriesComboBox.SelectedIndex > -1)
-        {
-            if (!longRunningActionExecutingRightNow) TaskWrapper(ScanSelectedDirectoryAsync, scanDirectoriesComboBox.Text);
-        }
+            if (!longRunningActionExecutingRightNow)
+                TaskWrapper(ScanSelectedDirectoryAsync, scanDirectoriesComboBox.Text);
         Utils.TraceOut();
     }
 }
