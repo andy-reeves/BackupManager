@@ -419,18 +419,18 @@ public sealed class MediaBackup
     /// <returns></returns>
     public IEnumerable<BackupFile> GetBackupFiles(bool includeDeletedFiles)
     {
-        return includeDeletedFiles
-            ? BackupFiles.OrderBy(static q => q.BackupDiskNumber)
-            : BackupFiles.Where(static p => !p.Deleted).OrderBy(static q => q.BackupDiskNumber);
+        return includeDeletedFiles ? BackupFiles : BackupFiles.Where(static p => !p.Deleted);
     }
 
     /// <summary>
     ///     Get BackupFiles that are marked as Deleted only
     /// </summary>
     /// <returns></returns>
-    public IEnumerable<BackupFile> GetBackupFilesMarkedAsDeleted()
+    public IEnumerable<BackupFile> GetBackupFilesMarkedAsDeleted(bool orderByDiskNumber)
     {
-        return BackupFiles.Where(static p => p.Deleted).OrderBy(static q => q.BackupDiskNumber);
+        return orderByDiskNumber
+            ? BackupFiles.Where(static p => p.Deleted).OrderBy(static q => q.BackupDiskNumber)
+            : BackupFiles.Where(static p => p.Deleted);
     }
 
     /// <summary>

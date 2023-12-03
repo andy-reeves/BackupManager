@@ -583,7 +583,7 @@ internal sealed partial class Main : Form
     private void ListFilesMarkedAsDeletedButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        var files = mediaBackup.GetBackupFilesMarkedAsDeleted();
+        var files = mediaBackup.GetBackupFilesMarkedAsDeleted(true);
         Utils.Log("Listing files marked as deleted");
         var backupFiles = files as BackupFile[] ?? files.ToArray();
 

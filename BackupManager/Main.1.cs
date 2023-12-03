@@ -225,12 +225,20 @@ internal sealed partial class Main
 
     private void UpdateMediaFilesCountDisplay()
     {
-        totalFilesTextBox.Invoke(x => x.Text = mediaBackup.GetBackupFiles(false).Count().ToString("N0"));
-        totalFilesSizeTextBox.Invoke(x => x.Text = Utils.FormatSize(mediaBackup.GetBackupFiles(false).Sum(static y => y.Length)));
-        notOnABackupDiskTextBox.Invoke(x => x.Text = mediaBackup.GetBackupFilesWithDiskEmpty().Count().ToString("N0"));
-        notOnABackupDiskSizeTextBox.Invoke(x => x.Text = Utils.FormatSize(mediaBackup.GetBackupFilesWithDiskEmpty().Sum(static y => y.Length)));
-        filesMarkedAsDeletedTextBox.Invoke(x => x.Text = mediaBackup.GetBackupFilesMarkedAsDeleted().Count().ToString("N0"));
-        filesMarkedAsDeletedSizeTextBox.Invoke(x => x.Text = Utils.FormatSize(mediaBackup.GetBackupFilesMarkedAsDeleted().Sum(static y => y.Length)));
+        var backupFilesWithoutDeleted = mediaBackup.GetBackupFiles(false).ToList();
+        var backupFilesWithDiskEmpty = mediaBackup.GetBackupFilesWithDiskEmpty().ToList();
+        var backupFilesMarkedAsDeleted = mediaBackup.GetBackupFilesMarkedAsDeleted(false).ToList();
+        SetNewTextOnControlWithInvoke(totalFilesTextBox, backupFilesWithoutDeleted.Count.ToString("N0"));
+        SetNewTextOnControlWithInvoke(totalFilesSizeTextBox, Utils.FormatSize(backupFilesWithoutDeleted.Sum(static y => y.Length)));
+        SetNewTextOnControlWithInvoke(notOnABackupDiskTextBox, backupFilesWithDiskEmpty.Count.ToString("N0"));
+        SetNewTextOnControlWithInvoke(notOnABackupDiskSizeTextBox, Utils.FormatSize(backupFilesWithDiskEmpty.Sum(static y => y.Length)));
+        SetNewTextOnControlWithInvoke(filesMarkedAsDeletedTextBox, backupFilesMarkedAsDeleted.Count.ToString("N0"));
+        SetNewTextOnControlWithInvoke(filesMarkedAsDeletedSizeTextBox, Utils.FormatSize(backupFilesMarkedAsDeleted.Sum(static y => y.Length)));
+    }
+
+    private static void SetNewTextOnControlWithInvoke(Control control, string text)
+    {
+        if (text != control.Text) control.Invoke(x => { x.Text = text; });
     }
 
     private void StartFileSystemWatchers()
