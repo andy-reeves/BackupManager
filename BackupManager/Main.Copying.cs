@@ -66,9 +66,9 @@ internal sealed partial class Main
         var outOfDiskSpaceMessageSent = false;
         long copiedSoFar = 0;
         var fileCounter = 0;
-        var files = backupFiles.ToList();
+        var files = backupFiles.ToArray();
         var remainingSizeOfFilesToCopy = files.Sum(static x => x.Length);
-        var totalFileCount = files.Count;
+        var totalFileCount = files.Length;
         var sizeOfFiles = files.Sum(static x => x.Length);
 
         // Start with a 30MB/s copy speed as a guess

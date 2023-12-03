@@ -293,9 +293,9 @@ internal sealed partial class Main : Form
             else
                 allMovies.Add(movieId, file);
         }
-        var sortedList = backupFilesWithDuplicates.OrderBy(static o => o.FileName).ToList();
+        var sortedArray = backupFilesWithDuplicates.OrderBy(static o => o.FileName).ToArray();
 
-        foreach (var backupMovieDuplicate in sortedList)
+        foreach (var backupMovieDuplicate in sortedArray)
         {
             Utils.Log($"{backupMovieDuplicate.FullPath}");
         }
@@ -644,9 +644,9 @@ internal sealed partial class Main : Form
                 var files = mediaBackup.BackupFiles.Where(static b => !b.Flag)
                     .Where(b => b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase)).Where(b =>
                         !b.FullPath.SubstringAfter(Utils.EnsurePathHasATerminatingSeparator(directoryToScan.Path),
-                            StringComparison.CurrentCultureIgnoreCase).Contains('\\')).ToList();
+                            StringComparison.CurrentCultureIgnoreCase).Contains('\\')).ToArray();
 
-                for (var j = files.Count - 1; j >= 0; j--)
+                for (var j = files.Length - 1; j >= 0; j--)
                 {
                     var backupFile = files[j];
 
@@ -754,7 +754,7 @@ internal sealed partial class Main : Form
 
     private void DirectoriesScanReportButton_Click(object sender, EventArgs e)
     {
-        var distinctDirectories = mediaBackup.DirectoryScans.Distinct().ToList();
+        var distinctDirectories = mediaBackup.DirectoryScans.Distinct().ToArray();
         var longestDirectoryLength = mediaBackup.DirectoryScans.Select(static d => d.Path.Length).Max();
         var headerLineDone = false;
         var headerLine = string.Empty.PadRight(longestDirectoryLength + 10);
@@ -763,10 +763,10 @@ internal sealed partial class Main : Form
 
         foreach (var directory in distinctDirectories)
         {
-            var scans = mediaBackup.DirectoryScans.Where(scan => scan.Path == directory.Path).OrderBy(static scan => scan.EndDateTime).ToList();
+            var scans = mediaBackup.DirectoryScans.Where(scan => scan.Path == directory.Path).OrderBy(static scan => scan.EndDateTime).ToArray();
             var fileCount = mediaBackup.GetBackupFilesInDirectory(directory.Path, false).Count();
             var textLine = $"{directory.Path.PadRight(longestDirectoryLength + 1)} {fileCount,6:n0}";
-            var maxValue = scans.Count < 10 ? scans.Count : 10;
+            var maxValue = scans.Length < 10 ? scans.Length : 10;
 
             for (var i = 0; i < maxValue; i++)
             {

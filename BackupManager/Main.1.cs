@@ -156,12 +156,12 @@ internal sealed partial class Main
 
         var directoriesToCheck = mediaBackup.Config.SymbolicLinks
             .Select(static a => Path.Combine(a.RootDirectory, Utils.RemoveRegexGroupsFromString(a.RelativePath))).Where(Directory.Exists)
-            .SelectMany(Directory.EnumerateDirectories).ToList();
+            .SelectMany(Directory.EnumerateDirectories).ToArray();
 
         // check the symbolic links root folders for any broken links
-        EnableProgressBar(0, directoriesToCheck.Count);
+        EnableProgressBar(0, directoriesToCheck.Length);
 
-        for (var i = 0; i < directoriesToCheck.Count; i++)
+        for (var i = 0; i < directoriesToCheck.Length; i++)
         {
             var directoryToCheck = directoriesToCheck[i];
             UpdateStatusLabel(string.Format(Resources.Main_Checking, directoryToCheck), i);
@@ -225,14 +225,14 @@ internal sealed partial class Main
 
     private void UpdateMediaFilesCountDisplay()
     {
-        var backupFilesWithoutDeleted = mediaBackup.GetBackupFiles(false).ToList();
-        var backupFilesWithDiskEmpty = mediaBackup.GetBackupFilesWithDiskEmpty().ToList();
-        var backupFilesMarkedAsDeleted = mediaBackup.GetBackupFilesMarkedAsDeleted(false).ToList();
-        SetNewTextOnControlWithInvoke(totalFilesTextBox, backupFilesWithoutDeleted.Count.ToString("N0"));
+        var backupFilesWithoutDeleted = mediaBackup.GetBackupFiles(false).ToArray();
+        var backupFilesWithDiskEmpty = mediaBackup.GetBackupFilesWithDiskEmpty().ToArray();
+        var backupFilesMarkedAsDeleted = mediaBackup.GetBackupFilesMarkedAsDeleted(false).ToArray();
+        SetNewTextOnControlWithInvoke(totalFilesTextBox, backupFilesWithoutDeleted.Length.ToString("N0"));
         SetNewTextOnControlWithInvoke(totalFilesSizeTextBox, Utils.FormatSize(backupFilesWithoutDeleted.Sum(static y => y.Length)));
-        SetNewTextOnControlWithInvoke(notOnABackupDiskTextBox, backupFilesWithDiskEmpty.Count.ToString("N0"));
+        SetNewTextOnControlWithInvoke(notOnABackupDiskTextBox, backupFilesWithDiskEmpty.Length.ToString("N0"));
         SetNewTextOnControlWithInvoke(notOnABackupDiskSizeTextBox, Utils.FormatSize(backupFilesWithDiskEmpty.Sum(static y => y.Length)));
-        SetNewTextOnControlWithInvoke(filesMarkedAsDeletedTextBox, backupFilesMarkedAsDeleted.Count.ToString("N0"));
+        SetNewTextOnControlWithInvoke(filesMarkedAsDeletedTextBox, backupFilesMarkedAsDeleted.Length.ToString("N0"));
         SetNewTextOnControlWithInvoke(filesMarkedAsDeletedSizeTextBox, Utils.FormatSize(backupFilesMarkedAsDeleted.Sum(static y => y.Length)));
     }
 
@@ -418,7 +418,6 @@ internal sealed partial class Main
         {
             control.Invoke(static x => x.Enabled = true);
         }
-        if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
     }
 
     /// <summary>
@@ -465,7 +464,6 @@ internal sealed partial class Main
         }
         UpdateProgressBar(value);
         if (toolStripStatusLabel.Text != textToUse) statusStrip.Invoke(_ => toolStripStatusLabel.Text = textToUse);
-        if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
         Utils.TraceOut();
     }
 
