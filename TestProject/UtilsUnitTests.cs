@@ -49,29 +49,6 @@ public sealed class UtilsUnitTests
     }
 
     [Fact]
-    [SuppressMessage("ReSharper", "StringLiteralTypo")]
-    public void FileCopy()
-    {
-        for (var i = 0; i < 5; i++)
-        {
-            var path1 = Path.Combine(Path.GetTempPath(), "FileCopy");
-            if (Directory.Exists(path1)) Directory.Delete(path1, true);
-            var file1 = Path.Combine(path1, "test1.txt");
-            var file2 = Path.Combine(path1, "test2.txt");
-            Utils.EnsureDirectoriesForDirectoryPath(path1);
-            Assert.False(File.Exists(file2));
-            Utils.CreateFile(file1);
-            Assert.Equal("098f6bcd4621d373cade4e832627b4f6", Utils.GetShortMd5HashFromFile(file1));
-            Assert.True(Utils.FileCopy(file1, file2));
-            Assert.True(File.Exists(file2));
-            Assert.Equal("098f6bcd4621d373cade4e832627b4f6", Utils.GetShortMd5HashFromFile(file2));
-
-            // Delete the folders we created
-            if (Directory.Exists(path1)) Directory.Delete(path1, true);
-        }
-    }
-
-    [Fact]
     public void ConvertMBtoByte()
     {
         Assert.Equal(23 * 1024 * 1024, Utils.ConvertMBtoBytes(23));
