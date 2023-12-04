@@ -38,7 +38,9 @@ public sealed class FileSystemWatcherTests
         Assert.True(watcher.IncludeSubdirectories == false, nameof(watcher.IncludeSubdirectories));
         Assert.True(watcher.ScanInterval == 60_000, nameof(watcher.ScanInterval));
         Assert.True(watcher.Directories.Length == 0, nameof(watcher.Directories.Length));
-        Assert.True(watcher.NotifyFilter == (NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName), nameof(watcher.NotifyFilter));
+
+        Assert.True(watcher.NotifyFilter == (NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName),
+            nameof(watcher.NotifyFilter));
         Assert.True(watcher.ProcessChangesInterval == 30_000, nameof(watcher.ProcessChangesInterval));
         Assert.True(watcher.DirectoriesToScan.Count == 0, nameof(FileSystemWatcher.DirectoriesToScan.Count));
         Assert.True(watcher.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));
@@ -52,7 +54,7 @@ public sealed class FileSystemWatcherTests
         Assert.True(watcher.DirectoriesToScan.Count == 0, nameof(FileSystemWatcher.DirectoriesToScan.Count));
         Assert.True(watcher.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));
         Assert.False(watcher.Running);
-        watcher.Start();
+        _ = watcher.Start();
         Assert.True(watcher.Running);
         Utils.CreateFile(Path.Combine(monitoringPath1, "test1.txt"));
         Utils.CreateFile(Path.Combine(monitoringPath2, "test2.txt"));
@@ -62,7 +64,7 @@ public sealed class FileSystemWatcherTests
         Assert.True(watcher.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));
         Assert.True(watcher.DirectoriesToScan.Count == 0, nameof(FileSystemWatcher.DirectoriesToScan.Count));
         Assert.True(watcher.Running);
-        watcher.Stop();
+        _ = watcher.Stop();
         Assert.False(watcher.Running);
 
         //Unhook event handlers
@@ -93,7 +95,7 @@ public sealed class FileSystemWatcherTests
             NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName
         };
         watcher.ReadyToScan += FileSystemWatcher_ReadyToScan2;
-        Assert.Throws<ArgumentException>(() => watcher.Start());
+        _ = Assert.Throws<ArgumentException>(() => watcher.Start());
         Assert.False(watcher.Running);
 
         //Unhook event handlers

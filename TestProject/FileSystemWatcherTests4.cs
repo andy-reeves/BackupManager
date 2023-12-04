@@ -45,7 +45,7 @@ public sealed class FileSystemWatcherTests4
         };
         watcher.ReadyToScan += FileSystemWatcher_ReadyToScan4;
         Assert.False(watcher.Running);
-        watcher.Start();
+        _ = watcher.Start();
         Assert.True(watcher.Running);
 
         // Create a file in a subfolder of a monitored folder that already exists
@@ -70,7 +70,7 @@ public sealed class FileSystemWatcherTests4
         Utils.FileDelete(Path.Combine(monitoringPath2, "subFolder", "test2.txt"));
         Utils.Wait(waitInMilliseconds);
         Assert.True(test4EventsCounter == 3);
-        watcher.Stop();
+        _ = watcher.Stop();
         Assert.False(watcher.Running);
         Assert.True(watcher.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));
         Assert.True(watcher.DirectoriesToScan.Count == 0, nameof(FileSystemWatcher.DirectoriesToScan.Count));

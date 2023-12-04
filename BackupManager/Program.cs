@@ -37,7 +37,7 @@ file static class Program
         {
             //there is already another instance running!
             //Application.Exit();
-            MessageBox.Show(Resources.Program_Main_BackManager_is_already_running);
+            _ = MessageBox.Show(Resources.Program_Main_BackManager_is_already_running);
             Environment.Exit(-1);
         }
 
@@ -72,6 +72,6 @@ file static class Program
     private static void ShowExceptionDetails(Exception ex)
     {
         // Do logging of exception details
-        MessageBox.Show(ex.Message, ex.TargetSite?.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error);
+        _ = MessageBox.Show(ex.Message, ex.TargetSite?.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error);
     }
 }

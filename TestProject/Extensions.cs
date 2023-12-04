@@ -26,9 +26,10 @@ public sealed class Extensions
     [Fact]
     public void Control()
     {
+        const string text = "test";
         var a = new TextBox();
-        a.Invoke(static c => c.Text = "test");
-        Assert.Equal("test", a.Text);
+        a.Invoke(static c => c.Text = text);
+        Assert.Equal(text, a.Text);
     }
 
     [Fact]

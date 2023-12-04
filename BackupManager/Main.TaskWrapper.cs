@@ -21,7 +21,7 @@ internal sealed partial class Main
         tokenSource = new CancellationTokenSource();
         ct = tokenSource.Token;
 
-        Task.Run(methodName, ct).ContinueWith(u =>
+        _ = Task.Run(methodName, ct).ContinueWith(u =>
         {
             if (u.Exception == null) return;
 
@@ -39,7 +39,7 @@ internal sealed partial class Main
         tokenSource = new CancellationTokenSource();
         ct = tokenSource.Token;
 
-        Task.Run(() => methodName(param1), ct).ContinueWith(u =>
+        _ = Task.Run(() => methodName(param1), ct).ContinueWith(u =>
         {
             if (u.Exception == null) return;
 
@@ -57,7 +57,7 @@ internal sealed partial class Main
         tokenSource = new CancellationTokenSource();
         ct = tokenSource.Token;
 
-        Task.Run(() => methodName(param1), ct).ContinueWith(u =>
+        _ = Task.Run(() => methodName(param1), ct).ContinueWith(u =>
         {
             if (u.Exception == null) return;
 
@@ -75,7 +75,7 @@ internal sealed partial class Main
         tokenSource = new CancellationTokenSource();
         ct = tokenSource.Token;
 
-        Task.Run(() => methodName(param1, param2), ct).ContinueWith(u =>
+        _ = Task.Run(() => methodName(param1, param2), ct).ContinueWith(u =>
         {
             if (u.Exception == null) return;
 

@@ -27,12 +27,9 @@ using System.Runtime.CompilerServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("82c074d7-aa17-4c4d-af72-1d8f4416e85a")]
-
 [assembly: AssemblyFileVersion("1.0.0.0")]
-
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: NeutralResourcesLanguage("en-GB")]
-
 #if DEBUG
 [assembly: InternalsVisibleTo("TestProject")]
 #endif

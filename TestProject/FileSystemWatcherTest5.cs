@@ -17,6 +17,8 @@ namespace TestProject;
 [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
 public sealed class FileSystemWatcherTest5
 {
+    private readonly string monitoringPath3DeletedAfterABit = Path.Combine(Path.GetTempPath(), "Test5MonitoringFolder3");
+
     private int test5EventsCounter;
 
     private int test5EventsErrorCounter;
@@ -24,8 +26,6 @@ public sealed class FileSystemWatcherTest5
     private int test5ExpectedEventFolderCount;
 
     private FileSystemWatcher? watcher;
-
-    private readonly string monitoringPath3DeletedAfterABit = Path.Combine(Path.GetTempPath(), "Test5MonitoringFolder3");
 
     [Fact]
     public void FileSystemWatcherTest()
@@ -51,7 +51,7 @@ public sealed class FileSystemWatcherTest5
         watcher.ReadyToScan += FileSystemWatcher_ReadyToScan3;
         watcher.Error += FileSystemWatcher_ErrorTest3;
         Assert.False(watcher.Running);
-        watcher.Start();
+        _ = watcher.Start();
         Assert.True(watcher.Running);
 
         //delete a folder while we're monitoring it
@@ -76,7 +76,7 @@ public sealed class FileSystemWatcherTest5
         Assert.True(watcher.Running);
 
         // Stop everything
-        watcher.Stop();
+        _ = watcher.Stop();
         Assert.False(watcher.Running);
         Assert.True(watcher.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));
         Assert.True(watcher.DirectoriesToScan.Count == 0, nameof(FileSystemWatcher.DirectoriesToScan.Count));
@@ -99,7 +99,7 @@ public sealed class FileSystemWatcherTest5
 
         Utils.EnsureDirectoriesForDirectoryPath(monitoringPath3DeletedAfterABit);
         Assert.True(watcher.Reset());
-        watcher.Start();
+        _ = watcher.Start();
         Assert.True(watcher.Running);
         test5EventsErrorCounter++;
     }

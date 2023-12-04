@@ -48,7 +48,7 @@ public sealed class FileSystemWatcherTests3
         watcher.ReadyToScan += FileSystemWatcher_ReadyToScan3;
         watcher.Error += FileSystemWatcher_ErrorTest3;
         Assert.False(watcher.Running);
-        watcher.Start();
+        _ = watcher.Start();
         Assert.True(watcher.Running);
         test3ExpectedEventFolderCount = 4;
         Utils.CreateFile(Path.Combine(monitoringPath1, "test1.txt"));
@@ -60,19 +60,19 @@ public sealed class FileSystemWatcherTests3
         Assert.True(watcher.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));
         Assert.True(watcher.DirectoriesToScan.Count == 0, nameof(FileSystemWatcher.DirectoriesToScan.Count));
         Assert.True(watcher.Running);
-        watcher.Stop();
+        _ = watcher.Stop();
         Assert.False(watcher.Running);
 
         // Now delete a folder we are monitoring after we've stopped
         if (Directory.Exists(monitoringPath3DeletedAfterABit)) Directory.Delete(monitoringPath3DeletedAfterABit, true);
 
         // should fail to restart because a folder is missing now
-        Assert.Throws<ArgumentException>(() => watcher.Start());
+        _ = Assert.Throws<ArgumentException>(() => watcher.Start());
 
         // now create the folder again and start
         Utils.EnsureDirectoriesForDirectoryPath(monitoringPath3DeletedAfterABit);
         Assert.False(watcher.Running);
-        watcher.Start();
+        _ = watcher.Start();
         Assert.True(watcher.Running);
         test3ExpectedEventFolderCount = 4;
         Utils.CreateFile(Path.Combine(monitoringPath1, "test1.txt"));
@@ -95,12 +95,12 @@ public sealed class FileSystemWatcherTests3
         Assert.False(watcher.Running);
 
         // should fail to restart because a folder is missing now
-        Assert.Throws<ArgumentException>(() => watcher.Start());
+        _ = Assert.Throws<ArgumentException>(() => watcher.Start());
 
         // now create the folder again and start
         Utils.EnsureDirectoriesForDirectoryPath(monitoringPath3DeletedAfterABit);
         Assert.False(watcher.Running);
-        watcher.Start();
+        _ = watcher.Start();
         Assert.True(watcher.Running);
         test3ExpectedEventFolderCount = 4;
         Utils.CreateFile(Path.Combine(monitoringPath1, "test1.txt"));
@@ -111,7 +111,7 @@ public sealed class FileSystemWatcherTests3
         Assert.True(test3EventsCounter == 3);
         Assert.True(test3EventsErrorCounter == 1);
         Assert.True(watcher.Running);
-        watcher.Stop();
+        _ = watcher.Stop();
         Assert.False(watcher.Running);
         Assert.True(watcher.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));
         Assert.True(watcher.DirectoriesToScan.Count == 0, nameof(FileSystemWatcher.DirectoriesToScan.Count));

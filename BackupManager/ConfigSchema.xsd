@@ -33,7 +33,7 @@
         </xs:element>
         <xs:element type="xs:int" name="DirectoriesDaysBetweenFullScan" maxOccurs="1" minOccurs="0" />
         <xs:element type="xs:boolean" name="DirectoriesFileChangeWatcherOnOff" maxOccurs="1" minOccurs="0" />
-        <xs:element type="xs:int" name="DirectoriesFileChangeWatcherRestartDelay" maxOccurs="1" minOccurs="0"/>
+        <xs:element type="xs:int" name="DirectoriesFileChangeWatcherRestartDelay" maxOccurs="1" minOccurs="0" />
         <xs:element type="xs:string" name="DirectoriesFilterRegEx" maxOccurs="1" minOccurs="0">
           <xs:annotation>
             <xs:documentation>Only files matching this filter are used for File System scanning</xs:documentation>
@@ -74,8 +74,8 @@
           <xs:annotation>
             <xs:documentation>in seconds</xs:documentation>
           </xs:annotation>
-        </xs:element>    
-        <xs:element type="xs:boolean" name="MonitoringCheckLatestVersions"  maxOccurs="1" minOccurs="0" /> 
+        </xs:element>
+        <xs:element type="xs:boolean" name="MonitoringCheckLatestVersions" maxOccurs="1" minOccurs="0" />
         <xs:element type="xs:unsignedShort" name="MonitoringInterval" maxOccurs="1" minOccurs="0">
           <xs:annotation>
             <xs:documentation>Monitor interval in seconds</xs:documentation>
@@ -168,7 +168,7 @@
                         <xs:restriction base="xs:string">
                           <xs:enumeration value="master" />
                           <xs:enumeration value="develop" />
-                          <xs:enumeration value="v3" /> 
+                          <xs:enumeration value="v3" />
                         </xs:restriction>
                       </xs:simpleType>
                     </xs:element>

@@ -61,6 +61,7 @@ internal sealed partial class Main
         Utils.TraceOut();
     }
 
+    // ReSharper disable once FunctionComplexityOverflow
     private void CopyFilesLoop(IEnumerable<BackupFile> backupFiles, long sizeOfCopy, BackupDisk disk)
     {
         var outOfDiskSpaceMessageSent = false;
@@ -108,7 +109,7 @@ internal sealed partial class Main
                 // Sometimes during a copy we get this if we lose the connection to the source NAS drive
                 Utils.LogWithPushover(BackupAction.BackupFiles, PushoverPriority.Emergency, $"IOException during copy. Skipping file. Details {ex}");
             }
-            UpdateCurrentBackupDiskInfo(disk);
+            _ = UpdateCurrentBackupDiskInfo(disk);
             UpdateEstimatedFinish();
         }
     }
@@ -162,7 +163,7 @@ internal sealed partial class Main
         var destinationFileName = backupFile.BackupDiskFullPath(disk.BackupPath);
         var destinationFileNameTemp = destinationFileName + ".copying";
         UpdateStatusLabel(string.Format(Resources.Main_Copying, Path.GetFileName(sourceFileName)), Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
-        Utils.GetDiskInfo(backupDiskTextBox.Text, out var availableSpace, out _);
+        _ = Utils.GetDiskInfo(backupDiskTextBox.Text, out var availableSpace, out _);
 
         if (availableSpace > Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave) + sourceFileInfo.Length)
         {

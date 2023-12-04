@@ -19,6 +19,28 @@ namespace TestProject;
 public sealed class EntityTests
 {
     [Fact]
+    public void DirectoryScan()
+    {
+        var dateTime = DateTime.Now;
+        var a = new DirectoryScan(@"c:\testPath", dateTime);
+        Assert.Equal(@"c:\testPath", a.Path);
+        Assert.Equal(dateTime, a.StartDateTime);
+        Assert.Equal(DateTime.MinValue, a.EndDateTime);
+        Assert.Equal(TimeSpan.Zero, a.ScanDuration);
+        var endDate = dateTime.AddDays(1);
+        a.EndDateTime = endDate;
+        Assert.Equal(dateTime, a.StartDateTime);
+        Assert.Equal(endDate, a.EndDateTime);
+        Assert.Equal(new TimeSpan(1, 0, 0, 0), a.ScanDuration);
+        _ = TestMethod();
+    }
+
+    private static bool TestMethod()
+    {
+        return false;
+    }
+
+    [Fact]
     public void MediaBackup()
     {
         var pathToFiles = Path.Combine(Path.GetTempPath(), "BackupFile1");
@@ -84,13 +106,13 @@ public sealed class EntityTests
         Assert.NotNull(mediaBackup.GetBackupFileFromHashKey(@"_Movies\test1.txt"));
 
         // GetBackupFilesOnBackupDisk
-        var backupFiles = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, false);
+        IEnumerable<BackupFile> backupFiles = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, false);
         Assert.NotNull(backupFiles);
         Assert.Empty(backupFiles);
         backupFile.Disk = "backup 1000";
         backupFiles = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, false);
         Assert.NotNull(backupFiles);
-        Assert.Single(backupFiles);
+        _ = Assert.Single(backupFiles);
 
         // GetOldestFile
         Assert.Null(mediaBackup.GetOldestFile());
@@ -98,27 +120,27 @@ public sealed class EntityTests
         Assert.NotNull(mediaBackup.GetOldestFile());
 
         // GetBackupFilesInDirectory
-        var a = mediaBackup.GetBackupFilesInDirectory(pathToMovies, true);
+        IEnumerable<BackupFile> a = mediaBackup.GetBackupFilesInDirectory(pathToMovies, true);
         Assert.NotNull(a);
-        Assert.Single(a);
+        _ = Assert.Single(a);
 
         // GetBackupFilesNotMarkedAsDeleted
-        var c = mediaBackup.GetBackupFiles(false);
+        IEnumerable<BackupFile> c = mediaBackup.GetBackupFiles(false);
         Assert.NotNull(c);
         Assert.Equal(2, c.Count());
         backupFile.Deleted = true;
 
         // GetBackupFilesMarkedAsDeleted
-        var b = mediaBackup.GetBackupFilesMarkedAsDeleted(false);
+        IEnumerable<BackupFile> b = mediaBackup.GetBackupFilesMarkedAsDeleted(false);
         Assert.NotNull(b);
-        Assert.Single(b);
+        _ = Assert.Single(b);
 
         // GetBackupFilesWithDiskEmpty
         backupFile.Deleted = false;
-        var d = mediaBackup.GetBackupFilesWithDiskEmpty();
+        IEnumerable<BackupFile> d = mediaBackup.GetBackupFilesWithDiskEmpty();
         Assert.NotNull(d);
         var collection = d as BackupFile[] ?? d.ToArray();
-        Assert.Single(collection);
+        _ = Assert.Single(collection);
 
         foreach (var file in collection)
         {
@@ -143,7 +165,7 @@ public sealed class EntityTests
         Assert.NotEqual("2023-01-01", mediaBackup.DirectoriesLastFullScan);
 
         // GetBackFile (with files with the same hash in different locations)
-        mediaBackup.EnsureFile(pathToFile3);
+        _ = mediaBackup.EnsureFile(pathToFile3);
         var j = mediaBackup.GetBackupFile(pathToFile3);
         Assert.NotNull(j);
         Assert.Equal("test1.txt", j.RelativePath);
@@ -153,7 +175,7 @@ public sealed class EntityTests
 
         // Remove 
         mediaBackup.RemoveFile(backupFile);
-        Assert.Single(mediaBackup.BackupFiles);
+        _ = Assert.Single(mediaBackup.BackupFiles);
         mediaBackup.RemoveFilesWithFlag(false, false);
         Assert.Empty(mediaBackup.BackupFiles);
 
@@ -217,7 +239,7 @@ public sealed class EntityTests
         backupFile1.ClearDiskChecked();
         Assert.Equal("", backupFile1.DiskChecked);
         Assert.NotEqual(0, backupFile1.GetHashCode());
-        Utils.FileCopy(pathToFile1, pathToFile1OnBackupDisk);
+        _ = Utils.FileCopy(pathToFile1, pathToFile1OnBackupDisk);
         var backupDisk = new BackupDisk("backup 1000", pathToBackupShare);
         Assert.True(backupFile1.CheckContentHashes(backupDisk));
         File.AppendAllText(pathToFile1OnBackupDisk, "test");
@@ -240,7 +262,7 @@ public sealed class EntityTests
         Assert.NotNull(backupDisk.Checked);
         Assert.Equal(45, backupDisk.GetHashCode());
         Assert.Equal(backupDiskName, backupDisk.ToString());
-        backupDisk.Update(null);
+        _ = backupDisk.Update(null);
         Assert.NotEqual(0, backupDisk.Capacity);
         Assert.NotEqual(string.Empty, backupDisk.CapacityFormatted);
         Assert.NotEqual(0, backupDisk.Free);

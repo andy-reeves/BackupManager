@@ -89,7 +89,7 @@ public sealed class UtilsUnitTests
         Assert.True(Utils.IsDirectoryEmpty(path1));
         Assert.False(Utils.IsDirectoryEmpty(path1 + "bob"));
         Utils.CreateFile(file1);
-        Directory.CreateSymbolicLink(path2, path1);
+        _ = Directory.CreateSymbolicLink(path2, path1);
         Assert.False(Utils.IsDirectoryEmpty(path1));
         Assert.False(Utils.IsDirectoryEmpty(path2));
 

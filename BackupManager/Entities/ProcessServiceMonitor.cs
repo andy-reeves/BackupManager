@@ -97,7 +97,7 @@ public class ProcessServiceMonitor
 
         if (FailureRetryExceeded)
         {
-            Utils.TraceOut("FailureRetry=TRUE");
+            _ = Utils.TraceOut("FailureRetry=TRUE");
             return;
         }
         Failures.Add(newFailure);
@@ -116,6 +116,6 @@ public class ProcessServiceMonitor
             Utils.Trace("Setting FailureRetry=TRUE");
             FailureRetryExceeded = true;
         }
-        Utils.TraceOut($"Failures.Count = {Failures.Count}");
+        _ = Utils.TraceOut($"Failures.Count = {Failures.Count}");
     }
 }

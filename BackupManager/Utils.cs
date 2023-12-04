@@ -101,7 +101,7 @@ internal static partial class Utils
     /// <summary>
     ///     The number of bytes in one Terabyte. 2^40 bytes.
     /// </summary>
-    internal const long BytesInOneTerabyte = 1_099_511_627_776;
+    private const long BytesInOneTerabyte = 1_099_511_627_776;
 
     /// <summary>
     ///     The number of bytes in one Gigabyte. 2^30 bytes.
@@ -186,7 +186,7 @@ internal static partial class Utils
         process.StartInfo.FileName = "cmd";
         var notePadPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "notepad.exe");
         process.StartInfo.Arguments = $"/c start /max \"{notePadPath}\" \"{_logFile}\"";
-        process.Start();
+        _ = process.Start();
     }
 
     internal static void BackupLogFile()
@@ -531,7 +531,7 @@ internal static partial class Utils
 
             foreach (var item in eventHandler.GetInvocationList())
             {
-                eventInfo.GetRemoveMethod(fieldInfo.IsPrivate)?.Invoke(instance, new object[] { item });
+                _ = eventInfo.GetRemoveMethod(fieldInfo.IsPrivate)?.Invoke(instance, new object[] { item });
             }
         }
     }
@@ -541,14 +541,10 @@ internal static partial class Utils
     /// </summary>
     /// <param name="filePath">
     /// </param>
-#if DEBUG
-    internal static void EnsureDirectoriesForFilePath(string filePath)
-#else
     private static void EnsureDirectoriesForFilePath(string filePath)
-#endif
     {
         var directoryName = new FileInfo(filePath).DirectoryName;
-        if (directoryName != null) Directory.CreateDirectory(directoryName);
+        if (directoryName != null) _ = Directory.CreateDirectory(directoryName);
     }
 
     /// <summary>
@@ -1203,7 +1199,7 @@ internal static partial class Utils
     private static byte[] GetLocalFileByteArray(Stream stream, long offset, long byteCountToReturn)
 #endif
     {
-        stream.Seek(offset, SeekOrigin.Begin);
+        _ = stream.Seek(offset, SeekOrigin.Begin);
         var buffer = new byte[byteCountToReturn];
         int count;
         var sum = 0;
@@ -1606,7 +1602,7 @@ internal static partial class Utils
     {
         var xml = new XmlDocument();
         xml.Load(xmlPath);
-        xml.Schemas.Add(null, xsdPath);
+        _ = xml.Schemas.Add(null, xsdPath);
 
         try
         {

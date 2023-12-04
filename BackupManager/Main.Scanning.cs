@@ -33,12 +33,11 @@ internal sealed partial class Main
         Utils.LogWithPushover(BackupAction.ScanDirectory, $"{directoryToCheck}");
         Utils.Trace($"{directoryToCheck} {subDirectoryText}");
         UpdateStatusLabel(string.Format(Resources.Main_Scanning, directoryToCheck));
-        var filters = mediaBackup.GetFilters();
 
         var filtersToDelete = mediaBackup.Config.FilesToDelete
             .Select(static filter => new { filter, replace = filter.Replace(".", @"\.").Replace("*", ".*").Replace("?", ".") })
             .Select(static t => $"^{t.replace}$").ToArray();
-        var files = Utils.GetFiles(directoryToCheck, filters, searchOption);
+        var files = Utils.GetFiles(directoryToCheck, mediaBackup.GetFilters(), searchOption);
         EnableProgressBar(0, files.Length);
 
         for (var i = 0; i < files.Length; i++)
@@ -96,9 +95,9 @@ internal sealed partial class Main
                     if (!directoriesChecked.Contains(rootPath))
                     {
                         RootDirectoryChecks(rootPath);
-                        directoriesChecked.Add(rootPath);
+                        _ = directoriesChecked.Add(rootPath);
                     }
-                    ScanSingleDirectory(directory, SearchOption.AllDirectories);
+                    _ = ScanSingleDirectory(directory, SearchOption.AllDirectories);
                     scanInfo.EndDateTime = DateTime.Now;
                     mediaBackup.DirectoryScans.Add(scanInfo);
                 }
@@ -163,7 +162,6 @@ internal sealed partial class Main
     private void RootDirectoryChecks(string rootDirectory)
     {
         Utils.TraceIn(rootDirectory);
-#if !DEBUG
         long readSpeed = 0;
         long writeSpeed = 0;
         var filters = mediaBackup.GetFilters();
@@ -172,21 +170,36 @@ internal sealed partial class Main
         if (mediaBackup.Config.SpeedTestOnOff)
         {
             UpdateStatusLabel(string.Format(Resources.Main_SpeedTesting, rootDirectory));
-            Utils.DiskSpeedTest(rootDirectory, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed, ct);
+
+            Utils.DiskSpeedTest(rootDirectory, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations,
+                out readSpeed, out writeSpeed, ct);
         }
         var totalBytesOnRootDirectoryDiskFormatted = Utils.FormatSize(totalBytesOnRootDirectoryDisk);
         var freeSpaceOnRootDirectoryDiskFormatted = Utils.FormatSize(freeSpaceOnRootDirectoryDisk);
         var readSpeedFormatted = Utils.FormatSpeed(readSpeed);
         var writeSpeedFormatted = Utils.FormatSpeed(writeSpeed);
-        var text = $"{rootDirectory}\nTotal: {totalBytesOnRootDirectoryDiskFormatted}\nFree: {freeSpaceOnRootDirectoryDiskFormatted}\nRead: {readSpeedFormatted}\nWrite: {writeSpeedFormatted}";
+
+        var text =
+            $"{rootDirectory}\nTotal: {totalBytesOnRootDirectoryDiskFormatted}\nFree: {freeSpaceOnRootDirectoryDiskFormatted}\nRead: {readSpeedFormatted}\nWrite: {writeSpeedFormatted}";
         Utils.LogWithPushover(BackupAction.ScanDirectory, text);
 
         if (mediaBackup.Config.SpeedTestOnOff)
         {
-            if (readSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumReadSpeed)) Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"Read speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumReadSpeed))}");
-            if (writeSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumWriteSpeed)) Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"Write speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumWriteSpeed))}");
+            if (readSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumReadSpeed))
+            {
+                Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High,
+                    $"Read speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumReadSpeed))}");
+            }
+
+            if (writeSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumWriteSpeed))
+            {
+                Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High,
+                    $"Write speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumWriteSpeed))}");
+            }
         }
-        if (freeSpaceOnRootDirectoryDisk < Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumCriticalSpace)) Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"Free space on {rootDirectory} is too low");
+
+        if (freeSpaceOnRootDirectoryDisk < Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumCriticalSpace))
+            Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"Free space on {rootDirectory} is too low");
         UpdateStatusLabel(string.Format(Resources.Main_ScanFolders_Deleting_empty_folders_in__0_, rootDirectory));
         var directoriesDeleted = Utils.DeleteEmptyDirectories(rootDirectory);
 
@@ -206,9 +219,8 @@ internal sealed partial class Main
         foreach (var file in files)
         {
             Utils.Trace($"Checking {file}");
-            CheckForFilesToDelete(file, filtersToDelete);
+            _ = CheckForFilesToDelete(file, filtersToDelete);
         }
-#endif
         Utils.TraceOut();
     }
 

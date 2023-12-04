@@ -30,5 +30,4 @@ public sealed class UtilsCreateHashForByteArrayTest
         Assert.Equal("1416d38415ac751620b97eab7f433723", Utils.CreateHashForByteArray(firstByteArray, secondByteArray, thirdByteArray));
     }
 }
-
 #endif

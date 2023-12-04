@@ -122,7 +122,6 @@ internal sealed class FileSystemWatcher
     /// </summary>
     [SuppressMessage("ReSharper", "PropertyCanBeMadeInitOnly.Global")]
     [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
-
     internal NotifyFilters NotifyFilter
     {
         get => notifyFilter;
@@ -196,7 +195,7 @@ internal sealed class FileSystemWatcher
     {
         if (!Running) return;
 
-        Stop();
+        _ = Stop();
         Running = Start();
     }
 
@@ -316,9 +315,9 @@ internal sealed class FileSystemWatcher
     ///     Stops monitoring the directories for any more changes. Events no longer raised.
     /// </summary>
     /// <returns>True if we've stopped successfully or were already stopped</returns>
-    public void Stop()
+    public bool Stop()
     {
-        if (!Running) return;
+        if (!Running) return true;
 
         processChangesTimer?.Stop();
         scanDirectoriesTimer?.Stop();
@@ -328,7 +327,7 @@ internal sealed class FileSystemWatcher
             watcher.EnableRaisingEvents = false;
         }
         Running = false;
-        Utils.TraceOut(true);
+        return Utils.TraceOut(true);
     }
 
     /// <summary>
@@ -343,7 +342,7 @@ internal sealed class FileSystemWatcher
         if (e.ChangeType is not WatcherChangeTypes.Created and not WatcherChangeTypes.Changed and not WatcherChangeTypes.Deleted
             and not WatcherChangeTypes.Renamed)
         {
-            Utils.TraceOut("OnSomethingHappened exit as not created/changed/deleted/renamed");
+            _ = Utils.TraceOut("OnSomethingHappened exit as not created/changed/deleted/renamed");
             return;
         }
 
@@ -483,7 +482,7 @@ internal sealed class FileSystemWatcher
         }
 
         // Stop stops the timers and disables the watchers
-        Stop();
+        _ = Stop();
         var handler = Error;
         handler?.Invoke(watcher, e);
     }

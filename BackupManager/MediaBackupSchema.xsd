@@ -1,4 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+
 <xs:schema id="MediaBackupSchema" targetNamespace="MediaBackupSchema.xsd"
            xmlns="MediaBackupSchema.xsd"
            xmlns:mstns="MediaBackupSchema.xsd"
@@ -15,16 +16,16 @@
                   <xs:sequence>
                     <xs:element type="xs:string" name="Path" maxOccurs="1" minOccurs="1" />
                     <xs:element type="xs:string" name="Deleted" maxOccurs="1" minOccurs="0" />
-                    <xs:element type="xs:string" name="Directory" maxOccurs="1" minOccurs="1"/>
-                    <xs:element type="xs:string" name="Hash" maxOccurs="1" minOccurs="1"/>
-                    <xs:element type="xs:dateTime" name="LastWriteTime" maxOccurs="1" minOccurs="1"/>
-                    <xs:element type="xs:long" name="Length" maxOccurs="1" minOccurs="1"/>
+                    <xs:element type="xs:string" name="Directory" maxOccurs="1" minOccurs="1" />
+                    <xs:element type="xs:string" name="Hash" maxOccurs="1" minOccurs="1" />
+                    <xs:element type="xs:dateTime" name="LastWriteTime" maxOccurs="1" minOccurs="1" />
+                    <xs:element type="xs:long" name="Length" maxOccurs="1" minOccurs="1" />
                     <xs:element name="DiskChecked" maxOccurs="1" minOccurs="0" nillable="true">
                       <xs:simpleType>
                         <xs:union>
                           <xs:simpleType>
                             <xs:restriction base="xs:date">
-                              <xs:minInclusive value="1900-01-01"/>
+                              <xs:minInclusive value="1900-01-01" />
                             </xs:restriction>
                           </xs:simpleType>
                           <xs:simpleType>
@@ -51,7 +52,7 @@
                   <xs:sequence>
                     <xs:element type="xs:string" name="Name" maxOccurs="1" minOccurs="1" />
                     <xs:element type="xs:date" name="Checked" maxOccurs="1" minOccurs="0" />
-                    <xs:element type="xs:long" name="Capacity" maxOccurs="1" minOccurs="0"/>
+                    <xs:element type="xs:long" name="Capacity" maxOccurs="1" minOccurs="0" />
                     <xs:element type="xs:long" name="TotalFiles" maxOccurs="1" minOccurs="0" />
                     <xs:element type="xs:long" name="Free" maxOccurs="1" minOccurs="0" />
                     <xs:element type="xs:string" name="LastReadSpeed" maxOccurs="1" minOccurs="0" />
@@ -69,8 +70,8 @@
                 <xs:complexType>
                   <xs:sequence>
                     <xs:element type="xs:string" name="Path" maxOccurs="1" minOccurs="1" />
-                    <xs:element type="xs:dateTime" name="StartDateTime" maxOccurs="1" minOccurs="1"/>
-                    <xs:element type="xs:dateTime" name="EndDateTime" maxOccurs="1" minOccurs="1"/>
+                    <xs:element type="xs:dateTime" name="StartDateTime" maxOccurs="1" minOccurs="1" />
+                    <xs:element type="xs:dateTime" name="EndDateTime" maxOccurs="1" minOccurs="1" />
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
@@ -84,7 +85,7 @@
                 <xs:complexType>
                   <xs:sequence>
                     <xs:element type="xs:string" name="Path" maxOccurs="1" minOccurs="1" />
-                    <xs:element type="xs:dateTime" name="ModifiedDateTime" maxOccurs="1" minOccurs="1"/>
+                    <xs:element type="xs:dateTime" name="ModifiedDateTime" maxOccurs="1" minOccurs="1" />
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
@@ -97,7 +98,7 @@
               <xs:element name="FileSystemEntry" maxOccurs="unbounded" minOccurs="0">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element type="xs:string" name="Path" maxOccurs="1" minOccurs="1"/>
+                    <xs:element type="xs:string" name="Path" maxOccurs="1" minOccurs="1" />
                     <xs:element type="xs:dateTime" name="ModifiedDateTime" maxOccurs="1" minOccurs="1" />
                   </xs:sequence>
                 </xs:complexType>

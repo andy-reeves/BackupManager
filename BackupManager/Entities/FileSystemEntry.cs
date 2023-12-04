@@ -34,7 +34,6 @@ public sealed class FileSystemEntry : IEquatable<FileSystemEntry>
     /// <summary>
     ///     The path to the FileSystemEntry that changed
     /// </summary>
-
     public string Path { get; set; }
 
     private string InternalPath => Path;

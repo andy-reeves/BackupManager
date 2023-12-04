@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!-- ReSharper disable MarkupTextTypo -->
 <Config xmlns="ConfigSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                                                 xmlns:xsd="http://www.w3.org/2001/XMLSchema">  
- 
-  
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+
   <!-- After this many days the backup warns to check the disks again -->
   <BackupDiskDaysToReportSinceFilesChecked>90</BackupDiskDaysToReportSinceFilesChecked>
 
@@ -16,12 +17,12 @@
   <!-- MinimumFreeSpaceToLeaveOnBackupDisk in MB -->
   <BackupDiskMinimumFreeSpaceToLeave>201</BackupDiskMinimumFreeSpaceToLeave>
 
-  <!-- number of days before the next scan will be a full scan of the Master Folders --> 
+  <!-- number of days before the next scan will be a full scan of the Master Folders -->
   <DirectoriesDaysBetweenFullScan>7</DirectoriesDaysBetweenFullScan>
 
   <!-- True and the Directories are monitored for changes and not scanned fully each day -->
   <DirectoriesFileChangeWatcherOnOff>true</DirectoriesFileChangeWatcherOnOff>
-  
+
   <!-- If an error occurs whilst monitoring Directories we wait for this long before attempting to Reset the Watcher in seconds (120) -->
   <DirectoriesFileChangeWatcherRestartDelay>120</DirectoriesFileChangeWatcherRestartDelay>
 
@@ -45,7 +46,7 @@
 
   <!-- Number of seconds between checking all the directories ready to scan to see if they are old enough now (300) -->
   <DirectoriesScanTimer>20</DirectoriesScanTimer>
-   
+
   <!-- When true check for latest versions of applications -->
   <MonitoringCheckLatestVersions>true</MonitoringCheckLatestVersions>
 
@@ -54,7 +55,7 @@
 
   <!-- When true the service monitoring starts when the app starts -->
   <MonitoringOnOff>false</MonitoringOnOff>
- 
+
   <PlexToken>InsertYourPlexPassTokenHere</PlexToken>
 
   <PushoverAppToken>InsertYourPushoverAppTokenHere</PushoverAppToken>
@@ -89,7 +90,7 @@
 
   <!-- Number of disk speed test iterations to run -->
   <SpeedTestIterations>1</SpeedTestIterations>
- 
+
   <!-- If True we test the speed of the disks -->
   <SpeedTestOnOff>false</SpeedTestOnOff>
 
@@ -112,7 +113,7 @@
     <Directory>\\nas1\assets1\_Test\_Movies</Directory>
     <Directory>\\nas1\assets1\_Test\_TV</Directory>
   </Directories>
-  
+
   <Filters>
     <!-- RegEx's of file to ignore when executing a scan -->
     <FilterRegEx>!*.bup</FilterRegEx>
@@ -123,19 +124,19 @@
   </FilesToDelete>
   <DisksToSkipOnRestore />
   <SymbolicLinks>
-   <!-- we need to capture the path up to and including the movie name and also the movieName -->
-   <SymbolicLink>
-     <RootDirectory>J:\</RootDirectory>
-     <FileDiscoveryRegEx>^(.*\\_Movies(?:\s\(non-tmdb\))?\\(.*?))(?:$|\\)</FileDiscoveryRegEx>
-     <RelativePath>_Movies\$2</RelativePath>
-     <PathToTarget>$1</PathToTarget>
-   </SymbolicLink>
-   <SymbolicLink>
-     <RootDirectory>J:\</RootDirectory>
-     <FileDiscoveryRegEx>^(.*\\_TV(?:\s\(non-tvdb\))?\\(.*?))(?:$|\\)</FileDiscoveryRegEx>
-     <RelativePath>_TV\$2</RelativePath>
-     <PathToTarget>$1</PathToTarget>
-   </SymbolicLink>
+    <!-- we need to capture the path up to and including the movie name and also the movieName -->
+    <SymbolicLink>
+      <RootDirectory>J:\</RootDirectory>
+      <FileDiscoveryRegEx>^(.*\\_Movies(?:\s\(non-tmdb\))?\\(.*?))(?:$|\\)</FileDiscoveryRegEx>
+      <RelativePath>_Movies\$2</RelativePath>
+      <PathToTarget>$1</PathToTarget>
+    </SymbolicLink>
+    <SymbolicLink>
+      <RootDirectory>J:\</RootDirectory>
+      <FileDiscoveryRegEx>^(.*\\_TV(?:\s\(non-tvdb\))?\\(.*?))(?:$|\\)</FileDiscoveryRegEx>
+      <RelativePath>_TV\$2</RelativePath>
+      <PathToTarget>$1</PathToTarget>
+    </SymbolicLink>
   </SymbolicLinks>
 </Config>
 <!-- ReSharper restore MarkupTextTypo -->

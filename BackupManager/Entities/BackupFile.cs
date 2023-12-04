@@ -252,7 +252,8 @@ public sealed class BackupFile : IEquatable<BackupFile>
     /// </summary>
     public void UpdateLastWriteTime()
     {
-        LastWriteTime = Utils.GetFileLastWriteTime(FullPath);
+        var newLastWriteTime = Utils.GetFileLastWriteTime(FullPath);
+        if (LastWriteTime != newLastWriteTime) LastWriteTime = newLastWriteTime;
     }
 
     /// <summary>

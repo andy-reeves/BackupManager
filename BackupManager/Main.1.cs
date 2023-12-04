@@ -150,7 +150,7 @@ internal sealed partial class Main
                  where mediaBackup.Config.SymbolicLinks.Select(a => Regex.Match(directoryPath, a.FileDiscoveryRegEx)).Any(static m => m.Success)
                  select directoryPath)
         {
-            hashSet.Add(path);
+            _ = hashSet.Add(path);
         }
         UpdateStatusLabel("Checking for broken Symbolic Links");
 
@@ -218,7 +218,7 @@ internal sealed partial class Main
             if (path != null && Directory.Exists(path)) continue;
 
             Utils.Trace($"Creating new symbolic link at {path} with target {pathToTarget}");
-            if (path != null) Directory.CreateSymbolicLink(path, pathToTarget);
+            if (path != null) _ = Directory.CreateSymbolicLink(path, pathToTarget);
         }
         Utils.TraceOut();
     }
@@ -245,7 +245,7 @@ internal sealed partial class Main
     {
         Utils.TraceIn();
         if (mediaBackup.Watcher.Directories.Length == 0) SetupWatcher();
-        mediaBackup.Watcher.Start();
+        _ = mediaBackup.Watcher.Start();
         Utils.Trace($"mediaBackup.Watcher.Running = {mediaBackup.Watcher.Running}");
         Utils.TraceOut();
     }
@@ -330,7 +330,7 @@ internal sealed partial class Main
 
     private void StopFileSystemWatchers()
     {
-        mediaBackup.Watcher.Stop();
+        _ = mediaBackup.Watcher.Stop();
     }
 
     private void UpdateMonitoringButton()

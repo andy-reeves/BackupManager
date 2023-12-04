@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<MediaBackup  xmlns="MediaBackupSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<MediaBackup xmlns="MediaBackupSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <BackupFiles />
   <BackupDisks>
     <BackupDisk>
       <Name>backup 1001</Name>
       <Capacity>11995171454976</Capacity>
       <TotalFiles>0</TotalFiles>
-      <Free>796295471104</Free>   
+      <Free>796295471104</Free>
     </BackupDisk>
   </BackupDisks>
   <DirectoriesToScan />
