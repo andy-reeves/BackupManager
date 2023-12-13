@@ -35,7 +35,9 @@ public sealed class UtilsSpeedTests
         // check the test files are removed
         var tokenSource = new CancellationTokenSource();
         var ct = tokenSource.Token;
-        _ = Task.Run(() => Utils.DiskSpeedTest(@"c:\speedtest", 1000000000, 1, out _, out _, ct), ct).ContinueWith(static _ => { }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
+
+        _ = Task.Run(() => Utils.DiskSpeedTest(@"c:\speedtest", 1000000000, 1, out _, out _, ct), ct).ContinueWith(static _ => { }, default,
+            TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
         Utils.Wait(100);
         tokenSource.Cancel();
         Utils.Wait(200);

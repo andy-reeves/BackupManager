@@ -51,7 +51,8 @@ internal sealed partial class Main
             InitializeComponent();
             TraceConfiguration.Register();
 #if DEBUG
-            Trace.Listeners.Add(new TextWriterTraceListener(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"), "myListener"));
+            Trace.Listeners.Add(new TextWriterTraceListener(
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"), "myListener"));
 
             // ReSharper disable StringLiteralTypo
             // ReSharper disable CommentTypo

@@ -38,7 +38,9 @@ public sealed class FileSystemWatcherTests
         Assert.True(watcher.IncludeSubdirectories == false, nameof(watcher.IncludeSubdirectories));
         Assert.True(watcher.ScanInterval == 60_000, nameof(watcher.ScanInterval));
         Assert.True(watcher.Directories.Length == 0, nameof(watcher.Directories.Length));
-        Assert.True(watcher.NotifyFilter == (NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName), nameof(watcher.NotifyFilter));
+
+        Assert.True(watcher.NotifyFilter == (NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName),
+            nameof(watcher.NotifyFilter));
         Assert.True(watcher.ProcessChangesInterval == 30_000, nameof(watcher.ProcessChangesInterval));
         Assert.True(watcher.DirectoriesToScan.Count == 0, nameof(FileSystemWatcher.DirectoriesToScan.Count));
         Assert.True(watcher.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));
@@ -86,7 +88,12 @@ public sealed class FileSystemWatcherTests
         if (Directory.Exists(monitoringPath3Missing)) Directory.Delete(monitoringPath3Missing, true);
         Utils.EnsureDirectoriesForDirectoryPath(monitoringPath1);
         Utils.EnsureDirectoriesForDirectoryPath(monitoringPath2);
-        var watcher = new FileSystemWatcher { Directories = new[] { monitoringPath1, monitoringPath2, monitoringPath3Missing }, NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName };
+
+        var watcher = new FileSystemWatcher
+        {
+            Directories = new[] { monitoringPath1, monitoringPath2, monitoringPath3Missing },
+            NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName
+        };
         watcher.ReadyToScan += FileSystemWatcher_ReadyToScan2;
         _ = Assert.Throws<ArgumentException>(() => watcher.Start());
         Assert.False(watcher.Running);

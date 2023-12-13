@@ -99,13 +99,13 @@ internal sealed partial class Main : Form
         Utils.TraceIn();
         if (longRunningActionExecutingRightNow) return;
 
-        if (MessageBox.Show(Resources.Main_RecreateAllSymbolicLinks, Resources.Main_SymbolicLinksTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
-        {
-            tokenSource?.Dispose();
-            tokenSource = new CancellationTokenSource();
-            ct = tokenSource.Token;
-            _ = TaskWrapperAsync(UpdateSymbolicLinksAsync);
-        }
+        if (MessageBox.Show(Resources.Main_RecreateAllSymbolicLinks, Resources.Main_SymbolicLinksTitle, MessageBoxButtons.YesNo) != DialogResult.Yes)
+            return;
+
+        tokenSource?.Dispose();
+        tokenSource = new CancellationTokenSource();
+        ct = tokenSource.Token;
+        _ = TaskWrapperAsync(UpdateSymbolicLinksAsync);
     }
 
     private void CheckDiskAndDeleteButton_Click(object sender, EventArgs e)
@@ -895,83 +895,6 @@ internal sealed partial class Main : Form
             }
             else
                 Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"{directory} doesn't exist");
-        }
-    }
-
-    private void ScheduledBackupAsync()
-    {
-        longRunningActionExecutingRightNow = true;
-        DisableControlsForAsyncTasks();
-        Utils.LogWithPushover(BackupAction.ScanDirectory, "Started");
-        UpdateStatusLabel(string.Format(Resources.Main_Scanning, string.Empty));
-        fileBlockingCollection = new BlockingCollection<string>();
-
-        if (mediaBackup.Config.MonitoringOnOff)
-        {
-            Utils.LogWithPushover(BackupAction.General,
-                $"Service monitoring is running every {Utils.FormatTimeFromSeconds(mediaBackup.Config.MonitoringInterval)}");
-        }
-        else
-            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, "Service monitoring is not running");
-        long oldFileCount = mediaBackup.BackupFiles.Count;
-        var doFullBackup = false;
-        _ = DateTime.TryParse(mediaBackup.DirectoriesLastFullScan, out var backupFileDate);
-        if (backupFileDate.AddDays(mediaBackup.Config.DirectoriesDaysBetweenFullScan) < DateTime.Now) doFullBackup = true;
-
-        try
-        {
-            tokenSource?.Dispose();
-            tokenSource = new CancellationTokenSource();
-            ct = tokenSource.Token;
-
-            // Update the master files if we've not been monitoring directories directly
-            if (!mediaBackup.Config.DirectoriesFileChangeWatcherOnOff || doFullBackup)
-            {
-                // split the directories into group by the disk name
-                var diskNames = Utils.GetDiskNames(mediaBackup.Config.Directories);
-                RootDirectoryChecks(mediaBackup.Config.Directories);
-                var tasks = new List<Task>(diskNames.Length);
-
-                tasks.AddRange(diskNames.Select(diskName => Utils.GetDirectoriesForDisk(diskName, mediaBackup.Config.Directories))
-                    .Select(directoriesOnDisk => TaskWrapper(GetFilesAsync, directoriesOnDisk)));
-                Task.WhenAll(tasks).Wait(ct);
-                _ = ScanFiles(fileBlockingCollection, ct);
-            }
-            UpdateSymbolicLinks(ct);
-
-            if (mediaBackup.Config.BackupDiskDifferenceInFileCountAllowedPercentage != 0)
-            {
-                var minimumFileCountAllowed = oldFileCount - oldFileCount * mediaBackup.Config.BackupDiskDifferenceInFileCountAllowedPercentage / 100;
-                long newFileCount = mediaBackup.BackupFiles.Count;
-
-                if (newFileCount < minimumFileCountAllowed)
-                    throw new Exception("ERROR: The count of files to backup is too low. Check connections to nas drives");
-            }
-
-            // checks for backup disks not verified in > xx days
-            CheckForOldBackupDisks();
-
-            // Check the connected backup disk (removing any extra files we don't need)
-            _ = CheckConnectedDisk(true);
-
-            // Copy any files that need a backup
-            CopyFiles(true);
-
-            // reset the daily trigger
-            SetupDailyTrigger(mediaBackup.Config.ScheduledBackupOnOff);
-            Utils.Trace($"TriggerHour={trigger.TriggerHour}");
-            ResetAllControls();
-            longRunningActionExecutingRightNow = false;
-        }
-        catch (Exception u)
-        {
-            Utils.Trace("Exception in the TaskWrapper");
-
-            if (u.Message == "The operation was canceled.")
-                Utils.LogWithPushover(BackupAction.General, PushoverPriority.Normal, "Cancelling");
-            else
-                Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, string.Format(Resources.Main_TaskWrapperException, u));
-            ASyncTasksCleanUp();
         }
     }
 
