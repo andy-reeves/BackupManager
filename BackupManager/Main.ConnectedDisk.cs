@@ -131,7 +131,7 @@ internal sealed partial class Main
         }
         UpdateMediaFilesCountDisplay();
         UpdateStatusLabel(string.Format(Resources.Main_Scanning, directoryToCheck));
-        var backupDiskFiles = Utils.GetFiles(directoryToCheck, "*", SearchOption.AllDirectories, FileAttributes.Hidden);
+        var backupDiskFiles = Utils.GetFiles(directoryToCheck, "*", SearchOption.AllDirectories, FileAttributes.Hidden, ct);
         EnableProgressBar(0, backupDiskFiles.Length);
 
         for (var i = 0; i < backupDiskFiles.Length; i++)

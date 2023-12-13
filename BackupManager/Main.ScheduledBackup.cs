@@ -38,8 +38,8 @@ internal sealed partial class Main
             // Update the master files if we've not been monitoring directories directly
             if (!mediaBackup.Config.DirectoriesFileChangeWatcherOnOff || doFullBackup)
             {
-                ScanDirectories();
-                UpdateSymbolicLinks();
+                _ = ScanDirectories();
+                UpdateSymbolicLinks(ct);
             }
 
             if (mediaBackup.Config.BackupDiskDifferenceInFileCountAllowedPercentage != 0)
@@ -55,7 +55,7 @@ internal sealed partial class Main
             CheckForOldBackupDisks();
 
             // Check the connected backup disk (removing any extra files we don't need)
-            CheckConnectedDisk(true);
+            _ = CheckConnectedDisk(true);
 
             // Copy any files that need a backup
             CopyFiles(true);
@@ -90,21 +90,5 @@ internal sealed partial class Main
             timeToNextRunTextBox.Text = string.Empty;
         }
         Utils.TraceOut();
-    }
-
-    private void ScheduledBackupAsync()
-    {
-        // This is so if the timer goes off to start and we're doing something else it's skipped
-        if (longRunningActionExecutingRightNow) return;
-
-        longRunningActionExecutingRightNow = true;
-        DisableControlsForAsyncTasks();
-        ScheduledBackup();
-
-        // reset the daily trigger
-        SetupDailyTrigger(mediaBackup.Config.ScheduledBackupOnOff);
-        Utils.Trace($"TriggerHour={trigger.TriggerHour}");
-        ResetAllControls();
-        longRunningActionExecutingRightNow = false;
     }
 }

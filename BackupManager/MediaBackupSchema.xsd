@@ -69,6 +69,7 @@
               <xs:element name="DirectoryScan" maxOccurs="unbounded" minOccurs="0">
                 <xs:complexType>
                   <xs:sequence>
+                    <xs:element type="xs:string" name="TypeOfScan" maxOccurs="1" minOccurs="1" />
                     <xs:element type="xs:string" name="Path" maxOccurs="1" minOccurs="1" />
                     <xs:element type="xs:dateTime" name="StartDateTime" maxOccurs="1" minOccurs="1" />
                     <xs:element type="xs:dateTime" name="EndDateTime" maxOccurs="1" minOccurs="1" />

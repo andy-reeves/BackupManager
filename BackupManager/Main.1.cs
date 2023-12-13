@@ -38,6 +38,7 @@ internal sealed partial class Main
 
     private bool monitoringExecutingRightNow;
 
+    // Always create a new one before running a long running task
     private CancellationTokenSource tokenSource;
 
     private DailyTrigger trigger;
@@ -50,8 +51,7 @@ internal sealed partial class Main
             InitializeComponent();
             TraceConfiguration.Register();
 #if DEBUG
-            Trace.Listeners.Add(new TextWriterTraceListener(
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"), "myListener"));
+            Trace.Listeners.Add(new TextWriterTraceListener(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"), "myListener"));
 
             // ReSharper disable StringLiteralTypo
             // ReSharper disable CommentTypo
@@ -92,7 +92,7 @@ internal sealed partial class Main
             {
                 processesComboBox.Items.Add(monitor.Name);
             }
-            scheduledBackupAction = () => { TaskWrapper(ScheduledBackupAsync); };
+            scheduledBackupAction = () => { _ = TaskWrapperAsync(ScheduledBackupAsync); };
             monitoringAction = MonitorServices;
             scheduledDateTimePicker.Value = DateTime.Parse(mediaBackup.Config.ScheduledBackupStartTime);
             UpdateSendingPushoverButton();
@@ -131,12 +131,12 @@ internal sealed partial class Main
     {
         longRunningActionExecutingRightNow = true;
         DisableControlsForAsyncTasks();
-        UpdateSymbolicLinks();
+        UpdateSymbolicLinks(ct);
         ResetAllControls();
         longRunningActionExecutingRightNow = false;
     }
 
-    private void UpdateSymbolicLinks()
+    private void UpdateSymbolicLinks(CancellationToken token)
     {
         Utils.TraceIn();
         UpdateStatusLabel("Started");
@@ -150,6 +150,7 @@ internal sealed partial class Main
                  where mediaBackup.Config.SymbolicLinks.Select(a => Regex.Match(directoryPath, a.FileDiscoveryRegEx)).Any(static m => m.Success)
                  select directoryPath)
         {
+            if (token.IsCancellationRequested) token.ThrowIfCancellationRequested();
             _ = hashSet.Add(path);
         }
         UpdateStatusLabel("Checking for broken Symbolic Links");
@@ -163,6 +164,7 @@ internal sealed partial class Main
 
         for (var i = 0; i < directoriesToCheck.Length; i++)
         {
+            if (token.IsCancellationRequested) token.ThrowIfCancellationRequested();
             var directoryToCheck = directoriesToCheck[i];
             UpdateStatusLabel(string.Format(Resources.Main_Checking, directoryToCheck), i);
             var linksDeleted = Utils.DeleteBrokenSymbolicLinks(directoryToCheck, true);
@@ -177,6 +179,7 @@ internal sealed partial class Main
 
         foreach (var path in hashSet)
         {
+            if (token.IsCancellationRequested) token.ThrowIfCancellationRequested();
             fileCounter++;
             UpdateStatusLabel(string.Format(Resources.Main_Checking, path), Convert.ToInt32(fileCounter * 100 / hashSet.Count));
             UpdateSymbolicLinkForDirectory(path);

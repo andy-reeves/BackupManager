@@ -5,10 +5,13 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 using BackupManager.Entities;
 using BackupManager.Extensions;
@@ -19,31 +22,62 @@ namespace BackupManager;
 internal sealed partial class Main
 {
     /// <summary>
-    ///     Scan the directory provided.
+    ///     Scan the directories provided.
     /// </summary>
     /// <param name="directoryToCheck">The full path to scan</param>
     /// <param name="searchOption">Whether to search subdirectories</param>
-    /// <returns>True if the scan was successful otherwise False. Returns True if the directory doesn't exist</returns>
+    /// <returns>True if the scan was successful otherwise False. Returns True if the directories doesn't exist</returns>
     private bool ScanSingleDirectory(string directoryToCheck, SearchOption searchOption)
     {
         Utils.TraceIn(directoryToCheck, searchOption);
         if (!Directory.Exists(directoryToCheck)) return Utils.TraceOut(true);
 
-        var subDirectoryText = searchOption == SearchOption.TopDirectoryOnly ? "directory only" : "and subdirectories";
         Utils.LogWithPushover(BackupAction.ScanDirectory, $"{directoryToCheck}");
-        Utils.Trace($"{directoryToCheck} {subDirectoryText}");
         UpdateStatusLabel(string.Format(Resources.Main_Scanning, directoryToCheck));
+        var files = Utils.GetFiles(directoryToCheck, mediaBackup.GetFilters(), searchOption, ct);
+        var subDirectoryText = searchOption == SearchOption.TopDirectoryOnly ? "directories only" : "and subdirectories";
+        Utils.Trace($"{directoryToCheck} {subDirectoryText}");
+        return ScanFiles(files, ct);
+    }
 
+    private bool ScanFiles(IReadOnlyCollection<string> filesParam, CancellationToken token)
+    {
         var filtersToDelete = mediaBackup.Config.FilesToDelete
             .Select(static filter => new { filter, replace = filter.Replace(".", @"\.").Replace("*", ".*").Replace("?", ".") })
             .Select(static t => $"^{t.replace}$").ToArray();
-        var files = Utils.GetFiles(directoryToCheck, mediaBackup.GetFilters(), searchOption);
-        EnableProgressBar(0, files.Length);
+        EnableProgressBar(0, filesParam.Count);
+        Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, "Processing scanned files");
+        var reportedPercentComplete = 0;
 
-        for (var i = 0; i < files.Length; i++)
+        // order the files by path so we can track when the monitored directories are changing for scan timings
+        var files = filesParam.OrderBy(static f => f.ToString()).ToList();
+        var directoryScanning = string.Empty;
+        var firstDir = true;
+        DirectoryScan scanInfo = null;
+
+        for (var i = 0; i < files.Count; i++)
         {
+            if (token.IsCancellationRequested) token.ThrowIfCancellationRequested();
+            var currentPercentComplete = i * 100 / files.Count;
+
+            if (currentPercentComplete % 10 == 0 && currentPercentComplete > reportedPercentComplete)
+            {
+                Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, $"Scanning {currentPercentComplete}%");
+                reportedPercentComplete = currentPercentComplete;
+            }
             var file = files[i];
+            _ = mediaBackup.GetFoldersForPath(file, out var directory, out _);
+
+            if (directory != directoryScanning)
+            {
+                if (!firstDir) scanInfo.EndDateTime = DateTime.Now;
+                scanInfo = new DirectoryScan(DirectoryScanType.ProcessingFiles, directory, DateTime.Now);
+                mediaBackup.DirectoryScans.Add(scanInfo);
+                directoryScanning = directory;
+                firstDir = false;
+            }
             Utils.Trace($"Checking {file}");
+            var directoryToCheck = new FileInfo(file).DirectoryName;
             UpdateStatusLabel(string.Format(Resources.Main_Scanning, directoryToCheck), i + 1);
             if (CheckForFilesToDelete(file, filtersToDelete)) continue;
 
@@ -82,14 +116,14 @@ internal sealed partial class Main
 
         foreach (var directory in mediaBackup.Config.Directories)
         {
-            var scanInfo = new DirectoryScan(directory, DateTime.Now);
+            var scanInfo = new DirectoryScan(DirectoryScanType.ProcessingFiles, directory, DateTime.Now);
             UpdateStatusLabel(string.Format(Resources.Main_Scanning, directory));
 
             if (Directory.Exists(directory))
             {
                 if (Utils.IsDirectoryWritable(directory))
                 {
-                    //We only want to check each root directory once so keep a Hashset of those we've already done
+                    //We only want to check each root directories once so keep a Hashset of those we've already done
                     var rootPath = Utils.GetRootPath(directory);
 
                     if (!directoriesChecked.Contains(rootPath))
@@ -200,17 +234,10 @@ internal sealed partial class Main
 
         if (freeSpaceOnRootDirectoryDisk < Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumCriticalSpace))
             Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"Free space on {rootDirectory} is too low");
-        UpdateStatusLabel(string.Format(Resources.Main_ScanFolders_Deleting_empty_folders_in__0_, rootDirectory));
-        var directoriesDeleted = Utils.DeleteEmptyDirectories(rootDirectory);
-
-        foreach (var directory in directoriesDeleted)
-        {
-            Utils.Log(BackupAction.ScanDirectory, $"Deleted empty folder {directory}");
-        }
         UpdateStatusLabel(string.Format(Resources.Main_Scanning, rootDirectory));
 
-        // Check for files in this root directory 
-        var files = Utils.GetFiles(rootDirectory, filters, SearchOption.TopDirectoryOnly);
+        // Check for files in this root directories 
+        var files = Utils.GetFiles(rootDirectory, filters, SearchOption.TopDirectoryOnly, ct);
 
         var filtersToDelete = mediaBackup.Config.FilesToDelete
             .Select(static filter => new { filter, replace = filter.Replace(".", @"\.").Replace("*", ".*").Replace("?", ".") })
@@ -237,18 +264,68 @@ internal sealed partial class Main
     // ReSharper restore StringLiteralTypo
     private static partial Regex MoviesFilenameRegex();
 
-    private void ScanDirectoryAsync()
+    private void ScanAllDirectoriesAsync()
     {
         longRunningActionExecutingRightNow = true;
         DisableControlsForAsyncTasks();
 
-        if (!ScanDirectories())
-            Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, Resources.Main_ScanDirectoriesAsync_Scan_Directories_failed);
-        ResetAllControls();
-        longRunningActionExecutingRightNow = false;
+        try
+        {
+            tokenSource?.Dispose();
+            tokenSource = new CancellationTokenSource();
+            ct = tokenSource.Token;
+            Utils.LogWithPushover(BackupAction.ScanDirectory, "Started");
+            fileBlockingCollection = new BlockingCollection<string>();
+
+            // split the directories into group by the disk name
+            var diskNames = Utils.GetDiskNames(mediaBackup.Config.Directories);
+            RootDirectoryChecks(mediaBackup.Config.Directories);
+            var tasks = new List<Task>(diskNames.Length);
+
+            tasks.AddRange(diskNames.Select(diskName => Utils.GetDirectoriesForDisk(diskName, mediaBackup.Config.Directories))
+                .Select(directoriesOnDisk => TaskWrapper(GetFilesAsync, directoriesOnDisk)));
+            Task.WhenAll(tasks).Wait(ct);
+
+            if (!ScanFiles(fileBlockingCollection, ct))
+            {
+                Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal,
+                    Resources.Main_ScanDirectoriesAsync_Scan_Directories_failed);
+            }
+            ResetAllControls();
+            longRunningActionExecutingRightNow = false;
+        }
+        catch (Exception u)
+        {
+            Utils.Trace("Exception in the TaskWrapper");
+
+            if (u.Message != "The operation was canceled.")
+                Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, string.Format(Resources.Main_TaskWrapperException, u));
+            ASyncTasksCleanUp();
+        }
     }
 
-    private void ScanSelectedDirectoryAsync(string directory)
+    private void GetFilesAsync(string[] directories)
+    {
+        var filters = mediaBackup.GetFilters();
+
+        foreach (var directory in directories)
+        {
+            var directoryScan = new DirectoryScan(DirectoryScanType.GetFiles, directory, DateTime.Now);
+            Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, string.Format(Resources.Main_Scanning, directory));
+            if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+            UpdateStatusLabel(string.Format(Resources.Main_Scanning, directory));
+            var files = Utils.GetFiles(directory, filters, SearchOption.AllDirectories, ct);
+            directoryScan.EndDateTime = DateTime.Now;
+            mediaBackup.DirectoryScans.Add(directoryScan);
+
+            foreach (var file in files)
+            {
+                fileBlockingCollection.Add(file, ct);
+            }
+        }
+    }
+
+    private void ScanDirectoryAsync(string directory)
     {
         longRunningActionExecutingRightNow = true;
         DisableControlsForAsyncTasks();

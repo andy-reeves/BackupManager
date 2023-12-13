@@ -22,7 +22,7 @@ public sealed class EntityTests
     public void DirectoryScan()
     {
         var dateTime = DateTime.Now;
-        var a = new DirectoryScan(@"c:\testPath", dateTime);
+        var a = new DirectoryScan(DirectoryScanType.ProcessingFiles, @"c:\testPath", dateTime);
         Assert.Equal(@"c:\testPath", a.Path);
         Assert.Equal(dateTime, a.StartDateTime);
         Assert.Equal(DateTime.MinValue, a.EndDateTime);
@@ -62,10 +62,7 @@ public sealed class EntityTests
         Utils.CreateFile(pathToFile1);
         Utils.CreateFile(pathToFile2);
         Utils.CreateFile(pathToFile3);
-
-        var mediaBackup =
-            BackupManager.Entities.MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)),
-                "..\\BackupManager\\MediaBackup.xml"));
+        var mediaBackup = BackupManager.Entities.MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)), "..\\BackupManager\\MediaBackup.xml"));
         mediaBackup.BackupMediaFile();
         mediaBackup.Config.Directories.Add(pathToMovies);
         mediaBackup.Config.Directories.Add(pathToTv);

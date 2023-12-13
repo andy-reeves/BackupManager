@@ -65,6 +65,8 @@ internal static partial class Utils
 
     private const int OpenExisting = 3;
 
+    private static readonly object _lock = new();
+
     #region Constants
 
 #if DEBUG
@@ -146,8 +148,7 @@ internal static partial class Utils
     ///     The path to the Log file
     /// </summary>
 #if DEBUG
-    private static readonly string _logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-        "BackupManager_Debug.log");
+    private static readonly string _logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Debug.log");
 #else
     private static readonly string _logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager.log");
 #endif
@@ -189,7 +190,7 @@ internal static partial class Utils
         _ = process.Start();
     }
 
-    internal static void BackupLogFile()
+    internal static void BackupLogFile(CancellationToken ct)
     {
         var timeLog = DateTime.Now.ToString("yy-MM-dd-HH-mm-ss");
 #if DEBUG
@@ -203,7 +204,8 @@ internal static partial class Utils
         if (File.Exists(_logFile)) FileMove(_logFile, destLogFile);
 
         var traceFiles = GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "*BackupManager_Trace.log",
-            SearchOption.TopDirectoryOnly);
+            SearchOption.TopDirectoryOnly, ct);
+        if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
 
         foreach (var file in traceFiles)
         {
@@ -562,9 +564,10 @@ internal static partial class Utils
     /// <param name="path">
     ///     The path.
     /// </param>
-    internal static string[] GetFiles(string path)
+    /// <param name="ct"></param>
+    internal static string[] GetFiles(string path, CancellationToken ct)
     {
-        return GetFiles(path, "*", SearchOption.AllDirectories, 0, 0);
+        return GetFiles(path, "*", SearchOption.AllDirectories, 0, 0, true, ct);
     }
 
     /// <summary>
@@ -576,11 +579,12 @@ internal static partial class Utils
     /// <param name="filters">
     ///     The filters.
     /// </param>
+    /// <param name="ct"></param>
     /// <returns>
     /// </returns>
-    internal static string[] GetFiles(string path, string filters)
+    internal static string[] GetFiles(string path, string filters, CancellationToken ct)
     {
-        return GetFiles(path, filters, SearchOption.AllDirectories, 0, 0);
+        return GetFiles(path, filters, SearchOption.AllDirectories, 0, 0, true, ct);
     }
 
     /// <summary>
@@ -598,11 +602,13 @@ internal static partial class Utils
     /// <param name="directoryAttributesToIgnore">
     ///     The directory attributes to ignore.
     /// </param>
+    /// <param name="ct"></param>
     /// <returns>
     /// </returns>
-    internal static string[] GetFiles(string path, string filters, SearchOption searchOption, FileAttributes directoryAttributesToIgnore)
+    internal static string[] GetFiles(string path, string filters, SearchOption searchOption, FileAttributes directoryAttributesToIgnore,
+        CancellationToken ct)
     {
-        return GetFiles(path, filters, searchOption, directoryAttributesToIgnore, 0);
+        return GetFiles(path, filters, searchOption, directoryAttributesToIgnore, 0, true, ct);
     }
 
     /// <summary>
@@ -617,11 +623,29 @@ internal static partial class Utils
     /// <param name="searchOption">
     ///     The search option.
     /// </param>
+    /// <param name="ct"></param>
     /// <returns>
     /// </returns>
-    internal static string[] GetFiles(string path, string filters, SearchOption searchOption)
+    internal static string[] GetFiles(string path, string filters, SearchOption searchOption, CancellationToken ct)
     {
-        return GetFiles(path, filters, searchOption, 0, 0);
+        return GetFiles(path, filters, searchOption, 0, 0, true, ct);
+    }
+
+    internal static string[] GetDiskNames(IEnumerable<string> directories)
+    {
+        var diskNames = new HashSet<string>();
+
+        foreach (var diskName in directories.Select(static d =>
+                     d.SubstringAfter(@"\\", StringComparison.CurrentCultureIgnoreCase).SubstringBefore('\\')))
+        {
+            _ = diskNames.Add(diskName);
+        }
+        return diskNames.ToArray();
+    }
+
+    internal static string[] GetDirectoriesForDisk(string diskName, IEnumerable<string> directories)
+    {
+        return directories.Where(dir => dir.StartsWith(@"\\" + diskName + @"\", StringComparison.CurrentCultureIgnoreCase)).ToArray();
     }
 
     /// <summary>
@@ -642,11 +666,14 @@ internal static partial class Utils
     /// <param name="fileAttributesToIgnore">
     ///     The file attributes to ignore.
     /// </param>
+    /// <param name="deleteEmptyDirectories"></param>
+    /// <param name="ct"></param>
     /// <returns>
     /// </returns>
     private static string[] GetFiles(string path, string filters, SearchOption searchOption, FileAttributes directoryAttributesToIgnore,
-        FileAttributes fileAttributesToIgnore)
+        FileAttributes fileAttributesToIgnore, bool deleteEmptyDirectories, CancellationToken ct)
     {
+        if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
         var sw = Stopwatch.StartNew();
 
         if (!Directory.Exists(path))
@@ -677,24 +704,38 @@ internal static partial class Utils
 
         while (pathsToSearch.Count > 0)
         {
+            if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
             var dir = pathsToSearch.Dequeue();
+            Trace($"Dequeued {dir}");
 
-            if (searchOption == SearchOption.AllDirectories)
+            if (deleteEmptyDirectories && IsDirectoryEmpty(dir))
             {
-                foreach (var subDir in Directory.GetDirectories(dir)
-                             .Where(subDir => !AnyFlagSet(new DirectoryInfo(subDir).Attributes, directoryAttributesToIgnore)))
+                Log("Directory {dir} is empty so deleting.");
+                Directory.Delete(dir);
+            }
+            else
+            {
+                if (searchOption == SearchOption.AllDirectories)
                 {
-                    pathsToSearch.Enqueue(subDir);
+                    foreach (var subDir in Directory.GetDirectories(dir)
+                                 .Where(subDir => !AnyFlagSet(new DirectoryInfo(subDir).Attributes, directoryAttributesToIgnore)))
+                    {
+                        if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+                        pathsToSearch.Enqueue(subDir);
+                    }
+                }
+
+                foreach (var collection in includeAsArray2.Select(filter =>
+                         {
+                             if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+                             return Directory.GetFiles(dir, filter, SearchOption.TopDirectoryOnly);
+                         }).Select(allFiles => excludeAsArray.Any() ? allFiles.Where(p => !excludeRegex.Match(p).Success) : allFiles))
+                {
+                    foundFiles.AddRange(collection.Where(p => !AnyFlagSet(new FileInfo(p).Attributes, fileAttributesToIgnore)));
                 }
             }
-
-            foreach (var collection in includeAsArray2.Select(filter => Directory.GetFiles(dir, filter, SearchOption.TopDirectoryOnly))
-                         .Select(allFiles => excludeAsArray.Any() ? allFiles.Where(p => !excludeRegex.Match(p).Success) : allFiles))
-            {
-                foundFiles.AddRange(collection.Where(p => !AnyFlagSet(new FileInfo(p).Attributes, fileAttributesToIgnore)));
-            }
         }
-        Trace($"Time taken = {sw.Elapsed.TotalSeconds} seconds");
+        Log($"GetFiles for {path} = {sw.Elapsed.TotalSeconds:#} seconds");
         return foundFiles.ToArray();
     }
 
@@ -1018,18 +1059,21 @@ internal static partial class Utils
     /// <param name="text"></param>
     internal static void Log(string text)
     {
-        var textArrayToWrite = text.Split('\n');
-
-        foreach (var textToWrite in from line in textArrayToWrite where line.HasValue() select $"{DateTime.Now:dd-MM-yy HH:mm:ss} {line}")
+        lock (_lock)
         {
-            Console.WriteLine(textToWrite);
+            var textArrayToWrite = text.Split('\n');
 
-            if (_logFile.HasValue())
+            foreach (var textToWrite in from line in textArrayToWrite where line.HasValue() select $"{DateTime.Now:dd-MM-yy HH:mm:ss} {line}")
             {
-                EnsureDirectoriesForFilePath(_logFile);
-                File.AppendAllLines(_logFile, new[] { textToWrite });
+                Console.WriteLine(textToWrite);
+
+                if (_logFile.HasValue())
+                {
+                    EnsureDirectoriesForFilePath(_logFile);
+                    File.AppendAllLines(_logFile, new[] { textToWrite });
+                }
+                Trace(text);
             }
-            Trace(text);
         }
     }
 

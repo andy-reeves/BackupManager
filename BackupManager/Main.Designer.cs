@@ -56,6 +56,7 @@
             versionCheckingButton = new System.Windows.Forms.Button();
             directoryScanReportButton = new System.Windows.Forms.Button();
             openLogFileButton = new System.Windows.Forms.Button();
+            scanFilesButton = new System.Windows.Forms.Button();
             scheduledBackupTimerButton = new System.Windows.Forms.Button();
             listFilesOnBackupDiskButton = new System.Windows.Forms.Button();
             listFilesInDirectoryButton = new System.Windows.Forms.Button();
@@ -413,7 +414,7 @@
             // 
             // directoryScanReportButton
             // 
-            directoryScanReportButton.Location = new System.Drawing.Point(312, 395);
+            directoryScanReportButton.Location = new System.Drawing.Point(312, 426);
             directoryScanReportButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             directoryScanReportButton.Name = "directoryScanReportButton";
             directoryScanReportButton.Size = new System.Drawing.Size(234, 27);
@@ -434,6 +435,18 @@
             toolTip.SetToolTip(openLogFileButton, "Opens the log file");
             openLogFileButton.UseVisualStyleBackColor = true;
             openLogFileButton.Click += OpenLogFileButton_Click;
+            // 
+            // scanFilesButton
+            // 
+            scanFilesButton.Location = new System.Drawing.Point(28, 359);
+            scanFilesButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            scanFilesButton.Name = "scanFilesButton";
+            scanFilesButton.Size = new System.Drawing.Size(259, 27);
+            scanFilesButton.TabIndex = 46;
+            scanFilesButton.Text = "Scan files";
+            toolTip.SetToolTip(scanFilesButton, "Scans all the directories and marks files as deleted as required.");
+            scanFilesButton.UseVisualStyleBackColor = true;
+            scanFilesButton.Click += ScanFilesButton_Click;
             // 
             // scheduledBackupTimerButton
             // 
@@ -854,7 +867,7 @@
             // statusStrip
             // 
             statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripStatusLabel, toolStripProgressBar });
-            statusStrip.Location = new System.Drawing.Point(0, 486);
+            statusStrip.Location = new System.Drawing.Point(0, 526);
             statusStrip.Name = "statusStrip";
             statusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
             statusStrip.Size = new System.Drawing.Size(1416, 22);
@@ -1006,7 +1019,7 @@
             // 
             // notOnABackupDiskTextBox
             // 
-            notOnABackupDiskTextBox.Location = new System.Drawing.Point(130, 395);
+            notOnABackupDiskTextBox.Location = new System.Drawing.Point(130, 426);
             notOnABackupDiskTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             notOnABackupDiskTextBox.Name = "notOnABackupDiskTextBox";
             notOnABackupDiskTextBox.ReadOnly = true;
@@ -1016,7 +1029,7 @@
             // label9
             // 
             label9.AutoSize = true;
-            label9.Location = new System.Drawing.Point(1, 397);
+            label9.Location = new System.Drawing.Point(1, 428);
             label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label9.Name = "label9";
             label9.Size = new System.Drawing.Size(119, 15);
@@ -1025,7 +1038,7 @@
             // 
             // totalFilesTextBox
             // 
-            totalFilesTextBox.Location = new System.Drawing.Point(130, 363);
+            totalFilesTextBox.Location = new System.Drawing.Point(130, 394);
             totalFilesTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             totalFilesTextBox.Name = "totalFilesTextBox";
             totalFilesTextBox.ReadOnly = true;
@@ -1035,7 +1048,7 @@
             // label10
             // 
             label10.AutoSize = true;
-            label10.Location = new System.Drawing.Point(68, 365);
+            label10.Location = new System.Drawing.Point(68, 396);
             label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label10.Name = "label10";
             label10.Size = new System.Drawing.Size(56, 15);
@@ -1044,7 +1057,7 @@
             // 
             // notOnABackupDiskSizeTextBox
             // 
-            notOnABackupDiskSizeTextBox.Location = new System.Drawing.Point(200, 395);
+            notOnABackupDiskSizeTextBox.Location = new System.Drawing.Point(200, 426);
             notOnABackupDiskSizeTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             notOnABackupDiskSizeTextBox.Name = "notOnABackupDiskSizeTextBox";
             notOnABackupDiskSizeTextBox.ReadOnly = true;
@@ -1053,7 +1066,7 @@
             // 
             // totalFilesSizeTextBox
             // 
-            totalFilesSizeTextBox.Location = new System.Drawing.Point(200, 363);
+            totalFilesSizeTextBox.Location = new System.Drawing.Point(200, 394);
             totalFilesSizeTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             totalFilesSizeTextBox.Name = "totalFilesSizeTextBox";
             totalFilesSizeTextBox.ReadOnly = true;
@@ -1081,7 +1094,7 @@
             // 
             // filesMarkedAsDeletedSizeTextBox
             // 
-            filesMarkedAsDeletedSizeTextBox.Location = new System.Drawing.Point(200, 427);
+            filesMarkedAsDeletedSizeTextBox.Location = new System.Drawing.Point(200, 458);
             filesMarkedAsDeletedSizeTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             filesMarkedAsDeletedSizeTextBox.Name = "filesMarkedAsDeletedSizeTextBox";
             filesMarkedAsDeletedSizeTextBox.ReadOnly = true;
@@ -1090,7 +1103,7 @@
             // 
             // filesMarkedAsDeletedTextBox
             // 
-            filesMarkedAsDeletedTextBox.Location = new System.Drawing.Point(130, 427);
+            filesMarkedAsDeletedTextBox.Location = new System.Drawing.Point(130, 458);
             filesMarkedAsDeletedTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             filesMarkedAsDeletedTextBox.Name = "filesMarkedAsDeletedTextBox";
             filesMarkedAsDeletedTextBox.ReadOnly = true;
@@ -1100,7 +1113,7 @@
             // label12
             // 
             label12.AutoSize = true;
-            label12.Location = new System.Drawing.Point(15, 429);
+            label12.Location = new System.Drawing.Point(15, 460);
             label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label12.Name = "label12";
             label12.Size = new System.Drawing.Size(103, 15);
@@ -1152,7 +1165,7 @@
             // 
             // oldestBackupDiskAgeTextBox
             // 
-            oldestBackupDiskAgeTextBox.Location = new System.Drawing.Point(200, 458);
+            oldestBackupDiskAgeTextBox.Location = new System.Drawing.Point(200, 489);
             oldestBackupDiskAgeTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             oldestBackupDiskAgeTextBox.Name = "oldestBackupDiskAgeTextBox";
             oldestBackupDiskAgeTextBox.ReadOnly = true;
@@ -1161,7 +1174,7 @@
             // 
             // oldestBackupDiskTextBox
             // 
-            oldestBackupDiskTextBox.Location = new System.Drawing.Point(130, 458);
+            oldestBackupDiskTextBox.Location = new System.Drawing.Point(130, 489);
             oldestBackupDiskTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             oldestBackupDiskTextBox.Name = "oldestBackupDiskTextBox";
             oldestBackupDiskTextBox.ReadOnly = true;
@@ -1171,7 +1184,7 @@
             // label16
             // 
             label16.AutoSize = true;
-            label16.Location = new System.Drawing.Point(15, 460);
+            label16.Location = new System.Drawing.Point(15, 491);
             label16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label16.Name = "label16";
             label16.Size = new System.Drawing.Size(107, 15);
@@ -1183,7 +1196,7 @@
             scanDirectoriesComboBox.BackColor = System.Drawing.SystemColors.Window;
             scanDirectoriesComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             scanDirectoriesComboBox.FormattingEnabled = true;
-            scanDirectoriesComboBox.Location = new System.Drawing.Point(28, 330);
+            scanDirectoriesComboBox.Location = new System.Drawing.Point(28, 327);
             scanDirectoriesComboBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             scanDirectoriesComboBox.Name = "scanDirectoriesComboBox";
             scanDirectoriesComboBox.Size = new System.Drawing.Size(163, 23);
@@ -1191,7 +1204,7 @@
             // 
             // scanDirectoryButton
             // 
-            scanDirectoryButton.Location = new System.Drawing.Point(200, 328);
+            scanDirectoryButton.Location = new System.Drawing.Point(200, 325);
             scanDirectoryButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             scanDirectoryButton.Name = "scanDirectoryButton";
             scanDirectoryButton.Size = new System.Drawing.Size(87, 27);
@@ -1204,7 +1217,8 @@
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(1416, 508);
+            ClientSize = new System.Drawing.Size(1416, 548);
+            Controls.Add(scanFilesButton);
             Controls.Add(scanDirectoryButton);
             Controls.Add(scanDirectoriesComboBox);
             Controls.Add(openLogFileButton);
@@ -1255,7 +1269,7 @@
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             MaximizeBox = false;
-            MaximumSize = new System.Drawing.Size(1432, 547);
+            MaximumSize = new System.Drawing.Size(1432, 587);
             MinimumSize = new System.Drawing.Size(1432, 507);
             Name = "Main";
             SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
@@ -1381,6 +1395,7 @@
         private System.Windows.Forms.Button openLogFileButton;
         private System.Windows.Forms.ComboBox scanDirectoriesComboBox;
         private System.Windows.Forms.Button scanDirectoryButton;
+        private System.Windows.Forms.Button scanFilesButton;
     }
 }
 
