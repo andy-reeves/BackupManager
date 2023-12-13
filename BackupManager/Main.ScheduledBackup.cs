@@ -55,6 +55,7 @@ internal sealed partial class Main
                     .Select(directoriesOnDisk => TaskWrapper(GetFilesAsync, directoriesOnDisk)));
                 Task.WhenAll(tasks).Wait(ct);
                 _ = ScanFiles(fileBlockingCollection, ct);
+                mediaBackup.Save();
             }
             UpdateSymbolicLinks(ct);
 
