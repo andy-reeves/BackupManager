@@ -62,7 +62,7 @@ internal sealed partial class Main
 
             if (currentPercentComplete % 10 == 0 && currentPercentComplete > reportedPercentComplete)
             {
-                Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, $"Scanning {currentPercentComplete}%");
+                Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, $"Processing {currentPercentComplete}%");
                 reportedPercentComplete = currentPercentComplete;
             }
             var file = files[i];
@@ -78,7 +78,7 @@ internal sealed partial class Main
             }
             Utils.Trace($"Checking {file}");
             var directoryToCheck = new FileInfo(file).DirectoryName;
-            UpdateStatusLabel(string.Format(Resources.Main_Scanning, directoryToCheck), i + 1);
+            UpdateStatusLabel($"Processing {directoryToCheck}", i + 1);
             if (CheckForFilesToDelete(file, filtersToDelete)) continue;
 
             // RegEx file name rules
