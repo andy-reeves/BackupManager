@@ -797,8 +797,14 @@ internal sealed partial class Main : Form
 
     private void DirectoriesScanReportButton_Click(object sender, EventArgs e)
     {
-        var distinctDirectories =
-            mediaBackup.DirectoryScans.Where(static s => s.TypeOfScan == DirectoryScanType.ProcessingFiles).Distinct().ToArray();
+        DirectoryScanReport(DirectoryScanType.ProcessingFiles);
+        DirectoryScanReport(DirectoryScanType.GetFiles);
+    }
+
+    private void DirectoryScanReport(DirectoryScanType scanType)
+    {
+        Utils.TraceIn();
+        var distinctDirectories = mediaBackup.DirectoryScans.Where(s => s.TypeOfScan == scanType).Distinct().ToArray();
         var longestDirectoryLength = mediaBackup.DirectoryScans.Select(static d => d.Path.Length).Max();
         var headerLineDone = false;
         var headerLine = string.Empty.PadRight(longestDirectoryLength + 10);
@@ -807,7 +813,7 @@ internal sealed partial class Main : Form
 
         foreach (var directory in distinctDirectories)
         {
-            var scans = mediaBackup.DirectoryScans.Where(scan => scan.Path == directory.Path && scan.TypeOfScan == DirectoryScanType.ProcessingFiles)
+            var scans = mediaBackup.DirectoryScans.Where(scan => scan.Path == directory.Path && scan.TypeOfScan == scanType)
                 .OrderBy(static scan => scan.EndDateTime).ToArray();
             var fileCount = mediaBackup.GetBackupFilesInDirectory(directory.Path, false).Count();
             var textLine = $"{directory.Path.PadRight(longestDirectoryLength + 1)} {fileCount,6:n0}";
@@ -829,6 +835,7 @@ internal sealed partial class Main : Form
 
             if (!headerLineDone)
             {
+                Utils.Log($"{scanType} report:");
                 Utils.Log(headerLine);
                 headerLineDone = true;
             }
