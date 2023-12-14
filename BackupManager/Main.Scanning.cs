@@ -60,7 +60,7 @@ internal sealed partial class Main
             if (token.IsCancellationRequested) token.ThrowIfCancellationRequested();
             var currentPercentComplete = i * 100 / files.Count;
 
-            if (currentPercentComplete % 10 == 0 && currentPercentComplete > reportedPercentComplete)
+            if (currentPercentComplete % 10 == 0 && currentPercentComplete > reportedPercentComplete && files.Count > 30)
             {
                 Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, $"Processing {currentPercentComplete}%");
                 reportedPercentComplete = currentPercentComplete;
@@ -98,6 +98,7 @@ internal sealed partial class Main
             }
             if (!mediaBackup.EnsureFile(file)) return Utils.TraceOut(false);
         }
+        Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, "Processing files completed.");
         UpdateMediaFilesCountDisplay();
         return Utils.TraceOut(true);
     }

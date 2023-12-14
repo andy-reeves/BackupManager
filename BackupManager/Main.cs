@@ -804,7 +804,7 @@ internal sealed partial class Main : Form
     private void DirectoryScanReport(DirectoryScanType scanType)
     {
         Utils.TraceIn();
-        var distinctDirectories = mediaBackup.DirectoryScans.Where(s => s.TypeOfScan == scanType).Distinct().ToArray();
+        var distinctDirectories = mediaBackup.DirectoryScans.Where(s => s.TypeOfScan == scanType).Distinct().OrderBy(static s => s.Path).ToArray();
         var longestDirectoryLength = mediaBackup.DirectoryScans.Select(static d => d.Path.Length).Max();
         var headerLineDone = false;
         var headerLine = string.Empty.PadRight(longestDirectoryLength + 10);
