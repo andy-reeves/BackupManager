@@ -19,6 +19,13 @@ internal sealed partial class Main
 {
     private void ScheduledBackupAsync()
     {
+        Utils.TraceIn();
+
+        if (longRunningActionExecutingRightNow)
+        {
+            Utils.TraceOut();
+            return;
+        }
         longRunningActionExecutingRightNow = true;
         DisableControlsForAsyncTasks();
         Utils.LogWithPushover(BackupAction.ScanDirectory, "Started");
@@ -55,6 +62,7 @@ internal sealed partial class Main
                     .Select(directoriesOnDisk => TaskWrapper(GetFilesAsync, directoriesOnDisk)));
                 Task.WhenAll(tasks).Wait(ct);
                 _ = ScanFiles(fileBlockingCollection, ct);
+                mediaBackup.UpdateLastFullScan();
                 mediaBackup.Save();
             }
             UpdateSymbolicLinks(ct);
@@ -93,6 +101,7 @@ internal sealed partial class Main
                 Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, string.Format(Resources.Main_TaskWrapperException, u));
             ASyncTasksCleanUp();
         }
+        Utils.TraceOut();
     }
 
     private void SetupDailyTrigger(bool addTrigger)
