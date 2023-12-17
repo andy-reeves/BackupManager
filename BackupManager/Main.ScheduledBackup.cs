@@ -122,6 +122,7 @@ internal sealed partial class Main
             {
                 trigger.OnTimeTriggered -= scheduledBackupAction;
                 Utils.Trace("SetupDailyTrigger OnTimeTriggered removed");
+                trigger = null;
             }
             timeToNextRunTextBox.Text = string.Empty;
         }

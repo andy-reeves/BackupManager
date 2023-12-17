@@ -46,7 +46,7 @@ internal sealed partial class Main
             .Select(static filter => new { filter, replace = filter.Replace(".", @"\.").Replace("*", ".*").Replace("?", ".") })
             .Select(static t => $"^{t.replace}$").ToArray();
         EnableProgressBar(0, filesParam.Count);
-        Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, "Processing scanned files");
+        Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, "Processing files");
         var reportedPercentComplete = 0;
 
         // order the files by path so we can track when the monitored directories are changing for scan timings

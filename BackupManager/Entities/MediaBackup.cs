@@ -199,6 +199,13 @@ public sealed class MediaBackup
         BackupMediaFile();
         DirectoryChanges = new Collection<FileSystemEntry>(Watcher.FileSystemChanges.ToList());
         DirectoriesToScan = new Collection<FileSystemEntry>(Watcher.DirectoriesToScan.ToList());
+
+        // remove any directory scan that didn't complete check end date
+        for (var index = DirectoryScans.Count - 1; index > -1; index--)
+        {
+            var scan = DirectoryScans[index];
+            if (scan.EndDateTime == DateTime.MinValue) _ = DirectoryScans.Remove(scan);
+        }
         var xRoot = new XmlRootAttribute { ElementName = "MediaBackup", Namespace = "MediaBackupSchema.xsd", IsNullable = true };
         XmlSerializer xmlSerializer = new(typeof(MediaBackup), xRoot);
         if (File.Exists(mediaBackupPath)) File.SetAttributes(mediaBackupPath, FileAttributes.Normal);
