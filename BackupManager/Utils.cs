@@ -288,6 +288,16 @@ internal static partial class Utils
         }
     }
 
+    internal static bool EventHandlerHasDelegate(object classInstance, string eventName)
+    {
+        var classType = classInstance.GetType();
+        var eventField = classType.GetField(eventName, BindingFlags.GetField | BindingFlags.NonPublic | BindingFlags.Instance);
+        if (eventField == null) return false;
+
+        var eventDelegate = eventField.GetValue(classInstance);
+        return eventDelegate != null;
+    }
+
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     internal static string GetApplicationVersionNumber(ApplicationType applicationTypeName)
     {

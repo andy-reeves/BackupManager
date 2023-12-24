@@ -85,6 +85,16 @@ internal sealed class DailyTrigger : IDisposable
     /// </summary>
     public event Action OnTimeTriggered;
 
+    public Delegate[] InvocationList()
+    {
+        return OnTimeTriggered?.GetInvocationList();
+    }
+
+    public int InvocationListCount()
+    {
+        return OnTimeTriggered != null ? OnTimeTriggered.GetInvocationList().Length : 0;
+    }
+
     /// <summary>
     ///     Finalized to ensure Dispose is called when out of scope
     /// </summary>

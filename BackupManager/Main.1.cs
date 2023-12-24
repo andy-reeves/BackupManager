@@ -41,7 +41,7 @@ internal sealed partial class Main
     // Always create a new one before running a long running task
     private CancellationTokenSource tokenSource;
 
-    private DailyTrigger trigger;
+    private static DailyTrigger _trigger;
 
     [SupportedOSPlatform("windows")]
     internal Main()

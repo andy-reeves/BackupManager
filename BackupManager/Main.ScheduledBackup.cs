@@ -84,10 +84,7 @@ internal sealed partial class Main
 
             // Copy any files that need a backup
             CopyFiles(true);
-
-            // reset the daily trigger
-            SetupDailyTrigger(mediaBackup.Config.ScheduledBackupOnOff);
-            Utils.Trace($"TriggerHour={trigger.TriggerHour}");
+            Utils.Trace($"TriggerHour={_trigger.TriggerHour}");
             ResetAllControls();
             longRunningActionExecutingRightNow = false;
         }
@@ -111,18 +108,16 @@ internal sealed partial class Main
 
         if (addTrigger)
         {
-            trigger = new DailyTrigger(scheduledDateTimePicker.Value);
-            trigger.OnTimeTriggered += scheduledBackupAction;
-            Utils.Trace("SetupDailyTrigger OnTimeTriggered added");
+            _trigger = new DailyTrigger(scheduledDateTimePicker.Value);
+            _trigger.OnTimeTriggered += scheduledBackupAction;
             UpdateUI_Tick(null, null);
         }
         else
         {
-            if (trigger != null)
+            if (_trigger != null)
             {
-                trigger.OnTimeTriggered -= scheduledBackupAction;
-                Utils.Trace("SetupDailyTrigger OnTimeTriggered removed");
-                trigger = null;
+                _trigger.OnTimeTriggered -= scheduledBackupAction;
+                _trigger = null;
             }
             timeToNextRunTextBox.Text = string.Empty;
         }
