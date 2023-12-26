@@ -22,7 +22,7 @@ public sealed class EntityTests
     public void DirectoryScan()
     {
         var dateTime = DateTime.Now;
-        var a = new DirectoryScan(DirectoryScanType.ProcessingFiles, @"c:\testPath", dateTime);
+        var a = new DirectoryScan(DirectoryScanType.ProcessingFiles, @"c:\testPath", dateTime, "1");
         Assert.Equal(@"c:\testPath", a.Path);
         Assert.Equal(dateTime, a.StartDateTime);
         Assert.Equal(DateTime.MinValue, a.EndDateTime);

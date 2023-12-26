@@ -48,6 +48,7 @@ internal sealed partial class Main
         EnableProgressBar(0, filesParam.Count);
         Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, "Processing files");
         var reportedPercentComplete = 0;
+        var scanId = Guid.NewGuid().ToString();
 
         // order the files by path so we can track when the monitored directories are changing for scan timings
         var files = filesParam.OrderBy(static f => f.ToString()).ToList();
@@ -71,7 +72,7 @@ internal sealed partial class Main
             if (directory != directoryScanning)
             {
                 if (!firstDir) scanInfo.EndDateTime = DateTime.Now;
-                scanInfo = new DirectoryScan(DirectoryScanType.ProcessingFiles, directory, DateTime.Now);
+                scanInfo = new DirectoryScan(DirectoryScanType.ProcessingFiles, directory, DateTime.Now, scanId);
                 mediaBackup.DirectoryScans.Add(scanInfo);
                 directoryScanning = directory;
                 firstDir = false;
@@ -230,10 +231,11 @@ internal sealed partial class Main
     private void GetFilesAsync(string[] directories)
     {
         var filters = mediaBackup.GetFilters();
+        var scanId = Guid.NewGuid().ToString();
 
         foreach (var directory in directories)
         {
-            var directoryScan = new DirectoryScan(DirectoryScanType.GetFiles, directory, DateTime.Now);
+            var directoryScan = new DirectoryScan(DirectoryScanType.GetFiles, directory, DateTime.Now, scanId);
             Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, string.Format(Resources.Main_Scanning, directory));
             if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
             UpdateStatusLabel(string.Format(Resources.Main_Scanning, directory));

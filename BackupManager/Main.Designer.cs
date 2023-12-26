@@ -57,6 +57,7 @@
             directoryScanReportButton = new System.Windows.Forms.Button();
             openLogFileButton = new System.Windows.Forms.Button();
             scanFilesButton = new System.Windows.Forms.Button();
+            directoryScanReportLastRunOnlyButton = new System.Windows.Forms.Button();
             scheduledBackupTimerButton = new System.Windows.Forms.Button();
             listFilesOnBackupDiskButton = new System.Windows.Forms.Button();
             listFilesInDirectoryButton = new System.Windows.Forms.Button();
@@ -447,6 +448,18 @@
             toolTip.SetToolTip(scanFilesButton, "Scans all the directories and marks files as deleted as required.");
             scanFilesButton.UseVisualStyleBackColor = true;
             scanFilesButton.Click += ScanFilesButton_Click;
+            // 
+            // directoryScanReportLastRunOnlyButton
+            // 
+            directoryScanReportLastRunOnlyButton.Location = new System.Drawing.Point(312, 458);
+            directoryScanReportLastRunOnlyButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            directoryScanReportLastRunOnlyButton.Name = "directoryScanReportLastRunOnlyButton";
+            directoryScanReportLastRunOnlyButton.Size = new System.Drawing.Size(234, 27);
+            directoryScanReportLastRunOnlyButton.TabIndex = 99;
+            directoryScanReportLastRunOnlyButton.Text = "Directory scan report (last run)";
+            toolTip.SetToolTip(directoryScanReportLastRunOnlyButton, "Reports the latest scan times for the directories");
+            directoryScanReportLastRunOnlyButton.UseVisualStyleBackColor = true;
+            directoryScanReportLastRunOnlyButton.Click += DirectoryScanReportLastRunOnlyButton_Click;
             // 
             // scheduledBackupTimerButton
             // 
@@ -1218,6 +1231,7 @@
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1416, 548);
+            Controls.Add(directoryScanReportLastRunOnlyButton);
             Controls.Add(scanFilesButton);
             Controls.Add(scanDirectoryButton);
             Controls.Add(scanDirectoriesComboBox);
@@ -1396,6 +1410,7 @@
         private System.Windows.Forms.ComboBox scanDirectoriesComboBox;
         private System.Windows.Forms.Button scanDirectoryButton;
         private System.Windows.Forms.Button scanFilesButton;
+        private System.Windows.Forms.Button directoryScanReportLastRunOnlyButton;
     }
 }
 

@@ -8,7 +8,7 @@ namespace BackupManager.Entities;
 
 public enum DirectoryScanType
 {
-    ProcessingFiles = 0,
+    ProcessingFiles = 1,
 
-    GetFiles = 1
+    GetFiles = 2
 }

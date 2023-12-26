@@ -23,6 +23,8 @@ namespace BackupManager;
 
 internal sealed partial class Main
 {
+    private static DailyTrigger _trigger;
+
     private readonly MediaBackup mediaBackup;
 
     private readonly Action monitoringAction;
@@ -40,8 +42,6 @@ internal sealed partial class Main
 
     // Always create a new one before running a long running task
     private CancellationTokenSource tokenSource;
-
-    private static DailyTrigger _trigger;
 
     [SupportedOSPlatform("windows")]
     internal Main()

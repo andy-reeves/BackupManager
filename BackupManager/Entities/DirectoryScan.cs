@@ -31,11 +31,12 @@ public sealed class DirectoryScan : IEquatable<DirectoryScan>
         Path = path;
     }
 
-    public DirectoryScan(DirectoryScanType typeOfScan, string path, DateTime startDateTime)
+    public DirectoryScan(DirectoryScanType typeOfScan, string path, DateTime startDateTime, string id)
     {
         TypeOfScan = typeOfScan;
         Path = path;
         StartDateTime = startDateTime;
+        Id = id;
     }
 
     public DirectoryScanType TypeOfScan { get; set; }
@@ -46,6 +47,8 @@ public sealed class DirectoryScan : IEquatable<DirectoryScan>
     public string Path { get; set; }
 
     private string InternalPath => Path;
+
+    public string Id { get; set; }
 
     /// <summary>
     /// </summary>

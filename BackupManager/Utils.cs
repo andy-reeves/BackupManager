@@ -9,6 +9,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -449,6 +450,90 @@ internal static partial class Utils
     internal static long ConvertMBtoBytes(long value)
     {
         return Convert.ToInt64(value * BytesInOneMegabyte);
+    }
+
+    internal static bool FixDateTakenForPhotos(string path)
+    {
+        TraceIn(path);
+        if (path == null) return false;
+
+        if (!File.Exists(path)) throw new NotSupportedException("File doesn't exist");
+
+        var filename = Path.GetFileNameWithoutExtension(path);
+        var extension = Path.GetExtension(path);
+
+        if (extension.ToLowerInvariant() != ".png" && extension.ToLowerInvariant() != ".jpg" && extension.ToLowerInvariant() != ".jpeg" &&
+            extension.ToLowerInvariant() != ".mp4")
+            return true;
+
+        DateTime creationTime;
+
+        if (filename.StartsWith("IMG_"))
+        {
+            // IMG_5048.2015-08-02_205756.JPG
+            creationTime = DateTime.ParseExact(filename.SubstringAfter('.'), "yyyy'-'MM'-'dd'_'HHmmss", CultureInfo.InvariantCulture);
+        }
+        else
+            creationTime = DateTime.ParseExact(filename.Substring(0, 10), "yyyy'-'MM'-'dd", CultureInfo.InvariantCulture);
+        var creationTimeString = creationTime.ToString("yyyy:MM:dd hh:mm:ss");
+        var arguments = string.Empty;
+
+        switch (extension.ToLowerInvariant())
+        {
+            case ".mp4":
+                arguments = $" -Quicktime:CreationDate=\"{creationTimeString}\" \"{path}\"";
+                break;
+            case ".png":
+                arguments = $" -PNG:CreationTime=\"{creationTimeString}\" \"{path}\"";
+                break;
+            case ".jpg":
+            case ".jpeg":
+                arguments = $" -EXIF:DateTimeOriginal=\"{creationTimeString}\" \"{path}\"";
+                break;
+        }
+
+        var process = new Process
+        {
+            StartInfo = new ProcessStartInfo
+            {
+                UseShellExecute = true, WindowStyle = ProcessWindowStyle.Hidden, FileName = @"c:\tools\exiftool.exe", Arguments = arguments
+            }
+        };
+        if (!process.Start()) return TraceOut(false);
+
+        try
+        {
+            var processId = process.Id;
+
+            // CopyProcess may be null here already if the file was very small
+            process.WaitForExit();
+
+            // We wait because otherwise lots of copy processes will start at once
+            // WaitForExit sometimes returns too early (especially for small files)
+            // So we then wait until the processID has gone completely
+            // This will throw ArgumentException if the process has stopped already
+
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            while (Process.GetProcessById(processId) != null)
+            {
+                Wait(1);
+            }
+
+            // We never exit here
+            return TraceOut(false);
+        }
+
+        // ArgumentException is thrown when the process actually stops
+        // Then we wait until the file is actually not locked anymore and the hash codes match
+        // InvalidOperationException is thrown if we access the Process and its already completed
+        catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
+        {
+            while (!IsFileAccessible(path))
+            {
+                Wait(1);
+            }
+            return TraceOut(true);
+        }
     }
 
     /// <summary>
@@ -1521,8 +1606,8 @@ internal static partial class Utils
     /// <returns></returns>
     internal static string FormatTimeSpanMinutesOnly(TimeSpan timeSpan)
     {
-        var seconds = Convert.ToInt32(timeSpan.TotalMinutes);
-        return $"{seconds}m";
+        var totalMinutes = Convert.ToInt32(timeSpan.TotalMinutes);
+        return totalMinutes < 1 ? "<1m" : $"{totalMinutes}m";
     }
 
     /// <summary>
