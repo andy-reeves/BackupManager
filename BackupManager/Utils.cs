@@ -1506,8 +1506,7 @@ internal static partial class Utils
         if (!IsSymbolicLink(path)) return !Directory.EnumerateFileSystemEntries(path).Any();
 
         var linkTarget = new FileInfo(path).LinkTarget;
-        Debug.Assert(linkTarget != null, nameof(linkTarget) + " != null");
-        return !SymbolicLinkTargetExists(path) || !Directory.GetFileSystemEntries(linkTarget).Any();
+        return linkTarget != null && (!SymbolicLinkTargetExists(path) || !Directory.GetFileSystemEntries(linkTarget).Any());
     }
 
     /// <summary>
