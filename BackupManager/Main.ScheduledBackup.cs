@@ -49,6 +49,7 @@ internal sealed partial class Main
             tokenSource?.Dispose();
             tokenSource = new CancellationTokenSource();
             ct = tokenSource.Token;
+            var scanId = Guid.NewGuid().ToString();
 
             // Update the master files if we've not been monitoring directories directly
             if (!mediaBackup.Config.DirectoriesFileChangeWatcherOnOff || doFullBackup)
@@ -59,9 +60,9 @@ internal sealed partial class Main
                 var tasks = new List<Task>(diskNames.Length);
 
                 tasks.AddRange(diskNames.Select(diskName => Utils.GetDirectoriesForDisk(diskName, mediaBackup.Config.Directories))
-                    .Select(directoriesOnDisk => TaskWrapper(GetFilesAsync, directoriesOnDisk)));
+                    .Select(directoriesOnDisk => TaskWrapper(GetFilesAsync, directoriesOnDisk, scanId)));
                 Task.WhenAll(tasks).Wait(ct);
-                _ = ScanFiles(fileBlockingCollection, ct);
+                _ = ScanFiles(fileBlockingCollection, scanId, ct);
                 mediaBackup.UpdateLastFullScan();
                 mediaBackup.Save();
             }

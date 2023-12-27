@@ -37,10 +37,11 @@ internal sealed partial class Main
         var files = Utils.GetFiles(directoryToCheck, mediaBackup.GetFilters(), searchOption, ct);
         var subDirectoryText = searchOption == SearchOption.TopDirectoryOnly ? "directories only" : "and subdirectories";
         Utils.Trace($"{directoryToCheck} {subDirectoryText}");
-        return ScanFiles(files, ct);
+        var scanId = Guid.NewGuid().ToString();
+        return ScanFiles(files, scanId, ct);
     }
 
-    private bool ScanFiles(IReadOnlyCollection<string> filesParam, CancellationToken token)
+    private bool ScanFiles(IReadOnlyCollection<string> filesParam, string scanId, CancellationToken token)
     {
         var filtersToDelete = mediaBackup.Config.FilesToDelete
             .Select(static filter => new { filter, replace = filter.Replace(".", @"\.").Replace("*", ".*").Replace("?", ".") })
@@ -48,7 +49,6 @@ internal sealed partial class Main
         EnableProgressBar(0, filesParam.Count);
         Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, "Processing files");
         var reportedPercentComplete = 0;
-        var scanId = Guid.NewGuid().ToString();
 
         // order the files by path so we can track when the monitored directories are changing for scan timings
         var files = filesParam.OrderBy(static f => f.ToString()).ToList();
@@ -194,6 +194,7 @@ internal sealed partial class Main
 
         try
         {
+            var scanId = Guid.NewGuid().ToString();
             tokenSource?.Dispose();
             tokenSource = new CancellationTokenSource();
             ct = tokenSource.Token;
@@ -206,10 +207,10 @@ internal sealed partial class Main
             var tasks = new List<Task>(diskNames.Length);
 
             tasks.AddRange(diskNames.Select(diskName => Utils.GetDirectoriesForDisk(diskName, mediaBackup.Config.Directories))
-                .Select(directoriesOnDisk => TaskWrapper(GetFilesAsync, directoriesOnDisk)));
+                .Select(directoriesOnDisk => TaskWrapper(GetFilesAsync, directoriesOnDisk, scanId)));
             Task.WhenAll(tasks).Wait(ct);
 
-            if (!ScanFiles(fileBlockingCollection, ct))
+            if (!ScanFiles(fileBlockingCollection, scanId, ct))
             {
                 Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal,
                     Resources.Main_ScanDirectoriesAsync_Scan_Directories_failed);
@@ -228,10 +229,9 @@ internal sealed partial class Main
         }
     }
 
-    private void GetFilesAsync(string[] directories)
+    private void GetFilesAsync(string[] directories, string scanId)
     {
         var filters = mediaBackup.GetFilters();
-        var scanId = Guid.NewGuid().ToString();
 
         foreach (var directory in directories)
         {

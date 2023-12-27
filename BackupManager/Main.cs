@@ -970,7 +970,8 @@ internal sealed partial class Main : Form
     private void ScanFilesButton_Click(object sender, EventArgs e)
     {
         var files = mediaBackup.BackupFiles.Select(static file => file.FullPath).ToList();
-        _ = ScanFiles(files, ct);
+        var scanId = Guid.NewGuid().ToString();
+        _ = ScanFiles(files, scanId, ct);
         mediaBackup.Save();
     }
 

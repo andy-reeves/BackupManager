@@ -81,10 +81,10 @@ internal sealed partial class Main
         }, default, TaskContinuationOptions.OnlyOnFaulted, scheduler);
     }
 
-    private Task TaskWrapper(Action<string[]> methodName, string[] param1)
+    private Task TaskWrapper(Action<string[], string> methodName, string[] param1, string scanId)
     {
         ArgumentNullException.ThrowIfNull(methodName);
-        var task = Task.Run(() => methodName(param1), ct);
+        var task = Task.Run(() => methodName(param1, scanId), ct);
         return task;
     }
 

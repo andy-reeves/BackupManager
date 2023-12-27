@@ -466,15 +466,9 @@ internal static partial class Utils
             extension.ToLowerInvariant() != ".mp4")
             return true;
 
-        DateTime creationTime;
-
-        if (filename.StartsWith("IMG_"))
-        {
-            // IMG_5048.2015-08-02_205756.JPG
-            creationTime = DateTime.ParseExact(filename.SubstringAfter('.'), "yyyy'-'MM'-'dd'_'HHmmss", CultureInfo.InvariantCulture);
-        }
-        else
-            creationTime = DateTime.ParseExact(filename.Substring(0, 10), "yyyy'-'MM'-'dd", CultureInfo.InvariantCulture);
+        var creationTime = filename.StartsWith("IMG_", StringComparison.CurrentCultureIgnoreCase)
+            ? DateTime.ParseExact(filename.SubstringAfter('.'), "yyyy'-'MM'-'dd'_'HHmmss", CultureInfo.InvariantCulture)
+            : DateTime.ParseExact(filename[..10], "yyyy'-'MM'-'dd", CultureInfo.InvariantCulture);
         var creationTimeString = creationTime.ToString("yyyy:MM:dd hh:mm:ss");
         var arguments = string.Empty;
 
