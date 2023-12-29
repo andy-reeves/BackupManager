@@ -200,6 +200,7 @@ internal sealed partial class Main
             ct = tokenSource.Token;
             Utils.LogWithPushover(BackupAction.ScanDirectory, "Started");
             fileBlockingCollection = new BlockingCollection<string>();
+            directoryScanBlockingCollection = new BlockingCollection<DirectoryScan>();
 
             // split the directories into group by the disk name
             var diskNames = Utils.GetDiskNames(mediaBackup.Config.Directories);
@@ -209,6 +210,11 @@ internal sealed partial class Main
             tasks.AddRange(diskNames.Select(diskName => Utils.GetDirectoriesForDisk(diskName, mediaBackup.Config.Directories))
                 .Select(directoriesOnDisk => TaskWrapper(GetFilesAsync, directoriesOnDisk, scanId)));
             Task.WhenAll(tasks).Wait(ct);
+
+            foreach (var scan in directoryScanBlockingCollection)
+            {
+                mediaBackup.DirectoryScans.Add(scan);
+            }
 
             if (!ScanFiles(fileBlockingCollection, scanId, ct))
             {
@@ -241,12 +247,12 @@ internal sealed partial class Main
             UpdateStatusLabel(string.Format(Resources.Main_Scanning, directory));
             var files = Utils.GetFiles(directory, filters, SearchOption.AllDirectories, ct);
             directoryScan.EndDateTime = DateTime.Now;
-            mediaBackup.DirectoryScans.Add(directoryScan);
 
             foreach (var file in files)
             {
                 fileBlockingCollection.Add(file, ct);
             }
+            directoryScanBlockingCollection.Add(directoryScan, ct);
         }
     }
 

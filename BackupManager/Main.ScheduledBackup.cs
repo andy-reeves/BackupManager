@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using BackupManager.Entities;
 using BackupManager.Properties;
 
 namespace BackupManager;
@@ -31,6 +32,7 @@ internal sealed partial class Main
         Utils.LogWithPushover(BackupAction.ScanDirectory, "Started");
         UpdateStatusLabel(string.Format(Resources.Main_Scanning, string.Empty));
         fileBlockingCollection = new BlockingCollection<string>();
+        directoryScanBlockingCollection = new BlockingCollection<DirectoryScan>();
 
         if (mediaBackup.Config.MonitoringOnOff)
         {
@@ -62,6 +64,11 @@ internal sealed partial class Main
                 tasks.AddRange(diskNames.Select(diskName => Utils.GetDirectoriesForDisk(diskName, mediaBackup.Config.Directories))
                     .Select(directoriesOnDisk => TaskWrapper(GetFilesAsync, directoriesOnDisk, scanId)));
                 Task.WhenAll(tasks).Wait(ct);
+
+                foreach (var scan in directoryScanBlockingCollection)
+                {
+                    mediaBackup.DirectoryScans.Add(scan);
+                }
                 _ = ScanFiles(fileBlockingCollection, scanId, ct);
                 mediaBackup.UpdateLastFullScan();
                 mediaBackup.Save();

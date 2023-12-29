@@ -264,7 +264,10 @@
 17.64 | T | True  | "\\nas4\assets1\_Movies\Blood Brothers (1989)\Blood Brothers (1989) [SDTV][AAC 2.0][h264].mp4"
 17.20 | T | True  | "\\nas2\assets2\_Movies\A Murder of Crows (1999)\A Murder of Crows (1999) {tmdb-17263} [HDTV-1080p][MP3 2.0][MPEG4].avi"
 17.21 | T | True  | "\\nas2\assets2\_Movies\12 Angry Men (1957)-other\12 Angry Men (1957)-other {tmdb-389} {edition-CRITERION COLLECTION} [Remux-1080p][PCM 1.0][h264].mkv"
+17.22 | T | True  | "\\nas5\assets3\_Movies\Seven Samurai (1954)\Seven Samurai (1954) {tmdb-346} [Remux-2160p][HLG][FLAC 1.0][HEVC].mkv"
 
+
+29-12-23 08:09:24 
 # Movies files must either be a special feature or have a valid quality specified
 
 18.1  | T | True  | "X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][TrueHD Atmos 7.1][h265].mkv"

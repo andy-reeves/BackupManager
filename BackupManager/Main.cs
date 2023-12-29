@@ -25,6 +25,8 @@ internal sealed partial class Main : Form
 {
     private BlockingCollection<string> fileBlockingCollection;
 
+    private BlockingCollection<DirectoryScan> directoryScanBlockingCollection;
+
     private void FileSystemWatcher_OnError(object sender, ErrorEventArgs e)
     {
         var ex = e.GetException();
@@ -799,42 +801,67 @@ internal sealed partial class Main : Form
 
     private void DirectoriesScanReportButton_Click(object sender, EventArgs e)
     {
-        DirectoryScanReport(DirectoryScanType.ProcessingFiles);
-        DirectoryScanReport(DirectoryScanType.GetFiles);
+        DirectoryScanReport(DirectoryScanType.GetFiles, 10);
+        DirectoryScanReport(DirectoryScanType.ProcessingFiles, 10);
     }
 
-    private void DirectoryScanReport(DirectoryScanType scanType)
+    private static List<string> GetLastScans(DirectoryScan[] scans, DirectoryScanType scanType, int directoryCount, int howMany)
+    {
+        Utils.TraceIn();
+
+        // filter by type and order the scans by startDate in ascending order if more than 1
+        // Move through the scans and find the top nn ids
+        var sc = howMany > 1
+            ? scans.Where(s => s.TypeOfScan == scanType).OrderBy(static s => s.StartDateTime)
+            : scans.Where(s => s.TypeOfScan == scanType).OrderByDescending(static s => s.StartDateTime);
+        List<string> list = new();
+
+        foreach (var scan in from scan in sc.Where(scan => !list.Contains(scan.Id))
+                 let a = scans.Count(s => s.Id == scan.Id)
+                 where a == directoryCount
+                 select scan)
+        {
+            list.Add(scan.Id);
+            if (list.Count == howMany) break;
+        }
+        return Utils.TraceOut(list);
+    }
+
+    private void DirectoryScanReport(DirectoryScanType scanType, int howMany)
     {
         Utils.TraceIn();
 
         // Needs to do last 10 scans
+        // get a list of the last 10 scanIds
         // search the scans, order by start date and find the 10th newest scan date
-        var d1 = mediaBackup.DirectoryScans.Where(s => s.TypeOfScan == scanType).DistinctBy(x => x.StartDateTime.Date)
-            .OrderBy(static s => s.StartDateTime).Take(10);
-        var distinctDirectories = mediaBackup.DirectoryScans.Where(s => s.TypeOfScan == scanType).Distinct().OrderBy(static s => s.Path).ToArray();
-        var longestDirectoryLength = mediaBackup.DirectoryScans.Select(static d => d.Path.Length).Max();
-        var headerLineDone = false;
-        var headerLine = string.Empty.PadRight(longestDirectoryLength + 10);
-        var totalLine = string.Empty.PadRight(longestDirectoryLength + 8);
-        var totals = new TimeSpan[10];
+        var scanIdsList = GetLastScans(mediaBackup.DirectoryScans.ToArray(), scanType, mediaBackup.Config.Directories.Count, howMany);
+        var scans = mediaBackup.DirectoryScans.Where(s => scanIdsList.Contains(s.Id) && s.TypeOfScan == scanType).ToArray();
+        if (scans.Length == 0) return;
 
-        foreach (var directory in distinctDirectories)
+        var distinctDirectoriesScans = scans.Distinct().OrderBy(static s => s.Path).ToArray();
+        var longestDirectoryLength = scans.Select(static d => d.Path.Length).Max();
+        var headerLineDone = false;
+        var headerLine1 = string.Empty.PadRight(longestDirectoryLength + 10);
+        var headerLine2 = string.Empty.PadRight(longestDirectoryLength + 10);
+        var totalLine = string.Empty.PadRight(longestDirectoryLength + 8);
+        var totals = new TimeSpan[howMany];
+
+        foreach (var directory in distinctDirectoriesScans)
         {
-            var scans = mediaBackup.DirectoryScans.Where(scan => scan.Path == directory.Path && scan.TypeOfScan == scanType)
-                .OrderBy(static scan => scan.EndDateTime).ToArray();
+            var scansForDirectory = scans.Where(scan => scan.Path == directory.Path && scan.TypeOfScan == scanType).ToArray();
             var fileCount = mediaBackup.GetBackupFilesInDirectory(directory.Path, false).Count();
             var textLine = $"{directory.Path.PadRight(longestDirectoryLength + 1)} {fileCount,6:n0}";
-            var maxValue = scans.Length < 10 ? scans.Length : 10;
+            var maxValue = scansForDirectory.Length < howMany ? scansForDirectory.Length : howMany;
 
             for (var i = 0; i < maxValue; i++)
             {
-                var backup = scans[i];
+                var backup = scansForDirectory.First(scan => scan.Id == scanIdsList[i]);
 
                 if (!headerLineDone)
                 {
                     // build the line of scan dates like 30.11 01.12 etc
-                    var d = backup.StartDateTime.ToString("dd.MM ");
-                    headerLine += d;
+                    headerLine1 += backup.StartDateTime.ToString("dd.MM ");
+                    headerLine2 += backup.StartDateTime.ToString("hh.mm ");
                 }
                 totals[i] += backup.ScanDuration;
                 textLine += $"{Utils.FormatTimeSpanMinutesOnly(backup.ScanDuration),6}";
@@ -843,62 +870,8 @@ internal sealed partial class Main : Form
             if (!headerLineDone)
             {
                 Utils.Log($"{scanType} report:");
-                Utils.Log(headerLine);
-                headerLineDone = true;
-            }
-            Utils.Log(textLine);
-        }
-
-        foreach (var aTotal in totals)
-        {
-            if (aTotal < TimeSpan.FromSeconds(60))
-                totalLine += string.Empty.PadRight(6);
-            else
-                totalLine += $"{Utils.FormatTimeSpanMinutesOnly(aTotal),6}";
-        }
-        Utils.Log(totalLine);
-    }
-
-    private void DirectoryScanReportLastRunOnly(DirectoryScanType scanType)
-    {
-        Utils.TraceIn();
-        var lastScanDate = mediaBackup.DirectoryScans.Where(s => s.TypeOfScan == scanType).OrderBy(static s => s.StartDateTime).Last().StartDateTime;
-
-        var directoryScans = mediaBackup.DirectoryScans.Where(s => s.TypeOfScan == scanType && s.StartDateTime.Date == lastScanDate.Date).Distinct()
-            .OrderBy(static s => s.Path).ToArray();
-        var longestDirectoryLength = mediaBackup.DirectoryScans.Select(static d => d.Path.Length).Max();
-        var headerLineDone = false;
-        var headerLine = string.Empty.PadRight(longestDirectoryLength + 10);
-        var totalLine = string.Empty.PadRight(longestDirectoryLength + 8);
-        var totals = new TimeSpan[10];
-
-        foreach (var directory in directoryScans)
-        {
-            var scans = mediaBackup.DirectoryScans
-                .Where(scan => scan.Path == directory.Path && scan.TypeOfScan == scanType && scan.StartDateTime.Date == lastScanDate.Date)
-                .OrderBy(static scan => scan.EndDateTime).ToArray();
-            var fileCount = mediaBackup.GetBackupFilesInDirectory(directory.Path, false).Count();
-            var textLine = $"{directory.Path.PadRight(longestDirectoryLength + 1)} {fileCount,6:n0}";
-            var maxValue = scans.Length < 10 ? scans.Length : 10;
-
-            for (var i = 0; i < maxValue; i++)
-            {
-                var backup = scans[i];
-
-                if (!headerLineDone)
-                {
-                    // build the line of scan dates like 30.11 01.12 etc
-                    var d = backup.StartDateTime.ToString("dd.MM ");
-                    headerLine += d;
-                }
-                totals[i] += backup.ScanDuration;
-                textLine += $"{Utils.FormatTimeSpanMinutesOnly(backup.ScanDuration),6}";
-            }
-
-            if (!headerLineDone)
-            {
-                Utils.Log($"{scanType} report:");
-                Utils.Log(headerLine);
+                Utils.Log(headerLine1);
+                Utils.Log(headerLine2);
                 headerLineDone = true;
             }
             Utils.Log(textLine);
@@ -977,7 +950,7 @@ internal sealed partial class Main : Form
 
     private void DirectoryScanReportLastRunOnlyButton_Click(object sender, EventArgs e)
     {
-        DirectoryScanReportLastRunOnly(DirectoryScanType.ProcessingFiles);
-        DirectoryScanReportLastRunOnly(DirectoryScanType.GetFiles);
+        DirectoryScanReport(DirectoryScanType.GetFiles, 1);
+        DirectoryScanReport(DirectoryScanType.ProcessingFiles, 1);
     }
 }
