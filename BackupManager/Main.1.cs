@@ -452,7 +452,8 @@ internal sealed partial class Main
 
         if (value > 0)
         {
-            var progress = value * 100 / toolStripProgressBar.Maximum;
+            var progress = 0;
+            if (toolStripProgressBar.Maximum > 0) progress = value * 100 / toolStripProgressBar.Maximum;
 
             progress = progress switch
             {

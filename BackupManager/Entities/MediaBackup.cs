@@ -201,10 +201,13 @@ public sealed class MediaBackup
         DirectoriesToScan = new Collection<FileSystemEntry>(Watcher.DirectoriesToScan.ToList());
 
         // remove any directory scan that didn't complete check end date
-        for (var index = DirectoryScans.Count - 1; index > -1; index--)
+        for (var index = DirectoryScans.Count - 1; index >= 0; index--)
         {
             var scan = DirectoryScans[index];
-            if (scan.EndDateTime == DateTime.MinValue) _ = DirectoryScans.Remove(scan);
+            if (scan.EndDateTime != DateTime.MinValue) continue;
+
+            Utils.Trace($"DirectoryScans Removing as no end date on {scan.Path}");
+            DirectoryScans.RemoveAt(index);
         }
         var xRoot = new XmlRootAttribute { ElementName = "MediaBackup", Namespace = "MediaBackupSchema.xsd", IsNullable = true };
         XmlSerializer xmlSerializer = new(typeof(MediaBackup), xRoot);

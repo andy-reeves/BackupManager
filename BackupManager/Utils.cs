@@ -1151,18 +1151,14 @@ internal static partial class Utils
     {
         lock (_lock)
         {
+            EnsureDirectoriesForFilePath(_logFile);
+            Trace(text);
             var textArrayToWrite = text.Split('\n');
 
             foreach (var textToWrite in from line in textArrayToWrite where line.HasValue() select $"{DateTime.Now:dd-MM-yy HH:mm:ss} {line}")
             {
                 Console.WriteLine(textToWrite);
-
-                if (_logFile.HasValue())
-                {
-                    EnsureDirectoriesForFilePath(_logFile);
-                    File.AppendAllLines(_logFile, new[] { textToWrite });
-                }
-                Trace(text);
+                if (_logFile.HasValue()) File.AppendAllLines(_logFile, new[] { textToWrite });
             }
         }
     }

@@ -23,9 +23,9 @@ namespace BackupManager;
 
 internal sealed partial class Main : Form
 {
-    private BlockingCollection<string> fileBlockingCollection;
-
     private BlockingCollection<DirectoryScan> directoryScanBlockingCollection;
+
+    private BlockingCollection<string> fileBlockingCollection;
 
     private void FileSystemWatcher_OnError(object sender, ErrorEventArgs e)
     {
@@ -805,7 +805,7 @@ internal sealed partial class Main : Form
         DirectoryScanReport(DirectoryScanType.ProcessingFiles, 10);
     }
 
-    private static List<string> GetLastScans(DirectoryScan[] scans, DirectoryScanType scanType, int directoryCount, int howMany)
+    private static List<string> GetLastScans(IEnumerable<DirectoryScan> scans, DirectoryScanType scanType, int howMany)
     {
         Utils.TraceIn();
 
@@ -816,10 +816,7 @@ internal sealed partial class Main : Form
             : scans.Where(s => s.TypeOfScan == scanType).OrderByDescending(static s => s.StartDateTime);
         List<string> list = new();
 
-        foreach (var scan in from scan in sc.Where(scan => !list.Contains(scan.Id))
-                 let a = scans.Count(s => s.Id == scan.Id)
-                 where a == directoryCount
-                 select scan)
+        foreach (var scan in sc.Where(scan => !list.Contains(scan.Id)))
         {
             list.Add(scan.Id);
             if (list.Count == howMany) break;
@@ -830,61 +827,57 @@ internal sealed partial class Main : Form
     private void DirectoryScanReport(DirectoryScanType scanType, int howMany)
     {
         Utils.TraceIn();
-
-        // Needs to do last 10 scans
-        // get a list of the last 10 scanIds
-        // search the scans, order by start date and find the 10th newest scan date
-        var scanIdsList = GetLastScans(mediaBackup.DirectoryScans.ToArray(), scanType, mediaBackup.Config.Directories.Count, howMany);
+        var scanIdsList = GetLastScans(mediaBackup.DirectoryScans.ToArray(), scanType, howMany);
         var scans = mediaBackup.DirectoryScans.Where(s => scanIdsList.Contains(s.Id) && s.TypeOfScan == scanType).ToArray();
         if (scans.Length == 0) return;
 
         var distinctDirectoriesScans = scans.Distinct().OrderBy(static s => s.Path).ToArray();
         var longestDirectoryLength = scans.Select(static d => d.Path.Length).Max();
-        var headerLineDone = false;
         var headerLine1 = string.Empty.PadRight(longestDirectoryLength + 10);
         var headerLine2 = string.Empty.PadRight(longestDirectoryLength + 10);
         var totalLine = string.Empty.PadRight(longestDirectoryLength + 8);
         var totals = new TimeSpan[howMany];
+        var previousId = string.Empty;
+
+        // prepare the header lines
+        foreach (var b in scans.OrderBy(static s => s.StartDateTime).Where(b => b.Id != previousId))
+        {
+            // build the line of scan dates like 30.11 01.12 etc
+            headerLine1 += b.StartDateTime.ToString("dd.MM ");
+            headerLine2 += b.StartDateTime.ToString("HH.mm ");
+            previousId = b.Id;
+        }
+        var textLines = string.Empty;
 
         foreach (var directory in distinctDirectoriesScans)
         {
             var scansForDirectory = scans.Where(scan => scan.Path == directory.Path && scan.TypeOfScan == scanType).ToArray();
             var fileCount = mediaBackup.GetBackupFilesInDirectory(directory.Path, false).Count();
-            var textLine = $"{directory.Path.PadRight(longestDirectoryLength + 1)} {fileCount,6:n0}";
-            var maxValue = scansForDirectory.Length < howMany ? scansForDirectory.Length : howMany;
+            textLines += $"{directory.Path.PadRight(longestDirectoryLength + 1)} {fileCount,6:n0}";
 
-            for (var i = 0; i < maxValue; i++)
+            for (var i = 0; i < scanIdsList.Count; i++)
             {
-                var backup = scansForDirectory.First(scan => scan.Id == scanIdsList[i]);
+                var backup = scansForDirectory.FirstOrDefault(scan => scan.Id == scanIdsList[i]);
 
-                if (!headerLineDone)
+                if (backup == null)
+                    textLines += "    --";
+                else
                 {
-                    // build the line of scan dates like 30.11 01.12 etc
-                    headerLine1 += backup.StartDateTime.ToString("dd.MM ");
-                    headerLine2 += backup.StartDateTime.ToString("hh.mm ");
+                    totals[i] += backup.ScanDuration;
+                    textLines += $"{Utils.FormatTimeSpanMinutesOnly(backup.ScanDuration),6}";
                 }
-                totals[i] += backup.ScanDuration;
-                textLine += $"{Utils.FormatTimeSpanMinutesOnly(backup.ScanDuration),6}";
             }
-
-            if (!headerLineDone)
-            {
-                Utils.Log($"{scanType} report:");
-                Utils.Log(headerLine1);
-                Utils.Log(headerLine2);
-                headerLineDone = true;
-            }
-            Utils.Log(textLine);
+            textLines += "\n";
         }
 
-        foreach (var aTotal in totals)
-        {
-            if (aTotal < TimeSpan.FromSeconds(60))
-                totalLine += string.Empty.PadRight(6);
-            else
-                totalLine += $"{Utils.FormatTimeSpanMinutesOnly(aTotal),6}";
-        }
+        totalLine = totals.Where(static aTotal => aTotal > TimeSpan.FromSeconds(0)).Aggregate(totalLine,
+            static (current, aTotal) => current + $"{Utils.FormatTimeSpanMinutesOnly(aTotal),6}");
+        Utils.Log($"{scanType} report:");
+        Utils.Log(headerLine1);
+        Utils.Log(headerLine2);
+        Utils.Log(textLines);
         Utils.Log(totalLine);
+        Utils.TraceOut();
     }
 
     /// <summary>

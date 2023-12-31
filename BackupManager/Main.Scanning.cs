@@ -99,6 +99,9 @@ internal sealed partial class Main
             }
             if (!mediaBackup.EnsureFile(file)) return Utils.TraceOut(false);
         }
+
+        // Update the last scan endDateTime as it wasn't set in the loop
+        if (scanInfo != null) scanInfo.EndDateTime = DateTime.Now;
         Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, "Processing files completed.");
         UpdateMediaFilesCountDisplay();
         return Utils.TraceOut(true);
@@ -215,6 +218,9 @@ internal sealed partial class Main
             {
                 mediaBackup.DirectoryScans.Add(scan);
             }
+
+            // Save now in case the scanning files is interrupted
+            mediaBackup.Save();
 
             if (!ScanFiles(fileBlockingCollection, scanId, ct))
             {
