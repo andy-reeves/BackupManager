@@ -445,7 +445,7 @@
             scanFilesButton.Size = new System.Drawing.Size(259, 27);
             scanFilesButton.TabIndex = 46;
             scanFilesButton.Text = "Scan files";
-            toolTip.SetToolTip(scanFilesButton, "Scans all the directories and marks files as deleted as required.");
+            toolTip.SetToolTip(scanFilesButton, "Scans the current file list and marks files as deleted as required. (Doesn't scan the directories)");
             scanFilesButton.UseVisualStyleBackColor = true;
             scanFilesButton.Click += ScanFilesButton_Click;
             // 
@@ -456,7 +456,7 @@
             directoryScanReportLastRunOnlyButton.Name = "directoryScanReportLastRunOnlyButton";
             directoryScanReportLastRunOnlyButton.Size = new System.Drawing.Size(234, 27);
             directoryScanReportLastRunOnlyButton.TabIndex = 99;
-            directoryScanReportLastRunOnlyButton.Text = "Directory scan report (last run)";
+            directoryScanReportLastRunOnlyButton.Text = "Directory scan report (last full run)";
             toolTip.SetToolTip(directoryScanReportLastRunOnlyButton, "Reports the latest scan times for the directories");
             directoryScanReportLastRunOnlyButton.UseVisualStyleBackColor = true;
             directoryScanReportLastRunOnlyButton.Click += DirectoryScanReportLastRunOnlyButton_Click;

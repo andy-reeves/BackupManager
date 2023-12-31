@@ -805,19 +805,25 @@ internal sealed partial class Main : Form
         DirectoryScanReport(DirectoryScanType.ProcessingFiles, 10);
     }
 
-    private static List<string> GetLastScans(IEnumerable<DirectoryScan> scans, DirectoryScanType scanType, int howMany)
+    private List<string> GetLastScans(IEnumerable<DirectoryScan> scans, DirectoryScanType scanType, int howMany)
     {
         Utils.TraceIn();
 
         // filter by type and order the scans by startDate in ascending order if more than 1
         // Move through the scans and find the top nn ids
         var sc = howMany > 1
-            ? scans.Where(s => s.TypeOfScan == scanType).OrderBy(static s => s.StartDateTime)
-            : scans.Where(s => s.TypeOfScan == scanType).OrderByDescending(static s => s.StartDateTime);
+            ? scans.Where(s => s.TypeOfScan == scanType).OrderBy(static s => s.StartDateTime).ToArray()
+            : scans.Where(s => s.TypeOfScan == scanType).OrderByDescending(static s => s.StartDateTime).ToArray();
         List<string> list = new();
 
         foreach (var scan in sc.Where(scan => !list.Contains(scan.Id)))
         {
+            // when only 1 report is requested we only return the last full report that ran
+            if (howMany == 1)
+            {
+                var a = sc.Count(s => s.Id == scan.Id);
+                if (a != mediaBackup.Config.Directories.Count) continue;
+            }
             list.Add(scan.Id);
             if (list.Count == howMany) break;
         }

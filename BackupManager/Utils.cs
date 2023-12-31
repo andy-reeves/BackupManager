@@ -1596,7 +1596,7 @@ internal static partial class Utils
     internal static string FormatTimeSpanMinutesOnly(TimeSpan timeSpan)
     {
         var totalMinutes = Convert.ToInt32(timeSpan.TotalMinutes);
-        if (totalMinutes < 1) return $"{timeSpan.TotalSeconds:n0}s";
+        if (totalMinutes < 1) return timeSpan.TotalSeconds == 0 ? "0s" : timeSpan.TotalSeconds < 1 ? "1s" : $"{timeSpan.TotalSeconds:n0}s";
 
         return $"{totalMinutes}m";
     }
