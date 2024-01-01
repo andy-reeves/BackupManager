@@ -808,6 +808,8 @@ internal sealed partial class Main : Form
     private List<string> GetLastScans(IEnumerable<DirectoryScan> scans, DirectoryScanType scanType, int howMany)
     {
         Utils.TraceIn();
+        var directoriesCount = mediaBackup.Config.Directories.Count;
+        const int marginOfErrorOnDirectoryCount = 5;
 
         // filter by type and order the scans by startDate in ascending order if more than 1
         // Move through the scans and find the top nn ids
@@ -816,14 +818,10 @@ internal sealed partial class Main : Form
             : scans.Where(s => s.TypeOfScan == scanType).OrderByDescending(static s => s.StartDateTime).ToArray();
         List<string> list = new();
 
-        foreach (var scan in sc.Where(scan => !list.Contains(scan.Id)))
+        // We check the count to include only full scans
+        foreach (var scan in sc.Where(scan => !list.Contains(scan.Id))
+                     .Where(scan => sc.Count(s => s.Id == scan.Id) > directoriesCount - marginOfErrorOnDirectoryCount))
         {
-            // when only 1 report is requested we only return the last full report that ran
-            if (howMany == 1)
-            {
-                var a = sc.Count(s => s.Id == scan.Id);
-                if (a != mediaBackup.Config.Directories.Count) continue;
-            }
             list.Add(scan.Id);
             if (list.Count == howMany) break;
         }
