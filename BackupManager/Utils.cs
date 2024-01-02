@@ -825,7 +825,8 @@ internal static partial class Utils
                 }
             }
         }
-        Log($"GetFiles for {path} = {sw.Elapsed.TotalSeconds:#} seconds");
+        sw.Stop();
+        Log($"GetFiles for {path} = {(sw.Elapsed.TotalSeconds < 1 ? "<1 second" : $"{sw.Elapsed.TotalSeconds:#} seconds")}");
         return foundFiles.ToArray();
     }
 
