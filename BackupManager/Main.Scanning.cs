@@ -96,6 +96,9 @@ internal sealed partial class Main
 
                 Utils.Trace($"File {file} matched by {rule.FileDiscoveryRegEx} but doesn't match {rule.FileTestRegEx}");
                 Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"{rule.Name} {rule.Message} {file}");
+
+                // If a rule has failed then break to avoid multiple messages sent
+                break;
             }
             if (!mediaBackup.EnsureFile(file)) return Utils.TraceOut(false);
         }
@@ -221,12 +224,15 @@ internal sealed partial class Main
 
             // Save now in case the scanning files is interrupted
             mediaBackup.Save();
+            mediaBackup.ClearFlags();
 
             if (!ScanFiles(fileBlockingCollection, scanId, ct))
             {
                 Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal,
                     Resources.Main_ScanDirectoriesAsync_Scan_Directories_failed);
             }
+            var filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag).ToArray();
+            RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out _, out _);
             mediaBackup.Save();
             ResetAllControls();
             longRunningActionExecutingRightNow = false;

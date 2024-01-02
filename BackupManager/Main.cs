@@ -679,32 +679,25 @@ internal sealed partial class Main : Form
 
             if (ScanSingleDirectory(directoryToScan.Path, searchOption))
             {
-                var removedFilesCount = 0;
-                var markedAsDeletedFilesCount = 0;
                 UpdateSymbolicLinkForDirectory(directoryToScan.Path);
 
                 // instead of removing files that are no longer found in a directory we now flag them as deleted so we can report them later
                 // unless they aren't on a backup disk in which case they are removed now 
-                var files = mediaBackup.BackupFiles.Where(static b => !b.Flag)
-                    .Where(b => b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase)).Where(b =>
-                        !b.FullPath.SubstringAfter(Utils.EnsurePathHasATerminatingSeparator(directoryToScan.Path),
-                            StringComparison.CurrentCultureIgnoreCase).Contains('\\')).ToArray();
+                BackupFile[] filesToRemoveOrMarkDeleted;
 
-                for (var j = files.Length - 1; j >= 0; j--)
+                if (searchOption == SearchOption.TopDirectoryOnly)
                 {
-                    var backupFile = files[j];
-
-                    if (string.IsNullOrEmpty(backupFile.Disk))
-                    {
-                        mediaBackup.RemoveFile(backupFile);
-                        removedFilesCount++;
-                    }
-                    else
-                    {
-                        backupFile.Deleted = true;
-                        markedAsDeletedFilesCount++;
-                    }
+                    filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag)
+                        .Where(b => b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase)).Where(b =>
+                            !b.FullPath.SubstringAfter(Utils.EnsurePathHasATerminatingSeparator(directoryToScan.Path),
+                                StringComparison.CurrentCultureIgnoreCase).Contains('\\')).ToArray();
                 }
+                else
+                {
+                    filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag)
+                        .Where(b => b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase)).ToArray();
+                }
+                RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out var removedFilesCount, out var markedAsDeletedFilesCount);
 
                 var fileCountAfter = mediaBackup.BackupFiles.Count(b =>
                     b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase));
@@ -731,6 +724,30 @@ internal sealed partial class Main : Form
         }
         UpdateStatusLabel();
         Utils.TraceOut();
+    }
+
+    private void RemoveOrDeleteFiles(IReadOnlyList<BackupFile> files, out int removedFilesCount, out int markedAsDeletedFilesCount)
+    {
+        removedFilesCount = 0;
+        markedAsDeletedFilesCount = 0;
+
+        for (var j = files.Count - 1; j >= 0; j--)
+        {
+            var backupFile = files[j];
+
+            if (string.IsNullOrEmpty(backupFile.Disk))
+            {
+                Utils.Trace($"Removing {backupFile.FullPath}");
+                mediaBackup.RemoveFile(backupFile);
+                removedFilesCount++;
+            }
+            else
+            {
+                Utils.Trace($"Marking {backupFile.FullPath} as Deleted");
+                backupFile.Deleted = true;
+                markedAsDeletedFilesCount++;
+            }
+        }
     }
 
     private void Main_FormClosing(object sender, FormClosingEventArgs e)
@@ -941,7 +958,14 @@ internal sealed partial class Main : Form
     {
         var files = mediaBackup.BackupFiles.Select(static file => file.FullPath).ToList();
         var scanId = Guid.NewGuid().ToString();
+        mediaBackup.ClearFlags();
         _ = ScanFiles(files, scanId, ct);
+        var filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag).ToArray();
+        /* var files = mediaBackup.BackupFiles.Where(static b => !b.Flag)
+             .Where(b => b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase)).Where(b =>
+                 !b.FullPath.SubstringAfter(Utils.EnsurePathHasATerminatingSeparator(directoryToScan.Path),
+                     StringComparison.CurrentCultureIgnoreCase).Contains('\\')).ToArray();*/
+        RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out _, out _);
         mediaBackup.Save();
     }
 

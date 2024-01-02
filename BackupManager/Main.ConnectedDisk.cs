@@ -246,6 +246,8 @@ internal sealed partial class Main
                 diskInfoMessageWasTheLastSent = false;
             }
         }
+
+        //TODO maybe check for root of a backup Disk being empty
         UpdateStatusLabel($"Deleting {directoryToCheck} empty folders");
         var directoriesDeleted = Utils.DeleteEmptyDirectories(directoryToCheck);
 
@@ -328,7 +330,7 @@ internal sealed partial class Main
             WaitForNewDisk(nextDiskMessage);
             disk = mediaBackup.GetBackupDisk(backupDiskTextBox.Text);
         }
-        _ = UpdateCurrentBackupDiskInfo(disk);
+        if (!UpdateCurrentBackupDiskInfo(disk)) _ = MessageBox.Show("Can't find a valid backup share", "Backup Disk", MessageBoxButtons.OK);
         return disk;
     }
 }

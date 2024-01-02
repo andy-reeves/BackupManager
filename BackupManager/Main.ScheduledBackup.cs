@@ -64,12 +64,16 @@ internal sealed partial class Main
                 tasks.AddRange(diskNames.Select(diskName => Utils.GetDirectoriesForDisk(diskName, mediaBackup.Config.Directories))
                     .Select(directoriesOnDisk => TaskWrapper(GetFilesAsync, directoriesOnDisk, scanId)));
                 Task.WhenAll(tasks).Wait(ct);
+                mediaBackup.Save();
 
                 foreach (var scan in directoryScanBlockingCollection)
                 {
                     mediaBackup.DirectoryScans.Add(scan);
                 }
+                mediaBackup.ClearFlags();
                 _ = ScanFiles(fileBlockingCollection, scanId, ct);
+                var filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag).ToArray();
+                RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out _, out _);
                 mediaBackup.UpdateLastFullScan();
                 mediaBackup.Save();
             }
