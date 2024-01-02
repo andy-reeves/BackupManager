@@ -467,6 +467,8 @@ internal static partial class Utils
             return true;
 
         var creationTime = filename.StartsWith("IMG_", StringComparison.CurrentCultureIgnoreCase)
+
+            // ReSharper disable once StringLiteralTypo
             ? DateTime.ParseExact(filename.SubstringAfter('.'), "yyyy'-'MM'-'dd'_'HHmmss", CultureInfo.InvariantCulture)
             : DateTime.ParseExact(filename[..10], "yyyy'-'MM'-'dd", CultureInfo.InvariantCulture);
         var creationTimeString = creationTime.ToString("yyyy:MM:dd hh:mm:ss");
@@ -475,6 +477,7 @@ internal static partial class Utils
         switch (extension.ToLowerInvariant())
         {
             case ".mp4":
+                // ReSharper disable once StringLiteralTypo
                 arguments = $" -Quicktime:CreationDate=\"{creationTimeString}\" \"{path}\"";
                 break;
             case ".png":

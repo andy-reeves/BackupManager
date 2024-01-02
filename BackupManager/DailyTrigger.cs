@@ -85,11 +85,13 @@ internal sealed class DailyTrigger : IDisposable
     /// </summary>
     public event Action OnTimeTriggered;
 
+    // ReSharper disable once UnusedMember.Global
     public Delegate[] InvocationList()
     {
         return OnTimeTriggered?.GetInvocationList();
     }
 
+    // ReSharper disable once UnusedMember.Global
     public int InvocationListCount()
     {
         return OnTimeTriggered != null ? OnTimeTriggered.GetInvocationList().Length : 0;
