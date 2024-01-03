@@ -822,33 +822,10 @@ internal sealed partial class Main : Form
         DirectoryScanReport(DirectoryScanType.ProcessingFiles, 10);
     }
 
-    private List<string> GetLastScans(IEnumerable<DirectoryScan> scans, DirectoryScanType scanType, int howMany)
-    {
-        Utils.TraceIn();
-        var directoriesCount = mediaBackup.Config.Directories.Count;
-        const int marginOfErrorOnDirectoryCount = 5;
-
-        // filter by type and order the scans by startDate in ascending order if more than 1
-        // Move through the scans and find the top nn ids
-        var sc = howMany > 1
-            ? scans.Where(s => s.TypeOfScan == scanType).OrderBy(static s => s.StartDateTime).ToArray()
-            : scans.Where(s => s.TypeOfScan == scanType).OrderByDescending(static s => s.StartDateTime).ToArray();
-        List<string> list = new();
-
-        // We check the count to include only full scans
-        foreach (var scan in sc.Where(scan => !list.Contains(scan.Id))
-                     .Where(scan => sc.Count(s => s.Id == scan.Id) > directoriesCount - marginOfErrorOnDirectoryCount))
-        {
-            list.Add(scan.Id);
-            if (list.Count == howMany) break;
-        }
-        return Utils.TraceOut(list);
-    }
-
     private void DirectoryScanReport(DirectoryScanType scanType, int howMany)
     {
         Utils.TraceIn();
-        var scanIdsList = GetLastScans(mediaBackup.DirectoryScans.ToArray(), scanType, howMany);
+        var scanIdsList = mediaBackup.GetLastScans(mediaBackup.DirectoryScans.ToArray(), scanType, howMany);
         var scans = mediaBackup.DirectoryScans.Where(s => scanIdsList.Contains(s.Id) && s.TypeOfScan == scanType).ToArray();
         if (scans.Length == 0) return;
 
@@ -856,8 +833,10 @@ internal sealed partial class Main : Form
         var longestDirectoryLength = scans.Select(static d => d.Path.Length).Max();
         var headerLine1 = string.Empty.PadRight(longestDirectoryLength + 10);
         var headerLine2 = string.Empty.PadRight(longestDirectoryLength + 10);
-        var totalLine = string.Empty.PadRight(longestDirectoryLength + 8);
+        var totalLine = "Total time: " + string.Empty.PadRight(longestDirectoryLength - 4);
+        var lapsedTimeLine = "Lapsed time: " + string.Empty.PadRight(longestDirectoryLength - 5);
         var totals = new TimeSpan[howMany];
+        var lapsedTime = new TimeSpan[howMany];
         var previousId = string.Empty;
 
         // prepare the header lines
@@ -891,6 +870,24 @@ internal sealed partial class Main : Form
             textLines += "\n";
         }
 
+        for (var index = 0; index < scanIdsList.Count; index++)
+        {
+            var a = scanIdsList[index];
+            var scanStartTime = DateTime.MaxValue;
+            var scanEndTime = DateTime.MinValue;
+            var directoryScans = mediaBackup.DirectoryScans.Where(s => s.Id == a && s.TypeOfScan == scanType);
+
+            foreach (var directoryScan in directoryScans)
+            {
+                if (directoryScan.EndDateTime > scanEndTime) scanEndTime = directoryScan.EndDateTime;
+                if (directoryScan.StartDateTime < scanStartTime) scanStartTime = directoryScan.StartDateTime;
+            }
+            lapsedTime[index] = scanEndTime - scanStartTime;
+        }
+
+        lapsedTimeLine = lapsedTime.Where(static aTotal => aTotal > TimeSpan.FromSeconds(0)).Aggregate(lapsedTimeLine,
+            static (current, aTotal) => current + $"{Utils.FormatTimeSpanMinutesOnly(aTotal),6}");
+
         totalLine = totals.Where(static aTotal => aTotal > TimeSpan.FromSeconds(0)).Aggregate(totalLine,
             static (current, aTotal) => current + $"{Utils.FormatTimeSpanMinutesOnly(aTotal),6}");
         Utils.Log($"{scanType} report:");
@@ -898,6 +895,7 @@ internal sealed partial class Main : Form
         Utils.Log(headerLine2);
         Utils.Log(textLines);
         Utils.Log(totalLine);
+        Utils.Log(lapsedTimeLine);
         Utils.TraceOut();
     }
 
@@ -961,10 +959,6 @@ internal sealed partial class Main : Form
         mediaBackup.ClearFlags();
         _ = ScanFiles(files, scanId, ct);
         var filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag).ToArray();
-        /* var files = mediaBackup.BackupFiles.Where(static b => !b.Flag)
-             .Where(b => b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase)).Where(b =>
-                 !b.FullPath.SubstringAfter(Utils.EnsurePathHasATerminatingSeparator(directoryToScan.Path),
-                     StringComparison.CurrentCultureIgnoreCase).Contains('\\')).ToArray();*/
         RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out _, out _);
         mediaBackup.Save();
     }
