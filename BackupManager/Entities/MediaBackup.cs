@@ -107,8 +107,8 @@ public sealed class MediaBackup
         {
             var destinationFileName = "MediaBackup-" + DateTime.Now.ToString("yy-MM-dd-HH-mm-ss.ff") + ".xml";
 
-            destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups",
-                destinationFileName);
+            destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                "BackupManager_Backups", destinationFileName);
         } while (File.Exists(destinationPath));
         return destinationPath;
     }
@@ -118,12 +118,18 @@ public sealed class MediaBackup
         try
         {
             var sw = Stopwatch.StartNew();
-            var xsdPath = Path.Combine(Path.GetDirectoryName(path) ?? throw new InvalidOperationException(), "MediaBackupSchema.xsd");
+
+            var xsdPath = Path.Combine(Path.GetDirectoryName(path) ?? throw new InvalidOperationException(),
+                "MediaBackupSchema.xsd");
             if (!Utils.ValidateXml(path, xsdPath)) throw new XmlSchemaValidationException("MediaBackup.xml failed validation");
 
             Utils.Trace($"Time to validate xml was {sw.Elapsed}");
             sw.Restart();
-            var xRoot = new XmlRootAttribute { ElementName = "MediaBackup", Namespace = "MediaBackupSchema.xsd", IsNullable = true };
+
+            var xRoot = new XmlRootAttribute
+            {
+                ElementName = "MediaBackup", Namespace = "MediaBackupSchema.xsd", IsNullable = true
+            };
             MediaBackup mediaBackup;
             XmlSerializer serializer = new(typeof(MediaBackup), xRoot);
 
@@ -200,8 +206,8 @@ public sealed class MediaBackup
         List<string> list = new();
 
         // We check the count to include only full scans
-        foreach (var scan in sc.Where(scan => !list.Contains(scan.Id))
-                     .Where(scan => sc.Count(s => s.Id == scan.Id) > directoriesCount - marginOfErrorOnDirectoryCount))
+        foreach (var scan in sc.Where(scan => !list.Contains(scan.Id)).Where(scan =>
+                     sc.Count(s => s.Id == scan.Id) > directoriesCount - marginOfErrorOnDirectoryCount))
         {
             list.Add(scan.Id);
             if (list.Count == howMany) break;
@@ -372,11 +378,12 @@ public sealed class MediaBackup
     public string GetParentPath(string path)
     {
         return (from directory in Config.Directories
-            where path.Contains(directory + "\\")
-            select path.SubstringAfter(directory + "\\", StringComparison.CurrentCultureIgnoreCase)
-            into pathAfterSlash
-            let lastSlashLocation = pathAfterSlash.IndexOf('\\')
-            select lastSlashLocation < 0 ? null : path[..(lastSlashLocation + (path.Length - pathAfterSlash.Length))]).FirstOrDefault();
+                where path.Contains(directory + "\\")
+                select path.SubstringAfter(directory + "\\", StringComparison.CurrentCultureIgnoreCase)
+                into pathAfterSlash
+                let lastSlashLocation = pathAfterSlash.IndexOf('\\')
+                select lastSlashLocation < 0 ? null : path[..(lastSlashLocation + (path.Length - pathAfterSlash.Length))])
+            .FirstOrDefault();
     }
 
     public string GetFilters()

@@ -19,7 +19,8 @@ public sealed class UtilsSpeedTests
 {
     static UtilsSpeedTests()
     {
-        var mediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)), "..\\BackupManager\\MediaBackup.xml"));
+        var mediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)),
+            "..\\BackupManager\\MediaBackup.xml"));
         Utils.Config = mediaBackup.Config;
     }
 
@@ -36,8 +37,8 @@ public sealed class UtilsSpeedTests
         var tokenSource = new CancellationTokenSource();
         var ct = tokenSource.Token;
 
-        _ = Task.Run(() => Utils.DiskSpeedTest(@"c:\speedtest", 1000000000, 1, out _, out _, ct), ct).ContinueWith(static _ => { }, default,
-            TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
+        _ = Task.Run(() => Utils.DiskSpeedTest(@"c:\speedtest", 1000000000, 1, out _, out _, ct), ct).ContinueWith(
+            static _ => { }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
         Utils.Wait(100);
         tokenSource.Cancel();
         Utils.Wait(200);

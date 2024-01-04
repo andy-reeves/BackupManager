@@ -81,7 +81,9 @@ internal sealed partial class Main
 
             if (mediaBackup.Config.BackupDiskDifferenceInFileCountAllowedPercentage != 0)
             {
-                var minimumFileCountAllowed = oldFileCount - oldFileCount * mediaBackup.Config.BackupDiskDifferenceInFileCountAllowedPercentage / 100;
+                var minimumFileCountAllowed = oldFileCount -
+                                              oldFileCount * mediaBackup.Config.BackupDiskDifferenceInFileCountAllowedPercentage /
+                                              100;
                 long newFileCount = mediaBackup.BackupFiles.Count;
 
                 if (newFileCount < minimumFileCountAllowed)
@@ -107,7 +109,8 @@ internal sealed partial class Main
             if (u.Message == "The operation was canceled.")
                 Utils.LogWithPushover(BackupAction.General, PushoverPriority.Normal, "Cancelling");
             else
-                Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, string.Format(Resources.Main_TaskWrapperException, u));
+                Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
+                    string.Format(Resources.Main_TaskWrapperException, u));
             ASyncTasksCleanUp();
         }
         Utils.TraceOut();

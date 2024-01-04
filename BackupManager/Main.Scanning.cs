@@ -43,6 +43,10 @@ internal sealed partial class Main
 
     private bool ScanFiles(IReadOnlyCollection<string> filesParam, string scanId, CancellationToken token)
     {
+        // TODO To make this async and multiple threads for each separate disk
+        // we need a blocking collection and then copy it back when its all done
+        // then split by disk name and have a Task for each of them like the directory scanner
+
         var filtersToDelete = mediaBackup.Config.FilesToDelete
             .Select(static filter => new { filter, replace = filter.Replace(".", @"\.").Replace("*", ".*").Replace("?", ".") })
             .Select(static t => $"^{t.replace}$").ToArray();
@@ -63,7 +67,8 @@ internal sealed partial class Main
 
             if (currentPercentComplete % 10 == 0 && currentPercentComplete > reportedPercentComplete && files.Count > 30)
             {
-                Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, $"Processing {currentPercentComplete}%");
+                Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal,
+                    $"Processing {currentPercentComplete}%");
                 reportedPercentComplete = currentPercentComplete;
             }
             var file = files[i];
@@ -134,8 +139,8 @@ internal sealed partial class Main
         {
             UpdateStatusLabel(string.Format(Resources.Main_SpeedTesting, rootDirectory));
 
-            Utils.DiskSpeedTest(rootDirectory, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations,
-                out readSpeed, out writeSpeed, ct);
+            Utils.DiskSpeedTest(rootDirectory, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize),
+                mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed, ct);
         }
         var totalBytesOnRootDirectoryDiskFormatted = Utils.FormatSize(totalBytesOnRootDirectoryDisk);
         var freeSpaceOnRootDirectoryDiskFormatted = Utils.FormatSize(freeSpaceOnRootDirectoryDisk);
@@ -242,7 +247,10 @@ internal sealed partial class Main
             Utils.Trace("Exception in the TaskWrapper");
 
             if (u.Message != "The operation was canceled.")
-                Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, string.Format(Resources.Main_TaskWrapperException, u));
+            {
+                Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
+                    string.Format(Resources.Main_TaskWrapperException, u));
+            }
             ASyncTasksCleanUp();
         }
     }
@@ -254,7 +262,9 @@ internal sealed partial class Main
         foreach (var directory in directories)
         {
             var directoryScan = new DirectoryScan(DirectoryScanType.GetFiles, directory, DateTime.Now, scanId);
-            Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, string.Format(Resources.Main_Scanning, directory));
+
+            Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal,
+                string.Format(Resources.Main_Scanning, directory));
             if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
             UpdateStatusLabel(string.Format(Resources.Main_Scanning, directory));
             var files = Utils.GetFiles(directory, filters, SearchOption.AllDirectories, ct);
@@ -288,7 +298,8 @@ internal sealed partial class Main
         var fileName = new FileInfo(filePath).Name;
         if (!filters.Any(pattern => Regex.IsMatch(fileName, pattern))) return false;
 
-        Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, $"File matches RegEx and so will be deleted {filePath}");
+        Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal,
+            $"File matches RegEx and so will be deleted {filePath}");
         Utils.FileDelete(filePath);
         return true;
     }

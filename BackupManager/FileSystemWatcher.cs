@@ -22,9 +22,10 @@ namespace BackupManager;
 
 internal sealed class FileSystemWatcher
 {
-    private const int NotifyFiltersValidMask = (int)(NotifyFilters.Attributes | NotifyFilters.CreationTime | NotifyFilters.DirectoryName |
-                                                     NotifyFilters.FileName | NotifyFilters.LastAccess | NotifyFilters.LastWrite |
-                                                     NotifyFilters.Security | NotifyFilters.Size);
+    private const int NotifyFiltersValidMask = (int)(NotifyFilters.Attributes | NotifyFilters.CreationTime |
+                                                     NotifyFilters.DirectoryName | NotifyFilters.FileName |
+                                                     NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.Security |
+                                                     NotifyFilters.Size);
 
     private readonly List<System.IO.FileSystemWatcher> watcherList = new();
 
@@ -129,7 +130,8 @@ internal sealed class FileSystemWatcher
         set
         {
             if (((int)value & ~NotifyFiltersValidMask) != 0)
-                throw new ArgumentException(string.Format(Resources.InvalidEnumArgument, nameof(value), (int)value, nameof(NotifyFilters)));
+                throw new ArgumentException(string.Format(Resources.InvalidEnumArgument, nameof(value), (int)value,
+                    nameof(NotifyFilters)));
 
             if (notifyFilter == value) return;
 
@@ -215,7 +217,9 @@ internal sealed class FileSystemWatcher
 
         // Early check for directory parameter so that an exception can be thrown as early as possible
         if (path.Length == 0) throw new ArgumentException(string.Format(Resources.InvalidDirName, path), nameof(path));
-        if (!Directory.Exists(path)) throw new ArgumentException(string.Format(Resources.InvalidDirNameNotExists, path), nameof(path));
+
+        if (!Directory.Exists(path))
+            throw new ArgumentException(string.Format(Resources.InvalidDirNameNotExists, path), nameof(path));
     }
 
     /// <summary>
@@ -381,9 +385,9 @@ internal sealed class FileSystemWatcher
     {
         Utils.TraceIn();
 
-        if (DirectoriesToScan.Count > 0 &&
-            DirectoriesToScan.Count(directoryToScan =>
-                directoryToScan.ModifiedDateTime.AddMilliseconds(MinimumAgeBeforeScanEventRaised) < DateTime.Now) == DirectoriesToScan.Count)
+        if (DirectoriesToScan.Count > 0 && DirectoriesToScan.Count(directoryToScan =>
+                directoryToScan.ModifiedDateTime.AddMilliseconds(MinimumAgeBeforeScanEventRaised) < DateTime.Now) ==
+            DirectoriesToScan.Count)
         {
             // All the directories are old enough so raise the ReadyToScan event
             var args = new FileSystemWatcherEventArgs(DirectoriesToScan);

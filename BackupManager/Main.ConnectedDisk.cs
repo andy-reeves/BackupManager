@@ -109,7 +109,9 @@ internal sealed partial class Main
                 ? Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize)
                 : disk.Free - Utils.BytesInOneKilobyte;
             UpdateStatusLabel(string.Format(Resources.Main_SpeedTesting, directoryToCheck));
-            Utils.DiskSpeedTest(directoryToCheck, diskTestSize, mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed, ct);
+
+            Utils.DiskSpeedTest(directoryToCheck, diskTestSize, mediaBackup.Config.SpeedTestIterations, out readSpeed,
+                out writeSpeed, ct);
             disk.UpdateSpeeds(readSpeed, writeSpeed);
         }
 
@@ -203,7 +205,9 @@ internal sealed partial class Main
                 if (file != null && file.Length != 0 && file.BackupDiskNumber == 0)
                 {
                     var destFileName = file.BackupDiskFullPath(disk.BackupPath);
-                    Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal, $"Renaming {backupFileFullPath} to {destFileName}");
+
+                    Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal,
+                        $"Renaming {backupFileFullPath} to {destFileName}");
 
                     if (File.Exists(destFileName))
                     {
@@ -236,13 +240,15 @@ internal sealed partial class Main
             // Extra file on a backup disk
             if (deleteExtraFiles)
             {
-                Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Extra file {backupFileFullPath} on backup disk {disk.Name} now deleted");
+                Utils.LogWithPushover(BackupAction.CheckBackupDisk,
+                    $"Extra file {backupFileFullPath} on backup disk {disk.Name} now deleted");
                 Utils.FileDelete(backupFileFullPath);
                 diskInfoMessageWasTheLastSent = false;
             }
             else
             {
-                Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Extra file {backupFileFullPath} on backup disk {disk.Name}");
+                Utils.LogWithPushover(BackupAction.CheckBackupDisk,
+                    $"Extra file {backupFileFullPath} on backup disk {disk.Name}");
                 diskInfoMessageWasTheLastSent = false;
             }
         }
@@ -259,7 +265,8 @@ internal sealed partial class Main
 
         if (!UpdateCurrentBackupDiskInfo(disk))
         {
-            Utils.LogWithPushover(BackupAction.BackupFiles, PushoverPriority.Emergency, $"Error updating info for backup disk {disk.Name}");
+            Utils.LogWithPushover(BackupAction.BackupFiles, PushoverPriority.Emergency,
+                $"Error updating info for backup disk {disk.Name}");
             return null;
         }
         UpdateMediaFilesCountDisplay();
@@ -288,10 +295,11 @@ internal sealed partial class Main
 
         while (currentConnectedBackupDiskName != backupDisk)
         {
-            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, $"Connect new backup drive to restore from {backupDisk}");
+            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
+                $"Connect new backup drive to restore from {backupDisk}");
 
-            var answer = MessageBox.Show(string.Format(Resources.Main_CorrectDiskPrompt, backupDisk), Resources.Main_CorrectDiskTitle,
-                MessageBoxButtons.YesNo);
+            var answer = MessageBox.Show(string.Format(Resources.Main_CorrectDiskPrompt, backupDisk),
+                Resources.Main_CorrectDiskTitle, MessageBoxButtons.YesNo);
 
             // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
             switch (answer)
@@ -330,7 +338,9 @@ internal sealed partial class Main
             WaitForNewDisk(nextDiskMessage);
             disk = mediaBackup.GetBackupDisk(backupDiskTextBox.Text);
         }
-        if (!UpdateCurrentBackupDiskInfo(disk)) _ = MessageBox.Show("Can't find a valid backup share", "Backup Disk", MessageBoxButtons.OK);
+
+        if (!UpdateCurrentBackupDiskInfo(disk))
+            _ = MessageBox.Show("Can't find a valid backup share", "Backup Disk", MessageBoxButtons.OK);
         return disk;
     }
 }

@@ -18,7 +18,8 @@ public sealed class UtilsGetLatestApplicationVersion
 {
     static UtilsGetLatestApplicationVersion()
     {
-        var mediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)), "..\\BackupManager\\MediaBackup.xml"));
+        var mediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)),
+            "..\\BackupManager\\MediaBackup.xml"));
         Utils.Config = mediaBackup.Config;
     }
 

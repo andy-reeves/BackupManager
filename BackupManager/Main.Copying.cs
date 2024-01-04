@@ -42,7 +42,8 @@ internal sealed partial class Main
 
         if (!UpdateCurrentBackupDiskInfo(disk))
         {
-            Utils.LogWithPushover(BackupAction.BackupFiles, PushoverPriority.Emergency, $"Error updating info for backup disk {disk.Name}");
+            Utils.LogWithPushover(BackupAction.BackupFiles, PushoverPriority.Emergency,
+                $"Error updating info for backup disk {disk.Name}");
             return;
         }
         mediaBackup.Save();
@@ -74,14 +75,18 @@ internal sealed partial class Main
 
         // Start with a 30MB/s copy speed as a guess
         var lastCopySpeed = Utils.ConvertMBtoBytes(30);
-        Utils.LogWithPushover(BackupAction.BackupFiles, $"{totalFileCount:n0} files to backup at {Utils.FormatSize(sizeOfFiles)}");
+
+        Utils.LogWithPushover(BackupAction.BackupFiles,
+            $"{totalFileCount:n0} files to backup at {Utils.FormatSize(sizeOfFiles)}");
 
         foreach (var backupFile in files)
         {
             try
             {
                 fileCounter++;
-                UpdateStatusLabel(string.Format(Resources.Main_Copying, string.Empty), Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
+
+                UpdateStatusLabel(string.Format(Resources.Main_Copying, string.Empty),
+                    Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
                 UpdateMediaFilesCountDisplay();
 
                 // We use a temporary name for the copy first and then rename it after
@@ -107,15 +112,16 @@ internal sealed partial class Main
             catch (IOException ex)
             {
                 // Sometimes during a copy we get this if we lose the connection to the source NAS drive
-                Utils.LogWithPushover(BackupAction.BackupFiles, PushoverPriority.Emergency, $"IOException during copy. Skipping file. Details {ex}");
+                Utils.LogWithPushover(BackupAction.BackupFiles, PushoverPriority.Emergency,
+                    $"IOException during copy. Skipping file. Details {ex}");
             }
             _ = UpdateCurrentBackupDiskInfo(disk);
             UpdateEstimatedFinish();
         }
     }
 
-    private bool FileExistsInternal(long sizeOfCopy, BackupDisk disk, BackupFile backupFile, string sourceFileName, long copiedSoFar, int fileCounter,
-        int totalFileCount)
+    private bool FileExistsInternal(long sizeOfCopy, BackupDisk disk, BackupFile backupFile, string sourceFileName,
+        long copiedSoFar, int fileCounter, int totalFileCount)
     {
         Utils.TraceIn();
         var destinationFileName = backupFile.BackupDiskFullPath(disk.BackupPath);
@@ -155,14 +161,16 @@ internal sealed partial class Main
         return Utils.TraceOut(copyTheFile);
     }
 
-    private void CopyFileInternal(long sizeOfCopy, BackupDisk disk, string sourceFileName, long copiedSoFar, FileInfo sourceFileInfo,
-        ref bool outOfDiskSpaceMessageSent, long remainingSizeOfFilesToCopy, int fileCounter, int totalFileCount, string sourceFileSize,
-        BackupFile backupFile, ref long lastCopySpeed)
+    private void CopyFileInternal(long sizeOfCopy, BackupDisk disk, string sourceFileName, long copiedSoFar,
+        FileInfo sourceFileInfo, ref bool outOfDiskSpaceMessageSent, long remainingSizeOfFilesToCopy, int fileCounter,
+        int totalFileCount, string sourceFileSize, BackupFile backupFile, ref long lastCopySpeed)
     {
         Utils.TraceIn();
         var destinationFileName = backupFile.BackupDiskFullPath(disk.BackupPath);
         var destinationFileNameTemp = destinationFileName + ".copying";
-        UpdateStatusLabel(string.Format(Resources.Main_Copying, Path.GetFileName(sourceFileName)), Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
+
+        UpdateStatusLabel(string.Format(Resources.Main_Copying, Path.GetFileName(sourceFileName)),
+            Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
         _ = Utils.GetDiskInfo(backupDiskTextBox.Text, out var availableSpace, out _);
 
         if (availableSpace > Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave) + sourceFileInfo.Length)
@@ -174,13 +182,18 @@ internal sealed partial class Main
             {
                 // remaining size is the smallest of remaining disk size-critical space to leave free OR
                 // size of remaining files to copy
-                var remainingDiskSpace = availableSpace - Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave);
-                var sizeOfCopyRemaining = remainingDiskSpace < remainingSizeOfFilesToCopy ? remainingDiskSpace : remainingSizeOfFilesToCopy;
+                var remainingDiskSpace =
+                    availableSpace - Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave);
+
+                var sizeOfCopyRemaining = remainingDiskSpace < remainingSizeOfFilesToCopy
+                    ? remainingDiskSpace
+                    : remainingSizeOfFilesToCopy;
                 var numberOfSecondsOfCopyRemaining = sizeOfCopyRemaining / (double)lastCopySpeed;
                 var rightNow = DateTime.Now;
                 var estimatedFinishDateTime = rightNow.AddSeconds(numberOfSecondsOfCopyRemaining);
 
-                formattedEndDateTime = Resources.Main_Estimated_finish_by_ + estimatedFinishDateTime.ToString(Resources.DateTime_HHmm) +
+                formattedEndDateTime = Resources.Main_Estimated_finish_by_ +
+                                       estimatedFinishDateTime.ToString(Resources.DateTime_HHmm) +
                                        $" in {Utils.FormatTimeFromSeconds(Convert.ToInt32(numberOfSecondsOfCopyRemaining))}";
 
                 // could be the following day

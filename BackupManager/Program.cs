@@ -17,8 +17,8 @@ namespace BackupManager;
 
 file static class Program
 {
-    private static readonly string _appGuid = ((GuidAttribute)Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(GuidAttribute), true)[0])
-        .Value;
+    private static readonly string _appGuid =
+        ((GuidAttribute)Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(GuidAttribute), true)[0]).Value;
 
 #if DEBUG
     private static readonly Mutex _singleton = new(true, _appGuid + "DEBUG");

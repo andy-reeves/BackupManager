@@ -63,9 +63,8 @@ public sealed class EntityTests
         Utils.CreateFile(pathToFile2);
         Utils.CreateFile(pathToFile3);
 
-        var mediaBackup =
-            BackupManager.Entities.MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)),
-                "..\\BackupManager\\MediaBackup.xml"));
+        var mediaBackup = BackupManager.Entities.MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)),
+            "..\\BackupManager\\MediaBackup.xml"));
         mediaBackup.BackupMediaFile();
         mediaBackup.Config.Directories.Add(pathToMovies);
         mediaBackup.Config.Directories.Add(pathToTv);

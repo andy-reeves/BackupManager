@@ -22,7 +22,8 @@ public sealed class FileRulesUnitTest
 
     static FileRulesUnitTest()
     {
-        _mediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)), "..\\BackupManager\\MediaBackup.xml"));
+        _mediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)),
+            "..\\BackupManager\\MediaBackup.xml"));
     }
 
     [Fact]
@@ -79,7 +80,10 @@ public sealed class FileRulesUnitTest
             var testPath = cols[3];
             var rule = _mediaBackup.Config.FileRules.SingleOrDefault(p => p.Number == ruleNumber);
             Assert.NotNull(rule);
-            var regEx = testOrDiscovery.StartsWith("T", StringComparison.InvariantCulture) ? rule.FileTestRegEx : rule.FileDiscoveryRegEx;
+
+            var regEx = testOrDiscovery.StartsWith("T", StringComparison.InvariantCulture)
+                ? rule.FileTestRegEx
+                : rule.FileDiscoveryRegEx;
 
             if (expectedResult)
                 Assert.True(testPath.IsMatch(regEx), $"Test {testNumber} of Rule {ruleNumber} {rule.Message} for {testPath}");

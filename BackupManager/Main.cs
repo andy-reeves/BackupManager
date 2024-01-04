@@ -85,7 +85,8 @@ internal sealed partial class Main : Form
 
         if (!longRunningActionExecutingRightNow)
         {
-            if (MessageBox.Show(Resources.Main_UpdateMasterFiles, Resources.Main_UpdateMasterFilesTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (MessageBox.Show(Resources.Main_UpdateMasterFiles, Resources.Main_UpdateMasterFilesTitle,
+                    MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 tokenSource?.Dispose();
                 tokenSource = new CancellationTokenSource();
@@ -101,7 +102,8 @@ internal sealed partial class Main : Form
         Utils.TraceIn();
         if (longRunningActionExecutingRightNow) return;
 
-        if (MessageBox.Show(Resources.Main_RecreateAllSymbolicLinks, Resources.Main_SymbolicLinksTitle, MessageBoxButtons.YesNo) != DialogResult.Yes)
+        if (MessageBox.Show(Resources.Main_RecreateAllSymbolicLinks, Resources.Main_SymbolicLinksTitle,
+                MessageBoxButtons.YesNo) != DialogResult.Yes)
             return;
 
         tokenSource?.Dispose();
@@ -114,7 +116,8 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
 
-        if (MessageBox.Show(Resources.Main_AreYouSureDelete, Resources.Main_DeleteExtraTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
+        if (MessageBox.Show(Resources.Main_AreYouSureDelete, Resources.Main_DeleteExtraTitle, MessageBoxButtons.YesNo) ==
+            DialogResult.Yes)
             TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, true, false);
         Utils.TraceOut();
     }
@@ -164,8 +167,8 @@ internal sealed partial class Main : Form
 
         if (mediaBackup.Config.SpeedTestOnOff)
         {
-            Utils.DiskSpeedTest(directory, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations,
-                out var readSpeed, out var writeSpeed, ct);
+            Utils.DiskSpeedTest(directory, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize),
+                mediaBackup.Config.SpeedTestIterations, out var readSpeed, out var writeSpeed, ct);
             Utils.Log($"Testing {directory}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
         }
 
@@ -186,18 +189,21 @@ internal sealed partial class Main : Form
         // prompt for the back up disk to be inserted 
         // check we have it inserted
         // copy any files off this disk until we're all done to the new disk that we specified
-        if (MessageBox.Show(Resources.Main_RestoreFiles, Resources.Main_RestoreFilesTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
+        if (MessageBox.Show(Resources.Main_RestoreFiles, Resources.Main_RestoreFilesTitle, MessageBoxButtons.YesNo) ==
+            DialogResult.Yes)
         {
             if (directoriesComboBox.SelectedItem == null)
             {
-                _ = MessageBox.Show(Resources.Main_RestoreFilesSelectDirectory, Resources.Main_RestoreFilesTitle, MessageBoxButtons.OK);
+                _ = MessageBox.Show(Resources.Main_RestoreFilesSelectDirectory, Resources.Main_RestoreFilesTitle,
+                    MessageBoxButtons.OK);
                 return;
             }
             var directory = directoriesComboBox.SelectedItem.ToString();
 
             if (restoreDirectoryComboBox.SelectedItem == null)
             {
-                _ = MessageBox.Show(Resources.Main_RestoreFilesDirectoryToRestoreTo, Resources.Main_RestoreFilesTitle, MessageBoxButtons.OK);
+                _ = MessageBox.Show(Resources.Main_RestoreFilesDirectoryToRestoreTo, Resources.Main_RestoreFilesTitle,
+                    MessageBoxButtons.OK);
                 return;
             }
             var targetDirectory = restoreDirectoryComboBox.SelectedItem.ToString();
@@ -217,14 +223,15 @@ internal sealed partial class Main : Form
                     //we need to check the correct disk is connected and prompt if not
                     if (!EnsureConnectedBackupDisk(file.Disk))
                     {
-                        _ = MessageBox.Show(Resources.Main_CorrectDiskTitle, Resources.Main_RestoreFilesTitle, MessageBoxButtons.OK);
+                        _ = MessageBox.Show(Resources.Main_CorrectDiskTitle, Resources.Main_RestoreFilesTitle,
+                            MessageBoxButtons.OK);
                         return;
                     }
 
                     if (file.Disk != lastBackupDisk)
                     {
-                        if (!mediaBackup.Config.DisksToSkipOnRestore.Contains(lastBackupDisk, StringComparer.CurrentCultureIgnoreCase) &&
-                            lastBackupDisk.HasValue())
+                        if (!mediaBackup.Config.DisksToSkipOnRestore.Contains(lastBackupDisk,
+                                StringComparer.CurrentCultureIgnoreCase) && lastBackupDisk.HasValue())
                         {
                             mediaBackup.Config.DisksToSkipOnRestore.Add(lastBackupDisk);
 
@@ -240,14 +247,16 @@ internal sealed partial class Main : Form
 
                     // calculate the source path
                     // calculate the destination path
-                    var sourceFileFullPath = Path.Combine(backupShare, file.Disk, Utils.GetIndexFolder(file.Directory), file.RelativePath);
+                    var sourceFileFullPath = Path.Combine(backupShare, file.Disk, Utils.GetIndexFolder(file.Directory),
+                        file.RelativePath);
 
                     if (targetDirectory != null)
                     {
                         var targetFilePath = Path.Combine(targetDirectory, file.RelativePath);
 
                         if (File.Exists(targetFilePath))
-                            Utils.LogWithPushover(BackupAction.Restore, $"[{fileCounter}/{countOfFiles}] {targetFilePath} Already exists");
+                            Utils.LogWithPushover(BackupAction.Restore,
+                                $"[{fileCounter}/{countOfFiles}] {targetFilePath} Already exists");
                         else
                         {
                             if (File.Exists(sourceFileFullPath))
@@ -286,7 +295,8 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
 
-        if (MessageBox.Show(Resources.Main_AreYouSureDelete, Resources.Main_DeleteExtraTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
+        if (MessageBox.Show(Resources.Main_AreYouSureDelete, Resources.Main_DeleteExtraTitle, MessageBoxButtons.YesNo) ==
+            DialogResult.Yes)
             TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, true, true);
         Utils.TraceOut();
     }
@@ -360,12 +370,17 @@ internal sealed partial class Main : Form
                 var d = DateTime.Parse(disk.Checked);
                 lastChecked = d.ToString(Resources.DateTime_ddMMMyy);
             }
-            var totalSizeOfFilesFromSumOfFiles = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, false).Sum(static p => p.Length);
+
+            var totalSizeOfFilesFromSumOfFiles =
+                mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, false).Sum(static p => p.Length);
 
             var deletedCount = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, true).Count() -
                                mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, false).Count();
             var sizeFromDiskAnalysis = disk.Capacity - disk.Free;
-            var difference = totalSizeOfFilesFromSumOfFiles > sizeFromDiskAnalysis ? 0 : sizeFromDiskAnalysis - totalSizeOfFilesFromSumOfFiles;
+
+            var difference = totalSizeOfFilesFromSumOfFiles > sizeFromDiskAnalysis
+                ? 0
+                : sizeFromDiskAnalysis - totalSizeOfFilesFromSumOfFiles;
             var percentageDiff = Math.Round(difference * 100 / (double)sizeFromDiskAnalysis, 0);
             var percentString = percentageDiff is < 1 and > -1 ? "-" : $"{percentageDiff}%";
 
@@ -430,7 +445,8 @@ internal sealed partial class Main : Form
 
                 foreach (var toKill in processesToKill)
                 {
-                    Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal, $"Stopping all '{toKill}' processes that match");
+                    Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal,
+                        $"Stopping all '{toKill}' processes that match");
                     _ = Utils.KillProcesses(toKill);
                 }
             }
@@ -439,7 +455,8 @@ internal sealed partial class Main : Form
             Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal, $"Stopping '{monitor.ServiceToRestart}'");
 
             if (!Utils.StopService(monitor.ServiceToRestart, 5000))
-                Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High, $"Failed to stop the service '{monitor.Name}'");
+                Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High,
+                    $"Failed to stop the service '{monitor.Name}'");
         }
         Utils.TraceOut();
     }
@@ -477,7 +494,8 @@ internal sealed partial class Main : Form
 
                 foreach (var toKill in processesToKill)
                 {
-                    Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal, $"Stopping all '{toKill}' processes that match");
+                    Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal,
+                        $"Stopping all '{toKill}' processes that match");
                     _ = Utils.KillProcesses(toKill);
                 }
             }
@@ -487,7 +505,8 @@ internal sealed partial class Main : Form
                 Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal, $"Stopping '{monitor.ServiceToRestart}'");
 
                 if (!Utils.StopService(monitor.ServiceToRestart, 5000))
-                    Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High, $"Failed to stop the service '{monitor.Name}'");
+                    Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High,
+                        $"Failed to stop the service '{monitor.Name}'");
             }
         }
         Utils.TraceOut();
@@ -524,7 +543,8 @@ internal sealed partial class Main : Form
         // Check the current backup disk connected
         // when its finished prompt for another disk and wait
 
-        if (MessageBox.Show(Resources.Main_AreYouSureDelete, Resources.Main_DeleteExtraTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
+        if (MessageBox.Show(Resources.Main_AreYouSureDelete, Resources.Main_DeleteExtraTitle, MessageBoxButtons.YesNo) ==
+            DialogResult.Yes)
         {
             tokenSource?.Dispose();
             tokenSource = new CancellationTokenSource();
@@ -559,7 +579,8 @@ internal sealed partial class Main : Form
         // when its finished prompt for another disk and wait
         Utils.TraceIn();
 
-        if (MessageBox.Show(Resources.Main_AreYouSureDelete, Resources.Main_DeleteExtraTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
+        if (MessageBox.Show(Resources.Main_AreYouSureDelete, Resources.Main_DeleteExtraTitle, MessageBoxButtons.YesNo) ==
+            DialogResult.Yes)
         {
             tokenSource?.Dispose();
             tokenSource = new CancellationTokenSource();
@@ -688,14 +709,14 @@ internal sealed partial class Main : Form
                 if (searchOption == SearchOption.TopDirectoryOnly)
                 {
                     filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag)
-                        .Where(b => b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase)).Where(b =>
-                            !b.FullPath.SubstringAfter(Utils.EnsurePathHasATerminatingSeparator(directoryToScan.Path),
-                                StringComparison.CurrentCultureIgnoreCase).Contains('\\')).ToArray();
+                        .Where(b => b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase))
+                        .Where(b => !b.FullPath.SubstringAfter(Utils.EnsurePathHasATerminatingSeparator(directoryToScan.Path),
+                            StringComparison.CurrentCultureIgnoreCase).Contains('\\')).ToArray();
                 }
                 else
                 {
-                    filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag)
-                        .Where(b => b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase)).ToArray();
+                    filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag).Where(b =>
+                        b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase)).ToArray();
                 }
                 RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out var removedFilesCount, out var markedAsDeletedFilesCount);
 
@@ -710,7 +731,8 @@ internal sealed partial class Main : Form
             }
             else
             {
-                var text = string.Format(Resources.Main_Directory_scan_skipped, Utils.FormatTimeFromSeconds(mediaBackup.Config.DirectoriesScanTimer));
+                var text = string.Format(Resources.Main_Directory_scan_skipped,
+                    Utils.FormatTimeFromSeconds(mediaBackup.Config.DirectoriesScanTimer));
                 Utils.LogWithPushover(BackupAction.ScanDirectory, text);
             }
         }
@@ -726,7 +748,8 @@ internal sealed partial class Main : Form
         Utils.TraceOut();
     }
 
-    private void RemoveOrDeleteFiles(IReadOnlyList<BackupFile> files, out int removedFilesCount, out int markedAsDeletedFilesCount)
+    private void RemoveOrDeleteFiles(IReadOnlyList<BackupFile> files, out int removedFilesCount,
+        out int markedAsDeletedFilesCount)
     {
         removedFilesCount = 0;
         markedAsDeletedFilesCount = 0;
@@ -778,7 +801,9 @@ internal sealed partial class Main : Form
     private void ListFilesNotOnBackupDiskButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        IEnumerable<BackupFile> filesNotOnBackupDisk = mediaBackup.GetBackupFilesWithDiskEmpty().OrderByDescending(static p => p.Length);
+
+        IEnumerable<BackupFile> filesNotOnBackupDisk =
+            mediaBackup.GetBackupFilesWithDiskEmpty().OrderByDescending(static p => p.Length);
         Utils.Log("Listing files not on a backup disk");
         var notOnBackupDisk = filesNotOnBackupDisk.ToArray();
 
@@ -794,8 +819,8 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
 
-        if (MessageBox.Show(Resources.Main_RecalculateAllHashes, Resources.Main_RecalculateAllHashesTitle, MessageBoxButtons.YesNo) ==
-            DialogResult.Yes)
+        if (MessageBox.Show(Resources.Main_RecalculateAllHashes, Resources.Main_RecalculateAllHashesTitle,
+                MessageBoxButtons.YesNo) == DialogResult.Yes)
         {
             foreach (var backupFile in mediaBackup.BackupFiles)
             {

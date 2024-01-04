@@ -234,7 +234,8 @@ public sealed class BackupFile : IEquatable<BackupFile>
     /// <exception cref="ApplicationException"></exception>
     private void UpdateContentsHash(string newContentsHash)
     {
-        contentsHash = newContentsHash ?? throw new ArgumentNullException(nameof(newContentsHash), Resources.BackupFile_HashCodeNotNull);
+        contentsHash = newContentsHash ??
+                       throw new ArgumentNullException(nameof(newContentsHash), Resources.BackupFile_HashCodeNotNull);
     }
 
     /// <summary>

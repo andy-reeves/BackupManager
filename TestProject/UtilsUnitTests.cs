@@ -21,7 +21,8 @@ public sealed class UtilsUnitTests
 {
     static UtilsUnitTests()
     {
-        var mediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)), "..\\BackupManager\\MediaBackup.xml"));
+        var mediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)),
+            "..\\BackupManager\\MediaBackup.xml"));
         Utils.Config = mediaBackup.Config;
     }
 
@@ -172,7 +173,9 @@ public sealed class UtilsUnitTests
 
         // Delete the folders we created
         if (Directory.Exists(path1)) Directory.Delete(path1, true);
-        files = Utils.GetFiles(path1 + "bob", "*.txt", SearchOption.AllDirectories, FileAttributes.Hidden, cancellationTokenSource.Token);
+
+        files = Utils.GetFiles(path1 + "bob", "*.txt", SearchOption.AllDirectories, FileAttributes.Hidden,
+            cancellationTokenSource.Token);
         Assert.Empty(files);
     }
 

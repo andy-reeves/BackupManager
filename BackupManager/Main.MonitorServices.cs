@@ -25,7 +25,9 @@ internal sealed partial class Main
         monitoringExecutingRightNow = true;
 
         foreach (var monitor in mediaBackup.Config.Monitors.Where(static monitor =>
-                     monitor.Port > 0 ? !Utils.ConnectionExists(monitor.Url, monitor.Port) : !Utils.UrlExists(monitor.Url, monitor.Timeout * 1000)))
+                     monitor.Port > 0
+                         ? !Utils.ConnectionExists(monitor.Url, monitor.Port)
+                         : !Utils.UrlExists(monitor.Url, monitor.Timeout * 1000)))
         {
             // The monitor is down
             monitor.UpdateFailures(DateTime.Now);
@@ -62,7 +64,8 @@ internal sealed partial class Main
 
                 foreach (var toKill in processesToKill)
                 {
-                    Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal, $"Stopping all '{toKill}' processes that match");
+                    Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal,
+                        $"Stopping all '{toKill}' processes that match");
                     _ = Utils.KillProcesses(toKill);
                 }
             }
@@ -77,7 +80,8 @@ internal sealed partial class Main
                     var newProcess = Process.Start(processToStart, monitor.ApplicationToStartArguments);
 
                     if (newProcess == null)
-                        Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High, $"Failed to start the new process '{monitor.Name}'");
+                        Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High,
+                            $"Failed to start the new process '{monitor.Name}'");
                     else
                         Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal, $"'{monitor.Name}' started");
                 }
@@ -94,7 +98,8 @@ internal sealed partial class Main
             if (Utils.RestartService(monitor.ServiceToRestart, monitor.Timeout * 1000))
                 Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal, $"'{monitor.Name}' started");
             else
-                Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High, $"Failed to restart the service '{monitor.Name}'");
+                Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High,
+                    $"Failed to restart the service '{monitor.Name}'");
         }
 
         if (mediaBackup.Config.MonitoringCheckLatestVersions)
@@ -106,7 +111,10 @@ internal sealed partial class Main
 
                 var installedVersion = Utils.GetApplicationVersionNumber(monitor.ApplicationType);
                 var availableVersion = Utils.GetLatestApplicationVersionNumber(monitor.ApplicationType);
-                if (!monitor.LogIssues || installedVersion == string.Empty || !Utils.VersionIsNewer(installedVersion, availableVersion)) continue;
+
+                if (!monitor.LogIssues || installedVersion == string.Empty ||
+                    !Utils.VersionIsNewer(installedVersion, availableVersion))
+                    continue;
 
                 monitor.LogIssues = false;
 

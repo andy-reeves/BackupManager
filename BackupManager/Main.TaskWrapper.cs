@@ -26,7 +26,9 @@ internal sealed partial class Main
             if (u.Exception == null) return;
 
             Utils.Trace("Exception in the TaskWrapper");
-            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, string.Format(Resources.Main_TaskWrapperException, u.Exception));
+
+            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
+                string.Format(Resources.Main_TaskWrapperException, u.Exception));
         }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
     }
 
@@ -47,7 +49,8 @@ internal sealed partial class Main
             if (u.Message == "The operation was canceled.")
                 Utils.LogWithPushover(BackupAction.General, PushoverPriority.Normal, "Cancelling");
             else
-                Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, string.Format(Resources.Main_TaskWrapperException, u));
+                Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
+                    string.Format(Resources.Main_TaskWrapperException, u));
             ASyncTasksCleanUp();
         }
     }
@@ -61,7 +64,9 @@ internal sealed partial class Main
             if (u.Exception == null) return;
 
             Utils.Trace("Exception in the TaskWrapper");
-            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, string.Format(Resources.Main_TaskWrapperException, u.Exception));
+
+            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
+                string.Format(Resources.Main_TaskWrapperException, u.Exception));
             ASyncTasksCleanUp();
         }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
     }
@@ -76,7 +81,9 @@ internal sealed partial class Main
             if (u.Exception == null) return;
 
             Utils.Trace("Exception in the TaskWrapper");
-            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, string.Format(Resources.Main_TaskWrapperException, u.Exception));
+
+            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
+                string.Format(Resources.Main_TaskWrapperException, u.Exception));
             ASyncTasksCleanUp();
         }, default, TaskContinuationOptions.OnlyOnFaulted, scheduler);
     }
@@ -97,7 +104,9 @@ internal sealed partial class Main
             if (u.Exception == null) return;
 
             Utils.Trace("Exception in the TaskWrapper");
-            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, string.Format(Resources.Main_TaskWrapperException, u.Exception));
+
+            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
+                string.Format(Resources.Main_TaskWrapperException, u.Exception));
             ASyncTasksCleanUp();
         }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
     }

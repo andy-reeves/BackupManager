@@ -27,7 +27,9 @@ public sealed class UtilsCreateHashForByteArrayTest
         var firstByteArray = Utils.GetLocalFileByteArray(path, 0, Utils.StartBlockSize);
         var secondByteArray = Utils.GetLocalFileByteArray(path, startDownloadPositionForMiddleBlock, Utils.MiddleBlockSize);
         var thirdByteArray = Utils.GetLocalFileByteArray(path, startDownloadPositionForEndBlock, Utils.EndBlockSize);
-        Assert.Equal("1416d38415ac751620b97eab7f433723", Utils.CreateHashForByteArray(firstByteArray, secondByteArray, thirdByteArray));
+
+        Assert.Equal("1416d38415ac751620b97eab7f433723",
+            Utils.CreateHashForByteArray(firstByteArray, secondByteArray, thirdByteArray));
     }
 }
 #endif

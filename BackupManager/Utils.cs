@@ -44,14 +44,16 @@ namespace BackupManager;
 [SuppressMessage("ReSharper", "UnusedMember.Global")]
 internal static partial class Utils
 {
-    [LibraryImport("kernel32.dll", EntryPoint = "GetDiskFreeSpaceExW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
+    [LibraryImport("kernel32.dll", EntryPoint = "GetDiskFreeSpaceExW", SetLastError = true,
+        StringMarshalling = StringMarshalling.Utf16)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool GetDiskFreeSpaceEx(string lpDirectoryName, out long lpFreeBytesAvailable, out long lpTotalNumberOfBytes,
-        out long lpTotalNumberOfFreeBytes);
+    private static partial bool GetDiskFreeSpaceEx(string lpDirectoryName, out long lpFreeBytesAvailable,
+        out long lpTotalNumberOfBytes, out long lpTotalNumberOfFreeBytes);
 
     [LibraryImport("kernel32.dll", EntryPoint = "CreateFileW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
-    private static partial SafeFileHandle CreateFile(string fileName, uint dwDesiredAccess, FileShare dwShareMode, IntPtr securityAttrsMustBeZero,
-        FileMode dwCreationDisposition, uint dwFlagsAndAttributes, IntPtr hTemplateFileMustBeZero);
+    private static partial SafeFileHandle CreateFile(string fileName, uint dwDesiredAccess, FileShare dwShareMode,
+        IntPtr securityAttrsMustBeZero, FileMode dwCreationDisposition, uint dwFlagsAndAttributes,
+        IntPtr hTemplateFileMustBeZero);
 
     [LibraryImport("kernel32.dll", EntryPoint = "SetFileTime", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -149,8 +151,8 @@ internal static partial class Utils
     ///     The path to the Log file
     /// </summary>
 #if DEBUG
-    private static readonly string _logFile =
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Debug.log");
+    private static readonly string _logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+        "BackupManager_Debug.log");
 #else
     private static readonly string _logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager.log");
 #endif
@@ -211,8 +213,8 @@ internal static partial class Utils
 
         foreach (var file in traceFiles)
         {
-            var destFileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups",
-                $"{new FileInfo(file).Name}_{timeLog}.log");
+            var destFileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                "BackupManager_Backups", $"{new FileInfo(file).Name}_{timeLog}.log");
 
             try
             {
@@ -261,21 +263,24 @@ internal static partial class Utils
                     var node = JsonNode.Parse(response);
                     return node?["computer"]?["Windows"]?["version"]?.ToString().SubstringBefore('-');
                 case ApplicationType.SABnzbd:
-                    return GitHubVersionNumberParser($"https://raw.githubusercontent.com/sabnzbd/sabnzbd/{branchName}/sabnzbd/version.py",
-                        "__version__", "=", 1);
+                    return GitHubVersionNumberParser(
+                        $"https://raw.githubusercontent.com/sabnzbd/sabnzbd/{branchName}/sabnzbd/version.py", "__version__", "=",
+                        1);
                 case ApplicationType.Sonarr:
-                    return GitHubVersionNumberParser($"https://raw.githubusercontent.com/Sonarr/Sonarr/{branchName}/version.sh", "packageVersion=",
-                        "=", 1);
+                    return GitHubVersionNumberParser($"https://raw.githubusercontent.com/Sonarr/Sonarr/{branchName}/version.sh",
+                        "packageVersion=", "=", 1);
                 case ApplicationType.Radarr:
-                    return GitHubVersionNumberParser($"https://raw.githubusercontent.com/Radarr/Radarr/{branchName}/azure-pipelines.yml",
-                        "majorVersion:", ":", 1);
+                    return GitHubVersionNumberParser(
+                        $"https://raw.githubusercontent.com/Radarr/Radarr/{branchName}/azure-pipelines.yml", "majorVersion:", ":",
+                        1);
                 case ApplicationType.Prowlarr:
-                    return GitHubVersionNumberParser($"https://raw.githubusercontent.com/Prowlarr/Prowlarr/{branchName}/azure-pipelines.yml",
-                        "majorVersion:", ":", 1);
+                    return GitHubVersionNumberParser(
+                        $"https://raw.githubusercontent.com/Prowlarr/Prowlarr/{branchName}/azure-pipelines.yml", "majorVersion:",
+                        ":", 1);
                 case ApplicationType.Bazarr:
                     return GitHubVersionNumberParser(
-                        $"https://raw.githubusercontent.com/morpheus65535/bazarr/{branchName}/libs/requests_oauthlib/__init__.py", "__version__", "=",
-                        1);
+                        $"https://raw.githubusercontent.com/morpheus65535/bazarr/{branchName}/libs/requests_oauthlib/__init__.py",
+                        "__version__", "=", 1);
 
                 // ReSharper disable once RedundantEnumCaseLabelForDefaultSection
                 case ApplicationType.Unknown:
@@ -462,8 +467,8 @@ internal static partial class Utils
         var filename = Path.GetFileNameWithoutExtension(path);
         var extension = Path.GetExtension(path);
 
-        if (extension.ToLowerInvariant() != ".png" && extension.ToLowerInvariant() != ".jpg" && extension.ToLowerInvariant() != ".jpeg" &&
-            extension.ToLowerInvariant() != ".mp4")
+        if (extension.ToLowerInvariant() != ".png" && extension.ToLowerInvariant() != ".jpg" &&
+            extension.ToLowerInvariant() != ".jpeg" && extension.ToLowerInvariant() != ".mp4")
             return true;
 
         var creationTime = filename.StartsWith("IMG_", StringComparison.CurrentCultureIgnoreCase)
@@ -493,7 +498,10 @@ internal static partial class Utils
         {
             StartInfo = new ProcessStartInfo
             {
-                UseShellExecute = true, WindowStyle = ProcessWindowStyle.Hidden, FileName = @"c:\tools\exiftool.exe", Arguments = arguments
+                UseShellExecute = true,
+                WindowStyle = ProcessWindowStyle.Hidden,
+                FileName = @"c:\tools\exiftool.exe",
+                Arguments = arguments
             }
         };
         if (!process.Start()) return TraceOut(false);
@@ -545,7 +553,8 @@ internal static partial class Utils
     /// </returns>
     private static bool AnyFlagSet(FileAttributes value, FileAttributes flagsToCheckFor)
     {
-        return flagsToCheckFor != 0 && Enum.GetValues(typeof(FileAttributes)).Cast<Enum>().Where(flagsToCheckFor.HasFlag).Any(value.HasFlag);
+        return flagsToCheckFor != 0 && Enum.GetValues(typeof(FileAttributes)).Cast<Enum>().Where(flagsToCheckFor.HasFlag)
+            .Any(value.HasFlag);
     }
 
     /// <summary>
@@ -606,8 +615,12 @@ internal static partial class Utils
         if (thirdByteArray != null) newSize += thirdByteArray.Length;
         var byteArrayToHash = new byte[newSize];
         Buffer.BlockCopy(firstByteArray, 0, byteArrayToHash, 0, firstByteArray.Length);
-        if (secondByteArray != null) Buffer.BlockCopy(secondByteArray, 0, byteArrayToHash, firstByteArray.Length, secondByteArray.Length);
-        if (thirdByteArray != null) Buffer.BlockCopy(thirdByteArray, 0, byteArrayToHash, thirdByteArrayDestinationOffset, thirdByteArray.Length);
+
+        if (secondByteArray != null)
+            Buffer.BlockCopy(secondByteArray, 0, byteArrayToHash, firstByteArray.Length, secondByteArray.Length);
+
+        if (thirdByteArray != null)
+            Buffer.BlockCopy(thirdByteArray, 0, byteArrayToHash, thirdByteArrayDestinationOffset, thirdByteArray.Length);
         return ByteArrayToString(MD5.HashData(byteArrayToHash));
     }
 
@@ -617,11 +630,13 @@ internal static partial class Utils
     /// <param name="instance"></param>
     internal static void ClearEvents(object instance)
     {
-        var eventsToClear = instance.GetType().GetEvents(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+        var eventsToClear = instance.GetType()
+            .GetEvents(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
 
         foreach (var eventInfo in eventsToClear)
         {
-            var fieldInfo = instance.GetType().GetField(eventInfo.Name, BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+            var fieldInfo = instance.GetType()
+                .GetField(eventInfo.Name, BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
             if (fieldInfo?.GetValue(instance) is not Delegate eventHandler) continue;
 
             foreach (var item in eventHandler.GetInvocationList())
@@ -698,8 +713,8 @@ internal static partial class Utils
     /// <param name="ct"></param>
     /// <returns>
     /// </returns>
-    internal static string[] GetFiles(string path, string filters, SearchOption searchOption, FileAttributes directoryAttributesToIgnore,
-        CancellationToken ct)
+    internal static string[] GetFiles(string path, string filters, SearchOption searchOption,
+        FileAttributes directoryAttributesToIgnore, CancellationToken ct)
     {
         return GetFiles(path, filters, searchOption, directoryAttributesToIgnore, 0, true, ct);
     }
@@ -738,7 +753,8 @@ internal static partial class Utils
 
     internal static string[] GetDirectoriesForDisk(string diskName, IEnumerable<string> directories)
     {
-        return directories.Where(dir => dir.StartsWith(@"\\" + diskName + @"\", StringComparison.CurrentCultureIgnoreCase)).ToArray();
+        return directories.Where(dir => dir.StartsWith(@"\\" + diskName + @"\", StringComparison.CurrentCultureIgnoreCase))
+            .ToArray();
     }
 
     /// <summary>
@@ -763,8 +779,9 @@ internal static partial class Utils
     /// <param name="ct"></param>
     /// <returns>
     /// </returns>
-    private static string[] GetFiles(string path, string filters, SearchOption searchOption, FileAttributes directoryAttributesToIgnore,
-        FileAttributes fileAttributesToIgnore, bool deleteEmptyDirectories, CancellationToken ct)
+    private static string[] GetFiles(string path, string filters, SearchOption searchOption,
+        FileAttributes directoryAttributesToIgnore, FileAttributes fileAttributesToIgnore, bool deleteEmptyDirectories,
+        CancellationToken ct)
     {
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
         var sw = Stopwatch.StartNew();
@@ -775,7 +792,9 @@ internal static partial class Utils
             return Array.Empty<string>();
         }
         DirectoryInfo directoryInfo = new(path);
-        if (directoryInfo.Parent != null && AnyFlagSet(directoryInfo.Attributes, directoryAttributesToIgnore)) return TraceOut(Array.Empty<string>());
+
+        if (directoryInfo.Parent != null && AnyFlagSet(directoryInfo.Attributes, directoryAttributesToIgnore))
+            return TraceOut(Array.Empty<string>());
 
         var include = from filter in filters.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
             where filter.Trim().HasValue()
@@ -810,8 +829,8 @@ internal static partial class Utils
             {
                 if (searchOption == SearchOption.AllDirectories)
                 {
-                    foreach (var subDir in Directory.GetDirectories(dir)
-                                 .Where(subDir => !AnyFlagSet(new DirectoryInfo(subDir).Attributes, directoryAttributesToIgnore)))
+                    foreach (var subDir in Directory.GetDirectories(dir).Where(subDir =>
+                                 !AnyFlagSet(new DirectoryInfo(subDir).Attributes, directoryAttributesToIgnore)))
                     {
                         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
                         pathsToSearch.Enqueue(subDir);
@@ -822,7 +841,8 @@ internal static partial class Utils
                          {
                              if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
                              return Directory.GetFiles(dir, filter, SearchOption.TopDirectoryOnly);
-                         }).Select(allFiles => excludeAsArray.Any() ? allFiles.Where(p => !excludeRegex.Match(p).Success) : allFiles))
+                         }).Select(allFiles =>
+                             excludeAsArray.Any() ? allFiles.Where(p => !excludeRegex.Match(p).Success) : allFiles))
                 {
                     foundFiles.AddRange(collection.Where(p => !AnyFlagSet(new FileInfo(p).Attributes, fileAttributesToIgnore)));
                 }
@@ -985,14 +1005,16 @@ internal static partial class Utils
         while (sw.Elapsed < howLongToWait) { }
     }
 
-    private static void SendPushoverMessage(string title, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires, string message)
+    private static void SendPushoverMessage(string title, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires,
+        string message)
     {
         TraceIn();
 
-        if (Config.PushoverOnOff && ((priority is PushoverPriority.Low or PushoverPriority.Lowest && Config.PushoverSendLowOnOff) ||
-                                     (priority == PushoverPriority.Normal && Config.PushoverSendNormalOnOff) ||
-                                     (priority == PushoverPriority.High && Config.PushoverSendHighOnOff) ||
-                                     (priority == PushoverPriority.Emergency && Config.PushoverSendEmergencyOnOff)))
+        if (Config.PushoverOnOff &&
+            ((priority is PushoverPriority.Low or PushoverPriority.Lowest && Config.PushoverSendLowOnOff) ||
+             (priority == PushoverPriority.Normal && Config.PushoverSendNormalOnOff) ||
+             (priority == PushoverPriority.High && Config.PushoverSendHighOnOff) ||
+             (priority == PushoverPriority.Emergency && Config.PushoverSendEmergencyOnOff)))
         {
             try
             {
@@ -1010,8 +1032,12 @@ internal static partial class Utils
                     if (retry == PushoverRetry.None) retry = PushoverRetry.ThirtySeconds;
                     if (expires == PushoverExpires.Immediately) expires = PushoverExpires.FiveMinutes;
                 }
-                if (retry != PushoverRetry.None) parameters.Add("retry", Convert.ChangeType(retry, retry.GetTypeCode()).ToString());
-                if (expires != PushoverExpires.Immediately) parameters.Add("expire", Convert.ChangeType(expires, expires.GetTypeCode()).ToString());
+
+                if (retry != PushoverRetry.None)
+                    parameters.Add("retry", Convert.ChangeType(retry, retry.GetTypeCode()).ToString());
+
+                if (expires != PushoverExpires.Immediately)
+                    parameters.Add("expire", Convert.ChangeType(expires, expires.GetTypeCode()).ToString());
 
                 // ensures there's a 1s gap between messages
                 while (DateTime.UtcNow < _timeLastPushoverMessageSent.AddMilliseconds(TimeDelayOnPushoverMessages))
@@ -1067,7 +1093,8 @@ internal static partial class Utils
     /// <exception cref="ArgumentException"></exception>
     internal static bool KillProcesses(string processName)
     {
-        var processes = Process.GetProcesses().Where(p => p.ProcessName.StartsWith(processName, StringComparison.CurrentCultureIgnoreCase));
+        var processes = Process.GetProcesses()
+            .Where(p => p.ProcessName.StartsWith(processName, StringComparison.CurrentCultureIgnoreCase));
 
         try
         {
@@ -1147,6 +1174,17 @@ internal static partial class Utils
         }
     }
 
+    internal static void LogHeader()
+    {
+        const string headerText = @" ____             _                  __  __" + "\n" +
+                                  @"| __ )  __ _  ___| | ___   _ _ __   |  \/  | __ _ _ __   __ _  __ _  ___ _ __" + "\n" +
+                                  @"|  _ \ / _` |/ __| |/ / | | | '_ \  | |\/| |/ _` | '_ \ / _` |/ _` |/ _ \ '__|" + "\n" +
+                                  @"| |_) | (_| | (__|   <| |_| | |_) | | |  | | (_| | | | | (_| | (_| |  __/ |" + "\n" +
+                                  @"|____/ \__,_|\___|_|\_\\__,_| .__/  |_|  |_|\__,_|_| |_|\__,_|\__, |\___|_|" + "\n" +
+                                  @"                            |_|                               |___/";
+        Log(headerText);
+    }
+
     /// <summary>
     ///     Writes the text to the logfile
     /// </summary>
@@ -1159,7 +1197,9 @@ internal static partial class Utils
             Trace(text);
             var textArrayToWrite = text.Split('\n');
 
-            foreach (var textToWrite in from line in textArrayToWrite where line.HasValue() select $"{DateTime.Now:dd-MM-yy HH:mm:ss} {line}")
+            foreach (var textToWrite in from line in textArrayToWrite
+                     where line.HasValue()
+                     select $"{DateTime.Now:dd-MM-yy HH:mm:ss} {line}")
             {
                 Console.WriteLine(textToWrite);
                 if (_logFile.HasValue()) File.AppendAllLines(_logFile, new[] { textToWrite });
@@ -1199,11 +1239,13 @@ internal static partial class Utils
     /// <param name="retry"></param>
     /// <param name="expires"></param>
     /// <param name="text"></param>
-    internal static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires,
-        string text)
+    internal static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, PushoverRetry retry,
+        PushoverExpires expires, string text)
     {
         Log(backupAction, text);
-        if (Config.PushoverAppToken.HasValue()) SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, text);
+
+        if (Config.PushoverAppToken.HasValue())
+            SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, text);
     }
 
     #endregion
@@ -1250,7 +1292,9 @@ internal static partial class Utils
     private static string ByteArrayToString(IReadOnlyList<byte> value, int startIndex, int length)
     {
         ArgumentNullException.ThrowIfNull(value);
-        if (startIndex < 0 || (startIndex >= value.Count && startIndex > 0)) throw new ArgumentOutOfRangeException(nameof(startIndex));
+
+        if (startIndex < 0 || (startIndex >= value.Count && startIndex > 0))
+            throw new ArgumentOutOfRangeException(nameof(startIndex));
         if (length < 0) throw new ArgumentOutOfRangeException(nameof(length));
         if (startIndex > value.Count - length) throw new ArgumentException(null, nameof(length));
 
@@ -1290,7 +1334,9 @@ internal static partial class Utils
     /// </returns>
     internal static string CreateHashForByteArray(byte[] firstByteArray, byte[] endByteArray)
     {
-        var byteArrayToHash = endByteArray == null ? new byte[firstByteArray.Length] : new byte[firstByteArray.Length + endByteArray.Length];
+        var byteArrayToHash = endByteArray == null
+            ? new byte[firstByteArray.Length]
+            : new byte[firstByteArray.Length + endByteArray.Length];
         Buffer.BlockCopy(firstByteArray, 0, byteArrayToHash, 0, firstByteArray.Length);
         if (endByteArray != null) Buffer.BlockCopy(endByteArray, 0, byteArrayToHash, firstByteArray.Length, endByteArray.Length);
         return ByteArrayToString(MD5.HashData(byteArrayToHash));
@@ -1557,8 +1603,8 @@ internal static partial class Utils
 
     private static bool SetDirectoryLastWriteUtc(string dirPath, DateTime lastWriteDate)
     {
-        using var hDir = CreateFile(dirPath, FileAccessGenericRead | FileAccessGenericWrite, FileShare.ReadWrite, IntPtr.Zero, (FileMode)OpenExisting,
-            FileFlagBackupSemantics, IntPtr.Zero);
+        using var hDir = CreateFile(dirPath, FileAccessGenericRead | FileAccessGenericWrite, FileShare.ReadWrite, IntPtr.Zero,
+            (FileMode)OpenExisting, FileFlagBackupSemantics, IntPtr.Zero);
         var lastWriteTime = lastWriteDate.ToFileTime();
         return SetFileTime(hDir, IntPtr.Zero, IntPtr.Zero, ref lastWriteTime);
     }
@@ -1600,7 +1646,9 @@ internal static partial class Utils
     internal static string FormatTimeSpanMinutesOnly(TimeSpan timeSpan)
     {
         var totalMinutes = Convert.ToInt32(timeSpan.TotalMinutes);
-        if (totalMinutes < 1) return timeSpan.TotalSeconds == 0 ? "0s" : timeSpan.TotalSeconds < 1 ? "1s" : $"{timeSpan.TotalSeconds:n0}s";
+
+        if (totalMinutes < 1)
+            return timeSpan.TotalSeconds == 0 ? "0s" : timeSpan.TotalSeconds < 1 ? "1s" : $"{timeSpan.TotalSeconds:n0}s";
 
         return $"{totalMinutes}m";
     }
@@ -1639,8 +1687,8 @@ internal static partial class Utils
     /// <param name="writeSpeed">in bytes per second</param>
     /// <param name="testFileSize"></param>
     /// <param name="ct">A cancellation token so we can act on cancelling</param>
-    internal static void DiskSpeedTest(string pathToDiskToTest, long testFileSize, int testIterations, out long readSpeed, out long writeSpeed,
-        CancellationToken ct)
+    internal static void DiskSpeedTest(string pathToDiskToTest, long testFileSize, int testIterations, out long readSpeed,
+        out long writeSpeed, CancellationToken ct)
     {
         TraceIn(pathToDiskToTest, testFileSize, testIterations);
         var tempPath = Path.GetTempPath();
@@ -1758,7 +1806,8 @@ internal static partial class Utils
     /// <param name="testIterations"></param>
     /// <param name="ct">A cancellation token so we can act on cancelling</param>
     /// <returns>The bytes read/written in 1s</returns>
-    private static long DiskSpeedTest(string sourcePath, string destinationPath, long testFileSize, int testIterations, CancellationToken ct)
+    private static long DiskSpeedTest(string sourcePath, string destinationPath, long testFileSize, int testIterations,
+        CancellationToken ct)
     {
         TraceIn();
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
@@ -1962,7 +2011,8 @@ internal static partial class Utils
         return TraceOut(listOfDirectoriesDeleted.ToArray());
     }
 
-    private static void DeleteBrokenSymbolicLinks(string directory, bool includeRoot, ICollection<string> list, string rootDirectory)
+    private static void DeleteBrokenSymbolicLinks(string directory, bool includeRoot, ICollection<string> list,
+        string rootDirectory)
     {
         TraceIn(directory);
 
