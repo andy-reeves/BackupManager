@@ -64,9 +64,6 @@ internal sealed partial class Main
             tasks.AddRange(diskNames.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam))
                 .Select(files => TaskWrapper(ProcessFilesA, files, scanId, token)));
             Task.WhenAll(tasks).Wait(ct);
-            var filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag).ToArray();
-            RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out _, out _);
-            mediaBackup.Save();
             Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal, "Processing files completed.");
             UpdateMediaFilesCountDisplay();
             ResetAllControls();
@@ -342,6 +339,7 @@ internal sealed partial class Main
         var scanId = Guid.NewGuid().ToString();
         mediaBackup.ClearFlags();
         _ = ProcessFiles(files, scanId, ct);
+        mediaBackup.Save();
     }
 
     /// <summary>
