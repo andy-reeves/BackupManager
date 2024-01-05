@@ -130,9 +130,10 @@ internal sealed class FileSystemWatcher
         set
         {
             if (((int)value & ~NotifyFiltersValidMask) != 0)
+            {
                 throw new ArgumentException(string.Format(Resources.InvalidEnumArgument, nameof(value), (int)value,
                     nameof(NotifyFilters)));
-
+            }
             if (notifyFilter == value) return;
 
             notifyFilter = value;

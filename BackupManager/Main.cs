@@ -25,6 +25,8 @@ internal sealed partial class Main : Form
 {
     private static readonly object _lock = new();
 
+    private volatile int currentPercentComplete;
+
     private BlockingCollection<DirectoryScan> directoryScanBlockingCollection;
 
     private BlockingCollection<string> fileBlockingCollection;
@@ -32,8 +34,6 @@ internal sealed partial class Main : Form
     private volatile int fileCounter;
 
     private volatile int reportedPercentComplete;
-
-    private volatile int currentPercentComplete;
 
     private void FileSystemWatcher_OnError(object sender, ErrorEventArgs e)
     {
@@ -960,7 +960,7 @@ internal sealed partial class Main : Form
                 tokenSource?.Dispose();
                 tokenSource = new CancellationTokenSource();
                 ct = tokenSource.Token;
-                TaskWrapper(ScanDirectoryAsync, scanDirectoryComboBox.Text);
+                _ = TaskWrapper(ScanDirectoryAsync, scanDirectoryComboBox.Text);
             }
         }
         Utils.TraceOut();
