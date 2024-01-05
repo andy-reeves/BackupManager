@@ -259,7 +259,7 @@ internal sealed partial class Main
         {
             Utils.LogWithPushover(BackupAction.ScanDirectory, "Started");
             UpdateStatusLabel(string.Format(Resources.Main_Scanning, string.Empty));
-            ScanAllDirectories();
+            ScanAllDirectories(false);
             ResetAllControls();
             longRunningActionExecutingRightNow = false;
         }
@@ -276,7 +276,7 @@ internal sealed partial class Main
         }
     }
 
-    private void ScanAllDirectories()
+    private void ScanAllDirectories(bool updateLastFullScan)
     {
         var scanId = Guid.NewGuid().ToString();
         tokenSource?.Dispose();
@@ -311,6 +311,7 @@ internal sealed partial class Main
         }
         var filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag).ToArray();
         RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out _, out _);
+        if (updateLastFullScan) mediaBackup.UpdateLastFullScan();
         mediaBackup.Save();
     }
 

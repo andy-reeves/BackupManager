@@ -42,9 +42,7 @@ internal sealed partial class Main
             // Update the master files if we've not been monitoring directories directly
             if (!mediaBackup.Config.DirectoriesFileChangeWatcherOnOff ||
                 backupFileDate.AddDays(mediaBackup.Config.DirectoriesDaysBetweenFullScan) < DateTime.Now)
-                ScanAllDirectories();
-            mediaBackup.UpdateLastFullScan();
-            mediaBackup.Save();
+                ScanAllDirectories(true);
             UpdateSymbolicLinks(ct);
 
             if (mediaBackup.Config.BackupDiskDifferenceInFileCountAllowedPercentage != 0)
