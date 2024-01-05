@@ -5,13 +5,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
-using BackupManager.Entities;
 using BackupManager.Properties;
 
 namespace BackupManager;
@@ -29,54 +23,28 @@ internal sealed partial class Main
         }
         longRunningActionExecutingRightNow = true;
         DisableControlsForAsyncTasks();
-        Utils.LogWithPushover(BackupAction.ScanDirectory, "Started");
-        UpdateStatusLabel(string.Format(Resources.Main_Scanning, string.Empty));
-        fileBlockingCollection = new BlockingCollection<string>();
-        directoryScanBlockingCollection = new BlockingCollection<DirectoryScan>();
-
-        if (mediaBackup.Config.MonitoringOnOff)
-        {
-            Utils.LogWithPushover(BackupAction.General,
-                $"Service monitoring is running every {Utils.FormatTimeFromSeconds(mediaBackup.Config.MonitoringInterval)}");
-        }
-        else
-            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, "Service monitoring is not running");
-        long oldFileCount = mediaBackup.BackupFiles.Count;
-        var doFullBackup = false;
-        _ = DateTime.TryParse(mediaBackup.DirectoriesLastFullScan, out var backupFileDate);
-        if (backupFileDate.AddDays(mediaBackup.Config.DirectoriesDaysBetweenFullScan) < DateTime.Now) doFullBackup = true;
 
         try
         {
-            tokenSource?.Dispose();
-            tokenSource = new CancellationTokenSource();
-            ct = tokenSource.Token;
-            var scanId = Guid.NewGuid().ToString();
+            Utils.LogWithPushover(BackupAction.ScanDirectory, "Started");
+            UpdateStatusLabel(string.Format(Resources.Main_Scanning, string.Empty));
+
+            if (mediaBackup.Config.MonitoringOnOff)
+            {
+                Utils.LogWithPushover(BackupAction.General,
+                    $"Service monitoring is running every {Utils.FormatTimeFromSeconds(mediaBackup.Config.MonitoringInterval)}");
+            }
+            else
+                Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, "Service monitoring is not running");
+            long oldFileCount = mediaBackup.BackupFiles.Count;
+            _ = DateTime.TryParse(mediaBackup.DirectoriesLastFullScan, out var backupFileDate);
 
             // Update the master files if we've not been monitoring directories directly
-            if (!mediaBackup.Config.DirectoriesFileChangeWatcherOnOff || doFullBackup)
-            {
-                // split the directories into group by the disk name
-                var diskNames = Utils.GetDiskNames(mediaBackup.Config.Directories);
-                RootDirectoryChecks(mediaBackup.Config.Directories);
-                var tasks = new List<Task>(diskNames.Length);
-
-                tasks.AddRange(diskNames.Select(diskName => Utils.GetDirectoriesForDisk(diskName, mediaBackup.Config.Directories))
-                    .Select(directoriesOnDisk => TaskWrapper(GetFilesAsync, directoriesOnDisk, scanId)));
-                Task.WhenAll(tasks).Wait(ct);
-                mediaBackup.Save();
-
-                foreach (var scan in directoryScanBlockingCollection)
-                {
-                    mediaBackup.DirectoryScans.Add(scan);
-                }
-                mediaBackup.ClearFlags();
-                _ = ProcessFiles(fileBlockingCollection, scanId, ct);
-                var filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag).ToArray();
-                RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out _, out _);
-                mediaBackup.UpdateLastFullScan();
-                mediaBackup.Save();
-            }
+            if (!mediaBackup.Config.DirectoriesFileChangeWatcherOnOff ||
+                backupFileDate.AddDays(mediaBackup.Config.DirectoriesDaysBetweenFullScan) < DateTime.Now)
+                ScanAllDirectories();
+            mediaBackup.UpdateLastFullScan();
+            mediaBackup.Save();
             UpdateSymbolicLinks(ct);
 
             if (mediaBackup.Config.BackupDiskDifferenceInFileCountAllowedPercentage != 0)

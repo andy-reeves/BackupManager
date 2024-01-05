@@ -245,46 +245,21 @@ internal sealed partial class Main
 
     private void ScanAllDirectoriesAsync()
     {
+        Utils.TraceIn();
+
+        if (longRunningActionExecutingRightNow)
+        {
+            Utils.TraceOut();
+            return;
+        }
         longRunningActionExecutingRightNow = true;
         DisableControlsForAsyncTasks();
 
         try
         {
-            var scanId = Guid.NewGuid().ToString();
-            tokenSource?.Dispose();
-            tokenSource = new CancellationTokenSource();
-            ct = tokenSource.Token;
             Utils.LogWithPushover(BackupAction.ScanDirectory, "Started");
-            fileBlockingCollection = new BlockingCollection<string>();
-            directoryScanBlockingCollection = new BlockingCollection<DirectoryScan>();
-
-            // split the directories into group by the disk name
-            var diskNames = Utils.GetDiskNames(mediaBackup.Config.Directories);
-            RootDirectoryChecks(mediaBackup.Config.Directories);
-            var tasks = new List<Task>(diskNames.Length);
-
-            tasks.AddRange(diskNames.Select(diskName => Utils.GetDirectoriesForDisk(diskName, mediaBackup.Config.Directories))
-                .Select(directoriesOnDisk => TaskWrapper(GetFilesAsync, directoriesOnDisk, scanId)));
-            Task.WhenAll(tasks).Wait(ct);
-            Utils.LogWithPushover(BackupAction.ScanDirectory, "Scanning complete.");
-
-            foreach (var scan in directoryScanBlockingCollection)
-            {
-                mediaBackup.DirectoryScans.Add(scan);
-            }
-
-            // Save now in case the scanning files is interrupted
-            mediaBackup.Save();
-            mediaBackup.ClearFlags();
-
-            if (!ProcessFiles(fileBlockingCollection, scanId, ct))
-            {
-                Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal,
-                    Resources.Main_ScanDirectoriesAsync_Scan_Directories_failed);
-            }
-            var filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag).ToArray();
-            RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out _, out _);
-            mediaBackup.Save();
+            UpdateStatusLabel(string.Format(Resources.Main_Scanning, string.Empty));
+            ScanAllDirectories();
             ResetAllControls();
             longRunningActionExecutingRightNow = false;
         }
@@ -299,6 +274,44 @@ internal sealed partial class Main
             }
             ASyncTasksCleanUp();
         }
+    }
+
+    private void ScanAllDirectories()
+    {
+        var scanId = Guid.NewGuid().ToString();
+        tokenSource?.Dispose();
+        tokenSource = new CancellationTokenSource();
+        ct = tokenSource.Token;
+        fileBlockingCollection = new BlockingCollection<string>();
+        directoryScanBlockingCollection = new BlockingCollection<DirectoryScan>();
+
+        // split the directories into group by the disk name
+        var diskNames = Utils.GetDiskNames(mediaBackup.Config.Directories);
+        RootDirectoryChecks(mediaBackup.Config.Directories);
+        var tasks = new List<Task>(diskNames.Length);
+
+        tasks.AddRange(diskNames.Select(diskName => Utils.GetDirectoriesForDisk(diskName, mediaBackup.Config.Directories))
+            .Select(directoriesOnDisk => TaskWrapper(GetFilesAsync, directoriesOnDisk, scanId)));
+        Task.WhenAll(tasks).Wait(ct);
+        Utils.LogWithPushover(BackupAction.ScanDirectory, "Scanning complete.");
+
+        foreach (var scan in directoryScanBlockingCollection)
+        {
+            mediaBackup.DirectoryScans.Add(scan);
+        }
+
+        // Save now in case the scanning files is interrupted
+        mediaBackup.Save();
+        mediaBackup.ClearFlags();
+
+        if (!ProcessFiles(fileBlockingCollection, scanId, ct))
+        {
+            Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal,
+                Resources.Main_ScanDirectoriesAsync_Scan_Directories_failed);
+        }
+        var filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag).ToArray();
+        RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out _, out _);
+        mediaBackup.Save();
     }
 
     private void GetFilesAsync(string[] directories, string scanId)
