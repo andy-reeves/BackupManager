@@ -50,13 +50,14 @@ internal sealed partial class Main
     /// <returns></returns>
     private bool ProcessFiles(IReadOnlyCollection<string> filesParam, string scanId, CancellationToken token)
     {
+        Utils.TraceIn();
         longRunningActionExecutingRightNow = true;
         DisableControlsForAsyncTasks();
 
         try
         {
             var diskNames = Utils.GetDiskNames(mediaBackup.Config.Directories);
-            var tasks = new List<Task>(diskNames.Length);
+            var tasks = new List<Task<bool>>(diskNames.Length);
             fileCounterForMultiThreadProcessing = 0;
             EnableProgressBar(0, filesParam.Count);
             Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal, $"Processing {filesParam.Count:n0} files");
@@ -64,10 +65,14 @@ internal sealed partial class Main
             tasks.AddRange(diskNames.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam))
                 .Select(files => TaskWrapper(ProcessFilesA, files, scanId, token)));
             Task.WhenAll(tasks).Wait(ct);
-            Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal, "Processing files completed.");
+            var returnValue = !tasks.Any(static t => !t.Result);
+
+            if (returnValue)
+                Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal, "Processing files completed.");
             UpdateMediaFilesCountDisplay();
             ResetAllControls();
             longRunningActionExecutingRightNow = false;
+            return Utils.TraceOut(returnValue);
         }
         catch (Exception u)
         {
@@ -79,8 +84,8 @@ internal sealed partial class Main
                     string.Format(Resources.Main_TaskWrapperException, u));
             }
             ASyncTasksCleanUp();
+            return Utils.TraceOut(false);
         }
-        return true;
     }
 
     /// <summary>
@@ -89,9 +94,10 @@ internal sealed partial class Main
     /// <param name="filesParam"></param>
     /// <param name="scanId"></param>
     /// <param name="token"></param>
-    private void ProcessFilesA(string[] filesParam, string scanId, CancellationToken token)
+    private bool ProcessFilesA(string[] filesParam, string scanId, CancellationToken token)
     {
-        // TODO To make this async and multiple threads for each separate disk
+        Utils.TraceIn();
+
         // we need a blocking collection and then copy it back when its all done
         // then split by disk name and have a Task for each of them like the directory scanner
 
@@ -153,11 +159,12 @@ internal sealed partial class Main
                 // If a rule has failed then break to avoid multiple messages sent
                 break;
             }
-            if (!mediaBackup.EnsureFile(file)) return;
+            if (!mediaBackup.EnsureFile(file)) return Utils.TraceOut(false);
         }
 
         // Update the last scan endDateTime as it wasn't set in the loop
         if (scanInfo != null) scanInfo.EndDateTime = DateTime.Now;
+        return Utils.TraceOut(true);
     }
 
     private void UpdateOldestBackupDisk()

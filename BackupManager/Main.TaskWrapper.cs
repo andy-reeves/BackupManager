@@ -96,12 +96,11 @@ internal sealed partial class Main
         }
     }
 
-    private Task TaskWrapper(Action<string[], string, CancellationToken> methodName, string[] param1, string scanId,
+    private Task<bool> TaskWrapper(Func<string[], string, CancellationToken, bool> methodName, string[] param1, string scanId,
         CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(methodName);
-        var task = Task.Run(() => methodName(param1, scanId, token), ct);
-        return task;
+        return Task.Run(() => methodName(param1, scanId, token), ct);
     }
 
     private Task TaskWrapper(Action<string[], string> methodName, string[] param1, string scanId)
