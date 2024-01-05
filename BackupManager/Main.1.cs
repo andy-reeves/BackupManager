@@ -80,7 +80,7 @@ internal sealed partial class Main
             listDirectoriesComboBox.Items.AddRange(directoriesArray.ToArray<object>());
             directoriesComboBox.Items.AddRange(directoriesArray.ToArray<object>());
             restoreDirectoryComboBox.Items.AddRange(directoriesArray.ToArray<object>());
-            scanDirectoriesComboBox.Items.AddRange(directoriesArray.ToArray<object>());
+            scanDirectoryComboBox.Items.AddRange(directoriesArray.ToArray<object>());
 
             foreach (var disk in mediaBackup.BackupDisks)
             {

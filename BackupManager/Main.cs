@@ -23,9 +23,17 @@ namespace BackupManager;
 
 internal sealed partial class Main : Form
 {
+    private static readonly object _lock = new();
+
     private BlockingCollection<DirectoryScan> directoryScanBlockingCollection;
 
     private BlockingCollection<string> fileBlockingCollection;
+
+    private volatile int fileCounter;
+
+    private volatile int reportedPercentComplete;
+
+    private volatile int currentPercentComplete;
 
     private void FileSystemWatcher_OnError(object sender, ErrorEventArgs e)
     {
@@ -255,8 +263,10 @@ internal sealed partial class Main : Form
                         var targetFilePath = Path.Combine(targetDirectory, file.RelativePath);
 
                         if (File.Exists(targetFilePath))
+                        {
                             Utils.LogWithPushover(BackupAction.Restore,
                                 $"[{fileCounter}/{countOfFiles}] {targetFilePath} Already exists");
+                        }
                         else
                         {
                             if (File.Exists(sourceFileFullPath))
@@ -455,8 +465,10 @@ internal sealed partial class Main : Form
             Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal, $"Stopping '{monitor.ServiceToRestart}'");
 
             if (!Utils.StopService(monitor.ServiceToRestart, 5000))
+            {
                 Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High,
                     $"Failed to stop the service '{monitor.Name}'");
+            }
         }
         Utils.TraceOut();
     }
@@ -505,8 +517,10 @@ internal sealed partial class Main : Form
                 Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal, $"Stopping '{monitor.ServiceToRestart}'");
 
                 if (!Utils.StopService(monitor.ServiceToRestart, 5000))
+                {
                     Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High,
                         $"Failed to stop the service '{monitor.Name}'");
+                }
             }
         }
         Utils.TraceOut();
@@ -569,6 +583,7 @@ internal sealed partial class Main : Form
         if (Utils.CopyProcess != null && !Utils.CopyProcess.HasExited) Utils.CopyProcess?.Kill();
         ResetAllControls();
         UpdateMediaFilesCountDisplay();
+        Utils.LogWithPushover(BackupAction.General, PushoverPriority.Normal, "Cancelled");
         longRunningActionExecutingRightNow = false;
         Utils.TraceOut();
     }
@@ -934,18 +949,18 @@ internal sealed partial class Main : Form
         Utils.OpenLogFile();
     }
 
-    private void ScanDirectoriesButton_Click(object sender, EventArgs e)
+    private void ScanDirectoryButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
 
-        if (scanDirectoriesComboBox.SelectedIndex > -1)
+        if (scanDirectoryComboBox.SelectedIndex > -1)
         {
             if (!longRunningActionExecutingRightNow)
             {
                 tokenSource?.Dispose();
                 tokenSource = new CancellationTokenSource();
                 ct = tokenSource.Token;
-                TaskWrapper(ScanDirectoryAsync, scanDirectoriesComboBox.Text);
+                TaskWrapper(ScanDirectoryAsync, scanDirectoryComboBox.Text);
             }
         }
         Utils.TraceOut();
@@ -977,20 +992,28 @@ internal sealed partial class Main : Form
         }
     }
 
-    private void ScanFilesButton_Click(object sender, EventArgs e)
+    private void ProcessFilesButton_Click(object sender, EventArgs e)
     {
-        var files = mediaBackup.BackupFiles.Select(static file => file.FullPath).ToList();
-        var scanId = Guid.NewGuid().ToString();
-        mediaBackup.ClearFlags();
-        _ = ScanFiles(files, scanId, ct);
-        var filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag).ToArray();
-        RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out _, out _);
-        mediaBackup.Save();
+        Utils.TraceIn();
+
+        if (!longRunningActionExecutingRightNow)
+        {
+            tokenSource?.Dispose();
+            tokenSource = new CancellationTokenSource();
+            ct = tokenSource.Token;
+            _ = TaskWrapperAsync(ProcessFilesAsync);
+        }
+        Utils.TraceOut();
     }
 
     private void DirectoryScanReportLastRunOnlyButton_Click(object sender, EventArgs e)
     {
         DirectoryScanReport(DirectoryScanType.GetFiles, 1);
         DirectoryScanReport(DirectoryScanType.ProcessingFiles, 1);
+    }
+
+    private void UpdateProgressBarTimer_Tick(object sender, EventArgs e)
+    {
+        UpdateProgressBar(fileCounter);
     }
 }

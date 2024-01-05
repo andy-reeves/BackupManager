@@ -30,7 +30,7 @@
         {
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
-            updateMasterFilesButton = new System.Windows.Forms.Button();
+            scanAllDirectoriesButton = new System.Windows.Forms.Button();
             checkConnectedBackupDiskButton = new System.Windows.Forms.Button();
             copyFilesToBackupDiskButton = new System.Windows.Forms.Button();
             label1 = new System.Windows.Forms.Label();
@@ -52,12 +52,13 @@
             listFilesMarkedAsDeletedButton = new System.Windows.Forms.Button();
             fileWatcherButton = new System.Windows.Forms.Button();
             listDirectoriesToScanButton = new System.Windows.Forms.Button();
-            recreateAllMkLinksButton = new System.Windows.Forms.Button();
+            checkAllSymbolicLinksButton = new System.Windows.Forms.Button();
             versionCheckingButton = new System.Windows.Forms.Button();
             directoryScanReportButton = new System.Windows.Forms.Button();
             openLogFileButton = new System.Windows.Forms.Button();
-            scanFilesButton = new System.Windows.Forms.Button();
+            processFilesButton = new System.Windows.Forms.Button();
             directoryScanReportLastRunOnlyButton = new System.Windows.Forms.Button();
+            scanDirectoryButton = new System.Windows.Forms.Button();
             scheduledBackupTimerButton = new System.Windows.Forms.Button();
             listFilesOnBackupDiskButton = new System.Windows.Forms.Button();
             listFilesInDirectoryButton = new System.Windows.Forms.Button();
@@ -127,8 +128,7 @@
             oldestBackupDiskAgeTextBox = new System.Windows.Forms.TextBox();
             oldestBackupDiskTextBox = new System.Windows.Forms.TextBox();
             label16 = new System.Windows.Forms.Label();
-            scanDirectoriesComboBox = new System.Windows.Forms.ComboBox();
-            scanDirectoryButton = new System.Windows.Forms.Button();
+            scanDirectoryComboBox = new System.Windows.Forms.ComboBox();
             pushoverGroupBox.SuspendLayout();
             groupBox2.SuspendLayout();
             listFilesInDirectoryGroupBox.SuspendLayout();
@@ -142,17 +142,17 @@
             groupBox4.SuspendLayout();
             SuspendLayout();
             // 
-            // updateMasterFilesButton
+            // scanAllDirectoriesButton
             // 
-            updateMasterFilesButton.Location = new System.Drawing.Point(8, 25);
-            updateMasterFilesButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            updateMasterFilesButton.Name = "updateMasterFilesButton";
-            updateMasterFilesButton.Size = new System.Drawing.Size(234, 27);
-            updateMasterFilesButton.TabIndex = 0;
-            updateMasterFilesButton.Text = "Scan directories";
-            toolTip.SetToolTip(updateMasterFilesButton, "Scans all the directories and marks files as deleted as required.");
-            updateMasterFilesButton.UseVisualStyleBackColor = true;
-            updateMasterFilesButton.Click += UpdateMasterFilesButton_Click;
+            scanAllDirectoriesButton.Location = new System.Drawing.Point(8, 25);
+            scanAllDirectoriesButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            scanAllDirectoriesButton.Name = "scanAllDirectoriesButton";
+            scanAllDirectoriesButton.Size = new System.Drawing.Size(234, 27);
+            scanAllDirectoriesButton.TabIndex = 0;
+            scanAllDirectoriesButton.Text = "Scan directories";
+            toolTip.SetToolTip(scanAllDirectoriesButton, "Scans all the directories, processes files and marks files as deleted as required.");
+            scanAllDirectoriesButton.UseVisualStyleBackColor = true;
+            scanAllDirectoriesButton.Click += UpdateMasterFilesButton_Click;
             // 
             // checkConnectedBackupDiskButton
             // 
@@ -389,17 +389,17 @@
             listDirectoriesToScanButton.UseVisualStyleBackColor = true;
             listDirectoriesToScanButton.Click += ListDirectoriesToScanButton_Click;
             // 
-            // recreateAllMkLinksButton
+            // checkAllSymbolicLinksButton
             // 
-            recreateAllMkLinksButton.Location = new System.Drawing.Point(8, 127);
-            recreateAllMkLinksButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            recreateAllMkLinksButton.Name = "recreateAllMkLinksButton";
-            recreateAllMkLinksButton.Size = new System.Drawing.Size(234, 27);
-            recreateAllMkLinksButton.TabIndex = 45;
-            recreateAllMkLinksButton.Text = "Check all symbolic links";
-            toolTip.SetToolTip(recreateAllMkLinksButton, "Checks all the symbolic links with the RegEx in config");
-            recreateAllMkLinksButton.UseVisualStyleBackColor = true;
-            recreateAllMkLinksButton.Click += CheckAllSymbolicLinksButton_Click;
+            checkAllSymbolicLinksButton.Location = new System.Drawing.Point(8, 127);
+            checkAllSymbolicLinksButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkAllSymbolicLinksButton.Name = "checkAllSymbolicLinksButton";
+            checkAllSymbolicLinksButton.Size = new System.Drawing.Size(234, 27);
+            checkAllSymbolicLinksButton.TabIndex = 45;
+            checkAllSymbolicLinksButton.Text = "Check all symbolic links";
+            toolTip.SetToolTip(checkAllSymbolicLinksButton, "Checks all the symbolic links with the RegEx in config");
+            checkAllSymbolicLinksButton.UseVisualStyleBackColor = true;
+            checkAllSymbolicLinksButton.Click += CheckAllSymbolicLinksButton_Click;
             // 
             // versionCheckingButton
             // 
@@ -437,17 +437,17 @@
             openLogFileButton.UseVisualStyleBackColor = true;
             openLogFileButton.Click += OpenLogFileButton_Click;
             // 
-            // scanFilesButton
+            // processFilesButton
             // 
-            scanFilesButton.Location = new System.Drawing.Point(28, 359);
-            scanFilesButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            scanFilesButton.Name = "scanFilesButton";
-            scanFilesButton.Size = new System.Drawing.Size(259, 27);
-            scanFilesButton.TabIndex = 46;
-            scanFilesButton.Text = "Scan files";
-            toolTip.SetToolTip(scanFilesButton, "Scans the current file list and marks files as deleted as required. (Doesn't scan the directories)");
-            scanFilesButton.UseVisualStyleBackColor = true;
-            scanFilesButton.Click += ScanFilesButton_Click;
+            processFilesButton.Location = new System.Drawing.Point(28, 359);
+            processFilesButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            processFilesButton.Name = "processFilesButton";
+            processFilesButton.Size = new System.Drawing.Size(259, 27);
+            processFilesButton.TabIndex = 46;
+            processFilesButton.Text = "Process files";
+            toolTip.SetToolTip(processFilesButton, "Processes the current file list and marks files as deleted as required. (Doesn't scan the directories)");
+            processFilesButton.UseVisualStyleBackColor = true;
+            processFilesButton.Click += ProcessFilesButton_Click;
             // 
             // directoryScanReportLastRunOnlyButton
             // 
@@ -460,6 +460,18 @@
             toolTip.SetToolTip(directoryScanReportLastRunOnlyButton, "Reports the latest scan times for the directories");
             directoryScanReportLastRunOnlyButton.UseVisualStyleBackColor = true;
             directoryScanReportLastRunOnlyButton.Click += DirectoryScanReportLastRunOnlyButton_Click;
+            // 
+            // scanDirectoryButton
+            // 
+            scanDirectoryButton.Location = new System.Drawing.Point(200, 325);
+            scanDirectoryButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            scanDirectoryButton.Name = "scanDirectoryButton";
+            scanDirectoryButton.Size = new System.Drawing.Size(87, 27);
+            scanDirectoryButton.TabIndex = 42;
+            scanDirectoryButton.Text = "Scan";
+            toolTip.SetToolTip(scanDirectoryButton, "Scan the selected directory and processes files");
+            scanDirectoryButton.UseVisualStyleBackColor = true;
+            scanDirectoryButton.Click += ScanDirectoryButton_Click;
             // 
             // scheduledBackupTimerButton
             // 
@@ -960,8 +972,8 @@
             // 
             // groupBox4
             // 
-            groupBox4.Controls.Add(recreateAllMkLinksButton);
-            groupBox4.Controls.Add(updateMasterFilesButton);
+            groupBox4.Controls.Add(checkAllSymbolicLinksButton);
+            groupBox4.Controls.Add(scanAllDirectoriesButton);
             groupBox4.Controls.Add(speedTestButton);
             groupBox4.Controls.Add(recalculateAllHashesButton);
             groupBox4.Location = new System.Drawing.Point(34, 150);
@@ -1204,27 +1216,16 @@
             label16.TabIndex = 94;
             label16.Text = "Oldest backup disk";
             // 
-            // scanDirectoriesComboBox
+            // scanDirectoryComboBox
             // 
-            scanDirectoriesComboBox.BackColor = System.Drawing.SystemColors.Window;
-            scanDirectoriesComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            scanDirectoriesComboBox.FormattingEnabled = true;
-            scanDirectoriesComboBox.Location = new System.Drawing.Point(28, 327);
-            scanDirectoriesComboBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            scanDirectoriesComboBox.Name = "scanDirectoriesComboBox";
-            scanDirectoriesComboBox.Size = new System.Drawing.Size(163, 23);
-            scanDirectoriesComboBox.TabIndex = 42;
-            // 
-            // scanDirectoryButton
-            // 
-            scanDirectoryButton.Location = new System.Drawing.Point(200, 325);
-            scanDirectoryButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            scanDirectoryButton.Name = "scanDirectoryButton";
-            scanDirectoryButton.Size = new System.Drawing.Size(87, 27);
-            scanDirectoryButton.TabIndex = 42;
-            scanDirectoryButton.Text = "Scan";
-            scanDirectoryButton.UseVisualStyleBackColor = true;
-            scanDirectoryButton.Click += ScanDirectoriesButton_Click;
+            scanDirectoryComboBox.BackColor = System.Drawing.SystemColors.Window;
+            scanDirectoryComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            scanDirectoryComboBox.FormattingEnabled = true;
+            scanDirectoryComboBox.Location = new System.Drawing.Point(28, 327);
+            scanDirectoryComboBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            scanDirectoryComboBox.Name = "scanDirectoryComboBox";
+            scanDirectoryComboBox.Size = new System.Drawing.Size(163, 23);
+            scanDirectoryComboBox.TabIndex = 42;
             // 
             // Main
             // 
@@ -1232,9 +1233,9 @@
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1416, 548);
             Controls.Add(directoryScanReportLastRunOnlyButton);
-            Controls.Add(scanFilesButton);
+            Controls.Add(processFilesButton);
             Controls.Add(scanDirectoryButton);
-            Controls.Add(scanDirectoriesComboBox);
+            Controls.Add(scanDirectoryComboBox);
             Controls.Add(openLogFileButton);
             Controls.Add(directoryScanReportButton);
             Controls.Add(versionCheckingButton);
@@ -1312,7 +1313,7 @@
 
         #endregion
 
-        private System.Windows.Forms.Button updateMasterFilesButton;
+        private System.Windows.Forms.Button scanAllDirectoriesButton;
         private System.Windows.Forms.Button checkConnectedBackupDiskButton;
         private System.Windows.Forms.Button copyFilesToBackupDiskButton;
         private System.Windows.Forms.Label label1;
@@ -1400,17 +1401,18 @@
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Button listDirectoriesToScanButton;
         private System.Windows.Forms.TextBox directoriesToScanTextBox;
-        private System.Windows.Forms.Button recreateAllMkLinksButton;
+        private System.Windows.Forms.Button checkAllSymbolicLinksButton;
         private System.Windows.Forms.TextBox oldestBackupDiskAgeTextBox;
         private System.Windows.Forms.TextBox oldestBackupDiskTextBox;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Button versionCheckingButton;
         private System.Windows.Forms.Button directoryScanReportButton;
         private System.Windows.Forms.Button openLogFileButton;
-        private System.Windows.Forms.ComboBox scanDirectoriesComboBox;
+        private System.Windows.Forms.ComboBox scanDirectoryComboBox;
         private System.Windows.Forms.Button scanDirectoryButton;
-        private System.Windows.Forms.Button scanFilesButton;
+        private System.Windows.Forms.Button processFilesButton;
         private System.Windows.Forms.Button directoryScanReportLastRunOnlyButton;
+       
     }
 }
 

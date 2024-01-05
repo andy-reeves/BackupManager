@@ -38,10 +38,61 @@ internal sealed partial class Main
         var subDirectoryText = searchOption == SearchOption.TopDirectoryOnly ? "directories only" : "and subdirectories";
         Utils.Trace($"{directoryToCheck} {subDirectoryText}");
         var scanId = Guid.NewGuid().ToString();
-        return ScanFiles(files, scanId, ct);
+        return ProcessFiles(files, scanId, ct);
     }
 
-    private bool ScanFiles(IReadOnlyCollection<string> filesParam, string scanId, CancellationToken token)
+    /// <summary>
+    ///     Processes the files provided on multiple threads (1 per disk)
+    /// </summary>
+    /// <param name="filesParam"></param>
+    /// <param name="scanId"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
+    private bool ProcessFiles(IReadOnlyCollection<string> filesParam, string scanId, CancellationToken token)
+    {
+        longRunningActionExecutingRightNow = true;
+        DisableControlsForAsyncTasks();
+
+        try
+        {
+            var diskNames = Utils.GetDiskNames(mediaBackup.Config.Directories);
+            var tasks = new List<Task>(diskNames.Length);
+            fileCounter = 0;
+            EnableProgressBar(0, filesParam.Count);
+            Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal, $"Processing {filesParam.Count:n0} files");
+
+            tasks.AddRange(diskNames.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam))
+                .Select(files => TaskWrapper(ProcessFilesA, files, scanId, token)));
+            Task.WhenAll(tasks).Wait(ct);
+            var filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag).ToArray();
+            RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out _, out _);
+            mediaBackup.Save();
+            Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal, "Processing files completed.");
+            UpdateMediaFilesCountDisplay();
+            ResetAllControls();
+            longRunningActionExecutingRightNow = false;
+        }
+        catch (Exception u)
+        {
+            Utils.Trace("Exception in the TaskWrapper");
+
+            if (u.Message != "The operation was canceled.")
+            {
+                Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
+                    string.Format(Resources.Main_TaskWrapperException, u));
+            }
+            ASyncTasksCleanUp();
+        }
+        return true;
+    }
+
+    /// <summary>
+    ///     Internal function to process the files provided
+    /// </summary>
+    /// <param name="filesParam"></param>
+    /// <param name="scanId"></param>
+    /// <param name="token"></param>
+    private void ProcessFilesA(string[] filesParam, string scanId, CancellationToken token)
     {
         // TODO To make this async and multiple threads for each separate disk
         // we need a blocking collection and then copy it back when its all done
@@ -50,9 +101,6 @@ internal sealed partial class Main
         var filtersToDelete = mediaBackup.Config.FilesToDelete
             .Select(static filter => new { filter, replace = filter.Replace(".", @"\.").Replace("*", ".*").Replace("?", ".") })
             .Select(static t => $"^{t.replace}$").ToArray();
-        EnableProgressBar(0, filesParam.Count);
-        Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, "Processing files");
-        var reportedPercentComplete = 0;
 
         // order the files by path so we can track when the monitored directories are changing for scan timings
         var files = filesParam.OrderBy(static f => f.ToString()).ToList();
@@ -60,18 +108,23 @@ internal sealed partial class Main
         var firstDir = true;
         DirectoryScan scanInfo = null;
 
-        for (var i = 0; i < files.Count; i++)
+        foreach (var file in files)
         {
+            _ = Interlocked.Increment(ref fileCounter);
             if (token.IsCancellationRequested) token.ThrowIfCancellationRequested();
-            var currentPercentComplete = i * 100 / files.Count;
+            currentPercentComplete = fileCounter * 100 / toolStripProgressBar.Maximum;
 
-            if (currentPercentComplete % 10 == 0 && currentPercentComplete > reportedPercentComplete && files.Count > 30)
+            if (currentPercentComplete % 5 == 0 && currentPercentComplete > reportedPercentComplete)
             {
-                Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal,
-                    $"Processing {currentPercentComplete}%");
-                reportedPercentComplete = currentPercentComplete;
+                lock (_lock)
+                {
+                    reportedPercentComplete = currentPercentComplete;
+
+                    Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal,
+                        $"Processing {currentPercentComplete}%");
+                }
             }
-            var file = files[i];
+            Utils.Trace($"{fileCounter} Processing {file}");
             _ = mediaBackup.GetFoldersForPath(file, out var directory, out _);
 
             if (directory != directoryScanning)
@@ -82,9 +135,9 @@ internal sealed partial class Main
                 directoryScanning = directory;
                 firstDir = false;
             }
-            Utils.Trace($"Checking {file}");
-            var directoryToCheck = new FileInfo(file).DirectoryName;
-            UpdateStatusLabel($"Processing {directoryToCheck}", i + 1);
+            UpdateStatusLabel("Processing", fileCounter);
+
+            // UpdateProgressBar(fileCounter);
             if (CheckForFilesToDelete(file, filtersToDelete)) continue;
 
             // RegEx file name rules
@@ -105,14 +158,11 @@ internal sealed partial class Main
                 // If a rule has failed then break to avoid multiple messages sent
                 break;
             }
-            if (!mediaBackup.EnsureFile(file)) return Utils.TraceOut(false);
+            if (!mediaBackup.EnsureFile(file)) return;
         }
 
         // Update the last scan endDateTime as it wasn't set in the loop
         if (scanInfo != null) scanInfo.EndDateTime = DateTime.Now;
-        Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, "Processing files completed.");
-        UpdateMediaFilesCountDisplay();
-        return Utils.TraceOut(true);
     }
 
     private void UpdateOldestBackupDisk()
@@ -221,6 +271,7 @@ internal sealed partial class Main
             tasks.AddRange(diskNames.Select(diskName => Utils.GetDirectoriesForDisk(diskName, mediaBackup.Config.Directories))
                 .Select(directoriesOnDisk => TaskWrapper(GetFilesAsync, directoriesOnDisk, scanId)));
             Task.WhenAll(tasks).Wait(ct);
+            Utils.LogWithPushover(BackupAction.ScanDirectory, "Scanning complete.");
 
             foreach (var scan in directoryScanBlockingCollection)
             {
@@ -231,7 +282,7 @@ internal sealed partial class Main
             mediaBackup.Save();
             mediaBackup.ClearFlags();
 
-            if (!ScanFiles(fileBlockingCollection, scanId, ct))
+            if (!ProcessFiles(fileBlockingCollection, scanId, ct))
             {
                 Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal,
                     Resources.Main_ScanDirectoriesAsync_Scan_Directories_failed);
@@ -283,6 +334,21 @@ internal sealed partial class Main
         longRunningActionExecutingRightNow = true;
         DisableControlsForAsyncTasks();
         ReadyToScan(new FileSystemWatcherEventArgs(directory), SearchOption.AllDirectories);
+        ResetAllControls();
+        longRunningActionExecutingRightNow = false;
+    }
+
+    private void ProcessFilesAsync()
+    {
+        longRunningActionExecutingRightNow = true;
+        DisableControlsForAsyncTasks();
+        var files = mediaBackup.BackupFiles.Where(static file => !file.Deleted).Select(static file => file.FullPath).ToList();
+        var scanId = Guid.NewGuid().ToString();
+        mediaBackup.ClearFlags();
+        _ = ProcessFiles(files, scanId, ct);
+        var filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag).ToArray();
+        RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out _, out _);
+        mediaBackup.Save();
         ResetAllControls();
         longRunningActionExecutingRightNow = false;
     }

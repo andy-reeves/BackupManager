@@ -71,7 +71,7 @@ internal sealed partial class Main
                     mediaBackup.DirectoryScans.Add(scan);
                 }
                 mediaBackup.ClearFlags();
-                _ = ScanFiles(fileBlockingCollection, scanId, ct);
+                _ = ProcessFiles(fileBlockingCollection, scanId, ct);
                 var filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag).ToArray();
                 RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out _, out _);
                 mediaBackup.UpdateLastFullScan();
@@ -109,8 +109,10 @@ internal sealed partial class Main
             if (u.Message == "The operation was canceled.")
                 Utils.LogWithPushover(BackupAction.General, PushoverPriority.Normal, "Cancelling");
             else
+            {
                 Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
                     string.Format(Resources.Main_TaskWrapperException, u));
+            }
             ASyncTasksCleanUp();
         }
         Utils.TraceOut();

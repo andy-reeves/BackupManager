@@ -12,6 +12,8 @@ internal enum BackupAction
 
     ScanDirectory,
 
+    ProcessFiles,
+
     BackupFiles,
 
     CheckBackupDisk,

@@ -49,8 +49,10 @@ internal sealed partial class Main
             if (u.Message == "The operation was canceled.")
                 Utils.LogWithPushover(BackupAction.General, PushoverPriority.Normal, "Cancelling");
             else
+            {
                 Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
                     string.Format(Resources.Main_TaskWrapperException, u));
+            }
             ASyncTasksCleanUp();
         }
     }
@@ -71,21 +73,35 @@ internal sealed partial class Main
         }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
     }
 
-    private void TaskWrapper(Action<string> methodName, string param1)
+    private async Task TaskWrapper(Action<string> methodName, string param1)
     {
-        ArgumentNullException.ThrowIfNull(methodName);
-        var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
-
-        _ = Task.Run(() => methodName(param1), ct).ContinueWith(u =>
+        try
         {
-            if (u.Exception == null) return;
-
+            var task = Task.Run(() => methodName(param1), ct);
+            await task;
+            if (longRunningActionExecutingRightNow) ASyncTasksCleanUp();
+        }
+        catch (Exception u)
+        {
             Utils.Trace("Exception in the TaskWrapper");
 
-            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
-                string.Format(Resources.Main_TaskWrapperException, u.Exception));
+            if (u.Message == "The operation was canceled.")
+                Utils.LogWithPushover(BackupAction.General, PushoverPriority.Normal, "Cancelling");
+            else
+            {
+                Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
+                    string.Format(Resources.Main_TaskWrapperException, u));
+            }
             ASyncTasksCleanUp();
-        }, default, TaskContinuationOptions.OnlyOnFaulted, scheduler);
+        }
+    }
+
+    private Task TaskWrapper(Action<string[], string, CancellationToken> methodName, string[] param1, string scanId,
+        CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(methodName);
+        var task = Task.Run(() => methodName(param1, scanId, token), ct);
+        return task;
     }
 
     private Task TaskWrapper(Action<string[], string> methodName, string[] param1, string scanId)

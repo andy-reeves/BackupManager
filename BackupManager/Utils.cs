@@ -751,6 +751,27 @@ internal static partial class Utils
         return diskNames.ToArray();
     }
 
+    internal static string[] GetDeviceAndFirstDirectoryNames(IEnumerable<string> directories)
+    {
+        var diskAndFirstDirectoryNames = new HashSet<string>();
+
+        foreach (var d in directories)
+        {
+            var text = d.SubstringAfter(@"\\", StringComparison.CurrentCultureIgnoreCase);
+            var machineName = text.SubstringBefore('\\');
+            var firstDirectory = text.SubstringAfter(@"\", StringComparison.CurrentCultureIgnoreCase).SubstringBefore('\\');
+            _ = diskAndFirstDirectoryNames.Add(Path.Combine(machineName, firstDirectory));
+        }
+        return diskAndFirstDirectoryNames.ToArray();
+    }
+
+    internal static string[] GetFilesForDisk(string diskName, IEnumerable<string> backupFiles)
+    {
+        var a = backupFiles.Where(file => file.StartsWith(@"\\" + diskName + @"\", StringComparison.CurrentCultureIgnoreCase));
+        var b = a.ToArray();
+        return b;
+    }
+
     internal static string[] GetDirectoriesForDisk(string diskName, IEnumerable<string> directories)
     {
         return directories.Where(dir => dir.StartsWith(@"\\" + diskName + @"\", StringComparison.CurrentCultureIgnoreCase))
@@ -1949,7 +1970,7 @@ internal static partial class Utils
 
         foreach (var line in textArrayToWrite.Where(static line => line.HasValue()))
         {
-            System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {threadId} : {line}");
+            System.Diagnostics.Trace.WriteLine($"{DateTime.Now:dd-MM-yy HH:mm:ss.ff} : {threadId,-2} : {line}");
         }
     }
 

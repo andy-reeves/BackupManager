@@ -80,8 +80,10 @@ internal sealed partial class Main
                     var newProcess = Process.Start(processToStart, monitor.ApplicationToStartArguments);
 
                     if (newProcess == null)
+                    {
                         Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High,
                             $"Failed to start the new process '{monitor.Name}'");
+                    }
                     else
                         Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal, $"'{monitor.Name}' started");
                 }
@@ -98,8 +100,10 @@ internal sealed partial class Main
             if (Utils.RestartService(monitor.ServiceToRestart, monitor.Timeout * 1000))
                 Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal, $"'{monitor.Name}' started");
             else
+            {
                 Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High,
                     $"Failed to restart the service '{monitor.Name}'");
+            }
         }
 
         if (mediaBackup.Config.MonitoringCheckLatestVersions)
