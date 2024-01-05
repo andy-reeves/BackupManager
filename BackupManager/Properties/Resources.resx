@@ -309,4 +309,10 @@
   <data name="Program_Main_BackManager_is_already_running" xml:space="preserve">
     <value>BackupManager is already running</value>
   </data>
+  <data name="Main_SetupBackupDisk_Backup_Disk" xml:space="preserve">
+    <value>Backup Disk</value>
+  </data>
+  <data name="Main_SetupBackupDisk_Can_t_find_a_valid_backup_share" xml:space="preserve">
+    <value>Can't find a valid backup share</value>
+  </data>
 </root>

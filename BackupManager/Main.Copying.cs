@@ -67,7 +67,7 @@ internal sealed partial class Main
     {
         var outOfDiskSpaceMessageSent = false;
         long copiedSoFar = 0;
-        var fileCounter = 0;
+        var counter = 0;
         var files = backupFiles.ToArray();
         var remainingSizeOfFilesToCopy = files.Sum(static x => x.Length);
         var totalFileCount = files.Length;
@@ -83,7 +83,7 @@ internal sealed partial class Main
         {
             try
             {
-                fileCounter++;
+                counter++;
 
                 UpdateStatusLabel(string.Format(Resources.Main_Copying, string.Empty),
                     Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
@@ -96,10 +96,10 @@ internal sealed partial class Main
                 FileInfo sourceFileInfo = new(sourceFileName);
                 var sourceFileSize = Utils.FormatSize(sourceFileInfo.Length);
 
-                if (FileExistsInternal(sizeOfCopy, disk, backupFile, sourceFileName, copiedSoFar, fileCounter, totalFileCount))
+                if (FileExistsInternal(sizeOfCopy, disk, backupFile, sourceFileName, copiedSoFar, counter, totalFileCount))
                 {
                     CopyFileInternal(sizeOfCopy, disk, sourceFileName, copiedSoFar, sourceFileInfo, ref outOfDiskSpaceMessageSent,
-                        remainingSizeOfFilesToCopy, fileCounter, totalFileCount, sourceFileSize, backupFile, ref lastCopySpeed);
+                        remainingSizeOfFilesToCopy, counter, totalFileCount, sourceFileSize, backupFile, ref lastCopySpeed);
                 }
                 remainingSizeOfFilesToCopy -= backupFile.Length;
                 copiedSoFar += backupFile.Length;

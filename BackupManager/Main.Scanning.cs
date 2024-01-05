@@ -57,7 +57,7 @@ internal sealed partial class Main
         {
             var diskNames = Utils.GetDiskNames(mediaBackup.Config.Directories);
             var tasks = new List<Task>(diskNames.Length);
-            fileCounter = 0;
+            fileCounterVolatile = 0;
             EnableProgressBar(0, filesParam.Count);
             Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal, $"Processing {filesParam.Count:n0} files");
 
@@ -110,9 +110,9 @@ internal sealed partial class Main
 
         foreach (var file in files)
         {
-            _ = Interlocked.Increment(ref fileCounter);
+            _ = Interlocked.Increment(ref fileCounterVolatile);
             if (token.IsCancellationRequested) token.ThrowIfCancellationRequested();
-            currentPercentComplete = fileCounter * 100 / toolStripProgressBar.Maximum;
+            currentPercentComplete = fileCounterVolatile * 100 / toolStripProgressBar.Maximum;
 
             if (currentPercentComplete % 5 == 0 && currentPercentComplete > reportedPercentComplete)
             {
@@ -124,7 +124,7 @@ internal sealed partial class Main
                         $"Processing {currentPercentComplete}%");
                 }
             }
-            Utils.Trace($"{fileCounter} Processing {file}");
+            Utils.Trace($"{fileCounterVolatile} Processing {file}");
             _ = mediaBackup.GetFoldersForPath(file, out var directory, out _);
 
             if (directory != directoryScanning)
@@ -135,9 +135,7 @@ internal sealed partial class Main
                 directoryScanning = directory;
                 firstDir = false;
             }
-            UpdateStatusLabel("Processing", fileCounter);
-
-            // UpdateProgressBar(fileCounter);
+            UpdateStatusLabel("Processing", fileCounterVolatile);
             if (CheckForFilesToDelete(file, filtersToDelete)) continue;
 
             // RegEx file name rules

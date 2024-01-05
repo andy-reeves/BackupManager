@@ -36,6 +36,7 @@ public sealed class UtilsGetLatestApplicationVersion
     }
 
     [Fact]
+    [SuppressMessage("ReSharper", "CommentTypo")]
     public void GetLatestApplicationVersionNumber()
     {
         Assert.Equal("1.32.8.7639", Utils.GetLatestApplicationVersionNumber(ApplicationType.Plex));

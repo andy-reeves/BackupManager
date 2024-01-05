@@ -31,7 +31,7 @@ internal sealed partial class Main : Form
 
     private BlockingCollection<string> fileBlockingCollection;
 
-    private volatile int fileCounter;
+    private volatile int fileCounterVolatile;
 
     private volatile int reportedPercentComplete;
 
@@ -1010,10 +1010,5 @@ internal sealed partial class Main : Form
     {
         DirectoryScanReport(DirectoryScanType.GetFiles, 1);
         DirectoryScanReport(DirectoryScanType.ProcessingFiles, 1);
-    }
-
-    private void UpdateProgressBarTimer_Tick(object sender, EventArgs e)
-    {
-        UpdateProgressBar(fileCounter);
     }
 }

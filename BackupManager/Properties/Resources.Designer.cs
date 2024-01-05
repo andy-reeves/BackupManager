@@ -493,6 +493,24 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Backup Disk.
+        /// </summary>
+        internal static string Main_SetupBackupDisk_Backup_Disk {
+            get {
+                return ResourceManager.GetString("Main_SetupBackupDisk_Backup_Disk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t find a valid backup share.
+        /// </summary>
+        internal static string Main_SetupBackupDisk_Can_t_find_a_valid_backup_share {
+            get {
+                return ResourceManager.GetString("Main_SetupBackupDisk_Can_t_find_a_valid_backup_share", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Skipping {0}.
         /// </summary>
         internal static string Main_Skipping {

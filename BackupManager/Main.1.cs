@@ -179,13 +179,13 @@ internal sealed partial class Main
             }
         }
         EnableProgressBar(0, 100);
-        var fileCounter = 0;
+        var counter = 0;
 
         foreach (var path in hashSet)
         {
             if (token.IsCancellationRequested) token.ThrowIfCancellationRequested();
-            fileCounter++;
-            UpdateStatusLabel(string.Format(Resources.Main_Checking, path), Convert.ToInt32(fileCounter * 100 / hashSet.Count));
+            counter++;
+            UpdateStatusLabel(string.Format(Resources.Main_Checking, path), Convert.ToInt32(counter * 100 / hashSet.Count));
             UpdateSymbolicLinkForDirectory(path);
         }
         UpdateStatusLabel(Resources.Main_Completed);
