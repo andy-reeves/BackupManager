@@ -870,7 +870,7 @@ internal static partial class Utils
             }
         }
         sw.Stop();
-        Log($"GetFiles for {path} = {(sw.Elapsed.TotalSeconds < 1 ? "<1 second" : $"{sw.Elapsed.TotalSeconds:#} seconds")}");
+        Trace($"GetFiles for {path} = {(sw.Elapsed.TotalSeconds < 1 ? "<1 second" : $"{sw.Elapsed.TotalSeconds:#} seconds")}");
         return foundFiles.ToArray();
     }
 
