@@ -116,7 +116,7 @@ internal sealed partial class Main
                 if (token.IsCancellationRequested) token.ThrowIfCancellationRequested();
                 currentPercentComplete = fileCounterForMultiThreadProcessing * 100 / toolStripProgressBar.Maximum;
 
-                if (currentPercentComplete % 5 == 0 && currentPercentComplete > reportedPercentComplete)
+                if (currentPercentComplete % 25 == 0 && currentPercentComplete > reportedPercentComplete && files.Count > 100)
                 {
                     reportedPercentComplete = currentPercentComplete;
 
@@ -338,18 +338,10 @@ internal sealed partial class Main
 
     private void ProcessFilesAsync()
     {
-        //longRunningActionExecutingRightNow = true;
-        // DisableControlsForAsyncTasks();
         var files = mediaBackup.BackupFiles.Where(static file => !file.Deleted).Select(static file => file.FullPath).ToList();
         var scanId = Guid.NewGuid().ToString();
         mediaBackup.ClearFlags();
         _ = ProcessFiles(files, scanId, ct);
-
-        // var filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag).ToArray();
-        // RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out _, out _);
-        // mediaBackup.Save();
-        //ResetAllControls();
-        // longRunningActionExecutingRightNow = false;
     }
 
     /// <summary>
