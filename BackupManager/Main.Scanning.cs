@@ -57,7 +57,7 @@ internal sealed partial class Main
         {
             var diskNames = Utils.GetDiskNames(mediaBackup.Config.Directories);
             var tasks = new List<Task>(diskNames.Length);
-            fileCounterVolatile = 0;
+            fileCounterForMultiThreadProcessing = 0;
             EnableProgressBar(0, filesParam.Count);
             Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal, $"Processing {filesParam.Count:n0} files");
 
@@ -110,21 +110,21 @@ internal sealed partial class Main
 
         foreach (var file in files)
         {
-            _ = Interlocked.Increment(ref fileCounterVolatile);
-            if (token.IsCancellationRequested) token.ThrowIfCancellationRequested();
-            currentPercentComplete = fileCounterVolatile * 100 / toolStripProgressBar.Maximum;
-
-            if (currentPercentComplete % 5 == 0 && currentPercentComplete > reportedPercentComplete)
+            lock (_lock)
             {
-                lock (_lock)
+                fileCounterForMultiThreadProcessing++;
+                if (token.IsCancellationRequested) token.ThrowIfCancellationRequested();
+                currentPercentComplete = fileCounterForMultiThreadProcessing * 100 / toolStripProgressBar.Maximum;
+
+                if (currentPercentComplete % 5 == 0 && currentPercentComplete > reportedPercentComplete)
                 {
                     reportedPercentComplete = currentPercentComplete;
 
                     Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal,
                         $"Processing {currentPercentComplete}%");
                 }
+                Utils.Trace($"{fileCounterForMultiThreadProcessing} Processing {file}");
             }
-            Utils.Trace($"{fileCounterVolatile} Processing {file}");
             _ = mediaBackup.GetFoldersForPath(file, out var directory, out _);
 
             if (directory != directoryScanning)
@@ -135,7 +135,7 @@ internal sealed partial class Main
                 directoryScanning = directory;
                 firstDir = false;
             }
-            UpdateStatusLabel("Processing", fileCounterVolatile);
+            UpdateStatusLabel("Processing", fileCounterForMultiThreadProcessing);
             if (CheckForFilesToDelete(file, filtersToDelete)) continue;
 
             // RegEx file name rules
@@ -338,17 +338,18 @@ internal sealed partial class Main
 
     private void ProcessFilesAsync()
     {
-        longRunningActionExecutingRightNow = true;
-        DisableControlsForAsyncTasks();
+        //longRunningActionExecutingRightNow = true;
+        // DisableControlsForAsyncTasks();
         var files = mediaBackup.BackupFiles.Where(static file => !file.Deleted).Select(static file => file.FullPath).ToList();
         var scanId = Guid.NewGuid().ToString();
         mediaBackup.ClearFlags();
         _ = ProcessFiles(files, scanId, ct);
-        var filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag).ToArray();
-        RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out _, out _);
-        mediaBackup.Save();
-        ResetAllControls();
-        longRunningActionExecutingRightNow = false;
+
+        // var filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag).ToArray();
+        // RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out _, out _);
+        // mediaBackup.Save();
+        //ResetAllControls();
+        // longRunningActionExecutingRightNow = false;
     }
 
     /// <summary>

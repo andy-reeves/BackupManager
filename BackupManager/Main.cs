@@ -25,15 +25,15 @@ internal sealed partial class Main : Form
 {
     private static readonly object _lock = new();
 
-    private volatile int currentPercentComplete;
+    private int currentPercentComplete;
 
     private BlockingCollection<DirectoryScan> directoryScanBlockingCollection;
 
     private BlockingCollection<string> fileBlockingCollection;
 
-    private volatile int fileCounterVolatile;
+    private int fileCounterForMultiThreadProcessing;
 
-    private volatile int reportedPercentComplete;
+    private int reportedPercentComplete;
 
     private void FileSystemWatcher_OnError(object sender, ErrorEventArgs e)
     {
