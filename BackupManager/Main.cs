@@ -767,24 +767,27 @@ internal sealed partial class Main : Form
     private void RemoveOrDeleteFiles(IReadOnlyList<BackupFile> files, out int removedFilesCount,
         out int markedAsDeletedFilesCount)
     {
-        removedFilesCount = 0;
-        markedAsDeletedFilesCount = 0;
-
-        for (var j = files.Count - 1; j >= 0; j--)
+        lock (_lock)
         {
-            var backupFile = files[j];
+            removedFilesCount = 0;
+            markedAsDeletedFilesCount = 0;
 
-            if (string.IsNullOrEmpty(backupFile.Disk))
+            for (var j = files.Count - 1; j >= 0; j--)
             {
-                Utils.Trace($"Removing {backupFile.FullPath}");
-                mediaBackup.RemoveFile(backupFile);
-                removedFilesCount++;
-            }
-            else
-            {
-                Utils.Trace($"Marking {backupFile.FullPath} as Deleted");
-                backupFile.Deleted = true;
-                markedAsDeletedFilesCount++;
+                var backupFile = files[j];
+
+                if (string.IsNullOrEmpty(backupFile.Disk))
+                {
+                    Utils.Trace($"Removing {backupFile.FullPath}");
+                    mediaBackup.RemoveFile(backupFile);
+                    removedFilesCount++;
+                }
+                else
+                {
+                    Utils.Trace($"Marking {backupFile.FullPath} as Deleted");
+                    backupFile.Deleted = true;
+                    markedAsDeletedFilesCount++;
+                }
             }
         }
     }

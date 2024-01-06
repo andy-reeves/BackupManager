@@ -5,6 +5,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -265,11 +266,25 @@ internal sealed partial class Main
 
         if (!UpdateCurrentBackupDiskInfo(disk))
         {
-            Utils.LogWithPushover(BackupAction.BackupFiles, PushoverPriority.Emergency,
+            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Emergency,
                 $"Error updating info for backup disk {disk.Name}");
             return null;
         }
         UpdateMediaFilesCountDisplay();
+        var filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => b.Deleted && !b.Disk.HasValue()).ToArray();
+        RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out var removedFilesCount, out var deletedFilesCount);
+
+        if (removedFilesCount > 0)
+        {
+            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal,
+                $"{removedFilesCount} files removed completely");
+        }
+
+        if (deletedFilesCount > 0)
+        {
+            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal,
+                $"{deletedFilesCount} files marked as deleted");
+        }
         mediaBackup.Save();
         UpdateStatusLabel(Resources.Main_Saved);
 
