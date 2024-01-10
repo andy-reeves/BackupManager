@@ -34,8 +34,12 @@ using BackupManager.Entities;
 using BackupManager.Extensions;
 using BackupManager.Properties;
 
+using MediaInfo;
+
+using Microsoft.Extensions.Logging;
 using Microsoft.Win32.SafeHandles;
 
+// ReSharper disable CommentTypo
 namespace BackupManager;
 
 /// <summary>
@@ -957,11 +961,17 @@ internal static partial class Utils
 
     internal static long GetFileLength(string fileName)
     {
+        ArgumentException.ThrowIfNullOrEmpty(fileName, nameof(fileName));
+        if (!File.Exists(fileName)) throw new FileNotFoundException("File not found", fileName);
+
         return new FileInfo(fileName).Length;
     }
 
     internal static DateTime GetFileLastWriteTime(string fileName)
     {
+        ArgumentException.ThrowIfNullOrEmpty(fileName, nameof(fileName));
+        if (!File.Exists(fileName)) throw new FileNotFoundException("File not found", fileName);
+
         FileInfo fileInfo = new(fileName);
         DateTime returnValue;
 
@@ -1024,6 +1034,55 @@ internal static partial class Utils
         var sw = Stopwatch.StartNew();
 
         while (sw.Elapsed < howLongToWait) { }
+    }
+
+    /// <summary>
+    ///     Checks the path is a video file
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns>False if its not a video file, True if its a video file. Exception if path is null or empty</returns>
+    internal static bool FileIsVideo(string path)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(path);
+        string[] videoExtensions = { ".mkv", ".mp4", ".mpeg", ".mpg", ".ts", ".avi" };
+        return videoExtensions.Contains(Path.GetExtension(path).ToLowerInvariant());
+    }
+
+    /// <summary>
+    ///     Returns True if the path contains [DV]
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    internal static bool VideoFileIsDolbyVision(string path)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(path);
+        return !string.IsNullOrEmpty(path) && path.ToUpperInvariant().Contains("[DV]");
+    }
+
+    /// <summary>
+    ///     Checks the file at path for a Dolby Vision Profile 5 file. It looks for 'dvhe.05' in the 'HDR format' metadata of
+    ///     the file. This has to load the entire file so its can take 10 seconds or more.
+    /// </summary>
+    /// <param name="path">The path to the file</param>
+    /// <returns>True if the file is Dolby Vision Profile 5</returns>
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
+    internal static bool FileIsDolbyVisionProfile5(string path)
+    {
+        TraceIn(path);
+        ArgumentException.ThrowIfNullOrEmpty(path);
+        if (!FileIsVideo(path) || !VideoFileIsDolbyVision(path)) return TraceOut(false);
+
+        if (!File.Exists(path)) throw new FileNotFoundException("File not found", path);
+
+        var media = new MediaInfoWrapper(path, new TestLogger());
+        if (!media.Success) throw new ApplicationException($"Unable to load video file {path} into MediaInfoWrapper");
+        if (!media.HasVideo) throw new ApplicationException($"{path} has no video streams");
+        if (!media.Text.HasValue()) throw new ApplicationException($"{path} has no media Text");
+
+        return TraceOut(media.Text.Split("\r\n")
+            .Where(static mediaTextLine => mediaTextLine.StartsWith("HDR format", StringComparison.CurrentCultureIgnoreCase)).Any(
+                static mediaTextLine => mediaTextLine.Split(":")[1].Trim().Split(",").Any(static v =>
+                    v.Trim().StartsWith("dvhe.05", StringComparison.CurrentCultureIgnoreCase))));
     }
 
     private static void SendPushoverMessage(string title, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires,
@@ -2189,4 +2248,62 @@ internal static partial class Utils
         var available = new Version(availableVersion);
         return installed.CompareTo(available) < 0;
     }
+
+    internal static bool StringContainsFixedSpace(string stringToTest)
+    {
+        var fixedSpace = Convert.ToChar(160);
+
+        for (var i = 0; i < stringToTest.Length; i++)
+        {
+            var chr = stringToTest[i];
+            if (chr != fixedSpace) continue;
+
+            Trace($"{stringToTest} contains a Fixed Space at {i}");
+            return true;
+        }
+        return false;
+    }
+
+    internal static string ReplaceFixedSpace(string stringToReplace)
+    {
+        var fixedSpace = Convert.ToChar(160);
+        var regularSpace = Convert.ToChar(32);
+        return stringToReplace.Replace(fixedSpace, regularSpace);
+    }
+
+    /// <summary>
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns>The new path without fixed spaces</returns>
+    /// <exception cref="FileNotFoundException"></exception>
+    internal static string RenameFileToRemoveFixedSpaces(string path)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
+        if (!File.Exists(path)) throw new FileNotFoundException("File not found", path);
+
+        if (!StringContainsFixedSpace(path)) return path;
+
+        var newPath = ReplaceFixedSpace(path);
+        FileMove(path, newPath);
+        if (!File.Exists(newPath)) throw new ApplicationException("Unable to rename file to remove fixed spaces");
+
+        return newPath;
+    }
+}
+
+file sealed class TestLogger : ILogger
+{
+    public IDisposable BeginScope<TState>(TState state)
+    {
+        // ReSharper disable once AssignNullToNotNullAttribute
+        return null;
+    }
+
+    public bool IsEnabled(LogLevel logLevel)
+    {
+        return true;
+    }
+
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
+        Func<TState, Exception, string> formatter) { }
 }

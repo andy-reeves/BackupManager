@@ -192,25 +192,30 @@ public sealed class MediaBackup
         return false;
     }
 
-    internal List<string> GetLastScans(IEnumerable<DirectoryScan> scans, DirectoryScanType scanType, int howMany)
+    internal string[] GetLastScans(IEnumerable<DirectoryScan> scans, DirectoryScanType scanType, int howMany)
     {
         Utils.TraceIn();
         var directoriesCount = Config.Directories.Count;
         const int marginOfErrorOnDirectoryCount = 5;
+        var minCount = directoriesCount - marginOfErrorOnDirectoryCount;
+        var maxCount = directoriesCount + marginOfErrorOnDirectoryCount;
 
-        // filter by type and order the scans by startDate in ascending order if more than 1
+        // filter by type and order the scans by startDate in Descending order
         // Move through the scans and find the top nn ids
-        var sc = howMany > 1
-            ? scans.Where(s => s.TypeOfScan == scanType).OrderBy(static s => s.StartDateTime).ToArray()
-            : scans.Where(s => s.TypeOfScan == scanType).OrderByDescending(static s => s.StartDateTime).ToArray();
-        List<string> list = new();
+        var sc = scans.Where(s => s.TypeOfScan == scanType).OrderByDescending(static s => s.StartDateTime).ToArray();
+        var list = new string[howMany];
+        var index = howMany - 1;
 
         // We check the count to include only full scans
-        foreach (var scan in sc.Where(scan => !list.Contains(scan.Id)).Where(scan =>
-                     sc.Count(s => s.Id == scan.Id) > directoriesCount - marginOfErrorOnDirectoryCount))
+        foreach (var scan in from scan in sc
+                 where !list.Contains(scan.Id)
+                 let count = sc.Count(s => s.Id == scan.Id)
+                 where count >= minCount && count <= maxCount
+                 select scan)
         {
-            list.Add(scan.Id);
-            if (list.Count == howMany) break;
+            list[index] = scan.Id;
+            index--;
+            if (index < 0) break;
         }
         return Utils.TraceOut(list);
     }

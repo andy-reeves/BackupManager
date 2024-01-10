@@ -16,26 +16,17 @@
  2.4  | D | False | "X:\_Movies\Chernobyl {tvdb-360893}\Season 1\Chernobyl s01e01 TBA [Bluray-2160p Remux].mkv" 
  
 	
-# TV files must either be a special feature or have s00e00 or yyyy-mm-dd in the file name
-     
- 3.1  | D | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv"
- 3.2  | D | True  | "Z:\_TV (non-tvdb)\The Queen's Christmas Broadcast\Season 1\The Queen's Christmas Broadcast s01e2015 2015 [HDTV-720p].mp4"
- 3.3  | T | True  | "X:\_TV\Cheers {tvdb-77623}\Season 11\Cheers s11e26-e28 One for the Road [SDTV].avi"          
- 3.4  | T | True  | "X:\_TV\Cheers {tvdb-77623}\Season 11\Cheers s11e26e27 One for the Road [SDTV].avi"        
- 3.5  | T | False | "X:\_TV\Cheers {tvdb-77623}\Season 11\Cheers s11.e26-e28 One for the Road [SDTV].avi"
- 3.6  | T | False | "X:\_TV\Cheers {tvdb-77623}\Season 11\Cheers s11e26f27 One for the Road [SDTV].avi"
- 3.7  | T | True  | "X:\_TV\The Late Late Show with James Corden {tvdb-292421}\Season 1\The Late Late Show with James Corden 2015-03-23 [HDTV-720p].mkv"
- 3.8  | T | True  | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-behindthescenes.mkv"
- 3.9  | T | False | "X:\_TV\The Late Late Show with James Corden {tvdb-292421}\Season 1\The Late Late Show with James Corden 20150323 [HDTV-720p].mkv"
- 3.10 | T | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv"
- 3.11 | T | True  | "X:\_TV\Cheers {tvdb-77623}\Season 11\Long Way Round s01e08.mkv"
- 3.12 | T | True  | "X:\_TV\Cheers {tvdb-77623}\Season 11\Long Way Round s01e108e109.mkv"
- 3.13 | T | True  | "X:\_TV\Cheers {tvdb-77623}\Season 11\Long Way Round s01e08-e12.mkv"
- 3.14 | T | True  | "Z:\_TV\The Queen's Christmas Broadcast {tvdb-359422}\Season 1\The Queen's Christmas Broadcast s01e2015 2015 [HDTV-720p].mp4"
- 3.15 | T | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv"
- 3.16 | T | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e2015 Puss Gets The Boot [SDTV].mkv"
- 3.17 | D | False | "X:\_Movies\Chernobyl {tvdb-360893}\Season 1\Chernobyl s01e01 TBA [Bluray-2160p Remux].mkv" 
- 
+# Music files must be named correctly
+
+3.1  | D | True  | "\\nas2\assets3\_Music\ABBA\More ABBA Gold\01-01- Summer Night City.mp3"
+3.2  | D | False | "\\nas5\assets4\_TV\3rd Rock from the Sun {tvdb-72389}\Specials\3rd Rock from the Sun s00e02 Behind the Scenes [DVD].ts"
+3.3  | T | True  | "\\nas2\assets3\_Music\ABBA\More ABBA Gold\01-01- Summer Night City.mp3"          
+3.4  | T | False | "\\nas2\assets3\_Music\ABBA\More ABBA Gold\Folder.jpg" 
+3.5  | T | True  | "\\nas2\assets3\_Music\ABBA\More ABBA Gold\folder.jpg" 
+3.6  | T | False | "\\nas2\assets3\_Music\ABBA\More ABBA Gold\01-01 Summer Night City.mp3" 
+3.7  | T | True  | "\\nas2\assets3\_Music\ABBA\More ABBA Gold\01-101- Summer Night City.mp3" 
+3.8  | T | True  | "\\nas2\assets3\_Music\ABBA\More ABBA Gold\01-101- Summer Night City.m4a"
+
  
 # TV files must either be a special feature or start with the TV show name followed by a Season/Specials folder and then the file name</Message>
      
@@ -213,7 +204,7 @@
 17.12 | T | True  | "\\nas1\assets4\_Movies\Aliens (1986)\Aliens (1986) {tmdb-679} [Remux-2160p][HDR10][AC3 5.1][h265].mkv"
 17.13 | T | True  | "\\nas1\assets4\_Movies\Guy Ritchies The Covenant (2023)\Guy Ritchies The Covenant (2023) {tmdb-882569} [WEBDL-2160p][HDR10Plus][EAC3 Atmos 5.1][h265].es.srt"
 17.14 | T | True  | "\\nas1\assets4\_Movies\Guy Ritchies The Covenant (2023)\Guy Ritchies The Covenant (2023) {tmdb-882569} [WEBDL-2160p][HDR10Plus][EAC3 Atmos 5.1][h265].mkv"
-17.15 | T | True  | "\\nas1\assets4\_Movies\Extraction 2 (2023)\Extraction 2 (2023) {tmdb-697843} [WEBDL-1080p][DV][EAC3 Atmos 5.1][HEVC].mkv"
+17.15 | T | True  | "\\nas1\assets4\_Movies\Extraction 2 (2023)\Extraction 2 (2023) {tmdb-697843} [WEBDL-1080p][DV HDR10Plus][EAC3 Atmos 5.1][HEVC].mkv"
 17.16 | T | True  | "\\nas1\assets4\_Movies\Extraction 2 (2023)\Extraction 2 (2023) {tmdb-697843} [WEBDL-1080p][DV][EAC3 Atmos 4.0][HEVC].mkv"
 17.17 | T | True  | "\\nas5\assets3\_Movies\Tootsie (1982)\Tootsie (1982) {tmdb-9576} [Remux-1080p][DTS-X 8.0][AVC].mkv"
 17.18 | T | False | "\\nas1\assets4\_Movies\The 4th Man (1983)\The 4th Man (1983) {tmdb-29140} [DVD][AC3 2.0][].en.srt"
@@ -262,12 +253,12 @@
 17.62 | T | False | "\\nas4\assets1\_Movies\A (2022)\A (2022) {tmdb-1} [DVD][Opus9 2.0][VP9].mkv"
 17.63 | T | False | "\\nas4\assets1\_Movies\A (2023)\A (2022) {tmdb-1} [DVD][EAC3 6.0][VP9].mkv"
 17.64 | T | True  | "\\nas4\assets1\_Movies\Blood Brothers (1989)\Blood Brothers (1989) [SDTV][AAC 2.0][h264].mp4"
-17.20 | T | True  | "\\nas2\assets2\_Movies\A Murder of Crows (1999)\A Murder of Crows (1999) {tmdb-17263} [HDTV-1080p][MP3 2.0][MPEG4].avi"
-17.21 | T | True  | "\\nas2\assets2\_Movies\12 Angry Men (1957)-other\12 Angry Men (1957)-other {tmdb-389} {edition-CRITERION COLLECTION} [Remux-1080p][PCM 1.0][h264].mkv"
-17.22 | T | True  | "\\nas5\assets3\_Movies\Seven Samurai (1954)\Seven Samurai (1954) {tmdb-346} [Remux-2160p][HLG][FLAC 1.0][HEVC].mkv"
+17.65 | T | True  | "\\nas2\assets2\_Movies\A Murder of Crows (1999)\A Murder of Crows (1999) {tmdb-17263} [HDTV-1080p][MP3 2.0][MPEG4].avi"
+17.66 | T | True  | "\\nas2\assets2\_Movies\12 Angry Men (1957)-other\12 Angry Men (1957)-other {tmdb-389} {edition-CRITERION COLLECTION} [Remux-1080p][PCM 1.0][h264].mkv"
+17.67 | T | True  | "\\nas5\assets3\_Movies\Seven Samurai (1954)\Seven Samurai (1954) {tmdb-346} [Remux-2160p][HLG][FLAC 1.0][HEVC].mkv"
+17.68 | T | True  | "\\nas1\assets4\_Movies\Aliens (1986)\Aliens (1986) {tmdb-679} [Remux-2160p][DV][AC3 5.1][h265].mkv"
 
 
-29-12-23 08:09:24 
 # Movies files must either be a special feature or have a valid quality specified
 
 18.1  | T | True  | "X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][TrueHD Atmos 7.1][h265].mkv"
@@ -279,42 +270,45 @@
 18.7  | T | True  | "X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][h265].mkv"
 
 
-# {Movie CleanTitle} {(Release Year)} {tmdb-{TmdbId}} {edition-{EDITION TAGS}} {[Quality Full]}{[MediaInfo 3D]}{[MediaInfo VideoDynamicRangeType]}{[Mediainfo AudioCodec}{ Mediainfo AudioChannels}][{Mediainfo VideoCodec}].extension
-
-
 # TV files must either be a special feature or be named correctly
 
 19.1  | D | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv"
 19.2  | D | True  | "Z:\_TV (non-tvdb)\The Queen's Christmas Broadcast\Season 1\The Queen's Christmas Broadcast s01e2015 2015 [HDTV-720p].mp4"
-19.3  | T | True  | "X:\_TV\Cheers {tvdb-77623}\Season 11\Cheers s11e26-e28 One for the Road [SDTV].avi"          
-19.4  | T | True  | "X:\_TV\Cheers {tvdb-77623}\Season 11\Cheers s11e26e27 One for the Road [SDTV].avi"        
-19.5  | T | False | "X:\_TV\Cheers {tvdb-77623}\Season 11\Cheers s11.e26-e28 One for the Road [SDTV].avi"
-19.6  | T | False | "X:\_TV\Cheers {tvdb-77623}\Season 11\Cheers s11e26f27 One for the Road [SDTV].avi"
-19.7  | T | True  | "X:\_TV\The Late Late Show with James Corden {tvdb-292421}\Season 1\The Late Late Show with James Corden 2015-03-23 [HDTV-720p].mkv"
+19.3  | T | True  | "X:\_TV\Cheers {tvdb-77623}\Season 11\Cheers s11e26-e28 One for the Road [SDTV][MP3 2.0][XviD].avi"  
+19.4  | T | True  | "X:\_TV\Cheers {tvdb-77623}\Season 11\Cheers s11e26e27 One for the Road [SDTV][MP3 2.0][XviD].avi"        
+19.5  | T | False | "X:\_TV\Cheers {tvdb-77623}\Season 11\Cheers s11.e26-e28 One for the Road [SDTV][MP3 2.0][XviD].avi"
+19.6  | T | False | "X:\_TV\Cheers {tvdb-77623}\Season 11\Cheers s11e26f27 One for the Road [SDTV][MP3 2.0][XviD].avi"
+19.7  | T | True  | "X:\_TV\The Late Late Show with James Corden {tvdb-292421}\Season 1\The Late Late Show with James Corden 2015-03-23 [HDTV-720p][MP3 2.0][XviD].mkv"
 19.8  | T | True  | "X:\_TV (non-tmdb)\Blood Brothers\Example 1-behindthescenes.mkv"
-19.9  | T | False | "X:\_TV\The Late Late Show with James Corden {tvdb-292421}\Season 1\The Late Late Show with James Corden 20150323 [HDTV-720p].mkv"
-19.10 | T | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv"
-19.11 | T | True  | "X:\_TV\Long Way Round {tvdb-77623}\Season 11\Long Way Round s01e08 [DVD].mkv"
-19.12 | T | True  | "X:\_TV\Long Way Round {tvdb-77623}\Season 11\Long Way Round s01e108e109 [DVD].mkv"
-19.13 | T | True  | "X:\_TV\Long Way Round {tvdb-77623}\Season 11\Long Way Round s01e08-e12 [DVD].mkv"
-19.14 | T | True  | "Z:\_TV\The Queen's Christmas Broadcast {tvdb-359422}\Season 1\The Queen's Christmas Broadcast s01e2015 2015 [HDTV-720p].mp4"
-19.15 | T | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv"
-19.16 | T | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e2015 Puss Gets The Boot [SDTV].mkv"
-19.17 | D | False | "X:\_Movies\Chernobyl {tvdb-360893}\Season 1\Chernobyl s01e01 TBA [Bluray-2160p Remux].mkv"
-19.18 | T | True  | "\\nas1\assets1\_TV\Charlie's Angels {tvdb-77170}\Season 5\Charlie's Angels s05e12 Chorus Line Angels [Bluray-1080p Remux].mkv"
-19.19 | T | True  | "\\nas5\assets4\_TV\3rd Rock from the Sun {tvdb-72389}\Specials\3rd Rock from the Sun s00e02 Behind the Scenes [DVD].avi"
-19.20 | T | False | "\\nas2\assets4\_TV\Episodes {tvdb-123581}\Season 3\Episodes s03e08 Episode 308 [Raw-HD].ts"
-19.21 | T | False | "\\nas2\assets1\_TV\The Grand Tour {tvdb-314087}\Season 5\The Grand Tour (2016) s05e01 A Scandi Flick [WEBDL-720p].mkv"
-19.22 | T | False | "\\nas5\assets4\_TV\3rd Rock from the Sun {tvdb-72389}\Specials\3rd Rock from the Sun s00e02 Behind the Scenes [DVD].ts"
+19.9  | T | False | "X:\_TV\The Late Late Show with James Corden {tvdb-292421}\Season 1\The Late Late Show with James Corden 20150323 [HDTV-720p][MP3 2.0][XviD].mkv"
+19.10 | T | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV][MP3 2.0][XviD].mkv"
+19.11 | T | True  | "X:\_TV\Long Way Round {tvdb-77623}\Season 11\Long Way Round s01e08 [DVD][MP3 2.0][XviD].mkv"
+19.12 | T | True  | "X:\_TV\Long Way Round {tvdb-77623}\Season 11\Long Way Round s01e108e109 [DVD][MP3 2.0][XviD].mkv"
+19.13 | T | True  | "X:\_TV\Long Way Round {tvdb-77623}\Season 11\Long Way Round s01e08-e12 [DVD][MP3 2.0][XviD].mkv"
+19.14 | T | True  | "Z:\_TV\The Queen's Christmas Broadcast {tvdb-359422}\Season 1\The Queen's Christmas Broadcast s01e2015 2015 [HDTV-720p][MP3 2.0][XviD].mp4"
+19.15 | T | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV][MP3 2.0][XviD].mkv"
+19.16 | T | False | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e2015 Puss Gets The Boot [SDTV][DV][XviD].mkv"
+19.17 | D | False | "X:\_Movies\Chernobyl {tvdb-360893}\Season 1\Chernobyl s01e01 TBA [Bluray-2160p Remux][MP3 2.0][XviD].mkv"
+19.18 | T | True  | "\\nas1\assets1\_TV\Charlie's Angels {tvdb-77170}\Season 5\Charlie's Angels s05e12 Chorus Line Angels [Bluray-1080p Remux][MP3 2.0][XviD].mkv"
+19.19 | T | True  | "\\nas5\assets4\_TV\3rd Rock from the Sun {tvdb-72389}\Specials\3rd Rock from the Sun s00e02 Behind the Scenes [DVD][MP3 2.0][XviD].avi"
+19.20 | T | False | "\\nas2\assets4\_TV\Episodes {tvdb-123581}\Season 3\Episodes s03e08 Episode 308 [Raw-HD][MP3 2.0][XviD].ts"
+19.21 | T | False | "\\nas2\assets1\_TV\The Grand Tour {tvdb-314087}\Season 5\The Grand Tour (2016) s05e01 A Scandi Flick [WEBDL-720p][MP3 2.0][XviD].mkv"
+19.22 | T | False | "\\nas5\assets4\_TV\3rd Rock from the Sun {tvdb-72389}\Specials\3rd Rock from the Sun s00e02 Behind the Scenes [DVD][MP3 2.0][XviD].ts"
+19.23 | T | True  | "K:\_TV\American Horror Story {tvdb-250487}\Season 1\American Horror Story s01e02 Home Invasion [HDTV-720p][DTS 5.1][x264].mkv"
+19.24 | T | True  | "K:\_TV\American Horror Story {tvdb-250487}\Season 1\American Horror Story s01e02 Home Invasion [HDTV-720p][DTS 5.1][x264].mkv"
+19.25 | T | True  | "K:\_TV\American Horror Story {tvdb-250487}\Season 1\American Horror Story s01e02 Home Invasion [HDTV-720p][DTS 5.1][x264].mkv"
+19.26 | T | True  | "K:\_TV\American Horror Story {tvdb-250487}\Season 1\American Horror Story s01e02 Home Invasion [HDTV-720p][DV HDR10][DTS HD 5.1][x264].mkv"
+19.27 | T | True  | "K:\_TV\American Horror Story {tvdb-250487}\Season 1\American Horror Story s01e02 Home Invasion [HDTV-720p][DV][DTS HD 5.1][x264].mkv"
+19.28 | T | True  | "\\nas1\assets1\_TV\Ben and Holly's Little Kingdom {tvdb-136941}\Season 2\Ben and Holly's Little Kingdom s02e15 Gaston To The Rescue [DVD][AAC 5.1][].mp4"
+19.29 | T | True  | "\\nas4\assets1\_TV\8 Out of 10 Cats {tvdb-79556}\Season 11\8 Out of 10 Cats s11e02 Patsy Palmer, Jack Whitehall, Krishnan Guru-Murthy, Joe Wilkinson [HDTV-720p][MP2 2.0][x264].mkv"
+19.30 | T | True  | "\\nas4\assets1\_TV\Curfew {tvdb-79556}\Season 1\Curfew s01e01 Episode 1 [HDTV-720p][Vorbis 6.0][x264].mkv"
 
+# All video files must not contain [DV] in the path
 
-# Music files must be named correctly
+20.1  | D | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv"
+20.2  | D | True  | "Z:\_TV (non-tvdb)\The Queen's Christmas Broadcast\Season 1\The Queen's Christmas Broadcast s01e2015 2015 [HDTV-720p].mp4"
+20.3  | D | True  | "X:\_Movies\Cheers {tvdb-77623}\Season 11\Cheers s11e26-e28 One for the Road [SDTV][MP3 2.0][XviD].avi"  
+20.4  | T | True  | "\\nas4\assets1\_TV\Curfew {tvdb-79556}\Season 1\Curfew s01e01 Episode 1 [HDTV-720p][Vorbis 6.0][x264].mkv"
+20.5  | T | False | "\\nas4\assets1\_TV\Curfew {tvdb-79556}\Season 1\Curfew s01e01 Episode 1 [HDTV-720p][DV][Vorbis 6.0][x264].mkv"
+20.6  | T | True  | "\\nas4\assets2\_Movies\Accused (2023)\Accused (2023) {tmdb-912974} [WEBDL-1080p][EAC3 5.1][x264].es.srt"
 
-20.1  | D | True  | "\\nas2\assets3\_Music\ABBA\More ABBA Gold\01-01- Summer Night City.mp3"
-20.2  | D | False | "\\nas5\assets4\_TV\3rd Rock from the Sun {tvdb-72389}\Specials\3rd Rock from the Sun s00e02 Behind the Scenes [DVD].ts"
-20.3  | T | True  | "\\nas2\assets3\_Music\ABBA\More ABBA Gold\01-01- Summer Night City.mp3"          
-20.4  | T | False | "\\nas2\assets3\_Music\ABBA\More ABBA Gold\Folder.jpg" 
-20.5  | T | True  | "\\nas2\assets3\_Music\ABBA\More ABBA Gold\folder.jpg" 
-20.6  | T | False | "\\nas2\assets3\_Music\ABBA\More ABBA Gold\01-01 Summer Night City.mp3" 
-20.7  | T | True  | "\\nas2\assets3\_Music\ABBA\More ABBA Gold\01-101- Summer Night City.mp3" 
-20.8  | T | True  | "\\nas2\assets3\_Music\ABBA\More ABBA Gold\01-101- Summer Night City.m4a"

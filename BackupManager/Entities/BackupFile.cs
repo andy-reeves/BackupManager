@@ -32,6 +32,10 @@ public sealed class BackupFile : IEquatable<BackupFile>
 
     private string fileName;
 
+    private string relativePath;
+
+    private string directory;
+
     public BackupFile() { }
 
     /// <summary>
@@ -40,6 +44,9 @@ public sealed class BackupFile : IEquatable<BackupFile>
     /// <param name="directory">The directory the file is in.</param>
     public BackupFile(string fullPath, string directory)
     {
+        if (Utils.StringContainsFixedSpace(fullPath)) throw new ArgumentException(Resources.Fixed_space_inside, fullPath);
+        if (Utils.StringContainsFixedSpace(directory)) throw new ArgumentException(Resources.Fixed_space_inside, directory);
+
         SetFullPath(fullPath, directory);
     }
 
@@ -47,7 +54,16 @@ public sealed class BackupFile : IEquatable<BackupFile>
     ///     The relative path of the file. Doesn't include Directory.
     /// </summary>
     [XmlElement("Path")]
-    public string RelativePath { get; set; }
+    public string RelativePath
+    {
+        get => relativePath;
+
+        set
+        {
+            if (Utils.StringContainsFixedSpace(value)) value = Utils.ReplaceFixedSpace(value);
+            relativePath = value;
+        }
+    }
 
     /// <summary>
     ///     This gets set to true for files no longer found.
@@ -57,7 +73,16 @@ public sealed class BackupFile : IEquatable<BackupFile>
     /// <summary>
     ///     The Directory this file is located at. Like '//nas1/assets1/_Movies'
     /// </summary>
-    public string Directory { get; set; }
+    public string Directory
+    {
+        get => directory;
+
+        set
+        {
+            if (Utils.StringContainsFixedSpace(value)) value = Utils.ReplaceFixedSpace(value);
+            directory = value;
+        }
+    }
 
     /// <summary>
     ///     The MD5 hash of the file contents.
@@ -203,12 +228,13 @@ public sealed class BackupFile : IEquatable<BackupFile>
         diskChecked = null;
     }
 
-    public void SetFullPath(string fullPath, string directory)
+    public void SetFullPath(string fullPath, string newDirectory)
     {
         if (!File.Exists(fullPath)) throw new FileNotFoundException();
 
-        RelativePath = GetRelativePath(fullPath, directory);
-        Directory = directory;
+        RelativePath = GetRelativePath(fullPath, newDirectory);
+        Directory = newDirectory;
+        fileName = Path.GetFileName(fullPath);
         UpdateContentsHash();
         UpdateLastWriteTime();
         UpdateFileLength();

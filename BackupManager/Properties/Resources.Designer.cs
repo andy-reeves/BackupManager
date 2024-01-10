@@ -160,6 +160,15 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Fixed space inside.
+        /// </summary>
+        internal static string Fixed_space_inside {
+            get {
+                return ResourceManager.GetString("Fixed_space_inside", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The directory name {0} is invalid.
         /// </summary>
         internal static string InvalidDirName {

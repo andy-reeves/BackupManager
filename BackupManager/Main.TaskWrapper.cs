@@ -40,6 +40,8 @@ internal sealed partial class Main
         {
             var task = Task.Run(methodName, ct);
             await task;
+
+            // todo does this put cancelled in the logs on a scheduled task
             if (longRunningActionExecutingRightNow) ASyncTasksCleanUp();
         }
         catch (Exception u)

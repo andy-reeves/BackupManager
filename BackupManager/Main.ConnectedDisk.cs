@@ -355,8 +355,10 @@ internal sealed partial class Main
         }
 
         if (!UpdateCurrentBackupDiskInfo(disk))
+        {
             _ = MessageBox.Show(Resources.Main_SetupBackupDisk_Can_t_find_a_valid_backup_share,
                 Resources.Main_SetupBackupDisk_Backup_Disk, MessageBoxButtons.OK);
+        }
         return disk;
     }
 }

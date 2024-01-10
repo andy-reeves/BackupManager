@@ -708,6 +708,14 @@ internal sealed partial class Main : Form
         for (var i = e.Directories.Length - 1; i >= 0; i--)
         {
             var directoryToScan = e.Directories[i];
+
+            if (Utils.StringContainsFixedSpace(directoryToScan.Path))
+            {
+                Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High,
+                    $"{directoryToScan.Path} contains a Fixed Space");
+                Utils.TraceOut();
+                return;
+            }
             mediaBackup.ClearFlags();
 
             var fileCountInDirectoryBefore = mediaBackup.BackupFiles.Count(b =>
@@ -899,7 +907,7 @@ internal sealed partial class Main : Form
             var fileCount = mediaBackup.GetBackupFilesInDirectory(directory.Path, false).Count();
             textLines += $"{directory.Path.PadRight(longestDirectoryLength + 1)} {fileCount,6:n0}";
 
-            for (var i = 0; i < scanIdsList.Count; i++)
+            for (var i = 0; i < scanIdsList.Length; i++)
             {
                 var backup = scansForDirectory.FirstOrDefault(scan => scan.Id == scanIdsList[i]);
 
@@ -914,7 +922,7 @@ internal sealed partial class Main : Form
             textLines += "\n";
         }
 
-        for (var index = 0; index < scanIdsList.Count; index++)
+        for (var index = 0; index < scanIdsList.Length; index++)
         {
             var a = scanIdsList[index];
             var scanStartTime = DateTime.MaxValue;
@@ -1014,5 +1022,26 @@ internal sealed partial class Main : Form
     {
         DirectoryScanReport(DirectoryScanType.GetFiles, 1);
         DirectoryScanReport(DirectoryScanType.ProcessingFiles, 1);
+    }
+
+    private void DvProfile5CheckButton_Click(object sender, EventArgs e)
+    {
+        var files = mediaBackup.BackupFiles.Where(static f => f.FullPath.Contains("[DV]") && !f.Deleted)
+            .OrderBy(static f => f.FullPath);
+
+        foreach (var file in files)
+        {
+            if (File.Exists(file.FullPath))
+            {
+                Utils.Log(Utils.FileIsDolbyVisionProfile5(file.FullPath)
+                    ? $"{file.FullPath} is DV Profile 5"
+                    : $"{file.FullPath} is DV but not Profile 5");
+            }
+            else
+            {
+                Utils.Log($"{file.FullPath} not found");
+                Utils.Log($"{Utils.StringContainsFixedSpace(file.FullPath)} for FixedSpace");
+            }
+        }
     }
 }

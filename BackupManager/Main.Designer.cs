@@ -59,6 +59,7 @@
             processFilesButton = new System.Windows.Forms.Button();
             directoryScanReportLastRunOnlyButton = new System.Windows.Forms.Button();
             scanDirectoryButton = new System.Windows.Forms.Button();
+            button2 = new System.Windows.Forms.Button();
             scheduledBackupTimerButton = new System.Windows.Forms.Button();
             listFilesOnBackupDiskButton = new System.Windows.Forms.Button();
             listFilesInDirectoryButton = new System.Windows.Forms.Button();
@@ -472,6 +473,18 @@
             toolTip.SetToolTip(scanDirectoryButton, "Scan the selected directory and processes files");
             scanDirectoryButton.UseVisualStyleBackColor = true;
             scanDirectoryButton.Click += ScanDirectoryButton_Click;
+            // 
+            // button2
+            // 
+            button2.Location = new System.Drawing.Point(589, 448);
+            button2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            button2.Name = "button2";
+            button2.Size = new System.Drawing.Size(234, 27);
+            button2.TabIndex = 100;
+            button2.Text = "Check all files for Dolby Vision Profile5";
+            toolTip.SetToolTip(button2, "Opens the log file");
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += DvProfile5CheckButton_Click;
             // 
             // scheduledBackupTimerButton
             // 
@@ -1232,6 +1245,7 @@
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1416, 548);
+            Controls.Add(button2);
             Controls.Add(directoryScanReportLastRunOnlyButton);
             Controls.Add(processFilesButton);
             Controls.Add(scanDirectoryButton);
@@ -1412,7 +1426,8 @@
         private System.Windows.Forms.Button scanDirectoryButton;
         private System.Windows.Forms.Button processFilesButton;
         private System.Windows.Forms.Button directoryScanReportLastRunOnlyButton;
-       
+     
+        private System.Windows.Forms.Button button2;
     }
 }
 

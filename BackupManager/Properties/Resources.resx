@@ -315,4 +315,7 @@
   <data name="Main_SetupBackupDisk_Can_t_find_a_valid_backup_share" xml:space="preserve">
     <value>Can't find a valid backup share</value>
   </data>
+  <data name="Fixed_space_inside" xml:space="preserve">
+    <value>Fixed space inside</value>
+  </data>
 </root>

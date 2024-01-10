@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 
 <!-- ReSharper disable MarkupTextTypo -->
+<!-- ReSharper disable CommentTypo -->
 <Rules xmlns="RulesSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <FileRules>
@@ -19,9 +20,9 @@
       <Number>2</Number>
     </FileRule>
     <FileRule>
-      <FileDiscoveryRegEx>^.*\\_TV(\s\(non-tvdb\))?\\.*$</FileDiscoveryRegEx>
-      <FileTestRegEx>^(.*\ss\d{1,4}e\d{2,4}((\s|\.)|-?e\d{2,4}(\s|\.)).*|.*\s\d{4}-\d\d-\d\d.*|.*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer)\..*)$</FileTestRegEx>
-      <Message>TV files must either be a special feature or have s00e00 or yyyy-mm-dd in the file name</Message>
+      <FileDiscoveryRegEx>^.*\\_Music\\.*$</FileDiscoveryRegEx>
+      <FileTestRegEx>^.*\\(\d\d-\d{2,3}-\s.*\.m(p3|4a)|(folder|back).jpg)$</FileTestRegEx>
+      <Message>Music files must be named correctly</Message>
       <Name>Rule 3</Name>
       <Number>3</Number>
     </FileRule>
@@ -133,18 +134,24 @@
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_TV(\s\(non-tvdb\))?\\.*$</FileDiscoveryRegEx>
-      <FileTestRegEx>^(?:.*\\_TV(?:\s\(non-tvdb\))?\\(.*)\s{t(m|v)db-\d{1,7}?}\\(Season\s\d+|Specials)\\(\1)\s(s\d{1,4}e\d{2,4}-?(e\d{2,4})?|\d{4}-\d\d-\d\d)(\s.*)?(\[(DVD|SDTV|(WEB(Rip|DL)|Bluray|HDTV)-(48|72|108|216)0p(\sRemux)?)\])|.*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(kv|p(4|e?g))|avi)$</FileTestRegEx>
+      <FileTestRegEx>^(?:.*\\_TV(?:\s\(non-tvdb\))?\\(.*)\s{t(m|v)db-\d{1,7}?}\\(Season\s\d+|Specials)\\(\1)\s(s\d{1,4}e\d{2,4}-?(e\d{2,4})?|\d{4}-\d\d-\d\d)(\s.*)?(\[(DVD|SDTV|(WEB(Rip|DL)|Bluray|HDTV)-(48|72|108|216)0p(\sRemux)?)\](\[((DV)?((\s)?HDR10(Plus)?)?|PQ|HLG|3D)\])?\[(DTS(\sHD|-(X|ES|HD\s(M|HR)A))?|(TrueHD|EAC3)(\sAtmos)?|AC3|FLAC|PCM|MP[23]|A[AV]C|Opus|Vorbis|WMA)\s([1-8]\.[01])\]\[([hx]26[45]|MPEG([24])?|HEVC|XviD|V(C1|P9)|AVC|DivX|RGB)?\])|.*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(kv|p(4|e?g))|avi)$</FileTestRegEx>
+
+      <!-- We really want the one below but Sonarr puts empty [] on some audio for now. That's why there's a ? after AVC -->
+      <!-- <FileTestRegEx>^(?:.*\\_TV(?:\s\(non-tvdb\))?\\(.*)\s{t(m|v)db-\d{1,7}?}\\(Season\s\d+|Specials)\\(\1)\s(s\d{1,4}e\d{2,4}-?(e\d{2,4})?|\d{4}-\d\d-\d\d)(\s.*)?(\[(DVD|SDTV|(WEB(Rip|DL)|Bluray|HDTV)-(48|72|108|216)0p(\sRemux)?)\](\[((DV)?((\s)?HDR10(Plus)?)?|PQ|HLG|3D)\])?\[(DTS(\sHD|-(X|ES|HD\s(M|HR)A))?|(TrueHD|EAC3)(\sAtmos)?|AC3|FLAC|PCM|MP[23]|A[AV]C|Opus|Vorbis|WMA)\s([1-8]\.[01])\]\[([hx]26[45]|MPEG([24])?|HEVC|XviD|V(C1|P9)|AVC|DivX|RGB)\])|.*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(kv|p(4|e?g))|avi)$</FileTestRegEx> -->
+
       <Message>TV files must either be a special feature or be named correctly</Message>
       <Name>Rule 19</Name>
       <Number>19</Number>
     </FileRule>
     <FileRule>
-      <FileDiscoveryRegEx>^.*\\_Music\\.*$</FileDiscoveryRegEx>
-      <FileTestRegEx>^.*\\(\d\d-\d{2,3}-\s.*\.m(p3|4a)|(folder|back).jpg)$</FileTestRegEx>
-      <Message>Music files must be named correctly</Message>
+      <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$</FileDiscoveryRegEx>
+      <FileTestRegEx>^((?!\[DV\])[\s\S])*\.(m(kv|p(4|e?g))|ts|avi|srt)$</FileTestRegEx>
+      <Message>Movies, Comedy, Concerts and TV files need to be checked manually for DolbyVision Profile 5 as the path contains [DV]</Message>
       <Name>Rule 20</Name>
       <Number>20</Number>
     </FileRule>
+    
   </FileRules>
 </Rules>
 <!-- ReSharper restore MarkupTextTypo -->
+<!-- ReSharper restore CommentTypo -->

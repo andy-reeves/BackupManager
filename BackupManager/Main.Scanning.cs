@@ -64,6 +64,9 @@ internal sealed partial class Main
 
             tasks.AddRange(diskNames.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam))
                 .Select(files => TaskWrapper(ProcessFilesA, files, scanId, token)));
+
+            // TODO just one list of files temp
+            // tasks.Add(TaskWrapper(ProcessFilesA, filesParam.ToArray(), scanId, token));
             Task.WhenAll(tasks).Wait(ct);
             var returnValue = !tasks.Any(static t => !t.Result);
 
@@ -111,10 +114,25 @@ internal sealed partial class Main
         var firstDir = true;
         DirectoryScan scanInfo = null;
 
-        foreach (var file in files)
+        foreach (var fileInsideForEach in files)
         {
+            var file = fileInsideForEach;
+
             lock (_lock)
             {
+                if (Utils.StringContainsFixedSpace(file))
+                {
+                    Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High,
+                        $"{file} has a fixed space so renaming it");
+
+                    if (Utils.IsFileAccessible(file))
+                        file = Utils.RenameFileToRemoveFixedSpaces(file);
+                    else
+                    {
+                        Utils.LogWithPushover(BackupAction.ProcessFiles, $"{file} is locked so can't be renamed now.");
+                        return Utils.TraceOut(false);
+                    }
+                }
                 fileCounterForMultiThreadProcessing++;
                 if (token.IsCancellationRequested) token.ThrowIfCancellationRequested();
                 currentPercentComplete = fileCounterForMultiThreadProcessing * 100 / toolStripProgressBar.Maximum;
@@ -154,7 +172,7 @@ internal sealed partial class Main
                 if (Regex.IsMatch(file, rule.FileTestRegEx)) continue;
 
                 Utils.Trace($"File {file} matched by {rule.FileDiscoveryRegEx} but doesn't match {rule.FileTestRegEx}");
-                Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"{rule.Name} {rule.Message} {file}");
+                Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High, $"{rule.Name} {rule.Message} {file}");
 
                 // If a rule has failed then break to avoid multiple messages sent
                 break;
@@ -320,6 +338,7 @@ internal sealed partial class Main
         RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out _, out _);
         if (updateLastFullScan) mediaBackup.UpdateLastFullScan();
         mediaBackup.Save();
+        UpdateMediaFilesCountDisplay();
     }
 
     private void GetFilesAsync(string[] directories, string scanId)

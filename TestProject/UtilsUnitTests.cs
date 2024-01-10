@@ -27,9 +27,39 @@ public sealed class UtilsUnitTests
     }
 
     [Fact]
+    public void RenameFileToRemoveFixedSpaces()
+    {
+        var path1 = Path.Combine(Path.GetTempPath(), "RenameFileToRemoveFixedSpaces");
+        var filePathWithFixedSpaces = Path.Combine(path1, "test" + Convert.ToChar(160) + "1.txt");
+        Utils.EnsureDirectoriesForDirectoryPath(path1);
+        Utils.CreateFile(filePathWithFixedSpaces);
+        Assert.True(Utils.StringContainsFixedSpace(filePathWithFixedSpaces));
+        var filePathWithFixedSpacesRemoved = Utils.ReplaceFixedSpace(filePathWithFixedSpaces);
+        var newFilePath = Utils.RenameFileToRemoveFixedSpaces(filePathWithFixedSpaces);
+        Assert.Equal(filePathWithFixedSpacesRemoved, newFilePath);
+        Assert.True(File.Exists(newFilePath));
+        Assert.False(File.Exists(filePathWithFixedSpaces));
+        File.Delete(newFilePath);
+        Assert.False(File.Exists(newFilePath));
+        if (Directory.Exists(path1)) Directory.Delete(path1, true);
+    }
+
+    [Fact]
     public void Config()
     {
         Utils.Config.LogParameters();
+    }
+
+    [Fact]
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
+    public void StringContainsFixedSpace()
+    {
+        const string workingString = @"\\nas1\assets1\_TV\Pennyworth The Origin of Batman's Butler {tvdb-363008}\Season 1";
+
+        var brokenString = @"\\nas1\assets1\_TV\Pennyworth The" + Convert.ToChar(160) +
+                           @"Origin of Batman's Butler {tvdb-363008}\Season 1"; // - broken
+        Assert.True(Utils.StringContainsFixedSpace(brokenString));
+        Assert.False(Utils.StringContainsFixedSpace(workingString));
     }
 
     [Fact]
