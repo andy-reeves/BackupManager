@@ -65,7 +65,7 @@ internal sealed partial class Main
             tasks.AddRange(diskNames.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam))
                 .Select(files => TaskWrapper(ProcessFilesA, files, scanId, token)));
 
-            // TODO just one list of files temp
+            // Use the line below instead of the above just one list of files 
             // tasks.Add(TaskWrapper(ProcessFilesA, filesParam.ToArray(), scanId, token));
             Task.WhenAll(tasks).Wait(ct);
             var returnValue = !tasks.Any(static t => !t.Result);
