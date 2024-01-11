@@ -116,7 +116,7 @@ internal sealed partial class Main
                     $"IOException during copy. Skipping file. Details {ex}");
             }
             _ = UpdateCurrentBackupDiskInfo(disk);
-            UpdateEstimatedFinish();
+            ClearEstimatedFinish();
         }
     }
 

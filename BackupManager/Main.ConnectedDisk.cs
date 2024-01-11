@@ -76,9 +76,9 @@ internal sealed partial class Main
         if (disk == null) return false;
 
         var returnValue = disk.Update(mediaBackup.BackupFiles);
-        currentBackupDiskTextBox.Invoke(x => x.Text = disk.Name);
-        backupDiskCapacityTextBox.Invoke(x => x.Text = disk.CapacityFormatted);
-        backupDiskAvailableTextBox.Invoke(x => x.Text = disk.FreeFormatted);
+        currentBackupDiskTextBox.TextWithInvoke(disk.Name);
+        backupDiskCapacityTextBox.TextWithInvoke(disk.CapacityFormatted);
+        backupDiskAvailableTextBox.TextWithInvoke(disk.FreeFormatted);
         return returnValue;
     }
 

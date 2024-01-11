@@ -51,7 +51,9 @@ internal sealed partial class Main
             InitializeComponent();
             TraceConfiguration.Register();
 #if DEBUG
-            Trace.Listeners.Add(new TextWriterTraceListener(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"), "myListener"));
+            Trace.Listeners.Add(new TextWriterTraceListener(
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"),
+                "myListener"));
 
             // ReSharper disable StringLiteralTypo
             // ReSharper disable CommentTypo
@@ -233,23 +235,12 @@ internal sealed partial class Main
         var backupFilesWithoutDeleted = mediaBackup.GetBackupFiles(false).ToArray();
         var backupFilesWithDiskEmpty = mediaBackup.GetBackupFilesWithDiskEmpty().ToArray();
         var backupFilesMarkedAsDeleted = mediaBackup.GetBackupFilesMarkedAsDeleted(false).ToArray();
-        SetNewTextOnControlWithInvoke(totalFilesTextBox, backupFilesWithoutDeleted.Length.ToString("N0"));
-
-        SetNewTextOnControlWithInvoke(totalFilesSizeTextBox,
-            Utils.FormatSize(backupFilesWithoutDeleted.Sum(static y => y.Length)));
-        SetNewTextOnControlWithInvoke(notOnABackupDiskTextBox, backupFilesWithDiskEmpty.Length.ToString("N0"));
-
-        SetNewTextOnControlWithInvoke(notOnABackupDiskSizeTextBox,
-            Utils.FormatSize(backupFilesWithDiskEmpty.Sum(static y => y.Length)));
-        SetNewTextOnControlWithInvoke(filesMarkedAsDeletedTextBox, backupFilesMarkedAsDeleted.Length.ToString("N0"));
-
-        SetNewTextOnControlWithInvoke(filesMarkedAsDeletedSizeTextBox,
-            Utils.FormatSize(backupFilesMarkedAsDeleted.Sum(static y => y.Length)));
-    }
-
-    private static void SetNewTextOnControlWithInvoke(Control control, string text)
-    {
-        if (text != control.Text) control.Invoke(x => { x.Text = text; });
+        totalFilesTextBox.TextWithInvoke(backupFilesWithoutDeleted.Length.ToString("N0"));
+        totalFilesSizeTextBox.TextWithInvoke(Utils.FormatSize(backupFilesWithoutDeleted.Sum(static y => y.Length)));
+        notOnABackupDiskTextBox.TextWithInvoke(backupFilesWithDiskEmpty.Length.ToString("N0"));
+        notOnABackupDiskSizeTextBox.TextWithInvoke(Utils.FormatSize(backupFilesWithDiskEmpty.Sum(static y => y.Length)));
+        filesMarkedAsDeletedTextBox.TextWithInvoke(backupFilesMarkedAsDeleted.Length.ToString("N0"));
+        filesMarkedAsDeletedSizeTextBox.TextWithInvoke(Utils.FormatSize(backupFilesMarkedAsDeleted.Sum(static y => y.Length)));
     }
 
     private void StartFileSystemWatchers()
@@ -394,14 +385,14 @@ internal sealed partial class Main
         longRunningActionExecutingRightNow = false;
     }
 
-    private void UpdateEstimatedFinish()
+    private void ClearEstimatedFinish()
     {
-        estimatedFinishTimeTextBox.Invoke(static x => x.Text = string.Empty);
+        estimatedFinishTimeTextBox.TextWithInvoke(string.Empty);
     }
 
     private void UpdateEstimatedFinish(DateTime estimatedFinishDateTime)
     {
-        estimatedFinishTimeTextBox.Invoke(x => x.Text = estimatedFinishDateTime.ToString(Resources.DateTime_HHmm));
+        estimatedFinishTimeTextBox.TextWithInvoke(estimatedFinishDateTime.ToString(Resources.DateTime_HHmm));
     }
 
     private void DisableControlsForAsyncTasks()
@@ -448,7 +439,7 @@ internal sealed partial class Main
         cancelButton.Invoke(static x => x.Enabled = false);
         statusStrip.Invoke(_ => toolStripProgressBar.Visible = false);
         statusStrip.Invoke(_ => toolStripStatusLabel.Text = string.Empty);
-        UpdateEstimatedFinish();
+        ClearEstimatedFinish();
     }
 
     private void UpdateStatusLabel(string text = "", int value = 0)

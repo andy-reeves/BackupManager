@@ -676,12 +676,13 @@ internal sealed partial class Main : Form
 
     private void UpdateUI_Tick(object sender, EventArgs e)
     {
-        timeToNextRunTextBox.Invoke(x =>
-            x.Text = _trigger == null || !updateUITimer.Enabled
-                ? string.Empty
-                : _trigger.TimeToNextTrigger().ToString(Resources.DateTime_TimeFormat));
-        directoriesToScanTextBox.Invoke(x => x.Text = mediaBackup.Watcher.DirectoriesToScan.Count.ToString());
-        fileChangesDetectedTextBox.Invoke(x => x.Text = mediaBackup.Watcher.FileSystemChanges.Count.ToString());
+        pushoverMessagesRemainingTextBox.TextWithInvoke(Utils.PushoverMessagesRemaining.ToString("n0"));
+
+        timeToNextRunTextBox.TextWithInvoke(_trigger == null || !updateUITimer.Enabled
+            ? string.Empty
+            : _trigger.TimeToNextTrigger().ToString(Resources.DateTime_TimeFormat));
+        directoriesToScanTextBox.TextWithInvoke(mediaBackup.Watcher.DirectoriesToScan.Count.ToString());
+        fileChangesDetectedTextBox.TextWithInvoke(mediaBackup.Watcher.FileSystemChanges.Count.ToString());
         UpdateOldestBackupDisk();
     }
 

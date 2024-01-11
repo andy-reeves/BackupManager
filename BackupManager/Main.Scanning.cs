@@ -190,11 +190,11 @@ internal sealed partial class Main
         var oldestFile = mediaBackup.GetOldestFile();
         if (oldestFile == null) return;
 
+        oldestBackupDiskTextBox.TextWithInvoke(oldestFile.Disk);
         var days = DateTime.Today.Subtract(DateTime.Parse(oldestFile.DiskChecked)).Days;
-        oldestBackupDiskTextBox.Invoke(x => x.Text = oldestFile.Disk);
 
-        oldestBackupDiskAgeTextBox.Invoke(x =>
-            x.Text = string.Format(Resources.Main_UpdateOldestBackupDiskNDaysAgo, days, days == 1 ? string.Empty : "s"));
+        oldestBackupDiskAgeTextBox.TextWithInvoke(string.Format(Resources.Main_UpdateOldestBackupDiskNDaysAgo, days,
+            days == 1 ? string.Empty : "s"));
     }
 
     private void RootDirectoryChecks(string rootDirectory)

@@ -130,6 +130,8 @@
             oldestBackupDiskTextBox = new System.Windows.Forms.TextBox();
             label16 = new System.Windows.Forms.Label();
             scanDirectoryComboBox = new System.Windows.Forms.ComboBox();
+            pushoverMessagesRemainingTextBox = new System.Windows.Forms.TextBox();
+            label17 = new System.Windows.Forms.Label();
             pushoverGroupBox.SuspendLayout();
             groupBox2.SuspendLayout();
             listFilesInDirectoryGroupBox.SuspendLayout();
@@ -669,7 +671,9 @@
             // 
             // pushoverGroupBox
             // 
+            pushoverGroupBox.Controls.Add(pushoverMessagesRemainingTextBox);
             pushoverGroupBox.Controls.Add(pushoverEmergencyCheckBox);
+            pushoverGroupBox.Controls.Add(label17);
             pushoverGroupBox.Controls.Add(pushoverHighCheckBox);
             pushoverGroupBox.Controls.Add(pushoverNormalCheckBox);
             pushoverGroupBox.Controls.Add(pushoverLowCheckBox);
@@ -678,11 +682,11 @@
             pushoverGroupBox.Controls.Add(testPushoverNormalButton);
             pushoverGroupBox.Controls.Add(testPushoverHighButton);
             pushoverGroupBox.Controls.Add(testPushoverEmergencyButton);
-            pushoverGroupBox.Location = new System.Drawing.Point(1143, 10);
+            pushoverGroupBox.Location = new System.Drawing.Point(1143, 17);
             pushoverGroupBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             pushoverGroupBox.Name = "pushoverGroupBox";
             pushoverGroupBox.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            pushoverGroupBox.Size = new System.Drawing.Size(253, 151);
+            pushoverGroupBox.Size = new System.Drawing.Size(253, 185);
             pushoverGroupBox.TabIndex = 54;
             pushoverGroupBox.TabStop = false;
             pushoverGroupBox.Text = "Pushover";
@@ -760,7 +764,7 @@
             groupBox2.Controls.Add(restoreDirectoryComboBox);
             groupBox2.Controls.Add(label3);
             groupBox2.Controls.Add(label4);
-            groupBox2.Location = new System.Drawing.Point(865, 14);
+            groupBox2.Location = new System.Drawing.Point(865, 17);
             groupBox2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             groupBox2.Name = "groupBox2";
             groupBox2.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -815,7 +819,7 @@
             groupBox5.Controls.Add(scheduledBackupTimerButton);
             groupBox5.Controls.Add(label2);
             groupBox5.Controls.Add(label5);
-            groupBox5.Location = new System.Drawing.Point(1143, 179);
+            groupBox5.Location = new System.Drawing.Point(1143, 215);
             groupBox5.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             groupBox5.Name = "groupBox5";
             groupBox5.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -957,7 +961,7 @@
             groupBox1.Controls.Add(checkDiskAndDeleteButton);
             groupBox1.Controls.Add(checkBackupDeleteAndCopyButton);
             groupBox1.Controls.Add(copyFilesToBackupDiskButton);
-            groupBox1.Location = new System.Drawing.Point(582, 10);
+            groupBox1.Location = new System.Drawing.Point(582, 14);
             groupBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             groupBox1.Name = "groupBox1";
             groupBox1.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -1240,6 +1244,25 @@
             scanDirectoryComboBox.Size = new System.Drawing.Size(163, 23);
             scanDirectoryComboBox.TabIndex = 42;
             // 
+            // pushoverMessagesRemainingTextBox
+            // 
+            pushoverMessagesRemainingTextBox.Location = new System.Drawing.Point(135, 150);
+            pushoverMessagesRemainingTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pushoverMessagesRemainingTextBox.Name = "pushoverMessagesRemainingTextBox";
+            pushoverMessagesRemainingTextBox.ReadOnly = true;
+            pushoverMessagesRemainingTextBox.Size = new System.Drawing.Size(62, 23);
+            pushoverMessagesRemainingTextBox.TabIndex = 102;
+            // 
+            // label17
+            // 
+            label17.AutoSize = true;
+            label17.Location = new System.Drawing.Point(9, 152);
+            label17.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label17.Name = "label17";
+            label17.Size = new System.Drawing.Size(115, 15);
+            label17.TabIndex = 101;
+            label17.Text = "Messages remaining";
+            // 
             // Main
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -1428,6 +1451,8 @@
         private System.Windows.Forms.Button directoryScanReportLastRunOnlyButton;
      
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.TextBox pushoverMessagesRemainingTextBox;
+        private System.Windows.Forms.Label label17;
     }
 }
 

@@ -173,6 +173,11 @@ internal static partial class Utils
 
     private static bool _alreadySendingPushoverMessage;
 
+    /// <summary>
+    ///     The number of Pushover messages remaining this month
+    /// </summary>
+    internal static int PushoverMessagesRemaining { get; private set; }
+
     #endregion
 
     #region internal Methods and Operators
@@ -1089,78 +1094,76 @@ internal static partial class Utils
         string message)
     {
         TraceIn();
+        var applicationLimitRemaining = 0;
 
-        if (Config.PushoverOnOff &&
-            ((priority is PushoverPriority.Low or PushoverPriority.Lowest && Config.PushoverSendLowOnOff) ||
-             (priority == PushoverPriority.Normal && Config.PushoverSendNormalOnOff) ||
-             (priority == PushoverPriority.High && Config.PushoverSendHighOnOff) ||
-             (priority == PushoverPriority.Emergency && Config.PushoverSendEmergencyOnOff)))
+        if (!Config.PushoverOnOff ||
+            ((priority is not (PushoverPriority.Low or PushoverPriority.Lowest) || !Config.PushoverSendLowOnOff) &&
+             (priority != PushoverPriority.Normal || !Config.PushoverSendNormalOnOff) &&
+             (priority != PushoverPriority.High || !Config.PushoverSendHighOnOff) &&
+             (priority != PushoverPriority.Emergency || !Config.PushoverSendEmergencyOnOff)))
+            return;
+
+        try
         {
-            try
+            Dictionary<string, string> parameters = new()
             {
-                Dictionary<string, string> parameters = new()
+                { "token", Config.PushoverAppToken },
+                { "user", Config.PushoverUserKey },
+                { "priority", Convert.ChangeType(priority, priority.GetTypeCode()).ToString() },
+                { "message", message },
+                { "title", title }
+            };
+
+            if (priority == PushoverPriority.Emergency)
+            {
+                if (retry == PushoverRetry.None) retry = PushoverRetry.ThirtySeconds;
+                if (expires == PushoverExpires.Immediately) expires = PushoverExpires.FiveMinutes;
+            }
+            if (retry != PushoverRetry.None) parameters.Add("retry", Convert.ChangeType(retry, retry.GetTypeCode()).ToString());
+
+            if (expires != PushoverExpires.Immediately)
+                parameters.Add("expire", Convert.ChangeType(expires, expires.GetTypeCode()).ToString());
+
+            // ensures there's a 1s gap between messages
+            while (DateTime.UtcNow < _timeLastPushoverMessageSent.AddMilliseconds(TimeDelayOnPushoverMessages))
+            {
+                Task.Delay(TimeDelayOnPushoverMessages / 10).Wait();
+            }
+
+            using (FormUrlEncodedContent postContent = new(parameters))
+            {
+                HttpClient client = new();
+
+                // ReSharper disable once AccessToDisposedClosure
+                var task = Task.Run(() => client.PostAsync(PushoverAddress, postContent));
+                task.Wait();
+                var response = task.Result;
+                _ = response.EnsureSuccessStatusCode();
+
+                if (response.Headers.TryGetValues("X-Limit-App-Remaining", out var values))
+                    applicationLimitRemaining = Convert.ToInt32(values.First());
+                Trace($"Pushover messages remaining: {applicationLimitRemaining}");
+                PushoverMessagesRemaining = applicationLimitRemaining;
+
+                if (applicationLimitRemaining < Config.PushoverWarningMessagesRemaining)
                 {
-                    { "token", Config.PushoverAppToken },
-                    { "user", Config.PushoverUserKey },
-                    { "priority", Convert.ChangeType(priority, priority.GetTypeCode()).ToString() },
-                    { "message", message },
-                    { "title", title }
-                };
-
-                if (priority == PushoverPriority.Emergency)
-                {
-                    if (retry == PushoverRetry.None) retry = PushoverRetry.ThirtySeconds;
-                    if (expires == PushoverExpires.Immediately) expires = PushoverExpires.FiveMinutes;
-                }
-
-                if (retry != PushoverRetry.None)
-                    parameters.Add("retry", Convert.ChangeType(retry, retry.GetTypeCode()).ToString());
-
-                if (expires != PushoverExpires.Immediately)
-                    parameters.Add("expire", Convert.ChangeType(expires, expires.GetTypeCode()).ToString());
-
-                // ensures there's a 1s gap between messages
-                while (DateTime.UtcNow < _timeLastPushoverMessageSent.AddMilliseconds(TimeDelayOnPushoverMessages))
-                {
-                    Task.Delay(TimeDelayOnPushoverMessages / 10).Wait();
-                }
-
-                using (FormUrlEncodedContent postContent = new(parameters))
-                {
-                    HttpClient client = new();
-
-                    // ReSharper disable once AccessToDisposedClosure
-                    var task = Task.Run(() => client.PostAsync(PushoverAddress, postContent));
-                    task.Wait();
-                    var response = task.Result;
-                    _ = response.EnsureSuccessStatusCode();
-                    var applicationLimitRemaining = 0;
-
-                    if (response.Headers.TryGetValues("X-Limit-App-Remaining", out var values))
-                        applicationLimitRemaining = Convert.ToInt32(values.First());
-                    Trace($"Pushover messages remaining: {applicationLimitRemaining}");
-
-                    if (applicationLimitRemaining < Config.PushoverWarningMessagesRemaining)
+                    if (!_alreadySendingPushoverMessage)
                     {
-                        if (!_alreadySendingPushoverMessage)
-                        {
-                            _alreadySendingPushoverMessage = true;
+                        _alreadySendingPushoverMessage = true;
 
-                            SendPushoverMessage("Message Limit Warning", PushoverPriority.High,
-                                $"ApplicationType Limit Remaining is: {applicationLimitRemaining}");
-                            _alreadySendingPushoverMessage = false;
-                        }
+                        SendPushoverMessage("Message Limit Warning", PushoverPriority.High,
+                            $"ApplicationType Limit Remaining is: {applicationLimitRemaining}");
+                        _alreadySendingPushoverMessage = false;
                     }
                 }
-                _timeLastPushoverMessageSent = DateTime.UtcNow;
             }
-            catch (Exception ex)
-            {
-                // we ignore any push problems
-                Log($"Exception sending Pushover message {ex}");
-            }
+            _timeLastPushoverMessageSent = DateTime.UtcNow;
         }
-        TraceOut();
+        catch (Exception ex)
+        {
+            // we ignore any push problems
+            Log($"Exception sending Pushover message {ex}");
+        }
     }
 
     /// <summary>
