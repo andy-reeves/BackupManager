@@ -924,17 +924,10 @@ internal sealed partial class Main : Form
 
         for (var index = 0; index < scanIdsList.Length; index++)
         {
-            var a = scanIdsList[index];
-            var scanStartTime = DateTime.MaxValue;
-            var scanEndTime = DateTime.MinValue;
-            var directoryScans = mediaBackup.DirectoryScans.Where(s => s.Id == a && s.TypeOfScan == scanType);
+            lapsedTime[index] = DirectoryScan.LapsedTime(
 
-            foreach (var directoryScan in directoryScans)
-            {
-                if (directoryScan.EndDateTime > scanEndTime) scanEndTime = directoryScan.EndDateTime;
-                if (directoryScan.StartDateTime < scanStartTime) scanStartTime = directoryScan.StartDateTime;
-            }
-            lapsedTime[index] = scanEndTime - scanStartTime;
+                // ReSharper disable once AccessToModifiedClosure
+                mediaBackup.DirectoryScans.Where(s => s.Id == scanIdsList[index] && s.TypeOfScan == scanType));
         }
 
         lapsedTimeLine = lapsedTime.Where(static aTotal => aTotal > TimeSpan.FromSeconds(0)).Aggregate(lapsedTimeLine,

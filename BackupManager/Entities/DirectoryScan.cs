@@ -5,6 +5,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Xml.Serialization;
 
@@ -29,6 +30,24 @@ public sealed class DirectoryScan : IEquatable<DirectoryScan>
     public DirectoryScan(string path)
     {
         Path = path;
+    }
+
+    /// <summary>
+    ///     Gets the LapsedTime from a list of DirectoryScans
+    /// </summary>
+    /// <param name="directoryScans"></param>
+    /// <returns></returns>
+    internal static TimeSpan LapsedTime(IEnumerable<DirectoryScan> directoryScans)
+    {
+        var scanStartTime = DateTime.MaxValue;
+        var scanEndTime = DateTime.MinValue;
+
+        foreach (var directoryScan in directoryScans)
+        {
+            if (directoryScan.EndDateTime > scanEndTime) scanEndTime = directoryScan.EndDateTime;
+            if (directoryScan.StartDateTime < scanStartTime) scanStartTime = directoryScan.StartDateTime;
+        }
+        return scanEndTime - scanStartTime;
     }
 
     public DirectoryScan(DirectoryScanType typeOfScan, string path, DateTime startDateTime, string id)

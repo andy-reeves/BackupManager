@@ -210,7 +210,7 @@ public sealed class MediaBackup
         foreach (var scan in from scan in sc
                  where !list.Contains(scan.Id)
                  let count = sc.Count(s => s.Id == scan.Id)
-                 where count >= minCount && count <= maxCount
+                 where count.IsInRange(minCount, maxCount)
                  select scan)
         {
             list[index] = scan.Id;
