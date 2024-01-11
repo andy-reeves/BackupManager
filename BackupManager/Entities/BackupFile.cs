@@ -26,6 +26,8 @@ public sealed class BackupFile : IEquatable<BackupFile>
 {
     private string contentsHash;
 
+    private string directory;
+
     private string disk;
 
     private string diskChecked;
@@ -33,8 +35,6 @@ public sealed class BackupFile : IEquatable<BackupFile>
     private string fileName;
 
     private string relativePath;
-
-    private string directory;
 
     public BackupFile() { }
 
