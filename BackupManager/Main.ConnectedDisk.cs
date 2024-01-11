@@ -100,7 +100,7 @@ internal sealed partial class Main
         // force a recalculation of both the hashes to check the files can both be read correctly
         var disk = SetupBackupDisk();
         var directoryToCheck = disk.BackupPath;
-        Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Started checking backup disk {directoryToCheck}");
+        Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Started\n{directoryToCheck}");
         UpdateStatusLabel($"Checking backup disk {directoryToCheck}");
         long readSpeed = 0, writeSpeed = 0;
 
@@ -210,6 +210,7 @@ internal sealed partial class Main
                     //TODO Temp remove the rename message until all of TV is done
                     //Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal,
                     // $"Renaming {backupFileFullPath} to {destFileName}");
+                    Utils.Log($"Renaming {backupFileFullPath} to {destFileName}");
 
                     if (File.Exists(destFileName))
                     {
@@ -294,7 +295,7 @@ internal sealed partial class Main
             text = $"Name: {disk.Name}\nTotal: {disk.CapacityFormatted}\nFree: {disk.FreeFormatted}\nFiles: {disk.TotalFiles:n0}";
             Utils.LogWithPushover(BackupAction.CheckBackupDisk, text);
         }
-        Utils.LogWithPushover(BackupAction.CheckBackupDisk, "Completed");
+        Utils.LogWithPushover(BackupAction.CheckBackupDisk, Resources.Main_Completed);
         return Utils.TraceOut(disk);
     }
 

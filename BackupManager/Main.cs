@@ -580,6 +580,9 @@ internal sealed partial class Main : Form
         Utils.TraceOut();
     }
 
+    /// <summary>
+    ///     Kills the CopyProcess and sends the Cancelled message. Resets all controls.
+    /// </summary>
     private void ASyncTasksCleanUp()
     {
         Utils.TraceIn();

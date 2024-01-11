@@ -189,6 +189,7 @@ internal sealed partial class Main
             UpdateStatusLabel(string.Format(Resources.Main_Checking, path), Convert.ToInt32(counter * 100 / hashSet.Count));
             UpdateSymbolicLinkForDirectory(path);
         }
+        Utils.LogWithPushover(BackupAction.CheckingSymbolicLinks, Resources.Main_Completed);
         UpdateStatusLabel(Resources.Main_Completed);
         Utils.TraceOut();
     }

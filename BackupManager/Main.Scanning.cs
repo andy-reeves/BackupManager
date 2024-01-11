@@ -69,26 +69,24 @@ internal sealed partial class Main
             // tasks.Add(TaskWrapper(ProcessFilesA, filesParam.ToArray(), scanId, token));
             Task.WhenAll(tasks).Wait(ct);
             var returnValue = !tasks.Any(static t => !t.Result);
-
-            if (returnValue)
-                Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal, "Processing files completed.");
+            if (returnValue) Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal, Resources.Main_Completed);
             UpdateMediaFilesCountDisplay();
             ResetAllControls();
             longRunningActionExecutingRightNow = false;
             return Utils.TraceOut(returnValue);
         }
-        catch (Exception u)
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
-            Utils.Trace("Exception in the TaskWrapper");
-
-            if (u.Message != "The operation was canceled.")
-            {
-                Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
-                    string.Format(Resources.Main_TaskWrapperException, u));
-            }
+            Utils.Trace("Cancelling ProcessFiles");
             ASyncTasksCleanUp();
             return Utils.TraceOut(false);
         }
+        catch (Exception u)
+        {
+            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
+                string.Format(Resources.Main_TaskWrapperException, u));
+        }
+        return Utils.TraceOut(false);
     }
 
     /// <summary>
