@@ -377,8 +377,8 @@ internal sealed class FileSystemWatcher
     private void StartTimers()
     {
         Utils.TraceIn();
-        processChangesTimer.Start();
-        scanDirectoriesTimer.Start();
+        processChangesTimer?.Start();
+        scanDirectoriesTimer?.Start();
         Utils.TraceOut();
     }
 
