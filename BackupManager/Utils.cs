@@ -1046,7 +1046,7 @@ internal static partial class Utils
     /// </summary>
     /// <param name="path"></param>
     /// <returns>False if its not a video file, True if its a video file. Exception if path is null or empty</returns>
-    internal static bool FileIsVideo(string path)
+    private static bool FileIsVideo(string path)
     {
         ArgumentException.ThrowIfNullOrEmpty(path);
         string[] videoExtensions = { ".mkv", ".mp4", ".mpeg", ".mpg", ".ts", ".avi" };
@@ -1058,7 +1058,7 @@ internal static partial class Utils
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
-    internal static bool VideoFileIsDolbyVision(string path)
+    private static bool VideoFileIsDolbyVision(string path)
     {
         ArgumentException.ThrowIfNullOrEmpty(path);
         return !string.IsNullOrEmpty(path) && path.ToUpperInvariant().Contains("[DV]");
