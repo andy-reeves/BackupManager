@@ -78,7 +78,9 @@
             killProcessesButton = new System.Windows.Forms.Button();
             listDirectoriesComboBox = new System.Windows.Forms.ComboBox();
             pushoverGroupBox = new System.Windows.Forms.GroupBox();
+            pushoverMessagesRemainingTextBox = new System.Windows.Forms.TextBox();
             pushoverEmergencyCheckBox = new System.Windows.Forms.CheckBox();
+            label17 = new System.Windows.Forms.Label();
             pushoverHighCheckBox = new System.Windows.Forms.CheckBox();
             pushoverNormalCheckBox = new System.Windows.Forms.CheckBox();
             pushoverLowCheckBox = new System.Windows.Forms.CheckBox();
@@ -130,8 +132,6 @@
             oldestBackupDiskTextBox = new System.Windows.Forms.TextBox();
             label16 = new System.Windows.Forms.Label();
             scanDirectoryComboBox = new System.Windows.Forms.ComboBox();
-            pushoverMessagesRemainingTextBox = new System.Windows.Forms.TextBox();
-            label17 = new System.Windows.Forms.Label();
             pushoverGroupBox.SuspendLayout();
             groupBox2.SuspendLayout();
             listFilesInDirectoryGroupBox.SuspendLayout();
@@ -222,6 +222,7 @@
             recalculateAllHashesButton.Text = "Recalculate all hashes";
             toolTip.SetToolTip(recalculateAllHashesButton, "Recalculates all the Hashcodes from the Master Files. Only use this is the hash algorithm has been changed.");
             recalculateAllHashesButton.UseVisualStyleBackColor = true;
+            recalculateAllHashesButton.Visible = false;
             recalculateAllHashesButton.Click += RecalculateAllHashesButton_Click;
             // 
             // checkDiskAndDeleteButton
@@ -691,6 +692,15 @@
             pushoverGroupBox.TabStop = false;
             pushoverGroupBox.Text = "Pushover";
             // 
+            // pushoverMessagesRemainingTextBox
+            // 
+            pushoverMessagesRemainingTextBox.Location = new System.Drawing.Point(135, 150);
+            pushoverMessagesRemainingTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pushoverMessagesRemainingTextBox.Name = "pushoverMessagesRemainingTextBox";
+            pushoverMessagesRemainingTextBox.ReadOnly = true;
+            pushoverMessagesRemainingTextBox.Size = new System.Drawing.Size(62, 23);
+            pushoverMessagesRemainingTextBox.TabIndex = 102;
+            // 
             // pushoverEmergencyCheckBox
             // 
             pushoverEmergencyCheckBox.AutoSize = true;
@@ -701,6 +711,16 @@
             pushoverEmergencyCheckBox.TabIndex = 72;
             pushoverEmergencyCheckBox.UseVisualStyleBackColor = true;
             pushoverEmergencyCheckBox.CheckedChanged += PushoverEmergencyCheckBox_CheckedChanged;
+            // 
+            // label17
+            // 
+            label17.AutoSize = true;
+            label17.Location = new System.Drawing.Point(9, 152);
+            label17.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label17.Name = "label17";
+            label17.Size = new System.Drawing.Size(115, 15);
+            label17.TabIndex = 101;
+            label17.Text = "Messages remaining";
             // 
             // pushoverHighCheckBox
             // 
@@ -1243,25 +1263,6 @@
             scanDirectoryComboBox.Name = "scanDirectoryComboBox";
             scanDirectoryComboBox.Size = new System.Drawing.Size(163, 23);
             scanDirectoryComboBox.TabIndex = 42;
-            // 
-            // pushoverMessagesRemainingTextBox
-            // 
-            pushoverMessagesRemainingTextBox.Location = new System.Drawing.Point(135, 150);
-            pushoverMessagesRemainingTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            pushoverMessagesRemainingTextBox.Name = "pushoverMessagesRemainingTextBox";
-            pushoverMessagesRemainingTextBox.ReadOnly = true;
-            pushoverMessagesRemainingTextBox.Size = new System.Drawing.Size(62, 23);
-            pushoverMessagesRemainingTextBox.TabIndex = 102;
-            // 
-            // label17
-            // 
-            label17.AutoSize = true;
-            label17.Location = new System.Drawing.Point(9, 152);
-            label17.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            label17.Name = "label17";
-            label17.Size = new System.Drawing.Size(115, 15);
-            label17.TabIndex = 101;
-            label17.Text = "Messages remaining";
             // 
             // Main
             // 

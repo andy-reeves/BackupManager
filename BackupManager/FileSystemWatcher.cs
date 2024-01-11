@@ -460,11 +460,6 @@ internal sealed class FileSystemWatcher
     {
         Utils.TraceIn();
         Utils.Trace($"watcherList count = {watcherList.Count}");
-
-        //foreach (var watcher in watcherList)
-        //{
-        //    watcher.Dispose();
-        //}
         watcherList.Clear();
         Utils.TraceOut();
     }

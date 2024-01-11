@@ -10,6 +10,8 @@ internal enum BackupAction
 {
     General,
 
+    ScheduledBackup,
+
     ScanDirectory,
 
     ProcessFiles,
@@ -20,5 +22,9 @@ internal enum BackupAction
 
     Restore,
 
-    Monitoring
+    Monitoring,
+
+    SpeedTest,
+
+    CheckingSymbolicLinks
 }

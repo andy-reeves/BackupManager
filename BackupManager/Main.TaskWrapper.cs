@@ -14,12 +14,14 @@ namespace BackupManager;
 
 internal sealed partial class Main
 {
+    /// <summary>
+    ///     Called by the Application monitoring
+    /// </summary>
+    /// <param name="methodName"></param>
     private void TaskWrapper(Action methodName)
     {
         ArgumentNullException.ThrowIfNull(methodName);
-        tokenSource?.Dispose();
-        tokenSource = new CancellationTokenSource();
-        ct = tokenSource.Token;
+        ResetTokenSource();
 
         _ = Task.Run(methodName, ct).ContinueWith(static u =>
         {
@@ -40,39 +42,45 @@ internal sealed partial class Main
         {
             var task = Task.Run(methodName, ct);
             await task;
-
-            // todo does this put cancelled in the logs on a scheduled task
             if (longRunningActionExecutingRightNow) ASyncTasksCleanUp();
+        }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            Utils.Trace($"Cancelling {methodName.Method}");
+            ASyncTasksCleanUp();
         }
         catch (Exception u)
         {
-            Utils.Trace("Exception in the TaskWrapper");
-
-            if (u.Message == "The operation was canceled.")
-                Utils.LogWithPushover(BackupAction.General, PushoverPriority.Normal, "Cancelling");
-            else
-            {
-                Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
-                    string.Format(Resources.Main_TaskWrapperException, u));
-            }
-            ASyncTasksCleanUp();
+            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
+                string.Format(Resources.Main_TaskWrapperException, u));
         }
     }
 
-    private void TaskWrapper(Action<bool> methodName, bool param1)
+    /// <summary>
+    ///     Called by the Check, Copy repeater
+    /// </summary>
+    /// <param name="methodName"></param>
+    /// <param name="param1"></param>
+    private async Task TaskWrapper(Action<bool> methodName, bool param1)
     {
         ArgumentNullException.ThrowIfNull(methodName);
 
-        _ = Task.Run(() => methodName(param1), ct).ContinueWith(u =>
+        try
         {
-            if (u.Exception == null) return;
-
-            Utils.Trace("Exception in the TaskWrapper");
-
-            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
-                string.Format(Resources.Main_TaskWrapperException, u.Exception));
+            var task = Task.Run(() => methodName(param1), ct);
+            await task;
+            if (longRunningActionExecutingRightNow) ASyncTasksCleanUp();
+        }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            Utils.Trace($"Cancelling {methodName.Method}");
             ASyncTasksCleanUp();
-        }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
+        }
+        catch (Exception u)
+        {
+            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
+                string.Format(Resources.Main_TaskWrapperException, u));
+        }
     }
 
     private async Task TaskWrapper(Action<string> methodName, string param1)
@@ -83,21 +91,26 @@ internal sealed partial class Main
             await task;
             if (longRunningActionExecutingRightNow) ASyncTasksCleanUp();
         }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            Utils.Trace($"Cancelling {methodName.Method}");
+            ASyncTasksCleanUp();
+        }
         catch (Exception u)
         {
-            Utils.Trace("Exception in the TaskWrapper");
-
-            if (u.Message == "The operation was canceled.")
-                Utils.LogWithPushover(BackupAction.General, PushoverPriority.Normal, "Cancelling");
-            else
-            {
-                Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
-                    string.Format(Resources.Main_TaskWrapperException, u));
-            }
-            ASyncTasksCleanUp();
+            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
+                string.Format(Resources.Main_TaskWrapperException, u));
         }
     }
 
+    /// <summary>
+    ///     Called by ProcessFiles
+    /// </summary>
+    /// <param name="methodName"></param>
+    /// <param name="param1"></param>
+    /// <param name="scanId"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
     private Task<bool> TaskWrapper(Func<string[], string, CancellationToken, bool> methodName, string[] param1, string scanId,
         CancellationToken token)
     {
@@ -105,6 +118,13 @@ internal sealed partial class Main
         return Task.Run(() => methodName(param1, scanId, token), ct);
     }
 
+    /// <summary>
+    ///     Called by GetFiles
+    /// </summary>
+    /// <param name="methodName"></param>
+    /// <param name="param1"></param>
+    /// <param name="scanId"></param>
+    /// <returns></returns>
     private Task TaskWrapper(Action<string[], string> methodName, string[] param1, string scanId)
     {
         ArgumentNullException.ThrowIfNull(methodName);
@@ -112,19 +132,31 @@ internal sealed partial class Main
         return task;
     }
 
-    private void TaskWrapper(Action<bool, bool> methodName, bool param1, bool param2)
+    /// <summary>
+    ///     Called by Check,Copy
+    /// </summary>
+    /// <param name="methodName"></param>
+    /// <param name="param1"></param>
+    /// <param name="param2"></param>
+    private async Task TaskWrapper(Action<bool, bool> methodName, bool param1, bool param2)
     {
         ArgumentNullException.ThrowIfNull(methodName);
 
-        _ = Task.Run(() => methodName(param1, param2), ct).ContinueWith(u =>
+        try
         {
-            if (u.Exception == null) return;
-
-            Utils.Trace("Exception in the TaskWrapper");
-
-            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
-                string.Format(Resources.Main_TaskWrapperException, u.Exception));
+            var task = Task.Run(() => methodName(param1, param2), ct);
+            await task;
+            if (longRunningActionExecutingRightNow) ASyncTasksCleanUp();
+        }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            Utils.Trace($"Cancelling {methodName.Method}");
             ASyncTasksCleanUp();
-        }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
+        }
+        catch (Exception u)
+        {
+            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
+                string.Format(Resources.Main_TaskWrapperException, u));
+        }
     }
 }

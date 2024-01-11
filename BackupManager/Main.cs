@@ -64,9 +64,7 @@ internal sealed partial class Main : Form
     private void ScheduledBackupRunNowButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        tokenSource?.Dispose();
-        tokenSource = new CancellationTokenSource();
-        ct = tokenSource.Token;
+        ResetTokenSource();
         _ = TaskWrapperAsync(ScheduledBackupAsync);
         Utils.TraceOut();
     }
@@ -91,32 +89,24 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
 
-        if (!longRunningActionExecutingRightNow)
-        {
-            if (MessageBox.Show(Resources.Main_UpdateMasterFiles, Resources.Main_UpdateMasterFilesTitle,
-                    MessageBoxButtons.YesNo) == DialogResult.Yes)
-            {
-                tokenSource?.Dispose();
-                tokenSource = new CancellationTokenSource();
-                ct = tokenSource.Token;
-                _ = TaskWrapperAsync(ScanAllDirectoriesAsync);
-            }
-        }
-        Utils.TraceOut();
+        if (longRunningActionExecutingRightNow ||
+            MessageBox.Show(Resources.Main_UpdateMasterFiles, Resources.Main_UpdateMasterFilesTitle, MessageBoxButtons.YesNo) !=
+            DialogResult.Yes)
+            return;
+
+        ResetTokenSource();
+        _ = TaskWrapperAsync(ScanAllDirectoriesAsync);
     }
 
     private void CheckAllSymbolicLinksButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        if (longRunningActionExecutingRightNow) return;
 
-        if (MessageBox.Show(Resources.Main_RecreateAllSymbolicLinks, Resources.Main_SymbolicLinksTitle,
-                MessageBoxButtons.YesNo) != DialogResult.Yes)
+        if (longRunningActionExecutingRightNow || MessageBox.Show(Resources.Main_RecreateAllSymbolicLinks,
+                Resources.Main_SymbolicLinksTitle, MessageBoxButtons.YesNo) != DialogResult.Yes)
             return;
 
-        tokenSource?.Dispose();
-        tokenSource = new CancellationTokenSource();
-        ct = tokenSource.Token;
+        ResetTokenSource();
         _ = TaskWrapperAsync(UpdateSymbolicLinksAsync);
     }
 
@@ -124,10 +114,21 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
 
-        if (MessageBox.Show(Resources.Main_AreYouSureDelete, Resources.Main_DeleteExtraTitle, MessageBoxButtons.YesNo) ==
+        if (longRunningActionExecutingRightNow ||
+            MessageBox.Show(Resources.Main_AreYouSureDelete, Resources.Main_DeleteExtraTitle, MessageBoxButtons.YesNo) !=
             DialogResult.Yes)
-            TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, true, false);
+            return;
+
+        ResetTokenSource();
+        _ = TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, true, false);
         Utils.TraceOut();
+    }
+
+    private void ResetTokenSource()
+    {
+        tokenSource?.Dispose();
+        tokenSource = new CancellationTokenSource();
+        ct = tokenSource.Token;
     }
 
     private void ListDirectoriesToScanButton_Click(object sender, EventArgs e)
@@ -305,9 +306,13 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
 
-        if (MessageBox.Show(Resources.Main_AreYouSureDelete, Resources.Main_DeleteExtraTitle, MessageBoxButtons.YesNo) ==
+        if (longRunningActionExecutingRightNow ||
+            MessageBox.Show(Resources.Main_AreYouSureDelete, Resources.Main_DeleteExtraTitle, MessageBoxButtons.YesNo) !=
             DialogResult.Yes)
-            TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, true, true);
+            return;
+
+        ResetTokenSource();
+        _ = TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, true, true);
         Utils.TraceOut();
     }
 
@@ -408,9 +413,7 @@ internal sealed partial class Main : Form
     private void SpeedTestButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        tokenSource?.Dispose();
-        tokenSource = new CancellationTokenSource();
-        ct = tokenSource.Token;
+        ResetTokenSource();
         _ = TaskWrapperAsync(SpeedTestAllDirectoriesAsync);
         Utils.TraceOut();
     }
@@ -557,14 +560,13 @@ internal sealed partial class Main : Form
         // Check the current backup disk connected
         // when its finished prompt for another disk and wait
 
-        if (MessageBox.Show(Resources.Main_AreYouSureDelete, Resources.Main_DeleteExtraTitle, MessageBoxButtons.YesNo) ==
+        if (longRunningActionExecutingRightNow ||
+            MessageBox.Show(Resources.Main_AreYouSureDelete, Resources.Main_DeleteExtraTitle, MessageBoxButtons.YesNo) !=
             DialogResult.Yes)
-        {
-            tokenSource?.Dispose();
-            tokenSource = new CancellationTokenSource();
-            ct = tokenSource.Token;
-            TaskWrapper(CheckConnectedDiskAndCopyFilesRepeaterAsync, true);
-        }
+            return;
+
+        ResetTokenSource();
+        _ = TaskWrapper(CheckConnectedDiskAndCopyFilesRepeaterAsync, true);
         Utils.TraceOut();
     }
 
@@ -573,6 +575,7 @@ internal sealed partial class Main : Form
         Utils.TraceIn();
         tokenSource.Cancel();
         toolStripStatusLabel.Text = Resources.Main_Cancelling;
+        Utils.LogWithPushover(BackupAction.General, PushoverPriority.Normal, "Canceling");
         if (Utils.CopyProcess != null && !Utils.CopyProcess.HasExited) Utils.CopyProcess?.Kill();
         Utils.TraceOut();
     }
@@ -594,14 +597,13 @@ internal sealed partial class Main : Form
         // when its finished prompt for another disk and wait
         Utils.TraceIn();
 
-        if (MessageBox.Show(Resources.Main_AreYouSureDelete, Resources.Main_DeleteExtraTitle, MessageBoxButtons.YesNo) ==
+        if (longRunningActionExecutingRightNow ||
+            MessageBox.Show(Resources.Main_AreYouSureDelete, Resources.Main_DeleteExtraTitle, MessageBoxButtons.YesNo) !=
             DialogResult.Yes)
-        {
-            tokenSource?.Dispose();
-            tokenSource = new CancellationTokenSource();
-            ct = tokenSource.Token;
-            TaskWrapper(CheckConnectedDiskAndCopyFilesRepeaterAsync, false);
-        }
+            return;
+
+        ResetTokenSource();
+        _ = TaskWrapper(CheckConnectedDiskAndCopyFilesRepeaterAsync, false);
         Utils.TraceOut();
     }
 
@@ -652,9 +654,9 @@ internal sealed partial class Main : Form
     private void RefreshBackupDiskButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        tokenSource?.Dispose();
-        tokenSource = new CancellationTokenSource();
-        ct = tokenSource.Token;
+        if (longRunningActionExecutingRightNow) return;
+
+        ResetTokenSource();
         _ = TaskWrapperAsync(SetupBackupDiskAsync);
         Utils.TraceOut();
     }
@@ -812,17 +814,20 @@ internal sealed partial class Main : Form
     private void CheckConnectedBackupDiskButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        tokenSource?.Dispose();
-        tokenSource = new CancellationTokenSource();
-        ct = tokenSource.Token;
-        TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, false, false);
+        if (longRunningActionExecutingRightNow) return;
+
+        ResetTokenSource();
+        _ = TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, false, false);
         Utils.TraceOut();
     }
 
     private void CopyFilesToBackupDiskButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        TaskWrapper(CopyFilesAsync, true);
+        if (longRunningActionExecutingRightNow) return;
+
+        ResetTokenSource();
+        _ = TaskWrapper(CopyFilesAsync, true);
         Utils.TraceOut();
     }
 
@@ -958,18 +963,10 @@ internal sealed partial class Main : Form
     private void ScanDirectoryButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
+        if (scanDirectoryComboBox.SelectedIndex <= -1 || longRunningActionExecutingRightNow) return;
 
-        if (scanDirectoryComboBox.SelectedIndex > -1)
-        {
-            if (!longRunningActionExecutingRightNow)
-            {
-                tokenSource?.Dispose();
-                tokenSource = new CancellationTokenSource();
-                ct = tokenSource.Token;
-                _ = TaskWrapper(ScanDirectoryAsync, scanDirectoryComboBox.Text);
-            }
-        }
-        Utils.TraceOut();
+        ResetTokenSource();
+        _ = TaskWrapper(ScanDirectoryAsync, scanDirectoryComboBox.Text);
     }
 
     private void RootDirectoryChecks(Collection<string> directories)
@@ -1001,15 +998,10 @@ internal sealed partial class Main : Form
     private void ProcessFilesButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
+        if (longRunningActionExecutingRightNow) return;
 
-        if (!longRunningActionExecutingRightNow)
-        {
-            tokenSource?.Dispose();
-            tokenSource = new CancellationTokenSource();
-            ct = tokenSource.Token;
-            _ = TaskWrapperAsync(ProcessFilesAsync);
-        }
-        Utils.TraceOut();
+        ResetTokenSource();
+        _ = TaskWrapperAsync(ProcessFilesAsync);
     }
 
     private void DirectoryScanReportLastRunOnlyButton_Click(object sender, EventArgs e)

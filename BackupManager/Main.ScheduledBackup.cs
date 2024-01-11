@@ -26,16 +26,16 @@ internal sealed partial class Main
 
         try
         {
-            Utils.LogWithPushover(BackupAction.ScanDirectory, "Started");
+            Utils.LogWithPushover(BackupAction.ScheduledBackup, "Started");
             UpdateStatusLabel(string.Format(Resources.Main_Scanning, string.Empty));
 
             if (mediaBackup.Config.MonitoringOnOff)
             {
-                Utils.LogWithPushover(BackupAction.General,
+                Utils.LogWithPushover(BackupAction.ScheduledBackup,
                     $"Service monitoring is running every {Utils.FormatTimeFromSeconds(mediaBackup.Config.MonitoringInterval)}");
             }
             else
-                Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, "Service monitoring is not running");
+                Utils.LogWithPushover(BackupAction.ScheduledBackup, PushoverPriority.High, "Service monitoring is not running");
             long oldFileCount = mediaBackup.BackupFiles.Count;
             _ = DateTime.TryParse(mediaBackup.DirectoriesLastFullScan, out var backupFileDate);
 
@@ -73,10 +73,10 @@ internal sealed partial class Main
             Utils.Trace("Exception in the TaskWrapper");
 
             if (u.Message == "The operation was canceled.")
-                Utils.LogWithPushover(BackupAction.General, PushoverPriority.Normal, "Cancelling");
+                Utils.LogWithPushover(BackupAction.ScheduledBackup, PushoverPriority.Normal, "Cancelling");
             else
             {
-                Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
+                Utils.LogWithPushover(BackupAction.ScheduledBackup, PushoverPriority.High,
                     string.Format(Resources.Main_TaskWrapperException, u));
             }
             ASyncTasksCleanUp();

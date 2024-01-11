@@ -304,9 +304,7 @@ internal sealed partial class Main
     private void ScanAllDirectories(bool updateLastFullScan)
     {
         var scanId = Guid.NewGuid().ToString();
-        tokenSource?.Dispose();
-        tokenSource = new CancellationTokenSource();
-        ct = tokenSource.Token;
+        ResetTokenSource();
         fileBlockingCollection = new BlockingCollection<string>();
         directoryScanBlockingCollection = new BlockingCollection<DirectoryScan>();
 

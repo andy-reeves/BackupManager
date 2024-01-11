@@ -207,8 +207,9 @@ internal sealed partial class Main
                 {
                     var destFileName = file.BackupDiskFullPath(disk.BackupPath);
 
-                    Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal,
-                        $"Renaming {backupFileFullPath} to {destFileName}");
+                    //TODO Temp remove the rename message until all of TV is done
+                    //Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal,
+                    // $"Renaming {backupFileFullPath} to {destFileName}");
 
                     if (File.Exists(destFileName))
                     {

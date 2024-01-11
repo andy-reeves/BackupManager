@@ -142,6 +142,7 @@ internal sealed partial class Main
     private void UpdateSymbolicLinks(CancellationToken token)
     {
         Utils.TraceIn();
+        Utils.LogWithPushover(BackupAction.CheckingSymbolicLinks, "Started");
         UpdateStatusLabel("Started");
         HashSet<string> hashSet = new();
 
@@ -368,7 +369,7 @@ internal sealed partial class Main
     {
         longRunningActionExecutingRightNow = true;
         DisableControlsForAsyncTasks();
-        Utils.Log("Speed testing all directories");
+        Utils.LogWithPushover(BackupAction.SpeedTest, "Started");
         EnableProgressBar(0, mediaBackup.Config.Directories.Count);
 
         for (var i = 0; i < mediaBackup.Config.Directories.Count; i++)
@@ -381,6 +382,7 @@ internal sealed partial class Main
                 mediaBackup.Config.SpeedTestIterations, out var readSpeed, out var writeSpeed, ct);
             Utils.Log($"testing {directory}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
         }
+        Utils.LogWithPushover(BackupAction.SpeedTest, Resources.Main_Completed);
         ResetAllControls();
         longRunningActionExecutingRightNow = false;
     }
