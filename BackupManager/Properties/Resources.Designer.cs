@@ -547,6 +547,15 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Started.
+        /// </summary>
+        internal static string Main_Started {
+            get {
+                return ResourceManager.GetString("Main_Started", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Symbolic Links.
         /// </summary>
         internal static string Main_SymbolicLinksTitle {

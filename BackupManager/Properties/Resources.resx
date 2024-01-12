@@ -318,4 +318,7 @@
   <data name="Fixed_space_inside" xml:space="preserve">
     <value>Fixed space inside</value>
   </data>
+  <data name="Main_Started" xml:space="preserve">
+    <value>Started</value>
+  </data>
 </root>

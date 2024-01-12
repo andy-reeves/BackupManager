@@ -26,7 +26,7 @@ internal sealed partial class Main
 
         try
         {
-            Utils.LogWithPushover(BackupAction.ScheduledBackup, "Started");
+            Utils.LogWithPushover(BackupAction.ScheduledBackup, Resources.Main_Started);
             UpdateStatusLabel(string.Format(Resources.Main_Scanning, string.Empty));
 
             if (mediaBackup.Config.MonitoringOnOff)
@@ -65,6 +65,7 @@ internal sealed partial class Main
             // Copy any files that need a backup
             CopyFiles(true);
             Utils.Trace($"TriggerHour={_trigger.TriggerHour}");
+            Utils.LogWithPushover(BackupAction.ScheduledBackup, Resources.Main_Completed);
             ResetAllControls();
             longRunningActionExecutingRightNow = false;
         }
