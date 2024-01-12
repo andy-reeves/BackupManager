@@ -86,8 +86,10 @@ internal sealed partial class Main
                             $"Failed to start the new process '{monitor.Name}'");
                     }
                     else
+                    {
                         Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal,
                             $"'{monitor.Name}' started");
+                    }
                 }
                 else
                 {

@@ -485,7 +485,7 @@
             button2.Size = new System.Drawing.Size(234, 27);
             button2.TabIndex = 100;
             button2.Text = "Check all files for Dolby Vision Profile5";
-            toolTip.SetToolTip(button2, "Opens the log file");
+            toolTip.SetToolTip(button2, "Checks any file with [DV] in the path for Profile5. Can take 20 secs per file");
             button2.UseVisualStyleBackColor = true;
             button2.Click += DvProfile5CheckButton_Click;
             // 

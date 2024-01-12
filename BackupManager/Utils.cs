@@ -2308,5 +2308,8 @@ file sealed class TestLogger : ILogger
     }
 
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
-        Func<TState, Exception, string> formatter) { }
+        Func<TState, Exception, string> formatter)
+    {
+        Utils.Trace($"{logLevel}: {formatter(state, exception)}");
+    }
 }

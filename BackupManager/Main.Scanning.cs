@@ -67,8 +67,7 @@ internal sealed partial class Main
 
             // One process thread for each disk or just one for all
 #if !DEBUG
-            tasks.AddRange(diskNames.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam))
-                .Select(files => TaskWrapper(ProcessFilesA, files, scanId, token)));
+            tasks.AddRange(diskNames.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam)).Select(files => TaskWrapper(ProcessFilesA, files, scanId, token)));
 #else
             tasks.Add(TaskWrapper(ProcessFilesA, filesParam.ToArray(), scanId, token));
 #endif
