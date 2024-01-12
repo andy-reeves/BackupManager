@@ -95,7 +95,12 @@ internal sealed partial class Main
             {
                 processesComboBox.Items.Add(monitor.Name);
             }
-            scheduledBackupAction = () => { _ = TaskWrapperAsync(ScheduledBackupAsync); };
+
+            scheduledBackupAction = () =>
+            {
+                ResetTokenSource();
+                _ = TaskWrapperAsync(ScheduledBackupAsync);
+            };
             monitoringAction = MonitorServices;
             scheduledDateTimePicker.Value = DateTime.Parse(mediaBackup.Config.ScheduledBackupStartTime);
             UpdateSendingPushoverButton();
@@ -111,6 +116,7 @@ internal sealed partial class Main
             if (mediaBackup.Config.ScheduledBackupRunOnStartup)
             {
 #if !DEBUG
+                ResetTokenSource();
                 TaskWrapper(ScheduledBackupAsync);
 #endif
             }

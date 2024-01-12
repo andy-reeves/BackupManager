@@ -21,11 +21,13 @@ internal sealed partial class Main
     {
         Utils.TraceIn();
         var disk = SetupBackupDisk();
-        Utils.LogWithPushover(BackupAction.CopyFiles, "Started");
         UpdateStatusLabel(string.Format(Resources.Main_Copying, string.Empty));
         IEnumerable<BackupFile> filesToBackup = mediaBackup.GetBackupFilesWithDiskEmpty().OrderByDescending(static q => q.Length);
         var backupFiles = filesToBackup.ToArray();
         var sizeOfFiles = backupFiles.Sum(static x => x.Length);
+
+        Utils.LogWithPushover(BackupAction.CopyFiles,
+            $"Started\n{backupFiles.Length:n0} files to backup at {Utils.FormatSize(sizeOfFiles)}");
         _ = Utils.GetDiskInfo(backupDiskTextBox.Text, out var availableSpace, out _);
         var remainingDiskSpace = availableSpace - Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave);
         var sizeOfCopy = remainingDiskSpace < sizeOfFiles ? remainingDiskSpace : sizeOfFiles;
@@ -71,11 +73,9 @@ internal sealed partial class Main
         var files = backupFiles.ToArray();
         var remainingSizeOfFilesToCopy = files.Sum(static x => x.Length);
         var totalFileCount = files.Length;
-        var sizeOfFiles = files.Sum(static x => x.Length);
 
         // Start with a 30MB/s copy speed as a guess
         var lastCopySpeed = Utils.ConvertMBtoBytes(30);
-        Utils.LogWithPushover(BackupAction.CopyFiles, $"{totalFileCount:n0} files to backup at {Utils.FormatSize(sizeOfFiles)}");
 
         foreach (var backupFile in files)
         {
