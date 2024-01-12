@@ -38,7 +38,7 @@ internal sealed partial class Main : Form
     private void FileSystemWatcher_OnError(object sender, ErrorEventArgs e)
     {
         var ex = e.GetException();
-        Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, $"Message: {ex.Message}");
+        Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High, $"Message: {ex.Message}");
 
         try
         {
@@ -50,7 +50,7 @@ internal sealed partial class Main : Form
         }
         catch (Exception exc)
         {
-            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, $"Unable to Reset FileSystemWatcher {exc}");
+            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High, $"Unable to Reset FileSystemWatcher {exc}");
         }
     }
 
@@ -425,12 +425,12 @@ internal sealed partial class Main : Form
         if (mediaBackup.Config.MonitoringOnOff)
         {
             monitoringTimer.Stop();
-            Utils.LogWithPushover(BackupAction.Monitoring, "Stopped");
+            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, "Stopped");
             mediaBackup.Config.MonitoringOnOff = false;
         }
         else
         {
-            Utils.LogWithPushover(BackupAction.Monitoring, "Started");
+            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, "Started");
             MonitoringTimer_Tick(null, null);
             monitoringTimer.Interval = mediaBackup.Config.MonitoringInterval * 1000;
             monitoringTimer.Start();
@@ -458,18 +458,19 @@ internal sealed partial class Main : Form
 
                 foreach (var toKill in processesToKill)
                 {
-                    Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal,
+                    Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal,
                         $"Stopping all '{toKill}' processes that match");
                     _ = Utils.KillProcesses(toKill);
                 }
             }
             if (!monitor.ServiceToRestart.HasValue()) continue;
 
-            Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal, $"Stopping '{monitor.ServiceToRestart}'");
+            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal,
+                $"Stopping '{monitor.ServiceToRestart}'");
 
             if (!Utils.StopService(monitor.ServiceToRestart, 5000))
             {
-                Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High,
+                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
                     $"Failed to stop the service '{monitor.Name}'");
             }
         }
@@ -509,7 +510,7 @@ internal sealed partial class Main : Form
 
                 foreach (var toKill in processesToKill)
                 {
-                    Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal,
+                    Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal,
                         $"Stopping all '{toKill}' processes that match");
                     _ = Utils.KillProcesses(toKill);
                 }
@@ -517,11 +518,12 @@ internal sealed partial class Main : Form
 
             if (monitor.ServiceToRestart.HasValue())
             {
-                Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal, $"Stopping '{monitor.ServiceToRestart}'");
+                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal,
+                    $"Stopping '{monitor.ServiceToRestart}'");
 
                 if (!Utils.StopService(monitor.ServiceToRestart, 5000))
                 {
-                    Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High,
+                    Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
                         $"Failed to stop the service '{monitor.Name}'");
                 }
             }

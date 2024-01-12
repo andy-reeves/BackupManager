@@ -29,7 +29,7 @@ internal sealed partial class Main
 
             Utils.Trace("Exception in the TaskWrapper");
 
-            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
+            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
                 string.Format(Resources.Main_TaskWrapperException, u.Exception));
         }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
     }
@@ -51,7 +51,7 @@ internal sealed partial class Main
         }
         catch (Exception u)
         {
-            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
+            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
                 string.Format(Resources.Main_TaskWrapperException, u));
         }
     }
@@ -78,7 +78,7 @@ internal sealed partial class Main
         }
         catch (Exception u)
         {
-            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
+            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
                 string.Format(Resources.Main_TaskWrapperException, u));
         }
     }
@@ -98,7 +98,7 @@ internal sealed partial class Main
         }
         catch (Exception u)
         {
-            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
+            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
                 string.Format(Resources.Main_TaskWrapperException, u));
         }
     }
@@ -155,7 +155,7 @@ internal sealed partial class Main
         }
         catch (Exception u)
         {
-            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
+            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
                 string.Format(Resources.Main_TaskWrapperException, u));
         }
     }

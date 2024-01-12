@@ -68,18 +68,15 @@ internal sealed partial class Main
             ResetAllControls();
             longRunningActionExecutingRightNow = false;
         }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            Utils.Trace("Cancelling ScheduledBackupAsync");
+            ASyncTasksCleanUp();
+        }
         catch (Exception u)
         {
-            Utils.Trace("Exception in the TaskWrapper");
-
-            if (u.Message == "The operation was canceled.")
-                Utils.LogWithPushover(BackupAction.ScheduledBackup, PushoverPriority.Normal, "Cancelling");
-            else
-            {
-                Utils.LogWithPushover(BackupAction.ScheduledBackup, PushoverPriority.High,
-                    string.Format(Resources.Main_TaskWrapperException, u));
-            }
-            ASyncTasksCleanUp();
+            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
+                string.Format(Resources.Main_TaskWrapperException, u));
         }
         Utils.TraceOut();
     }

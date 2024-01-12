@@ -24,6 +24,8 @@ public sealed class MediaInfoTests
         Assert.False(Utils.FileIsDolbyVisionProfile5(mediaFileName));
         mediaFileName = Path.Combine(Utils.GetProjectPath(typeof(UtilsUnitTests)), @"TestData\File3 [DV].mkv");
         Assert.True(Utils.FileIsDolbyVisionProfile5(mediaFileName));
+        mediaFileName = Path.Combine(Utils.GetProjectPath(typeof(UtilsUnitTests)), @"TestData\File4 [DV] profile8.mkv");
+        Assert.False(Utils.FileIsDolbyVisionProfile5(mediaFileName));
     }
 }
 #endif

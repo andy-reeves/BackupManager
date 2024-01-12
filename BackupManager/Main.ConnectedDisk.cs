@@ -45,7 +45,7 @@ internal sealed partial class Main
             if (copyFiles) CopyFiles(false);
 
             // send pushover high to change disk
-            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
+            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
                 $"Backup disk {lastBackupDiskChecked.Name} checked. Please insert the next disk now");
             UpdateStatusLabel(nextDiskMessage);
             BackupDisk newDisk;
@@ -312,7 +312,7 @@ internal sealed partial class Main
 
         while (currentConnectedBackupDiskName != backupDisk)
         {
-            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
+            Utils.LogWithPushover(BackupAction.Restore, PushoverPriority.High,
                 $"Connect new backup drive to restore from {backupDisk}");
 
             var answer = MessageBox.Show(string.Format(Resources.Main_CorrectDiskPrompt, backupDisk),

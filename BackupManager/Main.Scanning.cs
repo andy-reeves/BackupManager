@@ -60,13 +60,18 @@ internal sealed partial class Main
             var tasks = new List<Task<bool>>(diskNames.Length);
             fileCounterForMultiThreadProcessing = 0;
             EnableProgressBar(0, filesParam.Count);
-            Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal, $"Processing {filesParam.Count:n0} files");
+            var suffix = filesParam.Count == 1 ? string.Empty : "s";
 
+            Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal,
+                $"Processing {filesParam.Count:n0} file{suffix}");
+
+            // One process thread for each disk or just one for all
+#if !DEBUG
             tasks.AddRange(diskNames.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam))
                 .Select(files => TaskWrapper(ProcessFilesA, files, scanId, token)));
-
-            // Use the line below instead of the above just one list of files 
-            // tasks.Add(TaskWrapper(ProcessFilesA, filesParam.ToArray(), scanId, token));
+#else
+            tasks.Add(TaskWrapper(ProcessFilesA, filesParam.ToArray(), scanId, token));
+#endif
             Task.WhenAll(tasks).Wait(ct);
             var returnValue = !tasks.Any(static t => !t.Result);
             if (returnValue) Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal, Resources.Main_Completed);
@@ -83,7 +88,7 @@ internal sealed partial class Main
         }
         catch (Exception u)
         {
-            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
+            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
                 string.Format(Resources.Main_TaskWrapperException, u));
         }
         return Utils.TraceOut(false);
@@ -286,16 +291,15 @@ internal sealed partial class Main
             ResetAllControls();
             longRunningActionExecutingRightNow = false;
         }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            Utils.Trace("Cancelling ScanAllDirectoriesAsync");
+            ASyncTasksCleanUp();
+        }
         catch (Exception u)
         {
-            Utils.Trace("Exception in the TaskWrapper");
-
-            if (u.Message != "The operation was canceled.")
-            {
-                Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
-                    string.Format(Resources.Main_TaskWrapperException, u));
-            }
-            ASyncTasksCleanUp();
+            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
+                string.Format(Resources.Main_TaskWrapperException, u));
         }
     }
 

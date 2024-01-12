@@ -273,7 +273,7 @@ public sealed class Config
                 {
                     if (property.PropertyType.IsGenericType)
                     {
-                        Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
+                        Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
                             $"Unknown Config parameter type detected: {property.Name}");
                     }
                     else

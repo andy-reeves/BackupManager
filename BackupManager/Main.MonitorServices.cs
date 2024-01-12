@@ -35,7 +35,7 @@ internal sealed partial class Main
 
             var s = monitor.Failures.Count > 1 ? "s" : string.Empty;
 
-            Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High,
+            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
                 $"'{monitor.Name}' is down. {monitor.Failures.Count} failure{s} in the last {Utils.FormatTimeFromSeconds(monitor.FailureTimePeriod)}.");
 
             // check the latest version of this service available against the version running
@@ -52,7 +52,7 @@ internal sealed partial class Main
 
                 if (installedVersion != string.Empty && Utils.VersionIsNewer(installedVersion, availableVersion))
                 {
-                    Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High,
+                    Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
                         $"Newer version of service {monitor.ApplicationType} available so not stopping/starting service. Version {installedVersion} is installed and {availableVersion} is available.");
                     continue;
                 }
@@ -64,7 +64,7 @@ internal sealed partial class Main
 
                 foreach (var toKill in processesToKill)
                 {
-                    Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal,
+                    Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal,
                         $"Stopping all '{toKill}' processes that match");
                     _ = Utils.KillProcesses(toKill);
                 }
@@ -72,7 +72,8 @@ internal sealed partial class Main
 
             if (monitor.ApplicationToStart.HasValue())
             {
-                Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal, $"Starting {monitor.ApplicationToStart}");
+                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal,
+                    $"Starting {monitor.ApplicationToStart}");
                 var processToStart = Environment.ExpandEnvironmentVariables(monitor.ApplicationToStart);
 
                 if (File.Exists(processToStart))
@@ -81,27 +82,29 @@ internal sealed partial class Main
 
                     if (newProcess == null)
                     {
-                        Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High,
+                        Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
                             $"Failed to start the new process '{monitor.Name}'");
                     }
                     else
-                        Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal, $"'{monitor.Name}' started");
+                        Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal,
+                            $"'{monitor.Name}' started");
                 }
                 else
                 {
-                    Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High,
+                    Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
                         $"Failed to start the new process '{monitor.Name}' as its not found at {monitor.ApplicationToStart} (expanded to {processToStart})");
                 }
             }
             if (!monitor.ServiceToRestart.HasValue()) continue;
 
-            Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal, $"Restarting '{monitor.ServiceToRestart}'");
+            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal,
+                $"Restarting '{monitor.ServiceToRestart}'");
 
             if (Utils.RestartService(monitor.ServiceToRestart, monitor.Timeout * 1000))
-                Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.Normal, $"'{monitor.Name}' started");
+                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal, $"'{monitor.Name}' started");
             else
             {
-                Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High,
+                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
                     $"Failed to restart the service '{monitor.Name}'");
             }
         }
@@ -122,7 +125,7 @@ internal sealed partial class Main
 
                 monitor.LogIssues = false;
 
-                Utils.LogWithPushover(BackupAction.Monitoring, PushoverPriority.High,
+                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
                     $"Newer version of service {monitor.ApplicationType} is available. Version {installedVersion} is installed and {availableVersion} is available.");
             }
         }

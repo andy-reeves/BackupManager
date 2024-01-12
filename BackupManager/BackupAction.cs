@@ -16,15 +16,17 @@ internal enum BackupAction
 
     ProcessFiles,
 
-    BackupFiles,
+    CopyFiles,
 
     CheckBackupDisk,
 
     Restore,
 
-    Monitoring,
+    ApplicationMonitoring,
 
     SpeedTest,
 
-    CheckingSymbolicLinks
+    CheckingSymbolicLinks,
+
+    Error
 }
