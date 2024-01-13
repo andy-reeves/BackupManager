@@ -27,6 +27,13 @@ public sealed class UtilsUnitTests
     }
 
     [Fact]
+    public void IsDirectoryWritable()
+    {
+        Assert.True(Utils.IsDirectoryWritable(Utils.Config.Directories[0]));
+        Assert.False(Utils.IsDirectoryWritable(Utils.Config.Directories[0] + "2"));
+    }
+
+    [Fact]
     public void RenameFileToRemoveFixedSpaces()
     {
         var path1 = Path.Combine(Path.GetTempPath(), "RenameFileToRemoveFixedSpaces");

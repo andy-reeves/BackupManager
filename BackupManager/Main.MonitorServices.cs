@@ -50,7 +50,8 @@ internal sealed partial class Main
                 Utils.Trace($"Installed is {installedVersion}");
                 Utils.Trace($"Available is {availableVersion}");
 
-                if (installedVersion != string.Empty && Utils.VersionIsNewer(installedVersion, availableVersion))
+                if (installedVersion != string.Empty && availableVersion != string.Empty &&
+                    Utils.VersionIsNewer(installedVersion, availableVersion))
                 {
                     Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
                         $"Newer version of service {monitor.ApplicationType} available so not stopping/starting service. Version {installedVersion} is installed and {availableVersion} is available.");
@@ -121,7 +122,7 @@ internal sealed partial class Main
                 var installedVersion = Utils.GetApplicationVersionNumber(monitor.ApplicationType);
                 var availableVersion = Utils.GetLatestApplicationVersionNumber(monitor.ApplicationType);
 
-                if (!monitor.LogIssues || installedVersion == string.Empty ||
+                if (!monitor.LogIssues || installedVersion == string.Empty || availableVersion == string.Empty ||
                     !Utils.VersionIsNewer(installedVersion, availableVersion))
                     continue;
 
@@ -130,6 +131,17 @@ internal sealed partial class Main
                 Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
                     $"Newer version of service {monitor.ApplicationType} is available. Version {installedVersion} is installed and {availableVersion} is available.");
             }
+        }
+
+        // check all the directories are writable
+        foreach (var directory in mediaBackup.Config.Directories.Where(static directory => !Utils.IsDirectoryWritable(directory)))
+        {
+            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
+                $"{directory} is not available or writable");
+
+            // Turn off any more monitoring
+            mediaBackup.Config.MonitoringOnOff = false;
+            UpdateMonitoringButton();
         }
         monitoringExecutingRightNow = false;
     }

@@ -86,6 +86,11 @@
             <xs:documentation>When true the service monitoring starts when the app starts</xs:documentation>
           </xs:annotation>
         </xs:element>
+        <xs:element type="xs:boolean" name="MonitoringStartDelayOnOff" maxOccurs="1" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Monitor start is delayed until after the first monitoring interval</xs:documentation>
+          </xs:annotation>
+        </xs:element>
         <xs:element type="xs:string" name="PushoverAppToken" />
         <xs:element type="xs:boolean" name="PushoverOnOff">
           <xs:annotation>

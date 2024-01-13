@@ -104,7 +104,6 @@ internal sealed partial class Main
             monitoringAction = MonitorServices;
             scheduledDateTimePicker.Value = DateTime.Parse(mediaBackup.Config.ScheduledBackupStartTime);
             UpdateSendingPushoverButton();
-            UpdateMonitoringButton();
             UpdateScheduledBackupButton();
             UpdateSpeedTestDisksButton();
 
@@ -264,7 +263,19 @@ internal sealed partial class Main
     {
         Utils.TraceIn();
         mediaBackup.Watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName;
-        mediaBackup.Watcher.Directories = mediaBackup.Config.Directories.ToArray();
+
+        // check directories are writable and only monitor those that are
+        var writableDirectories = new List<string>();
+
+        foreach (var directory in mediaBackup.Config.Directories)
+        {
+            if (Utils.IsDirectoryWritable(directory))
+                writableDirectories.Add(directory);
+            else
+                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
+                    $"{directory} is not available or writable");
+        }
+        mediaBackup.Watcher.Directories = writableDirectories.ToArray();
         mediaBackup.Watcher.ProcessChangesInterval = mediaBackup.Config.DirectoriesProcessChangesTimer * 1000;
         mediaBackup.Watcher.ScanInterval = mediaBackup.Config.DirectoriesScanTimer * 1000;
         mediaBackup.Watcher.Filter = "*.*";
@@ -348,9 +359,9 @@ internal sealed partial class Main
     {
         Utils.TraceIn();
 
-        monitoringButton.Text = mediaBackup.Config.MonitoringOnOff
+        monitoringButton.TextWithInvoke(mediaBackup.Config.MonitoringOnOff
             ? string.Format(Resources.Main_MonitoringButton, Resources.Main_ON)
-            : string.Format(Resources.Main_MonitoringButton, Resources.Main_OFF);
+            : string.Format(Resources.Main_MonitoringButton, Resources.Main_OFF));
         Utils.TraceOut();
     }
 
@@ -358,8 +369,8 @@ internal sealed partial class Main
     {
         Utils.TraceIn();
 
-        speedTestDisksButton.Text = string.Format(Resources.Main_SpeedTestDisksButton,
-            mediaBackup.Config.SpeedTestOnOff ? Resources.Main_ON : Resources.Main_OFF);
+        speedTestDisksButton.TextWithInvoke(string.Format(Resources.Main_SpeedTestDisksButton,
+            mediaBackup.Config.SpeedTestOnOff ? Resources.Main_ON : Resources.Main_OFF));
         Utils.TraceOut();
     }
 
@@ -367,8 +378,8 @@ internal sealed partial class Main
     {
         Utils.TraceIn();
 
-        scheduledBackupTimerButton.Text = string.Format(Resources.Main_UpdateScheduledBackupButton,
-            mediaBackup.Config.ScheduledBackupOnOff ? Resources.Main_ON : Resources.Main_OFF);
+        scheduledBackupTimerButton.TextWithInvoke(string.Format(Resources.Main_UpdateScheduledBackupButton,
+            mediaBackup.Config.ScheduledBackupOnOff ? Resources.Main_ON : Resources.Main_OFF));
         Utils.TraceOut();
     }
 

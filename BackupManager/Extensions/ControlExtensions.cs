@@ -22,9 +22,17 @@ internal static class ControlExtensions
 
 internal static class TextBoxExtensions
 {
-    public static void TextWithInvoke(this TextBox control, string text)
+    public static void TextWithInvoke(this TextBox textBox, string text)
     {
-        if (text != control.Text) control.Invoke(x => { x.Text = text; });
+        if (text != textBox.Text) textBox.Invoke(x => { x.Text = text; });
+    }
+}
+
+internal static class ButtonExtensions
+{
+    public static void TextWithInvoke(this Button button, string text)
+    {
+        if (text != button.Text) button.Invoke(x => { x.Text = text; });
     }
 }
 

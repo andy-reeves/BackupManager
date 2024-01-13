@@ -44,8 +44,7 @@ internal sealed partial class Main
             }
             if (copyFiles) CopyFiles(false);
 
-            // send pushover high to change disk
-            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
+            Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.High,
                 $"Backup disk {lastBackupDiskChecked.Name} checked. Please insert the next disk now");
             UpdateStatusLabel(nextDiskMessage);
             BackupDisk newDisk;

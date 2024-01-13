@@ -129,6 +129,11 @@ public sealed class Config
     public bool MonitoringOnOff { get; set; }
 
     /// <summary>
+    ///     Delay before monitoring starts until after the first monitoring interval
+    /// </summary>
+    public bool MonitoringStartDelayOnOff { get; set; }
+
+    /// <summary>
     ///     A PlexPass token
     /// </summary>
     public string PlexToken { get; set; }

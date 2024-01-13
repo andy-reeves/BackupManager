@@ -430,9 +430,18 @@ internal sealed partial class Main : Form
         }
         else
         {
-            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, "Started");
-            MonitoringTimer_Tick(null, null);
             monitoringTimer.Interval = mediaBackup.Config.MonitoringInterval * 1000;
+
+            if (mediaBackup.Config.MonitoringStartDelayOnOff)
+            {
+                Utils.LogWithPushover(BackupAction.ApplicationMonitoring,
+                    $"Starting in {Utils.FormatTimeFromSeconds(mediaBackup.Config.MonitoringInterval)}");
+            }
+            else
+            {
+                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, "Started");
+                MonitoringTimer_Tick(null, null);
+            }
             monitoringTimer.Start();
             mediaBackup.Config.MonitoringOnOff = true;
         }
