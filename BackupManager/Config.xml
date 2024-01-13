@@ -55,6 +55,7 @@
 
   <!-- When true the service monitoring starts when the app starts -->
   <MonitoringOnOff>false</MonitoringOnOff>
+  <MonitoringStartDelayOnOff>true</MonitoringStartDelayOnOff>
 
   <PlexToken>InsertYourPlexPassTokenHere</PlexToken>
 
