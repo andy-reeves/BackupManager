@@ -1027,21 +1027,26 @@ internal sealed partial class Main : Form
     private void DvProfile5CheckButton_Click(object sender, EventArgs e)
     {
         var files = mediaBackup.BackupFiles.Where(static f => f.FullPath.Contains("[DV]") && !f.Deleted)
-            .OrderBy(static f => f.FullPath);
+            .OrderBy(static f => f.FullPath).ToArray();
 
-        foreach (var file in files)
+        if (files.Any())
         {
-            if (File.Exists(file.FullPath))
+            foreach (var file in files)
             {
-                Utils.Log(Utils.FileIsDolbyVisionProfile5(file.FullPath)
-                    ? $"{file.FullPath} is DV Profile 5"
-                    : $"{file.FullPath} is DV but not Profile 5");
-            }
-            else
-            {
-                Utils.Log($"{file.FullPath} not found");
-                Utils.Log($"{Utils.StringContainsFixedSpace(file.FullPath)} for FixedSpace");
+                if (File.Exists(file.FullPath))
+                {
+                    Utils.Log(Utils.FileIsDolbyVisionProfile5(file.FullPath)
+                        ? $"{file.FullPath} is DV Profile 5"
+                        : $"{file.FullPath} is DV but not Profile 5");
+                }
+                else
+                {
+                    Utils.Log($"{file.FullPath} not found");
+                    Utils.Log($"{Utils.StringContainsFixedSpace(file.FullPath)} for FixedSpace");
+                }
             }
         }
+        else
+            Utils.Log("No DV files found");
     }
 }

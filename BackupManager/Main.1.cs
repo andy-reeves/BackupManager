@@ -272,8 +272,10 @@ internal sealed partial class Main
             if (Utils.IsDirectoryWritable(directory))
                 writableDirectories.Add(directory);
             else
+            {
                 Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
                     $"{directory} is not available or writable");
+            }
         }
         mediaBackup.Watcher.Directories = writableDirectories.ToArray();
         mediaBackup.Watcher.ProcessChangesInterval = mediaBackup.Config.DirectoriesProcessChangesTimer * 1000;
