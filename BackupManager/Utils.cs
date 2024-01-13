@@ -1661,6 +1661,10 @@ internal static partial class Utils
         return file.LinkTarget != null;
     }
 
+    internal const string IsDirectoryWritableGuid = "{A2E236CE-87F1-4942-93B0-31B463142B8D}";
+
+    internal const string SpeedTestGuid = "{AFEF4827-0AA2-4C0E-8D90-9BEFB5DBEA62}";
+
     /// <summary>
     ///     Checks the directory is writable
     /// </summary>
@@ -1674,7 +1678,7 @@ internal static partial class Utils
         try
         {
             var lastWriteDate = Directory.GetLastWriteTimeUtc(path);
-            var tempFile = Path.GetFileNameWithoutExtension(Path.GetRandomFileName()) + ".tmp";
+            var tempFile = Path.GetFileNameWithoutExtension(Path.GetRandomFileName()) + IsDirectoryWritableGuid + ".tmp";
             using var fs = File.Create(Path.Combine(path, tempFile), 1, FileOptions.DeleteOnClose);
             return TraceOut(SetDirectoryLastWriteUtc(path, lastWriteDate));
         }
@@ -1902,8 +1906,8 @@ internal static partial class Utils
 
         for (var j = 1; j <= testIterations; j++)
         {
-            var firstPathFilename = sourcePath + "\\" + j + "test.tmp";
-            var secondPathFilename = destinationPath + "\\" + j + "test.tmp";
+            var firstPathFilename = sourcePath + "\\" + j + SpeedTestGuid + "test.tmp";
+            var secondPathFilename = destinationPath + "\\" + j + SpeedTestGuid + "test.tmp";
             if (File.Exists(firstPathFilename)) FileDelete(firstPathFilename);
             if (File.Exists(secondPathFilename)) FileDelete(secondPathFilename);
 

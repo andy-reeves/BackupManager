@@ -281,10 +281,7 @@ internal sealed partial class Main
         mediaBackup.Watcher.ProcessChangesInterval = mediaBackup.Config.DirectoriesProcessChangesTimer * 1000;
         mediaBackup.Watcher.ScanInterval = mediaBackup.Config.DirectoriesScanTimer * 1000;
         mediaBackup.Watcher.Filter = "*.*";
-
-        mediaBackup.Watcher.RegexFilter =
-            mediaBackup.Config
-                .DirectoriesFilterRegEx; // @".*(?<!\.tmp)$"; match all files except *.tmp (.*(?<!\.tmp)|.*\\_Backup\\.*)$
+        mediaBackup.Watcher.RegexFilter = mediaBackup.Config.DirectoriesFilterRegEx;
         mediaBackup.Watcher.IncludeSubdirectories = true;
         mediaBackup.Watcher.ReadyToScan += FileSystemWatcher_ReadyToScan;
         mediaBackup.Watcher.Error += FileSystemWatcher_OnError;

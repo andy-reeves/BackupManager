@@ -351,9 +351,21 @@ internal sealed class FileSystemWatcher
             return;
         }
 
+        if (Directory.Exists(e.FullPath))
+        {
+            _ = Utils.TraceOut("OnSomethingHappened exit as its a directory and not a file");
+            return;
+        }
+
         // check the Regex to filter more
         if (!RegexFilter.HasValue() || Regex.IsMatch(e.FullPath, RegexFilter))
         {
+            if (e.FullPath.EndsWith(Utils.IsDirectoryWritableGuid + ".tmp", StringComparison.InvariantCultureIgnoreCase) ||
+                e.FullPath.EndsWith(Utils.SpeedTestGuid + ".tmp", StringComparison.InvariantCultureIgnoreCase))
+            {
+                _ = Utils.TraceOut("OnSomethingHappened exit as its the DirectoryWritable Guid or SpeedTest Guid");
+                return;
+            }
             var entry = new FileSystemEntry(e.FullPath, DateTime.Now);
 
             if (FileSystemChanges.Contains(entry))
