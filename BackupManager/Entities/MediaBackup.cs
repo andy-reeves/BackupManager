@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 
@@ -92,11 +93,11 @@ public sealed class MediaBackup
     /// <summary>
     ///     Creates a backup of the current xml file
     /// </summary>
-    public void BackupMediaFile()
+    public void BackupMediaFile(CancellationToken ct)
     {
         // take a copy of the xml file
         var destinationPath = GetMediaBackupDestinationPath();
-        _ = Utils.FileCopy(mediaBackupPath, destinationPath);
+        _ = Utils.FileCopy(mediaBackupPath, destinationPath, ct);
     }
 
     private static string GetMediaBackupDestinationPath()
@@ -228,9 +229,9 @@ public sealed class MediaBackup
         directoriesLastFullScan = DateTime.Now.ToString(Resources.DateTime_yyyyMMdd);
     }
 
-    public void Save()
+    public void Save(CancellationToken ct)
     {
-        BackupMediaFile();
+        BackupMediaFile(ct);
         DirectoryChanges = new Collection<FileSystemEntry>(Watcher.FileSystemChanges.ToList());
         DirectoriesToScan = new Collection<FileSystemEntry>(Watcher.DirectoriesToScan.ToList());
 

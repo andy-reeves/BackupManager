@@ -4,6 +4,7 @@
 //  </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,41 +20,74 @@ internal sealed partial class Main
 {
     private void CheckConnectedDiskAndCopyFilesAsync(bool deleteExtraFiles, bool copyFiles)
     {
-        longRunningActionExecutingRightNow = true;
-        DisableControlsForAsyncTasks();
-        _ = CheckConnectedDisk(deleteExtraFiles);
-        if (copyFiles) CopyFiles(true);
-        ResetAllControls();
-        longRunningActionExecutingRightNow = false;
+        try
+        {
+            if (longRunningActionExecutingRightNow) return;
+
+            DisableControlsForAsyncTasks();
+            _ = CheckConnectedDisk(deleteExtraFiles);
+            if (copyFiles) CopyFiles(true);
+            ResetAllControls();
+        }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            ASyncTasksCleanUp();
+        }
+        catch (Exception u)
+        {
+            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
+                string.Format(Resources.Main_TaskWrapperException, u));
+        }
+        finally
+        {
+            Utils.TraceOut();
+        }
     }
 
     private void CheckConnectedDiskAndCopyFilesRepeaterAsync(bool copyFiles)
     {
-        longRunningActionExecutingRightNow = true;
-        DisableControlsForAsyncTasks();
-        var nextDiskMessage = Resources.Main_Please_insert_the_next_backup_disk_now;
-
-        while (!ct.IsCancellationRequested)
+        try
         {
-            var lastBackupDiskChecked = CheckConnectedDisk(true);
+            if (longRunningActionExecutingRightNow) return;
 
-            if (lastBackupDiskChecked == null)
+            DisableControlsForAsyncTasks();
+            var nextDiskMessage = Resources.Main_Please_insert_the_next_backup_disk_now;
+
+            while (!ct.IsCancellationRequested)
             {
-                _ = MessageBox.Show(Resources.Main_BackupDiskError, Resources.Main_BackupDiskTitle, MessageBoxButtons.OK);
-                continue;
+                var lastBackupDiskChecked = CheckConnectedDisk(true);
+
+                if (lastBackupDiskChecked == null)
+                {
+                    _ = MessageBox.Show(Resources.Main_BackupDiskError, Resources.Main_BackupDiskTitle, MessageBoxButtons.OK);
+                    continue;
+                }
+                if (copyFiles) CopyFiles(false);
+
+                Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.High,
+                    $"Backup disk {lastBackupDiskChecked.Name} checked. Please insert the next disk now");
+                UpdateStatusLabel(nextDiskMessage);
+                BackupDisk newDisk;
+
+                do
+                {
+                    WaitForNewDisk(nextDiskMessage);
+                    newDisk = SetupBackupDisk();
+                } while (newDisk.Name == lastBackupDiskChecked.Name);
             }
-            if (copyFiles) CopyFiles(false);
-
-            Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.High,
-                $"Backup disk {lastBackupDiskChecked.Name} checked. Please insert the next disk now");
-            UpdateStatusLabel(nextDiskMessage);
-            BackupDisk newDisk;
-
-            do
-            {
-                WaitForNewDisk(nextDiskMessage);
-                newDisk = SetupBackupDisk();
-            } while (newDisk.Name == lastBackupDiskChecked.Name);
+        }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            ASyncTasksCleanUp();
+        }
+        catch (Exception u)
+        {
+            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
+                string.Format(Resources.Main_TaskWrapperException, u));
+        }
+        finally
+        {
+            Utils.TraceOut();
         }
     }
 
@@ -286,7 +320,7 @@ internal sealed partial class Main
             Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal,
                 $"{deletedFilesCount} files marked as deleted");
         }
-        mediaBackup.Save();
+        mediaBackup.Save(ct);
         UpdateStatusLabel(Resources.Main_Saved);
 
         if (!diskInfoMessageWasTheLastSent)
@@ -332,12 +366,12 @@ internal sealed partial class Main
 
     private void SetupBackupDiskAsync()
     {
-        longRunningActionExecutingRightNow = true;
+        Utils.TraceIn();
         DisableControlsForAsyncTasks();
         var disk = SetupBackupDisk();
         _ = UpdateCurrentBackupDiskInfo(disk);
         ResetAllControls();
-        longRunningActionExecutingRightNow = false;
+        Utils.TraceOut();
     }
 
     /// <summary>
@@ -346,6 +380,7 @@ internal sealed partial class Main
     /// <returns></returns>
     private BackupDisk SetupBackupDisk()
     {
+        Utils.TraceIn();
         var nextDiskMessage = Resources.Main_Please_insert_the_next_backup_disk_now;
         var disk = mediaBackup.GetBackupDisk(backupDiskTextBox.Text);
 
@@ -360,6 +395,6 @@ internal sealed partial class Main
             _ = MessageBox.Show(Resources.Main_SetupBackupDisk_Can_t_find_a_valid_backup_share,
                 Resources.Main_SetupBackupDisk_Backup_Disk, MessageBoxButtons.OK);
         }
-        return disk;
+        return Utils.TraceOut(disk);
     }
 }

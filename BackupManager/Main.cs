@@ -65,7 +65,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapperAsync(ScheduledBackupAsync);
+        _ = TaskWrapper(ScheduledBackupAsync);
         Utils.TraceOut();
     }
 
@@ -88,37 +88,22 @@ internal sealed partial class Main : Form
     private void UpdateMasterFilesButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-
-        if (longRunningActionExecutingRightNow ||
-            MessageBox.Show(Resources.Main_UpdateMasterFiles, Resources.Main_UpdateMasterFilesTitle, MessageBoxButtons.YesNo) !=
-            DialogResult.Yes)
-            return;
-
         ResetTokenSource();
-        _ = TaskWrapperAsync(ScanAllDirectoriesAsync);
+        _ = TaskWrapper(ScanAllDirectoriesAsync);
+        Utils.TraceOut();
     }
 
     private void CheckAllSymbolicLinksButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-
-        if (longRunningActionExecutingRightNow || MessageBox.Show(Resources.Main_RecreateAllSymbolicLinks,
-                Resources.Main_SymbolicLinksTitle, MessageBoxButtons.YesNo) != DialogResult.Yes)
-            return;
-
         ResetTokenSource();
-        _ = TaskWrapperAsync(UpdateSymbolicLinksAsync);
+        _ = TaskWrapper(UpdateSymbolicLinksAsync);
+        Utils.TraceOut();
     }
 
     private void CheckDiskAndDeleteButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-
-        if (longRunningActionExecutingRightNow ||
-            MessageBox.Show(Resources.Main_AreYouSureDelete, Resources.Main_DeleteExtraTitle, MessageBoxButtons.YesNo) !=
-            DialogResult.Yes)
-            return;
-
         ResetTokenSource();
         _ = TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, true, false);
         Utils.TraceOut();
@@ -245,7 +230,7 @@ internal sealed partial class Main : Form
                             mediaBackup.Config.DisksToSkipOnRestore.Add(lastBackupDisk);
 
                             // This is to save the backup disks we've completed so far
-                            mediaBackup.Save();
+                            mediaBackup.Save(ct);
                         }
 
                         // count the number of files on this disk
@@ -274,7 +259,7 @@ internal sealed partial class Main : Form
                             {
                                 Utils.LogWithPushover(BackupAction.Restore,
                                     $"[{fileCounter}/{countOfFiles}] Copying {sourceFileFullPath} as {targetFilePath}");
-                                _ = Utils.FileCopy(sourceFileFullPath, targetFilePath);
+                                _ = Utils.FileCopy(sourceFileFullPath, targetFilePath, ct);
                             }
                             else
                             {
@@ -297,7 +282,7 @@ internal sealed partial class Main : Form
                 }
                 lastBackupDisk = file.Disk;
             }
-            mediaBackup.Save();
+            mediaBackup.Save(ct);
         }
         Utils.TraceOut();
     }
@@ -305,12 +290,6 @@ internal sealed partial class Main : Form
     private void CheckBackupDeleteAndCopyButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-
-        if (longRunningActionExecutingRightNow ||
-            MessageBox.Show(Resources.Main_AreYouSureDelete, Resources.Main_DeleteExtraTitle, MessageBoxButtons.YesNo) !=
-            DialogResult.Yes)
-            return;
-
         ResetTokenSource();
         _ = TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, true, true);
         Utils.TraceOut();
@@ -414,7 +393,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapperAsync(SpeedTestAllDirectoriesAsync);
+        _ = TaskWrapper(SpeedTestAllDirectoriesAsync);
         Utils.TraceOut();
     }
 
@@ -451,7 +430,7 @@ internal sealed partial class Main : Form
 
     private void MonitoringTimer_Tick(object sender, EventArgs e)
     {
-        if (!monitoringExecutingRightNow) TaskWrapper(monitoringAction);
+        if (!monitoringExecutingRightNow) TaskWrapperForApplicationMonitoringOnly(monitoringAction);
     }
 
     [SupportedOSPlatform("windows")]
@@ -567,15 +546,6 @@ internal sealed partial class Main : Form
     private void CheckDeleteAndCopyAllBackupDisksButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-
-        // Check the current backup disk connected
-        // when its finished prompt for another disk and wait
-
-        if (longRunningActionExecutingRightNow ||
-            MessageBox.Show(Resources.Main_AreYouSureDelete, Resources.Main_DeleteExtraTitle, MessageBoxButtons.YesNo) !=
-            DialogResult.Yes)
-            return;
-
         ResetTokenSource();
         _ = TaskWrapper(CheckConnectedDiskAndCopyFilesRepeaterAsync, true);
         Utils.TraceOut();
@@ -598,24 +568,15 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         if (Utils.CopyProcess != null && !Utils.CopyProcess.HasExited) Utils.CopyProcess?.Kill();
-        ResetAllControls();
         UpdateMediaFilesCountDisplay();
         Utils.LogWithPushover(BackupAction.General, PushoverPriority.Normal, "Cancelled");
-        longRunningActionExecutingRightNow = false;
+        ResetAllControls();
         Utils.TraceOut();
     }
 
     private void CheckAllBackupDisksButton_Click(object sender, EventArgs e)
     {
-        // Check the current backup disk connected
-        // when its finished prompt for another disk and wait
         Utils.TraceIn();
-
-        if (longRunningActionExecutingRightNow ||
-            MessageBox.Show(Resources.Main_AreYouSureDelete, Resources.Main_DeleteExtraTitle, MessageBoxButtons.YesNo) !=
-            DialogResult.Yes)
-            return;
-
         ResetTokenSource();
         _ = TaskWrapper(CheckConnectedDiskAndCopyFilesRepeaterAsync, false);
         Utils.TraceOut();
@@ -668,10 +629,8 @@ internal sealed partial class Main : Form
     private void RefreshBackupDiskButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        if (longRunningActionExecutingRightNow) return;
-
         ResetTokenSource();
-        _ = TaskWrapperAsync(SetupBackupDiskAsync);
+        _ = TaskWrapper(SetupBackupDiskAsync);
         Utils.TraceOut();
     }
 
@@ -704,89 +663,105 @@ internal sealed partial class Main : Form
 
     private void FileSystemWatcher_ReadyToScan(object sender, FileSystemWatcherEventArgs e)
     {
-        if (longRunningActionExecutingRightNow) return;
+        try
+        {
+            Utils.TraceIn();
 
-        longRunningActionExecutingRightNow = true;
-        ReadyToScan(e, SearchOption.TopDirectoryOnly);
-        longRunningActionExecutingRightNow = false;
+            if (longRunningActionExecutingRightNow)
+            {
+                // If another long running task is already executing then add these directories back to the list to be scanned later
+                foreach (var dir in e.Directories)
+                {
+                    mediaBackup.Watcher.DirectoriesToScan.Add(dir, ct);
+                }
+                return;
+            }
+            DisableControlsForAsyncTasks();
+            ReadyToScan(e, SearchOption.TopDirectoryOnly);
+            ResetAllControls();
+        }
+        finally
+        {
+            Utils.TraceOut();
+        }
     }
 
     private void ReadyToScan(FileSystemWatcherEventArgs e, SearchOption searchOption)
     {
-        Utils.TraceIn($"e.Directories = {e.Directories.Length}");
-        var toSave = false;
-
-        if (!e.Directories.Any())
+        try
         {
-            Utils.TraceOut();
-            return;
-        }
+            Utils.TraceIn($"e.Directories = {e.Directories.Length}");
+            var toSave = false;
+            if (!e.Directories.Any()) return;
 
-        for (var i = e.Directories.Length - 1; i >= 0; i--)
-        {
-            var directoryToScan = e.Directories[i];
-
-            if (Utils.StringContainsFixedSpace(directoryToScan.Path))
+            for (var i = e.Directories.Length - 1; i >= 0; i--)
             {
-                Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High,
-                    $"{directoryToScan.Path} contains a Fixed Space");
-                Utils.TraceOut();
-                return;
-            }
-            mediaBackup.ClearFlags();
+                var directoryToScan = e.Directories[i];
 
-            var fileCountInDirectoryBefore = mediaBackup.BackupFiles.Count(b =>
-                b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase));
-
-            if (ScanSingleDirectory(directoryToScan.Path, searchOption))
-            {
-                UpdateSymbolicLinkForDirectory(directoryToScan.Path);
-
-                // instead of removing files that are no longer found in a directory we now flag them as deleted so we can report them later
-                // unless they aren't on a backup disk in which case they are removed now 
-                BackupFile[] filesToRemoveOrMarkDeleted;
-
-                if (searchOption == SearchOption.TopDirectoryOnly)
+                if (Utils.StringContainsFixedSpace(directoryToScan.Path))
                 {
-                    filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag)
-                        .Where(b => b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase))
-                        .Where(b => !b.FullPath.SubstringAfter(Utils.EnsurePathHasATerminatingSeparator(directoryToScan.Path),
-                            StringComparison.CurrentCultureIgnoreCase).Contains('\\')).ToArray();
+                    Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High,
+                        $"{directoryToScan.Path} contains a Fixed Space");
+                    return;
+                }
+                mediaBackup.ClearFlags();
+
+                var fileCountInDirectoryBefore = mediaBackup.BackupFiles.Count(b =>
+                    b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase));
+
+                if (ScanSingleDirectory(directoryToScan.Path, searchOption))
+                {
+                    UpdateSymbolicLinkForDirectory(directoryToScan.Path);
+
+                    // instead of removing files that are no longer found in a directory we now flag them as deleted so we can report them later
+                    // unless they aren't on a backup disk in which case they are removed now 
+                    BackupFile[] filesToRemoveOrMarkDeleted;
+
+                    if (searchOption == SearchOption.TopDirectoryOnly)
+                    {
+                        filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag)
+                            .Where(b => b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase))
+                            .Where(b => !b.FullPath.SubstringAfter(Utils.EnsurePathHasATerminatingSeparator(directoryToScan.Path),
+                                StringComparison.CurrentCultureIgnoreCase).Contains('\\')).ToArray();
+                    }
+                    else
+                    {
+                        filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag).Where(b =>
+                            b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase)).ToArray();
+                    }
+                    RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out var removedFilesCount, out var markedAsDeletedFilesCount);
+
+                    var fileCountAfter = mediaBackup.BackupFiles.Count(b =>
+                        b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase));
+                    var filesNotOnBackupDiskCount = mediaBackup.GetBackupFilesWithDiskEmpty().Count();
+
+                    var text =
+                        $"Directory scan completed. {fileCountInDirectoryBefore} files before and now {fileCountAfter} files. {markedAsDeletedFilesCount} marked as deleted and {removedFilesCount} removed. {filesNotOnBackupDiskCount} to backup.";
+                    Utils.Log(BackupAction.ScanDirectory, text);
+                    toSave = true;
                 }
                 else
                 {
-                    filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag).Where(b =>
-                        b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase)).ToArray();
+                    var text = string.Format(Resources.Main_Directory_scan_skipped,
+                        Utils.FormatTimeFromSeconds(mediaBackup.Config.DirectoriesScanTimer));
+                    Utils.LogWithPushover(BackupAction.ScanDirectory, text);
+                    mediaBackup.Watcher.DirectoriesToScan.Add(directoryToScan, ct);
                 }
-                RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out var removedFilesCount, out var markedAsDeletedFilesCount);
-
-                var fileCountAfter = mediaBackup.BackupFiles.Count(b =>
-                    b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase));
-                var filesNotOnBackupDiskCount = mediaBackup.GetBackupFilesWithDiskEmpty().Count();
-
-                var text =
-                    $"Directory scan completed. {fileCountInDirectoryBefore} files before and now {fileCountAfter} files. {markedAsDeletedFilesCount} marked as deleted and {removedFilesCount} removed. {filesNotOnBackupDiskCount} to backup.";
-                Utils.Log(BackupAction.ScanDirectory, text);
-                toSave = true;
             }
-            else
+
+            if (toSave)
             {
-                var text = string.Format(Resources.Main_Directory_scan_skipped,
-                    Utils.FormatTimeFromSeconds(mediaBackup.Config.DirectoriesScanTimer));
-                Utils.LogWithPushover(BackupAction.ScanDirectory, text);
-                mediaBackup.Watcher.DirectoriesToScan.Add(directoryToScan, ct);
+                mediaBackup.Save(ct);
+                UpdateStatusLabel(Resources.Main_Saved);
+                UpdateUI_Tick(null, null);
+                UpdateMediaFilesCountDisplay();
             }
+            UpdateStatusLabel();
         }
-
-        if (toSave)
+        finally
         {
-            mediaBackup.Save();
-            UpdateStatusLabel(Resources.Main_Saved);
-            UpdateUI_Tick(null, null);
-            UpdateMediaFilesCountDisplay();
+            Utils.TraceOut();
         }
-        UpdateStatusLabel();
-        Utils.TraceOut();
     }
 
     private void RemoveOrDeleteFiles(IReadOnlyList<BackupFile> files, out int removedFilesCount,
@@ -794,6 +769,7 @@ internal sealed partial class Main : Form
     {
         lock (_lock)
         {
+            Utils.TraceIn();
             removedFilesCount = 0;
             markedAsDeletedFilesCount = 0;
 
@@ -814,6 +790,7 @@ internal sealed partial class Main : Form
                     markedAsDeletedFilesCount++;
                 }
             }
+            Utils.TraceOut();
         }
     }
 
@@ -822,14 +799,12 @@ internal sealed partial class Main : Form
         if (mediaBackup.Watcher.DirectoriesToScan.Count <= 0 && mediaBackup.Watcher.FileSystemChanges.Count <= 0) return;
 
         // If file or directory changes were detected so save xml
-        mediaBackup.Save();
+        mediaBackup.Save(ct);
     }
 
     private void CheckConnectedBackupDiskButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        if (longRunningActionExecutingRightNow) return;
-
         ResetTokenSource();
         _ = TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, false, false);
         Utils.TraceOut();
@@ -838,8 +813,6 @@ internal sealed partial class Main : Form
     private void CopyFilesToBackupDiskButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        if (longRunningActionExecutingRightNow) return;
-
         ResetTokenSource();
         _ = TaskWrapper(CopyFilesAsync, true);
         Utils.TraceOut();
@@ -873,7 +846,7 @@ internal sealed partial class Main : Form
             {
                 backupFile.UpdateContentsHash();
             }
-            mediaBackup.Save();
+            mediaBackup.Save(ct);
         }
         Utils.TraceOut();
     }
@@ -976,15 +949,23 @@ internal sealed partial class Main : Form
 
     private void ScanDirectoryButton_Click(object sender, EventArgs e)
     {
-        Utils.TraceIn();
-        if (scanDirectoryComboBox.SelectedIndex <= -1 || longRunningActionExecutingRightNow) return;
+        try
+        {
+            Utils.TraceIn();
+            if (scanDirectoryComboBox.SelectedIndex <= -1 || longRunningActionExecutingRightNow) return;
 
-        ResetTokenSource();
-        _ = TaskWrapper(ScanDirectoryAsync, scanDirectoryComboBox.Text);
+            ResetTokenSource();
+            _ = TaskWrapper(ScanDirectoryAsync, scanDirectoryComboBox.Text);
+        }
+        finally
+        {
+            Utils.TraceOut();
+        }
     }
 
     private void RootDirectoryChecks(Collection<string> directories)
     {
+        Utils.TraceIn();
         var directoriesChecked = new HashSet<string>();
 
         foreach (var directory in directories)
@@ -1007,25 +988,29 @@ internal sealed partial class Main : Form
             else
                 Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"{directory} doesn't exist");
         }
+        Utils.TraceOut();
     }
 
     private void ProcessFilesButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        if (longRunningActionExecutingRightNow) return;
-
         ResetTokenSource();
-        _ = TaskWrapperAsync(ProcessFilesAsync);
+        _ = TaskWrapper(ProcessFilesAsync);
+        Utils.TraceOut();
     }
 
     private void DirectoryScanReportLastRunOnlyButton_Click(object sender, EventArgs e)
     {
+        Utils.TraceIn();
         DirectoryScanReport(DirectoryScanType.GetFiles, 1);
         DirectoryScanReport(DirectoryScanType.ProcessingFiles, 1);
+        Utils.TraceOut();
     }
 
     private void DvProfile5CheckButton_Click(object sender, EventArgs e)
     {
+        Utils.TraceIn();
+
         var files = mediaBackup.BackupFiles.Where(static f => f.FullPath.Contains("[DV]") && !f.Deleted)
             .OrderBy(static f => f.FullPath).ToArray();
 
@@ -1048,5 +1033,6 @@ internal sealed partial class Main : Form
         }
         else
             Utils.Log("No DV files found");
+        Utils.TraceOut();
     }
 }

@@ -99,7 +99,7 @@ internal sealed partial class Main
             scheduledBackupAction = () =>
             {
                 ResetTokenSource();
-                _ = TaskWrapperAsync(ScheduledBackupAsync);
+                _ = TaskWrapper(ScheduledBackupAsync);
             };
             monitoringAction = MonitorServices;
             scheduledDateTimePicker.Value = DateTime.Parse(mediaBackup.Config.ScheduledBackupStartTime);
@@ -137,11 +137,27 @@ internal sealed partial class Main
 
     private void UpdateSymbolicLinksAsync()
     {
-        longRunningActionExecutingRightNow = true;
-        DisableControlsForAsyncTasks();
-        UpdateSymbolicLinks(ct);
-        ResetAllControls();
-        longRunningActionExecutingRightNow = false;
+        try
+        {
+            if (longRunningActionExecutingRightNow) return;
+
+            DisableControlsForAsyncTasks();
+            UpdateSymbolicLinks(ct);
+            ResetAllControls();
+        }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            ASyncTasksCleanUp();
+        }
+        catch (Exception u)
+        {
+            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
+                string.Format(Resources.Main_TaskWrapperException, u));
+        }
+        finally
+        {
+            Utils.TraceOut();
+        }
     }
 
     private void UpdateSymbolicLinks(CancellationToken token)
@@ -171,10 +187,22 @@ internal sealed partial class Main
 
         // check the symbolic links root folders for any broken links
         EnableProgressBar(0, directoriesToCheck.Length);
+        int percentCompleteCurrent;
+        var percentCompleteReported = 0;
 
         for (var i = 0; i < directoriesToCheck.Length; i++)
         {
             if (token.IsCancellationRequested) token.ThrowIfCancellationRequested();
+            percentCompleteCurrent = i * 100 / toolStripProgressBar.Maximum;
+
+            if (percentCompleteCurrent % 25 == 0 && percentCompleteCurrent > percentCompleteReported &&
+                directoriesToCheck.Length > 100)
+            {
+                percentCompleteReported = percentCompleteCurrent;
+
+                Utils.LogWithPushover(BackupAction.CheckingSymbolicLinks, PushoverPriority.Normal,
+                    $"Checking broken links {percentCompleteCurrent}%");
+            }
             var directoryToCheck = directoriesToCheck[i];
             UpdateStatusLabel(string.Format(Resources.Main_Checking, directoryToCheck), i);
             var linksDeleted = Utils.DeleteBrokenSymbolicLinks(directoryToCheck, true);
@@ -184,14 +212,25 @@ internal sealed partial class Main
                 Utils.Log($"Symbolic link {link} deleted");
             }
         }
+        Utils.LogWithPushover(BackupAction.CheckingSymbolicLinks, PushoverPriority.Normal, "Checking broken links completed.");
         EnableProgressBar(0, 100);
         var counter = 0;
+        percentCompleteReported = 0;
 
         foreach (var path in hashSet)
         {
             if (token.IsCancellationRequested) token.ThrowIfCancellationRequested();
             counter++;
-            UpdateStatusLabel(string.Format(Resources.Main_Checking, path), Convert.ToInt32(counter * 100 / hashSet.Count));
+            percentCompleteCurrent = Convert.ToInt32(counter * 100 / hashSet.Count);
+            UpdateStatusLabel(string.Format(Resources.Main_Checking, path), percentCompleteCurrent);
+
+            if (percentCompleteCurrent % 25 == 0 && percentCompleteCurrent > percentCompleteReported && hashSet.Count > 100)
+            {
+                percentCompleteReported = percentCompleteCurrent;
+
+                Utils.LogWithPushover(BackupAction.CheckingSymbolicLinks, PushoverPriority.Normal,
+                    $"Updating {percentCompleteCurrent}%");
+            }
             UpdateSymbolicLinkForDirectory(path);
         }
         Utils.LogWithPushover(BackupAction.CheckingSymbolicLinks, Resources.Main_Completed);
@@ -384,24 +423,40 @@ internal sealed partial class Main
 
     private void SpeedTestAllDirectoriesAsync()
     {
-        longRunningActionExecutingRightNow = true;
-        DisableControlsForAsyncTasks();
-        Utils.LogWithPushover(BackupAction.SpeedTest, "Started");
-        EnableProgressBar(0, mediaBackup.Config.Directories.Count);
-
-        for (var i = 0; i < mediaBackup.Config.Directories.Count; i++)
+        try
         {
-            var directory = mediaBackup.Config.Directories[i];
-            UpdateStatusLabel($"Speed testing {directory}", i + 1);
-            if (!Utils.IsDirectoryWritable(directory)) continue;
+            if (longRunningActionExecutingRightNow) return;
 
-            Utils.DiskSpeedTest(directory, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize),
-                mediaBackup.Config.SpeedTestIterations, out var readSpeed, out var writeSpeed, ct);
-            Utils.Log($"testing {directory}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
+            DisableControlsForAsyncTasks();
+            Utils.LogWithPushover(BackupAction.SpeedTest, "Started");
+            EnableProgressBar(0, mediaBackup.Config.Directories.Count);
+
+            for (var i = 0; i < mediaBackup.Config.Directories.Count; i++)
+            {
+                var directory = mediaBackup.Config.Directories[i];
+                UpdateStatusLabel($"Speed testing {directory}", i + 1);
+                if (!Utils.IsDirectoryWritable(directory)) continue;
+
+                Utils.DiskSpeedTest(directory, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize),
+                    mediaBackup.Config.SpeedTestIterations, out var readSpeed, out var writeSpeed, ct);
+                Utils.Log($"testing {directory}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
+            }
+            Utils.LogWithPushover(BackupAction.SpeedTest, Resources.Main_Completed);
+            ResetAllControls();
         }
-        Utils.LogWithPushover(BackupAction.SpeedTest, Resources.Main_Completed);
-        ResetAllControls();
-        longRunningActionExecutingRightNow = false;
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            ASyncTasksCleanUp();
+        }
+        catch (Exception u)
+        {
+            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
+                string.Format(Resources.Main_TaskWrapperException, u));
+        }
+        finally
+        {
+            Utils.TraceOut();
+        }
     }
 
     private void ClearEstimatedFinish()
@@ -417,6 +472,7 @@ internal sealed partial class Main
     private void DisableControlsForAsyncTasks()
     {
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+        longRunningActionExecutingRightNow = true;
 
         foreach (var c in Controls.Cast<Control>().Where(static c => c is not StatusStrip))
         {
@@ -443,7 +499,7 @@ internal sealed partial class Main
     }
 
     /// <summary>
-    ///     Re-enables all the form controls (typically after Cancel was clicked or we've finished)
+    ///     Re-enables all the form controls after an async task
     /// </summary>
     private void ResetAllControls()
     {
@@ -459,6 +515,7 @@ internal sealed partial class Main
         statusStrip.Invoke(_ => toolStripProgressBar.Visible = false);
         statusStrip.Invoke(_ => toolStripStatusLabel.Text = string.Empty);
         ClearEstimatedFinish();
+        longRunningActionExecutingRightNow = false;
     }
 
     private void UpdateStatusLabel(string text = "", int value = 0)

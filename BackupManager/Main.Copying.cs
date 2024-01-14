@@ -48,7 +48,7 @@ internal sealed partial class Main
                 $"Error updating info for backup disk {disk.Name}");
             return;
         }
-        mediaBackup.Save();
+        mediaBackup.Save(ct);
         UpdateStatusLabel(Resources.Main_Saved);
         var filesStillNotOnBackupDisk = mediaBackup.GetBackupFilesWithDiskEmpty();
         var text = string.Empty;
@@ -60,13 +60,14 @@ internal sealed partial class Main
             text = $"{stillNotOnBackupDisk.Length:n0} files still to backup at {Utils.FormatSize(sizeOfFiles)}.\n";
         }
         Utils.LogWithPushover(BackupAction.CopyFiles, text + $"{disk.FreeFormatted} free on backup disk");
-        if (showCompletedMessage) Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.High, "Completed");
+        if (showCompletedMessage) Utils.LogWithPushover(BackupAction.CopyFiles, "Completed");
         Utils.TraceOut();
     }
 
     // ReSharper disable once FunctionComplexityOverflow
     private void CopyFilesLoop(IEnumerable<BackupFile> backupFiles, long sizeOfCopy, BackupDisk disk)
     {
+        if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
         var outOfDiskSpaceMessageSent = false;
         long copiedSoFar = 0;
         var counter = 0;
@@ -81,6 +82,7 @@ internal sealed partial class Main
         {
             try
             {
+                if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
                 counter++;
 
                 UpdateStatusLabel(string.Format(Resources.Main_Copying, string.Empty),
@@ -164,6 +166,7 @@ internal sealed partial class Main
         int totalFileCount, string sourceFileSize, BackupFile backupFile, ref long lastCopySpeed)
     {
         Utils.TraceIn();
+        if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
         var destinationFileName = backupFile.BackupDiskFullPath(disk.BackupPath);
         var destinationFileNameTemp = destinationFileName + ".copying";
 
@@ -208,7 +211,7 @@ internal sealed partial class Main
                 $"[{fileCounter}/{totalFileCount}] {Utils.FormatSize(availableSpace)} free.\nCopying {sourceFileName} at {sourceFileSize}{formattedEndDateTime}");
             Utils.FileDelete(destinationFileNameTemp);
             var sw = Stopwatch.StartNew();
-            _ = Utils.FileCopy(sourceFileName, destinationFileNameTemp);
+            _ = Utils.FileCopy(sourceFileName, destinationFileNameTemp, ct);
             sw.Stop();
             var timeTaken = sw.Elapsed.TotalSeconds;
 
@@ -248,10 +251,27 @@ internal sealed partial class Main
 
     private void CopyFilesAsync(bool showCompletedMessage)
     {
-        longRunningActionExecutingRightNow = true;
-        DisableControlsForAsyncTasks();
-        CopyFiles(showCompletedMessage);
-        ResetAllControls();
-        longRunningActionExecutingRightNow = false;
+        try
+        {
+            Utils.TraceIn();
+            if (longRunningActionExecutingRightNow) return;
+
+            DisableControlsForAsyncTasks();
+            CopyFiles(showCompletedMessage);
+            ResetAllControls();
+        }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            ASyncTasksCleanUp();
+        }
+        catch (Exception u)
+        {
+            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
+                string.Format(Resources.Main_TaskWrapperException, u));
+        }
+        finally
+        {
+            Utils.TraceOut();
+        }
     }
 }

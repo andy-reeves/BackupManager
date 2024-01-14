@@ -39,7 +39,7 @@ public sealed class UtilsFileCopyTests
             Assert.False(File.Exists(file2));
             Utils.CreateFile(file1);
             Assert.Equal("098f6bcd4621d373cade4e832627b4f6", Utils.GetShortMd5HashFromFile(file1));
-            Assert.True(Utils.FileCopy(file1, file2));
+            Assert.True(Utils.FileCopy(file1, file2, new CancellationToken()));
             Assert.True(File.Exists(file2));
             Assert.Equal("098f6bcd4621d373cade4e832627b4f6", Utils.GetShortMd5HashFromFile(file2));
 

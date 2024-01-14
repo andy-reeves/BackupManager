@@ -18,13 +18,14 @@ internal sealed partial class Main
     ///     Called by the Application monitoring
     /// </summary>
     /// <param name="methodName"></param>
-    private void TaskWrapper(Action methodName)
+    private void TaskWrapperForApplicationMonitoringOnly(Action methodName)
     {
         ArgumentNullException.ThrowIfNull(methodName);
         ResetTokenSource();
 
         _ = Task.Run(methodName, ct).ContinueWith(static u =>
         {
+            Utils.Trace("In continueWith from App monitoring");
             if (u.Exception == null) return;
 
             Utils.Trace("Exception in the TaskWrapper");
@@ -34,7 +35,7 @@ internal sealed partial class Main
         }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
     }
 
-    private async Task TaskWrapperAsync(Action methodName)
+    private async Task TaskWrapper(Action methodName)
     {
         ArgumentNullException.ThrowIfNull(methodName);
 
@@ -42,7 +43,7 @@ internal sealed partial class Main
         {
             var task = Task.Run(methodName, ct);
             await task;
-            if (longRunningActionExecutingRightNow) ASyncTasksCleanUp();
+            Utils.Trace($"{methodName} just after await");
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
@@ -69,7 +70,7 @@ internal sealed partial class Main
         {
             var task = Task.Run(() => methodName(param1), ct);
             await task;
-            if (longRunningActionExecutingRightNow) ASyncTasksCleanUp();
+            Utils.Trace($"{methodName} just after await");
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
@@ -89,7 +90,7 @@ internal sealed partial class Main
         {
             var task = Task.Run(() => methodName(param1), ct);
             await task;
-            if (longRunningActionExecutingRightNow) ASyncTasksCleanUp();
+            Utils.Trace($"{methodName} just after await");
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
@@ -146,7 +147,7 @@ internal sealed partial class Main
         {
             var task = Task.Run(() => methodName(param1, param2), ct);
             await task;
-            if (longRunningActionExecutingRightNow) ASyncTasksCleanUp();
+            Utils.Trace($"{methodName} just after await");
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {

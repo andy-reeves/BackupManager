@@ -393,8 +393,9 @@ internal static partial class Utils
     /// </summary>
     /// <param name="sourceFileName">The file to copy.</param>
     /// <param name="destFileName">The name of the destination file. This cannot be a directory or an existing file.</param>
+    /// <param name="ct"></param>
     /// <returns>True if copy was successful or False</returns>
-    internal static bool FileCopy(string sourceFileName, string destFileName)
+    internal static bool FileCopy(string sourceFileName, string destFileName, CancellationToken ct)
     {
         TraceIn(sourceFileName, destFileName);
         if (destFileName == null || sourceFileName == null) return false;
@@ -402,6 +403,7 @@ internal static partial class Utils
         if (File.Exists(destFileName)) throw new NotSupportedException("Destination file already exists");
 
         EnsureDirectoriesForFilePath(destFileName);
+        if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
 
         // ReSharper disable once CommentTypo
         // we create the destination file so xcopy knows its a file and can copy over it
@@ -451,6 +453,7 @@ internal static partial class Utils
             while (!IsFileAccessible(destFileName) || GetShortMd5HashFromFile(destFileName) != hashSource)
             {
                 Wait(1);
+                if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
             }
             return TraceOut(true);
         }
@@ -1201,7 +1204,7 @@ internal static partial class Utils
     /// <returns>True if success code returned</returns>
     internal static bool UrlExists(string url, int timeout = 30 * 1000)
     {
-        bool returnValue;
+        var returnValue = false;
 
         try
         {
@@ -1213,7 +1216,7 @@ internal static partial class Utils
         }
         catch
         {
-            return false;
+            // ignored
         }
         return returnValue;
     }
@@ -1226,16 +1229,19 @@ internal static partial class Utils
     /// <returns>True if the connection is made</returns>
     internal static bool ConnectionExists(string host, int port)
     {
+        var returnValue = false;
+
         try
         {
             using TcpClient tcpClient = new();
             tcpClient.Connect(host, port);
+            returnValue = true;
         }
         catch
         {
-            return false;
+            // ignored
         }
-        return true;
+        return returnValue;
     }
 
     internal static void Log(BackupAction action, string message)

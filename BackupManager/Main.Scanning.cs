@@ -51,11 +51,11 @@ internal sealed partial class Main
     private bool ProcessFiles(IReadOnlyCollection<string> filesParam, string scanId, CancellationToken token)
     {
         Utils.TraceIn();
-        longRunningActionExecutingRightNow = true;
-        DisableControlsForAsyncTasks();
+        var returnValue = false;
 
         try
         {
+            DisableControlsForAsyncTasks();
             var diskNames = Utils.GetDiskNames(mediaBackup.Config.Directories);
             var tasks = new List<Task<bool>>(diskNames.Length);
             fileCounterForMultiThreadProcessing = 0;
@@ -72,25 +72,21 @@ internal sealed partial class Main
             tasks.Add(TaskWrapper(ProcessFilesA, filesParam.ToArray(), scanId, token));
 #endif
             Task.WhenAll(tasks).Wait(ct);
-            var returnValue = !tasks.Any(static t => !t.Result);
+            returnValue = !tasks.Any(static t => !t.Result);
             if (returnValue) Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal, Resources.Main_Completed);
             UpdateMediaFilesCountDisplay();
             ResetAllControls();
-            longRunningActionExecutingRightNow = false;
-            return Utils.TraceOut(returnValue);
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
-            Utils.Trace("Cancelling ProcessFiles");
             ASyncTasksCleanUp();
-            return Utils.TraceOut(false);
         }
         catch (Exception u)
         {
             Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
                 string.Format(Resources.Main_TaskWrapperException, u));
         }
-        return Utils.TraceOut(false);
+        return Utils.TraceOut(returnValue);
     }
 
     /// <summary>
@@ -189,6 +185,7 @@ internal sealed partial class Main
 
     private void UpdateOldestBackupDisk()
     {
+        Utils.TraceIn();
         var oldestFile = mediaBackup.GetOldestFile();
         if (oldestFile == null) return;
 
@@ -197,6 +194,7 @@ internal sealed partial class Main
 
         oldestBackupDiskAgeTextBox.TextWithInvoke(string.Format(Resources.Main_UpdateOldestBackupDiskNDaysAgo, days,
             days == 1 ? string.Empty : "s"));
+        Utils.TraceOut();
     }
 
     private void RootDirectoryChecks(string rootDirectory)
@@ -272,33 +270,29 @@ internal sealed partial class Main
 
     private void ScanAllDirectoriesAsync()
     {
-        Utils.TraceIn();
-
-        if (longRunningActionExecutingRightNow)
-        {
-            Utils.TraceOut();
-            return;
-        }
-        longRunningActionExecutingRightNow = true;
-        DisableControlsForAsyncTasks();
-
         try
         {
+            Utils.TraceIn();
+            if (longRunningActionExecutingRightNow) return;
+
+            DisableControlsForAsyncTasks();
             Utils.LogWithPushover(BackupAction.ScanDirectory, "Started");
             UpdateStatusLabel(string.Format(Resources.Main_Scanning, string.Empty));
             ScanAllDirectories(false);
             ResetAllControls();
-            longRunningActionExecutingRightNow = false;
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
-            Utils.Trace("Cancelling ScanAllDirectoriesAsync");
             ASyncTasksCleanUp();
         }
         catch (Exception u)
         {
             Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
                 string.Format(Resources.Main_TaskWrapperException, u));
+        }
+        finally
+        {
+            Utils.TraceOut();
         }
     }
 
@@ -325,7 +319,7 @@ internal sealed partial class Main
         }
 
         // Save now in case the scanning files is interrupted
-        mediaBackup.Save();
+        mediaBackup.Save(ct);
         mediaBackup.ClearFlags();
 
         if (!ProcessFiles(fileBlockingCollection, scanId, ct))
@@ -336,12 +330,13 @@ internal sealed partial class Main
         var filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag).ToArray();
         RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out _, out _);
         if (updateLastFullScan) mediaBackup.UpdateLastFullScan();
-        mediaBackup.Save();
+        mediaBackup.Save(ct);
         UpdateMediaFilesCountDisplay();
     }
 
     private void GetFilesAsync(string[] directories, string scanId)
     {
+        Utils.TraceIn();
         var filters = mediaBackup.GetFilters();
 
         foreach (var directory in directories)
@@ -361,24 +356,60 @@ internal sealed partial class Main
             }
             directoryScanBlockingCollection.Add(directoryScan, ct);
         }
+        Utils.TraceOut();
     }
 
     private void ScanDirectoryAsync(string directory)
     {
-        longRunningActionExecutingRightNow = true;
-        DisableControlsForAsyncTasks();
-        ReadyToScan(new FileSystemWatcherEventArgs(directory), SearchOption.AllDirectories);
-        ResetAllControls();
-        longRunningActionExecutingRightNow = false;
+        try
+        {
+            if (longRunningActionExecutingRightNow) return;
+
+            DisableControlsForAsyncTasks();
+            ReadyToScan(new FileSystemWatcherEventArgs(directory), SearchOption.AllDirectories);
+            ResetAllControls();
+        }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            ASyncTasksCleanUp();
+        }
+        catch (Exception u)
+        {
+            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
+                string.Format(Resources.Main_TaskWrapperException, u));
+        }
+        finally
+        {
+            Utils.TraceOut();
+        }
     }
 
     private void ProcessFilesAsync()
     {
-        var files = mediaBackup.BackupFiles.Where(static file => !file.Deleted).Select(static file => file.FullPath).ToList();
-        var scanId = Guid.NewGuid().ToString();
-        mediaBackup.ClearFlags();
-        _ = ProcessFiles(files, scanId, ct);
-        mediaBackup.Save();
+        try
+        {
+            if (longRunningActionExecutingRightNow) return;
+
+            DisableControlsForAsyncTasks();
+            var files = mediaBackup.BackupFiles.Where(static file => !file.Deleted).Select(static file => file.FullPath).ToList();
+            var scanId = Guid.NewGuid().ToString();
+            mediaBackup.ClearFlags();
+            if (ProcessFiles(files, scanId, ct)) mediaBackup.Save(ct);
+            ResetAllControls();
+        }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            ASyncTasksCleanUp();
+        }
+        catch (Exception u)
+        {
+            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
+                string.Format(Resources.Main_TaskWrapperException, u));
+        }
+        finally
+        {
+            Utils.TraceOut();
+        }
     }
 
     /// <summary>

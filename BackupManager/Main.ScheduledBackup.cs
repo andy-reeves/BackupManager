@@ -14,18 +14,12 @@ internal sealed partial class Main
 {
     private void ScheduledBackupAsync()
     {
-        Utils.TraceIn();
-
-        if (longRunningActionExecutingRightNow)
-        {
-            Utils.TraceOut();
-            return;
-        }
-        longRunningActionExecutingRightNow = true;
-        DisableControlsForAsyncTasks();
-
         try
         {
+            Utils.TraceIn();
+            if (longRunningActionExecutingRightNow) return;
+
+            DisableControlsForAsyncTasks();
             Utils.LogWithPushover(BackupAction.ScheduledBackup, Resources.Main_Started);
             UpdateStatusLabel(string.Format(Resources.Main_Scanning, string.Empty));
 
@@ -67,11 +61,9 @@ internal sealed partial class Main
             Utils.Trace($"TriggerHour={_trigger.TriggerHour}");
             Utils.LogWithPushover(BackupAction.ScheduledBackup, Resources.Main_Completed);
             ResetAllControls();
-            longRunningActionExecutingRightNow = false;
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
-            Utils.Trace("Cancelling ScheduledBackupAsync");
             ASyncTasksCleanUp();
         }
         catch (Exception u)
@@ -79,7 +71,10 @@ internal sealed partial class Main
             Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
                 string.Format(Resources.Main_TaskWrapperException, u));
         }
-        Utils.TraceOut();
+        finally
+        {
+            Utils.TraceOut();
+        }
     }
 
     private void SetupDailyTrigger(bool addTrigger)
