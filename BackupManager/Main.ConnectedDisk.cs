@@ -4,7 +4,6 @@
 //  </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,21 +21,13 @@ internal sealed partial class Main
     {
         try
         {
+            Utils.TraceIn();
             if (longRunningActionExecutingRightNow) return;
 
             DisableControlsForAsyncTasks();
             _ = CheckConnectedDisk(deleteExtraFiles);
             if (copyFiles) CopyFiles(true);
             ResetAllControls();
-        }
-        catch (OperationCanceledException) when (ct.IsCancellationRequested)
-        {
-            ASyncTasksCleanUp();
-        }
-        catch (Exception u)
-        {
-            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
-                string.Format(Resources.Main_TaskWrapperException, u));
         }
         finally
         {
@@ -48,6 +39,7 @@ internal sealed partial class Main
     {
         try
         {
+            Utils.TraceIn();
             if (longRunningActionExecutingRightNow) return;
 
             DisableControlsForAsyncTasks();
@@ -75,15 +67,6 @@ internal sealed partial class Main
                     newDisk = SetupBackupDisk();
                 } while (newDisk.Name == lastBackupDiskChecked.Name);
             }
-        }
-        catch (OperationCanceledException) when (ct.IsCancellationRequested)
-        {
-            ASyncTasksCleanUp();
-        }
-        catch (Exception u)
-        {
-            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
-                string.Format(Resources.Main_TaskWrapperException, u));
         }
         finally
         {

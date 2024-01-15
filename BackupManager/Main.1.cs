@@ -139,20 +139,12 @@ internal sealed partial class Main
     {
         try
         {
+            Utils.TraceIn();
             if (longRunningActionExecutingRightNow) return;
 
             DisableControlsForAsyncTasks();
             UpdateSymbolicLinks(ct);
             ResetAllControls();
-        }
-        catch (OperationCanceledException) when (ct.IsCancellationRequested)
-        {
-            ASyncTasksCleanUp();
-        }
-        catch (Exception u)
-        {
-            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
-                string.Format(Resources.Main_TaskWrapperException, u));
         }
         finally
         {
@@ -425,6 +417,7 @@ internal sealed partial class Main
     {
         try
         {
+            Utils.TraceIn();
             if (longRunningActionExecutingRightNow) return;
 
             DisableControlsForAsyncTasks();
@@ -443,15 +436,6 @@ internal sealed partial class Main
             }
             Utils.LogWithPushover(BackupAction.SpeedTest, Resources.Main_Completed);
             ResetAllControls();
-        }
-        catch (OperationCanceledException) when (ct.IsCancellationRequested)
-        {
-            ASyncTasksCleanUp();
-        }
-        catch (Exception u)
-        {
-            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
-                string.Format(Resources.Main_TaskWrapperException, u));
         }
         finally
         {

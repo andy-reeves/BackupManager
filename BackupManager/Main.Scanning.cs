@@ -51,41 +51,27 @@ internal sealed partial class Main
     private bool ProcessFiles(IReadOnlyCollection<string> filesParam, string scanId, CancellationToken token)
     {
         Utils.TraceIn();
-        var returnValue = false;
+        DisableControlsForAsyncTasks();
+        var diskNames = Utils.GetDiskNames(mediaBackup.Config.Directories);
+        var tasks = new List<Task<bool>>(diskNames.Length);
+        fileCounterForMultiThreadProcessing = 0;
+        EnableProgressBar(0, filesParam.Count);
+        var suffix = filesParam.Count == 1 ? string.Empty : "s";
 
-        try
-        {
-            DisableControlsForAsyncTasks();
-            var diskNames = Utils.GetDiskNames(mediaBackup.Config.Directories);
-            var tasks = new List<Task<bool>>(diskNames.Length);
-            fileCounterForMultiThreadProcessing = 0;
-            EnableProgressBar(0, filesParam.Count);
-            var suffix = filesParam.Count == 1 ? string.Empty : "s";
+        Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal,
+            $"Processing {filesParam.Count:n0} file{suffix}");
 
-            Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal,
-                $"Processing {filesParam.Count:n0} file{suffix}");
-
-            // One process thread for each disk or just one for all
+        // One process thread for each disk or just one for all
 #if !DEBUG
-            tasks.AddRange(diskNames.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam)).Select(files => TaskWrapper(ProcessFilesA, files, scanId, token)));
+        tasks.AddRange(diskNames.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam)).Select(files => TaskWrapper(ProcessFilesA, files, scanId, token)));
 #else
-            tasks.Add(TaskWrapper(ProcessFilesA, filesParam.ToArray(), scanId, token));
+        tasks.Add(TaskWrapper(ProcessFilesA, filesParam.ToArray(), scanId, token));
 #endif
-            Task.WhenAll(tasks).Wait(ct);
-            returnValue = !tasks.Any(static t => !t.Result);
-            if (returnValue) Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal, Resources.Main_Completed);
-            UpdateMediaFilesCountDisplay();
-            ResetAllControls();
-        }
-        catch (OperationCanceledException) when (ct.IsCancellationRequested)
-        {
-            ASyncTasksCleanUp();
-        }
-        catch (Exception u)
-        {
-            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
-                string.Format(Resources.Main_TaskWrapperException, u));
-        }
+        Task.WhenAll(tasks).Wait(ct);
+        var returnValue = !tasks.Any(static t => !t.Result);
+        if (returnValue) Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal, Resources.Main_Completed);
+        UpdateMediaFilesCountDisplay();
+        ResetAllControls();
         return Utils.TraceOut(returnValue);
     }
 
@@ -281,15 +267,6 @@ internal sealed partial class Main
             ScanAllDirectories(false);
             ResetAllControls();
         }
-        catch (OperationCanceledException) when (ct.IsCancellationRequested)
-        {
-            ASyncTasksCleanUp();
-        }
-        catch (Exception u)
-        {
-            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
-                string.Format(Resources.Main_TaskWrapperException, u));
-        }
         finally
         {
             Utils.TraceOut();
@@ -363,20 +340,12 @@ internal sealed partial class Main
     {
         try
         {
+            Utils.TraceIn();
             if (longRunningActionExecutingRightNow) return;
 
             DisableControlsForAsyncTasks();
             ReadyToScan(new FileSystemWatcherEventArgs(directory), SearchOption.AllDirectories);
             ResetAllControls();
-        }
-        catch (OperationCanceledException) when (ct.IsCancellationRequested)
-        {
-            ASyncTasksCleanUp();
-        }
-        catch (Exception u)
-        {
-            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
-                string.Format(Resources.Main_TaskWrapperException, u));
         }
         finally
         {
@@ -388,6 +357,7 @@ internal sealed partial class Main
     {
         try
         {
+            Utils.TraceIn();
             if (longRunningActionExecutingRightNow) return;
 
             DisableControlsForAsyncTasks();
@@ -396,15 +366,6 @@ internal sealed partial class Main
             mediaBackup.ClearFlags();
             if (ProcessFiles(files, scanId, ct)) mediaBackup.Save(ct);
             ResetAllControls();
-        }
-        catch (OperationCanceledException) when (ct.IsCancellationRequested)
-        {
-            ASyncTasksCleanUp();
-        }
-        catch (Exception u)
-        {
-            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
-                string.Format(Resources.Main_TaskWrapperException, u));
         }
         finally
         {

@@ -260,15 +260,6 @@ internal sealed partial class Main
             CopyFiles(showCompletedMessage);
             ResetAllControls();
         }
-        catch (OperationCanceledException) when (ct.IsCancellationRequested)
-        {
-            ASyncTasksCleanUp();
-        }
-        catch (Exception u)
-        {
-            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
-                string.Format(Resources.Main_TaskWrapperException, u));
-        }
         finally
         {
             Utils.TraceOut();

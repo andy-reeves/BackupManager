@@ -476,10 +476,9 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, "BackupManager stopped");
-        Utils.TraceOut();
-        tokenSource = new CancellationTokenSource();
-        ct = tokenSource.Token;
+        ResetTokenSource();
         Utils.BackupLogFile(ct);
+        Utils.TraceOut();
     }
 
     [SupportedOSPlatform("windows")]
@@ -799,6 +798,7 @@ internal sealed partial class Main : Form
         if (mediaBackup.Watcher.DirectoriesToScan.Count <= 0 && mediaBackup.Watcher.FileSystemChanges.Count <= 0) return;
 
         // If file or directory changes were detected so save xml
+        ResetTokenSource();
         mediaBackup.Save(ct);
     }
 
