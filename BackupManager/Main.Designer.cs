@@ -155,7 +155,7 @@
             scanAllDirectoriesButton.Text = "Scan directories";
             toolTip.SetToolTip(scanAllDirectoriesButton, "Scans all the directories, processes files and marks files as deleted as required.");
             scanAllDirectoriesButton.UseVisualStyleBackColor = true;
-            scanAllDirectoriesButton.Click += UpdateMasterFilesButton_Click;
+            scanAllDirectoriesButton.Click += ScanAllDirectoriesButton_Click;
             // 
             // checkConnectedBackupDiskButton
             // 

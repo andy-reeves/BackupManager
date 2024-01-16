@@ -5,6 +5,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
@@ -25,23 +26,43 @@ internal sealed partial class Main
 {
     private static DailyTrigger _trigger;
 
+    private static readonly object _lock = new();
+
     private readonly MediaBackup mediaBackup;
 
     private readonly Action monitoringAction;
 
     private readonly Action scheduledBackupAction;
 
-    private CancellationToken ct;
+    private CancellationToken cancellationToken;
+
+    private int currentPercentComplete;
+
+    private BlockingCollection<DirectoryScan> directoryScanBlockingCollection;
+
+    private BlockingCollection<string> fileBlockingCollection;
+
+    private int fileCounterForMultiThreadProcessing;
 
     /// <summary>
     ///     Any long-running action sets this to TRUE to stop the scheduledBackup timer from being able to start
     /// </summary>
     private bool longRunningActionExecutingRightNow;
 
+    /// <summary>
+    ///     When monitoring is executing prevent is executing again
+    /// </summary>
     private bool monitoringExecutingRightNow;
+
+    private int reportedPercentComplete;
 
     // Always create a new one before running a long running task
     private CancellationTokenSource tokenSource;
+
+    /// <summary>
+    ///     For the monitoring applications
+    /// </summary>
+    private readonly CancellationTokenSource monitoringTokenSource = new();
 
     [SupportedOSPlatform("windows")]
     internal Main()
@@ -98,8 +119,10 @@ internal sealed partial class Main
 
             scheduledBackupAction = () =>
             {
+                if (longRunningActionExecutingRightNow) return;
+
                 ResetTokenSource();
-                _ = TaskWrapper(ScheduledBackupAsync);
+                _ = TaskWrapper(ScheduledBackupAsync, cancellationToken);
             };
             monitoringAction = MonitorServices;
             scheduledDateTimePicker.Value = DateTime.Parse(mediaBackup.Config.ScheduledBackupStartTime);
@@ -135,14 +158,14 @@ internal sealed partial class Main
         }
     }
 
-    private void UpdateSymbolicLinksAsync()
+    private void UpdateSymbolicLinksAsync(CancellationToken ct)
     {
         try
         {
             Utils.TraceIn();
             if (longRunningActionExecutingRightNow) return;
 
-            DisableControlsForAsyncTasks();
+            DisableControlsForAsyncTasks(ct);
             UpdateSymbolicLinks(ct);
             ResetAllControls();
         }
@@ -152,7 +175,7 @@ internal sealed partial class Main
         }
     }
 
-    private void UpdateSymbolicLinks(CancellationToken token)
+    private void UpdateSymbolicLinks(CancellationToken ct)
     {
         Utils.TraceIn();
         Utils.LogWithPushover(BackupAction.CheckingSymbolicLinks, "Started");
@@ -168,7 +191,7 @@ internal sealed partial class Main
                      .Any(static m => m.Success)
                  select directoryPath)
         {
-            if (token.IsCancellationRequested) token.ThrowIfCancellationRequested();
+            if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
             _ = hashSet.Add(path);
         }
         UpdateStatusLabel("Checking for broken Symbolic Links");
@@ -184,7 +207,7 @@ internal sealed partial class Main
 
         for (var i = 0; i < directoriesToCheck.Length; i++)
         {
-            if (token.IsCancellationRequested) token.ThrowIfCancellationRequested();
+            if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
             percentCompleteCurrent = i * 100 / toolStripProgressBar.Maximum;
 
             if (percentCompleteCurrent % 25 == 0 && percentCompleteCurrent > percentCompleteReported &&
@@ -211,7 +234,7 @@ internal sealed partial class Main
 
         foreach (var path in hashSet)
         {
-            if (token.IsCancellationRequested) token.ThrowIfCancellationRequested();
+            if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
             counter++;
             percentCompleteCurrent = Convert.ToInt32(counter * 100 / hashSet.Count);
             UpdateStatusLabel(string.Format(Resources.Main_Checking, path), percentCompleteCurrent);
@@ -320,12 +343,12 @@ internal sealed partial class Main
 
         foreach (var item in mediaBackup.DirectoryChanges)
         {
-            mediaBackup.Watcher.FileSystemChanges.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime), ct);
+            mediaBackup.Watcher.FileSystemChanges.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime), cancellationToken);
         }
 
         foreach (var item in mediaBackup.DirectoriesToScan)
         {
-            mediaBackup.Watcher.DirectoriesToScan.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime), ct);
+            mediaBackup.Watcher.DirectoriesToScan.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime), cancellationToken);
         }
         Utils.TraceOut();
     }
@@ -413,14 +436,14 @@ internal sealed partial class Main
         Utils.TraceOut();
     }
 
-    private void SpeedTestAllDirectoriesAsync()
+    private void SpeedTestAllDirectoriesAsync(CancellationToken ct)
     {
         try
         {
             Utils.TraceIn();
             if (longRunningActionExecutingRightNow) return;
 
-            DisableControlsForAsyncTasks();
+            DisableControlsForAsyncTasks(ct);
             Utils.LogWithPushover(BackupAction.SpeedTest, "Started");
             EnableProgressBar(0, mediaBackup.Config.Directories.Count);
 
@@ -453,7 +476,7 @@ internal sealed partial class Main
         estimatedFinishTimeTextBox.TextWithInvoke(estimatedFinishDateTime.ToString(Resources.DateTime_HHmm));
     }
 
-    private void DisableControlsForAsyncTasks()
+    private void DisableControlsForAsyncTasks(CancellationToken ct)
     {
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
         longRunningActionExecutingRightNow = true;
@@ -505,7 +528,6 @@ internal sealed partial class Main
     private void UpdateStatusLabel(string text = "", int value = 0)
     {
         Utils.TraceIn(value);
-        if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
         text = text.Trim();
         var textToUse = string.Empty;
 

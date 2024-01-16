@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 
 using BackupManager.Entities;
 using BackupManager.Properties;
@@ -17,10 +18,10 @@ namespace BackupManager;
 
 internal sealed partial class Main
 {
-    private void CopyFiles(bool showCompletedMessage)
+    private void CopyFiles(bool showCompletedMessage, CancellationToken ct)
     {
         Utils.TraceIn();
-        var disk = SetupBackupDisk();
+        var disk = SetupBackupDisk(ct);
         UpdateStatusLabel(string.Format(Resources.Main_Copying, string.Empty));
         IEnumerable<BackupFile> filesToBackup = mediaBackup.GetBackupFilesWithDiskEmpty().OrderByDescending(static q => q.Length);
         var backupFiles = filesToBackup.ToArray();
@@ -39,7 +40,7 @@ internal sealed partial class Main
 
         // We use 100 as the max because the actual number of bytes could be far too large 
         EnableProgressBar(0, 100);
-        CopyFilesLoop(backupFiles, sizeOfCopy, disk);
+        CopyFilesLoop(backupFiles, sizeOfCopy, disk, ct);
         UpdateMediaFilesCountDisplay();
 
         if (!UpdateCurrentBackupDiskInfo(disk))
@@ -65,7 +66,7 @@ internal sealed partial class Main
     }
 
     // ReSharper disable once FunctionComplexityOverflow
-    private void CopyFilesLoop(IEnumerable<BackupFile> backupFiles, long sizeOfCopy, BackupDisk disk)
+    private void CopyFilesLoop(IEnumerable<BackupFile> backupFiles, long sizeOfCopy, BackupDisk disk, CancellationToken ct)
     {
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
         var outOfDiskSpaceMessageSent = false;
@@ -99,7 +100,7 @@ internal sealed partial class Main
                 if (FileExistsInternal(sizeOfCopy, disk, backupFile, sourceFileName, copiedSoFar, counter, totalFileCount))
                 {
                     CopyFileInternal(sizeOfCopy, disk, sourceFileName, copiedSoFar, sourceFileInfo, ref outOfDiskSpaceMessageSent,
-                        remainingSizeOfFilesToCopy, counter, totalFileCount, sourceFileSize, backupFile, ref lastCopySpeed);
+                        remainingSizeOfFilesToCopy, counter, totalFileCount, sourceFileSize, backupFile, ref lastCopySpeed, ct);
                 }
                 remainingSizeOfFilesToCopy -= backupFile.Length;
                 copiedSoFar += backupFile.Length;
@@ -163,7 +164,7 @@ internal sealed partial class Main
 
     private void CopyFileInternal(long sizeOfCopy, BackupDisk disk, string sourceFileName, long copiedSoFar,
         FileInfo sourceFileInfo, ref bool outOfDiskSpaceMessageSent, long remainingSizeOfFilesToCopy, int fileCounter,
-        int totalFileCount, string sourceFileSize, BackupFile backupFile, ref long lastCopySpeed)
+        int totalFileCount, string sourceFileSize, BackupFile backupFile, ref long lastCopySpeed, CancellationToken ct)
     {
         Utils.TraceIn();
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
@@ -249,15 +250,15 @@ internal sealed partial class Main
         Utils.TraceOut();
     }
 
-    private void CopyFilesAsync(bool showCompletedMessage)
+    private void CopyFilesAsync(bool showCompletedMessage, CancellationToken ct)
     {
         try
         {
             Utils.TraceIn();
             if (longRunningActionExecutingRightNow) return;
 
-            DisableControlsForAsyncTasks();
-            CopyFiles(showCompletedMessage);
+            DisableControlsForAsyncTasks(ct);
+            CopyFiles(showCompletedMessage, ct);
             ResetAllControls();
         }
         finally

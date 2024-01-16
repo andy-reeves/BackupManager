@@ -26,8 +26,9 @@ internal sealed partial class Main
     /// </summary>
     /// <param name="directoryToCheck">The full path to scan</param>
     /// <param name="searchOption">Whether to search subdirectories</param>
+    /// <param name="ct"></param>
     /// <returns>True if the scan was successful otherwise False. Returns True if the directories doesn't exist</returns>
-    private bool ScanSingleDirectory(string directoryToCheck, SearchOption searchOption)
+    private bool ScanSingleDirectory(string directoryToCheck, SearchOption searchOption, CancellationToken ct)
     {
         Utils.TraceIn(directoryToCheck, searchOption);
         if (!Directory.Exists(directoryToCheck)) return Utils.TraceOut(true);
@@ -46,12 +47,12 @@ internal sealed partial class Main
     /// </summary>
     /// <param name="filesParam"></param>
     /// <param name="scanId"></param>
-    /// <param name="token"></param>
+    /// <param name="ct"></param>
     /// <returns></returns>
-    private bool ProcessFiles(IReadOnlyCollection<string> filesParam, string scanId, CancellationToken token)
+    private bool ProcessFiles(IReadOnlyCollection<string> filesParam, string scanId, CancellationToken ct)
     {
         Utils.TraceIn();
-        DisableControlsForAsyncTasks();
+        DisableControlsForAsyncTasks(ct);
         var diskNames = Utils.GetDiskNames(mediaBackup.Config.Directories);
         var tasks = new List<Task<bool>>(diskNames.Length);
         fileCounterForMultiThreadProcessing = 0;
@@ -63,9 +64,9 @@ internal sealed partial class Main
 
         // One process thread for each disk or just one for all
 #if !DEBUG
-        tasks.AddRange(diskNames.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam)).Select(files => TaskWrapper(ProcessFilesA, files, scanId, token)));
+        tasks.AddRange(diskNames.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam)).Select(files => TaskWrapper(ProcessFilesA, files, scanId, ct)));
 #else
-        tasks.Add(TaskWrapper(ProcessFilesA, filesParam.ToArray(), scanId, token));
+        tasks.Add(TaskWrapper(ProcessFilesA, filesParam.ToArray(), scanId, ct));
 #endif
         Task.WhenAll(tasks).Wait(ct);
         var returnValue = !tasks.Any(static t => !t.Result);
@@ -80,8 +81,8 @@ internal sealed partial class Main
     /// </summary>
     /// <param name="filesParam"></param>
     /// <param name="scanId"></param>
-    /// <param name="token"></param>
-    private bool ProcessFilesA(string[] filesParam, string scanId, CancellationToken token)
+    /// <param name="ct"></param>
+    private bool ProcessFilesA(string[] filesParam, string scanId, CancellationToken ct)
     {
         Utils.TraceIn();
 
@@ -118,7 +119,7 @@ internal sealed partial class Main
                     }
                 }
                 fileCounterForMultiThreadProcessing++;
-                if (token.IsCancellationRequested) token.ThrowIfCancellationRequested();
+                if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
                 currentPercentComplete = fileCounterForMultiThreadProcessing * 100 / toolStripProgressBar.Maximum;
 
                 if (currentPercentComplete % 25 == 0 && currentPercentComplete > reportedPercentComplete && files.Count > 100)
@@ -183,7 +184,7 @@ internal sealed partial class Main
         Utils.TraceOut();
     }
 
-    private void RootDirectoryChecks(string rootDirectory)
+    private void RootDirectoryChecks(string rootDirectory, CancellationToken ct)
     {
         Utils.TraceIn(rootDirectory);
         long readSpeed = 0;
@@ -254,17 +255,17 @@ internal sealed partial class Main
     // ReSharper restore StringLiteralTypo
     private static partial Regex MoviesFilenameRegex();
 
-    private void ScanAllDirectoriesAsync()
+    private void ScanAllDirectoriesAsync(CancellationToken token)
     {
         try
         {
             Utils.TraceIn();
             if (longRunningActionExecutingRightNow) return;
 
-            DisableControlsForAsyncTasks();
+            DisableControlsForAsyncTasks(token);
             Utils.LogWithPushover(BackupAction.ScanDirectory, "Started");
             UpdateStatusLabel(string.Format(Resources.Main_Scanning, string.Empty));
-            ScanAllDirectories(false);
+            ScanAllDirectories(false, token);
             ResetAllControls();
         }
         finally
@@ -273,20 +274,21 @@ internal sealed partial class Main
         }
     }
 
-    private void ScanAllDirectories(bool updateLastFullScan)
+    private void ScanAllDirectories(bool updateLastFullScan, CancellationToken ct)
     {
         var scanId = Guid.NewGuid().ToString();
-        ResetTokenSource();
+
+        //ResetTokenSource();
         fileBlockingCollection = new BlockingCollection<string>();
         directoryScanBlockingCollection = new BlockingCollection<DirectoryScan>();
 
         // split the directories into group by the disk name
         var diskNames = Utils.GetDiskNames(mediaBackup.Config.Directories);
-        RootDirectoryChecks(mediaBackup.Config.Directories);
+        RootDirectoryChecks(mediaBackup.Config.Directories, ct);
         var tasks = new List<Task>(diskNames.Length);
 
         tasks.AddRange(diskNames.Select(diskName => Utils.GetDirectoriesForDisk(diskName, mediaBackup.Config.Directories))
-            .Select(directoriesOnDisk => TaskWrapper(GetFilesAsync, directoriesOnDisk, scanId)));
+            .Select(directoriesOnDisk => TaskWrapper(GetFilesAsync, directoriesOnDisk, scanId, ct)));
         Task.WhenAll(tasks).Wait(ct);
         Utils.LogWithPushover(BackupAction.ScanDirectory, "Scanning complete.");
 
@@ -311,7 +313,7 @@ internal sealed partial class Main
         UpdateMediaFilesCountDisplay();
     }
 
-    private void GetFilesAsync(string[] directories, string scanId)
+    private void GetFilesAsync(string[] directories, string scanId, CancellationToken ct)
     {
         Utils.TraceIn();
         var filters = mediaBackup.GetFilters();
@@ -336,15 +338,15 @@ internal sealed partial class Main
         Utils.TraceOut();
     }
 
-    private void ScanDirectoryAsync(string directory)
+    private void ScanDirectoryAsync(string directory, CancellationToken ct)
     {
         try
         {
             Utils.TraceIn();
             if (longRunningActionExecutingRightNow) return;
 
-            DisableControlsForAsyncTasks();
-            ReadyToScan(new FileSystemWatcherEventArgs(directory), SearchOption.AllDirectories);
+            DisableControlsForAsyncTasks(ct);
+            ReadyToScan(new FileSystemWatcherEventArgs(directory), SearchOption.AllDirectories, ct);
             ResetAllControls();
         }
         finally
@@ -353,18 +355,18 @@ internal sealed partial class Main
         }
     }
 
-    private void ProcessFilesAsync()
+    private void ProcessFilesAsync(CancellationToken token)
     {
         try
         {
             Utils.TraceIn();
             if (longRunningActionExecutingRightNow) return;
 
-            DisableControlsForAsyncTasks();
+            DisableControlsForAsyncTasks(token);
             var files = mediaBackup.BackupFiles.Where(static file => !file.Deleted).Select(static file => file.FullPath).ToList();
             var scanId = Guid.NewGuid().ToString();
             mediaBackup.ClearFlags();
-            if (ProcessFiles(files, scanId, ct)) mediaBackup.Save(ct);
+            if (ProcessFiles(files, scanId, token)) mediaBackup.Save(token);
             ResetAllControls();
         }
         finally

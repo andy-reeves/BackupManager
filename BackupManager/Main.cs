@@ -5,7 +5,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -23,18 +22,6 @@ namespace BackupManager;
 
 internal sealed partial class Main : Form
 {
-    private static readonly object _lock = new();
-
-    private int currentPercentComplete;
-
-    private BlockingCollection<DirectoryScan> directoryScanBlockingCollection;
-
-    private BlockingCollection<string> fileBlockingCollection;
-
-    private int fileCounterForMultiThreadProcessing;
-
-    private int reportedPercentComplete;
-
     private void FileSystemWatcher_OnError(object sender, ErrorEventArgs e)
     {
         var ex = e.GetException();
@@ -44,6 +31,7 @@ internal sealed partial class Main : Form
         {
             // the most common is DirectoryNotFound for a network path
             // wait a bit and then attempt restart the watcher
+            var ct = new CancellationToken();
             Task.Delay(mediaBackup.Config.DirectoriesFileChangeWatcherRestartDelay * 1000, ct).Wait(ct);
             _ = mediaBackup.Watcher.Reset();
             _ = mediaBackup.Watcher.Start();
@@ -65,7 +53,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(ScheduledBackupAsync);
+        _ = TaskWrapper(ScheduledBackupAsync, cancellationToken);
         Utils.TraceOut();
     }
 
@@ -85,11 +73,11 @@ internal sealed partial class Main : Form
         Utils.TraceOut();
     }
 
-    private void UpdateMasterFilesButton_Click(object sender, EventArgs e)
+    private void ScanAllDirectoriesButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(ScanAllDirectoriesAsync);
+        _ = TaskWrapper(ScanAllDirectoriesAsync, cancellationToken);
         Utils.TraceOut();
     }
 
@@ -97,7 +85,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(UpdateSymbolicLinksAsync);
+        _ = TaskWrapper(UpdateSymbolicLinksAsync, cancellationToken);
         Utils.TraceOut();
     }
 
@@ -105,7 +93,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, true, false);
+        _ = TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, true, false, cancellationToken);
         Utils.TraceOut();
     }
 
@@ -113,7 +101,7 @@ internal sealed partial class Main : Form
     {
         tokenSource?.Dispose();
         tokenSource = new CancellationTokenSource();
-        ct = tokenSource.Token;
+        cancellationToken = tokenSource.Token;
     }
 
     private void ListDirectoriesToScanButton_Click(object sender, EventArgs e)
@@ -162,7 +150,7 @@ internal sealed partial class Main : Form
         if (mediaBackup.Config.SpeedTestOnOff)
         {
             Utils.DiskSpeedTest(directory, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize),
-                mediaBackup.Config.SpeedTestIterations, out var readSpeed, out var writeSpeed, ct);
+                mediaBackup.Config.SpeedTestIterations, out var readSpeed, out var writeSpeed, cancellationToken);
             Utils.Log($"Testing {directory}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
         }
 
@@ -230,7 +218,7 @@ internal sealed partial class Main : Form
                             mediaBackup.Config.DisksToSkipOnRestore.Add(lastBackupDisk);
 
                             // This is to save the backup disks we've completed so far
-                            mediaBackup.Save(ct);
+                            mediaBackup.Save(cancellationToken);
                         }
 
                         // count the number of files on this disk
@@ -259,7 +247,7 @@ internal sealed partial class Main : Form
                             {
                                 Utils.LogWithPushover(BackupAction.Restore,
                                     $"[{fileCounter}/{countOfFiles}] Copying {sourceFileFullPath} as {targetFilePath}");
-                                _ = Utils.FileCopy(sourceFileFullPath, targetFilePath, ct);
+                                _ = Utils.FileCopy(sourceFileFullPath, targetFilePath, cancellationToken);
                             }
                             else
                             {
@@ -282,7 +270,7 @@ internal sealed partial class Main : Form
                 }
                 lastBackupDisk = file.Disk;
             }
-            mediaBackup.Save(ct);
+            mediaBackup.Save(cancellationToken);
         }
         Utils.TraceOut();
     }
@@ -291,7 +279,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, true, true);
+        _ = TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, true, true, cancellationToken);
         Utils.TraceOut();
     }
 
@@ -393,7 +381,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(SpeedTestAllDirectoriesAsync);
+        _ = TaskWrapper(SpeedTestAllDirectoriesAsync, cancellationToken);
         Utils.TraceOut();
     }
 
@@ -477,7 +465,7 @@ internal sealed partial class Main : Form
         Utils.TraceIn();
         Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, "BackupManager stopped");
         ResetTokenSource();
-        Utils.BackupLogFile(ct);
+        Utils.BackupLogFile(cancellationToken);
         Utils.TraceOut();
     }
 
@@ -546,7 +534,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(CheckConnectedDiskAndCopyFilesRepeaterAsync, true);
+        _ = TaskWrapper(CheckConnectedDiskAndCopyFilesRepeaterAsync, true, cancellationToken);
         Utils.TraceOut();
     }
 
@@ -577,7 +565,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(CheckConnectedDiskAndCopyFilesRepeaterAsync, false);
+        _ = TaskWrapper(CheckConnectedDiskAndCopyFilesRepeaterAsync, false, cancellationToken);
         Utils.TraceOut();
     }
 
@@ -629,7 +617,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(SetupBackupDiskAsync);
+        _ = TaskWrapper(SetupBackupDiskAsync, cancellationToken);
         Utils.TraceOut();
     }
 
@@ -671,12 +659,12 @@ internal sealed partial class Main : Form
                 // If another long running task is already executing then add these directories back to the list to be scanned later
                 foreach (var dir in e.Directories)
                 {
-                    mediaBackup.Watcher.DirectoriesToScan.Add(dir, ct);
+                    mediaBackup.Watcher.DirectoriesToScan.Add(dir, cancellationToken);
                 }
                 return;
             }
-            DisableControlsForAsyncTasks();
-            ReadyToScan(e, SearchOption.TopDirectoryOnly);
+            DisableControlsForAsyncTasks(cancellationToken);
+            ReadyToScan(e, SearchOption.TopDirectoryOnly, cancellationToken);
             ResetAllControls();
         }
         finally
@@ -685,7 +673,7 @@ internal sealed partial class Main : Form
         }
     }
 
-    private void ReadyToScan(FileSystemWatcherEventArgs e, SearchOption searchOption)
+    private void ReadyToScan(FileSystemWatcherEventArgs e, SearchOption searchOption, CancellationToken ct)
     {
         try
         {
@@ -708,7 +696,7 @@ internal sealed partial class Main : Form
                 var fileCountInDirectoryBefore = mediaBackup.BackupFiles.Count(b =>
                     b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase));
 
-                if (ScanSingleDirectory(directoryToScan.Path, searchOption))
+                if (ScanSingleDirectory(directoryToScan.Path, searchOption, ct))
                 {
                     UpdateSymbolicLinkForDirectory(directoryToScan.Path);
 
@@ -799,14 +787,14 @@ internal sealed partial class Main : Form
 
         // If file or directory changes were detected so save xml
         ResetTokenSource();
-        mediaBackup.Save(ct);
+        mediaBackup.Save(cancellationToken);
     }
 
     private void CheckConnectedBackupDiskButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, false, false);
+        _ = TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, false, false, cancellationToken);
         Utils.TraceOut();
     }
 
@@ -814,7 +802,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(CopyFilesAsync, true);
+        _ = TaskWrapper(CopyFilesAsync, true, cancellationToken);
         Utils.TraceOut();
     }
 
@@ -846,7 +834,7 @@ internal sealed partial class Main : Form
             {
                 backupFile.UpdateContentsHash();
             }
-            mediaBackup.Save(ct);
+            mediaBackup.Save(cancellationToken);
         }
         Utils.TraceOut();
     }
@@ -955,7 +943,7 @@ internal sealed partial class Main : Form
             if (scanDirectoryComboBox.SelectedIndex <= -1 || longRunningActionExecutingRightNow) return;
 
             ResetTokenSource();
-            _ = TaskWrapper(ScanDirectoryAsync, scanDirectoryComboBox.Text);
+            _ = TaskWrapper(ScanDirectoryAsync, scanDirectoryComboBox.Text, cancellationToken);
         }
         finally
         {
@@ -963,7 +951,7 @@ internal sealed partial class Main : Form
         }
     }
 
-    private void RootDirectoryChecks(Collection<string> directories)
+    private void RootDirectoryChecks(Collection<string> directories, CancellationToken ct)
     {
         Utils.TraceIn();
         var directoriesChecked = new HashSet<string>();
@@ -979,7 +967,7 @@ internal sealed partial class Main : Form
                     var rootPath = Utils.GetRootPath(directory);
                     if (directoriesChecked.Contains(rootPath)) continue;
 
-                    RootDirectoryChecks(rootPath);
+                    RootDirectoryChecks(rootPath, ct);
                     _ = directoriesChecked.Add(rootPath);
                 }
                 else
@@ -995,7 +983,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(ProcessFilesAsync);
+        _ = TaskWrapper(ProcessFilesAsync, cancellationToken);
         Utils.TraceOut();
     }
 

@@ -5,6 +5,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Threading;
 
 using BackupManager.Properties;
 
@@ -12,14 +13,14 @@ namespace BackupManager;
 
 internal sealed partial class Main
 {
-    private void ScheduledBackupAsync()
+    private void ScheduledBackupAsync(CancellationToken token)
     {
         try
         {
             Utils.TraceIn();
             if (longRunningActionExecutingRightNow) return;
 
-            DisableControlsForAsyncTasks();
+            DisableControlsForAsyncTasks(token);
             Utils.LogWithPushover(BackupAction.ScheduledBackup, Resources.Main_Started);
             UpdateStatusLabel(string.Format(Resources.Main_Scanning, string.Empty));
 
@@ -36,8 +37,8 @@ internal sealed partial class Main
             // Update the master files if we've not been monitoring directories directly
             if (!mediaBackup.Config.DirectoriesFileChangeWatcherOnOff ||
                 backupFileDate.AddDays(mediaBackup.Config.DirectoriesDaysBetweenFullScan) < DateTime.Now)
-                ScanAllDirectories(true);
-            UpdateSymbolicLinks(ct);
+                ScanAllDirectories(true, token);
+            UpdateSymbolicLinks(token);
 
             if (mediaBackup.Config.BackupDiskDifferenceInFileCountAllowedPercentage != 0)
             {
@@ -54,10 +55,10 @@ internal sealed partial class Main
             CheckForOldBackupDisks();
 
             // Check the connected backup disk (removing any extra files we don't need)
-            _ = CheckConnectedDisk(true);
+            _ = CheckConnectedDisk(true, token);
 
             // Copy any files that need a backup
-            CopyFiles(true);
+            CopyFiles(true, token);
             Utils.Trace($"TriggerHour={_trigger.TriggerHour}");
             Utils.LogWithPushover(BackupAction.ScheduledBackup, Resources.Main_Completed);
             ResetAllControls();

@@ -6,6 +6,7 @@
 
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -17,16 +18,16 @@ namespace BackupManager;
 
 internal sealed partial class Main
 {
-    private void CheckConnectedDiskAndCopyFilesAsync(bool deleteExtraFiles, bool copyFiles)
+    private void CheckConnectedDiskAndCopyFilesAsync(bool deleteExtraFiles, bool copyFiles, CancellationToken ct)
     {
         try
         {
             Utils.TraceIn();
             if (longRunningActionExecutingRightNow) return;
 
-            DisableControlsForAsyncTasks();
-            _ = CheckConnectedDisk(deleteExtraFiles);
-            if (copyFiles) CopyFiles(true);
+            DisableControlsForAsyncTasks(ct);
+            _ = CheckConnectedDisk(deleteExtraFiles, ct);
+            if (copyFiles) CopyFiles(true, ct);
             ResetAllControls();
         }
         finally
@@ -35,26 +36,26 @@ internal sealed partial class Main
         }
     }
 
-    private void CheckConnectedDiskAndCopyFilesRepeaterAsync(bool copyFiles)
+    private void CheckConnectedDiskAndCopyFilesRepeaterAsync(bool copyFiles, CancellationToken ct)
     {
         try
         {
             Utils.TraceIn();
             if (longRunningActionExecutingRightNow) return;
 
-            DisableControlsForAsyncTasks();
+            DisableControlsForAsyncTasks(ct);
             var nextDiskMessage = Resources.Main_Please_insert_the_next_backup_disk_now;
 
             while (!ct.IsCancellationRequested)
             {
-                var lastBackupDiskChecked = CheckConnectedDisk(true);
+                var lastBackupDiskChecked = CheckConnectedDisk(true, ct);
 
                 if (lastBackupDiskChecked == null)
                 {
                     _ = MessageBox.Show(Resources.Main_BackupDiskError, Resources.Main_BackupDiskTitle, MessageBoxButtons.OK);
                     continue;
                 }
-                if (copyFiles) CopyFiles(false);
+                if (copyFiles) CopyFiles(false, ct);
 
                 Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.High,
                     $"Backup disk {lastBackupDiskChecked.Name} checked. Please insert the next disk now");
@@ -63,8 +64,8 @@ internal sealed partial class Main
 
                 do
                 {
-                    WaitForNewDisk(nextDiskMessage);
-                    newDisk = SetupBackupDisk();
+                    WaitForNewDisk(nextDiskMessage, ct);
+                    newDisk = SetupBackupDisk(ct);
                 } while (newDisk.Name == lastBackupDiskChecked.Name);
             }
         }
@@ -74,7 +75,7 @@ internal sealed partial class Main
         }
     }
 
-    private void WaitForNewDisk(string message)
+    private void WaitForNewDisk(string message, CancellationToken ct)
     {
         Utils.TraceIn();
         UpdateStatusLabel(message);
@@ -103,7 +104,7 @@ internal sealed partial class Main
     /// </summary>
     /// <param name="deleteExtraFiles"></param>
     /// <returns>null if there was an error</returns>
-    private BackupDisk CheckConnectedDisk(bool deleteExtraFiles)
+    private BackupDisk CheckConnectedDisk(bool deleteExtraFiles, CancellationToken ct)
     {
         Utils.TraceIn();
 
@@ -114,7 +115,7 @@ internal sealed partial class Main
         // checks the file still exists there
         // if it does compare the hash codes and update results
         // force a recalculation of both the hashes to check the files can both be read correctly
-        var disk = SetupBackupDisk();
+        var disk = SetupBackupDisk(ct);
         var directoryToCheck = disk.BackupPath;
         Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Started\n{directoryToCheck}");
         UpdateStatusLabel($"Checking backup disk {directoryToCheck}");
@@ -347,11 +348,11 @@ internal sealed partial class Main
         return Utils.TraceOut(true);
     }
 
-    private void SetupBackupDiskAsync()
+    private void SetupBackupDiskAsync(CancellationToken ct)
     {
         Utils.TraceIn();
-        DisableControlsForAsyncTasks();
-        var disk = SetupBackupDisk();
+        DisableControlsForAsyncTasks(ct);
+        var disk = SetupBackupDisk(ct);
         _ = UpdateCurrentBackupDiskInfo(disk);
         ResetAllControls();
         Utils.TraceOut();
@@ -361,7 +362,7 @@ internal sealed partial class Main
     ///     Waits for a valid backup disk to be inserted
     /// </summary>
     /// <returns></returns>
-    private BackupDisk SetupBackupDisk()
+    private BackupDisk SetupBackupDisk(CancellationToken ct)
     {
         Utils.TraceIn();
         var nextDiskMessage = Resources.Main_Please_insert_the_next_backup_disk_now;
@@ -369,7 +370,7 @@ internal sealed partial class Main
 
         while (disk == null)
         {
-            WaitForNewDisk(nextDiskMessage);
+            WaitForNewDisk(nextDiskMessage, ct);
             disk = mediaBackup.GetBackupDisk(backupDiskTextBox.Text);
         }
 
