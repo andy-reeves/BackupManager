@@ -64,9 +64,10 @@ internal sealed partial class Main
 
         // One process thread for each disk or just one for all
 #if !DEBUG
-        tasks.AddRange(diskNames.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam)).Select(files => TaskWrapper(Task.Run(() => ProcessFilesA(files, scanId, ct), ct), nameof(ProcessFilesA), ct)));
+        tasks.AddRange(diskNames.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam))
+            .Select(files => TaskWrapper(Task.Run(() => ProcessFilesA(files, scanId, ct), ct), ct)));
 #else
-        tasks.Add(TaskWrapper(Task.Run(() => ProcessFilesA(filesParam.ToArray(), scanId, ct), ct), nameof(ProcessFilesA), ct));
+        tasks.Add(TaskWrapper(Task.Run(() => ProcessFilesA(filesParam.ToArray(), scanId, ct), ct), ct));
 #endif
         Task.WhenAll(tasks).Wait(ct);
         var returnValue = !tasks.Any(static t => !t.Result);
@@ -289,7 +290,7 @@ internal sealed partial class Main
             directoriesOnDisk =>
             {
                 var methodName = GetFilesAsync;
-                return TaskWrapper(Task.Run(() => methodName(directoriesOnDisk, scanId, ct), ct), "GetFilesAsync", ct);
+                return TaskWrapper(Task.Run(() => methodName(directoriesOnDisk, scanId, ct), ct), ct);
             }));
         Task.WhenAll(tasks).Wait(ct);
         Utils.LogWithPushover(BackupAction.ScanDirectory, "Scanning complete.");

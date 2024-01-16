@@ -123,9 +123,7 @@ internal sealed partial class Main
                 if (longRunningActionExecutingRightNow) return;
 
                 ResetTokenSource();
-
-                _ = TaskWrapper(Task.Run(() => ScheduledBackupAsync(cancellationToken), cancellationToken),
-                    nameof(ScheduledBackupAsync), cancellationToken);
+                _ = TaskWrapper(Task.Run(() => ScheduledBackupAsync(cancellationToken), cancellationToken), cancellationToken);
             };
             monitoringAction = MonitorServices;
             scheduledDateTimePicker.Value = DateTime.Parse(mediaBackup.Config.ScheduledBackupStartTime);
@@ -142,7 +140,7 @@ internal sealed partial class Main
             {
 #if !DEBUG
                 ResetTokenSource();
-                _ = TaskWrapper(Task.Run(() => ScheduledBackupAsync(cancellationToken), cancellationToken), nameof(ScheduledBackupAsync), cancellationToken);
+                _ = TaskWrapper(Task.Run(() => ScheduledBackupAsync(cancellationToken), cancellationToken), cancellationToken);
 #endif
             }
             SetupDailyTrigger(mediaBackup.Config.ScheduledBackupOnOff);

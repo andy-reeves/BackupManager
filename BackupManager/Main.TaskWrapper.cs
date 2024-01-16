@@ -14,19 +14,17 @@ namespace BackupManager;
 
 internal sealed partial class Main
 {
-    private async Task<bool> TaskWrapper(Task<bool> task, string methodName, CancellationToken ct)
+    private async Task<bool> TaskWrapper(Task<bool> task, CancellationToken ct)
     {
-        ArgumentNullException.ThrowIfNull(methodName);
-
         try
         {
-            Utils.Trace($"{methodName} just before await");
+            Utils.TraceIn();
             return await task;
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
-            Utils.Trace($"Canceling {methodName}");
-            ASyncTasksCleanUp(methodName);
+            Utils.Trace("Canceling");
+            ASyncTasksCleanUp();
         }
         catch (Exception u)
         {
@@ -36,25 +34,37 @@ internal sealed partial class Main
         return false;
     }
 
-    /// <summary>
-    /// </summary>
-    /// <param name="task"></param>
-    /// <param name="methodName"></param>
-    /// <param name="ct"></param>
-    private async Task TaskWrapper(Task task, string methodName, CancellationToken ct)
+    private async Task TaskWrapper(Task task, bool noAsyncTasksCleanup, CancellationToken ct)
     {
-        ArgumentNullException.ThrowIfNull(methodName);
-
         try
         {
-            Utils.Trace($"{methodName} just before await");
+            Utils.TraceIn($"noAsyncTasksCleanup = {noAsyncTasksCleanup}");
             await task;
-            Utils.Trace($"{methodName} just after await");
+            Utils.Trace("After await");
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
-            Utils.Trace($"Canceling {methodName}");
-            ASyncTasksCleanUp(methodName);
+            Utils.Trace("Canceling");
+        }
+        catch (Exception u)
+        {
+            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
+                string.Format(Resources.Main_TaskWrapperException, u));
+        }
+    }
+
+    private async Task TaskWrapper(Task task, CancellationToken ct)
+    {
+        try
+        {
+            Utils.TraceIn();
+            await task;
+            Utils.Trace("After await");
+        }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            Utils.Trace("Canceling");
+            ASyncTasksCleanUp();
         }
         catch (Exception u)
         {
