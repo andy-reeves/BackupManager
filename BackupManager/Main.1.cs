@@ -14,6 +14,7 @@ using System.Linq;
 using System.Runtime.Versioning;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using BackupManager.Entities;
@@ -31,6 +32,11 @@ internal sealed partial class Main
     private readonly MediaBackup mediaBackup;
 
     private readonly Action monitoringAction;
+
+    /// <summary>
+    ///     For the monitoring applications
+    /// </summary>
+    private readonly CancellationTokenSource monitoringTokenSource = new();
 
     private readonly Action scheduledBackupAction;
 
@@ -58,11 +64,6 @@ internal sealed partial class Main
 
     // Always create a new one before running a long running task
     private CancellationTokenSource tokenSource;
-
-    /// <summary>
-    ///     For the monitoring applications
-    /// </summary>
-    private readonly CancellationTokenSource monitoringTokenSource = new();
 
     [SupportedOSPlatform("windows")]
     internal Main()
@@ -122,7 +123,9 @@ internal sealed partial class Main
                 if (longRunningActionExecutingRightNow) return;
 
                 ResetTokenSource();
-                _ = TaskWrapper(ScheduledBackupAsync, cancellationToken);
+
+                _ = TaskWrapper(Task.Run(() => ScheduledBackupAsync(cancellationToken), cancellationToken),
+                    nameof(ScheduledBackupAsync), cancellationToken);
             };
             monitoringAction = MonitorServices;
             scheduledDateTimePicker.Value = DateTime.Parse(mediaBackup.Config.ScheduledBackupStartTime);
@@ -139,7 +142,7 @@ internal sealed partial class Main
             {
 #if !DEBUG
                 ResetTokenSource();
-                _ = TaskWrapper(ScheduledBackupAsync, cancellationToken);
+                _ = TaskWrapper(Task.Run(() => ScheduledBackupAsync(cancellationToken), cancellationToken), nameof(ScheduledBackupAsync), cancellationToken);
 #endif
             }
             SetupDailyTrigger(mediaBackup.Config.ScheduledBackupOnOff);

@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.Versioning;
 using System.Threading;
 using System.Threading.Tasks;
@@ -54,7 +53,9 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(ScheduledBackupAsync, cancellationToken);
+
+        _ = TaskWrapper(Task.Run(() => ScheduledBackupAsync(cancellationToken), cancellationToken), nameof(ScheduledBackupAsync),
+            cancellationToken);
         Utils.TraceOut();
     }
 
@@ -78,7 +79,9 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(ScanAllDirectoriesAsync, cancellationToken);
+
+        _ = TaskWrapper(Task.Run(() => ScanAllDirectoriesAsync(cancellationToken), cancellationToken),
+            nameof(ScanAllDirectoriesAsync), cancellationToken);
         Utils.TraceOut();
     }
 
@@ -86,7 +89,9 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(UpdateSymbolicLinksAsync, cancellationToken);
+
+        _ = TaskWrapper(Task.Run(() => UpdateSymbolicLinksAsync(cancellationToken), cancellationToken),
+            nameof(UpdateSymbolicLinksAsync), cancellationToken);
         Utils.TraceOut();
     }
 
@@ -94,7 +99,9 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, true, false, cancellationToken);
+
+        _ = TaskWrapper(Task.Run(() => CheckConnectedDiskAndCopyFilesAsync(true, false, cancellationToken), cancellationToken),
+            nameof(CheckConnectedDiskAndCopyFilesAsync), cancellationToken);
         Utils.TraceOut();
     }
 
@@ -280,7 +287,9 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, true, true, cancellationToken);
+
+        _ = TaskWrapper(Task.Run(() => CheckConnectedDiskAndCopyFilesAsync(true, true, cancellationToken), cancellationToken),
+            nameof(CheckConnectedDiskAndCopyFilesAsync), cancellationToken);
         Utils.TraceOut();
     }
 
@@ -382,7 +391,9 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(SpeedTestAllDirectoriesAsync, cancellationToken);
+
+        _ = TaskWrapper(Task.Run(() => SpeedTestAllDirectoriesAsync(cancellationToken), cancellationToken),
+            nameof(SpeedTestAllDirectoriesAsync), cancellationToken);
         Utils.TraceOut();
     }
 
@@ -419,7 +430,11 @@ internal sealed partial class Main : Form
 
     private void MonitoringTimer_Tick(object sender, EventArgs e)
     {
-        if (!monitoringExecutingRightNow) _ = TaskWrapper(monitoringAction, monitoringTokenSource.Token);
+        if (!monitoringExecutingRightNow)
+        {
+            var ct = monitoringTokenSource.Token;
+            _ = TaskWrapper(Task.Run(monitoringAction, ct), nameof(MonitorServices), ct);
+        }
     }
 
     [SupportedOSPlatform("windows")]
@@ -535,7 +550,9 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(CheckConnectedDiskAndCopyFilesRepeaterAsync, true, cancellationToken);
+
+        _ = TaskWrapper(Task.Run(() => CheckConnectedDiskAndCopyFilesRepeaterAsync(true, cancellationToken), cancellationToken),
+            nameof(CheckConnectedDiskAndCopyFilesRepeaterAsync), cancellationToken);
         Utils.TraceOut();
     }
 
@@ -552,15 +569,15 @@ internal sealed partial class Main : Form
     /// <summary>
     ///     Kills the CopyProcess and sends the Cancelled message. Resets all controls.
     /// </summary>
-    /// <param name="memberInfo"></param>
-    private void ASyncTasksCleanUp(MemberInfo memberInfo)
+    /// <param name="methodName"></param>
+    private void ASyncTasksCleanUp(string methodName)
     {
         try
         {
             Utils.TraceIn();
 
             // Don't cancel the other long running tasks if the Monitoring has cancelled
-            if (memberInfo.Name == "MonitorServices") return;
+            if (methodName == nameof(MonitorServices)) return;
 
             if (Utils.CopyProcess != null && !Utils.CopyProcess.HasExited) Utils.CopyProcess?.Kill();
             UpdateMediaFilesCountDisplay();
@@ -577,7 +594,9 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(CheckConnectedDiskAndCopyFilesRepeaterAsync, false, cancellationToken);
+
+        _ = TaskWrapper(Task.Run(() => CheckConnectedDiskAndCopyFilesRepeaterAsync(false, cancellationToken), cancellationToken),
+            nameof(CheckConnectedDiskAndCopyFilesRepeaterAsync), cancellationToken);
         Utils.TraceOut();
     }
 
@@ -629,7 +648,9 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(SetupBackupDiskAsync, cancellationToken);
+
+        _ = TaskWrapper(Task.Run(() => SetupBackupDiskAsync(cancellationToken), cancellationToken), nameof(SetupBackupDiskAsync),
+            cancellationToken);
         Utils.TraceOut();
     }
 
@@ -806,7 +827,9 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(CheckConnectedDiskAndCopyFilesAsync, false, false, cancellationToken);
+
+        _ = TaskWrapper(Task.Run(() => CheckConnectedDiskAndCopyFilesAsync(false, false, cancellationToken), cancellationToken),
+            nameof(CheckConnectedDiskAndCopyFilesAsync), cancellationToken);
         Utils.TraceOut();
     }
 
@@ -814,7 +837,9 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(CopyFilesAsync, true, cancellationToken);
+
+        _ = TaskWrapper(Task.Run(() => CopyFilesAsync(true, cancellationToken), cancellationToken), nameof(CopyFilesAsync),
+            cancellationToken);
         Utils.TraceOut();
     }
 
@@ -955,7 +980,10 @@ internal sealed partial class Main : Form
             if (scanDirectoryComboBox.SelectedIndex <= -1 || longRunningActionExecutingRightNow) return;
 
             ResetTokenSource();
-            _ = TaskWrapper(ScanDirectoryAsync, scanDirectoryComboBox.Text, cancellationToken);
+            var param1 = scanDirectoryComboBox.Text;
+
+            _ = TaskWrapper(Task.Run(() => ScanDirectoryAsync(param1, cancellationToken), cancellationToken),
+                nameof(ScanDirectoryAsync), cancellationToken);
         }
         finally
         {
@@ -995,7 +1023,9 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(ProcessFilesAsync, cancellationToken);
+
+        _ = TaskWrapper(Task.Run(() => ProcessFilesAsync(cancellationToken), cancellationToken), nameof(ProcessFilesAsync),
+            cancellationToken);
         Utils.TraceOut();
     }
 

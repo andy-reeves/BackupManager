@@ -64,9 +64,9 @@ internal sealed partial class Main
 
         // One process thread for each disk or just one for all
 #if !DEBUG
-        tasks.AddRange(diskNames.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam)).Select(files => TaskWrapper(ProcessFilesA, files, scanId, ct)));
+        tasks.AddRange(diskNames.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam)).Select(files => TaskWrapper(Task.Run(() => ProcessFilesA(files, scanId, ct), ct), nameof(ProcessFilesA), ct)));
 #else
-        tasks.Add(TaskWrapper(ProcessFilesA, filesParam.ToArray(), scanId, ct));
+        tasks.Add(TaskWrapper(Task.Run(() => ProcessFilesA(filesParam.ToArray(), scanId, ct), ct), nameof(ProcessFilesA), ct));
 #endif
         Task.WhenAll(tasks).Wait(ct);
         var returnValue = !tasks.Any(static t => !t.Result);
@@ -285,8 +285,12 @@ internal sealed partial class Main
         RootDirectoryChecks(mediaBackup.Config.Directories, ct);
         var tasks = new List<Task>(diskNames.Length);
 
-        tasks.AddRange(diskNames.Select(diskName => Utils.GetDirectoriesForDisk(diskName, mediaBackup.Config.Directories))
-            .Select(directoriesOnDisk => TaskWrapper(GetFilesAsync, directoriesOnDisk, scanId, ct)));
+        tasks.AddRange(diskNames.Select(diskName => Utils.GetDirectoriesForDisk(diskName, mediaBackup.Config.Directories)).Select(
+            directoriesOnDisk =>
+            {
+                var methodName = GetFilesAsync;
+                return TaskWrapper(Task.Run(() => methodName(directoriesOnDisk, scanId, ct), ct), "GetFilesAsync", ct);
+            }));
         Task.WhenAll(tasks).Wait(ct);
         Utils.LogWithPushover(BackupAction.ScanDirectory, "Scanning complete.");
 

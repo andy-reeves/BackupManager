@@ -14,130 +14,19 @@ namespace BackupManager;
 
 internal sealed partial class Main
 {
-    /// <summary>
-    ///     Called by the Application monitoring
-    /// </summary>
-    /// <param name="methodName"></param>
-    /// <param name="ct"></param>
-    private async Task TaskWrapper(Action methodName, CancellationToken ct)
+    private async Task<bool> TaskWrapper(Task<bool> task, string methodName, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(methodName);
 
         try
         {
-            var task = Task.Run(methodName, ct);
-            await task;
-            Utils.Trace($"{methodName} just after await");
-        }
-        catch (OperationCanceledException) when (ct.IsCancellationRequested)
-        {
-            Utils.Trace($"Canceling {methodName.Method}");
-            ASyncTasksCleanUp(methodName.Method);
-        }
-        catch (Exception u)
-        {
-            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
-                string.Format(Resources.Main_TaskWrapperException, u));
-        }
-    }
-
-    private async Task TaskWrapper(Action<CancellationToken> methodName, CancellationToken ct)
-    {
-        ArgumentNullException.ThrowIfNull(methodName);
-
-        try
-        {
-            var task = Task.Run(() => methodName(ct), ct);
-            await task;
-            Utils.Trace($"{methodName} just after await");
-        }
-        catch (OperationCanceledException) when (ct.IsCancellationRequested)
-        {
-            Utils.Trace($"Canceling {methodName.Method}");
-            ASyncTasksCleanUp(methodName.Method);
-        }
-        catch (Exception u)
-        {
-            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
-                string.Format(Resources.Main_TaskWrapperException, u));
-        }
-    }
-
-    /// <summary>
-    /// </summary>
-    /// <param name="methodName"></param>
-    /// <param name="param1"></param>
-    /// <param name="ct"></param>
-    private async Task TaskWrapper(Action<bool, CancellationToken> methodName, bool param1, CancellationToken ct)
-    {
-        ArgumentNullException.ThrowIfNull(methodName);
-
-        try
-        {
-            var task = Task.Run(() => methodName(param1, ct), ct);
-            await task;
-            Utils.Trace($"{methodName} just after await");
-        }
-        catch (OperationCanceledException) when (ct.IsCancellationRequested)
-        {
-            Utils.Trace($"Canceling {methodName.Method}");
-            ASyncTasksCleanUp(methodName.Method);
-        }
-        catch (Exception u)
-        {
-            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
-                string.Format(Resources.Main_TaskWrapperException, u));
-        }
-    }
-
-    /// <summary>
-    /// </summary>
-    /// <param name="methodName"></param>
-    /// <param name="param1"></param>
-    /// <param name="ct"></param>
-    /// <returns></returns>
-    private async Task TaskWrapper(Action<string, CancellationToken> methodName, string param1, CancellationToken ct)
-    {
-        try
-        {
-            var task = Task.Run(() => methodName(param1, ct), ct);
-            await task;
-            Utils.Trace($"{methodName} just after await");
-        }
-        catch (OperationCanceledException) when (ct.IsCancellationRequested)
-        {
-            Utils.Trace($"Canceling {methodName.Method}");
-            ASyncTasksCleanUp(methodName.Method);
-        }
-        catch (Exception u)
-        {
-            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
-                string.Format(Resources.Main_TaskWrapperException, u));
-        }
-    }
-
-    /// <summary>
-    /// </summary>
-    /// <param name="methodName"></param>
-    /// <param name="param1"></param>
-    /// <param name="param2"></param>
-    /// <param name="ct"></param>
-    /// <returns></returns>
-    private async Task<bool> TaskWrapper(Func<string[], string, CancellationToken, bool> methodName, string[] param1,
-        string param2, CancellationToken ct)
-    {
-        ArgumentNullException.ThrowIfNull(methodName);
-
-        try
-        {
-            var task = Task.Run(() => methodName(param1, param2, ct), ct);
             Utils.Trace($"{methodName} just before await");
             return await task;
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
-            Utils.Trace($"Canceling {methodName.Method}");
-            ASyncTasksCleanUp(methodName.Method);
+            Utils.Trace($"Canceling {methodName}");
+            ASyncTasksCleanUp(methodName);
         }
         catch (Exception u)
         {
@@ -149,55 +38,23 @@ internal sealed partial class Main
 
     /// <summary>
     /// </summary>
+    /// <param name="task"></param>
     /// <param name="methodName"></param>
-    /// <param name="param1"></param>
-    /// <param name="param2"></param>
     /// <param name="ct"></param>
-    /// <returns></returns>
-    private async Task TaskWrapper(Action<string[], string, CancellationToken> methodName, string[] param1, string param2,
-        CancellationToken ct)
+    private async Task TaskWrapper(Task task, string methodName, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(methodName);
 
         try
         {
-            var task = Task.Run(() => methodName(param1, param2, ct), ct);
+            Utils.Trace($"{methodName} just before await");
             await task;
             Utils.Trace($"{methodName} just after await");
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
-            Utils.Trace($"Canceling {methodName.Method}");
-            ASyncTasksCleanUp(methodName.Method);
-        }
-        catch (Exception u)
-        {
-            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
-                string.Format(Resources.Main_TaskWrapperException, u));
-        }
-    }
-
-    /// <summary>
-    /// </summary>
-    /// <param name="methodName"></param>
-    /// <param name="param1"></param>
-    /// <param name="param2"></param>
-    /// <param name="ct"></param>
-    private async Task TaskWrapper(Action<bool, bool, CancellationToken> methodName, bool param1, bool param2,
-        CancellationToken ct)
-    {
-        ArgumentNullException.ThrowIfNull(methodName);
-
-        try
-        {
-            var task = Task.Run(() => methodName(param1, param2, ct), ct);
-            await task;
-            Utils.Trace($"{methodName} just after await");
-        }
-        catch (OperationCanceledException) when (ct.IsCancellationRequested)
-        {
-            Utils.Trace($"Canceling {methodName.Method}");
-            ASyncTasksCleanUp(methodName.Method);
+            Utils.Trace($"Canceling {methodName}");
+            ASyncTasksCleanUp(methodName);
         }
         catch (Exception u)
         {
