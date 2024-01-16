@@ -139,7 +139,7 @@ internal sealed partial class Main
             {
 #if !DEBUG
                 ResetTokenSource();
-                TaskWrapper(ScheduledBackupAsync);
+                _ = TaskWrapper(ScheduledBackupAsync, cancellationToken);
 #endif
             }
             SetupDailyTrigger(mediaBackup.Config.ScheduledBackupOnOff);

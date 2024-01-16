@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Versioning;
 using System.Threading;
 using System.Threading.Tasks;
@@ -418,7 +419,7 @@ internal sealed partial class Main : Form
 
     private void MonitoringTimer_Tick(object sender, EventArgs e)
     {
-        if (!monitoringExecutingRightNow) TaskWrapperForApplicationMonitoringOnly(monitoringAction);
+        if (!monitoringExecutingRightNow) _ = TaskWrapper(monitoringAction, monitoringTokenSource.Token);
     }
 
     [SupportedOSPlatform("windows")]
@@ -551,14 +552,25 @@ internal sealed partial class Main : Form
     /// <summary>
     ///     Kills the CopyProcess and sends the Cancelled message. Resets all controls.
     /// </summary>
-    private void ASyncTasksCleanUp()
+    /// <param name="memberInfo"></param>
+    private void ASyncTasksCleanUp(MemberInfo memberInfo)
     {
-        Utils.TraceIn();
-        if (Utils.CopyProcess != null && !Utils.CopyProcess.HasExited) Utils.CopyProcess?.Kill();
-        UpdateMediaFilesCountDisplay();
-        Utils.LogWithPushover(BackupAction.General, PushoverPriority.Normal, "Cancelled");
-        ResetAllControls();
-        Utils.TraceOut();
+        try
+        {
+            Utils.TraceIn();
+
+            // Don't cancel the other long running tasks if the Monitoring has cancelled
+            if (memberInfo.Name == "MonitorServices") return;
+
+            if (Utils.CopyProcess != null && !Utils.CopyProcess.HasExited) Utils.CopyProcess?.Kill();
+            UpdateMediaFilesCountDisplay();
+            Utils.LogWithPushover(BackupAction.General, PushoverPriority.Normal, "Cancelled");
+            ResetAllControls();
+        }
+        finally
+        {
+            Utils.TraceOut();
+        }
     }
 
     private void CheckAllBackupDisksButton_Click(object sender, EventArgs e)

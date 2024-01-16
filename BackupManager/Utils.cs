@@ -135,7 +135,7 @@ internal static partial class Utils
     /// <summary>
     ///     Delay between Pushover messages in milliseconds
     /// </summary>
-    private const int TimeDelayOnPushoverMessages = 1000;
+    private const int TimeDelayOnPushoverMessages = 500;
 
     #endregion
 

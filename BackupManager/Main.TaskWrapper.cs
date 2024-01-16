@@ -18,20 +18,27 @@ internal sealed partial class Main
     ///     Called by the Application monitoring
     /// </summary>
     /// <param name="methodName"></param>
-    private void TaskWrapperForApplicationMonitoringOnly(Action methodName)
+    /// <param name="ct"></param>
+    private async Task TaskWrapper(Action methodName, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(methodName);
 
-        _ = Task.Run(methodName, monitoringTokenSource.Token).ContinueWith(static u =>
+        try
         {
-            Utils.Trace("In continueWith from App monitoring");
-            if (u.Exception == null) return;
-
-            Utils.Trace("Exception in the TaskWrapper");
-
+            var task = Task.Run(methodName, ct);
+            await task;
+            Utils.Trace($"{methodName} just after await");
+        }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            Utils.Trace($"Canceling {methodName.Method}");
+            ASyncTasksCleanUp(methodName.Method);
+        }
+        catch (Exception u)
+        {
             Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
-                string.Format(Resources.Main_TaskWrapperException, u.Exception));
-        }, default, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.FromCurrentSynchronizationContext());
+                string.Format(Resources.Main_TaskWrapperException, u));
+        }
     }
 
     private async Task TaskWrapper(Action<CancellationToken> methodName, CancellationToken ct)
@@ -46,8 +53,8 @@ internal sealed partial class Main
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
-            Utils.Trace($"Cancelling {methodName.Method}");
-            ASyncTasksCleanUp();
+            Utils.Trace($"Canceling {methodName.Method}");
+            ASyncTasksCleanUp(methodName.Method);
         }
         catch (Exception u)
         {
@@ -74,8 +81,8 @@ internal sealed partial class Main
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
-            Utils.Trace($"Cancelling {methodName.Method}");
-            ASyncTasksCleanUp();
+            Utils.Trace($"Canceling {methodName.Method}");
+            ASyncTasksCleanUp(methodName.Method);
         }
         catch (Exception u)
         {
@@ -94,8 +101,8 @@ internal sealed partial class Main
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
-            Utils.Trace($"Cancelling {methodName.Method}");
-            ASyncTasksCleanUp();
+            Utils.Trace($"Canceling {methodName.Method}");
+            ASyncTasksCleanUp(methodName.Method);
         }
         catch (Exception u)
         {
@@ -109,14 +116,14 @@ internal sealed partial class Main
     /// </summary>
     /// <param name="methodName"></param>
     /// <param name="param1"></param>
-    /// <param name="scanId"></param>
+    /// <param name="param2"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    private Task<bool> TaskWrapper(Func<string[], string, CancellationToken, bool> methodName, string[] param1, string scanId,
+    private Task<bool> TaskWrapper(Func<string[], string, CancellationToken, bool> methodName, string[] param1, string param2,
         CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(methodName);
-        return Task.Run(() => methodName(param1, scanId, ct), ct);
+        return Task.Run(() => methodName(param1, param2, ct), ct);
     }
 
     /// <summary>
@@ -124,14 +131,14 @@ internal sealed partial class Main
     /// </summary>
     /// <param name="methodName"></param>
     /// <param name="param1"></param>
-    /// <param name="scanId"></param>
+    /// <param name="param2"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    private Task TaskWrapper(Action<string[], string, CancellationToken> methodName, string[] param1, string scanId,
+    private Task TaskWrapper(Action<string[], string, CancellationToken> methodName, string[] param1, string param2,
         CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(methodName);
-        return Task.Run(() => methodName(param1, scanId, ct), ct);
+        return Task.Run(() => methodName(param1, param2, ct), ct);
     }
 
     /// <summary>
@@ -154,8 +161,8 @@ internal sealed partial class Main
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
-            Utils.Trace($"Cancelling {methodName.Method}");
-            ASyncTasksCleanUp();
+            Utils.Trace($"Canceling {methodName.Method}");
+            ASyncTasksCleanUp(methodName.Method);
         }
         catch (Exception u)
         {
