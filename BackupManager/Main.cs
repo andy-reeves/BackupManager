@@ -425,7 +425,7 @@ internal sealed partial class Main : Form
         if (!monitoringExecutingRightNow)
         {
             var ct = monitoringTokenSource.Token;
-            _ = TaskWrapper(Task.Run(monitoringAction, ct), true, ct);
+            _ = TaskWrapper(Task.Run(monitoringAction, ct), false, ct);
         }
     }
 

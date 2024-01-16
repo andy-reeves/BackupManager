@@ -34,17 +34,18 @@ internal sealed partial class Main
         return false;
     }
 
-    private async Task TaskWrapper(Task task, bool noAsyncTasksCleanup, CancellationToken ct)
+    private async Task TaskWrapper(Task task, bool withAsyncTasksCleanup, CancellationToken ct)
     {
         try
         {
-            Utils.TraceIn($"noAsyncTasksCleanup = {noAsyncTasksCleanup}");
+            Utils.TraceIn($"withAsyncTasksCleanup = {withAsyncTasksCleanup}");
             await task;
             Utils.Trace("After await");
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
             Utils.Trace("Canceling");
+            if (withAsyncTasksCleanup) ASyncTasksCleanUp();
         }
         catch (Exception u)
         {
@@ -55,21 +56,6 @@ internal sealed partial class Main
 
     private async Task TaskWrapper(Task task, CancellationToken ct)
     {
-        try
-        {
-            Utils.TraceIn();
-            await task;
-            Utils.Trace("After await");
-        }
-        catch (OperationCanceledException) when (ct.IsCancellationRequested)
-        {
-            Utils.Trace("Canceling");
-            ASyncTasksCleanUp();
-        }
-        catch (Exception u)
-        {
-            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
-                string.Format(Resources.Main_TaskWrapperException, u));
-        }
+        await TaskWrapper(task, true, ct);
     }
 }
