@@ -206,8 +206,8 @@ public sealed class Config
     {
         try
         {
-            var xsdPath = Path.Combine(Path.GetDirectoryName(path) ?? throw new InvalidOperationException(), "ConfigSchema.xsd");
-            if (!Utils.ValidateXml(path, xsdPath)) throw new XmlSchemaValidationException("Config.xml failed validation");
+            if (!Utils.ValidateXmlFromResources(path, "BackupManager.ConfigSchema.xsd"))
+                throw new XmlSchemaValidationException("Config.xml failed validation");
 
             var xRoot = new XmlRootAttribute { ElementName = "Config", Namespace = "ConfigSchema.xsd", IsNullable = true };
             Config config;

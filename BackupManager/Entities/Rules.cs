@@ -31,8 +31,8 @@ public sealed class Rules
     {
         try
         {
-            var xsdPath = Path.Combine(Path.GetDirectoryName(path) ?? throw new InvalidOperationException(), "RulesSchema.xsd");
-            if (!Utils.ValidateXml(path, xsdPath)) throw new XmlSchemaValidationException("Rules.xml failed validation");
+            if (!Utils.ValidateXmlFromResources(path, "BackupManager.RulesSchema.xsd"))
+                throw new XmlSchemaValidationException("Rules.xml failed validation");
 
             var xRoot = new XmlRootAttribute { ElementName = "Rules", Namespace = "RulesSchema.xsd", IsNullable = true };
             XmlSerializer serializer = new(typeof(Rules), xRoot);

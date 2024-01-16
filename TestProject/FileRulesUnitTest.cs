@@ -49,7 +49,7 @@ public sealed class FileRulesUnitTest
         var file1 = Path.Combine(path1, "test1.txt");
         Utils.EnsureDirectoriesForDirectoryPath(path1);
         Utils.CreateFile(file1);
-        _ = Assert.Throws<ApplicationException>(static () => Rules.Load(null));
+        _ = Assert.Throws<ArgumentNullException>(static () => Rules.Load(null));
         _ = Assert.Throws<XmlException>(() => Rules.Load(file1));
 
         // Delete the folders we created

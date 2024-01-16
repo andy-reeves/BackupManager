@@ -120,9 +120,8 @@ public sealed class MediaBackup
         {
             var sw = Stopwatch.StartNew();
 
-            var xsdPath = Path.Combine(Path.GetDirectoryName(path) ?? throw new InvalidOperationException(),
-                "MediaBackupSchema.xsd");
-            if (!Utils.ValidateXml(path, xsdPath)) throw new XmlSchemaValidationException("MediaBackup.xml failed validation");
+            if (!Utils.ValidateXmlFromResources(path, "BackupManager.MediaBackupSchema.xsd"))
+                throw new XmlSchemaValidationException("MediaBackup.xml failed validation");
 
             Utils.Trace($"Time to validate xml was {sw.Elapsed}");
             sw.Restart();

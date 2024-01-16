@@ -1892,6 +1892,38 @@ internal static partial class Utils
     }
 
     /// <summary>
+    ///     Validates the xml provided against the xsd provided.
+    /// </summary>
+    /// <param name="xmlPath"></param>
+    /// <param name="resourceName"></param>
+    /// <returns>True is the xml is valid</returns>
+    internal static bool ValidateXmlFromResources(string xmlPath, string resourceName)
+    {
+        var xml = new XmlDocument();
+        xml.Load(xmlPath);
+        var myAssembly = Assembly.GetExecutingAssembly();
+
+        using (var schemaStream = myAssembly.GetManifestResourceStream(resourceName))
+        {
+            if (schemaStream != null)
+            {
+                using var schemaReader = XmlReader.Create(schemaStream);
+                _ = xml.Schemas.Add(null, schemaReader);
+            }
+        }
+
+        try
+        {
+            xml.Validate(null);
+        }
+        catch (XmlSchemaValidationException)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    /// <summary>
     /// </summary>
     /// <param name="sourcePath"></param>
     /// <param name="destinationPath"></param>
