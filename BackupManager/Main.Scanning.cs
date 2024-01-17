@@ -34,7 +34,7 @@ internal sealed partial class Main
         if (!Directory.Exists(directoryToCheck)) return Utils.TraceOut(true);
 
         Utils.LogWithPushover(BackupAction.ScanDirectory, $"{directoryToCheck}");
-        UpdateStatusLabel(string.Format(Resources.Main_Scanning, directoryToCheck));
+        UpdateStatusLabel(ct, string.Format(Resources.Main_Scanning, directoryToCheck));
         var files = Utils.GetFiles(directoryToCheck, mediaBackup.GetFilters(), searchOption, ct);
         var subDirectoryText = searchOption == SearchOption.TopDirectoryOnly ? "directories only" : "and subdirectories";
         Utils.Trace($"{directoryToCheck} {subDirectoryText}");
@@ -141,7 +141,7 @@ internal sealed partial class Main
                 directoryScanning = directory;
                 firstDir = false;
             }
-            UpdateStatusLabel("Processing", fileCounterForMultiThreadProcessing);
+            UpdateStatusLabel(ct, "Processing", fileCounterForMultiThreadProcessing);
             if (CheckForFilesToDelete(file, filtersToDelete)) continue;
 
             // RegEx file name rules
@@ -194,7 +194,7 @@ internal sealed partial class Main
 
         if (mediaBackup.Config.SpeedTestOnOff)
         {
-            UpdateStatusLabel(string.Format(Resources.Main_SpeedTesting, rootDirectory));
+            UpdateStatusLabel(ct, string.Format(Resources.Main_SpeedTesting, rootDirectory));
 
             Utils.DiskSpeedTest(rootDirectory, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize),
                 mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed, ct);
@@ -225,7 +225,7 @@ internal sealed partial class Main
 
         if (freeSpaceOnRootDirectoryDisk < Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumCriticalSpace))
             Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"Free space on {rootDirectory} is too low");
-        UpdateStatusLabel(string.Format(Resources.Main_Scanning, rootDirectory));
+        UpdateStatusLabel(ct, string.Format(Resources.Main_Scanning, rootDirectory));
 
         // Check for files in this root directories 
         var files = Utils.GetFiles(rootDirectory, filters, SearchOption.TopDirectoryOnly, ct);
@@ -255,17 +255,17 @@ internal sealed partial class Main
     // ReSharper restore StringLiteralTypo
     private static partial Regex MoviesFilenameRegex();
 
-    private void ScanAllDirectoriesAsync(CancellationToken token)
+    private void ScanAllDirectoriesAsync(CancellationToken ct)
     {
         try
         {
             Utils.TraceIn();
             if (longRunningActionExecutingRightNow) return;
 
-            DisableControlsForAsyncTasks(token);
+            DisableControlsForAsyncTasks(ct);
             Utils.LogWithPushover(BackupAction.ScanDirectory, "Started");
-            UpdateStatusLabel(string.Format(Resources.Main_Scanning, string.Empty));
-            ScanAllDirectories(false, token);
+            UpdateStatusLabel(ct, string.Format(Resources.Main_Scanning, string.Empty));
+            ScanAllDirectories(false, ct);
             ResetAllControls();
         }
         finally
@@ -327,7 +327,7 @@ internal sealed partial class Main
             Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal,
                 string.Format(Resources.Main_Scanning, directory));
             if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
-            UpdateStatusLabel(string.Format(Resources.Main_Scanning, directory));
+            UpdateStatusLabel(ct, string.Format(Resources.Main_Scanning, directory));
             var files = Utils.GetFiles(directory, filters, SearchOption.AllDirectories, ct);
             directoryScan.EndDateTime = DateTime.Now;
 

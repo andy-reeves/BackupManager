@@ -53,7 +53,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(Task.Run(() => ScheduledBackupAsync(cancellationToken), cancellationToken), cancellationToken);
+        _ = TaskWrapper(Task.Run(() => ScheduledBackupAsync(mainCt), mainCt), mainCt);
         Utils.TraceOut();
     }
 
@@ -77,7 +77,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(Task.Run(() => ScanAllDirectoriesAsync(cancellationToken), cancellationToken), cancellationToken);
+        _ = TaskWrapper(Task.Run(() => ScanAllDirectoriesAsync(mainCt), mainCt), mainCt);
         Utils.TraceOut();
     }
 
@@ -85,7 +85,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(Task.Run(() => UpdateSymbolicLinksAsync(cancellationToken), cancellationToken), cancellationToken);
+        _ = TaskWrapper(Task.Run(() => UpdateSymbolicLinksAsync(mainCt), mainCt), mainCt);
         Utils.TraceOut();
     }
 
@@ -93,17 +93,15 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-
-        _ = TaskWrapper(Task.Run(() => CheckConnectedDiskAndCopyFilesAsync(true, false, cancellationToken), cancellationToken),
-            cancellationToken);
+        _ = TaskWrapper(Task.Run(() => CheckConnectedDiskAndCopyFilesAsync(true, false, mainCt), mainCt), mainCt);
         Utils.TraceOut();
     }
 
     private void ResetTokenSource()
     {
-        tokenSource?.Dispose();
-        tokenSource = new CancellationTokenSource();
-        cancellationToken = tokenSource.Token;
+        mainCancellationTokenSource?.Dispose();
+        mainCancellationTokenSource = new CancellationTokenSource();
+        mainCt = mainCancellationTokenSource.Token;
     }
 
     private void ListDirectoriesToScanButton_Click(object sender, EventArgs e)
@@ -152,7 +150,7 @@ internal sealed partial class Main : Form
         if (mediaBackup.Config.SpeedTestOnOff)
         {
             Utils.DiskSpeedTest(directory, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize),
-                mediaBackup.Config.SpeedTestIterations, out var readSpeed, out var writeSpeed, cancellationToken);
+                mediaBackup.Config.SpeedTestIterations, out var readSpeed, out var writeSpeed, mainCt);
             Utils.Log($"Testing {directory}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
         }
 
@@ -220,7 +218,7 @@ internal sealed partial class Main : Form
                             mediaBackup.Config.DisksToSkipOnRestore.Add(lastBackupDisk);
 
                             // This is to save the backup disks we've completed so far
-                            mediaBackup.Save(cancellationToken);
+                            mediaBackup.Save(mainCt);
                         }
 
                         // count the number of files on this disk
@@ -249,7 +247,7 @@ internal sealed partial class Main : Form
                             {
                                 Utils.LogWithPushover(BackupAction.Restore,
                                     $"[{fileCounter}/{countOfFiles}] Copying {sourceFileFullPath} as {targetFilePath}");
-                                _ = Utils.FileCopy(sourceFileFullPath, targetFilePath, cancellationToken);
+                                _ = Utils.FileCopy(sourceFileFullPath, targetFilePath, mainCt);
                             }
                             else
                             {
@@ -272,7 +270,7 @@ internal sealed partial class Main : Form
                 }
                 lastBackupDisk = file.Disk;
             }
-            mediaBackup.Save(cancellationToken);
+            mediaBackup.Save(mainCt);
         }
         Utils.TraceOut();
     }
@@ -281,9 +279,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-
-        _ = TaskWrapper(Task.Run(() => CheckConnectedDiskAndCopyFilesAsync(true, true, cancellationToken), cancellationToken),
-            cancellationToken);
+        _ = TaskWrapper(Task.Run(() => CheckConnectedDiskAndCopyFilesAsync(true, true, mainCt), mainCt), mainCt);
         Utils.TraceOut();
     }
 
@@ -385,7 +381,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(Task.Run(() => SpeedTestAllDirectoriesAsync(cancellationToken), cancellationToken), cancellationToken);
+        _ = TaskWrapper(Task.Run(() => SpeedTestAllDirectoriesAsync(mainCt), mainCt), mainCt);
         Utils.TraceOut();
     }
 
@@ -424,7 +420,7 @@ internal sealed partial class Main : Form
     {
         if (!monitoringExecutingRightNow)
         {
-            var ct = monitoringTokenSource.Token;
+            var ct = monitoringCancellationTokenSource.Token;
             _ = TaskWrapper(Task.Run(monitoringAction, ct), false, ct);
         }
     }
@@ -473,7 +469,7 @@ internal sealed partial class Main : Form
         Utils.TraceIn();
         Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, "BackupManager stopped");
         ResetTokenSource();
-        Utils.BackupLogFile(cancellationToken);
+        Utils.BackupLogFile(mainCt);
         Utils.TraceOut();
     }
 
@@ -542,16 +538,14 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-
-        _ = TaskWrapper(Task.Run(() => CheckConnectedDiskAndCopyFilesRepeaterAsync(true, cancellationToken), cancellationToken),
-            cancellationToken);
+        _ = TaskWrapper(Task.Run(() => CheckConnectedDiskAndCopyFilesRepeaterAsync(true, mainCt), mainCt), mainCt);
         Utils.TraceOut();
     }
 
     private void CancelButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        tokenSource.Cancel();
+        mainCancellationTokenSource.Cancel();
         toolStripStatusLabel.Text = Resources.Main_Cancelling;
         Utils.LogWithPushover(BackupAction.General, PushoverPriority.Normal, "Canceling");
         if (Utils.CopyProcess != null && !Utils.CopyProcess.HasExited) Utils.CopyProcess?.Kill();
@@ -581,9 +575,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-
-        _ = TaskWrapper(Task.Run(() => CheckConnectedDiskAndCopyFilesRepeaterAsync(false, cancellationToken), cancellationToken),
-            cancellationToken);
+        _ = TaskWrapper(Task.Run(() => CheckConnectedDiskAndCopyFilesRepeaterAsync(false, mainCt), mainCt), mainCt);
         Utils.TraceOut();
     }
 
@@ -635,7 +627,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(Task.Run(() => SetupBackupDiskAsync(cancellationToken), cancellationToken), cancellationToken);
+        _ = TaskWrapper(Task.Run(() => SetupBackupDiskAsync(mainCt), mainCt), mainCt);
         Utils.TraceOut();
     }
 
@@ -677,12 +669,12 @@ internal sealed partial class Main : Form
                 // If another long running task is already executing then add these directories back to the list to be scanned later
                 foreach (var dir in e.Directories)
                 {
-                    mediaBackup.Watcher.DirectoriesToScan.Add(dir, cancellationToken);
+                    mediaBackup.Watcher.DirectoriesToScan.Add(dir, mainCt);
                 }
                 return;
             }
-            DisableControlsForAsyncTasks(cancellationToken);
-            ReadyToScan(e, SearchOption.TopDirectoryOnly, cancellationToken);
+            DisableControlsForAsyncTasks(mainCt);
+            ReadyToScan(e, SearchOption.TopDirectoryOnly, mainCt);
             ResetAllControls();
         }
         finally
@@ -757,11 +749,11 @@ internal sealed partial class Main : Form
             if (toSave)
             {
                 mediaBackup.Save(ct);
-                UpdateStatusLabel(Resources.Main_Saved);
+                UpdateStatusLabel(ct, Resources.Main_Saved);
                 UpdateUI_Tick(null, null);
                 UpdateMediaFilesCountDisplay();
             }
-            UpdateStatusLabel();
+            UpdateStatusLabel(ct);
         }
         finally
         {
@@ -805,16 +797,14 @@ internal sealed partial class Main : Form
 
         // If file or directory changes were detected so save xml
         ResetTokenSource();
-        mediaBackup.Save(cancellationToken);
+        mediaBackup.Save(mainCt);
     }
 
     private void CheckConnectedBackupDiskButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
         ResetTokenSource();
-
-        _ = TaskWrapper(Task.Run(() => CheckConnectedDiskAndCopyFilesAsync(false, false, cancellationToken), cancellationToken),
-            cancellationToken);
+        _ = TaskWrapper(Task.Run(() => CheckConnectedDiskAndCopyFilesAsync(false, false, mainCt), mainCt), mainCt);
         Utils.TraceOut();
     }
 
@@ -822,7 +812,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(Task.Run(() => CopyFilesAsync(true, cancellationToken), cancellationToken), cancellationToken);
+        _ = TaskWrapper(Task.Run(() => CopyFilesAsync(true, mainCt), mainCt), mainCt);
         Utils.TraceOut();
     }
 
@@ -854,7 +844,7 @@ internal sealed partial class Main : Form
             {
                 backupFile.UpdateContentsHash();
             }
-            mediaBackup.Save(cancellationToken);
+            mediaBackup.Save(mainCt);
         }
         Utils.TraceOut();
     }
@@ -964,7 +954,7 @@ internal sealed partial class Main : Form
 
             ResetTokenSource();
             var param1 = scanDirectoryComboBox.Text;
-            _ = TaskWrapper(Task.Run(() => ScanDirectoryAsync(param1, cancellationToken), cancellationToken), cancellationToken);
+            _ = TaskWrapper(Task.Run(() => ScanDirectoryAsync(param1, mainCt), mainCt), mainCt);
         }
         finally
         {
@@ -979,7 +969,7 @@ internal sealed partial class Main : Form
 
         foreach (var directory in directories)
         {
-            UpdateStatusLabel(string.Format(Resources.Main_Scanning, directory));
+            UpdateStatusLabel(ct, string.Format(Resources.Main_Scanning, directory));
 
             if (Directory.Exists(directory))
             {
@@ -1004,7 +994,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(Task.Run(() => ProcessFilesAsync(cancellationToken), cancellationToken), cancellationToken);
+        _ = TaskWrapper(Task.Run(() => ProcessFilesAsync(mainCt), mainCt), mainCt);
         Utils.TraceOut();
     }
 

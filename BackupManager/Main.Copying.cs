@@ -22,7 +22,7 @@ internal sealed partial class Main
     {
         Utils.TraceIn();
         var disk = SetupBackupDisk(ct);
-        UpdateStatusLabel(string.Format(Resources.Main_Copying, string.Empty));
+        UpdateStatusLabel(ct, string.Format(Resources.Main_Copying, string.Empty));
         IEnumerable<BackupFile> filesToBackup = mediaBackup.GetBackupFilesWithDiskEmpty().OrderByDescending(static q => q.Length);
         var backupFiles = filesToBackup.ToArray();
         var sizeOfFiles = backupFiles.Sum(static x => x.Length);
@@ -50,7 +50,7 @@ internal sealed partial class Main
             return;
         }
         mediaBackup.Save(ct);
-        UpdateStatusLabel(Resources.Main_Saved);
+        UpdateStatusLabel(ct, Resources.Main_Saved);
         var filesStillNotOnBackupDisk = mediaBackup.GetBackupFilesWithDiskEmpty();
         var text = string.Empty;
         var stillNotOnBackupDisk = filesStillNotOnBackupDisk as BackupFile[] ?? filesStillNotOnBackupDisk.ToArray();
@@ -86,7 +86,7 @@ internal sealed partial class Main
                 if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
                 counter++;
 
-                UpdateStatusLabel(string.Format(Resources.Main_Copying, string.Empty),
+                UpdateStatusLabel(ct, string.Format(Resources.Main_Copying, string.Empty),
                     Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
                 UpdateMediaFilesCountDisplay();
 
@@ -136,7 +136,7 @@ internal sealed partial class Main
         // disk and copy the new one
         if (backupFile.CheckContentHashes(disk))
         {
-            UpdateStatusLabel(string.Format(Resources.Main_Skipping, Path.GetFileName(sourceFileName)),
+            UpdateStatusLabel( string.Format(Resources.Main_Skipping, Path.GetFileName(sourceFileName)),
                 Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
 
             Utils.LogWithPushover(BackupAction.CopyFiles,
@@ -171,7 +171,7 @@ internal sealed partial class Main
         var destinationFileName = backupFile.BackupDiskFullPath(disk.BackupPath);
         var destinationFileNameTemp = destinationFileName + ".copying";
 
-        UpdateStatusLabel(string.Format(Resources.Main_Copying, Path.GetFileName(sourceFileName)),
+        UpdateStatusLabel(ct, string.Format(Resources.Main_Copying, Path.GetFileName(sourceFileName)),
             Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
         _ = Utils.GetDiskInfo(backupDiskTextBox.Text, out var availableSpace, out _);
 

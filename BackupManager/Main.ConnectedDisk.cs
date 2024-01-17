@@ -4,6 +4,7 @@
 //  </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -59,7 +60,7 @@ internal sealed partial class Main
 
                 Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.High,
                     $"Backup disk {lastBackupDiskChecked.Name} checked. Please insert the next disk now");
-                UpdateStatusLabel(nextDiskMessage);
+                UpdateStatusLabel(ct, nextDiskMessage);
                 BackupDisk newDisk;
 
                 do
@@ -78,7 +79,7 @@ internal sealed partial class Main
     private void WaitForNewDisk(string message, CancellationToken ct)
     {
         Utils.TraceIn();
-        UpdateStatusLabel(message);
+        UpdateStatusLabel(ct, message);
         Task.Delay(5000, ct).Wait(ct);
         Utils.TraceOut();
     }
@@ -103,7 +104,9 @@ internal sealed partial class Main
     ///     Returns a BackupDisk of the connected disk that's just been checked
     /// </summary>
     /// <param name="deleteExtraFiles"></param>
+    /// <param name="ct"></param>
     /// <returns>null if there was an error</returns>
+    [SuppressMessage("ReSharper", "MethodSupportsCancellation")]
     private BackupDisk CheckConnectedDisk(bool deleteExtraFiles, CancellationToken ct)
     {
         Utils.TraceIn();
@@ -118,7 +121,7 @@ internal sealed partial class Main
         var disk = SetupBackupDisk(ct);
         var directoryToCheck = disk.BackupPath;
         Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Started\n{directoryToCheck}");
-        UpdateStatusLabel($"Checking backup disk {directoryToCheck}");
+        UpdateStatusLabel(ct, $"Checking backup disk {directoryToCheck}");
         long readSpeed = 0, writeSpeed = 0;
 
         if (mediaBackup.Config.SpeedTestOnOff)
@@ -126,7 +129,7 @@ internal sealed partial class Main
             var diskTestSize = disk.Free > Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize)
                 ? Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize)
                 : disk.Free - Utils.BytesInOneKilobyte;
-            UpdateStatusLabel(string.Format(Resources.Main_SpeedTesting, directoryToCheck));
+            UpdateStatusLabel(ct, string.Format(Resources.Main_SpeedTesting, directoryToCheck));
 
             Utils.DiskSpeedTest(directoryToCheck, diskTestSize, mediaBackup.Config.SpeedTestIterations, out readSpeed,
                 out writeSpeed, ct);
@@ -143,23 +146,41 @@ internal sealed partial class Main
             Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
                 $"{disk.FreeFormatted} free is very low. Prepare new backup disk");
         }
-        var filesToReset = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, true);
 
-        foreach (var fileName in filesToReset)
+        // TODO So we can cancel safely we only clear the disk.Name property and leave the DiskChecked value
+        // Then if a cancel is requested we can put the disk.Name back how it was before we started scanning
+        var filesToReset = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, true).ToArray();
+
+        foreach (var file in filesToReset)
         {
-            fileName.ClearDiskChecked();
+            file.Disk = "-1"; // this is so we can reset them if we need to. DiskChecked is NOT cleared
         }
         UpdateMediaFilesCountDisplay();
-        UpdateStatusLabel(string.Format(Resources.Main_Scanning, directoryToCheck));
+        UpdateStatusLabel(ct, string.Format(Resources.Main_Scanning, directoryToCheck));
         var backupDiskFiles = Utils.GetFiles(directoryToCheck, "*", SearchOption.AllDirectories, FileAttributes.Hidden, ct);
         EnableProgressBar(0, backupDiskFiles.Length);
+        var reportedPercent = 0;
 
         for (var i = 0; i < backupDiskFiles.Length; i++)
         {
+            if (ct.IsCancellationRequested) continue;
+
             var backupFileFullPath = backupDiskFiles[i];
             var backupFileIndexFolderRelativePath = backupFileFullPath[(directoryToCheck.Length + 1)..];
             UpdateStatusLabel(string.Format(Resources.Main_Scanning, directoryToCheck), i + 1);
             UpdateMediaFilesCountDisplay();
+            var currentPercent = i * 100 / toolStripProgressBar.Maximum;
+
+            if (currentPercent % 10 == 0 && currentPercent > reportedPercent && backupDiskFiles.Length > 100)
+            {
+                reportedPercent = currentPercent;
+
+                if (!UpdateCurrentBackupDiskInfo(disk))
+                {
+                    Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Emergency,
+                        $"Error updating info for backup disk {disk.Name}");
+                }
+            }
 
             if (mediaBackup.Contains(backupFileIndexFolderRelativePath))
             {
@@ -171,7 +192,7 @@ internal sealed partial class Main
                     // calling CheckContentHashes will switch it from one disk to another and they'll keep doing it
                     // so if it was last seen on another disk delete it from this one
 
-                    if (disk.Name != backupFile.Disk && backupFile.Disk.HasValue())
+                    if (disk.Name != backupFile.Disk && backupFile.Disk != "-1")
                     {
                         Utils.Log($"{backupFile.FullPath} was on {backupFile.Disk} but now found on {disk.Name}");
 
@@ -273,46 +294,60 @@ internal sealed partial class Main
             }
         }
 
-        //TODO maybe check for root of a backup Disk being empty
-        UpdateStatusLabel($"Deleting {directoryToCheck} empty folders");
-        var directoriesDeleted = Utils.DeleteEmptyDirectories(directoryToCheck);
-
-        foreach (var directory in directoriesDeleted)
+        if (!ct.IsCancellationRequested)
         {
-            Utils.Log(BackupAction.CheckBackupDisk, $"Deleted empty directory {directory}");
-        }
-        disk.UpdateDiskChecked();
+            //TODO maybe check for root of a backup Disk being empty
+            UpdateStatusLabel($"Deleting {directoryToCheck} empty folders");
+            var directoriesDeleted = Utils.DeleteEmptyDirectories(directoryToCheck);
 
-        if (!UpdateCurrentBackupDiskInfo(disk))
-        {
-            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Emergency,
-                $"Error updating info for backup disk {disk.Name}");
-            return null;
-        }
-        UpdateMediaFilesCountDisplay();
-        var filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => b.Deleted && !b.Disk.HasValue()).ToArray();
-        RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out var removedFilesCount, out var deletedFilesCount);
+            foreach (var directory in directoriesDeleted)
+            {
+                Utils.Log(BackupAction.CheckBackupDisk, $"Deleted empty directory {directory}");
+            }
+            disk.UpdateDiskChecked();
 
-        if (removedFilesCount > 0)
-        {
-            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal,
-                $"{removedFilesCount} files removed completely");
-        }
+            if (!UpdateCurrentBackupDiskInfo(disk))
+            {
+                Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Emergency,
+                    $"Error updating info for backup disk {disk.Name}");
+                return null;
+            }
+            UpdateMediaFilesCountDisplay();
+            var filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => b.Deleted && !b.Disk.HasValue()).ToArray();
+            RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out var removedFilesCount, out var deletedFilesCount);
 
-        if (deletedFilesCount > 0)
-        {
-            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal,
-                $"{deletedFilesCount} files marked as deleted");
-        }
-        mediaBackup.Save(ct);
-        UpdateStatusLabel(Resources.Main_Saved);
+            if (removedFilesCount > 0)
+            {
+                Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal,
+                    $"{removedFilesCount} files removed completely");
+            }
 
-        if (!diskInfoMessageWasTheLastSent)
-        {
-            text = $"Name: {disk.Name}\nTotal: {disk.CapacityFormatted}\nFree: {disk.FreeFormatted}\nFiles: {disk.TotalFiles:n0}";
-            Utils.LogWithPushover(BackupAction.CheckBackupDisk, text);
+            if (deletedFilesCount > 0)
+            {
+                Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal,
+                    $"{deletedFilesCount} files marked as deleted");
+            }
+            mediaBackup.Save(ct);
+            UpdateStatusLabel(Resources.Main_Saved);
+
+            if (!diskInfoMessageWasTheLastSent)
+            {
+                text =
+                    $"Name: {disk.Name}\nTotal: {disk.CapacityFormatted}\nFree: {disk.FreeFormatted}\nFiles: {disk.TotalFiles:n0}";
+                Utils.LogWithPushover(BackupAction.CheckBackupDisk, text);
+            }
+            Utils.LogWithPushover(BackupAction.CheckBackupDisk, Resources.Main_Completed);
         }
-        Utils.LogWithPushover(BackupAction.CheckBackupDisk, Resources.Main_Completed);
+        else
+        {
+            // canceling so reset the files that we cleared earlier
+            foreach (var file in filesToReset)
+            {
+                // resetting to before we started
+                file.Disk = disk.Name;
+            }
+            ct.ThrowIfCancellationRequested();
+        }
         return Utils.TraceOut(disk);
     }
 

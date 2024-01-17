@@ -36,11 +36,9 @@ internal sealed partial class Main
     /// <summary>
     ///     For the monitoring applications
     /// </summary>
-    private readonly CancellationTokenSource monitoringTokenSource = new();
+    private readonly CancellationTokenSource monitoringCancellationTokenSource = new();
 
     private readonly Action scheduledBackupAction;
-
-    private CancellationToken cancellationToken;
 
     private int currentPercentComplete;
 
@@ -55,15 +53,17 @@ internal sealed partial class Main
     /// </summary>
     private bool longRunningActionExecutingRightNow;
 
+    // Always create a new one before running a long running task
+    private CancellationTokenSource mainCancellationTokenSource;
+
+    private CancellationToken mainCt;
+
     /// <summary>
     ///     When monitoring is executing prevent is executing again
     /// </summary>
     private bool monitoringExecutingRightNow;
 
     private int reportedPercentComplete;
-
-    // Always create a new one before running a long running task
-    private CancellationTokenSource tokenSource;
 
     [SupportedOSPlatform("windows")]
     internal Main()
@@ -123,7 +123,7 @@ internal sealed partial class Main
                 if (longRunningActionExecutingRightNow) return;
 
                 ResetTokenSource();
-                _ = TaskWrapper(Task.Run(() => ScheduledBackupAsync(cancellationToken), cancellationToken), cancellationToken);
+                _ = TaskWrapper(Task.Run(() => ScheduledBackupAsync(mainCt), mainCt), mainCt);
             };
             monitoringAction = MonitorServices;
             scheduledDateTimePicker.Value = DateTime.Parse(mediaBackup.Config.ScheduledBackupStartTime);
@@ -180,7 +180,7 @@ internal sealed partial class Main
     {
         Utils.TraceIn();
         Utils.LogWithPushover(BackupAction.CheckingSymbolicLinks, "Started");
-        UpdateStatusLabel("Started");
+        UpdateStatusLabel(ct, "Started");
         HashSet<string> hashSet = new();
 
         // HashSet of parent paths that match the RegEx's from config
@@ -195,7 +195,7 @@ internal sealed partial class Main
             if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
             _ = hashSet.Add(path);
         }
-        UpdateStatusLabel("Checking for broken Symbolic Links");
+        UpdateStatusLabel(ct, "Checking for broken Symbolic Links");
 
         var directoriesToCheck = mediaBackup.Config.SymbolicLinks
             .Select(static a => Path.Combine(a.RootDirectory, Utils.RemoveRegexGroupsFromString(a.RelativePath)))
@@ -220,7 +220,7 @@ internal sealed partial class Main
                     $"Checking broken links {percentCompleteCurrent}%");
             }
             var directoryToCheck = directoriesToCheck[i];
-            UpdateStatusLabel(string.Format(Resources.Main_Checking, directoryToCheck), i);
+            UpdateStatusLabel(ct, string.Format(Resources.Main_Checking, directoryToCheck), i);
             var linksDeleted = Utils.DeleteBrokenSymbolicLinks(directoryToCheck, true);
 
             foreach (var link in linksDeleted)
@@ -238,7 +238,7 @@ internal sealed partial class Main
             if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
             counter++;
             percentCompleteCurrent = Convert.ToInt32(counter * 100 / hashSet.Count);
-            UpdateStatusLabel(string.Format(Resources.Main_Checking, path), percentCompleteCurrent);
+            UpdateStatusLabel(ct, string.Format(Resources.Main_Checking, path), percentCompleteCurrent);
 
             if (percentCompleteCurrent % 25 == 0 && percentCompleteCurrent > percentCompleteReported && hashSet.Count > 100)
             {
@@ -250,7 +250,7 @@ internal sealed partial class Main
             UpdateSymbolicLinkForDirectory(path);
         }
         Utils.LogWithPushover(BackupAction.CheckingSymbolicLinks, Resources.Main_Completed);
-        UpdateStatusLabel(Resources.Main_Completed);
+        UpdateStatusLabel(ct, Resources.Main_Completed);
         Utils.TraceOut();
     }
 
@@ -295,7 +295,12 @@ internal sealed partial class Main
     private void UpdateMediaFilesCountDisplay()
     {
         var backupFilesWithoutDeleted = mediaBackup.GetBackupFiles(false).ToArray();
-        var backupFilesWithDiskEmpty = mediaBackup.GetBackupFilesWithDiskEmpty().ToArray();
+
+        //TODO 1
+        //var backupFilesWithDiskEmpty = mediaBackup.GetBackupFilesWithDiskEmpty().ToArray();
+
+        var backupFilesWithDiskEmpty = mediaBackup.BackupFiles
+            .Where(static p => (string.IsNullOrEmpty(p.Disk) || p.Disk == "-1") && !p.Deleted).ToArray();
         var backupFilesMarkedAsDeleted = mediaBackup.GetBackupFilesMarkedAsDeleted(false).ToArray();
         totalFilesTextBox.TextWithInvoke(backupFilesWithoutDeleted.Length.ToString("N0"));
         totalFilesSizeTextBox.TextWithInvoke(Utils.FormatSize(backupFilesWithoutDeleted.Sum(static y => y.Length)));
@@ -344,12 +349,12 @@ internal sealed partial class Main
 
         foreach (var item in mediaBackup.DirectoryChanges)
         {
-            mediaBackup.Watcher.FileSystemChanges.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime), cancellationToken);
+            mediaBackup.Watcher.FileSystemChanges.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime), mainCt);
         }
 
         foreach (var item in mediaBackup.DirectoriesToScan)
         {
-            mediaBackup.Watcher.DirectoriesToScan.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime), cancellationToken);
+            mediaBackup.Watcher.DirectoriesToScan.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime), mainCt);
         }
         Utils.TraceOut();
     }
@@ -451,7 +456,7 @@ internal sealed partial class Main
             for (var i = 0; i < mediaBackup.Config.Directories.Count; i++)
             {
                 var directory = mediaBackup.Config.Directories[i];
-                UpdateStatusLabel($"Speed testing {directory}", i + 1);
+                UpdateStatusLabel(ct, $"Speed testing {directory}", i + 1);
                 if (!Utils.IsDirectoryWritable(directory)) continue;
 
                 Utils.DiskSpeedTest(directory, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize),
@@ -526,9 +531,16 @@ internal sealed partial class Main
         longRunningActionExecutingRightNow = false;
     }
 
-    private void UpdateStatusLabel(string text = "", int value = 0)
+    private void UpdateStatusLabel(CancellationToken ct, string text = "", int value = 0)
     {
         Utils.TraceIn(value);
+        if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+        UpdateStatusLabel(text, value);
+        Utils.TraceOut();
+    }
+
+    private void UpdateStatusLabel(string text = "", int value = 0)
+    {
         text = text.Trim();
         var textToUse = string.Empty;
 
@@ -551,7 +563,6 @@ internal sealed partial class Main
         }
         UpdateProgressBar(value);
         if (toolStripStatusLabel.Text != textToUse) statusStrip.Invoke(_ => toolStripStatusLabel.Text = textToUse);
-        Utils.TraceOut();
     }
 
     private void EnableProgressBar(int minimum, int maximum)
