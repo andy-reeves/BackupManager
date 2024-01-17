@@ -285,11 +285,7 @@ internal sealed partial class Main
         var tasks = new List<Task>(diskNames.Length);
 
         tasks.AddRange(diskNames.Select(diskName => Utils.GetDirectoriesForDisk(diskName, mediaBackup.Config.Directories)).Select(
-            directoriesOnDisk =>
-            {
-                var methodName = GetFilesAsync;
-                return TaskWrapper(Task.Run(() => methodName(directoriesOnDisk, scanId, ct), ct), ct);
-            }));
+            directoriesOnDisk => { return TaskWrapper(Task.Run(() => GetFilesAsync(directoriesOnDisk, scanId, ct), ct), ct); }));
         Task.WhenAll(tasks).Wait(ct);
         Utils.LogWithPushover(BackupAction.ScanDirectory, "Scanning complete.");
 
@@ -334,6 +330,7 @@ internal sealed partial class Main
             {
                 fileBlockingCollection.Add(file, ct);
             }
+            directoryScan.TotalFiles = files.Length;
             directoryScanBlockingCollection.Add(directoryScan, ct);
         }
         Utils.TraceOut();

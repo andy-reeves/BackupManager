@@ -294,9 +294,6 @@ internal sealed partial class Main
     {
         var backupFilesWithoutDeleted = mediaBackup.GetBackupFiles(false).ToArray();
 
-        //TODO 1
-        //var backupFilesWithDiskEmpty = mediaBackup.GetBackupFilesWithDiskEmpty().ToArray();
-
         var backupFilesWithDiskEmpty = mediaBackup.BackupFiles
             .Where(static p => (string.IsNullOrEmpty(p.Disk) || p.Disk == "-1") && !p.Deleted).ToArray();
         var backupFilesMarkedAsDeleted = mediaBackup.GetBackupFilesMarkedAsDeleted(false).ToArray();

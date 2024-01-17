@@ -147,7 +147,7 @@ internal sealed partial class Main
                 $"{disk.FreeFormatted} free is very low. Prepare new backup disk");
         }
 
-        // TODO So we can cancel safely we only clear the disk.Name property and leave the DiskChecked value
+        // So we can cancel safely we only clear the disk.Name property and leave the DiskChecked value
         // Then if a cancel is requested we can put the disk.Name back how it was before we started scanning
         var filesToReset = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, true).ToArray();
 
@@ -242,7 +242,7 @@ internal sealed partial class Main
                 var hashToCheck = Utils.GetShortMd5HashFromFile(backupFileFullPath);
                 var file = mediaBackup.GetBackupFileFromContentsHashcode(hashToCheck);
 
-                if (file != null && file.Length != 0 && file.BackupDiskNumber == 0)
+                if (file != null && file.Length != 0 && file.Disk.HasValue())
                 {
                     var destFileName = file.BackupDiskFullPath(disk.BackupPath);
 

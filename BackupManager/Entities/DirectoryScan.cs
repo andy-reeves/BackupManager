@@ -71,6 +71,8 @@ public sealed class DirectoryScan : IEquatable<DirectoryScan>
         }
     }
 
+    public int TotalFiles { get; set; }
+
     public bool Equals(DirectoryScan other)
     {
         return null != other && Path == other.Path;
