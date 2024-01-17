@@ -62,13 +62,11 @@ internal sealed partial class Main
         Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal,
             $"Processing {filesParam.Count:n0} file{suffix}");
 
-        // One process thread for each disk or just one for all
-#if !DEBUG
-        tasks.AddRange(diskNames.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam))
-            .Select(files => TaskWrapper(Task.Run(() => ProcessFilesA(files, scanId, ct), ct), ct)));
-#else
-        tasks.Add(TaskWrapper(Task.Run(() => ProcessFilesA(filesParam.ToArray(), scanId, ct), ct), ct));
-#endif
+        // One process thread for each disk
+        tasks.AddRange(diskNames.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam)).Select(files => TaskWrapper(Task.Run(() => ProcessFilesA(files, scanId, ct), ct), ct)));
+
+        // this is to have only 1 thread processing files
+        // tasks.Add(TaskWrapper(Task.Run(() => ProcessFilesA(filesParam.ToArray(), scanId, ct), ct), ct));
         Task.WhenAll(tasks).Wait(ct);
         var returnValue = !tasks.Any(static t => !t.Result);
         if (returnValue) Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal, Resources.Main_Completed);
@@ -83,7 +81,7 @@ internal sealed partial class Main
     /// <param name="filesParam"></param>
     /// <param name="scanId"></param>
     /// <param name="ct"></param>
-    private bool ProcessFilesA(string[] filesParam, string scanId, CancellationToken ct)
+    private bool ProcessFilesA(IEnumerable<string> filesParam, string scanId, CancellationToken ct)
     {
         Utils.TraceIn();
 

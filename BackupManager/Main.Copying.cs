@@ -97,7 +97,7 @@ internal sealed partial class Main
                 FileInfo sourceFileInfo = new(sourceFileName);
                 var sourceFileSize = Utils.FormatSize(sourceFileInfo.Length);
 
-                if (FileExistsInternal(sizeOfCopy, disk, backupFile, sourceFileName, copiedSoFar, counter, totalFileCount))
+                if (FileExistsInternal(sizeOfCopy, disk, backupFile, sourceFileName, copiedSoFar, counter, totalFileCount, ct))
                 {
                     CopyFileInternal(sizeOfCopy, disk, sourceFileName, copiedSoFar, sourceFileInfo, ref outOfDiskSpaceMessageSent,
                         remainingSizeOfFilesToCopy, counter, totalFileCount, sourceFileSize, backupFile, ref lastCopySpeed, ct);
@@ -122,7 +122,7 @@ internal sealed partial class Main
     }
 
     private bool FileExistsInternal(long sizeOfCopy, BackupDisk disk, BackupFile backupFile, string sourceFileName,
-        long copiedSoFar, int fileCounter, int totalFileCount)
+        long copiedSoFar, int fileCounter, int totalFileCount, CancellationToken ct)
     {
         Utils.TraceIn();
         var destinationFileName = backupFile.BackupDiskFullPath(disk.BackupPath);
@@ -136,7 +136,7 @@ internal sealed partial class Main
         // disk and copy the new one
         if (backupFile.CheckContentHashes(disk))
         {
-            UpdateStatusLabel( string.Format(Resources.Main_Skipping, Path.GetFileName(sourceFileName)),
+            UpdateStatusLabel(ct, string.Format(Resources.Main_Skipping, Path.GetFileName(sourceFileName)),
                 Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
 
             Utils.LogWithPushover(BackupAction.CopyFiles,

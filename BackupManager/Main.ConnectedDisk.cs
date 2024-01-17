@@ -340,7 +340,7 @@ internal sealed partial class Main
         }
         else
         {
-            // canceling so reset the files that we cleared earlier
+            // cancelling so reset the files that we cleared earlier
             foreach (var file in filesToReset)
             {
                 // resetting to before we started

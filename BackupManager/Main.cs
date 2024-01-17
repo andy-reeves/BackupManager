@@ -547,7 +547,7 @@ internal sealed partial class Main : Form
         Utils.TraceIn();
         mainCancellationTokenSource.Cancel();
         toolStripStatusLabel.Text = Resources.Main_Cancelling;
-        Utils.LogWithPushover(BackupAction.General, PushoverPriority.Normal, "Canceling");
+        Utils.LogWithPushover(BackupAction.General, Resources.Main_Cancelling);
         if (Utils.CopyProcess != null && !Utils.CopyProcess.HasExited) Utils.CopyProcess?.Kill();
         Utils.TraceOut();
     }

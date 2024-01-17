@@ -23,7 +23,7 @@ internal sealed partial class Main
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
-            Utils.Trace("Canceling");
+            Utils.Trace(Resources.Main_Cancelling);
             ASyncTasksCleanUp();
         }
         catch (Exception u)
@@ -44,7 +44,7 @@ internal sealed partial class Main
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
-            Utils.Trace("Canceling");
+            Utils.Trace(Resources.Main_Cancelling);
             if (withAsyncTasksCleanup) ASyncTasksCleanUp();
         }
         catch (Exception u)
