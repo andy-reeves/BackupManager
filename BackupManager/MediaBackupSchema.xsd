@@ -74,6 +74,7 @@
                     <xs:element type="xs:string" name="Id" maxOccurs="1" minOccurs="1" />
                     <xs:element type="xs:dateTime" name="StartDateTime" maxOccurs="1" minOccurs="1" />
                     <xs:element type="xs:dateTime" name="EndDateTime" maxOccurs="1" minOccurs="1" />
+                    <xs:element type="xs:long" name="TotalFiles" maxOccurs="1" minOccurs="1" />
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>

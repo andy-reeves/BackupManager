@@ -305,6 +305,14 @@ internal sealed partial class Main
             {
                 Utils.Log(BackupAction.CheckBackupDisk, $"Deleted empty directory {directory}");
             }
+
+            // This updates any remaining files that were on this disk to be empty and ready for copying again
+            var filesWithMinusOne = mediaBackup.GetBackupFilesOnBackupDisk("-1", true).ToArray();
+
+            foreach (var file in filesWithMinusOne)
+            {
+                file.Disk = string.Empty;
+            }
             disk.UpdateDiskChecked();
 
             if (!UpdateCurrentBackupDiskInfo(disk))
