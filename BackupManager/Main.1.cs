@@ -138,10 +138,8 @@ internal sealed partial class Main
 
             if (mediaBackup.Config.ScheduledBackupRunOnStartup)
             {
-#if !DEBUG
                 ResetTokenSource();
-                _ = TaskWrapper(Task.Run(() => ScheduledBackupAsync(cancellationToken), cancellationToken), cancellationToken);
-#endif
+                _ = TaskWrapper(Task.Run(() => ScheduledBackupAsync(mainCt), mainCt), mainCt);
             }
             SetupDailyTrigger(mediaBackup.Config.ScheduledBackupOnOff);
             SetupFileWatchers();
