@@ -108,8 +108,7 @@ internal sealed partial class Main
             {
                 if (Utils.StringContainsFixedSpace(file))
                 {
-                    Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High,
-                        $"{file} has a fixed space so renaming it");
+                    Utils.LogWithPushover(BackupAction.ProcessFiles, $"{file} has a fixed space so renaming it");
 
                     if (Utils.IsFileAccessible(file))
                         file = Utils.RenameFileToRemoveFixedSpaces(file);
