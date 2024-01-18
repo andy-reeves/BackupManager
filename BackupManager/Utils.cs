@@ -34,6 +34,8 @@ using BackupManager.Entities;
 using BackupManager.Extensions;
 using BackupManager.Properties;
 
+using HtmlAgilityPack;
+
 using MediaInfo;
 
 using Microsoft.Extensions.Logging;
@@ -276,8 +278,12 @@ internal static partial class Utils
                         $"https://raw.githubusercontent.com/sabnzbd/sabnzbd/{branchName}/sabnzbd/version.py", "__version__", "=",
                         1);
                 case ApplicationType.Sonarr:
-                    return GitHubVersionNumberParser($"https://raw.githubusercontent.com/Sonarr/Sonarr/{branchName}/version.sh",
-                        "packageVersion=", "=", 1);
+                    // For up to v3 we did this
+                    // GitHubVersionNumberParser($"https://raw.githubusercontent.com/Sonarr/Sonarr/{branchName}/version.sh", "packageVersion=", "=", 1);
+
+                    // for v4 this
+                    var doc = new HtmlWeb().Load("https://github.com/Sonarr/Sonarr/releases/latest");
+                    return doc.DocumentNode.SelectNodes("//html/head/title")[0].InnerText.Split(" ")[1];
                 case ApplicationType.Radarr:
                     return GitHubVersionNumberParser(
                         $"https://raw.githubusercontent.com/Radarr/Radarr/{branchName}/azure-pipelines.yml", "majorVersion:", ":",
