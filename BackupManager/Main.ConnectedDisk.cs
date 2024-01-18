@@ -194,7 +194,7 @@ internal sealed partial class Main
 
                     if (disk.Name != backupFile.Disk && backupFile.Disk != "-1")
                     {
-                        if (backupFile.Disk != "-1")
+                        if (backupFile.Disk != "-1" && backupFile.Disk.HasValue())
                             Utils.Log($"{backupFile.FullPath} was on {backupFile.Disk} but now found on {disk.Name}");
 
                         // we will fall through from here to the delete further down and remove the file
