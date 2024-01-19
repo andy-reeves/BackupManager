@@ -418,11 +418,10 @@ internal sealed partial class Main : Form
 
     private void MonitoringTimer_Tick(object sender, EventArgs e)
     {
-        if (!monitoringExecutingRightNow)
-        {
-            var ct = monitoringCancellationTokenSource.Token;
-            _ = TaskWrapper(Task.Run(monitoringAction, ct), false, ct);
-        }
+        if (monitoringExecutingRightNow) return;
+
+        _ = TaskWrapper(Task.Run(monitoringAction, monitoringCancellationTokenSource.Token), false,
+            monitoringCancellationTokenSource.Token);
     }
 
     [SupportedOSPlatform("windows")]

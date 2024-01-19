@@ -314,7 +314,7 @@ internal sealed partial class Main
         UpdateMediaFilesCountDisplay();
     }
 
-    private void GetFilesAsync(string[] directories, string scanId, CancellationToken ct)
+    private void GetFilesAsync(IEnumerable<string> directories, string scanId, CancellationToken ct)
     {
         Utils.TraceIn();
         var filters = mediaBackup.GetFilters();

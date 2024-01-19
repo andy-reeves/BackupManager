@@ -1,5 +1,12 @@
-﻿using System;
+﻿// --------------------------------------------------------------------------------------------------------------------
+//  <copyright file="VideoFileInfoReader.cs" company="Andy Reeves">
+// 
+//  </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 using BackupManager.Extensions;
@@ -8,64 +15,43 @@ using FFMpegCore;
 
 namespace BackupManager;
 
-public interface IVideoFileInfoReader
+internal sealed class VideoFileInfoReader
 {
-    MediaInfoModel GetMediaInfo(string filename);
+    private const int CurrentMediaInfoSchemaRevision = 11;
 
-    TimeSpan? GetRunTime(string filename);
-}
+    private static readonly string[] _validHdrColourPrimaries = { "bt2020" };
 
-public class VideoFileInfoReader : IVideoFileInfoReader
-{
-    // private readonly IDiskProvider _diskProvider;
+    // ReSharper disable once StringLiteralTypo
+    private static readonly string[] _hlgTransferFunctions = { "bt2020-10", "arib-std-b67" };
 
-    // private readonly Logger<> _logger;
+    // ReSharper disable once StringLiteralTypo
+    private static readonly string[] _pqTransferFunctions = { "smpte2084" };
 
-    private readonly List<FFProbePixelFormat> _pixelFormats;
+    private static readonly string[] _validHdrTransferFunctions = _hlgTransferFunctions.Concat(_pqTransferFunctions).ToArray();
 
-    public const int MINIMUM_MEDIA_INFO_SCHEMA_REVISION = 8;
+    private readonly List<FFProbePixelFormat> pixelFormats;
 
-    public const int CURRENT_MEDIA_INFO_SCHEMA_REVISION = 11;
-
-    private static readonly string[] ValidHdrColourPrimaries = { "bt2020" };
-
-    private static readonly string[] HlgTransferFunctions = { "bt2020-10", "arib-std-b67" };
-
-    private static readonly string[] PqTransferFunctions = { "smpte2084" };
-
-    private static readonly string[] ValidHdrTransferFunctions = HlgTransferFunctions.Concat(PqTransferFunctions).ToArray();
-
-    public VideoFileInfoReader() //(IDiskProvider diskProvider, Logger logger)
+    internal VideoFileInfoReader()
     {
-        // _diskProvider = diskProvider;
-        // _logger = logger;
-
-        // We bundle ffprobe for all platforms
-        // GlobalFFOptions.Configure(options => options.BinaryFolder = AppDomain.CurrentDomain.BaseDirectory);
-        // GlobalFFOptions.Configure(options => options.BinaryFolder = AppDomain.CurrentDomain.BaseDirectory);
-
         try
         {
-            _pixelFormats = FFProbe.GetPixelFormats();
+            pixelFormats = FFProbe.GetPixelFormats();
         }
-        catch //(Exception e)
+        catch
         {
-            //_logger.Error(e, "Failed to get supported pixel formats from ffprobe");
-            _pixelFormats = new List<FFProbePixelFormat>();
+            pixelFormats = new List<FFProbePixelFormat>();
         }
     }
 
+    [SuppressMessage("ReSharper", "IdentifierTypo")]
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
+    [SuppressMessage("ReSharper", "ConstantConditionalAccessQualifier")]
+
+    // ReSharper disable once FunctionComplexityOverflow
     public MediaInfoModel GetMediaInfo(string filename)
     {
-        // if (!_diskProvider.FileExists(filename)) throw new FileNotFoundException("Media file does not exist: " + filename);
-
-        // if (MediaFileExtensions.DiskExtensions.Contains(Path.GetExtension(filename))) return null;
-
-        // TODO: Cache media info by path, mtime and length so we don't need to read files multiple times
         try
         {
-            // _logger.Debug("Getting media info from {0}", filename);
-
             var ffprobeOutput =
                 FFProbe.GetStreamJson(filename, ffOptions: new FFOptions { ExtraArguments = "-probesize 50000000" });
             var analysis = FFProbe.AnalyseStreamJson(ffprobeOutput);
@@ -77,47 +63,49 @@ public class VideoFileInfoReader : IVideoFileInfoReader
                     ffOptions: new FFOptions { ExtraArguments = "-probesize 150000000 -analyzeduration 150000000" });
                 analysis = FFProbe.AnalyseStreamJson(ffprobeOutput);
             }
-            var mediaInfoModel = new MediaInfoModel();
-            mediaInfoModel.ContainerFormat = analysis.Format.FormatName;
-            mediaInfoModel.VideoFormat = primaryVideoStream?.CodecName;
-            mediaInfoModel.VideoCodecID = primaryVideoStream?.CodecTagString;
-            mediaInfoModel.VideoProfile = primaryVideoStream?.Profile;
-            mediaInfoModel.VideoBitrate = primaryVideoStream?.BitRate ?? 0;
-            mediaInfoModel.VideoMultiViewCount = primaryVideoStream?.Tags?.ContainsKey("stereo_mode") ?? false ? 2 : 1;
-            mediaInfoModel.VideoBitDepth = GetPixelFormat(primaryVideoStream?.PixelFormat)?.Components.Min(x => x.BitDepth) ?? 8;
-            mediaInfoModel.VideoColourPrimaries = primaryVideoStream?.ColorPrimaries;
-            mediaInfoModel.VideoTransferCharacteristics = primaryVideoStream?.ColorTransfer;
 
-            mediaInfoModel.DoviConfigurationRecord =
-                primaryVideoStream?.SideDataList?.Find(x => x.GetType().Name == nameof(DoviConfigurationRecordSideData)) as
-                    DoviConfigurationRecordSideData;
-            mediaInfoModel.Height = primaryVideoStream?.Height ?? 0;
-            mediaInfoModel.Width = primaryVideoStream?.Width ?? 0;
-            mediaInfoModel.AudioFormat = analysis.PrimaryAudioStream?.CodecName;
-            mediaInfoModel.AudioCodecID = analysis.PrimaryAudioStream?.CodecTagString;
-            mediaInfoModel.AudioProfile = analysis.PrimaryAudioStream?.Profile;
-            mediaInfoModel.AudioBitrate = analysis.PrimaryAudioStream?.BitRate ?? 0;
-
-            mediaInfoModel.RunTime = GetBestRuntime(analysis.PrimaryAudioStream?.Duration, primaryVideoStream?.Duration,
-                analysis.Format.Duration);
-            mediaInfoModel.AudioStreamCount = analysis.AudioStreams.Count;
-            mediaInfoModel.AudioChannels = analysis.PrimaryAudioStream?.Channels ?? 0;
-            mediaInfoModel.AudioChannelPositions = analysis.PrimaryAudioStream?.ChannelLayout;
-            mediaInfoModel.VideoFps = primaryVideoStream?.FrameRate ?? 0;
-
-            mediaInfoModel.AudioLanguages = analysis.AudioStreams?.Select(x => x.Language)
-                .Where(l => l.IsNotNullOrWhiteSpace()).ToList();
-
-            mediaInfoModel.Subtitles = analysis.SubtitleStreams?.Select(x => x.Language).Where(l => l.IsNotNullOrWhiteSpace())
-                .ToList();
-            mediaInfoModel.ScanType = "Progressive";
-            mediaInfoModel.RawStreamData = ffprobeOutput;
-            mediaInfoModel.SchemaRevision = CURRENT_MEDIA_INFO_SCHEMA_REVISION;
+            var mediaInfoModel = new MediaInfoModel
+            {
+                ContainerFormat = analysis.Format.FormatName,
+                VideoFormat = primaryVideoStream?.CodecName,
+                VideoCodecId = primaryVideoStream?.CodecTagString,
+                VideoProfile = primaryVideoStream?.Profile,
+                VideoBitrate = primaryVideoStream?.BitRate ?? 0,
+                VideoMultiViewCount = primaryVideoStream?.Tags?.ContainsKey("stereo_mode") ?? false ? 2 : 1,
+                VideoBitDepth = GetPixelFormat(primaryVideoStream?.PixelFormat)?.Components.Min(static x => x.BitDepth) ?? 8,
+                VideoColourPrimaries = primaryVideoStream?.ColorPrimaries,
+                VideoTransferCharacteristics = primaryVideoStream?.ColorTransfer,
+                DoviConfigurationRecord =
+                    primaryVideoStream?.SideDataList?.Find(static x =>
+                        x.GetType().Name == nameof(DoviConfigurationRecordSideData)) as DoviConfigurationRecordSideData,
+                Height = primaryVideoStream?.Height ?? 0,
+                Width = primaryVideoStream?.Width ?? 0,
+                AudioFormat = analysis.PrimaryAudioStream?.CodecName,
+                AudioCodecId = analysis.PrimaryAudioStream?.CodecTagString,
+                AudioProfile = analysis.PrimaryAudioStream?.Profile,
+                AudioBitrate = analysis.PrimaryAudioStream?.BitRate ?? 0,
+                RunTime =
+                    GetBestRuntime(analysis.PrimaryAudioStream?.Duration, primaryVideoStream?.Duration,
+                        analysis.Format.Duration),
+                AudioStreamCount = analysis.AudioStreams.Count,
+                AudioChannels = analysis.PrimaryAudioStream?.Channels ?? 0,
+                AudioChannelPositions = analysis.PrimaryAudioStream?.ChannelLayout,
+                VideoFps = primaryVideoStream?.FrameRate ?? 0,
+                AudioLanguages =
+                    analysis.AudioStreams?.Select(static x => x.Language).Where(static l => l.IsNotNullOrWhiteSpace())
+                        .ToList(),
+                Subtitles =
+                    analysis.SubtitleStreams?.Select(static x => x.Language).Where(static l => l.IsNotNullOrWhiteSpace())
+                        .ToList(),
+                ScanType = "Progressive",
+                RawStreamData = ffprobeOutput,
+                SchemaRevision = CurrentMediaInfoSchemaRevision
+            };
             if (analysis.Format.Tags?.TryGetValue("title", out var title) ?? false) mediaInfoModel.Title = title;
             FFProbeFrames frames = null;
 
             // if it looks like PQ10 or similar HDR, do a frame analysis to figure out which type it is
-            if (PqTransferFunctions.Contains(mediaInfoModel.VideoTransferCharacteristics))
+            if (_pqTransferFunctions.Contains(mediaInfoModel.VideoTransferCharacteristics))
             {
                 var frameOutput = FFProbe.GetFrameJson(filename,
                     ffOptions: new FFOptions { ExtraArguments = "-read_intervals \"%+#1\" -select_streams v" });
@@ -125,19 +113,16 @@ public class VideoFileInfoReader : IVideoFileInfoReader
                 frames = FFProbe.AnalyseFrameJson(frameOutput);
             }
             var streamSideData = primaryVideoStream?.SideDataList ?? new List<SideData>();
-
-            var framesSideData = frames?.Frames?.Count > 0
-                ? frames?.Frames[0]?.SideDataList ?? new List<SideData>()
-                : new List<SideData>();
+            var framesSideData = frames?.Frames.Count > 0 ? frames.Frames[0].SideDataList : new List<SideData>();
             var sideData = streamSideData.Concat(framesSideData).ToList();
 
             mediaInfoModel.VideoHdrFormat = GetHdrFormat(mediaInfoModel.VideoBitDepth, mediaInfoModel.VideoColourPrimaries,
                 mediaInfoModel.VideoTransferCharacteristics, sideData);
             return mediaInfoModel;
         }
-        catch //(Exception ex)
+        catch
         {
-            // _logger.Error(ex, "Unable to parse media info from file: {0}", filename);
+            // ignored
         }
         return null;
     }
@@ -150,20 +135,18 @@ public class VideoFileInfoReader : IVideoFileInfoReader
 
     private static TimeSpan GetBestRuntime(TimeSpan? audio, TimeSpan? video, TimeSpan general)
     {
-        if (!video.HasValue || video.Value.TotalMilliseconds == 0)
-        {
-            if (!audio.HasValue || audio.Value.TotalMilliseconds == 0) return general;
+        if (video.HasValue && video.Value.TotalMilliseconds != 0) return video.Value;
+        if (!audio.HasValue || audio.Value.TotalMilliseconds == 0) return general;
 
-            return audio.Value;
-        }
-        return video.Value;
+        return audio.Value;
     }
 
-    private VideoStream GetPrimaryVideoStream(IMediaAnalysis mediaAnalysis)
+    private static VideoStream GetPrimaryVideoStream(IMediaAnalysis mediaAnalysis)
     {
         if (mediaAnalysis.VideoStreams.Count <= 1) return mediaAnalysis.PrimaryVideoStream;
 
         // motion image codec streams are often in front of the main video stream
+        // ReSharper disable once StringLiteralTypo
         var codecFilter = new[] { "mjpeg", "png" };
 
         return mediaAnalysis.VideoStreams.FirstOrDefault(s => !codecFilter.Contains(s.CodecName)) ??
@@ -172,13 +155,14 @@ public class VideoFileInfoReader : IVideoFileInfoReader
 
     private FFProbePixelFormat GetPixelFormat(string format)
     {
-        return _pixelFormats.Find(x => x.Name == format);
+        return pixelFormats.Find(x => x.Name == format);
     }
 
-    public static HdrFormat GetHdrFormat(int bitDepth, string colorPrimaries, string transferFunction, List<SideData> sideData)
+    private static HdrFormat GetHdrFormat(int bitDepth, string colorPrimaries, string transferFunction, List<SideData> sideData)
     {
         if (bitDepth < 10) return HdrFormat.None;
 
+        // ReSharper disable once IdentifierTypo
         if (TryGetSideData<DoviConfigurationRecordSideData>(sideData, out var dovi))
         {
             var hasHdr10Plus = TryGetSideData<HdrDynamicMetadataSpmte2094>(sideData, out _);
@@ -193,26 +177,22 @@ public class VideoFileInfoReader : IVideoFileInfoReader
             };
         }
 
-        if (!ValidHdrColourPrimaries.Contains(colorPrimaries) || !ValidHdrTransferFunctions.Contains(transferFunction))
+        if (!_validHdrColourPrimaries.Contains(colorPrimaries) || !_validHdrTransferFunctions.Contains(transferFunction))
             return HdrFormat.None;
-        if (HlgTransferFunctions.Contains(transferFunction)) return HdrFormat.Hlg10;
+        if (_hlgTransferFunctions.Contains(transferFunction)) return HdrFormat.Hlg10;
+        if (!_pqTransferFunctions.Contains(transferFunction)) return HdrFormat.None;
+        if (TryGetSideData<HdrDynamicMetadataSpmte2094>(sideData, out _)) return HdrFormat.Hdr10Plus;
 
-        if (PqTransferFunctions.Contains(transferFunction))
-        {
-            if (TryGetSideData<HdrDynamicMetadataSpmte2094>(sideData, out _)) return HdrFormat.Hdr10Plus;
+        if (TryGetSideData<MasteringDisplayMetadata>(sideData, out _) ||
+            TryGetSideData<ContentLightLevelMetadata>(sideData, out _))
+            return HdrFormat.Hdr10;
 
-            if (TryGetSideData<MasteringDisplayMetadata>(sideData, out _) ||
-                TryGetSideData<ContentLightLevelMetadata>(sideData, out _))
-                return HdrFormat.Hdr10;
-
-            return HdrFormat.Pq10;
-        }
-        return HdrFormat.None;
+        return HdrFormat.Pq10;
     }
 
-    private static bool TryGetSideData<T>(List<SideData> list, out T result) where T : SideData
+    private static bool TryGetSideData<T>(IEnumerable<SideData> list, out T result) where T : SideData
     {
-        result = (T)list?.FirstOrDefault(x => x.GetType().Name == typeof(T).Name);
+        result = (T)list?.FirstOrDefault(static x => x.GetType().Name == typeof(T).Name);
         return result != null;
     }
 }
