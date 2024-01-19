@@ -91,17 +91,19 @@
             <xs:documentation>Monitor start is delayed until after the first monitoring interval</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element type="xs:string" name="PushoverAppToken" />
-        <xs:element type="xs:boolean" name="PushoverOnOff">
+        <xs:element type="xs:string" name="PushoverAppToken1" maxOccurs="1" minOccurs="0" />
+        <xs:element type="xs:string" name="PushoverAppToken2" maxOccurs="1" minOccurs="0" />
+
+        <xs:element type="xs:boolean" name="PushoverOnOff" maxOccurs="1" minOccurs="0">
           <xs:annotation>
             <xs:documentation>True to enable sending Pushover messages</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element type="xs:boolean" name="PushoverSendLowOnOff" />
-        <xs:element type="xs:boolean" name="PushoverSendNormalOnOff" />
-        <xs:element type="xs:boolean" name="PushoverSendHighOnOff" />
-        <xs:element type="xs:boolean" name="PushoverSendEmergencyOnOff" />
-        <xs:element type="xs:string" name="PushoverUserKey" />
+        <xs:element type="xs:boolean" name="PushoverSendLowOnOff" maxOccurs="1" minOccurs="0" />
+        <xs:element type="xs:boolean" name="PushoverSendNormalOnOff" maxOccurs="1" minOccurs="0" />
+        <xs:element type="xs:boolean" name="PushoverSendHighOnOff" maxOccurs="1" minOccurs="0" />
+        <xs:element type="xs:boolean" name="PushoverSendEmergencyOnOff" maxOccurs="1" minOccurs="0" />
+        <xs:element type="xs:string" name="PushoverUserKey" maxOccurs="1" minOccurs="0" />
         <xs:element type="xs:int" name="PushoverWarningMessagesRemaining" maxOccurs="1" minOccurs="0">
           <xs:annotation>
             <xs:documentation>Sends a high priority message once this limit is passed</xs:documentation>

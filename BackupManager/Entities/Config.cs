@@ -138,7 +138,12 @@ public sealed class Config
     /// </summary>
     public string PlexToken { get; set; }
 
-    public string PushoverAppToken { get; set; }
+    public string PushoverAppToken1 { get; set; }
+
+    /// <summary>
+    ///     Used when PushoverAppToken1 has reached its limit
+    /// </summary>
+    public string PushoverAppToken2 { get; set; }
 
     /// <summary>
     ///     If True Pushover messages are sent

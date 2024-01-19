@@ -175,6 +175,8 @@ internal static partial class Utils
 
     private static bool _alreadySendingPushoverMessage;
 
+    private static bool _sentAlertForLowPushoverMessages;
+
     /// <summary>
     ///     The number of Pushover messages remaining this month
     /// </summary>
@@ -1039,7 +1041,7 @@ internal static partial class Utils
 
     private static void SendPushoverMessage(string title, PushoverPriority priority, string message)
     {
-        SendPushoverMessage(title, priority, PushoverRetry.None, PushoverExpires.Immediately, message);
+        SendPushoverMessage(title, priority, PushoverRetry.None, PushoverExpires.Immediately, message, Config.PushoverAppToken1);
     }
 
     internal static void Wait(int howManyMillisecondsToWait)
@@ -1100,7 +1102,7 @@ internal static partial class Utils
     }
 
     private static void SendPushoverMessage(string title, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires,
-        string message)
+        string message, string pushoverAppToken)
     {
         TraceIn();
         var applicationLimitRemaining = 0;
@@ -1116,7 +1118,7 @@ internal static partial class Utils
         {
             Dictionary<string, string> parameters = new()
             {
-                { "token", Config.PushoverAppToken },
+                { "token", pushoverAppToken },
                 { "user", Config.PushoverUserKey },
                 { "priority", Convert.ChangeType(priority, priority.GetTypeCode()).ToString() },
                 { "message", message },
@@ -1154,15 +1156,27 @@ internal static partial class Utils
                 Trace($"Pushover messages remaining: {applicationLimitRemaining}");
                 PushoverMessagesRemaining = applicationLimitRemaining;
 
-                if (applicationLimitRemaining < Config.PushoverWarningMessagesRemaining)
+                if (applicationLimitRemaining <= 0)
                 {
-                    if (!_alreadySendingPushoverMessage)
+                    if (Config.PushoverAppToken2.HasValue())
+                        SendPushoverMessage(title, priority, retry, expires, message, Config.PushoverAppToken2);
+                }
+                else
+                {
+                    if (applicationLimitRemaining < Config.PushoverWarningMessagesRemaining)
                     {
-                        _alreadySendingPushoverMessage = true;
+                        if (!_sentAlertForLowPushoverMessages)
+                        {
+                            if (!_alreadySendingPushoverMessage)
+                            {
+                                _alreadySendingPushoverMessage = true;
 
-                        SendPushoverMessage("Message Limit Warning", PushoverPriority.High,
-                            $"ApplicationType Limit Remaining is: {applicationLimitRemaining}");
-                        _alreadySendingPushoverMessage = false;
+                                SendPushoverMessage("Message Limit Warning", PushoverPriority.High,
+                                    $"{applicationLimitRemaining} remaining");
+                                _alreadySendingPushoverMessage = false;
+                                _sentAlertForLowPushoverMessages = true;
+                            }
+                        }
                     }
                 }
             }
@@ -1322,7 +1336,7 @@ internal static partial class Utils
     {
         Log(backupAction, text);
 
-        if (Config.PushoverAppToken.HasValue() && Config.PushoverAppToken != "InsertYourPushoverAppTokenHere")
+        if (Config.PushoverAppToken1.HasValue() && Config.PushoverAppToken1 != "InsertYourPushoverAppTokenHere")
             SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, text);
     }
 
@@ -1339,8 +1353,11 @@ internal static partial class Utils
     {
         Log(backupAction, text);
 
-        if (Config.PushoverAppToken.HasValue())
-            SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, text);
+        if (Config.PushoverAppToken1.HasValue())
+        {
+            SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, text,
+                Config.PushoverAppToken1);
+        }
     }
 
     #endregion
