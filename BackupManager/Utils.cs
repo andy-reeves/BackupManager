@@ -1075,9 +1075,6 @@ internal static partial class Utils
         return !string.IsNullOrEmpty(path) && path.ToUpperInvariant().Contains("[DV]");
     }
 
-    /*
-   */
-
     internal static bool FileIsDolbyVisionProfile5(string path)
     {
         TraceIn(path);
@@ -1091,7 +1088,7 @@ internal static partial class Utils
         // ReSharper disable once StringLiteralTypo
         return info == null
             ? throw new ApplicationException("Unable to load ffprobe.exe")
-            : info is { DoviConfigurationRecord.DvProfile: 5 };
+            : TraceOut(info is { DoviConfigurationRecord.DvProfile: 5 });
     }
 
     /// <summary>
