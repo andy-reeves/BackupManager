@@ -135,7 +135,11 @@ internal sealed partial class Main
             if (directory != directoryScanning)
             {
                 if (!firstDir) scanInfo.EndDateTime = DateTime.Now;
-                scanInfo = new DirectoryScan(DirectoryScanType.ProcessingFiles, directory, DateTime.Now, scanId);
+
+                scanInfo = new DirectoryScan(DirectoryScanType.ProcessingFiles, directory, DateTime.Now, scanId)
+                {
+                    TotalFiles = files.Count(f => f.StartsWithIgnoreCase(directory))
+                };
                 mediaBackup.DirectoryScans.Add(scanInfo);
                 directoryScanning = directory;
                 firstDir = false;

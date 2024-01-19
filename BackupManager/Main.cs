@@ -872,22 +872,25 @@ internal sealed partial class Main : Form
         var scans = mediaBackup.DirectoryScans.Where(s => scanIdsList.Contains(s.Id) && s.TypeOfScan == scanType).ToArray();
         if (scans.Length == 0) return;
 
+        const int columnWidth = 7;
         var distinctDirectoriesScans = scans.Distinct().OrderBy(static s => s.Path).ToArray();
         var longestDirectoryLength = scans.Select(static d => d.Path.Length).Max();
-        var headerLine1 = string.Empty.PadRight(longestDirectoryLength + 10);
-        var headerLine2 = string.Empty.PadRight(longestDirectoryLength + 10);
-        var totalLine = "Total time: " + string.Empty.PadRight(longestDirectoryLength - 4);
-        var lapsedTimeLine = "Lapsed time: " + string.Empty.PadRight(longestDirectoryLength - 5);
+        var headerLine1 = string.Empty.PadRight(longestDirectoryLength + columnWidth + 4);
+        var headerLine2 = string.Empty.PadRight(longestDirectoryLength + columnWidth + 4);
+        var totalLine = "Total time:" + string.Empty.PadRight(longestDirectoryLength - 2);
+        var lapsedTimeLine = "Lapsed time:" + string.Empty.PadRight(longestDirectoryLength - columnWidth + 4);
+        var fileCountsLine = "File count:" + string.Empty.PadRight(longestDirectoryLength - columnWidth + 5);
         var totals = new TimeSpan[howMany];
         var lapsedTime = new TimeSpan[howMany];
+        var fileCounts = new int[howMany];
         var previousId = string.Empty;
 
         // prepare the header lines
         foreach (var b in scans.OrderBy(static s => s.StartDateTime).Where(b => b.Id != previousId))
         {
             // build the line of scan dates like 30.11 01.12 etc
-            headerLine1 += b.StartDateTime.ToString("dd.MM ");
-            headerLine2 += b.StartDateTime.ToString("HH.mm ");
+            headerLine1 += b.StartDateTime.ToString("dd.MM  ");
+            headerLine2 += b.StartDateTime.ToString("HH.mm  ");
             previousId = b.Id;
         }
         var textLines = string.Empty;
@@ -896,18 +899,18 @@ internal sealed partial class Main : Form
         {
             var scansForDirectory = scans.Where(scan => scan.Path == directory.Path && scan.TypeOfScan == scanType).ToArray();
             var fileCount = mediaBackup.GetBackupFilesInDirectory(directory.Path, false).Count();
-            textLines += $"{directory.Path.PadRight(longestDirectoryLength + 1)} {fileCount,6:n0}";
+            textLines += $"{directory.Path.PadRight(longestDirectoryLength + 1)} {fileCount,columnWidth:n0}";
 
             for (var i = 0; i < scanIdsList.Length; i++)
             {
                 var backup = scansForDirectory.FirstOrDefault(scan => scan.Id == scanIdsList[i]);
 
                 if (backup == null)
-                    textLines += "    --";
+                    textLines += "--".PadLeft(columnWidth);
                 else
                 {
                     totals[i] += backup.ScanDuration;
-                    textLines += $"{Utils.FormatTimeSpanMinutesOnly(backup.ScanDuration),6}";
+                    textLines += $"{Utils.FormatTimeSpanMinutesOnly(backup.ScanDuration),columnWidth}";
                 }
             }
             textLines += "\n";
@@ -919,17 +922,24 @@ internal sealed partial class Main : Form
 
                 // ReSharper disable once AccessToModifiedClosure
                 mediaBackup.DirectoryScans.Where(s => s.Id == scanIdsList[index] && s.TypeOfScan == scanType));
+
+            fileCounts[index] = mediaBackup.DirectoryScans.Where(s => s.Id == scanIdsList[index] && s.TypeOfScan == scanType)
+                .Sum(static directoryScan => directoryScan.TotalFiles);
         }
 
+        fileCountsLine = fileCounts.Where(static aTotal => aTotal > -1)
+            .Aggregate(fileCountsLine, static (current, aTotal) => current + $"{aTotal,columnWidth:n0}");
+
         lapsedTimeLine = lapsedTime.Where(static aTotal => aTotal > TimeSpan.FromSeconds(0)).Aggregate(lapsedTimeLine,
-            static (current, aTotal) => current + $"{Utils.FormatTimeSpanMinutesOnly(aTotal),6}");
+            static (current, aTotal) => current + $"{Utils.FormatTimeSpanMinutesOnly(aTotal),columnWidth}");
 
         totalLine = totals.Where(static aTotal => aTotal > TimeSpan.FromSeconds(0)).Aggregate(totalLine,
-            static (current, aTotal) => current + $"{Utils.FormatTimeSpanMinutesOnly(aTotal),6}");
+            static (current, aTotal) => current + $"{Utils.FormatTimeSpanMinutesOnly(aTotal),columnWidth}");
         Utils.Log($"{scanType} report:");
         Utils.Log(headerLine1);
         Utils.Log(headerLine2);
         Utils.Log(textLines);
+        Utils.Log(fileCountsLine);
         Utils.Log(totalLine);
         Utils.Log(lapsedTimeLine);
         Utils.TraceOut();
