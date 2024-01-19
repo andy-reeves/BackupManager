@@ -353,6 +353,36 @@ internal static partial class StringExtensions
         return s.Length > length ? s[..(length - 1)] + "…" : s;
     }
 
+    public static bool IsNullOrWhiteSpace(this string text)
+    {
+        return string.IsNullOrWhiteSpace(text);
+    }
+
+    public static bool IsNotNullOrWhiteSpace(this string text)
+    {
+        return !string.IsNullOrWhiteSpace(text);
+    }
+
+    public static bool StartsWithIgnoreCase(this string text, string startsWith)
+    {
+        return text.StartsWith(startsWith, StringComparison.InvariantCultureIgnoreCase);
+    }
+
+    public static bool EndsWithIgnoreCase(this string text, string startsWith)
+    {
+        return text.EndsWith(startsWith, StringComparison.InvariantCultureIgnoreCase);
+    }
+
+    public static bool EqualsIgnoreCase(this string text, string equals)
+    {
+        return text.Equals(equals, StringComparison.InvariantCultureIgnoreCase);
+    }
+
+    public static bool ContainsIgnoreCase(this string text, string contains)
+    {
+        return text.IndexOf(contains, StringComparison.InvariantCultureIgnoreCase) > -1;
+    }
+
     public static bool Contains(this string source, string toCheck, StringComparison comp)
     {
         return source?.IndexOf(toCheck, comp) >= 0;

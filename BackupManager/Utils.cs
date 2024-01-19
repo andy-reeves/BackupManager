@@ -1075,6 +1075,25 @@ internal static partial class Utils
         return !string.IsNullOrEmpty(path) && path.ToUpperInvariant().Contains("[DV]");
     }
 
+    /*
+   */
+
+    internal static bool FileIsDolbyVisionProfile5(string path)
+    {
+        TraceIn(path);
+        ArgumentException.ThrowIfNullOrEmpty(path);
+        if (!FileIsVideo(path) || !VideoFileIsDolbyVision(path)) return TraceOut(false);
+
+        if (!File.Exists(path)) throw new FileNotFoundException("File not found", path);
+
+        var info = new VideoFileInfoReader().GetMediaInfo(path);
+
+        // ReSharper disable once StringLiteralTypo
+        return info == null
+            ? throw new ApplicationException("Unable to load ffprobe.exe")
+            : info is { DoviConfigurationRecord.DvProfile: 5 };
+    }
+
     /// <summary>
     ///     Checks the file at path for a Dolby Vision Profile 5 file. It looks for 'dvhe.05' in the 'HDR format' metadata of
     ///     the file. This has to load the entire file so its can take 10 seconds or more.
@@ -1082,7 +1101,7 @@ internal static partial class Utils
     /// <param name="path">The path to the file</param>
     /// <returns>True if the file is Dolby Vision Profile 5</returns>
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
-    internal static bool FileIsDolbyVisionProfile5(string path)
+    internal static bool FileIsDolbyVisionProfile5Old(string path)
     {
         TraceIn(path);
         ArgumentException.ThrowIfNullOrEmpty(path);
