@@ -76,6 +76,8 @@ internal static partial class Utils
 
     private static readonly object _lock = new();
 
+    private static readonly HttpClient _client = new();
+
     #region Constants
 
 #if DEBUG
@@ -1159,6 +1161,9 @@ internal static partial class Utils
                  (priority != PushoverPriority.Emergency || !Config.PushoverSendEmergencyOnOff)))
                 return;
 
+            var timestamp = DateTime.Now.ToUnixTimeMilliseconds();
+            Trace($"timestamp is {timestamp} for {message}");
+
             Dictionary<string, string> parameters = new()
             {
                 { "token", Config.PushoverAppTokenToUse },
@@ -1166,7 +1171,7 @@ internal static partial class Utils
                 { "priority", Convert.ChangeType(priority, priority.GetTypeCode()).ToString() },
                 { "message", message },
                 { "title", title },
-                { "timestamp", DateTime.Now.ToUnixTime() }
+                { "timestamp", timestamp }
             };
 
             if (priority == PushoverPriority.Emergency)
@@ -1179,10 +1184,10 @@ internal static partial class Utils
             if (expires != PushoverExpires.Immediately)
                 parameters.Add("expire", Convert.ChangeType(expires, expires.GetTypeCode()).ToString());
             using FormUrlEncodedContent postContent = new(parameters);
-            HttpClient client = new();
+            Task.Delay(500).Wait(); // 500 seems to work
 
             // ReSharper disable once AccessToDisposedClosure
-            var task = Task.Run(() => client.PostAsync(PushoverAddress, postContent));
+            var task = Task.Run(() => _client.PostAsync(PushoverAddress, postContent));
             task.Wait();
             var response = task.Result;
             _ = response.EnsureSuccessStatusCode();

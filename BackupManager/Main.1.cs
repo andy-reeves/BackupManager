@@ -493,9 +493,9 @@ internal sealed partial class Main
             cancelButton, testPushoverEmergencyButton, testPushoverHighButton, testPushoverNormalButton,
             testPushoverLowButton, listFilesInDirectoryButton, listFilesNotCheckedInXXButton, listFilesNotOnBackupDiskButton,
             listFilesOnBackupDiskButton, listFilesWithDuplicateContentHashcodesButton, listMoviesWithMultipleFilesButton,
-            processesGroupBox, pushoverGroupBox, listFilesGroupBox, allBackupDisksGroupBox, reportBackupDiskStatusButton,
-            listFilesInDirectoryGroupBox, checkAllBackupDisksButton, checkDeleteAndCopyAllBackupDisksButton, monitoringButton,
-            reportBackupDiskStatusButton, listFilesInDirectoryGroupBox, listFilesOnBackupDiskGroupBox, openLogFileButton
+            processesGroupBox, pushoverGroupBox, listFilesGroupBox, reportBackupDiskStatusButton,
+            listFilesInDirectoryGroupBox, monitoringButton, reportBackupDiskStatusButton, listFilesInDirectoryGroupBox,
+            listFilesOnBackupDiskGroupBox, openLogFileButton
         };
 
         // ReSharper restore BadListLineBreaks
