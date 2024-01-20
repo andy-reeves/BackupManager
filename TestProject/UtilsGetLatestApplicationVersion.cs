@@ -32,7 +32,7 @@ public sealed class UtilsGetLatestApplicationVersion
         Assert.Equal("1.12.2.4211", Utils.GetApplicationVersionNumber(ApplicationType.Prowlarr));
         Assert.Equal("5.2.6.8376", Utils.GetApplicationVersionNumber(ApplicationType.Radarr));
         Assert.Equal("4.2.1", Utils.GetApplicationVersionNumber(ApplicationType.SABnzbd));
-        Assert.Equal("4.0.0.748", Utils.GetApplicationVersionNumber(ApplicationType.Sonarr));
+        Assert.Equal("4.0.1.929", Utils.GetApplicationVersionNumber(ApplicationType.Sonarr));
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public sealed class UtilsGetLatestApplicationVersion
         Assert.Equal("1.12.2", Utils.GetLatestApplicationVersionNumber(ApplicationType.Prowlarr));
         Assert.Equal("5.2.6", Utils.GetLatestApplicationVersionNumber(ApplicationType.Radarr));
         Assert.Equal("4.2.1", Utils.GetLatestApplicationVersionNumber(ApplicationType.SABnzbd));
-        Assert.Equal("4.0.0.748", Utils.GetLatestApplicationVersionNumber(ApplicationType.Sonarr));
+        Assert.Equal("4.0.1.929", Utils.GetLatestApplicationVersionNumber(ApplicationType.Sonarr));
 
         // These are the latest or develop branches
         // TODO Assert.Equal("4.0.10", Utils.GetLatestApplicationVersionNumber(ApplicationType.Sonarr, "develop"));
