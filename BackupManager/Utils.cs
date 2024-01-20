@@ -134,11 +134,6 @@ internal static partial class Utils
     /// </summary>
     private const string PushoverAddress = "https://api.pushover.net/1/messages.json";
 
-    /// <summary>
-    ///     Delay between Pushover messages in milliseconds
-    /// </summary>
-    private const int TimeDelayOnPushoverMessages = 500;
-
     #endregion
 
     #region Static Fields
@@ -160,13 +155,9 @@ internal static partial class Utils
     private static readonly string _logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
         "BackupManager_Debug.log");
 #else
-    private static readonly string _logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager.log");
+    private static readonly string _logFile =
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager.log");
 #endif
-
-    /// <summary>
-    ///     We use this to track when we sent the messages. This allows us to delay between messages
-    /// </summary>
-    private static DateTime _timeLastPushoverMessageSent = DateTime.UtcNow.AddSeconds(-60);
 
     /// <summary>
     ///     So we can get config values
@@ -1041,7 +1032,7 @@ internal static partial class Utils
 
     private static void SendPushoverMessage(string title, PushoverPriority priority, string message)
     {
-        SendPushoverMessage(title, priority, PushoverRetry.None, PushoverExpires.Immediately, message, Config.PushoverAppToken1);
+        SendPushoverMessage(title, priority, PushoverRetry.None, PushoverExpires.Immediately, message);
     }
 
     internal static void Wait(int howManyMillisecondsToWait)
@@ -1117,28 +1108,65 @@ internal static partial class Utils
                     v.Trim().StartsWith("dvhe.05", StringComparison.CurrentCultureIgnoreCase))));
     }
 
-    private static void SendPushoverMessage(string title, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires,
-        string message, string pushoverAppToken)
+    private static bool PushoverServiceAvailable(string pushoverAppToken)
     {
         TraceIn();
-        var applicationLimitRemaining = 0;
-
-        if (!Config.PushoverOnOff ||
-            ((priority is not (PushoverPriority.Low or PushoverPriority.Lowest) || !Config.PushoverSendLowOnOff) &&
-             (priority != PushoverPriority.Normal || !Config.PushoverSendNormalOnOff) &&
-             (priority != PushoverPriority.High || !Config.PushoverSendHighOnOff) &&
-             (priority != PushoverPriority.Emergency || !Config.PushoverSendEmergencyOnOff)))
-            return;
+        if (!pushoverAppToken.HasValue()) return TraceOut(false);
 
         try
         {
+            var pushoverLimitsAddress = $"https://api.pushover.net/1/apps/limits.json?token={pushoverAppToken}";
+            HttpClient client = new();
+            var task = Task.Run(() => client.GetAsync(pushoverLimitsAddress));
+            task.Wait();
+            var response = task.Result;
+            _ = response.EnsureSuccessStatusCode();
+
+            return !response.Headers.TryGetValues("X-Limit-App-Remaining", out var values)
+                ? TraceOut(false)
+                : TraceOut(Convert.ToInt32(values.First()) > 1);
+        }
+        catch (Exception ex)
+        {
+            Log($"Exception testing Pushover message {ex}");
+            return TraceOut(false);
+        }
+    }
+
+    private static void SetupPushoverAppToken()
+    {
+        Config.PushoverAppTokenToUse = PushoverServiceAvailable(Config.PushoverAppToken1) ? Config.PushoverAppToken1 :
+            PushoverServiceAvailable(Config.PushoverAppToken2) ? Config.PushoverAppToken2 : string.Empty;
+    }
+
+    private static void SendPushoverMessage(string title, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires,
+        string message)
+    {
+        TraceIn();
+
+        try
+        {
+            if (!Config.PushoverAppTokenToUse.HasValue())
+            {
+                SetupPushoverAppToken();
+                if (!Config.PushoverAppTokenToUse.HasValue()) return;
+            }
+
+            if (!Config.PushoverOnOff ||
+                ((priority is not (PushoverPriority.Low or PushoverPriority.Lowest) || !Config.PushoverSendLowOnOff) &&
+                 (priority != PushoverPriority.Normal || !Config.PushoverSendNormalOnOff) &&
+                 (priority != PushoverPriority.High || !Config.PushoverSendHighOnOff) &&
+                 (priority != PushoverPriority.Emergency || !Config.PushoverSendEmergencyOnOff)))
+                return;
+
             Dictionary<string, string> parameters = new()
             {
-                { "token", pushoverAppToken },
+                { "token", Config.PushoverAppTokenToUse },
                 { "user", Config.PushoverUserKey },
                 { "priority", Convert.ChangeType(priority, priority.GetTypeCode()).ToString() },
                 { "message", message },
-                { "title", title }
+                { "title", title },
+                { "timestamp", DateTime.Now.ToUnixTime() }
             };
 
             if (priority == PushoverPriority.Emergency)
@@ -1150,58 +1178,40 @@ internal static partial class Utils
 
             if (expires != PushoverExpires.Immediately)
                 parameters.Add("expire", Convert.ChangeType(expires, expires.GetTypeCode()).ToString());
+            using FormUrlEncodedContent postContent = new(parameters);
+            HttpClient client = new();
 
-            // ensures there's a 1s gap between messages
-            while (DateTime.UtcNow < _timeLastPushoverMessageSent.AddMilliseconds(TimeDelayOnPushoverMessages))
+            // ReSharper disable once AccessToDisposedClosure
+            var task = Task.Run(() => client.PostAsync(PushoverAddress, postContent));
+            task.Wait();
+            var response = task.Result;
+            _ = response.EnsureSuccessStatusCode();
+
+            PushoverMessagesRemaining = response.Headers.TryGetValues("X-Limit-App-Remaining", out var values)
+                ? Convert.ToInt32(values.First())
+                : 0;
+            Trace($"Pushover messages remaining: {PushoverMessagesRemaining}");
+
+            if (PushoverMessagesRemaining < Config.PushoverWarningMessagesRemaining)
             {
-                Task.Delay(TimeDelayOnPushoverMessages / 10).Wait();
-            }
-
-            using (FormUrlEncodedContent postContent = new(parameters))
-            {
-                HttpClient client = new();
-
-                // ReSharper disable once AccessToDisposedClosure
-                var task = Task.Run(() => client.PostAsync(PushoverAddress, postContent));
-                task.Wait();
-                var response = task.Result;
-                _ = response.EnsureSuccessStatusCode();
-
-                if (response.Headers.TryGetValues("X-Limit-App-Remaining", out var values))
-                    applicationLimitRemaining = Convert.ToInt32(values.First());
-                Trace($"Pushover messages remaining: {applicationLimitRemaining}");
-                PushoverMessagesRemaining = applicationLimitRemaining;
-
-                if (applicationLimitRemaining <= 0)
+                if (!_sentAlertForLowPushoverMessages && !_alreadySendingPushoverMessage)
                 {
-                    if (Config.PushoverAppToken2.HasValue())
-                        SendPushoverMessage(title, priority, retry, expires, message, Config.PushoverAppToken2);
-                }
-                else
-                {
-                    if (applicationLimitRemaining < Config.PushoverWarningMessagesRemaining)
-                    {
-                        if (!_sentAlertForLowPushoverMessages)
-                        {
-                            if (!_alreadySendingPushoverMessage)
-                            {
-                                _alreadySendingPushoverMessage = true;
-
-                                SendPushoverMessage("Message Limit Warning", PushoverPriority.High,
-                                    $"{applicationLimitRemaining} remaining");
-                                _alreadySendingPushoverMessage = false;
-                                _sentAlertForLowPushoverMessages = true;
-                            }
-                        }
-                    }
+                    _alreadySendingPushoverMessage = true;
+                    SendPushoverMessage("Message Limit Warning", PushoverPriority.High, $"{PushoverMessagesRemaining} remaining");
+                    _alreadySendingPushoverMessage = false;
+                    _sentAlertForLowPushoverMessages = true;
                 }
             }
-            _timeLastPushoverMessageSent = DateTime.UtcNow;
+            if (PushoverMessagesRemaining < 5) SetupPushoverAppToken();
         }
         catch (Exception ex)
         {
-            // we ignore any push problems
+            // we ignore any pushover problems
             Log($"Exception sending Pushover message {ex}");
+        }
+        finally
+        {
+            TraceOut();
         }
     }
 
@@ -1351,9 +1361,7 @@ internal static partial class Utils
     internal static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, string text)
     {
         Log(backupAction, text);
-
-        if (Config.PushoverAppToken1.HasValue() && Config.PushoverAppToken1 != "InsertYourPushoverAppTokenHere")
-            SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, text);
+        SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, text);
     }
 
     /// <summary>
@@ -1368,12 +1376,7 @@ internal static partial class Utils
         PushoverExpires expires, string text)
     {
         Log(backupAction, text);
-
-        if (Config.PushoverAppToken1.HasValue())
-        {
-            SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, text,
-                Config.PushoverAppToken1);
-        }
+        SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, text);
     }
 
     #endregion

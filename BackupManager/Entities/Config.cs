@@ -145,6 +145,8 @@ public sealed class Config
     /// </summary>
     public string PushoverAppToken2 { get; set; }
 
+    [XmlIgnore] public string PushoverAppTokenToUse { get; set; }
+
     /// <summary>
     ///     If True Pushover messages are sent
     /// </summary>

@@ -124,9 +124,7 @@ internal sealed partial class Main
                 if (currentPercentComplete % 25 == 0 && currentPercentComplete > reportedPercentComplete && files.Count > 100)
                 {
                     reportedPercentComplete = currentPercentComplete;
-
-                    Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal,
-                        $"Processing {currentPercentComplete}%");
+                    Utils.LogWithPushover(BackupAction.ProcessFiles, $"Processing {currentPercentComplete}%");
                 }
                 Utils.Trace($"{fileCounterForMultiThreadProcessing} Processing {file}");
             }
