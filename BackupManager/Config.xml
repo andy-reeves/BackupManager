@@ -4,6 +4,7 @@
 <Config xmlns="ConfigSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 
+  <BackupDisk>d:\</BackupDisk>
 
   <!-- After this many days the backup warns to check the disks again -->
   <BackupDiskDaysToReportSinceFilesChecked>90</BackupDiskDaysToReportSinceFilesChecked>
@@ -57,7 +58,7 @@
   <MonitoringOnOff>false</MonitoringOnOff>
   <MonitoringStartDelayOnOff>true</MonitoringStartDelayOnOff>
 
-  <PlexToken>InsertYourPlexPassTokenHere</PlexToken>
+  <PlexToken />
 
   <!-- Pushover messages are sent to this App Token until any limit reached and then the next -->
   <PushoverAppToken1>InsertYourPushoverAppTokenHere</PushoverAppToken1>
