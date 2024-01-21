@@ -60,7 +60,6 @@
             directoryScanReportLastRunOnlyButton = new System.Windows.Forms.Button();
             scanDirectoryButton = new System.Windows.Forms.Button();
             button2 = new System.Windows.Forms.Button();
-            createNewBackupDiskButton = new System.Windows.Forms.Button();
             scheduledBackupTimerButton = new System.Windows.Forms.Button();
             listFilesOnBackupDiskButton = new System.Windows.Forms.Button();
             listFilesInDirectoryButton = new System.Windows.Forms.Button();
@@ -200,7 +199,6 @@
             backupDiskTextBox.Size = new System.Drawing.Size(157, 23);
             backupDiskTextBox.TabIndex = 7;
             backupDiskTextBox.Text = "d:\\";
-            backupDiskTextBox.TextChanged += backupDiskTextBox_TextChanged;
             // 
             // listFilesNotOnBackupDiskButton
             // 
@@ -490,18 +488,6 @@
             toolTip.SetToolTip(button2, "Checks any file with [DV] in the path for Profile5. Can take 20 secs per file");
             button2.UseVisualStyleBackColor = true;
             button2.Click += DvProfile5CheckButton_Click;
-            // 
-            // createNewBackupDiskButton
-            // 
-            createNewBackupDiskButton.Location = new System.Drawing.Point(212, 125);
-            createNewBackupDiskButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            createNewBackupDiskButton.Name = "createNewBackupDiskButton";
-            createNewBackupDiskButton.Size = new System.Drawing.Size(64, 27);
-            createNewBackupDiskButton.TabIndex = 101;
-            createNewBackupDiskButton.Text = "Create";
-            toolTip.SetToolTip(createNewBackupDiskButton, "Creates a new backup disk");
-            createNewBackupDiskButton.UseVisualStyleBackColor = true;
-            createNewBackupDiskButton.Click += CreateNewBackupDiskButton_Click;
             // 
             // scheduledBackupTimerButton
             // 
@@ -1283,7 +1269,6 @@
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1416, 548);
-            Controls.Add(createNewBackupDiskButton);
             Controls.Add(button2);
             Controls.Add(directoryScanReportLastRunOnlyButton);
             Controls.Add(processFilesButton);
@@ -1469,7 +1454,6 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.TextBox pushoverMessagesRemainingTextBox;
         private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.Button createNewBackupDiskButton;
     }
 }
 

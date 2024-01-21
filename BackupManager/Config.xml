@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!-- ReSharper disable MarkupTextTypo -->
 <Config xmlns="ConfigSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:xsd="http://www.w3.org/2001/XMLSchema">  
-  
-  <!-- The backup disk path -->
-  <BackupDisk>d:\</BackupDisk> 
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
 
   <!-- After this many days the backup warns to check the disks again -->
-  <BackupDiskDaysToReportSinceFilesChecked>180</BackupDiskDaysToReportSinceFilesChecked>
+  <BackupDiskDaysToReportSinceFilesChecked>90</BackupDiskDaysToReportSinceFilesChecked>
 
   <!-- A bigger percentage difference than this and the backup stops -->
-  <BackupDiskDifferenceInFileCountAllowedPercentage>1</BackupDiskDifferenceInFileCountAllowedPercentage> 
+  <BackupDiskDifferenceInFileCountAllowedPercentage>1</BackupDiskDifferenceInFileCountAllowedPercentage>
 
   <!-- MinimumCriticalBackupDiskSpace in MB -->
   <BackupDiskMinimumCriticalSpace>210</BackupDiskMinimumCriticalSpace>
@@ -17,22 +17,22 @@
   <!-- MinimumFreeSpaceToLeaveOnBackupDisk in MB -->
   <BackupDiskMinimumFreeSpaceToLeave>201</BackupDiskMinimumFreeSpaceToLeave>
 
-  <!-- number of days before the next scan will be a full scan of the Directories --> 
+  <!-- number of days before the next scan will be a full scan of the Master Folders -->
   <DirectoriesDaysBetweenFullScan>7</DirectoriesDaysBetweenFullScan>
 
   <!-- True and the Directories are monitored for changes and not scanned fully each day -->
   <DirectoriesFileChangeWatcherOnOff>true</DirectoriesFileChangeWatcherOnOff>
 
-  <!-- If an error occurs whilst monitoring Directories we wait for this long before attempting to Reset the Watcher in seconds (120 - 2 mins) -->
+  <!-- If an error occurs whilst monitoring Directories we wait for this long before attempting to Reset the Watcher in seconds (120) -->
   <DirectoriesFileChangeWatcherRestartDelay>120</DirectoriesFileChangeWatcherRestartDelay>
 
   <!-- Only files matching this filter are used for File System scanning -->
-  <DirectoriesFilterRegEx />
+  <DirectoriesFilterRegEx>(.*(?&lt;!\.tmp)|.*\\_Backup\\.*)$</DirectoriesFilterRegEx>
 
-  <!-- Minimum age of the last change to a directory before we will scan it in seconds (300 - 5 mins) -->
-  <DirectoriesMinimumAgeBeforeScanning>300</DirectoriesMinimumAgeBeforeScanning>
+  <!-- Minimum age of the last change to a directory before we will scan it in seconds (250) -->
+  <DirectoriesMinimumAgeBeforeScanning>20</DirectoriesMinimumAgeBeforeScanning>
 
-  <!-- MinimumCriticalMasterFolderSpace in MB -->
+  <!-- Minimum critical directory space in MB -->
   <DirectoriesMinimumCriticalSpace>150000</DirectoriesMinimumCriticalSpace>
 
   <!-- Minimum read speed in MB/s -->
@@ -41,34 +41,28 @@
   <!-- Minimum write speed in MB/s -->
   <DirectoriesMinimumWriteSpeed>20</DirectoriesMinimumWriteSpeed>
 
-  <!-- Number of seconds between checking all the changed file notifications for folders to scan later (300 - 5 mins) -->
-  <DirectoriesProcessChangesTimer>300</DirectoriesProcessChangesTimer>
+  <!-- Number of seconds between checking all the changed file notifications for folders to scan later (180) -->
+  <DirectoriesProcessChangesTimer>10</DirectoriesProcessChangesTimer>
 
-  <!-- Number of seconds between checking all the directories ready to scan to see if they are old enough now (900 - 15 mins) -->
-  <DirectoriesScanTimer>900</DirectoriesScanTimer>
+  <!-- Number of seconds between checking all the directories ready to scan to see if they are old enough now (300) -->
+  <DirectoriesScanTimer>20</DirectoriesScanTimer>
 
-  <!-- When true check for latest versions of applications-->
+  <!-- When true check for latest versions of applications -->
   <MonitoringCheckLatestVersions>true</MonitoringCheckLatestVersions>
 
-  <!-- Monitor interval in seconds (240 - 4 mins) -->
-  <MonitoringInterval>240</MonitoringInterval>
+  <!-- Monitor interval in seconds -->
+  <MonitoringInterval>180</MonitoringInterval>
 
   <!-- When true the service monitoring starts when the app starts -->
-  <MonitoringOnOff>true</MonitoringOnOff>
-  
-  <!-- Delay before Application monitoring starts -->
+  <MonitoringOnOff>false</MonitoringOnOff>
   <MonitoringStartDelayOnOff>true</MonitoringStartDelayOnOff>
-  
-  <PlexToken>df_s2aZXWFiAmvJU-QFM</PlexToken>
+
+  <PlexToken>InsertYourPlexPassTokenHere</PlexToken>
 
   <!-- Pushover messages are sent to this App Token until any limit reached and then the next -->
-  <PushoverAppToken1>acdzfbwibfev3bzis73vv9dzy81tqb</PushoverAppToken1>
+  <PushoverAppToken1>InsertYourPushoverAppTokenHere</PushoverAppToken1>
 
-  <PushoverAppToken2>a68hubsd9egvubjmwsvh5ndawwtuda</PushoverAppToken2>
-
-  <PushoverAppToken3>antpms12oumk3u3wzw2xauchjss7qp</PushoverAppToken3>
-
-
+  <PushoverAppToken2>InsertYourPushoverAppTokenHere</PushoverAppToken2>
 
   <!-- True to enable sending Pushover messages -->
   <PushoverOnOff>true</PushoverOnOff>
@@ -81,7 +75,7 @@
 
   <PushoverSendEmergencyOnOff>true</PushoverSendEmergencyOnOff>
 
-  <PushoverUserKey>u94guozp6xu2qpbgqpvdzxxj6hpxad</PushoverUserKey>
+  <PushoverUserKey>InsertYourPushoverUserKeyHere</PushoverUserKey>
 
   <!-- Sends a high priority message once this limit is passed -->
   <PushoverWarningMessagesRemaining>500</PushoverWarningMessagesRemaining>
@@ -100,153 +94,53 @@
 
   <!-- Number of disk speed test iterations to run -->
   <SpeedTestIterations>1</SpeedTestIterations>
- 
+
   <!-- If True we test the speed of the disks -->
-  <SpeedTestOnOff>true</SpeedTestOnOff>
+  <SpeedTestOnOff>false</SpeedTestOnOff>
 
   <Monitors>
     <Monitor>
-      <Url>https://pb.eu/radarr</Url>
-      <Timeout>5</Timeout>
-      <ProcessToKill>radarr</ProcessToKill>
-      <ApplicationToStart>%ProgramData%\Radarr\bin\Radarr.exe</ApplicationToStart>
-      <ApplicationToStartArguments>/icon</ApplicationToStartArguments>
-      <Name>Radarr</Name>
-      <Port>0</Port>
-      <FailureTimePeriod>600</FailureTimePeriod>
-      <MaximumFailures>3</MaximumFailures>
-      <ApplicationType>Radarr</ApplicationType>
-    </Monitor>
-    <Monitor>
-      <Url>https://pb.eu/sonarr</Url>
-      <Timeout>5</Timeout>
-      <ProcessToKill>sonarr</ProcessToKill>
-      <ApplicationToStart>%ProgramData%\Sonarr\bin\Sonarr.exe</ApplicationToStart>
-      <ApplicationToStartArguments>/icon</ApplicationToStartArguments>
-      <Name>Sonarr</Name>
-      <Port>0</Port>
-      <FailureTimePeriod>600</FailureTimePeriod>
-      <MaximumFailures>3</MaximumFailures>
-      <ApplicationType>Sonarr</ApplicationType>
-    </Monitor>
-    <Monitor>
-      <Url>https://pb.eu/plex</Url>
-      <Timeout>5</Timeout>
-      <ProcessToKill>plex, ffmpeg</ProcessToKill>
-      <ApplicationToStart>C:\Program Files\Plex\Plex Media Server\Plex Media Server.exe</ApplicationToStart>
+      <Url />
+      <Timeout>30</Timeout>
+      <ProcessToKill>plex media server,ffmpeg</ProcessToKill>
+      <ApplicationToStart>"%ProgramFiles(x86)%\Plex\Plex Media Server\Plex Media Server.exe"</ApplicationToStart>
       <Name>Plex</Name>
       <Port>0</Port>
-      <FailureTimePeriod>600</FailureTimePeriod>
-      <MaximumFailures>3</MaximumFailures>
+      <FailureTimePeriod>30</FailureTimePeriod>
+      <MaximumFailures>10</MaximumFailures>
       <ApplicationType>PlexPass</ApplicationType>
     </Monitor>
-    <Monitor>
-      <Url>https://pb.eu/prowlarr</Url>
-      <Timeout>5</Timeout>
-      <ProcessToKill>prowlarr</ProcessToKill>
-      <ApplicationToStart>%ProgramData%\Prowlarr\bin\Prowlarr.exe</ApplicationToStart>
-      <Name>Prowlarr</Name>
-      <Port>0</Port>
-      <FailureTimePeriod>600</FailureTimePeriod>
-      <MaximumFailures>3</MaximumFailures>
-      <ApplicationType>Prowlarr</ApplicationType>
-    </Monitor>
-    <Monitor>
-      <Url>https://pb.eu/bazarr/movies</Url>
-      <Timeout>5</Timeout>
-      <Name>Bazarr</Name>
-      <Port>0</Port>
-      <ServiceToRestart>bazarr</ServiceToRestart>
-      <FailureTimePeriod>600</FailureTimePeriod>
-      <MaximumFailures>3</MaximumFailures>
-      <ApplicationType>Bazarr</ApplicationType>
-    </Monitor>
-    <Monitor>
-      <Url>https://pb.eu/sabnzbd</Url>
-      <Timeout>5</Timeout>
-      <ProcessToKill>sabnzbd</ProcessToKill>
-      <ApplicationToStart>%ProgramW6432%\SABnzbd\SABnzbd.exe</ApplicationToStart>
-      <ApplicationToStartArguments>-b0</ApplicationToStartArguments>
-      <Name>Sab</Name>
-      <Port>0</Port>
-      <FailureTimePeriod>600</FailureTimePeriod>
-      <MaximumFailures>3</MaximumFailures>
-      <ApplicationType>SABnzbd</ApplicationType>
-    </Monitor>
-    <Monitor>
-      <Url>pb.eu</Url>
-      <Timeout>10</Timeout>
-      <ProcessToKill />
-      <ApplicationToStart />
-      <Name>Media Server</Name>
-      <Port>3389</Port>
-      <FailureTimePeriod>600</FailureTimePeriod>
-      <MaximumFailures>3</MaximumFailures>
-    </Monitor>
   </Monitors>
-  <Directories>
-    <Directory>\\nas1\assets1\_Music</Directory>
-    <Directory>\\nas1\assets1\_TV</Directory>
-    <Directory>\\nas1\assets4\_Movies</Directory>
-    <Directory>\\nas1\assets4\_TV</Directory>
-    <Directory>\\nas2\assets1\_TV</Directory>
-    <Directory>\\nas2\assets2\_TV</Directory>
-    <Directory>\\nas2\assets2\_Movies</Directory>
-    <Directory>\\nas2\assets3\_Audio Books</Directory>
-    <Directory>\\nas2\assets3\_Backup</Directory>
-    <Directory>\\nas2\assets3\_Comedy</Directory>
-    <Directory>\\nas2\assets3\_Comedy (non-tmdb)</Directory>
-    <Directory>\\nas2\assets3\_Concerts</Directory>
-    <Directory>\\nas2\assets3\_Movies</Directory>
-    <Directory>\\nas2\assets3\_TV</Directory>
-    <Directory>\\nas2\assets3\_Videos</Directory>
-    <Directory>\\nas2\assets4\_Movies</Directory>
-    <Directory>\\nas2\assets4\_TV</Directory>
-    <Directory>\\nas3\assets1\_Movies</Directory>
-    <Directory>\\nas3\assets2\_Movies</Directory>
-    <Directory>\\nas3\assets3\_Movies</Directory>
-    <Directory>\\nas3\assets4\_Movies</Directory>
-    <Directory>\\nas3\assets4\_Movies (non-tmdb)</Directory>
-    <Directory>\\nas4\assets1\_TV</Directory>
-    <Directory>\\nas4\assets1\_Movies</Directory>
-    <Directory>\\nas4\assets2\_Movies</Directory>
-    <Directory>\\nas4\assets3\_Movies</Directory>
-    <Directory>\\nas4\assets4\_TV</Directory>
-    <Directory>\\nas5\assets1\_Movies</Directory>
-    <Directory>\\nas5\assets2\_MMA</Directory>
-    <Directory>\\nas5\assets2\_Movies</Directory>
-    <Directory>\\nas5\assets2\_Other</Directory>
-    <Directory>\\nas5\assets2\_Software</Directory>
-    <Directory>\\nas5\assets2\_Sport</Directory>
-    <Directory>\\nas5\assets2\_TV</Directory>
-    <Directory>\\nas5\assets3\_Movies</Directory>
-    <Directory>\\nas5\assets4\_TV</Directory>
-    <Directory>\\nas5\assets4\_TV (non-tvdb)</Directory>
-  </Directories>
-  
-  <Filters />
 
+  <!-- List each UNC path that you want to scan for files to backup here -->
+  <Directories>
+    <Directory>\\nas1\assets1\_Test\_Movies</Directory>
+    <Directory>\\nas1\assets1\_Test\_TV</Directory>
+  </Directories>
+
+  <Filters>
+    <!-- RegEx's of file to ignore when executing a scan -->
+    <FilterRegEx>!*.bup</FilterRegEx>
+  </Filters>
   <FilesToDelete>
     <FilesToDeleteRegEx>._.DS_Store</FilesToDeleteRegEx>
     <FilesToDeleteRegEx>.DS_Store</FilesToDeleteRegEx>
   </FilesToDelete>
-
-  <SymbolicLinks>
-   <!-- we need to capture the path up to and including the movie name and also the movieName -->
-   <SymbolicLink>
-     <RootDirectory>J:\</RootDirectory>
-     <FileDiscoveryRegEx>^(.*\\_Movies(?:\s\(non-tmdb\))?\\(.*?))(?:$|\\)</FileDiscoveryRegEx>
-     <RelativePath>_Movies\$2</RelativePath>
-     <PathToTarget>$1</PathToTarget>
-   </SymbolicLink>
-   <SymbolicLink>
-     <RootDirectory>J:\</RootDirectory>
-     <FileDiscoveryRegEx>^(.*\\_TV(?:\s\(non-tvdb\))?\\(.*?))(?:$|\\)</FileDiscoveryRegEx>
-     <RelativePath>_TV\$2</RelativePath>
-     <PathToTarget>$1</PathToTarget>
-   </SymbolicLink>
-  </SymbolicLinks>
-
   <DisksToSkipOnRestore />
-
+  <SymbolicLinks>
+    <!-- we need to capture the path up to and including the movie name and also the movieName -->
+    <SymbolicLink>
+      <RootDirectory>J:\</RootDirectory>
+      <FileDiscoveryRegEx>^(.*\\_Movies(?:\s\(non-tmdb\))?\\(.*?))(?:$|\\)</FileDiscoveryRegEx>
+      <RelativePath>_Movies\$2</RelativePath>
+      <PathToTarget>$1</PathToTarget>
+    </SymbolicLink>
+    <SymbolicLink>
+      <RootDirectory>J:\</RootDirectory>
+      <FileDiscoveryRegEx>^(.*\\_TV(?:\s\(non-tvdb\))?\\(.*?))(?:$|\\)</FileDiscoveryRegEx>
+      <RelativePath>_TV\$2</RelativePath>
+      <PathToTarget>$1</PathToTarget>
+    </SymbolicLink>
+  </SymbolicLinks>
 </Config>
+<!-- ReSharper restore MarkupTextTypo -->

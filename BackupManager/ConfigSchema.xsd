@@ -11,11 +11,6 @@
     </xs:annotation>
     <xs:complexType>
       <xs:all>
-        <xs:element type="xs:string" name="BackupDisk" maxOccurs="1" minOccurs="1">
-          <xs:annotation>
-            <xs:documentation>The backup disk path</xs:documentation>
-          </xs:annotation>
-        </xs:element>
         <xs:element type="xs:int" name="BackupDiskDaysToReportSinceFilesChecked" maxOccurs="1" minOccurs="0">
           <xs:annotation>
             <xs:documentation>After this many days the backup warns to check the disks again</xs:documentation>
@@ -98,7 +93,6 @@
         </xs:element>
         <xs:element type="xs:string" name="PushoverAppToken1" maxOccurs="1" minOccurs="0" />
         <xs:element type="xs:string" name="PushoverAppToken2" maxOccurs="1" minOccurs="0" />
-        <xs:element type="xs:string" name="PushoverAppToken3" maxOccurs="1" minOccurs="0" />
 
         <xs:element type="xs:boolean" name="PushoverOnOff" maxOccurs="1" minOccurs="0">
           <xs:annotation>

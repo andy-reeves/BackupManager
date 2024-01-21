@@ -245,7 +245,11 @@ internal sealed partial class Main
                 if (file != null && file.Length != 0 && file.Disk.HasValue())
                 {
                     var destFileName = file.BackupDiskFullPath(disk.BackupPath);
-                    Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Renaming {backupFileFullPath} to {destFileName}");
+
+                    //TODO Temp remove the rename message until all of TV is done
+                    //Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal,
+                    // $"Renaming {backupFileFullPath} to {destFileName}");
+                    Utils.Log($"Renaming {backupFileFullPath} to {destFileName}");
 
                     if (File.Exists(destFileName))
                     {
@@ -293,17 +297,13 @@ internal sealed partial class Main
 
         if (!ct.IsCancellationRequested)
         {
+            //TODO maybe check for root of a backup Disk being empty
             UpdateStatusLabel($"Deleting {directoryToCheck} empty folders");
-            var filesOnThisDisk = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, true);
+            var directoriesDeleted = Utils.DeleteEmptyDirectories(directoryToCheck);
 
-            if (filesOnThisDisk.Any())
+            foreach (var directory in directoriesDeleted)
             {
-                var directoriesDeleted = Utils.DeleteEmptyDirectories(directoryToCheck);
-
-                foreach (var directory in directoriesDeleted)
-                {
-                    Utils.Log(BackupAction.CheckBackupDisk, $"Deleted empty directory {directory}");
-                }
+                Utils.Log(BackupAction.CheckBackupDisk, $"Deleted empty directory {directory}");
             }
 
             // This updates any remaining files that were on this disk to be empty and ready for copying again

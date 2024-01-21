@@ -342,7 +342,6 @@ internal sealed partial class Main : Form
         Utils.TraceIn();
         IEnumerable<BackupDisk> disks = mediaBackup.BackupDisks.OrderBy(static p => p.Number);
         Utils.Log("Listing backup disk statuses");
-        Utils.Log("Name        Checked    Capacity   Used     Free    Files  Deleted   Diff      %");
 
         foreach (var disk in disks)
         {
@@ -353,11 +352,12 @@ internal sealed partial class Main : Form
                 var d = DateTime.Parse(disk.Checked);
                 lastChecked = d.ToString(Resources.DateTime_ddMMMyy);
             }
-            var backupFilesOnBackupDiskNotIncludingDeleted = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, false).ToArray();
-            var totalSizeOfFilesFromSumOfFiles = backupFilesOnBackupDiskNotIncludingDeleted.Sum(static p => p.Length);
+
+            var totalSizeOfFilesFromSumOfFiles =
+                mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, false).Sum(static p => p.Length);
 
             var deletedCount = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, true).Count() -
-                               backupFilesOnBackupDiskNotIncludingDeleted.Length;
+                               mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, false).Count();
             var sizeFromDiskAnalysis = disk.Capacity - disk.Free;
 
             var difference = totalSizeOfFilesFromSumOfFiles > sizeFromDiskAnalysis
@@ -366,13 +366,14 @@ internal sealed partial class Main : Form
             var percentageDiff = Math.Round(difference * 100 / (double)sizeFromDiskAnalysis, 0);
             var percentString = percentageDiff is < 1 and > -1 ? "-" : $"{percentageDiff}%";
 
-            Utils.Log($"{disk.Name,-12}{lastChecked,9}{disk.CapacityFormatted,9}{Utils.FormatSize(sizeFromDiskAnalysis),9}" +
-                      $"{disk.FreeFormatted,9}{Utils.FormatSize(totalSizeOfFilesFromSumOfFiles),9}{deletedCount,5}" +
-                      $"{Utils.FormatSize(difference),12}{percentString,5}");
+            Utils.Log(
+                $"{disk.Name,-11} Checked: {lastChecked,-9} Capacity: {disk.CapacityFormatted,-8} Used: {Utils.FormatSize(sizeFromDiskAnalysis),-7} Free: {disk.FreeFormatted,-7} Sum of files: {Utils.FormatSize(totalSizeOfFilesFromSumOfFiles),-8} DeletedFiles: {deletedCount,-3} Diff: {Utils.FormatSize(difference),-8} {percentString}");
         }
         var totalSizeFormatted = Utils.FormatSize(mediaBackup.BackupDisks.Sum(static p => p.Capacity));
         var totalFreeSpaceFormatted = Utils.FormatSize(mediaBackup.BackupDisks.Sum(static p => p.Free));
-        Utils.Log($"\n      Total Capacity: {totalSizeFormatted,8}     Free: {totalFreeSpaceFormatted,7}");
+
+        Utils.Log(
+            $"                         Total Capacity: {totalSizeFormatted,-22} Free: {totalFreeSpaceFormatted,-7} Sum of files: {Utils.FormatSize(mediaBackup.BackupFiles.Sum(static p => p.Length))}");
         Utils.TraceOut();
     }
 
@@ -1042,72 +1043,4 @@ internal sealed partial class Main : Form
             Utils.Log("No DV files found");
         Utils.TraceOut();
     }
-
-    [SupportedOSPlatform("windows")]
-    private void CreateNewBackupDiskButton_Click(object sender, EventArgs e)
-    {
-        Utils.TraceIn();
-
-        try
-        {
-            if (MessageBox.Show("Are you sure you want to prepare a new backup disk?", "Create new disk",
-                    MessageBoxButtons.YesNo) != DialogResult.Yes)
-                return;
-
-            // get the next unused disk number
-            // rename the disk
-            // turn all recycle bin
-            // create the backup folder
-            // create the share
-            // scan the disk
-            // save the disk info
-            // redraw UI
-            var directoryInfo = new DirectoryInfo(backupDiskTextBox.Text);
-
-            if (directoryInfo.GetFileSystemInfos("*", SearchOption.TopDirectoryOnly)
-                .Where(static x => (x.Attributes & FileAttributes.Hidden) == 0).Any())
-            {
-                _ = MessageBox.Show("Disk is not empty. Please empty the disk before preparing for backup.", "Disk not empty",
-                    MessageBoxButtons.OK);
-                return;
-            }
-            var i = 1;
-
-            while (DiskNumberFound(i))
-            {
-                i++;
-            }
-            var newDiskName = $"Backup {i}";
-
-            //create the directory
-            _ = Directory.CreateDirectory(Path.Combine(backupDiskTextBox.Text, newDiskName.ToLowerInvariant()));
-
-            //rename the disk
-            _ = new DriveInfo(backupDiskTextBox.Text) { VolumeLabel = newDiskName };
-
-            // create the share
-            const string shareName = "backup";
-            var tempShare = Win32Share.GetNamedShare(shareName);
-            if (tempShare != null) _ = tempShare.Delete();
-            _ = Utils.ShareFolder(backupDiskTextBox.Text, shareName, string.Empty);
-            var domain = Environment.UserDomainName;
-            Utils.AddPermissions(shareName, domain, "Everyone");
-
-            //BackupDisk.CheckForValidBackupShare(backupDiskTextBox.Text);
-            var disk = mediaBackup.GetBackupDisk(backupDiskTextBox.Text);
-            _ = disk.Update(mediaBackup.BackupFiles);
-            mediaBackup.Save(mainCt);
-        }
-        finally
-        {
-            Utils.TraceOut();
-        }
-    }
-
-    private bool DiskNumberFound(int diskNumber)
-    {
-        return mediaBackup.BackupFiles.Any(f => f.BackupDiskNumber == diskNumber);
-    }
-
-    private void backupDiskTextBox_TextChanged(object sender, EventArgs e) { }
 }

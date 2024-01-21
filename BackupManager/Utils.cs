@@ -12,7 +12,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Management;
 using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
@@ -37,6 +36,9 @@ using BackupManager.Properties;
 
 using HtmlAgilityPack;
 
+using MediaInfo;
+
+using Microsoft.Extensions.Logging;
 using Microsoft.Win32.SafeHandles;
 
 // ReSharper disable CommentTypo
@@ -727,7 +729,7 @@ internal static partial class Utils
     internal static string[] GetFiles(string path, string filters, SearchOption searchOption,
         FileAttributes directoryAttributesToIgnore, CancellationToken ct)
     {
-        return GetFiles(path, filters, searchOption, directoryAttributesToIgnore, 0, false, ct);
+        return GetFiles(path, filters, searchOption, directoryAttributesToIgnore, 0, true, ct);
     }
 
     /// <summary>
@@ -1080,6 +1082,32 @@ internal static partial class Utils
         return info == null
             ? throw new ApplicationException("Unable to load ffprobe.exe")
             : TraceOut(info is { DoviConfigurationRecord.DvProfile: 5 });
+    }
+
+    /// <summary>
+    ///     Checks the file at path for a Dolby Vision Profile 5 file. It looks for 'dvhe.05' in the 'HDR format' metadata of
+    ///     the file. This has to load the entire file so its can take 10 seconds or more.
+    /// </summary>
+    /// <param name="path">The path to the file</param>
+    /// <returns>True if the file is Dolby Vision Profile 5</returns>
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
+    internal static bool FileIsDolbyVisionProfile5Old(string path)
+    {
+        TraceIn(path);
+        ArgumentException.ThrowIfNullOrEmpty(path);
+        if (!FileIsVideo(path) || !VideoFileIsDolbyVision(path)) return TraceOut(false);
+
+        if (!File.Exists(path)) throw new FileNotFoundException("File not found", path);
+
+        var media = new MediaInfoWrapper(path, new TestLogger());
+        if (!media.Success) throw new ApplicationException($"Unable to load video file {path} into MediaInfoWrapper");
+        if (!media.HasVideo) throw new ApplicationException($"{path} has no video streams");
+        if (!media.Text.HasValue()) throw new ApplicationException($"{path} has no media Text");
+
+        return TraceOut(media.Text.Split("\r\n")
+            .Where(static mediaTextLine => mediaTextLine.StartsWith("HDR format", StringComparison.CurrentCultureIgnoreCase)).Any(
+                static mediaTextLine => mediaTextLine.Split(":")[1].Trim().Split(",").Any(static v =>
+                    v.Trim().StartsWith("dvhe.05", StringComparison.CurrentCultureIgnoreCase))));
     }
 
     private static bool PushoverServiceAvailable(string pushoverAppToken)
@@ -2353,325 +2381,24 @@ internal static partial class Utils
 
         return newPath;
     }
+}
 
-    [SupportedOSPlatform("windows")]
-    internal static bool ShareFolder(string folderPath, string shareName, string description)
+file sealed class TestLogger : ILogger
+{
+    public IDisposable BeginScope<TState>(TState state)
     {
-        try
-        {
-            _ = Directory.CreateDirectory(folderPath);
-            var oManagementClass = new ManagementClass("Win32_Share");
-            var inputParameters = oManagementClass.GetMethodParameters("Create");
-            inputParameters["Description"] = description;
-            inputParameters["Name"] = shareName;
-            inputParameters["Path"] = folderPath;
-            inputParameters["Type"] = 0x0; //disk drive 
-            inputParameters["MaximumAllowed"] = null;
-            inputParameters["Access"] = null;
-            inputParameters["Password"] = null;
-            var outputParameters = oManagementClass.InvokeMethod("Create", inputParameters, null);
+        // ReSharper disable once AssignNullToNotNullAttribute
+        return null;
+    }
 
-            if ((uint)outputParameters.Properties["ReturnValue"].Value != 0)
-                throw new Exception("There is a problem while sharing the directory.");
-        }
-        catch (Exception ex)
-        {
-            Trace(ex.ToString());
-            return false;
-        }
+    public bool IsEnabled(LogLevel logLevel)
+    {
         return true;
     }
 
-    [SupportedOSPlatform("windows")]
-    internal static void AddPermissions(string sharedFolderName, string domain, string userName)
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
+        Func<TState, Exception, string> formatter)
     {
-        // Step 1 - Getting the user Account Object
-        var sharedFolder = GetSharedFolderObject(sharedFolderName);
-
-        if (sharedFolder == null)
-        {
-            Trace("The shared folder with given name does not exist");
-            return;
-        }
-        var securityDescriptorObject = sharedFolder.InvokeMethod("GetSecurityDescriptor", null, null);
-
-        if (securityDescriptorObject == null)
-        {
-            Trace(string.Format(CultureInfo.InvariantCulture, "Error extracting security descriptor of the shared path {0}.",
-                sharedFolderName));
-            return;
-        }
-        var returnCode = Convert.ToInt32(securityDescriptorObject.Properties["ReturnValue"].Value);
-
-        if (returnCode != 0)
-        {
-            Trace(string.Format(CultureInfo.InvariantCulture,
-                "Error extracting security descriptor of the shared path {0}. Error Code{1}.", sharedFolderName,
-                returnCode.ToString()));
-            return;
-        }
-        var securityDescriptor = securityDescriptorObject.Properties["Descriptor"].Value as ManagementBaseObject;
-
-        // Step 2 -- Extract Access Control List from the security descriptor
-        var existingAccessControlEntriesCount = 0;
-
-        if (securityDescriptor != null)
-        {
-            var accessControlList = securityDescriptor.Properties["DACL"].Value as ManagementBaseObject[];
-
-            if (accessControlList == null)
-            {
-                // If there aren't any entries in access control list or the list is empty - create one
-                accessControlList = new ManagementBaseObject[1];
-            }
-            else
-            {
-                // Otherwise, resize the list to allow for all new users.
-                existingAccessControlEntriesCount = accessControlList.Length;
-                Array.Resize(ref accessControlList, accessControlList.Length + 1);
-            }
-
-            // Step 3 - Getting the user Account Object
-            var userAccountObject = GetUserAccountObject(domain, userName);
-
-            var securityIdentifierObject =
-                new ManagementObject(string.Format("Win32_SID.SID='{0}'", (string)userAccountObject.Properties["SID"].Value));
-            securityIdentifierObject.Get();
-
-            // Step 4 - Create Trustee Object
-            var trusteeObject = CreateTrustee(domain, userName, securityIdentifierObject);
-
-            // Step 5 - Create Access Control Entry
-            var accessControlEntry = CreateAccessControlEntry(trusteeObject, false);
-
-            // Step 6 - Add Access Control Entry to the Access Control List
-            accessControlList[existingAccessControlEntriesCount] = accessControlEntry;
-
-            // Step 7 - Assign access Control list to security desciptor 
-            securityDescriptor.Properties["DACL"].Value = accessControlList;
-        }
-
-        // Step 8 - Assign access Control list to security desciptor 
-        var parameterForSetSecurityDescriptor = sharedFolder.GetMethodParameters("SetSecurityDescriptor");
-        parameterForSetSecurityDescriptor["Descriptor"] = securityDescriptor;
-        _ = sharedFolder.InvokeMethod("SetSecurityDescriptor", parameterForSetSecurityDescriptor, null);
-    }
-
-    /// <summary>
-    ///     The method returns ManagementObject object for the shared folder with given name
-    /// </summary>
-    /// <param name="sharedFolderName">string containing name of shared folder</param>
-    /// <returns>Object of type ManagementObject for the shared folder.</returns>
-    [SupportedOSPlatform("windows")]
-    private static ManagementObject GetSharedFolderObject(string sharedFolderName)
-    {
-        ManagementObject sharedFolderObject = null;
-
-        //Creating a searcher object to search 
-        var searcher =
-            new ManagementObjectSearcher(
-                "Select * from Win32_LogicalShareSecuritySetting where Name = '" + sharedFolderName + "'");
-        var resultOfSearch = searcher.Get();
-        if (resultOfSearch.Count <= 0) return null;
-
-        //The search might return a number of objects with same shared name. I assume there is just going to be one
-        foreach (var o in resultOfSearch)
-        {
-            sharedFolderObject = (ManagementObject)o;
-            break;
-        }
-        return sharedFolderObject;
-    }
-
-    /// <summary>
-    ///     The method returns ManagementObject object for the user folder with given name
-    /// </summary>
-    /// <param name="domain">string containing domain name of user </param>
-    /// <param name="alias">string containing the user's network name </param>
-    /// <returns>Object of type ManagementObject for the user folder.</returns>
-    [SupportedOSPlatform("windows")]
-    private static ManagementObject GetUserAccountObject(string domain, string alias)
-    {
-        ManagementObject userAccountObject = null;
-        var searcher = new ManagementObjectSearcher($"select * from Win32_Account where Name = '{alias}' and Domain='{domain}'");
-        var resultOfSearch = searcher.Get();
-        if (resultOfSearch.Count <= 0) return null;
-
-        foreach (var o in resultOfSearch)
-        {
-            userAccountObject = (ManagementObject)o;
-            break;
-        }
-        return userAccountObject;
-    }
-
-    /// <summary>
-    ///     Returns the Security Identifier Sid of the given user
-    /// </summary>
-    /// <param name="userAccountObject">The user object who's Sid needs to be returned</param>
-    /// <returns></returns>
-    [SupportedOSPlatform("windows")]
-    internal static ManagementObject GetAccountSecurityIdentifier(ManagementBaseObject userAccountObject)
-    {
-        var securityIdentifierObject =
-            new ManagementObject($"Win32_SID.SID='{(string)userAccountObject.Properties["SID"].Value}'");
-        securityIdentifierObject.Get();
-        return securityIdentifierObject;
-    }
-
-    /// <summary>
-    ///     Create a trustee object for the given user
-    /// </summary>
-    /// <param name="domain">name of domain</param>
-    /// <param name="userName">the network name of the user</param>
-    /// <param name="securityIdentifierOfUser">Object containing User's sid</param>
-    /// <returns></returns>
-    [SupportedOSPlatform("windows")]
-    private static ManagementObject CreateTrustee(string domain, string userName, ManagementObject securityIdentifierOfUser)
-    {
-        var trusteeObject = new ManagementClass("Win32_Trustee").CreateInstance();
-        trusteeObject.Properties["Domain"].Value = domain;
-        trusteeObject.Properties["Name"].Value = userName;
-        trusteeObject.Properties["SID"].Value = securityIdentifierOfUser.Properties["BinaryRepresentation"].Value;
-        trusteeObject.Properties["SidLength"].Value = securityIdentifierOfUser.Properties["SidLength"].Value;
-        trusteeObject.Properties["SIDString"].Value = securityIdentifierOfUser.Properties["SID"].Value;
-        return trusteeObject;
-    }
-
-    /// <summary>
-    ///     Create an Access Control Entry object for the given user
-    /// </summary>
-    /// <param name="trustee">The user's trustee object</param>
-    /// <param name="deny">boolean to say if user permissions should be assigned or denied</param>
-    /// <returns></returns>
-    [SupportedOSPlatform("windows")]
-    private static ManagementObject CreateAccessControlEntry(ManagementObject trustee, bool deny)
-    {
-        var aceObject = new ManagementClass("Win32_ACE").CreateInstance();
-
-        aceObject.Properties["AccessMask"].Value = 0x1U | 0x2U | 0x4U | 0x8U | 0x10U | 0x20U | 0x40U | 0x80U | 0x100U | 0x10000U |
-                                                   0x20000U | 0x40000U | 0x80000U | 0x100000U; // all permissions
-        aceObject.Properties["AceFlags"].Value = 0x0U; // no flags
-        aceObject.Properties["AceType"].Value = deny ? 1U : 0U; // 0 = allow, 1 = deny
-        aceObject.Properties["Trustee"].Value = trustee;
-        return aceObject;
+        Utils.Trace($"{logLevel}: {formatter(state, exception)}");
     }
 }
-
-[SupportedOSPlatform("windows")]
-internal sealed class Win32Share
-{
-    internal enum MethodStatus : uint
-    {
-        Success = 0,
-
-        AccessDenied = 2,
-
-        UnknownFailure = 8,
-
-        InvalidName = 9,
-
-        InvalidLevel = 10,
-
-        InvalidParameter = 21,
-
-        DuplicateShare = 22,
-
-        RedirectedPath = 23,
-
-        UnknownDevice = 24,
-
-        NetNameNotFound = 25
-    }
-
-    public enum ShareType : uint
-    {
-        DiskDrive = 0x0,
-
-        PrintQueue = 0x1,
-
-        Device = 0x2,
-
-        Ipc = 0x3,
-
-        DiskDriveAdmin = 0x80000000,
-
-        PrintQueueAdmin = 0x80000001,
-
-        DeviceAdmin = 0x80000002,
-
-        IpcAdmin = 0x80000003
-    }
-
-    private readonly ManagementObject mWinShareObject;
-
-    private Win32Share(ManagementObject obj)
-    {
-        mWinShareObject = obj;
-    }
-
-    public uint AccessMask => Convert.ToUInt32(mWinShareObject["AccessMask"]);
-
-    public bool AllowMaximum => Convert.ToBoolean(mWinShareObject["AllowMaximum"]);
-
-    public string Caption => Convert.ToString(mWinShareObject["Caption"]);
-
-    public string Description => Convert.ToString(mWinShareObject["Description"]);
-
-    public DateTime InstallDate => Convert.ToDateTime(mWinShareObject["InstallDate"]);
-
-    public uint MaximumAllowed => Convert.ToUInt32(mWinShareObject["MaximumAllowed"]);
-
-    public string Name => Convert.ToString(mWinShareObject["Name"]);
-
-    public string Path => Convert.ToString(mWinShareObject["Path"]);
-
-    [SupportedOSPlatform("windows")] public string Status => Convert.ToString(mWinShareObject["Status"]);
-
-    [SupportedOSPlatform("windows")] public ShareType Type => (ShareType)Convert.ToUInt32(mWinShareObject["Type"]);
-
-    [SupportedOSPlatform("windows")]
-    public MethodStatus Delete()
-    {
-        var result = mWinShareObject.InvokeMethod("Delete", new object[] { });
-        var r = Convert.ToUInt32(result);
-        return (MethodStatus)r;
-    }
-
-    [SupportedOSPlatform("windows")]
-    internal static MethodStatus Create(string path, string name, ShareType type, uint maximumAllowed, string description,
-        string password)
-    {
-        var mc = new ManagementClass("Win32_Share");
-        object[] parameters = { path, name, (uint)type, maximumAllowed, description, password, null };
-        var result = mc.InvokeMethod("Create", parameters);
-        var r = Convert.ToUInt32(result);
-        return (MethodStatus)r;
-    }
-
-    [SupportedOSPlatform("windows")]
-    private static IEnumerable<Win32Share> GetAllShares()
-    {
-        IList<Win32Share> result = new List<Win32Share>();
-        var moc = new ManagementClass("Win32_Share").GetInstances();
-
-        foreach (var o in moc)
-        {
-            result.Add(new Win32Share((ManagementObject)o));
-        }
-        return result;
-    }
-
-    [SupportedOSPlatform("windows")]
-    internal static Win32Share GetNamedShare(string name)
-    {
-        return GetAllShares().FirstOrDefault(s => s.Name == name);
-    }
-}
-
-
-
-
-    
-   
-

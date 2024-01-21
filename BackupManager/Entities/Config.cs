@@ -53,11 +53,6 @@ public sealed class Config
     public int BackupDiskDifferenceInFileCountAllowedPercentage { get; set; }
 
     /// <summary>
-    ///     The backup disk path
-    /// </summary>
-    public string BackupDisk { get; set; }
-
-    /// <summary>
     ///     Minimum space before we throw a critical Disk space message in MB for backup disks
     /// </summary>
     public long BackupDiskMinimumCriticalSpace { get; set; }
