@@ -29,6 +29,11 @@ internal sealed partial class Main
 
     private static readonly object _lock = new();
 
+    /// <summary>
+    ///     The main application config.xml
+    /// </summary>
+    private readonly Config config;
+
     private readonly MediaBackup mediaBackup;
 
     private readonly Action monitoringAction;
@@ -64,11 +69,6 @@ internal sealed partial class Main
     private bool monitoringExecutingRightNow;
 
     private int reportedPercentComplete;
-
-    /// <summary>
-    ///     The main application config.xml
-    /// </summary>
-    private readonly Config config;
 
     [SupportedOSPlatform("windows")]
     internal Main()

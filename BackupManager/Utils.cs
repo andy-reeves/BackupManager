@@ -2561,29 +2561,6 @@ internal static partial class Utils
 [SupportedOSPlatform("windows")]
 internal sealed class Win32Share
 {
-    internal enum MethodStatus : uint
-    {
-        Success = 0,
-
-        AccessDenied = 2,
-
-        UnknownFailure = 8,
-
-        InvalidName = 9,
-
-        InvalidLevel = 10,
-
-        InvalidParameter = 21,
-
-        DuplicateShare = 22,
-
-        RedirectedPath = 23,
-
-        UnknownDevice = 24,
-
-        NetNameNotFound = 25
-    }
-
     public enum ShareType : uint
     {
         DiskDrive = 0x0,
@@ -2667,11 +2644,27 @@ internal sealed class Win32Share
     {
         return GetAllShares().FirstOrDefault(s => s.Name == name);
     }
+
+    internal enum MethodStatus : uint
+    {
+        Success = 0,
+
+        AccessDenied = 2,
+
+        UnknownFailure = 8,
+
+        InvalidName = 9,
+
+        InvalidLevel = 10,
+
+        InvalidParameter = 21,
+
+        DuplicateShare = 22,
+
+        RedirectedPath = 23,
+
+        UnknownDevice = 24,
+
+        NetNameNotFound = 25
+    }
 }
-
-
-
-
-    
-   
-
