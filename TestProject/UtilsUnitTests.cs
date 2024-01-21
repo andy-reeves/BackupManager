@@ -21,9 +21,36 @@ public sealed class UtilsUnitTests
 {
     static UtilsUnitTests()
     {
-        var mediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)),
+        var mediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(UtilsUnitTests)),
             "..\\BackupManager\\MediaBackup.xml"));
         Utils.Config = mediaBackup.Config;
+    }
+
+    [Fact]
+    public void SharedFolder()
+    {
+        string? path1 = null;
+
+        try
+        {
+            path1 = Path.Combine(Path.GetTempPath(), "SharedFolder");
+            var file = Path.Combine(path1, "test1.txt");
+            if (Directory.Exists(path1)) Directory.Delete(path1, true);
+            Utils.EnsureDirectoriesForDirectoryPath(path1);
+            Utils.CreateFile(file);
+            const string shareName = "TestShare";
+            Assert.True(Utils.ShareFolder(path1, shareName, "Test"));
+            var domain = Environment.UserDomainName;
+            Utils.AddPermissions(shareName, domain, "Everyone");
+            var tempShare = Win32Share.GetNamedShare(shareName);
+            Assert.Equal(Win32Share.MethodStatus.Success, tempShare.Delete());
+        }
+        finally
+        {
+            if (path1 != null)
+                if (Directory.Exists(path1))
+                    Directory.Delete(path1, true);
+        }
     }
 
     [Fact]

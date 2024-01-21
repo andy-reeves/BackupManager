@@ -9,6 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 
 using BackupManager;
 using BackupManager.Entities;
+using BackupManager.Extensions;
 
 namespace TestProject;
 
@@ -47,12 +48,13 @@ public sealed class UtilsGetLatestApplicationVersion
         Assert.Equal("4.0.1.929", Utils.GetLatestApplicationVersionNumber(ApplicationType.Sonarr));
 
         // These are the latest or develop branches
-        // TODO Assert.Equal("4.0.10", Utils.GetLatestApplicationVersionNumber(ApplicationType.Sonarr, "develop"));
-        Assert.Equal("1.13.0", Utils.GetLatestApplicationVersionNumber(ApplicationType.Prowlarr, "develop"));
-        Assert.Equal("5.3.2", Utils.GetLatestApplicationVersionNumber(ApplicationType.Radarr, "develop"));
-        Assert.Equal("1.32.8.7639", Utils.GetLatestApplicationVersionNumber(ApplicationType.PlexPass));
 
-        // Assert.Equal("1.40.0.7775", Utils.GetLatestApplicationVersionNumber(ApplicationType.PlexPass));
+        Assert.Equal(Utils.Config.PlexToken.HasValue() ? "1.40.0.7775" : "1.32.8.7639",
+            Utils.GetLatestApplicationVersionNumber(ApplicationType.PlexPass));
+
+        // TODO Assert.Equal("4.0.10", Utils.GetLatestApplicationVersionNumber(ApplicationType.Sonarr, "develop"));
+        Assert.Equal("1.13.1", Utils.GetLatestApplicationVersionNumber(ApplicationType.Prowlarr, "develop"));
+        Assert.Equal("5.3.3", Utils.GetLatestApplicationVersionNumber(ApplicationType.Radarr, "develop"));
     }
 }
 #endif
