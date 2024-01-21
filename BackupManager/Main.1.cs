@@ -65,6 +65,11 @@ internal sealed partial class Main
 
     private int reportedPercentComplete;
 
+    /// <summary>
+    ///     The main application config.xml
+    /// </summary>
+    private readonly Config config;
+
     [SupportedOSPlatform("windows")]
     internal Main()
     {
@@ -76,29 +81,19 @@ internal sealed partial class Main
             Trace.Listeners.Add(new TextWriterTraceListener(
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"),
                 "myListener"));
-
-            // ReSharper disable StringLiteralTypo
-            // ReSharper disable CommentTypo
-            // backupDiskTextBox.Text = @"\\nas1\assets1\_Test\BackupDisks\backup 1001 parent";
-            backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
-
-            // ReSharper restore CommentTypo
-            // ReSharper restore StringLiteralTypo
-#else
-            backupDiskTextBox.Text = Path.Combine(@"\\", Environment.MachineName, "backup");
 #endif
             var mediaBackupXml = ConfigurationManager.AppSettings.Get("MediaBackupXml");
             var localMediaXml = Path.Combine(Application.StartupPath, "MediaBackup.xml");
             mediaBackup = MediaBackup.Load(File.Exists(localMediaXml) ? localMediaXml : mediaBackupXml);
+            config = mediaBackup.Config;
+            Utils.Config = config;
+            backupDiskTextBox.Text = config.BackupDisk;
             if (Utils.IsRunningAsAdmin()) Text += Resources.Main_AdminTitle;
             UpdateMediaFilesCountDisplay();
-            Utils.Config = mediaBackup.Config;
-            Utils.LogWithPushover(BackupAction.General, "BackupManager started");
             Utils.LogHeader();
-
-            // Log the parameters after setting the Pushover keys in the Utils class
-            mediaBackup.Config.LogParameters();
-            var directoriesArray = mediaBackup.Config.Directories.ToArray();
+            Utils.LogWithPushover(BackupAction.General, "BackupManager started");
+            config.LogParameters();
+            var directoriesArray = config.Directories.ToArray();
             listDirectoriesComboBox.Items.AddRange(directoriesArray.ToArray<object>());
             directoriesComboBox.Items.AddRange(directoriesArray.ToArray<object>());
             restoreDirectoryComboBox.Items.AddRange(directoriesArray.ToArray<object>());
@@ -108,12 +103,12 @@ internal sealed partial class Main
             {
                 listFilesComboBox.Items.Add(disk.Name);
             }
-            pushoverLowCheckBox.Checked = mediaBackup.Config.PushoverSendLowOnOff;
-            pushoverNormalCheckBox.Checked = mediaBackup.Config.PushoverSendNormalOnOff;
-            pushoverHighCheckBox.Checked = mediaBackup.Config.PushoverSendHighOnOff;
-            pushoverEmergencyCheckBox.Checked = mediaBackup.Config.PushoverSendEmergencyOnOff;
+            pushoverLowCheckBox.Checked = config.PushoverSendLowOnOff;
+            pushoverNormalCheckBox.Checked = config.PushoverSendNormalOnOff;
+            pushoverHighCheckBox.Checked = config.PushoverSendHighOnOff;
+            pushoverEmergencyCheckBox.Checked = config.PushoverSendEmergencyOnOff;
 
-            foreach (var monitor in mediaBackup.Config.Monitors)
+            foreach (var monitor in config.Monitors)
             {
                 processesComboBox.Items.Add(monitor.Name);
             }
@@ -126,27 +121,27 @@ internal sealed partial class Main
                 _ = TaskWrapper(Task.Run(() => ScheduledBackupAsync(mainCt), mainCt), mainCt);
             };
             monitoringAction = MonitorServices;
-            scheduledDateTimePicker.Value = DateTime.Parse(mediaBackup.Config.ScheduledBackupStartTime);
+            scheduledDateTimePicker.Value = DateTime.Parse(config.ScheduledBackupStartTime);
             UpdateSendingPushoverButton();
             UpdateScheduledBackupButton();
             UpdateSpeedTestDisksButton();
 
             // we switch it off and force the button to be clicked to turn it on again
-            mediaBackup.Config.MonitoringOnOff = !mediaBackup.Config.MonitoringOnOff;
+            config.MonitoringOnOff = !config.MonitoringOnOff;
             MonitoringButton_Click(null, null);
             UpdateCurrentBackupDiskInfo(mediaBackup.GetBackupDisk(backupDiskTextBox.Text));
 
-            if (mediaBackup.Config.ScheduledBackupRunOnStartup)
+            if (config.ScheduledBackupRunOnStartup)
             {
                 ResetTokenSource();
                 _ = TaskWrapper(Task.Run(() => ScheduledBackupAsync(mainCt), mainCt), mainCt);
             }
-            SetupDailyTrigger(mediaBackup.Config.ScheduledBackupOnOff);
+            SetupDailyTrigger(config.ScheduledBackupOnOff);
             SetupFileWatchers();
             UpdateUI_Tick(null, null);
 
             // we switch it off and force the button to be clicked to turn it on again
-            mediaBackup.Config.MonitoringCheckLatestVersions = !mediaBackup.Config.MonitoringCheckLatestVersions;
+            config.MonitoringCheckLatestVersions = !config.MonitoringCheckLatestVersions;
             VersionCheckingButton_Click(null, null);
             Utils.TraceOut();
         }
@@ -186,7 +181,7 @@ internal sealed partial class Main
                  select mediaBackup.GetParentPath(backupFile.FullPath)
                  into directoryPath
                  where directoryPath != null
-                 where mediaBackup.Config.SymbolicLinks.Select(a => Regex.Match(directoryPath, a.FileDiscoveryRegEx))
+                 where config.SymbolicLinks.Select(a => Regex.Match(directoryPath, a.FileDiscoveryRegEx))
                      .Any(static m => m.Success)
                  select directoryPath)
         {
@@ -195,7 +190,7 @@ internal sealed partial class Main
         }
         UpdateStatusLabel(ct, "Checking for broken Symbolic Links");
 
-        var directoriesToCheck = mediaBackup.Config.SymbolicLinks
+        var directoriesToCheck = config.SymbolicLinks
             .Select(static a => Path.Combine(a.RootDirectory, Utils.RemoveRegexGroupsFromString(a.RelativePath)))
             .Where(Directory.Exists).SelectMany(Directory.EnumerateDirectories).ToArray();
 
@@ -262,7 +257,7 @@ internal sealed partial class Main
             return;
         }
 
-        foreach (var a in mediaBackup.Config.SymbolicLinks)
+        foreach (var a in config.SymbolicLinks)
         {
             var m = Regex.Match(symbolicLinkPath, a.FileDiscoveryRegEx);
             if (!m.Success) continue;
@@ -322,7 +317,7 @@ internal sealed partial class Main
         // check directories are writable and only monitor those that are
         var writableDirectories = new List<string>();
 
-        foreach (var directory in mediaBackup.Config.Directories)
+        foreach (var directory in config.Directories)
         {
             if (Utils.IsDirectoryWritable(directory))
                 writableDirectories.Add(directory);
@@ -333,14 +328,14 @@ internal sealed partial class Main
             }
         }
         mediaBackup.Watcher.Directories = writableDirectories.ToArray();
-        mediaBackup.Watcher.ProcessChangesInterval = mediaBackup.Config.DirectoriesProcessChangesTimer * 1000;
-        mediaBackup.Watcher.ScanInterval = mediaBackup.Config.DirectoriesScanTimer * 1000;
+        mediaBackup.Watcher.ProcessChangesInterval = config.DirectoriesProcessChangesTimer * 1000;
+        mediaBackup.Watcher.ScanInterval = config.DirectoriesScanTimer * 1000;
         mediaBackup.Watcher.Filter = "*.*";
-        mediaBackup.Watcher.RegexFilter = mediaBackup.Config.DirectoriesFilterRegEx;
+        mediaBackup.Watcher.RegexFilter = config.DirectoriesFilterRegEx;
         mediaBackup.Watcher.IncludeSubdirectories = true;
         mediaBackup.Watcher.ReadyToScan += FileSystemWatcher_ReadyToScan;
         mediaBackup.Watcher.Error += FileSystemWatcher_OnError;
-        mediaBackup.Watcher.MinimumAgeBeforeScanEventRaised = mediaBackup.Config.DirectoriesMinimumAgeBeforeScanning;
+        mediaBackup.Watcher.MinimumAgeBeforeScanEventRaised = config.DirectoriesMinimumAgeBeforeScanning;
 
         foreach (var item in mediaBackup.DirectoryChanges)
         {
@@ -357,7 +352,7 @@ internal sealed partial class Main
     private void CheckForOldBackupDisks()
     {
         Utils.TraceIn();
-        var numberOfDays = mediaBackup.Config.BackupDiskDaysToReportSinceFilesChecked;
+        var numberOfDays = config.BackupDiskDaysToReportSinceFilesChecked;
 
         var files = mediaBackup.BackupFiles.Where(p =>
             p.DiskChecked.HasValue() && DateTime.Parse(p.DiskChecked).AddDays(numberOfDays) < DateTime.Today);
@@ -371,8 +366,8 @@ internal sealed partial class Main
 
         Utils.Log(BackupAction.General,
             !backupFiles.Any()
-                ? $"All files checked in last {mediaBackup.Config.BackupDiskDaysToReportSinceFilesChecked} days"
-                : $"Listing files not checked in {mediaBackup.Config.BackupDiskDaysToReportSinceFilesChecked} days");
+                ? $"All files checked in last {config.BackupDiskDaysToReportSinceFilesChecked} days"
+                : $"Listing files not checked in {config.BackupDiskDaysToReportSinceFilesChecked} days");
 
         foreach (var file in backupFiles)
         {
@@ -387,7 +382,7 @@ internal sealed partial class Main
         Utils.TraceIn();
 
         pushoverOnOffButton.Text = string.Format(Resources.Main_SendingPushoverButton,
-            mediaBackup.Config.PushoverOnOff ? Resources.Main_ON : Resources.Main_OFF);
+            config.PushoverOnOff ? Resources.Main_ON : Resources.Main_OFF);
         Utils.TraceOut();
     }
 
@@ -396,9 +391,9 @@ internal sealed partial class Main
         Utils.TraceIn();
 
         fileWatcherButton.Text = string.Format(Resources.Main_FileWatchersButton,
-            mediaBackup.Config.DirectoriesFileChangeWatcherOnOff ? Resources.Main_ON : Resources.Main_OFF);
+            config.DirectoriesFileChangeWatcherOnOff ? Resources.Main_ON : Resources.Main_OFF);
 
-        if (mediaBackup.Config.DirectoriesFileChangeWatcherOnOff)
+        if (config.DirectoriesFileChangeWatcherOnOff)
             StartFileSystemWatchers();
         else
             StopFileSystemWatchers();
@@ -413,7 +408,7 @@ internal sealed partial class Main
     {
         Utils.TraceIn();
 
-        monitoringButton.TextWithInvoke(mediaBackup.Config.MonitoringOnOff
+        monitoringButton.TextWithInvoke(config.MonitoringOnOff
             ? string.Format(Resources.Main_MonitoringButton, Resources.Main_ON)
             : string.Format(Resources.Main_MonitoringButton, Resources.Main_OFF));
         Utils.TraceOut();
@@ -424,7 +419,7 @@ internal sealed partial class Main
         Utils.TraceIn();
 
         speedTestDisksButton.TextWithInvoke(string.Format(Resources.Main_SpeedTestDisksButton,
-            mediaBackup.Config.SpeedTestOnOff ? Resources.Main_ON : Resources.Main_OFF));
+            config.SpeedTestOnOff ? Resources.Main_ON : Resources.Main_OFF));
         Utils.TraceOut();
     }
 
@@ -433,7 +428,7 @@ internal sealed partial class Main
         Utils.TraceIn();
 
         scheduledBackupTimerButton.TextWithInvoke(string.Format(Resources.Main_UpdateScheduledBackupButton,
-            mediaBackup.Config.ScheduledBackupOnOff ? Resources.Main_ON : Resources.Main_OFF));
+            config.ScheduledBackupOnOff ? Resources.Main_ON : Resources.Main_OFF));
         Utils.TraceOut();
     }
 
@@ -446,16 +441,16 @@ internal sealed partial class Main
 
             DisableControlsForAsyncTasks(ct);
             Utils.LogWithPushover(BackupAction.SpeedTest, "Started");
-            EnableProgressBar(0, mediaBackup.Config.Directories.Count);
+            EnableProgressBar(0, config.Directories.Count);
 
-            for (var i = 0; i < mediaBackup.Config.Directories.Count; i++)
+            for (var i = 0; i < config.Directories.Count; i++)
             {
-                var directory = mediaBackup.Config.Directories[i];
+                var directory = config.Directories[i];
                 UpdateStatusLabel(ct, $"Speed testing {directory}", i + 1);
                 if (!Utils.IsDirectoryWritable(directory)) continue;
 
-                Utils.DiskSpeedTest(directory, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize),
-                    mediaBackup.Config.SpeedTestIterations, out var readSpeed, out var writeSpeed, ct);
+                Utils.DiskSpeedTest(directory, Utils.ConvertMBtoBytes(config.SpeedTestFileSize), config.SpeedTestIterations,
+                    out var readSpeed, out var writeSpeed, ct);
                 Utils.Log($"testing {directory}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
             }
             Utils.LogWithPushover(BackupAction.SpeedTest, Resources.Main_Completed);

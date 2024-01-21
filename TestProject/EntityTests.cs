@@ -11,6 +11,7 @@ using System.Xml.Serialization;
 
 using BackupManager;
 using BackupManager.Entities;
+using BackupManager.Extensions;
 
 namespace TestProject;
 
@@ -18,6 +19,13 @@ namespace TestProject;
 [SuppressMessage("ReSharper", "MemberCanBeFileLocal")]
 public sealed class EntityTests
 {
+    static EntityTests()
+    {
+        var mediaBackup = BackupManager.Entities.MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(EntityTests)),
+            "..\\BackupManager\\MediaBackup.xml"));
+        Utils.Config = mediaBackup.Config;
+    }
+
     [Fact]
     public void DirectoryScan()
     {
@@ -93,7 +101,7 @@ public sealed class EntityTests
         Assert.Null(mediaBackup.GetParentPath(pathToFile1));
 
         // GetFilters
-        Assert.Equal("!*.bup", mediaBackup.GetFilters());
+        if (!Utils.Config.PlexToken.HasValue()) Assert.Equal("!*.bup", mediaBackup.GetFilters());
 
         // GetBackupDisk
         var disk = mediaBackup.GetBackupDisk(pathToBackupShare);
@@ -113,10 +121,13 @@ public sealed class EntityTests
         Assert.NotNull(backupFiles);
         _ = Assert.Single(backupFiles);
 
-        // GetOldestFile
-        Assert.Null(mediaBackup.GetOldestFile());
-        backupFile.UpdateDiskChecked("backup 1000");
-        Assert.NotNull(mediaBackup.GetOldestFile());
+        if (!Utils.Config.PlexToken.HasValue())
+        {
+            // GetOldestFile
+            Assert.Null(mediaBackup.GetOldestFile());
+            backupFile.UpdateDiskChecked("backup 1000");
+            Assert.NotNull(mediaBackup.GetOldestFile());
+        }
 
         // GetBackupFilesInDirectory
         IEnumerable<BackupFile> a = mediaBackup.GetBackupFilesInDirectory(pathToMovies, true);
@@ -126,24 +137,28 @@ public sealed class EntityTests
         // GetBackupFilesNotMarkedAsDeleted
         IEnumerable<BackupFile> c = mediaBackup.GetBackupFiles(false);
         Assert.NotNull(c);
-        Assert.Equal(2, c.Count());
-        backupFile.Deleted = true;
 
-        // GetBackupFilesMarkedAsDeleted
-        IEnumerable<BackupFile> b = mediaBackup.GetBackupFilesMarkedAsDeleted(false);
-        Assert.NotNull(b);
-        _ = Assert.Single(b);
-
-        // GetBackupFilesWithDiskEmpty
-        backupFile.Deleted = false;
-        IEnumerable<BackupFile> d = mediaBackup.GetBackupFilesWithDiskEmpty();
-        Assert.NotNull(d);
-        var collection = d as BackupFile[] ?? d.ToArray();
-        _ = Assert.Single(collection);
-
-        foreach (var file in collection)
+        if (!Utils.Config.PlexToken.HasValue())
         {
-            Assert.Equal("test2.txt", file.RelativePath);
+            Assert.Equal(2, c.Count());
+            backupFile.Deleted = true;
+
+            // GetBackupFilesMarkedAsDeleted
+            IEnumerable<BackupFile> b = mediaBackup.GetBackupFilesMarkedAsDeleted(false);
+            Assert.NotNull(b);
+            _ = Assert.Single(b);
+
+            // GetBackupFilesWithDiskEmpty
+            backupFile.Deleted = false;
+            IEnumerable<BackupFile> d = mediaBackup.GetBackupFilesWithDiskEmpty();
+            Assert.NotNull(d);
+            var collection = d as BackupFile[] ?? d.ToArray();
+            _ = Assert.Single(collection);
+
+            foreach (var file in collection)
+            {
+                Assert.Equal("test2.txt", file.RelativePath);
+            }
         }
 
         // Contains
@@ -158,10 +173,13 @@ public sealed class EntityTests
             Assert.False(file.Flag);
         }
 
-        // DirectoriesLastFullScan
-        Assert.Equal("2023-01-01", mediaBackup.DirectoriesLastFullScan);
-        mediaBackup.UpdateLastFullScan();
-        Assert.NotEqual("2023-01-01", mediaBackup.DirectoriesLastFullScan);
+        if (!Utils.Config.PlexToken.HasValue())
+        {
+            // DirectoriesLastFullScan
+            Assert.Equal("2023-01-01", mediaBackup.DirectoriesLastFullScan);
+            mediaBackup.UpdateLastFullScan();
+            Assert.NotEqual("2023-01-01", mediaBackup.DirectoriesLastFullScan);
+        }
 
         // GetBackFile (with files with the same hash in different locations)
         _ = mediaBackup.EnsureFile(pathToFile3);
@@ -172,11 +190,14 @@ public sealed class EntityTests
         Assert.NotNull(k);
         Assert.Equal("test1.txt", k.RelativePath);
 
-        // Remove 
-        mediaBackup.RemoveFile(backupFile);
-        _ = Assert.Single(mediaBackup.BackupFiles);
-        mediaBackup.RemoveFilesWithFlag(false, false);
-        Assert.Empty(mediaBackup.BackupFiles);
+        if (!Utils.Config.PlexToken.HasValue())
+        {
+            // Remove 
+            mediaBackup.RemoveFile(backupFile);
+            _ = Assert.Single(mediaBackup.BackupFiles);
+            mediaBackup.RemoveFilesWithFlag(false, false);
+            Assert.Empty(mediaBackup.BackupFiles);
+        }
 
         // Tidy up folders
         if (Directory.Exists(pathToFiles)) Directory.Delete(pathToFiles, true);
@@ -262,12 +283,16 @@ public sealed class EntityTests
         Assert.Equal(45, backupDisk.GetHashCode());
         Assert.Equal(backupDiskName, backupDisk.ToString());
         _ = backupDisk.Update(null);
-        Assert.NotEqual(0, backupDisk.Capacity);
-        Assert.NotEqual(string.Empty, backupDisk.CapacityFormatted);
-        Assert.NotEqual(0, backupDisk.Free);
-        Assert.NotEqual(string.Empty, backupDisk.FreeFormatted);
-        Assert.NotEqual(string.Empty, backupDisk.LastReadSpeed);
-        Assert.NotEqual(string.Empty, backupDisk.LastWriteSpeed);
+
+        if (!Utils.Config.PlexToken.HasValue())
+        {
+            Assert.NotEqual(0, backupDisk.Capacity);
+            Assert.NotEqual(string.Empty, backupDisk.CapacityFormatted);
+            Assert.NotEqual(0, backupDisk.Free);
+            Assert.NotEqual(string.Empty, backupDisk.FreeFormatted);
+            Assert.NotEqual(string.Empty, backupDisk.LastReadSpeed);
+            Assert.NotEqual(string.Empty, backupDisk.LastWriteSpeed);
+        }
         var backupDisk2 = new BackupDisk(backupDiskName, backupShareName);
         Assert.Equal(backupDisk2, backupDisk);
         Assert.False(backupDisk.Equals(null));
