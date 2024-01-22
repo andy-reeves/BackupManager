@@ -59,7 +59,7 @@ internal sealed partial class Main
                 if (copyFiles) CopyFiles(false, ct);
 
                 Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.High,
-                    $"Backup disk {lastBackupDiskChecked.Name} checked. Please insert the next disk now");
+                    $"Backup disk {lastBackupDiskChecked.Name} checked. Please insert the next disk now", true);
                 UpdateStatusLabel(ct, nextDiskMessage);
                 BackupDisk newDisk;
 
@@ -120,7 +120,8 @@ internal sealed partial class Main
         // force a recalculation of both the hashes to check the files can both be read correctly
         var disk = SetupBackupDisk(ct);
         var directoryToCheck = disk.BackupPath;
-        Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Started\n{directoryToCheck}");
+        Utils.LogWithPushover(BackupAction.CheckBackupDisk, Resources.Main_Started, true);
+        Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Checking {directoryToCheck}");
         UpdateStatusLabel(ct, $"Checking backup disk {directoryToCheck}");
         long readSpeed = 0, writeSpeed = 0;
 
@@ -345,7 +346,7 @@ internal sealed partial class Main
                     $"Name: {disk.Name}\nTotal: {disk.CapacityFormatted}\nFree: {disk.FreeFormatted}\nFiles: {disk.TotalFiles:n0}";
                 Utils.LogWithPushover(BackupAction.CheckBackupDisk, text);
             }
-            Utils.LogWithPushover(BackupAction.CheckBackupDisk, Resources.Main_Completed);
+            Utils.LogWithPushover(BackupAction.CheckBackupDisk, Resources.Main_Completed, true);
         }
         else
         {

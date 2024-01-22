@@ -70,7 +70,7 @@ internal sealed partial class Main
         // tasks.Add(TaskWrapper(Task.Run(() => ProcessFilesInternal(filesParam.ToArray(), scanId, ct), ct), ct));
         Task.WhenAll(tasks).Wait(ct);
         var returnValue = !tasks.Any(static t => !t.Result);
-        if (returnValue) Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal, Resources.Main_Completed);
+        if (returnValue) Utils.LogWithPushover(BackupAction.ProcessFiles, Resources.Main_Completed, true);
         UpdateMediaFilesCountDisplay();
         ResetAllControls();
         return Utils.TraceOut(returnValue);
@@ -264,7 +264,7 @@ internal sealed partial class Main
             if (longRunningActionExecutingRightNow) return;
 
             DisableControlsForAsyncTasks(ct);
-            Utils.LogWithPushover(BackupAction.ScanDirectory, "Started");
+            Utils.LogWithPushover(BackupAction.ScanDirectory, Resources.Main_Started, true);
             UpdateStatusLabel(ct, string.Format(Resources.Main_Scanning, string.Empty));
             ScanAllDirectories(false, ct);
             ResetAllControls();
@@ -289,7 +289,7 @@ internal sealed partial class Main
         tasks.AddRange(diskNames.Select(diskName => Utils.GetDirectoriesForDisk(diskName, mediaBackup.Config.Directories)).Select(
             directoriesOnDisk => { return TaskWrapper(Task.Run(() => GetFilesAsync(directoriesOnDisk, scanId, ct), ct), ct); }));
         Task.WhenAll(tasks).Wait(ct);
-        Utils.LogWithPushover(BackupAction.ScanDirectory, "Scanning complete.");
+        Utils.LogWithPushover(BackupAction.ScanDirectory, "Scanning complete.", true);
 
         foreach (var scan in directoryScanBlockingCollection)
         {

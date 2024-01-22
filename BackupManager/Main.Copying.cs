@@ -26,9 +26,10 @@ internal sealed partial class Main
         IEnumerable<BackupFile> filesToBackup = mediaBackup.GetBackupFilesWithDiskEmpty().OrderByDescending(static q => q.Length);
         var backupFiles = filesToBackup.ToArray();
         var sizeOfFiles = backupFiles.Sum(static x => x.Length);
+        Utils.LogWithPushover(BackupAction.CopyFiles, Resources.Main_Started, true);
 
         Utils.LogWithPushover(BackupAction.CopyFiles,
-            $"Started\n{backupFiles.Length:n0} files to backup at {Utils.FormatSize(sizeOfFiles)}");
+            $"{backupFiles.Length:n0} files to backup at {Utils.FormatSize(sizeOfFiles)}");
         _ = Utils.GetDiskInfo(backupDiskTextBox.Text, out var availableSpace, out _);
         var remainingDiskSpace = availableSpace - Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave);
         var sizeOfCopy = remainingDiskSpace < sizeOfFiles ? remainingDiskSpace : sizeOfFiles;
@@ -140,7 +141,7 @@ internal sealed partial class Main
                 Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
 
             Utils.LogWithPushover(BackupAction.CopyFiles,
-                $"[{fileCounter}/{totalFileCount}]\nSkipping copy of {sourceFileName} as it exists already.");
+                $"[{fileCounter}/{totalFileCount}]\nSkipping copy of {sourceFileName} as it exists already.", true);
         }
         else
         {
@@ -244,7 +245,8 @@ internal sealed partial class Main
             if (outOfDiskSpaceMessageSent) return;
 
             Utils.LogWithPushover(BackupAction.CopyFiles,
-                $"[{fileCounter}/{totalFileCount}] {Utils.FormatSize(availableSpace)} free.\nSkipping {sourceFileName} as not enough free space");
+                $"[{fileCounter}/{totalFileCount}] {Utils.FormatSize(availableSpace)} free.\nSkipping {sourceFileName} as not enough free space",
+                true);
             outOfDiskSpaceMessageSent = true;
         }
         Utils.TraceOut();

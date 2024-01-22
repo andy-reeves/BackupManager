@@ -405,7 +405,7 @@ internal sealed partial class Main : Form
             }
             else
             {
-                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, "Started");
+                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, Resources.Main_Started, true);
                 MonitoringTimer_Tick(null, null);
             }
             monitoringTimer.Start();
@@ -465,7 +465,7 @@ internal sealed partial class Main : Form
     private void Main_FormClosed(object sender, FormClosedEventArgs e)
     {
         Utils.TraceIn();
-        Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, "BackupManager stopped");
+        Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, "BackupManager stopped", true);
         ResetTokenSource();
         Utils.BackupLogFile(mainCt);
         Utils.TraceOut();
@@ -545,7 +545,7 @@ internal sealed partial class Main : Form
         Utils.TraceIn();
         mainCancellationTokenSource.Cancel();
         toolStripStatusLabel.Text = Resources.Main_Cancelling;
-        Utils.LogWithPushover(BackupAction.General, Resources.Main_Cancelling);
+        Utils.LogWithPushover(BackupAction.General, Resources.Main_Cancelling, true);
         if (Utils.CopyProcess != null && !Utils.CopyProcess.HasExited) Utils.CopyProcess?.Kill();
         Utils.TraceOut();
     }
@@ -560,7 +560,7 @@ internal sealed partial class Main : Form
             Utils.TraceIn();
             if (Utils.CopyProcess != null && !Utils.CopyProcess.HasExited) Utils.CopyProcess?.Kill();
             UpdateMediaFilesCountDisplay();
-            Utils.LogWithPushover(BackupAction.General, PushoverPriority.Normal, "Cancelled");
+            Utils.LogWithPushover(BackupAction.General, PushoverPriority.Normal, "Cancelled", true);
             ResetAllControls();
         }
         finally
@@ -739,7 +739,7 @@ internal sealed partial class Main : Form
                 {
                     var text = string.Format(Resources.Main_Directory_scan_skipped,
                         Utils.FormatTimeFromSeconds(mediaBackup.Config.DirectoriesScanTimer));
-                    Utils.LogWithPushover(BackupAction.ScanDirectory, text);
+                    Utils.LogWithPushover(BackupAction.ScanDirectory, text, true);
                     mediaBackup.Watcher.DirectoriesToScan.Add(directoryToScan, ct);
                 }
             }

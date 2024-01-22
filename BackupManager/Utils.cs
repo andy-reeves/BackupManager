@@ -1320,9 +1320,10 @@ internal static partial class Utils
     /// </summary>
     /// <param name="backupAction"></param>
     /// <param name="text"></param>
-    internal static void LogWithPushover(BackupAction backupAction, string text)
+    /// <param name="delayBeforeSending"></param>
+    internal static void LogWithPushover(BackupAction backupAction, string text, bool delayBeforeSending = false)
     {
-        LogWithPushover(backupAction, PushoverPriority.Normal, text);
+        LogWithPushover(backupAction, PushoverPriority.Normal, text, delayBeforeSending);
     }
 
     /// <summary>
@@ -1331,9 +1332,11 @@ internal static partial class Utils
     /// <param name="backupAction"></param>
     /// <param name="priority"></param>
     /// <param name="text"></param>
-    internal static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, string text)
+    /// <param name="delayBeforeSending"></param>
+    internal static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, string text,
+        bool delayBeforeSending = false)
     {
-        LogWithPushover(backupAction, priority, PushoverRetry.None, PushoverExpires.Immediately, text);
+        LogWithPushover(backupAction, priority, PushoverRetry.None, PushoverExpires.Immediately, text, delayBeforeSending);
     }
 
     private static async Task TaskWrapper(Task task, CancellationToken ct)
@@ -1360,44 +1363,31 @@ internal static partial class Utils
 
     /// <summary>
     ///     Logs the text to the LogFile and sends a Pushover message
+    ///     Messages can be delayed before sending for 1s.
+    ///     Errors are always sent immediately
     /// </summary>
     /// <param name="backupAction"></param>
     /// <param name="priority"></param>
     /// <param name="retry"></param>
     /// <param name="expires"></param>
     /// <param name="text"></param>
+    /// <param name="delayBeforeSending"></param>
     internal static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, PushoverRetry retry,
-        PushoverExpires expires, string text)
+        PushoverExpires expires, string text, bool delayBeforeSending = false)
     {
-        var delayBeforeSending = new[]
-        {
-            "stopped", "cancelled", "completed", "complete.", "skipped", "checked.", "skipping ", "started", "cancelling"
-        };
-
-        //var delayAfterSending = new[] { };
         Log(backupAction, text);
-        var lowerText = text.ToLower();
 
-        //var delayAfter = delayAfterSending.Any(lowerText.Contains);
-        var delayBefore = delayBeforeSending.Any(lowerText.Contains);
-
-        if (delayBefore) // || delayAfter)
-        {
-            //if (delayBefore)
-            // {
-            Task.Delay(1000).Wait();
-
-            // }
-            SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, text);
-
-            //if (delayAfter) Task.Delay(1000).Wait();
-        }
-        else
+        if (backupAction == BackupAction.Error || !delayBeforeSending)
         {
             _ = TaskWrapper(
                 Task.Run(() =>
                     SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, text)),
                 new CancellationTokenSource().Token);
+        }
+        else
+        {
+            Task.Delay(1000).Wait();
+            SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, text);
         }
     }
 

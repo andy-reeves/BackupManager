@@ -60,7 +60,7 @@ internal sealed partial class Main
             // Copy any files that need a backup
             CopyFiles(true, ct);
             Utils.Trace($"TriggerHour={_trigger.TriggerHour}");
-            Utils.LogWithPushover(BackupAction.ScheduledBackup, Resources.Main_Completed);
+            Utils.LogWithPushover(BackupAction.ScheduledBackup, Resources.Main_Completed, true);
             ResetAllControls();
         }
         finally
