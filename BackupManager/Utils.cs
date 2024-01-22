@@ -1080,7 +1080,7 @@ internal static partial class Utils
     private static bool PushoverServiceAvailable(string pushoverAppToken)
     {
         TraceIn();
-        if (!pushoverAppToken.HasValue()) return TraceOut(false);
+        if (!pushoverAppToken.HasValue() || pushoverAppToken == "InsertYourPushoverAppTokenHere") return TraceOut(false);
 
         try
         {
