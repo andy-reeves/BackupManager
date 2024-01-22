@@ -1369,18 +1369,18 @@ internal static partial class Utils
     internal static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, PushoverRetry retry,
         PushoverExpires expires, string text)
     {
+        var delayBeforeSending = new[] { "stopped", "cancelled", "completed" };
+        var delayAfterSending = new[] { "started", "cancelling" };
         Log(backupAction, text);
         var lowerText = text.ToLower();
+        var delayAfter = delayAfterSending.Any(lowerText.Contains);
+        var delayBefore = delayBeforeSending.Any(lowerText.Contains);
 
-        if (lowerText.Contains("started") || lowerText.Contains("cancelling"))
+        if (delayBefore || delayAfter)
         {
+            if (delayBefore) Task.Delay(1000).Wait();
             SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, text);
-            Task.Delay(500).Wait();
-        }
-        else if (lowerText.Contains("stopped") || lowerText.Contains("cancelled"))
-        {
-            Task.Delay(500).Wait();
-            SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, text);
+            if (delayAfter) Task.Delay(1000).Wait();
         }
         else
         {
