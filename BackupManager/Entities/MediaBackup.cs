@@ -536,7 +536,7 @@ public sealed class MediaBackup
 
         foreach (var backupFile in BackupFiles)
         {
-            if (!backupFile.DiskChecked.HasValue()) continue;
+            if (!backupFile.DiskChecked.HasValue() || backupFile.Disk == "-1") continue;
 
             var backupFileDate = DateTime.Parse(backupFile.DiskChecked);
             if (backupFileDate >= oldestFileDate && oldestFile != null) continue;

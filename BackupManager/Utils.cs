@@ -1369,7 +1369,7 @@ internal static partial class Utils
     internal static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, PushoverRetry retry,
         PushoverExpires expires, string text)
     {
-        var delayBeforeSending = new[] { "stopped", "cancelled", "completed", "complete.", "skipped" };
+        var delayBeforeSending = new[] { "stopped", "cancelled", "completed", "complete.", "skipped", "checked." };
         var delayAfterSending = new[] { "started", "cancelling" };
         Log(backupAction, text);
         var lowerText = text.ToLower();
