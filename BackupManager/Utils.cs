@@ -1321,9 +1321,11 @@ internal static partial class Utils
     /// <param name="backupAction"></param>
     /// <param name="text"></param>
     /// <param name="delayBeforeSending"></param>
-    internal static void LogWithPushover(BackupAction backupAction, string text, bool delayBeforeSending = false)
+    /// <param name="delayAfterSending"></param>
+    internal static void LogWithPushover(BackupAction backupAction, string text, bool delayBeforeSending = false,
+        bool delayAfterSending = false)
     {
-        LogWithPushover(backupAction, PushoverPriority.Normal, text, delayBeforeSending);
+        LogWithPushover(backupAction, PushoverPriority.Normal, text, delayBeforeSending, delayAfterSending);
     }
 
     /// <summary>
@@ -1333,10 +1335,12 @@ internal static partial class Utils
     /// <param name="priority"></param>
     /// <param name="text"></param>
     /// <param name="delayBeforeSending"></param>
+    /// <param name="delayAfterSending"></param>
     internal static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, string text,
-        bool delayBeforeSending = false)
+        bool delayBeforeSending = false, bool delayAfterSending = false)
     {
-        LogWithPushover(backupAction, priority, PushoverRetry.None, PushoverExpires.Immediately, text, delayBeforeSending);
+        LogWithPushover(backupAction, priority, PushoverRetry.None, PushoverExpires.Immediately, text, delayBeforeSending,
+            delayAfterSending);
     }
 
     private static async Task TaskWrapper(Task task, CancellationToken ct)
@@ -1372,12 +1376,13 @@ internal static partial class Utils
     /// <param name="expires"></param>
     /// <param name="text"></param>
     /// <param name="delayBeforeSending"></param>
+    /// <param name="delayAfterSending"></param>
     internal static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, PushoverRetry retry,
-        PushoverExpires expires, string text, bool delayBeforeSending = false)
+        PushoverExpires expires, string text, bool delayBeforeSending = false, bool delayAfterSending = false)
     {
         Log(backupAction, text);
 
-        if (backupAction == BackupAction.Error || !delayBeforeSending)
+        if (backupAction == BackupAction.Error || (!delayBeforeSending && !delayAfterSending))
         {
             _ = TaskWrapper(
                 Task.Run(() =>
@@ -1386,8 +1391,9 @@ internal static partial class Utils
         }
         else
         {
-            Task.Delay(1000).Wait();
+            if (delayBeforeSending) Task.Delay(1000).Wait();
             SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, text);
+            if (delayAfterSending) Task.Delay(1000).Wait();
         }
     }
 

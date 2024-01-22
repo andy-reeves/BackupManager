@@ -264,7 +264,7 @@ internal sealed partial class Main
             if (longRunningActionExecutingRightNow) return;
 
             DisableControlsForAsyncTasks(ct);
-            Utils.LogWithPushover(BackupAction.ScanDirectory, Resources.Main_Started, true);
+            Utils.LogWithPushover(BackupAction.ScanDirectory, Resources.Main_Started, false, true);
             UpdateStatusLabel(ct, string.Format(Resources.Main_Scanning, string.Empty));
             ScanAllDirectories(false, ct);
             ResetAllControls();

@@ -21,7 +21,7 @@ internal sealed partial class Main
             if (longRunningActionExecutingRightNow) return;
 
             DisableControlsForAsyncTasks(ct);
-            Utils.LogWithPushover(BackupAction.ScheduledBackup, Resources.Main_Started);
+            Utils.LogWithPushover(BackupAction.ScheduledBackup, Resources.Main_Started, false, true);
             UpdateStatusLabel(ct, string.Format(Resources.Main_Scanning, string.Empty));
 
             if (mediaBackup.Config.MonitoringOnOff)

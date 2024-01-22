@@ -91,7 +91,7 @@ internal sealed partial class Main
             if (Utils.IsRunningAsAdmin()) Text += Resources.Main_AdminTitle;
             UpdateMediaFilesCountDisplay();
             Utils.LogHeader();
-            Utils.LogWithPushover(BackupAction.General, "BackupManager started", true);
+            Utils.LogWithPushover(BackupAction.General, "BackupManager started", false, true);
             config.LogParameters();
             var directoriesArray = config.Directories.ToArray();
             listDirectoriesComboBox.Items.AddRange(directoriesArray.ToArray<object>());
@@ -172,7 +172,7 @@ internal sealed partial class Main
     private void UpdateSymbolicLinks(CancellationToken ct)
     {
         Utils.TraceIn();
-        Utils.LogWithPushover(BackupAction.CheckingSymbolicLinks, Resources.Main_Started, true);
+        Utils.LogWithPushover(BackupAction.CheckingSymbolicLinks, Resources.Main_Started, false, true);
         UpdateStatusLabel(ct, Resources.Main_Started);
         HashSet<string> hashSet = new();
 
@@ -440,7 +440,7 @@ internal sealed partial class Main
             if (longRunningActionExecutingRightNow) return;
 
             DisableControlsForAsyncTasks(ct);
-            Utils.LogWithPushover(BackupAction.SpeedTest, Resources.Main_Started, true);
+            Utils.LogWithPushover(BackupAction.SpeedTest, Resources.Main_Started, false, true);
             EnableProgressBar(0, config.Directories.Count);
 
             for (var i = 0; i < config.Directories.Count; i++)

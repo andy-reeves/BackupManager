@@ -26,7 +26,7 @@ internal sealed partial class Main
         IEnumerable<BackupFile> filesToBackup = mediaBackup.GetBackupFilesWithDiskEmpty().OrderByDescending(static q => q.Length);
         var backupFiles = filesToBackup.ToArray();
         var sizeOfFiles = backupFiles.Sum(static x => x.Length);
-        Utils.LogWithPushover(BackupAction.CopyFiles, Resources.Main_Started, true);
+        Utils.LogWithPushover(BackupAction.CopyFiles, Resources.Main_Started, true, true);
 
         Utils.LogWithPushover(BackupAction.CopyFiles,
             $"{backupFiles.Length:n0} files to backup at {Utils.FormatSize(sizeOfFiles)}");
