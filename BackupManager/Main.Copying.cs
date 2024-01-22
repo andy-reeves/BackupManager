@@ -23,7 +23,9 @@ internal sealed partial class Main
         Utils.TraceIn();
         var disk = SetupBackupDisk(ct);
         UpdateStatusLabel(ct, string.Format(Resources.Main_Copying, string.Empty));
-        IEnumerable<BackupFile> filesToBackup = mediaBackup.GetBackupFilesWithDiskEmpty().OrderByDescending(static q => q.Length);
+
+        // TODO IEnumerable<BackupFile> filesToBackup = mediaBackup.GetBackupFilesWithDiskEmpty().OrderByDescending(static q => q.Length);
+        IEnumerable<BackupFile> filesToBackup = mediaBackup.GetBackupFilesWithDiskEmpty().OrderBy(static q => q.Length);
         var backupFiles = filesToBackup.ToArray();
         var sizeOfFiles = backupFiles.Sum(static x => x.Length);
         Utils.LogWithPushover(BackupAction.CopyFiles, Resources.Main_Started, true);

@@ -192,8 +192,7 @@ internal sealed partial class Main
                     // sometimes we get the same file on multiple backup disks
                     // calling CheckContentHashes will switch it from one disk to another and they'll keep doing it
                     // so if it was last seen on another disk delete it from this one
-
-                    if (disk.Name != backupFile.Disk && backupFile.Disk != "-1")
+                    if (disk.Name != backupFile.Disk && backupFile.Disk.HasValue() && backupFile.Disk != "-1")
                     {
                         if (backupFile.Disk != "-1" && backupFile.Disk.HasValue())
                             Utils.Log($"{backupFile.FullPath} was on {backupFile.Disk} but now found on {disk.Name}");
@@ -220,7 +219,11 @@ internal sealed partial class Main
                                 diskInfoMessageWasTheLastSent = false;
                             }
                             else
+                            {
+                                Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
+                                    $"Deleting {backupFile.FullPath}. ");
                                 Utils.FileDelete(backupFileFullPath);
+                            }
                         }
                         continue;
                     }
@@ -243,7 +246,7 @@ internal sealed partial class Main
                 var hashToCheck = Utils.GetShortMd5HashFromFile(backupFileFullPath);
                 var file = mediaBackup.GetBackupFileFromContentsHashcode(hashToCheck);
 
-                if (file != null && file.Length != 0 && file.Disk.HasValue())
+                if (file != null && file.Length != 0 && file.Disk.HasValue() && file.Disk != "-1")
                 {
                     var destFileName = file.BackupDiskFullPath(disk.BackupPath);
                     Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Renaming {backupFileFullPath} to {destFileName}");
@@ -279,7 +282,7 @@ internal sealed partial class Main
             // Extra file on a backup disk
             if (deleteExtraFiles)
             {
-                Utils.LogWithPushover(BackupAction.CheckBackupDisk,
+                Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
                     $"Extra file {backupFileFullPath} on backup disk {disk.Name} now deleted");
                 Utils.FileDelete(backupFileFullPath);
                 diskInfoMessageWasTheLastSent = false;
