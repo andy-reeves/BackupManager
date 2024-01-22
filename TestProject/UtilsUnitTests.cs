@@ -48,9 +48,8 @@ public sealed class UtilsUnitTests
         finally
         {
             if (path1 != null)
-            {
-                if (Directory.Exists(path1)) Directory.Delete(path1, true);
-            }
+                if (Directory.Exists(path1))
+                    Directory.Delete(path1, true);
         }
     }
 

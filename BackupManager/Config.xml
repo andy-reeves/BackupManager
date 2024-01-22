@@ -65,7 +65,7 @@
     <Token>InsertYourPushoverAppTokenHere</Token>
     <Token>InsertYourPushoverAppTokenHere</Token>
   </PushoverAppTokens>
-  
+
   <!-- True to enable sending Pushover messages -->
   <PushoverOnOff>true</PushoverOnOff>
 
