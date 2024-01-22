@@ -15,6 +15,7 @@ using System.Linq;
 using System.Management;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -155,8 +156,7 @@ internal static partial class Utils
     private static readonly string _logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
         "BackupManager_Debug.log");
 #else
-    private static readonly string _logFile =
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager.log");
+    private static readonly string _logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager.log");
 #endif
 
     /// <summary>
@@ -1030,11 +1030,6 @@ internal static partial class Utils
         return TraceOut(CreateHashForByteArray(startBlock, middleBlock, endBlock));
     }
 
-    private static void SendPushoverMessage(string title, PushoverPriority priority, string message)
-    {
-        SendPushoverMessage(title, priority, PushoverRetry.None, PushoverExpires.Immediately, message);
-    }
-
     internal static void Wait(int howManyMillisecondsToWait)
     {
         var howLongToWait = TimeSpan.FromMilliseconds(howManyMillisecondsToWait);
@@ -1095,10 +1090,7 @@ internal static partial class Utils
             task.Wait();
             var response = task.Result;
             _ = response.EnsureSuccessStatusCode();
-
-            return !response.Headers.TryGetValues("X-Limit-App-Remaining", out var values)
-                ? TraceOut(false)
-                : TraceOut(Convert.ToInt32(values.First()) > 1);
+            return TraceOut(GetHeaderValue(response.Headers, "X-Limit-App-Remaining") > 1);
         }
         catch (Exception ex)
         {
@@ -1109,8 +1101,9 @@ internal static partial class Utils
 
     private static void SetupPushoverAppToken()
     {
-        Config.PushoverAppTokenToUse = PushoverServiceAvailable(Config.PushoverAppToken1) ? Config.PushoverAppToken1 :
-            PushoverServiceAvailable(Config.PushoverAppToken2) ? Config.PushoverAppToken2 : string.Empty;
+        TraceIn();
+        Config.PushoverAppTokenToUse = Config.PushoverAppTokens.FirstOrDefault(static t => PushoverServiceAvailable(t));
+        TraceOut();
     }
 
     private static void SendPushoverMessage(string title, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires,
@@ -1156,17 +1149,13 @@ internal static partial class Utils
             if (expires != PushoverExpires.Immediately)
                 parameters.Add("expire", Convert.ChangeType(expires, expires.GetTypeCode()).ToString());
             using FormUrlEncodedContent postContent = new(parameters);
-            Task.Delay(500).Wait(); // 500 seems to work
 
             // ReSharper disable once AccessToDisposedClosure
             var task = Task.Run(() => _client.PostAsync(PushoverAddress, postContent));
             task.Wait();
             var response = task.Result;
             _ = response.EnsureSuccessStatusCode();
-
-            PushoverMessagesRemaining = response.Headers.TryGetValues("X-Limit-App-Remaining", out var values)
-                ? Convert.ToInt32(values.First())
-                : 0;
+            PushoverMessagesRemaining = GetHeaderValue(response.Headers, "X-Limit-App-Remaining");
             Trace($"Pushover messages remaining: {PushoverMessagesRemaining}");
 
             if (PushoverMessagesRemaining < Config.PushoverWarningMessagesRemaining)
@@ -1174,7 +1163,9 @@ internal static partial class Utils
                 if (!_sentAlertForLowPushoverMessages && !_alreadySendingPushoverMessage)
                 {
                     _alreadySendingPushoverMessage = true;
-                    SendPushoverMessage("Message Limit Warning", PushoverPriority.High, $"{PushoverMessagesRemaining} remaining");
+
+                    SendPushoverMessage("Message Limit Warning", PushoverPriority.High, PushoverRetry.None,
+                        PushoverExpires.Immediately, $"{PushoverMessagesRemaining} remaining");
                     _alreadySendingPushoverMessage = false;
                     _sentAlertForLowPushoverMessages = true;
                 }
@@ -1190,6 +1181,11 @@ internal static partial class Utils
         {
             TraceOut();
         }
+    }
+
+    private static int GetHeaderValue(HttpHeaders headers, string headerKey)
+    {
+        return headers.TryGetValues(headerKey, out var values) ? Convert.ToInt32(values.First()) : 0;
     }
 
     /// <summary>
@@ -1337,8 +1333,29 @@ internal static partial class Utils
     /// <param name="text"></param>
     internal static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, string text)
     {
-        Log(backupAction, text);
-        SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, text);
+        LogWithPushover(backupAction, priority, PushoverRetry.None, PushoverExpires.Immediately, text);
+    }
+
+    private static async Task TaskWrapper(Task task, CancellationToken ct)
+    {
+        try
+        {
+            TraceIn();
+            await task;
+            Trace("After await");
+        }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            Trace(Resources.Main_Cancelling);
+        }
+        catch (Exception u)
+        {
+            LogWithPushover(BackupAction.Error, PushoverPriority.High, string.Format(Resources.Main_TaskWrapperException, u));
+        }
+        finally
+        {
+            TraceOut();
+        }
     }
 
     /// <summary>
@@ -1353,7 +1370,25 @@ internal static partial class Utils
         PushoverExpires expires, string text)
     {
         Log(backupAction, text);
-        SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, text);
+        var lowerText = text.ToLower();
+
+        if (lowerText.Contains("started") || lowerText.Contains("cancelling"))
+        {
+            SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, text);
+            Task.Delay(500).Wait();
+        }
+        else if (lowerText.Contains("stopped") || lowerText.Contains("cancelled"))
+        {
+            Task.Delay(500).Wait();
+            SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, text);
+        }
+        else
+        {
+            _ = TaskWrapper(
+                Task.Run(() =>
+                    SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, text)),
+                new CancellationTokenSource().Token);
+        }
     }
 
     #endregion

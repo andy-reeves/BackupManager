@@ -96,10 +96,7 @@
             <xs:documentation>Monitor start is delayed until after the first monitoring interval</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element type="xs:string" name="PushoverAppToken1" maxOccurs="1" minOccurs="0" />
-        <xs:element type="xs:string" name="PushoverAppToken2" maxOccurs="1" minOccurs="0" />
-        <xs:element type="xs:string" name="PushoverAppToken3" maxOccurs="1" minOccurs="0" />
-
+       
         <xs:element type="xs:boolean" name="PushoverOnOff" maxOccurs="1" minOccurs="0">
           <xs:annotation>
             <xs:documentation>True to enable sending Pushover messages</xs:documentation>
@@ -198,10 +195,22 @@
           </xs:annotation>
           <xs:complexType>
             <xs:sequence>
-              <xs:element type="xs:string" name="Directory" maxOccurs="unbounded" minOccurs="0" />
+              <xs:element type="xs:string" name="Directory" maxOccurs="unbounded" minOccurs="1" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
+        
+        <xs:element name="PushoverAppTokens" maxOccurs="1" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Pushover messages are sent to this App Token until any limit reached and then the next</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="xs:string" name="Token" maxOccurs="unbounded" minOccurs="1" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        
         <xs:element name="Filters">
           <xs:complexType>
             <xs:sequence>

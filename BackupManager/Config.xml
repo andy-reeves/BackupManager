@@ -61,10 +61,11 @@
   <PlexToken />
 
   <!-- Pushover messages are sent to this App Token until any limit reached and then the next -->
-  <PushoverAppToken1>InsertYourPushoverAppTokenHere</PushoverAppToken1>
-
-  <PushoverAppToken2>InsertYourPushoverAppTokenHere</PushoverAppToken2>
-
+  <PushoverAppTokens>
+    <Token>InsertYourPushoverAppTokenHere</Token>
+    <Token>InsertYourPushoverAppTokenHere</Token>
+  </PushoverAppTokens>
+  
   <!-- True to enable sending Pushover messages -->
   <PushoverOnOff>true</PushoverOnOff>
 
