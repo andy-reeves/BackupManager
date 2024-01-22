@@ -29,7 +29,7 @@ internal sealed partial class Main
         Utils.LogWithPushover(BackupAction.CopyFiles, Resources.Main_Started, true, true);
 
         Utils.LogWithPushover(BackupAction.CopyFiles,
-            $"{backupFiles.Length:n0} files to backup at {Utils.FormatSize(sizeOfFiles)}");
+            $"{backupFiles.Length:n0} files to backup at {Utils.FormatSize(sizeOfFiles)}", false, true);
         _ = Utils.GetDiskInfo(backupDiskTextBox.Text, out var availableSpace, out _);
         var remainingDiskSpace = availableSpace - Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave);
         var sizeOfCopy = remainingDiskSpace < sizeOfFiles ? remainingDiskSpace : sizeOfFiles;
