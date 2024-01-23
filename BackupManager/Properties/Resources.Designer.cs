@@ -250,6 +250,15 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Disk is not empty. Please empty the disk before preparing for backup..
+        /// </summary>
+        internal static string Main_Click_Disk_is_not_empty {
+            get {
+                return ResourceManager.GetString("Main_Click_Disk_is_not_empty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Completed..
         /// </summary>
         internal static string Main_Completed {
@@ -286,6 +295,15 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create new disk.
+        /// </summary>
+        internal static string Main_Create_new_disk {
+            get {
+                return ResourceManager.GetString("Main_Create_new_disk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete extra files.
         /// </summary>
         internal static string Main_DeleteExtraTitle {
@@ -300,6 +318,15 @@ namespace BackupManager.Properties {
         internal static string Main_Directory_scan_skipped {
             get {
                 return ResourceManager.GetString("Main_Directory_scan_skipped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disk not empty.
+        /// </summary>
+        internal static string Main_Disk_not_empty {
+            get {
+                return ResourceManager.GetString("Main_Disk_not_empty", resourceCulture);
             }
         }
         
@@ -354,6 +381,15 @@ namespace BackupManager.Properties {
         internal static string Main_MonitoringButton {
             get {
                 return ResourceManager.GetString("Main_MonitoringButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to prepare a new backup disk?.
+        /// </summary>
+        internal static string Main_new_backup_disk_are_you_sure {
+            get {
+                return ResourceManager.GetString("Main_new_backup_disk_are_you_sure", resourceCulture);
             }
         }
         

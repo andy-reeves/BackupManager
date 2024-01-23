@@ -1050,7 +1050,7 @@ internal sealed partial class Main : Form
 
         try
         {
-            if (MessageBox.Show("Are you sure you want to prepare a new backup disk?", "Create new disk",
+            if (MessageBox.Show(Resources.Main_new_backup_disk_are_you_sure, Resources.Main_Create_new_disk,
                     MessageBoxButtons.YesNo) != DialogResult.Yes)
                 return;
 
@@ -1067,8 +1067,7 @@ internal sealed partial class Main : Form
             if (directoryInfo.GetFileSystemInfos("*", SearchOption.TopDirectoryOnly)
                 .Where(static x => (x.Attributes & FileAttributes.Hidden) == 0).Any())
             {
-                _ = MessageBox.Show("Disk is not empty. Please empty the disk before preparing for backup.", "Disk not empty",
-                    MessageBoxButtons.OK);
+                _ = MessageBox.Show(Resources.Main_Click_Disk_is_not_empty, Resources.Main_Disk_not_empty, MessageBoxButtons.OK);
                 return;
             }
             var i = 1;
@@ -1092,8 +1091,6 @@ internal sealed partial class Main : Form
             _ = Utils.ShareFolder(backupDiskTextBox.Text, shareName, string.Empty);
             var domain = Environment.UserDomainName;
             Utils.AddPermissions(shareName, domain, "Everyone");
-
-            //BackupDisk.CheckForValidBackupShare(backupDiskTextBox.Text);
             var disk = mediaBackup.GetBackupDisk(backupDiskTextBox.Text);
             _ = disk.Update(mediaBackup.BackupFiles);
             mediaBackup.Save(mainCt);

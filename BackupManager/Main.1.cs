@@ -490,7 +490,7 @@ internal sealed partial class Main
             listFilesOnBackupDiskButton, listFilesWithDuplicateContentHashcodesButton, listMoviesWithMultipleFilesButton,
             processesGroupBox, pushoverGroupBox, listFilesGroupBox, reportBackupDiskStatusButton,
             listFilesInDirectoryGroupBox, monitoringButton, reportBackupDiskStatusButton, listFilesInDirectoryGroupBox,
-            listFilesOnBackupDiskGroupBox, openLogFileButton
+            listFilesOnBackupDiskGroupBox, openLogFileButton, allBackupDisksGroupBox
         };
 
         // ReSharper restore BadListLineBreaks
@@ -499,6 +499,8 @@ internal sealed partial class Main
         {
             control.Invoke(static x => x.Enabled = true);
         }
+        checkAllBackupDisksButton.Invoke(static x => x.Enabled = false);
+        checkDeleteAndCopyAllBackupDisksButton.Invoke(static x => x.Enabled = false);
     }
 
     /// <summary>

@@ -34,10 +34,8 @@ internal sealed partial class Main
         var remainingDiskSpace = availableSpace - Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave);
         var sizeOfCopy = remainingDiskSpace < sizeOfFiles ? remainingDiskSpace : sizeOfFiles;
 
-        if (sizeOfCopy == 0)
-
-            // This avoids any division by zero errors later
-            sizeOfCopy = 1;
+        // This avoids any division by zero errors later
+        if (sizeOfCopy == 0) sizeOfCopy = 1;
 
         // We use 100 as the max because the actual number of bytes could be far too large 
         EnableProgressBar(0, 100);
@@ -96,12 +94,11 @@ internal sealed partial class Main
                 // This file will be seen on the next scan and removed
                 var sourceFileName = backupFile.FullPath;
                 FileInfo sourceFileInfo = new(sourceFileName);
-                var sourceFileSize = Utils.FormatSize(sourceFileInfo.Length);
 
                 if (FileExistsInternal(sizeOfCopy, disk, backupFile, sourceFileName, copiedSoFar, counter, totalFileCount, ct))
                 {
                     CopyFileInternal(sizeOfCopy, disk, sourceFileName, copiedSoFar, sourceFileInfo, ref outOfDiskSpaceMessageSent,
-                        remainingSizeOfFilesToCopy, counter, totalFileCount, sourceFileSize, backupFile, ref lastCopySpeed, ct);
+                        remainingSizeOfFilesToCopy, counter, totalFileCount, backupFile, ref lastCopySpeed, ct);
                 }
                 remainingSizeOfFilesToCopy -= backupFile.Length;
                 copiedSoFar += backupFile.Length;
@@ -165,7 +162,7 @@ internal sealed partial class Main
 
     private void CopyFileInternal(long sizeOfCopy, BackupDisk disk, string sourceFileName, long copiedSoFar,
         FileInfo sourceFileInfo, ref bool outOfDiskSpaceMessageSent, long remainingSizeOfFilesToCopy, int fileCounter,
-        int totalFileCount, string sourceFileSize, BackupFile backupFile, ref long lastCopySpeed, CancellationToken ct)
+        int totalFileCount, BackupFile backupFile, ref long lastCopySpeed, CancellationToken ct)
     {
         Utils.TraceIn();
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
@@ -208,9 +205,11 @@ internal sealed partial class Main
                 }
                 UpdateEstimatedFinish(estimatedFinishDateTime);
             }
+            var sourceFileSize = Utils.FormatSize(sourceFileInfo.Length);
 
             Utils.LogWithPushover(BackupAction.CopyFiles,
-                $"[{fileCounter}/{totalFileCount}] {Utils.FormatSize(availableSpace)} free.\nCopying {sourceFileName} at {sourceFileSize}{formattedEndDateTime}");
+                $"[{fileCounter}/{totalFileCount}] {Utils.FormatSize(availableSpace)} free.\n" +
+                $"Copying {sourceFileName} at {sourceFileSize}{formattedEndDateTime}", false, true);
             Utils.FileDelete(destinationFileNameTemp);
             var sw = Stopwatch.StartNew();
             _ = Utils.FileCopy(sourceFileName, destinationFileNameTemp, ct);
@@ -229,7 +228,8 @@ internal sealed partial class Main
             // Make sure its not readonly
             Utils.ClearFileAttribute(destinationFileName, FileAttributes.ReadOnly);
 
-            // it could be that the source file hash changed after we read it (we read the hash, updated the master file and then copied it)
+            // it could be that the source file hash changed after we read it (we read the hash, updated the master file and
+            // then copied it)
             // in which case check the source hash again and then check the copied file 
 
             if (!backupFile.CheckContentHashes(disk))
@@ -237,16 +237,18 @@ internal sealed partial class Main
                 // There was an error with the hash codes of the source file anf the file on the backup disk
             {
                 Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.High,
-                    $"There was an error with the hash codes on the source and backup disk. Its likely the source file has changed since the last backup of {backupFile.FullPath} to {destinationFileName}");
+                    $"There was an error with the hash codes on the source and backup disk. " +
+                    $"Its likely the source file has changed since the last backup of {backupFile.FullPath} to " +
+                    $"{destinationFileName}");
             }
         }
         else
         {
             if (outOfDiskSpaceMessageSent) return;
 
-            Utils.LogWithPushover(BackupAction.CopyFiles,
-                $"[{fileCounter}/{totalFileCount}] {Utils.FormatSize(availableSpace)} free.\nSkipping {sourceFileName} as not enough free space",
-                true);
+            var text = $"[{fileCounter}/{totalFileCount}] {Utils.FormatSize(availableSpace)} free.\n" +
+                       $"Skipping {sourceFileName} as not enough free space";
+            Utils.LogWithPushover(BackupAction.CopyFiles, text, false, true);
             outOfDiskSpaceMessageSent = true;
         }
         Utils.TraceOut();

@@ -321,4 +321,16 @@
   <data name="Main_Started" xml:space="preserve">
     <value>Started</value>
   </data>
+  <data name="Main_new_backup_disk_are_you_sure" xml:space="preserve">
+    <value>Are you sure you want to prepare a new backup disk?</value>
+  </data>
+  <data name="Main_Create_new_disk" xml:space="preserve">
+    <value>Create new disk</value>
+  </data>
+  <data name="Main_Click_Disk_is_not_empty" xml:space="preserve">
+    <value>Disk is not empty. Please empty the disk before preparing for backup.</value>
+  </data>
+  <data name="Main_Disk_not_empty" xml:space="preserve">
+    <value>Disk not empty</value>
+  </data>
 </root>
