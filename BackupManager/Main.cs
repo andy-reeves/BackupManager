@@ -341,9 +341,13 @@ internal sealed partial class Main : Form
     private void ReportBackupDiskStatusButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        IEnumerable<BackupDisk> disks = mediaBackup.BackupDisks.OrderBy(static p => p.Number);
         Utils.Log("Listing backup disk statuses");
         Utils.Log("Name        Checked    Capacity   Used     Free    Files  Deleted   Diff      %");
+#if DEBUG
+        var disks = mediaBackup.BackupDisks.OrderByDescending(static d => d.Free);
+#else
+        var disks = mediaBackup.BackupDisks.OrderByDescending(static d => d.Number);
+#endif
 
         foreach (var disk in disks)
         {
