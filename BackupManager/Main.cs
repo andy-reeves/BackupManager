@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.Versioning;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -514,20 +515,23 @@ internal sealed partial class Main : Form
         Dictionary<string, BackupFile> allFilesUniqueContentsHash = new();
         List<BackupFile> backupFilesWithDuplicates = new();
 
-        foreach (var f in mediaBackup.BackupFiles.Where(static f => f.FullPath.Contains("_Movies") || f.FullPath.Contains("_TV")))
+        foreach (var backupFile in mediaBackup.BackupFiles.Where(file => !file.Deleted &&
+                                                                         Regex.Match(file.FullPath,
+                                                                                 config.DuplicateContentHashCodesDiscoveryRegex)
+                                                                             .Success))
         {
-            if (allFilesUniqueContentsHash.TryGetValue(f.ContentsHash, out var originalFile))
+            if (allFilesUniqueContentsHash.TryGetValue(backupFile.ContentsHash, out var originalFile))
             {
-                backupFilesWithDuplicates.Add(f);
+                backupFilesWithDuplicates.Add(backupFile);
                 if (!backupFilesWithDuplicates.Contains(originalFile)) backupFilesWithDuplicates.Add(originalFile);
             }
             else
-                allFilesUniqueContentsHash.Add(f.ContentsHash, f);
+                allFilesUniqueContentsHash.Add(backupFile.ContentsHash, backupFile);
         }
 
-        foreach (var f in backupFilesWithDuplicates)
+        foreach (var duplicateFile in backupFilesWithDuplicates)
         {
-            Utils.Log($"{f.FullPath} has a duplicate");
+            Utils.Log($"{duplicateFile.FullPath} has a duplicate");
         }
         Utils.TraceOut();
     }

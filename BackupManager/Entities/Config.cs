@@ -119,6 +119,11 @@ public sealed class Config
     public int DirectoriesScanTimer { get; set; }
 
     /// <summary>
+    ///     Any files matching this will be checked to report unique content hash codes
+    /// </summary>
+    public string DuplicateContentHashCodesDiscoveryRegex { get; set; }
+
+    /// <summary>
     ///     When true check for latest versions of applications
     /// </summary>
     public bool MonitoringCheckLatestVersions { get; set; }
