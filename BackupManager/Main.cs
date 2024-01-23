@@ -287,16 +287,16 @@ internal sealed partial class Main : Form
     private void ListMoviesWithMultipleFilesButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        Utils.Log("Listing movies with multiple files in directory");
+        Utils.Log("Listing files with multiple matching files");
         Dictionary<string, BackupFile> allMovies = new();
         List<BackupFile> backupFilesWithDuplicates = new();
 
-        foreach (var file in mediaBackup.BackupFiles)
+        foreach (var file in mediaBackup.GetBackupFiles(false))
         {
-            var m = MoviesFilenameRegex().Match(file.FullPath);
+            var m = Regex.Match(file.FullPath, config.DuplicateFilesRegex);
             if (!m.Success) continue;
 
-            var movieId = m.Groups[2].Value;
+            var movieId = m.Groups[1].Value;
 
             if (allMovies.TryGetValue(movieId, out var movie))
             {
@@ -511,29 +511,37 @@ internal sealed partial class Main : Form
 
     private void ListFilesWithDuplicateContentHashCodesButton_Click(object sender, EventArgs e)
     {
-        Utils.TraceIn();
-        Dictionary<string, BackupFile> allFilesUniqueContentsHash = new();
-        List<BackupFile> backupFilesWithDuplicates = new();
-
-        foreach (var backupFile in mediaBackup.BackupFiles.Where(file => !file.Deleted &&
-                                                                         Regex.Match(file.FullPath,
-                                                                                 config.DuplicateContentHashCodesDiscoveryRegex)
-                                                                             .Success))
+        try
         {
-            if (allFilesUniqueContentsHash.TryGetValue(backupFile.ContentsHash, out var originalFile))
+            Utils.TraceIn();
+            Dictionary<string, BackupFile> allFilesUniqueContentsHash = new();
+            List<BackupFile> backupFilesWithDuplicates = new();
+            if (!config.DuplicateContentHashCodesDiscoveryRegex.HasValue()) return;
+
+            foreach (var backupFile in mediaBackup.BackupFiles.Where(file => !file.Deleted &&
+                                                                             Regex.Match(file.FullPath,
+                                                                                     config
+                                                                                         .DuplicateContentHashCodesDiscoveryRegex)
+                                                                                 .Success))
             {
-                backupFilesWithDuplicates.Add(backupFile);
-                if (!backupFilesWithDuplicates.Contains(originalFile)) backupFilesWithDuplicates.Add(originalFile);
+                if (allFilesUniqueContentsHash.TryGetValue(backupFile.ContentsHash, out var originalFile))
+                {
+                    backupFilesWithDuplicates.Add(backupFile);
+                    if (!backupFilesWithDuplicates.Contains(originalFile)) backupFilesWithDuplicates.Add(originalFile);
+                }
+                else
+                    allFilesUniqueContentsHash.Add(backupFile.ContentsHash, backupFile);
             }
-            else
-                allFilesUniqueContentsHash.Add(backupFile.ContentsHash, backupFile);
-        }
 
-        foreach (var duplicateFile in backupFilesWithDuplicates)
-        {
-            Utils.Log($"{duplicateFile.FullPath} has a duplicate");
+            foreach (var duplicateFile in backupFilesWithDuplicates)
+            {
+                Utils.Log($"{duplicateFile.FullPath} has a duplicate");
+            }
         }
-        Utils.TraceOut();
+        finally
+        {
+            Utils.TraceOut();
+        }
     }
 
     private void CheckDeleteAndCopyAllBackupDisksButton_Click(object sender, EventArgs e)
@@ -1109,6 +1117,4 @@ internal sealed partial class Main : Form
     {
         return mediaBackup.BackupFiles.Any(f => f.BackupDiskNumber == diskNumber);
     }
-
-    private void backupDiskTextBox_TextChanged(object sender, EventArgs e) { }
 }

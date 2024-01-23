@@ -124,6 +124,11 @@ public sealed class Config
     public string DuplicateContentHashCodesDiscoveryRegex { get; set; }
 
     /// <summary>
+    ///     The capturing group is this Regex must be unique for all matching files
+    /// </summary>
+    public string DuplicateFilesRegex { get; set; }
+
+    /// <summary>
     ///     When true check for latest versions of applications
     /// </summary>
     public bool MonitoringCheckLatestVersions { get; set; }

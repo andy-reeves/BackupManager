@@ -200,7 +200,6 @@
             backupDiskTextBox.Size = new System.Drawing.Size(157, 23);
             backupDiskTextBox.TabIndex = 7;
             backupDiskTextBox.Text = "d:\\";
-            backupDiskTextBox.TextChanged += backupDiskTextBox_TextChanged;
             // 
             // listFilesNotOnBackupDiskButton
             // 
@@ -258,7 +257,7 @@
             listMoviesWithMultipleFilesButton.Name = "listMoviesWithMultipleFilesButton";
             listMoviesWithMultipleFilesButton.Size = new System.Drawing.Size(232, 27);
             listMoviesWithMultipleFilesButton.TabIndex = 37;
-            listMoviesWithMultipleFilesButton.Text = "... with multiple movie files";
+            listMoviesWithMultipleFilesButton.Text = "... with multiple files";
             toolTip.SetToolTip(listMoviesWithMultipleFilesButton, "Lists any movies that have multiple video files in the same directory");
             listMoviesWithMultipleFilesButton.UseVisualStyleBackColor = true;
             listMoviesWithMultipleFilesButton.Click += ListMoviesWithMultipleFilesButton_Click;

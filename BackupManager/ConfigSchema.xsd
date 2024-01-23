@@ -81,6 +81,7 @@
           </xs:annotation>
         </xs:element>
         <xs:element type="xs:string" name="DuplicateContentHashCodesDiscoveryRegex" maxOccurs="1" minOccurs="0" />
+        <xs:element type="xs:string" name="DuplicateFilesRegex" maxOccurs="1" minOccurs="0" />
         <xs:element type="xs:boolean" name="MonitoringCheckLatestVersions" maxOccurs="1" minOccurs="0" />
         <xs:element type="xs:unsignedShort" name="MonitoringInterval" maxOccurs="1" minOccurs="0">
           <xs:annotation>
