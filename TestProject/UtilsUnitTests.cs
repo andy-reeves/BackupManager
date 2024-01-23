@@ -48,8 +48,13 @@ public sealed class UtilsUnitTests
         finally
         {
             if (path1 != null)
+            {
                 if (Directory.Exists(path1))
+                {
+                    // Tidy up directories we created 
                     Directory.Delete(path1, true);
+                }
+            }
         }
     }
 
