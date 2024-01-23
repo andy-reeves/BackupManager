@@ -33,7 +33,7 @@ internal sealed partial class Main
         Utils.TraceIn(directoryToCheck, searchOption);
         if (!Directory.Exists(directoryToCheck)) return Utils.TraceOut(true);
 
-        Utils.LogWithPushover(BackupAction.ScanDirectory, $"{directoryToCheck}");
+        Utils.LogWithPushover(BackupAction.ScanDirectory, $"{directoryToCheck}", false, true);
         UpdateStatusLabel(ct, string.Format(Resources.Main_Scanning, directoryToCheck));
         var files = Utils.GetFiles(directoryToCheck, mediaBackup.GetFilters(), searchOption, ct);
         var subDirectoryText = searchOption == SearchOption.TopDirectoryOnly ? "directories only" : "and subdirectories";
@@ -60,7 +60,7 @@ internal sealed partial class Main
         var suffix = filesParam.Count == 1 ? string.Empty : "s";
 
         Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal,
-            $"Processing {filesParam.Count:n0} file{suffix}");
+            $"Processing {filesParam.Count:n0} file{suffix}", false, true);
 
         // One process thread for each disk
         tasks.AddRange(diskNames.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam)).Select(files =>
