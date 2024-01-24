@@ -241,7 +241,8 @@ internal sealed partial class Main
         }
         else
         {
-            UpdateStatusLabel(ct, Resources.Main_Copying, Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
+            UpdateStatusLabel(ct, string.Format(Resources.Main_Skipping, string.Empty),
+                Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
             if (outOfDiskSpaceMessageSent) return;
 
             var text = $"[{fileCounter}/{totalFileCount}] {Utils.FormatSize(availableSpace)} free.\n" +

@@ -747,7 +747,7 @@ internal sealed partial class Main : Form
                     var filesNotOnBackupDiskCount = mediaBackup.GetBackupFilesWithDiskEmpty().Count();
 
                     var text =
-                        $"Directory scan completed. {fileCountInDirectoryBefore} files before and now {fileCountAfter} files. {markedAsDeletedFilesCount} marked as deleted and {removedFilesCount} removed. {filesNotOnBackupDiskCount} to backup.";
+                        $"Directory scan {directoryToScan.Path} completed. {fileCountInDirectoryBefore} files before and now {fileCountAfter} files. {markedAsDeletedFilesCount} marked as deleted and {removedFilesCount} removed. {filesNotOnBackupDiskCount} to backup.";
                     Utils.Log(BackupAction.ScanDirectory, text);
                     toSave = true;
                 }
