@@ -17,7 +17,7 @@ namespace BackupManager;
 
 internal sealed class VideoFileInfoReader
 {
-    private const int CurrentMediaInfoSchemaRevision = 11;
+    private const int CurrentMediaInfoSchemaRevision = 9;
 
     private static readonly string[] _validHdrColourPrimaries = { "bt2020" };
 
@@ -71,7 +71,6 @@ internal sealed class VideoFileInfoReader
                 VideoCodecId = primaryVideoStream?.CodecTagString,
                 VideoProfile = primaryVideoStream?.Profile,
                 VideoBitrate = primaryVideoStream?.BitRate ?? 0,
-                VideoMultiViewCount = primaryVideoStream?.Tags?.ContainsKey("stereo_mode") ?? false ? 2 : 1,
                 VideoBitDepth = GetPixelFormat(primaryVideoStream?.PixelFormat)?.Components.Min(static x => x.BitDepth) ?? 8,
                 VideoColourPrimaries = primaryVideoStream?.ColorPrimaries,
                 VideoTransferCharacteristics = primaryVideoStream?.ColorTransfer,
@@ -94,9 +93,8 @@ internal sealed class VideoFileInfoReader
                 AudioLanguages =
                     analysis.AudioStreams?.Select(static x => x.Language).Where(static l => l.IsNotNullOrWhiteSpace())
                         .ToList(),
-                Subtitles =
-                    analysis.SubtitleStreams?.Select(static x => x.Language).Where(static l => l.IsNotNullOrWhiteSpace())
-                        .ToList(),
+                Subtitles = analysis.SubtitleStreams?.Select(static x => x.Language)
+                    .Where(static l => l.IsNotNullOrWhiteSpace()).ToList(),
                 ScanType = "Progressive",
                 RawStreamData = ffprobeOutput,
                 SchemaRevision = CurrentMediaInfoSchemaRevision
@@ -113,14 +111,14 @@ internal sealed class VideoFileInfoReader
                 frames = FFProbe.AnalyseFrameJson(frameOutput);
             }
             var streamSideData = primaryVideoStream?.SideDataList ?? new List<SideData>();
-            var framesSideData = frames?.Frames.Count > 0 ? frames.Frames[0].SideDataList : new List<SideData>();
+            var framesSideData = frames?.Frames?.Count > 0 ? frames?.Frames[0]?.SideDataList : new List<SideData>();
             var sideData = streamSideData.Concat(framesSideData).ToList();
 
             mediaInfoModel.VideoHdrFormat = GetHdrFormat(mediaInfoModel.VideoBitDepth, mediaInfoModel.VideoColourPrimaries,
                 mediaInfoModel.VideoTransferCharacteristics, sideData);
             return mediaInfoModel;
         }
-        catch
+        catch (Exception)
         {
             // ignored
         }

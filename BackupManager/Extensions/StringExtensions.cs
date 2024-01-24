@@ -19,6 +19,11 @@ namespace BackupManager.Extensions;
 [SuppressMessage("ReSharper", "UnusedMember.Global")]
 internal static partial class StringExtensions
 {
+    public static string WrapInSquareBrackets(this string text)
+    {
+        return $"[{text}]";
+    }
+
     /// <summary>
     ///     Returns the TitleCase of the string but fixes 10Th to 10th etc.
     /// </summary>

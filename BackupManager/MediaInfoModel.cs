@@ -61,8 +61,6 @@ internal sealed class MediaInfoModel : IEmbeddedDocument
 
     public int VideoBitDepth { get; set; }
 
-    public int VideoMultiViewCount { get; set; }
-
     public string VideoColourPrimaries { get; set; }
 
     public string VideoTransferCharacteristics { get; set; }

@@ -27,5 +27,31 @@ public sealed class MediaInfoTests
         mediaFileName = Path.Combine(Utils.GetProjectPath(typeof(UtilsUnitTests)), @"TestData\File4 [DV] profile8.mkv");
         Assert.False(Utils.FileIsDolbyVisionProfile5(mediaFileName));
     }
+
+    [Fact]
+    public void RenameVideoFiles()
+    {
+        var mediaFileName = Path.Combine(Utils.GetProjectPath(typeof(UtilsUnitTests)),
+            @"TestData\File5 [WEBDL-1080p][EAC3 5.1][h264].mkv");
+
+        var mediaFileNameOutputIfRenamed = Path.Combine(Utils.GetProjectPath(typeof(UtilsUnitTests)),
+            @"TestData\File5 [WEBDL-1080p][EAC3 5.1][h264].mkv");
+        Assert.True(File.Exists(mediaFileName));
+        Utils.RenameVideoCodec(mediaFileName);
+        Assert.True(File.Exists(mediaFileNameOutputIfRenamed));
+
+        mediaFileName = Path.Combine(Utils.GetProjectPath(typeof(UtilsUnitTests)),
+            @"TestData\File6 [WEBDL-1080p][EAC3 5.1][h264].mkv");
+
+        mediaFileNameOutputIfRenamed = Path.Combine(Utils.GetProjectPath(typeof(UtilsUnitTests)),
+            @"TestData\File6 [WEBDL-1080p][EAC3 5.1][x265].mkv");
+        Assert.True(File.Exists(mediaFileName));
+        Utils.RenameVideoCodec(mediaFileName);
+        Assert.False(File.Exists(mediaFileName));
+        Assert.True(File.Exists(mediaFileNameOutputIfRenamed));
+        Utils.FileMove(mediaFileNameOutputIfRenamed, mediaFileName);
+        Assert.False(File.Exists(mediaFileNameOutputIfRenamed));
+        Assert.True(File.Exists(mediaFileName));
+    }
 }
 #endif

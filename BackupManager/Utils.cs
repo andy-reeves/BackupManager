@@ -1061,6 +1061,92 @@ internal static partial class Utils
         return !string.IsNullOrEmpty(path) && path.ToUpperInvariant().Contains("[DV]");
     }
 
+    internal static void RenameVideoCodec(string path)
+    {
+        try
+        {
+            TraceIn(path);
+            ArgumentException.ThrowIfNullOrEmpty(path);
+            if (!FileIsVideo(path)) return;
+
+            if (!File.Exists(path)) throw new FileNotFoundException("File not found", path);
+
+            var info = new VideoFileInfoReader().GetMediaInfo(path);
+            var sceneName = Path.GetFileNameWithoutExtension(path);
+            var directoryName = Path.GetDirectoryName(path);
+            if (directoryName == null) return;
+
+            var currentVideoCodecInFileName = sceneName.SubstringAfterLast('[').SubstringBefore(']');
+            var actualVideoCodec = FormatVideoCodec(info, sceneName);
+            if (actualVideoCodec == currentVideoCodecInFileName) return;
+
+            var newPath = Path.Combine(directoryName,
+                              sceneName.Replace(currentVideoCodecInFileName.WrapInSquareBrackets(),
+                                  actualVideoCodec.WrapInSquareBrackets())) +
+                          Path.GetExtension(path);
+            Log($"Renaming {path} to {newPath}");
+            if (File.Exists(newPath)) return;
+
+            FileMove(path, newPath);
+            Log($"Renamed {path} to {newPath}");
+        }
+        finally
+        {
+            TraceOut();
+        }
+    }
+
+    private static string GetSceneNameMatch(string sceneName, params string[] tokens)
+    {
+        sceneName = sceneName.IsNotNullOrWhiteSpace() ? Path.GetFileNameWithoutExtension(sceneName) : string.Empty;
+
+        foreach (var token in tokens.Where(token => sceneName.ContainsIgnoreCase(token)))
+        {
+            return token;
+        }
+
+        // Last token is the default.
+        return tokens.Last();
+    }
+
+    private static string FormatVideoCodec(MediaInfoModel mediaInfo, string sceneName)
+    {
+        if (mediaInfo.VideoFormat == null) return null;
+
+        var videoFormat = mediaInfo.VideoFormat;
+        var videoCodecId = mediaInfo.VideoCodecId ?? string.Empty;
+        var result = videoFormat.Trim();
+        if (videoFormat.Empty()) return result;
+
+        // see definitions here: https://github.com/FFmpeg/FFmpeg/blob/master/libavcodec/codec_desc.c
+        if (videoCodecId == "x264") return "x264";
+        if (videoFormat == "h264") return GetSceneNameMatch(sceneName, "AVC", "x264", "h264");
+        if (videoCodecId == "x265") return "x265";
+        if (videoFormat == "hevc") return GetSceneNameMatch(sceneName, "HEVC", "x265", "h265");
+        if (videoFormat == "mpeg2video") return "MPEG2";
+        if (videoFormat == "mpeg1video") return "MPEG";
+
+        if (videoFormat == "mpeg4" || videoFormat.Contains("msmpeg4"))
+        {
+            if (videoCodecId == "XVID") return "XviD";
+            if (videoCodecId == "DIV3" || videoCodecId == "DX50" || videoCodecId.ToUpperInvariant() == "DIVX") return "DivX";
+
+            return "";
+        }
+        if (videoFormat == "vc1") return "VC1";
+        if (videoFormat == "av1") return "AV1";
+        if (videoFormat.Contains("vp6")) return "VP6";
+        if (videoFormat == "vp7" || videoFormat == "vp8" || videoFormat == "vp9") return videoFormat.ToUpperInvariant();
+        if (videoFormat == "wmv1" || videoFormat == "wmv2" || videoFormat == "wmv3") return "WMV";
+
+        if (videoFormat == "qtrle" || videoFormat == "rpza" || videoFormat == "rv10" || videoFormat == "rv20" ||
+            videoFormat == "rv30" || videoFormat == "rv40" || videoFormat == "cinepak" || videoFormat == "rawvideo" ||
+            videoFormat == "msvideo1")
+            return "";
+
+        return result;
+    }
+
     internal static bool FileIsDolbyVisionProfile5(string path)
     {
         TraceIn(path);
