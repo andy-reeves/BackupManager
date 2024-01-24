@@ -163,6 +163,12 @@ internal sealed partial class Main
                 // If a rule has failed then break to avoid multiple messages sent
                 break;
             }
+
+            if (Utils.RenameVideoCodec(file))
+            {
+                Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High,
+                    $"{file} rename required for video codec");
+            }
             if (!mediaBackup.EnsureFile(file)) return Utils.TraceOut(false);
         }
 

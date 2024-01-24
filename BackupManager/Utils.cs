@@ -1069,33 +1069,34 @@ internal static partial class Utils
     internal static bool RenameVideoCodec(string path)
     {
         TraceIn(path);
-            ArgumentException.ThrowIfNullOrEmpty(path);
-            if (!File.Exists(path)) throw new FileNotFoundException("File not found", path);
+        ArgumentException.ThrowIfNullOrEmpty(path);
+        if (!File.Exists(path)) throw new FileNotFoundException("File not found", path);
 
-            // ReSharper disable once StringLiteralTypo
-            var VideoCodecRegex = @"^.*\[([hx]26[45]|MPEG([24])?|HEVC|XviD|V(C1|P9)|AVC|DivX|RGB)\]\.(?:m(?:kv|p(4|e?g))|avi)$";
-            var match = Regex.Match(path, VideoCodecRegex);
-            if (!match.Success) return TraceOut(false);
+        // ReSharper disable once StringLiteralTypo
+        var VideoCodecRegex = @"^.*\[([hx]26[45]|MPEG([24])?|HEVC|XviD|V(C1|P9)|AVC|DivX|RGB)\]\.(?:m(?:kv|p(4|e?g))|avi)$";
+        var match = Regex.Match(path, VideoCodecRegex);
+        if (!match.Success) return TraceOut(false);
 
-            var info = new VideoFileInfoReader().GetMediaInfo(path);
-            var sceneName = Path.GetFileNameWithoutExtension(path);
-            var directoryName = Path.GetDirectoryName(path);
-            if (directoryName == null) return TraceOut(false);
+        var info = new VideoFileInfoReader().GetMediaInfo(path);
+        var sceneName = Path.GetFileNameWithoutExtension(path);
+        var directoryName = Path.GetDirectoryName(path);
+        if (directoryName == null) return TraceOut(false);
 
-            var currentVideoCodecInFileName = match.Groups[1].Value;
-            var actualVideoCodec = FormatVideoCodec(info, sceneName);
-            if (actualVideoCodec == currentVideoCodecInFileName) return TraceOut(false);
+        var currentVideoCodecInFileName = match.Groups[1].Value;
+        var actualVideoCodec = FormatVideoCodec(info, sceneName);
+        if (actualVideoCodec == currentVideoCodecInFileName) return TraceOut(false);
 
-            var newPath = Path.Combine(directoryName,
-                              sceneName.Replace(currentVideoCodecInFileName.WrapInSquareBrackets(),
-                                  actualVideoCodec.WrapInSquareBrackets())) +
-                          Path.GetExtension(path);
-            Log($"Renaming {path} to {newPath}");
-            if (File.Exists(newPath)) throw new ApplicationException($"Failed to rename {newPath} as it already exists");
+        var newPath = Path.Combine(directoryName,
+                          sceneName.Replace(currentVideoCodecInFileName.WrapInSquareBrackets(),
+                              actualVideoCodec.WrapInSquareBrackets())) +
+                      Path.GetExtension(path);
+        Log($"Renaming {path} to {newPath}");
+        if (File.Exists(newPath)) throw new ApplicationException($"Failed to rename {newPath} as it already exists");
 
-            FileMove(path, newPath);
-            Log($"Renamed {path} to {newPath}");
-            return TraceOut(true);
+        // TODO Don't actually rename it yet
+        // FileMove(path, newPath);
+        Log($"Renamed {path} to {newPath}");
+        return TraceOut(true);
     }
 
     private static string GetSceneNameMatch(string sceneName, params string[] tokens)
