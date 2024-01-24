@@ -41,7 +41,7 @@
             checkDiskAndDeleteButton = new System.Windows.Forms.Button();
             checkBackupDeleteAndCopyButton = new System.Windows.Forms.Button();
             listMoviesWithMultipleFilesButton = new System.Windows.Forms.Button();
-            reportBackupDiskStatusButton = new System.Windows.Forms.Button();
+            listBackupDiskStatusByDiskNumberButton = new System.Windows.Forms.Button();
             speedTestButton = new System.Windows.Forms.Button();
             monitoringButton = new System.Windows.Forms.Button();
             listFilesWithDuplicateContentHashcodesButton = new System.Windows.Forms.Button();
@@ -61,6 +61,7 @@
             scanDirectoryButton = new System.Windows.Forms.Button();
             button2 = new System.Windows.Forms.Button();
             createNewBackupDiskButton = new System.Windows.Forms.Button();
+            listBackupDiskStatusByFreeSpaceButton = new System.Windows.Forms.Button();
             scheduledBackupTimerButton = new System.Windows.Forms.Button();
             listFilesOnBackupDiskButton = new System.Windows.Forms.Button();
             listFilesInDirectoryButton = new System.Windows.Forms.Button();
@@ -262,17 +263,17 @@
             listMoviesWithMultipleFilesButton.UseVisualStyleBackColor = true;
             listMoviesWithMultipleFilesButton.Click += ListMoviesWithMultipleFilesButton_Click;
             // 
-            // reportBackupDiskStatusButton
+            // listBackupDiskStatusByDiskNumberButton
             // 
-            reportBackupDiskStatusButton.Location = new System.Drawing.Point(7, 21);
-            reportBackupDiskStatusButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            reportBackupDiskStatusButton.Name = "reportBackupDiskStatusButton";
-            reportBackupDiskStatusButton.Size = new System.Drawing.Size(234, 27);
-            reportBackupDiskStatusButton.TabIndex = 43;
-            reportBackupDiskStatusButton.Text = "List disk status";
-            toolTip.SetToolTip(reportBackupDiskStatusButton, "Reports the status of each backup disk");
-            reportBackupDiskStatusButton.UseVisualStyleBackColor = true;
-            reportBackupDiskStatusButton.Click += ReportBackupDiskStatusButton_Click;
+            listBackupDiskStatusByDiskNumberButton.Location = new System.Drawing.Point(7, 21);
+            listBackupDiskStatusByDiskNumberButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            listBackupDiskStatusByDiskNumberButton.Name = "listBackupDiskStatusByDiskNumberButton";
+            listBackupDiskStatusByDiskNumberButton.Size = new System.Drawing.Size(114, 27);
+            listBackupDiskStatusByDiskNumberButton.TabIndex = 43;
+            listBackupDiskStatusByDiskNumberButton.Text = "Disk status (#)";
+            toolTip.SetToolTip(listBackupDiskStatusByDiskNumberButton, "Reports the status of each backup disk");
+            listBackupDiskStatusByDiskNumberButton.UseVisualStyleBackColor = true;
+            listBackupDiskStatusByDiskNumberButton.Click += ListBackupDiskStatusByDiskNumberButton_Click;
             // 
             // speedTestButton
             // 
@@ -501,6 +502,18 @@
             toolTip.SetToolTip(createNewBackupDiskButton, "Creates a new backup disk");
             createNewBackupDiskButton.UseVisualStyleBackColor = true;
             createNewBackupDiskButton.Click += CreateNewBackupDiskButton_Click;
+            // 
+            // listBackupDiskStatusByFreeSpaceButton
+            // 
+            listBackupDiskStatusByFreeSpaceButton.Location = new System.Drawing.Point(127, 21);
+            listBackupDiskStatusByFreeSpaceButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            listBackupDiskStatusByFreeSpaceButton.Name = "listBackupDiskStatusByFreeSpaceButton";
+            listBackupDiskStatusByFreeSpaceButton.Size = new System.Drawing.Size(114, 27);
+            listBackupDiskStatusByFreeSpaceButton.TabIndex = 66;
+            listBackupDiskStatusByFreeSpaceButton.Text = "Disk status (space)";
+            toolTip.SetToolTip(listBackupDiskStatusByFreeSpaceButton, "Reports the status of each backup disk");
+            listBackupDiskStatusByFreeSpaceButton.UseVisualStyleBackColor = true;
+            listBackupDiskStatusByFreeSpaceButton.Click += ListBackupDiskStatusByFreeSpaceButton_Click;
             // 
             // scheduledBackupTimerButton
             // 
@@ -976,9 +989,10 @@
             // 
             // allBackupDisksGroupBox
             // 
+            allBackupDisksGroupBox.Controls.Add(listBackupDiskStatusByFreeSpaceButton);
             allBackupDisksGroupBox.Controls.Add(checkAllBackupDisksButton);
             allBackupDisksGroupBox.Controls.Add(checkDeleteAndCopyAllBackupDisksButton);
-            allBackupDisksGroupBox.Controls.Add(reportBackupDiskStatusButton);
+            allBackupDisksGroupBox.Controls.Add(listBackupDiskStatusByDiskNumberButton);
             allBackupDisksGroupBox.Location = new System.Drawing.Point(582, 179);
             allBackupDisksGroupBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             allBackupDisksGroupBox.Name = "allBackupDisksGroupBox";
@@ -1388,7 +1402,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button testPushoverEmergencyButton;
-        private System.Windows.Forms.Button reportBackupDiskStatusButton;
+        private System.Windows.Forms.Button listBackupDiskStatusByDiskNumberButton;
         private System.Windows.Forms.Button speedTestButton;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label5;
@@ -1469,6 +1483,7 @@
         private System.Windows.Forms.TextBox pushoverMessagesRemainingTextBox;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Button createNewBackupDiskButton;
+        private System.Windows.Forms.Button listBackupDiskStatusByFreeSpaceButton;
     }
 }
 

@@ -338,16 +338,24 @@ internal sealed partial class Main : Form
         Utils.TraceOut();
     }
 
-    private void ReportBackupDiskStatusButton_Click(object sender, EventArgs e)
+    private void ListBackupDiskStatusByFreeSpaceButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
+        ListBackupDiskStatus(mediaBackup.BackupDisks.OrderByDescending(static d => d.Free));
+        Utils.TraceOut();
+    }
+
+    private void ListBackupDiskStatusByDiskNumberButton_Click(object sender, EventArgs e)
+    {
+        Utils.TraceIn();
+        ListBackupDiskStatus(mediaBackup.BackupDisks.OrderBy(static d => d.Number));
+        Utils.TraceOut();
+    }
+
+    private void ListBackupDiskStatus(IOrderedEnumerable<BackupDisk> disks)
+    {
         Utils.Log("Listing backup disk statuses");
         Utils.Log("Name        Checked    Capacity   Used     Free    Files  Deleted   Diff      %");
-#if DEBUG
-        var disks = mediaBackup.BackupDisks.OrderByDescending(static d => d.Free);
-#else
-        var disks = mediaBackup.BackupDisks.OrderByDescending(static d => d.Number);
-#endif
 
         foreach (var disk in disks)
         {
@@ -378,7 +386,6 @@ internal sealed partial class Main : Form
         var totalSizeFormatted = Utils.FormatSize(mediaBackup.BackupDisks.Sum(static p => p.Capacity));
         var totalFreeSpaceFormatted = Utils.FormatSize(mediaBackup.BackupDisks.Sum(static p => p.Free));
         Utils.Log($"\n      Total Capacity: {totalSizeFormatted,8}     Free: {totalFreeSpaceFormatted,7}");
-        Utils.TraceOut();
     }
 
     private void SpeedTestButton_Click(object sender, EventArgs e)
