@@ -1067,16 +1067,19 @@ internal static partial class Utils
         {
             TraceIn(path);
             ArgumentException.ThrowIfNullOrEmpty(path);
-            if (!FileIsVideo(path)) return;
-
             if (!File.Exists(path)) throw new FileNotFoundException("File not found", path);
+
+            // ReSharper disable once StringLiteralTypo
+            var VideoCodecRegex = @"^.*\[([hx]26[45]|MPEG([24])?|HEVC|XviD|V(C1|P9)|AVC|DivX|RGB)\]\.(?:m(?:kv|p(4|e?g))|avi)$";
+            var match = Regex.Match(path, VideoCodecRegex);
+            if (!match.Success) return;
 
             var info = new VideoFileInfoReader().GetMediaInfo(path);
             var sceneName = Path.GetFileNameWithoutExtension(path);
             var directoryName = Path.GetDirectoryName(path);
             if (directoryName == null) return;
 
-            var currentVideoCodecInFileName = sceneName.SubstringAfterLast('[').SubstringBefore(']');
+            var currentVideoCodecInFileName = match.Groups[1].Value;
             var actualVideoCodec = FormatVideoCodec(info, sceneName);
             if (actualVideoCodec == currentVideoCodecInFileName) return;
 
