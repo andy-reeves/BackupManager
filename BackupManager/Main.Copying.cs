@@ -85,10 +85,6 @@ internal sealed partial class Main
                 if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
                 counter++;
 
-                UpdateStatusLabel(ct, string.Format(Resources.Main_Copying, string.Empty),
-                    Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
-                UpdateMediaFilesCountDisplay();
-
                 // We use a temporary name for the copy first and then rename it after
                 // This is in case the Backup is aborted during the copy
                 // This file will be seen on the next scan and removed
@@ -168,13 +164,14 @@ internal sealed partial class Main
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
         var destinationFileName = backupFile.BackupDiskFullPath(disk.BackupPath);
         var destinationFileNameTemp = destinationFileName + ".copying";
-
-        UpdateStatusLabel(ct, string.Format(Resources.Main_Copying, Path.GetFileName(sourceFileName)),
-            Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
         _ = Utils.GetDiskInfo(backupDiskTextBox.Text, out var availableSpace, out _);
 
         if (availableSpace > Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave) + sourceFileInfo.Length)
         {
+            UpdateMediaFilesCountDisplay();
+
+            UpdateStatusLabel(ct, string.Format(Resources.Main_Copying, Path.GetFileName(sourceFileName)),
+                Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
             outOfDiskSpaceMessageSent = false;
             var formattedEndDateTime = string.Empty;
 
@@ -244,6 +241,7 @@ internal sealed partial class Main
         }
         else
         {
+            UpdateStatusLabel(ct, Resources.Main_Copying, Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
             if (outOfDiskSpaceMessageSent) return;
 
             var text = $"[{fileCounter}/{totalFileCount}] {Utils.FormatSize(availableSpace)} free.\n" +
