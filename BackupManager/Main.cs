@@ -694,6 +694,7 @@ internal sealed partial class Main : Form
                 }
                 return;
             }
+            ResetTokenSource();
             DisableControlsForAsyncTasks(mainCt);
             ReadyToScan(e, SearchOption.TopDirectoryOnly, mainCt);
             ResetAllControls();
