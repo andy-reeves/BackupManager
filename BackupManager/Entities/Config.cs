@@ -78,6 +78,11 @@ public sealed class Config
     public bool DirectoriesFileChangeWatcherOnOff { get; set; }
 
     /// <summary>
+    ///     Whether to check video files are named corrected and rename them if not
+    /// </summary>
+    public bool DirectoriesRenameVideoFilesOnOff { get; set; }
+
+    /// <summary>
     ///     If an error occurs whilst monitoring Directories we wait for this long before attempting to Reset the Watcher in
     ///     seconds (120)
     /// </summary>
@@ -87,6 +92,11 @@ public sealed class Config
     ///     The Regex used to filter file changes in the FileSystemWatcher
     /// </summary>
     public string DirectoriesFilterRegEx { get; set; }
+
+    /// <summary>
+    ///     Any files matching this will be checked for correct name and renamed if not correct
+    /// </summary>
+    public string DirectoriesRenameVideoFilesRegEx { get; set; }
 
     /// <summary>
     ///     The minimum age of changes in directories before we schedule a scan in seconds

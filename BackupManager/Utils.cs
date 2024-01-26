@@ -854,7 +854,7 @@ internal static partial class Utils
 
             if (deleteEmptyDirectories && IsDirectoryEmpty(dir))
             {
-                Log("Directory {dir} is empty so deleting.");
+                Log($"Directory {dir} is empty so deleting.");
                 Directory.Delete(dir);
             }
             else
@@ -1073,11 +1073,14 @@ internal static partial class Utils
         if (!File.Exists(path)) throw new FileNotFoundException("File not found", path);
 
         // ReSharper disable once StringLiteralTypo
-        var VideoCodecRegex = @"^.*\[([hx]26[45]|MPEG([24])?|HEVC|XviD|V(C1|P9)|AVC|DivX|RGB)\]\.(?:m(?:kv|p(4|e?g))|avi)$";
-        var match = Regex.Match(path, VideoCodecRegex);
+        var videoCodecRegex = Config.DirectoriesRenameVideoFilesRegEx;
+        if (videoCodecRegex.HasNoValue()) return false;
+
+        var match = Regex.Match(path, videoCodecRegex);
         if (!match.Success) return TraceOut(false);
 
-        var info = new VideoFileInfoReader().GetMediaInfo(path);
+        var info = new VideoFileInfoReader().GetMediaInfo(path) ??
+                   throw new ApplicationException($"Failed to load MediaInfo for {path}");
         var sceneName = Path.GetFileNameWithoutExtension(path);
         var directoryName = Path.GetDirectoryName(path);
         if (directoryName == null) return TraceOut(false);
@@ -1093,15 +1096,14 @@ internal static partial class Utils
         Log($"Renaming {path} to {newPath}");
         if (File.Exists(newPath)) throw new ApplicationException($"Failed to rename {newPath} as it already exists");
 
-        // TODO Don't actually rename it yet
-        // FileMove(path, newPath);
+        FileMove(path, newPath);
         Log($"Renamed {path} to {newPath}");
         return TraceOut(true);
     }
 
     private static string GetSceneNameMatch(string sceneName, params string[] tokens)
     {
-        sceneName = sceneName.IsNotNullOrWhiteSpace() ? Path.GetFileNameWithoutExtension(sceneName) : string.Empty;
+        sceneName = sceneName.IsNotNullOrWhiteSpace() ? sceneName : string.Empty;
 
         foreach (var token in tokens.Where(token => sceneName.ContainsIgnoreCase(token)))
         {
@@ -1132,9 +1134,14 @@ internal static partial class Utils
         if (videoFormat == "mpeg4" || videoFormat.Contains("msmpeg4"))
         {
             if (videoCodecId == "XVID") return "XviD";
+
+            // Andy added this for some media its 'xvid' and not 'XVID'
+            if (videoCodecId.ToLowerInvariant() == "xvid") return "XviD";
             if (videoCodecId == "DIV3" || videoCodecId == "DX50" || videoCodecId.ToUpperInvariant() == "DIVX") return "DivX";
 
-            return "";
+            // Andy - was return ""
+            //return "";
+            return "MPEG4";
         }
         if (videoFormat == "vc1") return "VC1";
         if (videoFormat == "av1") return "AV1";
@@ -1142,11 +1149,16 @@ internal static partial class Utils
         if (videoFormat == "vp7" || videoFormat == "vp8" || videoFormat == "vp9") return videoFormat.ToUpperInvariant();
         if (videoFormat == "wmv1" || videoFormat == "wmv2" || videoFormat == "wmv3") return "WMV";
 
+        // ANDY new line for RGB
+        if (videoFormat == "rawvideo") return "RGB";
+
         if (videoFormat == "qtrle" || videoFormat == "rpza" || videoFormat == "rv10" || videoFormat == "rv20" ||
             videoFormat == "rv30" || videoFormat == "rv40" || videoFormat == "cinepak" || videoFormat == "rawvideo" ||
             videoFormat == "msvideo1")
+        {
+            LogWithPushover(BackupAction.General, PushoverPriority.High, $"About to return string.Empty for {sceneName}");
             return "";
-
+        }
         return result;
     }
 

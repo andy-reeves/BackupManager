@@ -38,6 +38,12 @@
         </xs:element>
         <xs:element type="xs:int" name="DirectoriesDaysBetweenFullScan" maxOccurs="1" minOccurs="0" />
         <xs:element type="xs:boolean" name="DirectoriesFileChangeWatcherOnOff" maxOccurs="1" minOccurs="0" />
+        <xs:element type="xs:boolean" name="DirectoriesRenameVideoFilesOnOff" maxOccurs="1" minOccurs="0" />
+        <xs:element type="xs:string" name="DirectoriesRenameVideoFilesRegEx" maxOccurs="1" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Any files matching this will be checked for correct name and renamed if not correct</xs:documentation>
+          </xs:annotation>
+        </xs:element>
         <xs:element type="xs:int" name="DirectoriesFileChangeWatcherRestartDelay" maxOccurs="1" minOccurs="0" />
         <xs:element type="xs:string" name="DirectoriesFilterRegEx" maxOccurs="1" minOccurs="0">
           <xs:annotation>

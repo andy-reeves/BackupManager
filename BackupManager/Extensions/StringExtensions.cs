@@ -136,6 +136,20 @@ internal static partial class StringExtensions
     }
 
     /// <summary>
+    ///     Indicates whether the specified <see cref="string" /> is null or an <see cref="string.Empty" /> string.
+    /// </summary>
+    /// <param name="s">
+    ///     The <see cref="string" /> to check.
+    /// </param>
+    /// <returns>
+    ///     <c>true</c> if the value is null or an <see cref="string.Empty" /> string; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool HasNoValue(this string s)
+    {
+        return string.IsNullOrEmpty(s);
+    }
+
+    /// <summary>
     ///     Indicates whether the regular expression finds a match in the input string, using the regular expression specified.
     /// </summary>
     /// <param name="s">

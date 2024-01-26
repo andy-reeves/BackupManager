@@ -111,7 +111,12 @@ internal sealed class VideoFileInfoReader
                 frames = FFProbe.AnalyseFrameJson(frameOutput);
             }
             var streamSideData = primaryVideoStream?.SideDataList ?? new List<SideData>();
-            var framesSideData = frames?.Frames?.Count > 0 ? frames?.Frames[0]?.SideDataList : new List<SideData>();
+
+            var framesSideData = frames?.Frames?.Count > 0
+
+                // ReSharper disable once ConstantNullCoalescingCondition
+                ? frames?.Frames[0]?.SideDataList ?? new List<SideData>()
+                : new List<SideData>();
             var sideData = streamSideData.Concat(framesSideData).ToList();
 
             mediaInfoModel.VideoHdrFormat = GetHdrFormat(mediaInfoModel.VideoBitDepth, mediaInfoModel.VideoColourPrimaries,

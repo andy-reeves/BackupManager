@@ -362,7 +362,7 @@ public sealed class MediaBackup
     ///     Ensures the BackupFile exists and sets the Flag=TRUE. Sets Deleted=FALSE.
     /// </summary>
     /// <param name="path">Full path to the file in the directory</param>
-    /// <returns>Null is the file  was locked or an error occurred</returns>
+    /// <returns>False if the file  was locked or an error occurred</returns>
     internal bool EnsureFile(string path)
     {
         Utils.TraceIn();
@@ -533,8 +533,9 @@ public sealed class MediaBackup
     {
         var oldestFileDate = DateTime.Today;
         BackupFile oldestFile = null;
+        var backupFilesArray = BackupFiles.ToArray();
 
-        foreach (var backupFile in BackupFiles)
+        foreach (var backupFile in backupFilesArray)
         {
             if (!backupFile.DiskChecked.HasValue() || backupFile.Disk == "-1") continue;
 
