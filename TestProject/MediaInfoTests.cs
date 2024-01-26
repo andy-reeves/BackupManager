@@ -45,44 +45,48 @@ public sealed class MediaInfoTests
         var mediaFileName = Path.Combine(testDataPath, "File11 Episode 1 [HDTV-720p][AAC 2.0][RGB].mkv");
         var mediaFileNameOutputIfRenamed = mediaFileName;
         Assert.True(File.Exists(mediaFileName));
-        Assert.False(Utils.RenameVideoCodec(mediaFileName));
+        Assert.False(Utils.RenameVideoCodec(mediaFileName, out _));
         Assert.True(File.Exists(mediaFileNameOutputIfRenamed));
 
         //
         mediaFileName = Path.Combine(testDataPath, "File10 (1983) {tmdb-29140} [DVD][AC3 2.0][MPEG4].mkv");
         mediaFileNameOutputIfRenamed = mediaFileName;
         Assert.True(File.Exists(mediaFileName));
-        Assert.False(Utils.RenameVideoCodec(mediaFileName));
+        Assert.False(Utils.RenameVideoCodec(mediaFileName, out var newPath));
+        Assert.Equal(mediaFileName, newPath);
         Assert.True(File.Exists(mediaFileNameOutputIfRenamed));
 
         //
         mediaFileName = Path.Combine(testDataPath, "File9 [SDTV][MP2 2.0][XviD].mkv");
         mediaFileNameOutputIfRenamed = mediaFileName;
         Assert.True(File.Exists(mediaFileName));
-        Assert.False(Utils.RenameVideoCodec(mediaFileName));
+        Assert.False(Utils.RenameVideoCodec(mediaFileName, out _));
         Assert.True(File.Exists(mediaFileNameOutputIfRenamed));
 
         //
         mediaFileName = Path.Combine(testDataPath, "File8 [Bluray-1080p Remux][DTS-HD MA 5.1][AVC].mkv");
         mediaFileNameOutputIfRenamed = mediaFileName;
         Assert.True(File.Exists(mediaFileName));
-        Assert.False(Utils.RenameVideoCodec(mediaFileName));
+        Assert.False(Utils.RenameVideoCodec(mediaFileName, out _));
         Assert.True(File.Exists(mediaFileNameOutputIfRenamed));
 
         //
         mediaFileName = Path.Combine(testDataPath, "File5 [WEBDL-1080p][EAC3 5.1][h264].mkv");
         mediaFileNameOutputIfRenamed = mediaFileName;
         Assert.True(File.Exists(mediaFileName));
-        Assert.False(Utils.RenameVideoCodec(mediaFileName));
+        Assert.False(Utils.RenameVideoCodec(mediaFileName, out _));
         Assert.True(File.Exists(mediaFileNameOutputIfRenamed));
 
         // This one does need renaming
         mediaFileName = Path.Combine(testDataPath, "File6 [WEBDL-1080p][EAC3 5.1][h264].mkv");
         mediaFileNameOutputIfRenamed = Path.Combine(testDataPath, "File6 [WEBDL-1080p][EAC3 5.1][x265].mkv");
         Assert.True(File.Exists(mediaFileName));
-        Assert.True(Utils.RenameVideoCodec(mediaFileName));
+        Assert.True(Utils.RenameVideoCodec(mediaFileName, out newPath));
         Assert.False(File.Exists(mediaFileName));
         Assert.True(File.Exists(mediaFileNameOutputIfRenamed));
+        Assert.Equal(mediaFileNameOutputIfRenamed, newPath);
+
+        // reset the file
         Utils.FileMove(mediaFileNameOutputIfRenamed, mediaFileName);
         Assert.False(File.Exists(mediaFileNameOutputIfRenamed));
         Assert.True(File.Exists(mediaFileName));
@@ -91,7 +95,7 @@ public sealed class MediaInfoTests
         mediaFileName = Path.Combine(testDataPath, "File7 [WEBDL-1080p][EAC3 5.1].mkv");
         mediaFileNameOutputIfRenamed = mediaFileName;
         Assert.True(File.Exists(mediaFileName));
-        Assert.False(Utils.RenameVideoCodec(mediaFileName));
+        Assert.False(Utils.RenameVideoCodec(mediaFileName, out _));
         Assert.True(File.Exists(mediaFileNameOutputIfRenamed));
     }
 }

@@ -164,13 +164,13 @@ internal sealed partial class Main
                 break;
             }
 
-            if (config.DirectoriesRenameVideoFilesOnOff && File.Exists(file) && Utils.RenameVideoCodec(file))
+            if (config.DirectoriesRenameVideoFilesOnOff && File.Exists(file) && Utils.RenameVideoCodec(file, out var newFile))
             {
                 Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High,
-                    $"{file} rename required for video codec");
+                    $"{file} rename required for video codec to {newFile}");
 
-                // return false so the newly renamed file can be picked up next time
-                return Utils.TraceOut(false);
+                // change the file to the newFile to continue processing
+                file = newFile;
             }
             if (!mediaBackup.EnsureFile(file)) return Utils.TraceOut(false);
         }

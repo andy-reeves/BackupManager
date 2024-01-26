@@ -1062,13 +1062,16 @@ internal static partial class Utils
     }
 
     /// <summary>
-    ///     Returns True if a rename was required
+    ///     Returns True if a rename was required. newPath has the full path after the rename or the orginal path if not
+    ///     renamed
     /// </summary>
     /// <param name="path"></param>
+    /// <param name="newPath"></param>
     /// <exception cref="FileNotFoundException"></exception>
-    internal static bool RenameVideoCodec(string path)
+    internal static bool RenameVideoCodec(string path, out string newPath)
     {
         TraceIn(path);
+        newPath = path;
         ArgumentException.ThrowIfNullOrEmpty(path);
         if (!File.Exists(path)) throw new FileNotFoundException("File not found", path);
 
@@ -1089,15 +1092,18 @@ internal static partial class Utils
         var actualVideoCodec = FormatVideoCodec(info, sceneName);
         if (actualVideoCodec == currentVideoCodecInFileName) return TraceOut(false);
 
-        var newPath = Path.Combine(directoryName,
-                          sceneName.Replace(currentVideoCodecInFileName.WrapInSquareBrackets(),
-                              actualVideoCodec.WrapInSquareBrackets())) +
-                      Path.GetExtension(path);
-        Log($"Renaming {path} to {newPath}");
-        if (File.Exists(newPath)) throw new ApplicationException($"Failed to rename {newPath} as it already exists");
+        var newPathInternal = Path.Combine(directoryName,
+                                  sceneName.Replace(currentVideoCodecInFileName.WrapInSquareBrackets(),
+                                      actualVideoCodec.WrapInSquareBrackets())) +
+                              Path.GetExtension(path);
+        Log($"Renaming {path} to {newPathInternal}");
 
-        FileMove(path, newPath);
-        Log($"Renamed {path} to {newPath}");
+        if (File.Exists(newPathInternal))
+            throw new ApplicationException($"Failed to rename {path} to {newPathInternal} as it already exists");
+
+        FileMove(path, newPathInternal);
+        Log($"Renamed {path} to {newPathInternal}");
+        newPath = newPathInternal;
         return TraceOut(true);
     }
 
