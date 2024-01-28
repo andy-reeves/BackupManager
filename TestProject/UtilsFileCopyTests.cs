@@ -51,9 +51,24 @@ public sealed class UtilsFileCopyTests
     {
         const string testPath =
             @"\\nas4\assets4\_TV\Paw Patrol {tvdb-272472}\Season 7\Paw Patrol s07e01-e04 Mighty Pups, Charged Up Pups Stop a Humdinger Horde + Mighty Pups, Charged Up Pups Save a Mighty Lighthouse + Pups Save Election Day + Pups Save the Bubble Monkeys [HDTV-1080p][AAC 2.0][x264].mkv";
-        _ = testPath.Length;
         Assert.True(testPath.Length > Utils.MAX_PATH);
+
+        var path1 = Path.Combine(Path.GetTempPath(),
+            @"FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\" +
+            @"FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy" +
+            @"FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy");
+        Assert.True(path1.Length > 256);
+        if (Directory.Exists(path1)) Directory.Delete(path1, true);
+        var file1 = Path.Combine(path1, "test1.txt");
+        var file2 = Path.Combine(path1, "test2.txt");
+        Utils.CreateFile(file1);
+        Assert.True(File.Exists(file1));
+        Assert.False(File.Exists(file2));
+        _ = Assert.Throws<NotSupportedException>(() => Utils.FileCopy(file1, file2, new CancellationToken()));
+        Assert.True(File.Exists(file1));
+        Assert.False(File.Exists(file2));
+
+        // Delete the folders we created
+        if (Directory.Exists(path1)) Directory.Delete(path1, true);
     }
 }
-
-// #endif
