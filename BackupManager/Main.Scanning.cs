@@ -105,6 +105,13 @@ internal sealed partial class Main
 
             lock (_lock)
             {
+                if (file.Length > Utils.MAX_PATH)
+                {
+                    Utils.LogWithPushover(BackupAction.ProcessFiles,
+                        $"{file} is has a path longer than 256 characters. Please rename manually.");
+                    return Utils.TraceOut(false);
+                }
+
                 if (Utils.StringContainsFixedSpace(file))
                 {
                     Utils.LogWithPushover(BackupAction.ProcessFiles, $"{file} has a fixed space so renaming it");
