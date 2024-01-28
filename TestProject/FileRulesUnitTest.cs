@@ -4,7 +4,6 @@
 //  </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-#if DEBUG
 using System.Diagnostics.CodeAnalysis;
 using System.Xml;
 
@@ -92,4 +91,5 @@ public sealed class FileRulesUnitTest
         }
     }
 }
-#endif
+
+// #endif

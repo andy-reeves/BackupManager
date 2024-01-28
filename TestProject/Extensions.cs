@@ -4,7 +4,6 @@
 //  </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-#if DEBUG
 using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
 
@@ -39,4 +38,5 @@ public sealed class Extensions
         Assert.Equal("Test", "test".Capitalize());
     }
 }
-#endif
+
+//#endif

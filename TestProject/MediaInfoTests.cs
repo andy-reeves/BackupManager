@@ -4,7 +4,6 @@
 //  </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-#if DEBUG
 using System.Diagnostics.CodeAnalysis;
 
 using BackupManager;
@@ -136,4 +135,5 @@ public sealed class MediaInfoTests
         Assert.True(File.Exists(mediaFileNameOutputIfRenamed));
     }
 }
-#endif
+
+// #endif

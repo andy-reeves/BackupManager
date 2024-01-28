@@ -6,10 +6,8 @@
 
 using System.Reflection;
 using System.Resources;
-using System.Runtime.InteropServices;
-#if DEBUG
 using System.Runtime.CompilerServices;
-#endif
+using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("BackupManager")]
 [assembly: AssemblyDescription("")]
@@ -30,6 +28,4 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: NeutralResourcesLanguage("en-GB")]
-#if DEBUG
 [assembly: InternalsVisibleTo("TestProject")]
-#endif

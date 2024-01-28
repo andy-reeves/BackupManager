@@ -4,7 +4,6 @@
 //  </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-#if DEBUG
 using System.Diagnostics.CodeAnalysis;
 
 using BackupManager;
@@ -98,4 +97,5 @@ public sealed class FileSystemWatcherTests4
         test4EventsCounter++;
     }
 }
-#endif
+
+// #endif

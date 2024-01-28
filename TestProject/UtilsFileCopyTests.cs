@@ -4,9 +4,6 @@
 //  </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-#if DEBUG
-global using Xunit;
-
 using System.Diagnostics.CodeAnalysis;
 
 using BackupManager;
@@ -58,4 +55,5 @@ public sealed class UtilsFileCopyTests
         Assert.True(testPath.Length > Utils.MAX_PATH);
     }
 }
-#endif
+
+// #endif

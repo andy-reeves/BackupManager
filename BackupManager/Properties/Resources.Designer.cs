@@ -707,5 +707,23 @@ namespace BackupManager.Properties {
                 return ResourceManager.GetString("Utils_Not_a_valid_application_name", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to rename {0} to {1} as it already exists.
+        /// </summary>
+        internal static string Utils_RenameVideoCodec_Failed_to_rename__0__to__1__as_it_already_exists {
+            get {
+                return ResourceManager.GetString("Utils_RenameVideoCodec_Failed_to_rename__0__to__1__as_it_already_exists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to load ffprobe.exe for {0}.
+        /// </summary>
+        internal static string Utils_Unable_to_load_ffprobe_exe {
+            get {
+                return ResourceManager.GetString("Utils_Unable_to_load_ffprobe_exe", resourceCulture);
+            }
+        }
     }
 }

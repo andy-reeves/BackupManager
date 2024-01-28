@@ -333,4 +333,10 @@
   <data name="Main_Disk_not_empty" xml:space="preserve">
     <value>Disk not empty</value>
   </data>
+  <data name="Utils_Unable_to_load_ffprobe_exe" xml:space="preserve">
+    <value>Unable to load ffprobe.exe for {0}</value>
+  </data>
+  <data name="Utils_RenameVideoCodec_Failed_to_rename__0__to__1__as_it_already_exists" xml:space="preserve">
+    <value>Failed to rename {0} to {1} as it already exists</value>
+  </data>
 </root>

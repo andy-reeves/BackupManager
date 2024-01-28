@@ -4,7 +4,6 @@
 //  </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-#if DEBUG
 global using Xunit;
 
 using System.Diagnostics.CodeAnalysis;
@@ -419,4 +418,5 @@ public sealed class UtilsUnitTests
         Assert.True(totalBytes > 0);
     }
 }
-#endif
+
+// #endif

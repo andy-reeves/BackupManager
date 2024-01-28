@@ -20,11 +20,7 @@ file static class Program
     private static readonly string _appGuid =
         ((GuidAttribute)Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(GuidAttribute), true)[0]).Value;
 
-#if DEBUG
-    private static readonly Mutex _singleton = new(true, _appGuid + "DEBUG");
-#else
-    private static readonly Mutex _singleton = new(true, _appGuid);
-#endif
+    private static readonly Mutex _singleton = new(true, _appGuid + Utils._inDebugBuild);
 
     /// <summary>
     ///     The main entry point for the application.

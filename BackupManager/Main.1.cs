@@ -80,7 +80,7 @@ internal sealed partial class Main
             InitializeComponent();
             TraceConfiguration.Register();
 
-            if (Utils.IN_DEBUG_BUILD)
+            if (Utils._inDebugBuild)
             {
                 _ = Trace.Listeners.Add(new TextWriterTraceListener(
                     Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"),

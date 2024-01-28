@@ -4,7 +4,6 @@
 //  </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-#if DEBUG
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Xml.Serialization;
@@ -336,4 +335,5 @@ public sealed class EntityTests
         File.Delete(path);
     }
 }
-#endif
+
+//#endif

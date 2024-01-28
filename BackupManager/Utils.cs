@@ -40,7 +40,6 @@ using HtmlAgilityPack;
 
 using Microsoft.Win32.SafeHandles;
 
-// ReSharper disable CommentTypo
 namespace BackupManager;
 
 /// <summary>
@@ -49,28 +48,6 @@ namespace BackupManager;
 [SuppressMessage("ReSharper", "UnusedMember.Global")]
 internal static partial class Utils
 {
-#if DEBUG
-    internal const bool IN_DEBUG_BUILD = true;
-#else
-    internal const bool IN_DEBUG_BUILD = false;
-#endif
-
-    [LibraryImport("kernel32.dll", EntryPoint = "GetDiskFreeSpaceExW", SetLastError = true,
-        StringMarshalling = StringMarshalling.Utf16)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool GetDiskFreeSpaceEx(string lpDirectoryName, out long lpFreeBytesAvailable,
-        out long lpTotalNumberOfBytes, out long lpTotalNumberOfFreeBytes);
-
-    [LibraryImport("kernel32.dll", EntryPoint = "CreateFileW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
-    private static partial SafeFileHandle CreateFile(string fileName, uint dwDesiredAccess, FileShare dwShareMode,
-        IntPtr securityAttrsMustBeZero, FileMode dwCreationDisposition, uint dwFlagsAndAttributes,
-        IntPtr hTemplateFileMustBeZero);
-
-    [LibraryImport("kernel32.dll", EntryPoint = "SetFileTime", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool SetFileTime(SafeFileHandle hFile, IntPtr lpCreationTimeUnused, IntPtr lpLastAccessTimeUnused,
-        ref long lpLastWriteTime);
-
     private const uint FILE_ACCESS_GENERIC_READ = 0x80000000;
 
     private const uint FILE_ACCESS_GENERIC_WRITE = 0x40000000;
@@ -78,12 +55,6 @@ internal static partial class Utils
     private const int FILE_FLAG_BACKUP_SEMANTICS = 0x02000000;
 
     private const int OPEN_EXISTING = 3;
-
-    private static readonly object _lock = new();
-
-    private static readonly HttpClient _client = new();
-
-    #region Constants
 
     /// <summary>
     ///     The end block size.
@@ -103,7 +74,9 @@ internal static partial class Utils
     /// <summary>
     ///     The number of bytes in one Terabyte. 2^40 bytes.
     /// </summary>
-    private const long BYTES_IN_ONE_TERABYTE = 1_099_511_627_776;
+
+    // ReSharper disable once MemberCanBePrivate.Global
+    internal const long BYTES_IN_ONE_TERABYTE = 1_099_511_627_776;
 
     /// <summary>
     ///     The number of bytes in one Gigabyte. 2^30 bytes.
@@ -125,9 +98,23 @@ internal static partial class Utils
     /// </summary>
     private const string PUSHOVER_MESSAGES_URL = "https://api.pushover.net/1/messages.json";
 
-    #endregion
+    /// <summary>
+    ///     Windows MAX_PATH of 256 characters
+    /// </summary>
+    internal const int MAX_PATH = 256;
 
-    #region Static Fields
+    internal const string IS_DIRECTORY_WRITABLE_GUID = "{A2E236CE-87F1-4942-93B0-31B463142B8D}";
+
+    internal const string SPEED_TEST_GUID = "{AFEF4827-0AA2-4C0E-8D90-9BEFB5DBEA62}";
+
+    /// <summary>
+    ///     True when we're in a DEBUG build otherwise False
+    /// </summary>
+    internal static readonly bool _inDebugBuild;
+
+    private static readonly object _lock = new();
+
+    private static readonly HttpClient _client = new();
 
     /// <summary>
     ///     We use this to pad our logging messages
@@ -142,16 +129,7 @@ internal static partial class Utils
     /// <summary>
     ///     The path to the Log file
     /// </summary>
-#if DEBUG
-    private static readonly string _logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-        "BackupManager_Debug.log");
-
-#else
-    private static readonly string _logFile =
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager.log");
-#endif
-
-    internal const int MAX_PATH = 256;
+    private static readonly string _logFile;
 
     /// <summary>
     ///     So we can get config values
@@ -162,16 +140,38 @@ internal static partial class Utils
 
     private static bool _sentAlertForLowPushoverMessages;
 
+    static Utils()
+    {
+#if DEBUG
+        _inDebugBuild = true;
+#else
+        _inDebugBuild = false;
+#endif
+        _logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+            _inDebugBuild ? "BackupManager_Debug.log" : "BackupManager.log");
+    }
+
     /// <summary>
     ///     The number of Pushover messages remaining this month
     /// </summary>
     internal static int PushoverMessagesRemaining { get; private set; }
 
-    #endregion
+    [LibraryImport("kernel32.dll", EntryPoint = "GetDiskFreeSpaceExW", SetLastError = true,
+        StringMarshalling = StringMarshalling.Utf16)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool GetDiskFreeSpaceEx(string lpDirectoryName, out long lpFreeBytesAvailable,
+        out long lpTotalNumberOfBytes, out long lpTotalNumberOfFreeBytes);
 
-    #region internal Methods and Operators
+    [LibraryImport("kernel32.dll", EntryPoint = "CreateFileW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
+    private static partial SafeFileHandle CreateFile(string fileName, uint dwDesiredAccess, FileShare dwShareMode,
+        IntPtr securityAttrsMustBeZero, FileMode dwCreationDisposition, uint dwFlagsAndAttributes,
+        IntPtr hTemplateFileMustBeZero);
 
-#if DEBUG
+    [LibraryImport("kernel32.dll", EntryPoint = "SetFileTime", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool SetFileTime(SafeFileHandle hFile, IntPtr lpCreationTimeUnused, IntPtr lpLastAccessTimeUnused,
+        ref long lpLastWriteTime);
+
     /// <summary>
     ///     This file has a hash of 098f6bcd4621d373cade4e832627b4f6 and length of 4 containing the text 'test'
     /// </summary>
@@ -181,7 +181,6 @@ internal static partial class Utils
         EnsureDirectoriesForFilePath(filePath);
         File.AppendAllText(filePath, "test");
     }
-#endif
 
     internal static void OpenLogFile()
     {
@@ -195,11 +194,11 @@ internal static partial class Utils
     internal static void BackupLogFile(CancellationToken ct)
     {
         var timeLog = DateTime.Now.ToString("yy-MM-dd-HH-mm-ss");
-#if DEBUG
-        const string suffix = "_Debug";
-#else
-        const string suffix = "";
-#endif
+
+        // ReSharper disable once HeuristicUnreachableCode
+#pragma warning disable CS0162 // Unreachable code detected
+        var suffix = _inDebugBuild ? "_Debug" : string.Empty;
+#pragma warning restore CS0162 // Unreachable code detected
 
         var destLogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups",
             $"BackupManager{suffix}_{timeLog}.log");
@@ -605,11 +604,7 @@ internal static partial class Utils
     /// <returns>
     ///     A String of the hash.
     /// </returns>
-#if DEBUG
     internal static string CreateHashForByteArray(byte[] firstByteArray, byte[] secondByteArray, byte[] thirdByteArray)
-#else
-    private static string CreateHashForByteArray(byte[] firstByteArray, byte[] secondByteArray, byte[] thirdByteArray)
-#endif
     {
         var newSize = 0;
         newSize += firstByteArray.Length;
@@ -932,7 +927,7 @@ internal static partial class Utils
     }
 
     /// <summary>
-    ///     The get short md 5 hash from file.
+    ///     Caclculates the short MD5 hash of the file.
     /// </summary>
     /// <param name="stream">
     ///     The stream.
@@ -1082,7 +1077,7 @@ internal static partial class Utils
         if (!match.Success) return TraceOut(false);
 
         var info = new VideoFileInfoReader().GetMediaInfo(path) ??
-                   throw new ApplicationException($"Unable to load ffprobe.exe for {path}");
+                   throw new ApplicationException(string.Format(Resources.Utils_Unable_to_load_ffprobe_exe, path));
         var sceneName = Path.GetFileNameWithoutExtension(path);
         var directoryName = Path.GetDirectoryName(path);
         if (directoryName == null) return TraceOut(false);
@@ -1095,13 +1090,15 @@ internal static partial class Utils
                                   sceneName.Replace(currentVideoCodecInFileName.WrapInSquareBrackets(),
                                       actualVideoCodec.WrapInSquareBrackets())) +
                               Path.GetExtension(path);
-        Log($"Renaming {path} to {newPathInternal}");
+        Trace($"Renaming {path} to {newPathInternal}");
 
         if (File.Exists(newPathInternal))
-            throw new ApplicationException($"Failed to rename {path} to {newPathInternal} as it already exists");
-
+        {
+            throw new ApplicationException(string.Format(
+                Resources.Utils_RenameVideoCodec_Failed_to_rename__0__to__1__as_it_already_exists, path, newPathInternal));
+        }
         FileMove(path, newPathInternal);
-        Log($"Renamed {path} to {newPathInternal}");
+        Trace($"Renamed {path} to {newPathInternal}");
         newPath = newPathInternal;
         return TraceOut(true);
     }
@@ -1502,10 +1499,6 @@ internal static partial class Utils
         }
     }
 
-    #endregion
-
-    #region Methods
-
     /// <summary>
     ///     The byte array to string.
     /// </summary>
@@ -1627,11 +1620,7 @@ internal static partial class Utils
     /// <returns>
     ///     The byte[]
     /// </returns>
-#if DEBUG
     private static byte[] GetLocalFileByteArray(Stream stream, long offset, long byteCountToReturn)
-#else
-    private static byte[] GetLocalFileByteArray(Stream stream, long offset, long byteCountToReturn)
-#endif
     {
         _ = stream.Seek(offset, SeekOrigin.Begin);
         var buffer = new byte[byteCountToReturn];
@@ -1665,11 +1654,7 @@ internal static partial class Utils
     /// <returns>
     ///     The byte[]
     /// </returns>
-#if DEBUG
     internal static byte[] GetLocalFileByteArray(string fileName, long offset, long byteCountToReturn)
-#else
-    private static byte[] GetLocalFileByteArray(string fileName, long offset, long byteCountToReturn)
-#endif
     {
         byte[] buffer;
         FileStream fileStream = new(fileName, FileMode.Open, FileAccess.Read);
@@ -1712,8 +1697,6 @@ internal static partial class Utils
         return i < 10 ? (char)(i + 48) : (char)(i - 10 + 65 + 32);
     }
 
-    #endregion
-
     /// <summary>
     /// </summary>
     /// <param name="path"></param>
@@ -1734,7 +1717,7 @@ internal static partial class Utils
     /// </summary>
     /// <param name="startupClass"></param>
     /// <returns></returns>
-    public static string GetProjectPath(Type startupClass)
+    internal static string GetProjectPath(Type startupClass)
     {
         var assembly = startupClass.GetTypeInfo().Assembly;
         var projectName = assembly.GetName().Name;
@@ -1831,10 +1814,6 @@ internal static partial class Utils
         FileInfo file = new(path);
         return file.LinkTarget != null;
     }
-
-    internal const string IS_DIRECTORY_WRITABLE_GUID = "{A2E236CE-87F1-4942-93B0-31B463142B8D}";
-
-    internal const string SPEED_TEST_GUID = "{AFEF4827-0AA2-4C0E-8D90-9BEFB5DBEA62}";
 
     /// <summary>
     ///     Checks the directory is writable

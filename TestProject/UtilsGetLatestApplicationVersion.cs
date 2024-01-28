@@ -4,7 +4,6 @@
 //  </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-#if DEBUG
 using System.Diagnostics.CodeAnalysis;
 
 using BackupManager;
@@ -57,4 +56,5 @@ public sealed class UtilsGetLatestApplicationVersion
         Assert.Equal("5.3.4", Utils.GetLatestApplicationVersionNumber(ApplicationType.Radarr, "develop"));
     }
 }
-#endif
+
+// #endif

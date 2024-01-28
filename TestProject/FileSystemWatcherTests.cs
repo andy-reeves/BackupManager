@@ -4,7 +4,6 @@
 //  </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-#if DEBUG
 using System.Diagnostics.CodeAnalysis;
 
 using BackupManager;
@@ -133,4 +132,5 @@ public sealed class FileSystemWatcherTests
         Assert.True(watcher.DirectoriesToScan.Count == 0, nameof(FileSystemWatcher.DirectoriesToScan.Count));
     }
 }
-#endif
+
+// #endif
