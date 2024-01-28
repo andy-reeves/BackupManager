@@ -47,5 +47,15 @@ public sealed class UtilsFileCopyTests
             if (Directory.Exists(path1)) Directory.Delete(path1, true);
         }
     }
+
+    [Fact]
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
+    public void LongFileNameTest()
+    {
+        const string testPath =
+            @"\\nas4\assets4\_TV\Paw Patrol {tvdb-272472}\Season 7\Paw Patrol s07e01-e04 Mighty Pups, Charged Up Pups Stop a Humdinger Horde + Mighty Pups, Charged Up Pups Save a Mighty Lighthouse + Pups Save Election Day + Pups Save the Bubble Monkeys [HDTV-1080p][AAC 2.0][x264].mkv";
+        _ = testPath.Length;
+        Assert.True(testPath.Length > Utils.MAX_PATH);
+    }
 }
 #endif

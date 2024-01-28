@@ -49,6 +49,12 @@ namespace BackupManager;
 [SuppressMessage("ReSharper", "UnusedMember.Global")]
 internal static partial class Utils
 {
+#if DEBUG
+    internal const bool IN_DEBUG_BUILD = true;
+#else
+    internal const bool IN_DEBUG_BUILD = false;
+#endif
+
     [LibraryImport("kernel32.dll", EntryPoint = "GetDiskFreeSpaceExW", SetLastError = true,
         StringMarshalling = StringMarshalling.Utf16)]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -65,13 +71,13 @@ internal static partial class Utils
     private static partial bool SetFileTime(SafeFileHandle hFile, IntPtr lpCreationTimeUnused, IntPtr lpLastAccessTimeUnused,
         ref long lpLastWriteTime);
 
-    private const uint FileAccessGenericRead = 0x80000000;
+    private const uint FILE_ACCESS_GENERIC_READ = 0x80000000;
 
-    private const uint FileAccessGenericWrite = 0x40000000;
+    private const uint FILE_ACCESS_GENERIC_WRITE = 0x40000000;
 
-    private const int FileFlagBackupSemantics = 0x02000000;
+    private const int FILE_FLAG_BACKUP_SEMANTICS = 0x02000000;
 
-    private const int OpenExisting = 3;
+    private const int OPEN_EXISTING = 3;
 
     private static readonly object _lock = new();
 
@@ -79,61 +85,45 @@ internal static partial class Utils
 
     #region Constants
 
-#if DEBUG
     /// <summary>
     ///     The end block size.
     /// </summary>
-    internal const int EndBlockSize = 16 * BytesInOneKilobyte; // 16K
+    internal const int END_BLOCK_SIZE = 16 * BYTES_IN_ONE_KILOBYTE; // 16K
 
     /// <summary>
     ///     The middle block size.
     /// </summary>
-    internal const int MiddleBlockSize = 16 * BytesInOneKilobyte; // 16K
+    internal const int MIDDLE_BLOCK_SIZE = 16 * BYTES_IN_ONE_KILOBYTE; // 16K
 
     /// <summary>
     ///     The start block size.
     /// </summary>
-    internal const int StartBlockSize = 16 * BytesInOneKilobyte; // 16K
-#else
-    /// <summary>
-    ///     The end block size.
-    /// </summary>
-    private const int EndBlockSize = 16 * BytesInOneKilobyte; // 16K
+    internal const int START_BLOCK_SIZE = 16 * BYTES_IN_ONE_KILOBYTE; // 16K
 
-    /// <summary>
-    ///     The middle block size.
-    /// </summary>
-    private const int MiddleBlockSize = 16 * BytesInOneKilobyte; // 16K
-
-    /// <summary>
-    ///     The start block size.
-    /// </summary>
-    private const int StartBlockSize = 16 * BytesInOneKilobyte; // 16K
-#endif
     /// <summary>
     ///     The number of bytes in one Terabyte. 2^40 bytes.
     /// </summary>
-    private const long BytesInOneTerabyte = 1_099_511_627_776;
+    private const long BYTES_IN_ONE_TERABYTE = 1_099_511_627_776;
 
     /// <summary>
     ///     The number of bytes in one Gigabyte. 2^30 bytes.
     /// </summary>
-    internal const int BytesInOneGigabyte = 1_073_741_824;
+    internal const int BYTES_IN_ONE_GIGABYTE = 1_073_741_824;
 
     /// <summary>
     ///     The number of bytes in one Megabyte. 2^20 bytes.
     /// </summary>
-    internal const int BytesInOneMegabyte = 1_048_576;
+    internal const int BYTES_IN_ONE_MEGABYTE = 1_048_576;
 
     /// <summary>
     ///     The number of bytes in one Kilobyte. 2^10 bytes.
     /// </summary>
-    internal const int BytesInOneKilobyte = 1_024;
+    internal const int BYTES_IN_ONE_KILOBYTE = 1_024;
 
     /// <summary>
     ///     The URL of the Pushover messaging service.
     /// </summary>
-    private const string PushoverAddress = "https://api.pushover.net/1/messages.json";
+    private const string PUSHOVER_MESSAGES_URL = "https://api.pushover.net/1/messages.json";
 
     #endregion
 
@@ -155,9 +145,13 @@ internal static partial class Utils
 #if DEBUG
     private static readonly string _logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
         "BackupManager_Debug.log");
+
 #else
-    private static readonly string _logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager.log");
+    private static readonly string _logFile =
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager.log");
 #endif
+
+    internal const int MAX_PATH = 256;
 
     /// <summary>
     ///     So we can get config values
@@ -399,6 +393,11 @@ internal static partial class Utils
         TraceIn(sourceFileName, destFileName);
         if (destFileName == null || sourceFileName == null) return false;
 
+        if (sourceFileName.Length > 256)
+            throw new NotSupportedException($"Source file name {sourceFileName} exceeds 256 characters");
+
+        if (destFileName.Length > 256)
+            throw new NotSupportedException($"Destination file name {destFileName} exceeds 256 characters");
         if (File.Exists(destFileName)) throw new NotSupportedException("Destination file already exists");
 
         EnsureDirectoriesForFilePath(destFileName);
@@ -465,7 +464,7 @@ internal static partial class Utils
     /// <returns></returns>
     internal static long ConvertMBtoBytes(long value)
     {
-        return Convert.ToInt64(value * BytesInOneMegabyte);
+        return Convert.ToInt64(value * BYTES_IN_ONE_MEGABYTE);
     }
 
     internal static bool FixDateTakenForPhotos(string path)
@@ -899,7 +898,7 @@ internal static partial class Utils
     /// </returns>
     internal static string GetHashFromFile(string fileName, HashAlgorithm algorithm)
     {
-        using BufferedStream stream = new(File.OpenRead(fileName), BytesInOneMegabyte);
+        using BufferedStream stream = new(File.OpenRead(fileName), BYTES_IN_ONE_MEGABYTE);
         return ByteArrayToString(algorithm.ComputeHash(stream));
     }
 
@@ -953,13 +952,13 @@ internal static partial class Utils
         byte[] middleBlock = null;
         byte[] endBlock = null;
 
-        if (size >= StartBlockSize + MiddleBlockSize + EndBlockSize)
+        if (size >= START_BLOCK_SIZE + MIDDLE_BLOCK_SIZE + END_BLOCK_SIZE)
         {
-            var startDownloadPositionForEndBlock = size - EndBlockSize;
+            var startDownloadPositionForEndBlock = size - END_BLOCK_SIZE;
             var startDownloadPositionForMiddleBlock = size / 2;
-            startBlock = GetLocalFileByteArray(stream, 0, StartBlockSize);
-            middleBlock = GetLocalFileByteArray(stream, startDownloadPositionForMiddleBlock, MiddleBlockSize);
-            endBlock = GetLocalFileByteArray(stream, startDownloadPositionForEndBlock, EndBlockSize);
+            startBlock = GetLocalFileByteArray(stream, 0, START_BLOCK_SIZE);
+            middleBlock = GetLocalFileByteArray(stream, startDownloadPositionForMiddleBlock, MIDDLE_BLOCK_SIZE);
+            endBlock = GetLocalFileByteArray(stream, startDownloadPositionForEndBlock, END_BLOCK_SIZE);
         }
         else
             startBlock = GetLocalFileByteArray(stream, 0, size);
@@ -1017,13 +1016,13 @@ internal static partial class Utils
         byte[] middleBlock = null;
         byte[] endBlock = null;
 
-        if (size >= StartBlockSize + MiddleBlockSize + EndBlockSize)
+        if (size >= START_BLOCK_SIZE + MIDDLE_BLOCK_SIZE + END_BLOCK_SIZE)
         {
-            var startDownloadPositionForEndBlock = size - EndBlockSize;
+            var startDownloadPositionForEndBlock = size - END_BLOCK_SIZE;
             var startDownloadPositionForMiddleBlock = size / 2;
-            startBlock = GetLocalFileByteArray(path, 0, StartBlockSize);
-            middleBlock = GetLocalFileByteArray(path, startDownloadPositionForMiddleBlock, MiddleBlockSize);
-            endBlock = GetLocalFileByteArray(path, startDownloadPositionForEndBlock, EndBlockSize);
+            startBlock = GetLocalFileByteArray(path, 0, START_BLOCK_SIZE);
+            middleBlock = GetLocalFileByteArray(path, startDownloadPositionForMiddleBlock, MIDDLE_BLOCK_SIZE);
+            endBlock = GetLocalFileByteArray(path, startDownloadPositionForEndBlock, END_BLOCK_SIZE);
         }
         else
             startBlock = GetLocalFileByteArray(path, 0, size);
@@ -1083,7 +1082,7 @@ internal static partial class Utils
         if (!match.Success) return TraceOut(false);
 
         var info = new VideoFileInfoReader().GetMediaInfo(path) ??
-                   throw new ApplicationException($"Failed to load MediaInfo for {path}");
+                   throw new ApplicationException($"Unable to load ffprobe.exe for {path}");
         var sceneName = Path.GetFileNameWithoutExtension(path);
         var directoryName = Path.GetDirectoryName(path);
         if (directoryName == null) return TraceOut(false);
@@ -1159,8 +1158,7 @@ internal static partial class Utils
         if (videoFormat == "rawvideo") return "RGB";
 
         if (videoFormat == "qtrle" || videoFormat == "rpza" || videoFormat == "rv10" || videoFormat == "rv20" ||
-            videoFormat == "rv30" || videoFormat == "rv40" || videoFormat == "cinepak" || videoFormat == "rawvideo" ||
-            videoFormat == "msvideo1")
+            videoFormat == "rv30" || videoFormat == "rv40" || videoFormat == "cinepak" || videoFormat == "msvideo1")
         {
             LogWithPushover(BackupAction.General, PushoverPriority.High, $"About to return string.Empty for {sceneName}");
             return "";
@@ -1258,7 +1256,7 @@ internal static partial class Utils
             using FormUrlEncodedContent postContent = new(parameters);
 
             // ReSharper disable once AccessToDisposedClosure
-            var task = Task.Run(() => _client.PostAsync(PushoverAddress, postContent));
+            var task = Task.Run(() => _client.PostAsync(PUSHOVER_MESSAGES_URL, postContent));
             task.Wait();
             var response = task.Result;
             _ = response.EnsureSuccessStatusCode();
@@ -1768,12 +1766,12 @@ internal static partial class Utils
     /// <returns>a string like x.yTB, xGB, xMB or xKB depending on the size</returns>
     internal static string FormatSize(long value)
     {
-        return value > BytesInOneTerabyte ? $"{(decimal)value / BytesInOneTerabyte:0.#} TB" :
-            value > 25 * (long)BytesInOneGigabyte ? $"{value / BytesInOneGigabyte:n0} GB" :
-            value > BytesInOneGigabyte ? $"{(decimal)value / BytesInOneGigabyte:0.#} GB" :
-            value > 25 * BytesInOneMegabyte ? $"{value / BytesInOneMegabyte:n0} MB" :
-            value > BytesInOneMegabyte ? $"{(decimal)value / BytesInOneMegabyte:0.#} MB" :
-            value > BytesInOneKilobyte ? $"{value / BytesInOneKilobyte:n0} KB" : $"{value:n0} bytes";
+        return value > BYTES_IN_ONE_TERABYTE ? $"{(decimal)value / BYTES_IN_ONE_TERABYTE:0.#} TB" :
+            value > 25 * (long)BYTES_IN_ONE_GIGABYTE ? $"{value / BYTES_IN_ONE_GIGABYTE:n0} GB" :
+            value > BYTES_IN_ONE_GIGABYTE ? $"{(decimal)value / BYTES_IN_ONE_GIGABYTE:0.#} GB" :
+            value > 25 * BYTES_IN_ONE_MEGABYTE ? $"{value / BYTES_IN_ONE_MEGABYTE:n0} MB" :
+            value > BYTES_IN_ONE_MEGABYTE ? $"{(decimal)value / BYTES_IN_ONE_MEGABYTE:0.#} MB" :
+            value > BYTES_IN_ONE_KILOBYTE ? $"{value / BYTES_IN_ONE_KILOBYTE:n0} KB" : $"{value:n0} bytes";
     }
 
     /// <summary>
@@ -1834,9 +1832,9 @@ internal static partial class Utils
         return file.LinkTarget != null;
     }
 
-    internal const string IsDirectoryWritableGuid = "{A2E236CE-87F1-4942-93B0-31B463142B8D}";
+    internal const string IS_DIRECTORY_WRITABLE_GUID = "{A2E236CE-87F1-4942-93B0-31B463142B8D}";
 
-    internal const string SpeedTestGuid = "{AFEF4827-0AA2-4C0E-8D90-9BEFB5DBEA62}";
+    internal const string SPEED_TEST_GUID = "{AFEF4827-0AA2-4C0E-8D90-9BEFB5DBEA62}";
 
     /// <summary>
     ///     Checks the directory is writable
@@ -1851,7 +1849,7 @@ internal static partial class Utils
         try
         {
             var lastWriteDate = Directory.GetLastWriteTimeUtc(path);
-            var tempFile = Path.GetFileNameWithoutExtension(Path.GetRandomFileName()) + IsDirectoryWritableGuid + ".tmp";
+            var tempFile = Path.GetFileNameWithoutExtension(Path.GetRandomFileName()) + IS_DIRECTORY_WRITABLE_GUID + ".tmp";
             using var fs = File.Create(Path.Combine(path, tempFile), 1, FileOptions.DeleteOnClose);
             return TraceOut(SetDirectoryLastWriteUtc(path, lastWriteDate));
         }
@@ -1863,8 +1861,8 @@ internal static partial class Utils
 
     private static bool SetDirectoryLastWriteUtc(string dirPath, DateTime lastWriteDate)
     {
-        using var hDir = CreateFile(dirPath, FileAccessGenericRead | FileAccessGenericWrite, FileShare.ReadWrite, IntPtr.Zero,
-            (FileMode)OpenExisting, FileFlagBackupSemantics, IntPtr.Zero);
+        using var hDir = CreateFile(dirPath, FILE_ACCESS_GENERIC_READ | FILE_ACCESS_GENERIC_WRITE, FileShare.ReadWrite,
+            IntPtr.Zero, (FileMode)OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, IntPtr.Zero);
         var lastWriteTime = lastWriteDate.ToFileTime();
         return SetFileTime(hDir, IntPtr.Zero, IntPtr.Zero, ref lastWriteTime);
     }
@@ -1929,12 +1927,12 @@ internal static partial class Utils
             // if disk speed greater than 1MB/s return x.yyMB/s
             // if disk speed greater than 1KB/s return xKB/s
             // else return bytes/s
-            > BytesInOneTerabyte => $"{(decimal)value / BytesInOneTerabyte:0.#} TB/s",
-            > 25 * (long)BytesInOneGigabyte => $"{value / BytesInOneGigabyte:n0} GB/s",
-            > BytesInOneGigabyte => $"{(decimal)value / BytesInOneGigabyte:0.#} GB/s",
-            > 25 * BytesInOneMegabyte => $"{value / BytesInOneMegabyte:n0} MB/s",
-            > BytesInOneMegabyte => $"{(decimal)value / BytesInOneMegabyte:0.#} MB/s",
-            _ => value > BytesInOneKilobyte ? $"{value / BytesInOneKilobyte:n0} KB/s" : $"{value:n0} bytes/s"
+            > BYTES_IN_ONE_TERABYTE => $"{(decimal)value / BYTES_IN_ONE_TERABYTE:0.#} TB/s",
+            > 25 * (long)BYTES_IN_ONE_GIGABYTE => $"{value / BYTES_IN_ONE_GIGABYTE:n0} GB/s",
+            > BYTES_IN_ONE_GIGABYTE => $"{(decimal)value / BYTES_IN_ONE_GIGABYTE:0.#} GB/s",
+            > 25 * BYTES_IN_ONE_MEGABYTE => $"{value / BYTES_IN_ONE_MEGABYTE:n0} MB/s",
+            > BYTES_IN_ONE_MEGABYTE => $"{(decimal)value / BYTES_IN_ONE_MEGABYTE:0.#} MB/s",
+            _ => value > BYTES_IN_ONE_KILOBYTE ? $"{value / BYTES_IN_ONE_KILOBYTE:n0} KB/s" : $"{value:n0} bytes/s"
         };
     }
 
@@ -2104,15 +2102,15 @@ internal static partial class Utils
         TraceIn();
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
         const long randomStringSize = 500_000;
-        const int streamWriteBufferSize = 20 * BytesInOneMegabyte;
+        const int streamWriteBufferSize = 20 * BYTES_IN_ONE_MEGABYTE;
         var randomText = RandomString(randomStringSize);
         var appendIterations = testFileSize / randomStringSize;
         double totalPerf = 0;
 
         for (var j = 1; j <= testIterations; j++)
         {
-            var firstPathFilename = sourcePath + "\\" + j + SpeedTestGuid + "test.tmp";
-            var secondPathFilename = destinationPath + "\\" + j + SpeedTestGuid + "test.tmp";
+            var firstPathFilename = sourcePath + "\\" + j + SPEED_TEST_GUID + "test.tmp";
+            var secondPathFilename = destinationPath + "\\" + j + SPEED_TEST_GUID + "test.tmp";
             if (File.Exists(firstPathFilename)) FileDelete(firstPathFilename);
             if (File.Exists(secondPathFilename)) FileDelete(secondPathFilename);
 
@@ -2410,7 +2408,7 @@ internal static partial class Utils
     /// <returns></returns>
     internal static long ConvertGBtoBytes(long value)
     {
-        return Convert.ToInt64(value * BytesInOneGigabyte);
+        return Convert.ToInt64(value * BYTES_IN_ONE_GIGABYTE);
     }
 
     /// <summary>

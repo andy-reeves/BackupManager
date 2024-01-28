@@ -22,11 +22,11 @@ public sealed class UtilsCreateHashForByteArrayTest
     {
         var path = Path.Combine(Utils.GetProjectPath(typeof(UtilsUnitTests)), @"TestData\TestFile1");
         var size = new FileInfo(path).Length;
-        var startDownloadPositionForEndBlock = size - Utils.EndBlockSize;
+        var startDownloadPositionForEndBlock = size - Utils.END_BLOCK_SIZE;
         var startDownloadPositionForMiddleBlock = size / 2;
-        var firstByteArray = Utils.GetLocalFileByteArray(path, 0, Utils.StartBlockSize);
-        var secondByteArray = Utils.GetLocalFileByteArray(path, startDownloadPositionForMiddleBlock, Utils.MiddleBlockSize);
-        var thirdByteArray = Utils.GetLocalFileByteArray(path, startDownloadPositionForEndBlock, Utils.EndBlockSize);
+        var firstByteArray = Utils.GetLocalFileByteArray(path, 0, Utils.START_BLOCK_SIZE);
+        var secondByteArray = Utils.GetLocalFileByteArray(path, startDownloadPositionForMiddleBlock, Utils.MIDDLE_BLOCK_SIZE);
+        var thirdByteArray = Utils.GetLocalFileByteArray(path, startDownloadPositionForEndBlock, Utils.END_BLOCK_SIZE);
 
         Assert.Equal("1416d38415ac751620b97eab7f433723",
             Utils.CreateHashForByteArray(firstByteArray, secondByteArray, thirdByteArray));

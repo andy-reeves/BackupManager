@@ -70,7 +70,7 @@ internal sealed partial class Main
         // tasks.Add(TaskWrapper(Task.Run(() => ProcessFilesInternal(filesParam.ToArray(), scanId, ct), ct), ct));
         Task.WhenAll(tasks).Wait(ct);
         var returnValue = !tasks.Any(static t => !t.Result);
-        if (returnValue) Utils.LogWithPushover(BackupAction.ProcessFiles, Resources.Main_Completed, true);
+        if (returnValue) Utils.LogWithPushover(BackupAction.ProcessFiles, Resources.Main_Completed, true, true);
         UpdateMediaFilesCountDisplay();
         ResetAllControls();
         return Utils.TraceOut(returnValue);
@@ -164,10 +164,10 @@ internal sealed partial class Main
                 break;
             }
 
-            if (config.DirectoriesRenameVideoFilesOnOff && File.Exists(file) && Utils.RenameVideoCodec(file, out var newFile))
+            if (config.DirectoriesRenameVideoFilesOnOff && File.Exists(file) && Utils.IsFileAccessible(file) &&
+                Utils.RenameVideoCodec(file, out var newFile))
             {
-                Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High,
-                    $"{file} rename required for video codec to {newFile}");
+                Utils.LogWithPushover(BackupAction.ProcessFiles, $"{file} rename required for video codec to {newFile}");
 
                 // change the file to the newFile to continue processing
                 file = newFile;

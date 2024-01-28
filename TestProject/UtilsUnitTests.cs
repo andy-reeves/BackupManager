@@ -157,12 +157,12 @@ public sealed class UtilsUnitTests
     {
         Assert.Equal("22.3 MB", Utils.FormatSize(23424234));
         Assert.Equal("2130.4 TB", Utils.FormatSize(2342423232323234));
-        Assert.Equal("25 GB", Utils.FormatSize(25 * (long)Utils.BytesInOneGigabyte + 1));
-        Assert.Equal("1 GB", Utils.FormatSize(Utils.BytesInOneGigabyte + 1));
-        Assert.Equal("25 MB", Utils.FormatSize(25 * Utils.BytesInOneMegabyte + 1));
-        Assert.Equal("1 MB", Utils.FormatSize(Utils.BytesInOneMegabyte + 1));
-        Assert.Equal("1 KB", Utils.FormatSize(Utils.BytesInOneKilobyte + 1));
-        Assert.Equal("1,014 bytes", Utils.FormatSize(Utils.BytesInOneKilobyte - 10));
+        Assert.Equal("25 GB", Utils.FormatSize(25 * (long)Utils.BYTES_IN_ONE_GIGABYTE + 1));
+        Assert.Equal("1 GB", Utils.FormatSize(Utils.BYTES_IN_ONE_GIGABYTE + 1));
+        Assert.Equal("25 MB", Utils.FormatSize(25 * Utils.BYTES_IN_ONE_MEGABYTE + 1));
+        Assert.Equal("1 MB", Utils.FormatSize(Utils.BYTES_IN_ONE_MEGABYTE + 1));
+        Assert.Equal("1 KB", Utils.FormatSize(Utils.BYTES_IN_ONE_KILOBYTE + 1));
+        Assert.Equal("1,014 bytes", Utils.FormatSize(Utils.BYTES_IN_ONE_KILOBYTE - 10));
     }
 
     [Fact]
@@ -180,9 +180,9 @@ public sealed class UtilsUnitTests
         Utils.EnsureDirectoriesForDirectoryPath(path1);
         Utils.CreateFile(file1);
 
-        using (BufferedStream stream = new(File.OpenRead(file1), Utils.BytesInOneMegabyte))
+        using (BufferedStream stream = new(File.OpenRead(file1), Utils.BYTES_IN_ONE_MEGABYTE))
         {
-            var byteArray = Utils.GetRemoteFileByteArray(stream, Utils.BytesInOneMegabyte);
+            var byteArray = Utils.GetRemoteFileByteArray(stream, Utils.BYTES_IN_ONE_MEGABYTE);
             Assert.Equal(4, byteArray.Length);
         }
 
@@ -201,7 +201,7 @@ public sealed class UtilsUnitTests
 
         using (var stream = File.OpenRead(file1))
         {
-            Assert.Equal("098f6bcd4621d373cade4e832627b4f6", Utils.GetShortMd5HashFromFile(stream, Utils.BytesInOneMegabyte));
+            Assert.Equal("098f6bcd4621d373cade4e832627b4f6", Utils.GetShortMd5HashFromFile(stream, Utils.BYTES_IN_ONE_MEGABYTE));
         }
         Assert.Equal("098f6bcd4621d373cade4e832627b4f6", Utils.GetShortMd5HashFromFile(file1));
 

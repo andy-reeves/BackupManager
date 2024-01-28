@@ -71,20 +71,26 @@ internal sealed partial class Main
     private int reportedPercentComplete;
 
     [SupportedOSPlatform("windows")]
+
+    // ReSharper disable once FunctionComplexityOverflow
     internal Main()
     {
         try
         {
             InitializeComponent();
             TraceConfiguration.Register();
-#if DEBUG
-            Trace.Listeners.Add(new TextWriterTraceListener(
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"),
-                "myListener"));
-#endif
-            var mediaBackupXml = ConfigurationManager.AppSettings.Get("MediaBackupXml");
+
+            if (Utils.IN_DEBUG_BUILD)
+            {
+                _ = Trace.Listeners.Add(new TextWriterTraceListener(
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"),
+                    "myListener"));
+            }
             var localMediaXml = Path.Combine(Application.StartupPath, "MediaBackup.xml");
-            mediaBackup = MediaBackup.Load(File.Exists(localMediaXml) ? localMediaXml : mediaBackupXml);
+
+            mediaBackup = MediaBackup.Load(File.Exists(localMediaXml)
+                ? localMediaXml
+                : ConfigurationManager.AppSettings.Get("MediaBackupXml"));
             config = mediaBackup.Config;
             Utils.Config = config;
             backupDiskTextBox.Text = config.BackupDisk;
@@ -99,9 +105,14 @@ internal sealed partial class Main
             restoreDirectoryComboBox.Items.AddRange(directoriesArray.ToArray<object>());
             scanDirectoryComboBox.Items.AddRange(directoriesArray.ToArray<object>());
 
+            foreach (var file in mediaBackup.BackupFiles.Where(static file => file.FullPath.Length > Utils.MAX_PATH))
+            {
+                Utils.Log($"{file.FullPath} is longer than 256 characters");
+            }
+
             foreach (var disk in mediaBackup.BackupDisks)
             {
-                listFilesComboBox.Items.Add(disk.Name);
+                _ = listFilesComboBox.Items.Add(disk.Name);
             }
             pushoverLowCheckBox.Checked = config.PushoverSendLowOnOff;
             pushoverNormalCheckBox.Checked = config.PushoverSendNormalOnOff;
@@ -110,7 +121,7 @@ internal sealed partial class Main
 
             foreach (var monitor in config.Monitors)
             {
-                processesComboBox.Items.Add(monitor.Name);
+                _ = processesComboBox.Items.Add(monitor.Name);
             }
 
             scheduledBackupAction = () =>
@@ -129,7 +140,7 @@ internal sealed partial class Main
             // we switch it off and force the button to be clicked to turn it on again
             config.MonitoringOnOff = !config.MonitoringOnOff;
             MonitoringButton_Click(null, null);
-            UpdateCurrentBackupDiskInfo(mediaBackup.GetBackupDisk(backupDiskTextBox.Text));
+            _ = UpdateCurrentBackupDiskInfo(mediaBackup.GetBackupDisk(backupDiskTextBox.Text));
 
             if (config.ScheduledBackupRunOnStartup)
             {
@@ -147,7 +158,7 @@ internal sealed partial class Main
         }
         catch (Exception ex)
         {
-            MessageBox.Show(string.Format(Resources.Main_ExceptionOccured, ex));
+            _ = MessageBox.Show(string.Format(Resources.Main_ExceptionOccured, ex));
             Environment.Exit(0);
         }
     }

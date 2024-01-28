@@ -53,8 +53,8 @@ public sealed class UtilsGetLatestApplicationVersion
             Utils.GetLatestApplicationVersionNumber(ApplicationType.PlexPass));
 
         // TODO Assert.Equal("4.0.10", Utils.GetLatestApplicationVersionNumber(ApplicationType.Sonarr, "develop"));
-        Assert.Equal("1.13.1", Utils.GetLatestApplicationVersionNumber(ApplicationType.Prowlarr, "develop"));
-        Assert.Equal("5.3.3", Utils.GetLatestApplicationVersionNumber(ApplicationType.Radarr, "develop"));
+        Assert.Equal("1.13.2", Utils.GetLatestApplicationVersionNumber(ApplicationType.Prowlarr, "develop"));
+        Assert.Equal("5.3.4", Utils.GetLatestApplicationVersionNumber(ApplicationType.Radarr, "develop"));
     }
 }
 #endif

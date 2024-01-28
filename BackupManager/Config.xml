@@ -45,6 +45,12 @@
   <!-- Number of seconds between checking all the changed file notifications for folders to scan later (180) -->
   <DirectoriesProcessChangesTimer>10</DirectoriesProcessChangesTimer>
 
+  <!-- Whether to check video files are named corrected and rename them if not -->
+  <DirectoriesRenameVideoFilesOnOff>true</DirectoriesRenameVideoFilesOnOff>
+
+  <!-- Any files matching this will be checked for correct name and renamed if not correct -->
+  <DirectoriesRenameVideoFilesRegEx>^.*\[([hx]26[45]|MPEG([24])?|HEVC|XviD|V(C1|P9)|AVC|DivX|RGB)\]\.(?:m(?:kv|p(4|e?g))|avi)$</DirectoriesRenameVideoFilesRegEx>
+
   <!-- Number of seconds between checking all the directories ready to scan to see if they are old enough now (300) -->
   <DirectoriesScanTimer>20</DirectoriesScanTimer>
 
