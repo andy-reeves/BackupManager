@@ -150,7 +150,13 @@
       <Name>Rule 20</Name>
       <Number>20</Number>
     </FileRule>
-
+    <FileRule>
+      <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$</FileDiscoveryRegEx>
+      <FileTestRegEx>^.{1,256}$</FileTestRegEx>
+      <Message>Movies, Comedy, Concerts and TV files need to have a maximum path length of 256 characters</Message>
+      <Name>Rule 21</Name>
+      <Number>21</Number>
+      </FileRule>
   </FileRules>
 </Rules>
 <!-- ReSharper restore MarkupTextTypo -->
