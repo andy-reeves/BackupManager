@@ -1037,11 +1037,11 @@ internal static partial class Utils
     /// </summary>
     /// <param name="path"></param>
     /// <returns>False if its not a video file, True if its a video file. Exception if path is null or empty</returns>
-    private static bool FileIsVideo(string path)
+    internal static bool FileIsVideo(string path)
     {
         ArgumentException.ThrowIfNullOrEmpty(path);
         string[] videoExtensions = { ".mkv", ".mp4", ".mpeg", ".mpg", ".ts", ".avi" };
-        return videoExtensions.Contains(Path.GetExtension(path).ToLowerInvariant());
+        return Path.GetExtension(path).ToLowerInvariant().ContainsAny(videoExtensions);
     }
 
     /// <summary>
@@ -1069,28 +1069,19 @@ internal static partial class Utils
         ArgumentException.ThrowIfNullOrEmpty(path);
         if (!File.Exists(path)) throw new FileNotFoundException("File not found", path);
 
-        // ReSharper disable once StringLiteralTypo
-        var videoCodecRegex = Config.DirectoriesRenameVideoFilesRegEx;
-        if (videoCodecRegex.HasNoValue()) return false;
+        if (!FileIsVideo(path)) return TraceOut(false);
 
-        var match = Regex.Match(path, videoCodecRegex);
-        if (!match.Success) return TraceOut(false);
-
-        var info = new VideoFileInfoReader().GetMediaInfo(path) ??
-                   throw new ApplicationException(string.Format(Resources.Utils_Unable_to_load_ffprobe_exe, path));
-        var sceneName = Path.GetFileNameWithoutExtension(path);
+        var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(path);
         var directoryName = Path.GetDirectoryName(path);
         if (directoryName == null) return TraceOut(false);
-
-        var currentVideoCodecInFileName = match.Groups[1].Value;
-        var actualVideoCodec = FormatVideoCodec(info, sceneName);
+        if (!GetVideoCodecFromFileName(Path.GetFileName(path), out var currentVideoCodecInFileName)) return TraceOut(false);
+        if (!GetVideoCodec(path, out var actualVideoCodec)) return TraceOut(false);
         if (actualVideoCodec == currentVideoCodecInFileName) return TraceOut(false);
 
         var newPathInternal = Path.Combine(directoryName,
-                                  sceneName.Replace(currentVideoCodecInFileName.WrapInSquareBrackets(),
-                                      actualVideoCodec.WrapInSquareBrackets())) +
-                              Path.GetExtension(path);
-        Trace($"Renaming {path} to {newPathInternal}");
+            fileNameWithoutExtension.Replace(currentVideoCodecInFileName.WrapInSquareBrackets(),
+                actualVideoCodec.WrapInSquareBrackets())) + Path.GetExtension(path);
+        Log($"Renaming {path} to {newPathInternal}");
 
         if (File.Exists(newPathInternal))
         {
@@ -1103,20 +1094,51 @@ internal static partial class Utils
         return TraceOut(true);
     }
 
-    private static string GetSceneNameMatch(string sceneName, params string[] tokens)
+    /// <summary>
+    /// </summary>
+    /// <param name="path">Must have a video extension</param>
+    /// <param name="videoCodec"></param>
+    /// <returns></returns>
+    internal static bool GetVideoCodecFromFileName(string path, out string videoCodec)
     {
-        sceneName = sceneName.IsNotNullOrWhiteSpace() ? sceneName : string.Empty;
+        TraceIn(path);
+        ArgumentException.ThrowIfNullOrEmpty(path);
+        var fileName = Path.GetFileName(path);
+        videoCodec = string.Empty;
+        var videoCodecRegex = Config.DirectoriesRenameVideoFilesRegEx;
+        if (videoCodecRegex.HasNoValue()) return false;
 
-        foreach (var token in tokens.Where(token => sceneName.ContainsIgnoreCase(token)))
-        {
-            return token;
-        }
+        var match = Regex.Match(fileName, videoCodecRegex);
+        if (!match.Success) return TraceOut(false);
 
-        // Last token is the default.
-        return tokens.Last();
+        videoCodec = match.Groups[1].Value;
+        return TraceOut(true);
     }
 
-    private static string FormatVideoCodec(MediaInfoModel mediaInfo, string sceneName)
+    /// <summary>
+    ///     Gets the actual video codec of the file
+    /// </summary>
+    /// <param name="path">Path to the video file</param>
+    /// <param name="actualVideoCodec">The actual video codec of the file</param>
+    /// <returns>True if the video codec was determined</returns>
+    /// <exception cref="FileNotFoundException"></exception>
+    /// <exception cref="ApplicationException"></exception>
+    internal static bool GetVideoCodec(string path, out string actualVideoCodec)
+    {
+        TraceIn(path);
+        ArgumentException.ThrowIfNullOrEmpty(path);
+        if (!File.Exists(path)) throw new FileNotFoundException("File not found", path);
+        if (!FileIsVideo(path)) throw new NotSupportedException("file is not video");
+
+        actualVideoCodec = string.Empty;
+
+        var info = new VideoFileInfoReader().GetMediaInfo(path) ??
+                   throw new ApplicationException(string.Format(Resources.Utils_Unable_to_load_ffprobe_exe, path));
+        actualVideoCodec = FormatVideoCodec(info, Path.GetFileNameWithoutExtension(path));
+        return TraceOut(true);
+    }
+
+    private static string FormatVideoCodec(MediaInfoModel mediaInfo, string fileName)
     {
         if (mediaInfo.VideoFormat == null) return null;
 
@@ -1126,23 +1148,18 @@ internal static partial class Utils
         if (videoFormat.Empty()) return result;
 
         // see definitions here: https://github.com/FFmpeg/FFmpeg/blob/master/libavcodec/codec_desc.c
-        if (videoCodecId == "x264") return "x264";
-        if (videoFormat == "h264") return GetSceneNameMatch(sceneName, "AVC", "x264", "h264");
-        if (videoCodecId == "x265") return "x265";
-        if (videoFormat == "hevc") return GetSceneNameMatch(sceneName, "HEVC", "x265", "h265");
+        if (videoCodecId == "x264") return "h264";
+        if (videoFormat == "h264") return "h264";
+        if (videoCodecId == "x265") return "h265";
+        if (videoFormat == "hevc") return "h265";
         if (videoFormat == "mpeg2video") return "MPEG2";
         if (videoFormat == "mpeg1video") return "MPEG";
 
         if (videoFormat == "mpeg4" || videoFormat.Contains("msmpeg4"))
         {
-            if (videoCodecId == "XVID") return "XviD";
-
-            // Andy added this for some media its 'xvid' and not 'XVID'
             if (videoCodecId.ToLowerInvariant() == "xvid") return "XviD";
             if (videoCodecId == "DIV3" || videoCodecId == "DX50" || videoCodecId.ToUpperInvariant() == "DIVX") return "DivX";
 
-            // Andy - was return ""
-            //return "";
             return "MPEG4";
         }
         if (videoFormat == "vc1") return "VC1";
@@ -1150,14 +1167,12 @@ internal static partial class Utils
         if (videoFormat.Contains("vp6")) return "VP6";
         if (videoFormat == "vp7" || videoFormat == "vp8" || videoFormat == "vp9") return videoFormat.ToUpperInvariant();
         if (videoFormat == "wmv1" || videoFormat == "wmv2" || videoFormat == "wmv3") return "WMV";
-
-        // ANDY new line for RGB
         if (videoFormat == "rawvideo") return "RGB";
 
         if (videoFormat == "qtrle" || videoFormat == "rpza" || videoFormat == "rv10" || videoFormat == "rv20" ||
             videoFormat == "rv30" || videoFormat == "rv40" || videoFormat == "cinepak" || videoFormat == "msvideo1")
         {
-            LogWithPushover(BackupAction.General, PushoverPriority.High, $"About to return string.Empty for {sceneName}");
+            LogWithPushover(BackupAction.General, PushoverPriority.High, $"About to return string.Empty for {fileName}");
             return "";
         }
         return result;

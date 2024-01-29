@@ -22,10 +22,12 @@ namespace BackupManager;
 
 internal sealed class FileSystemWatcher
 {
-    private const int NotifyFiltersValidMask = (int)(NotifyFilters.Attributes | NotifyFilters.CreationTime |
-                                                     NotifyFilters.DirectoryName | NotifyFilters.FileName |
-                                                     NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.Security |
-                                                     NotifyFilters.Size);
+    private const int NOTIFY_FILTERS_VALID_MASK = (int)(NotifyFilters.Attributes | NotifyFilters.CreationTime |
+                                                        NotifyFilters.DirectoryName | NotifyFilters.FileName |
+                                                        NotifyFilters.LastAccess | NotifyFilters.LastWrite |
+                                                        NotifyFilters.Security | NotifyFilters.Size);
+
+    private static readonly object _lock = new();
 
     private readonly List<System.IO.FileSystemWatcher> watcherList = new();
 
@@ -129,7 +131,7 @@ internal sealed class FileSystemWatcher
 
         set
         {
-            if (((int)value & ~NotifyFiltersValidMask) != 0)
+            if (((int)value & ~NOTIFY_FILTERS_VALID_MASK) != 0)
             {
                 throw new ArgumentException(string.Format(Resources.InvalidEnumArgument, nameof(value), (int)value,
                     nameof(NotifyFilters)));
@@ -398,14 +400,33 @@ internal sealed class FileSystemWatcher
     {
         Utils.TraceIn();
 
-        if (DirectoriesToScan.Count > 0 && DirectoriesToScan.Count(directoryToScan =>
-                directoryToScan.ModifiedDateTime.AddMilliseconds(MinimumAgeBeforeScanEventRaised) < DateTime.Now) ==
-            DirectoriesToScan.Count)
+        lock (_lock)
         {
-            // All the directories are old enough so raise the ReadyToScan event
-            var args = new FileSystemWatcherEventArgs(DirectoriesToScan);
-            var handler = ReadyToScan;
-            handler?.Invoke(this, args);
+            //select the directories that are old enough now
+            // raise event for them only
+            // remove them from our list and set another timer
+            var dirsToRaiseEventFor = DirectoriesToScan.Where(
+                d => d.ModifiedDateTime.AddMilliseconds(MinimumAgeBeforeScanEventRaised) < DateTime.Now).ToArray();
+
+            if (dirsToRaiseEventFor.Any())
+            {
+                var collection = new BlockingCollection<FileSystemEntry>();
+
+                while (DirectoriesToScan.TryTake(out var dir))
+                {
+                    if (!dirsToRaiseEventFor.Contains(dir)) _ = collection.TryAdd(dir);
+                }
+
+                foreach (var d in collection)
+                {
+                    DirectoriesToScan.Add(d);
+                }
+
+                //  raise the ReadyToScan event for directories that are old enough
+                var args = new FileSystemWatcherEventArgs(dirsToRaiseEventFor);
+                var handler = ReadyToScan;
+                handler?.Invoke(this, args);
+            }
         }
         if (DirectoriesToScan.Count > 0 || FileSystemChanges.Count > 0) scanDirectoriesTimer.Start();
         Utils.TraceOut();
@@ -508,6 +529,13 @@ internal sealed class FileSystemWatcherEventArgs : EventArgs
     internal FileSystemWatcherEventArgs(string directory)
     {
         Directories = new FileSystemEntry[] { new(directory) };
+    }
+
+    internal FileSystemWatcherEventArgs(FileSystemEntry[] directoriesToScan)
+    {
+        Utils.TraceIn();
+        Directories = directoriesToScan;
+        Utils.TraceOut();
     }
 
     internal FileSystemWatcherEventArgs(BlockingCollection<FileSystemEntry> directoriesToScan)

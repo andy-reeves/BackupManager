@@ -134,6 +134,7 @@
             oldestBackupDiskTextBox = new System.Windows.Forms.TextBox();
             label16 = new System.Windows.Forms.Label();
             scanDirectoryComboBox = new System.Windows.Forms.ComboBox();
+            videoCodecCheckButton = new System.Windows.Forms.Button();
             pushoverGroupBox.SuspendLayout();
             groupBox2.SuspendLayout();
             listFilesInDirectoryGroupBox.SuspendLayout();
@@ -1291,11 +1292,24 @@
             scanDirectoryComboBox.Size = new System.Drawing.Size(163, 23);
             scanDirectoryComboBox.TabIndex = 42;
             // 
+            // videoCodecCheckButton
+            // 
+            videoCodecCheckButton.Location = new System.Drawing.Point(831, 448);
+            videoCodecCheckButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            videoCodecCheckButton.Name = "videoCodecCheckButton";
+            videoCodecCheckButton.Size = new System.Drawing.Size(234, 27);
+            videoCodecCheckButton.TabIndex = 102;
+            videoCodecCheckButton.Text = "Check all files for correct Video Codec";
+            toolTip.SetToolTip(videoCodecCheckButton, "Checks any file with [DV] in the path for Profile5. Can take 20 secs per file");
+            videoCodecCheckButton.UseVisualStyleBackColor = true;
+            videoCodecCheckButton.Click += videoCodecCheckButton_Click;
+            // 
             // Main
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1416, 548);
+            Controls.Add(videoCodecCheckButton);
             Controls.Add(createNewBackupDiskButton);
             Controls.Add(button2);
             Controls.Add(directoryScanReportLastRunOnlyButton);
@@ -1484,6 +1498,7 @@
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Button createNewBackupDiskButton;
         private System.Windows.Forms.Button listBackupDiskStatusByFreeSpaceButton;
+        private System.Windows.Forms.Button videoCodecCheckButton;
     }
 }
 

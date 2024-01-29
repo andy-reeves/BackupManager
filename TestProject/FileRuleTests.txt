@@ -204,13 +204,13 @@
 17.12 | T | True  | "\\nas1\assets4\_Movies\Aliens (1986)\Aliens (1986) {tmdb-679} [Remux-2160p][HDR10][AC3 5.1][h265].mkv"
 17.13 | T | True  | "\\nas1\assets4\_Movies\Guy Ritchies The Covenant (2023)\Guy Ritchies The Covenant (2023) {tmdb-882569} [WEBDL-2160p][HDR10Plus][EAC3 Atmos 5.1][h265].es.srt"
 17.14 | T | True  | "\\nas1\assets4\_Movies\Guy Ritchies The Covenant (2023)\Guy Ritchies The Covenant (2023) {tmdb-882569} [WEBDL-2160p][HDR10Plus][EAC3 Atmos 5.1][h265].mkv"
-17.15 | T | True  | "\\nas1\assets4\_Movies\Extraction 2 (2023)\Extraction 2 (2023) {tmdb-697843} [WEBDL-1080p][DV HDR10Plus][EAC3 Atmos 5.1][HEVC].mkv"
-17.16 | T | True  | "\\nas1\assets4\_Movies\Extraction 2 (2023)\Extraction 2 (2023) {tmdb-697843} [WEBDL-1080p][DV][EAC3 Atmos 4.0][HEVC].mkv"
-17.17 | T | True  | "\\nas5\assets3\_Movies\Tootsie (1982)\Tootsie (1982) {tmdb-9576} [Remux-1080p][DTS-X 8.0][AVC].mkv"
+17.15 | T | False | "\\nas1\assets4\_Movies\Extraction 2 (2023)\Extraction 2 (2023) {tmdb-697843} [WEBDL-1080p][DV HDR10Plus][EAC3 Atmos 5.1][HEVC].mkv"
+17.16 | T | True  | "\\nas1\assets4\_Movies\Extraction 2 (2023)\Extraction 2 (2023) {tmdb-697843} [WEBDL-1080p][DV][EAC3 Atmos 4.0][h265].mkv"
+17.17 | T | True  | "\\nas5\assets3\_Movies\Tootsie (1982)\Tootsie (1982) {tmdb-9576} [Remux-1080p][DTS-X 8.0][h264].mkv"
 17.18 | T | False | "\\nas1\assets4\_Movies\The 4th Man (1983)\The 4th Man (1983) {tmdb-29140} [DVD][AC3 2.0][].en.srt"
 17.19 | T | False | "\\nas1\assets4\_Movies\Angelique The Road To Versailles (1965)\Angelique The Road To Versailles (1965) {tmdb-44453} [Bluray-1080p]][x264].en.srt"
 17.20 | T | False | "\\nas2\assets2\_Movies\A Murder of Crows (1999)\A Murder of Crows (1999) {tmdb-17263} [HDTV-1080p][MP3 2.0][].avi"
-17.21 | T | True  | "\\nas3\assets2\_Movies\Creature from the Black Lagoon (1954)\Creature from the Black Lagoon (1954) {tmdb-10973} [Remux-1080p][3D][DTS-HD MA 2.0][AVC].mkv"  
+17.21 | T | False | "\\nas3\assets2\_Movies\Creature from the Black Lagoon (1954)\Creature from the Black Lagoon (1954) {tmdb-10973} [Remux-1080p][3D][DTS-HD MA 2.0][AVC].mkv"  
 17.22 | T | True  | "\\nas4\assets1\_Movies\LEGO Marvel Avengers Time Twisted (2022)\LEGO Marvel Avengers Time Twisted (2022) {tmdb-940543} [WEBDL-1080p][Opus 2.0][VP9].mkv"
 17.23 | T | False | "\\nas3\assets4\_Movies\Apocalypse Now (1979)\Apocalypse Now (1979) {tmdb-28} {edition-FINAL CUT} [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][h265].1.es.srt"
 17.24 | T | False | "\\nas3\assets4\_Movies (non-tmdb)\12 Angry Men (1957)\12 Angry Men (1957) {tmdb-389} {edition-CRITERION COLLECTION} [Remux-1080p].es.srt"
@@ -255,7 +255,7 @@
 17.64 | T | True  | "\\nas4\assets1\_Movies\Blood Brothers (1989)\Blood Brothers (1989) [SDTV][AAC 2.0][h264].mp4"
 17.65 | T | True  | "\\nas2\assets2\_Movies\A Murder of Crows (1999)\A Murder of Crows (1999) {tmdb-17263} [HDTV-1080p][MP3 2.0][MPEG4].avi"
 17.66 | T | True  | "\\nas2\assets2\_Movies\12 Angry Men (1957)-other\12 Angry Men (1957)-other {tmdb-389} {edition-CRITERION COLLECTION} [Remux-1080p][PCM 1.0][h264].mkv"
-17.67 | T | True  | "\\nas5\assets3\_Movies\Seven Samurai (1954)\Seven Samurai (1954) {tmdb-346} [Remux-2160p][HLG][FLAC 1.0][HEVC].mkv"
+17.67 | T | True  | "\\nas5\assets3\_Movies\Seven Samurai (1954)\Seven Samurai (1954) {tmdb-346} [Remux-2160p][HLG][FLAC 1.0][h265].mkv"
 17.68 | T | True  | "\\nas1\assets4\_Movies\Aliens (1986)\Aliens (1986) {tmdb-679} [Remux-2160p][DV][AC3 5.1][h265].mkv"
 
 
@@ -304,7 +304,7 @@
 19.30 | T | True  | "\\nas4\assets1\_TV\Curfew {tvdb-79556}\Season 1\Curfew s01e01 Episode 1 [HDTV-720p][Vorbis 6.0][x264].mkv"
 19.31 | T | True  | "\\nas4\assets1\_TV\Curfew {tvdb-79556}\Season 1\Curfew s01e01 Episode 1 [HDTV-720p][Vorbis 6.0][x264]-TdarrCacheFile-fwefefwf.mkv"
 
-# All video files must not contain [DV] in the path
+# All video files that contain [DV] in the path need to be checked manually for DV Profile 5
 
 20.1  | D | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv"
 20.2  | D | True  | "Z:\_TV (non-tvdb)\The Queen's Christmas Broadcast\Season 1\The Queen's Christmas Broadcast s01e2015 2015 [HDTV-720p].mp4"

@@ -84,7 +84,7 @@ public sealed class MediaInfoTests
         // Format settings, CABAC                   : Yes
         // Format settings, Reference frames        : 2 frames
         // Codec ID                                 : V_MPEG4/ISO/AVC
-        mediaFileName = Path.Combine(testDataPath, "File8 [Bluray-1080p Remux][DTS-HD MA 5.1][AVC].mkv");
+        mediaFileName = Path.Combine(testDataPath, "File8 [Bluray-1080p Remux][DTS-HD MA 5.1][h264].mkv");
         mediaFileNameOutputIfRenamed = mediaFileName;
         Assert.True(File.Exists(mediaFileName));
         Assert.False(Utils.RenameVideoCodec(mediaFileName, out _));
@@ -111,7 +111,7 @@ public sealed class MediaInfoTests
         // Format profile                           : Main@L4@Main
         // Codec ID                                 : V_MPEGH/ISO/HEVC
         mediaFileName = Path.Combine(testDataPath, "File6 [WEBDL-1080p][EAC3 5.1][h264].mkv");
-        mediaFileNameOutputIfRenamed = Path.Combine(testDataPath, "File6 [WEBDL-1080p][EAC3 5.1][x265].mkv");
+        mediaFileNameOutputIfRenamed = Path.Combine(testDataPath, "File6 [WEBDL-1080p][EAC3 5.1][h265].mkv");
         Assert.True(File.Exists(mediaFileName));
         Assert.True(Utils.RenameVideoCodec(mediaFileName, out newPath));
         Assert.False(File.Exists(mediaFileName));
@@ -128,7 +128,7 @@ public sealed class MediaInfoTests
         // Format/Info                              : High Efficiency Video Coding
         // Format profile                           : Main@L4@Main
         // Codec ID                                 : V_MPEGH/ISO/HEVC
-        mediaFileName = Path.Combine(testDataPath, "File7 [WEBDL-1080p][EAC3 5.1][x265].mkv");
+        mediaFileName = Path.Combine(testDataPath, "File7 [WEBDL-1080p][EAC3 5.1][h265].mkv");
         mediaFileNameOutputIfRenamed = mediaFileName;
         Assert.True(File.Exists(mediaFileName));
         Assert.False(Utils.RenameVideoCodec(mediaFileName, out _));

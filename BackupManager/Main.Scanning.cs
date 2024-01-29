@@ -108,7 +108,7 @@ internal sealed partial class Main
                 if (file.Length > Utils.MAX_PATH)
                 {
                     Utils.LogWithPushover(BackupAction.ProcessFiles,
-                        $"{file} is has a path longer than 256 characters. Please rename manually.");
+                        $"{file} has a path longer than 256 characters. Please rename manually.");
                     return Utils.TraceOut(false);
                 }
 
@@ -171,8 +171,8 @@ internal sealed partial class Main
                 break;
             }
 
-            if (config.DirectoriesRenameVideoFilesOnOff && File.Exists(file) && Utils.IsFileAccessible(file) &&
-                Utils.RenameVideoCodec(file, out var newFile))
+            if (config.DirectoriesRenameVideoFilesOnOff && File.Exists(file) && Utils.FileIsVideo(file) &&
+                Utils.IsFileAccessible(file) && Utils.RenameVideoCodec(file, out var newFile))
             {
                 Utils.LogWithPushover(BackupAction.ProcessFiles, $"{file} rename required for video codec to {newFile}");
 

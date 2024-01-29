@@ -1129,4 +1129,36 @@ internal sealed partial class Main : Form
     {
         return mediaBackup.BackupFiles.Any(f => f.BackupDiskNumber == diskNumber);
     }
+
+    private void videoCodecCheckButton_Click(object sender, EventArgs e)
+    {
+        string[] specialFeatures =
+        {
+            "-featurette", "-other", "-interview", "-scene", "-short", "-deleted", "-behindthescenes", "-trailer"
+        };
+
+        foreach (var file in mediaBackup.BackupFiles)
+        {
+            if (Utils.FileIsVideo(file.FullPath) && (file.FullPath.Contains("_TV") || file.FullPath.Contains("_Movies")))
+            {
+                if (file.FullPath.ContainsAny(specialFeatures)) continue;
+
+                var c = Utils.GetVideoCodecFromFileName(file.FullPath, out var videoCodecFromFileName);
+                var a = Utils.GetVideoCodec(file.FullPath, out var actualVideoCodec);
+                if (!c) continue;
+
+                if (!a)
+                {
+                    Utils.Log($"Couldn't get video code for {file.FullPath}");
+                    continue;
+                }
+
+                if (videoCodecFromFileName != actualVideoCodec)
+                {
+                    Utils.Log(
+                        $"VideoCodec to change for {file.FullPath}. Was {videoCodecFromFileName} and should be {actualVideoCodec}");
+                }
+            }
+        }
+    }
 }

@@ -147,8 +147,12 @@ public sealed class MediaBackup
                 if (!mediaBackup.indexFolderAndRelativePath.ContainsKey(backupFile.Hash))
                     mediaBackup.indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
                 else
-                    throw new ApplicationException(string.Format(Resources.DuplicateContentsHashCode, backupFile.FileName));
+                {
+                    var otherFile = mediaBackup.indexFolderAndRelativePath[backupFile.Hash];
 
+                    throw new ApplicationException(string.Format(Resources.DuplicateContentsHashCode, backupFile.FileName) +
+                                                   $" at {backupFile.FullPath} and {otherFile.FullPath}");
+                }
                 if (!backupFile.DiskChecked.HasValue() || !backupFile.Disk.HasValue()) backupFile.ClearDiskChecked();
             }
             var directoryName = new FileInfo(path).DirectoryName;
@@ -251,14 +255,14 @@ public sealed class MediaBackup
     }
 
     /// <summary>
-    ///     Gets a BackupFile representing the file from the contents Hashcode provided
+    ///     Gets a BackupFile representing the file from the contents Hashcode provided. Doesn't check files marked Deleted
     /// </summary>
     /// <param name="value">The contents Hashcode of the file to find.</param>
     /// <returns>Null if it wasn't found or null if more than 1</returns>
     public BackupFile GetBackupFileFromContentsHashcode(string value)
     {
         Utils.TraceIn();
-        var count = BackupFiles.Count(a => a.ContentsHash == value);
+        var count = BackupFiles.Count(a => a.ContentsHash == value && !a.Deleted);
 
         switch (count)
         {
@@ -268,7 +272,7 @@ public sealed class MediaBackup
                 Utils.Trace(string.Format(Resources.DuplicateContentsHashCode, value));
                 return Utils.TraceOut<BackupFile>("exit2");
         }
-        var file = BackupFiles.First(q => q.ContentsHash == value);
+        var file = BackupFiles.First(q => q.ContentsHash == value && !q.Deleted);
         return Utils.TraceOut(file);
     }
 

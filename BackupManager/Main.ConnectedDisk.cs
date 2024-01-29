@@ -246,10 +246,12 @@ internal sealed partial class Main
                 var hashToCheck = Utils.GetShortMd5HashFromFile(backupFileFullPath);
                 var file = mediaBackup.GetBackupFileFromContentsHashcode(hashToCheck);
 
-                if (file != null && file.Length != 0 && file.Disk.HasValue() && file.Disk != "-1")
+                if (file != null && file.Length != 0 && file.Disk.HasValue())
                 {
                     var destFileName = file.BackupDiskFullPath(disk.BackupPath);
-                    Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Renaming {backupFileFullPath} to {destFileName}");
+
+                    // TODO put back after next full disk check Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Renaming {backupFileFullPath} to {destFileName}");
+                    Utils.Log(BackupAction.CheckBackupDisk, $"Renaming {backupFileFullPath} to {destFileName}");
 
                     if (File.Exists(destFileName))
                     {

@@ -19,6 +19,11 @@ namespace BackupManager.Extensions;
 [SuppressMessage("ReSharper", "UnusedMember.Global")]
 internal static partial class StringExtensions
 {
+    public static bool ContainsAny(this string haystack, params string[] needles)
+    {
+        return needles.Any(haystack.Contains);
+    }
+
     public static string WrapInSquareBrackets(this string text)
     {
         return $"[{text}]";
