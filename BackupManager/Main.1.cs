@@ -298,17 +298,26 @@ internal sealed partial class Main
 
     private void UpdateMediaFilesCountDisplay()
     {
-        var backupFilesWithoutDeleted = mediaBackup.GetBackupFiles(false).ToArray();
+        try
+        {
+            var backupFilesWithoutDeleted = mediaBackup.GetBackupFiles(false).ToArray();
 
-        var backupFilesWithDiskEmpty = mediaBackup.BackupFiles
-            .Where(static p => (string.IsNullOrEmpty(p.Disk) || p.Disk == "-1") && !p.Deleted).ToArray();
-        var backupFilesMarkedAsDeleted = mediaBackup.GetBackupFilesMarkedAsDeleted(false).ToArray();
-        totalFilesTextBox.TextWithInvoke(backupFilesWithoutDeleted.Length.ToString("N0"));
-        totalFilesSizeTextBox.TextWithInvoke(Utils.FormatSize(backupFilesWithoutDeleted.Sum(static y => y.Length)));
-        notOnABackupDiskTextBox.TextWithInvoke(backupFilesWithDiskEmpty.Length.ToString("N0"));
-        notOnABackupDiskSizeTextBox.TextWithInvoke(Utils.FormatSize(backupFilesWithDiskEmpty.Sum(static y => y.Length)));
-        filesMarkedAsDeletedTextBox.TextWithInvoke(backupFilesMarkedAsDeleted.Length.ToString("N0"));
-        filesMarkedAsDeletedSizeTextBox.TextWithInvoke(Utils.FormatSize(backupFilesMarkedAsDeleted.Sum(static y => y.Length)));
+            var backupFilesWithDiskEmpty = mediaBackup.BackupFiles
+                .Where(static p => (string.IsNullOrEmpty(p.Disk) || p.Disk == "-1") && !p.Deleted).ToArray();
+            var backupFilesMarkedAsDeleted = mediaBackup.GetBackupFilesMarkedAsDeleted(false).ToArray();
+            totalFilesTextBox.TextWithInvoke(backupFilesWithoutDeleted.Length.ToString("N0"));
+            totalFilesSizeTextBox.TextWithInvoke(Utils.FormatSize(backupFilesWithoutDeleted.Sum(static y => y.Length)));
+            notOnABackupDiskTextBox.TextWithInvoke(backupFilesWithDiskEmpty.Length.ToString("N0"));
+            notOnABackupDiskSizeTextBox.TextWithInvoke(Utils.FormatSize(backupFilesWithDiskEmpty.Sum(static y => y.Length)));
+            filesMarkedAsDeletedTextBox.TextWithInvoke(backupFilesMarkedAsDeleted.Length.ToString("N0"));
+
+            filesMarkedAsDeletedSizeTextBox.TextWithInvoke(
+                Utils.FormatSize(backupFilesMarkedAsDeleted.Sum(static y => y.Length)));
+        }
+        catch (InvalidOperationException)
+        {
+            // if collections are modified by checking the disk then we cant update the UI here
+        }
     }
 
     private void StartFileSystemWatchers()
