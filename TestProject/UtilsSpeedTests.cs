@@ -42,4 +42,3 @@ public sealed class UtilsSpeedTests
         Assert.False(File.Exists(@"c:\speedtest\1test.tmp"));
     }
 }
-

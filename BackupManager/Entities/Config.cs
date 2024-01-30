@@ -83,6 +83,11 @@ public sealed class Config
     public bool DirectoriesRenameVideoFilesOnOff { get; set; }
 
     /// <summary>
+    ///     Whether to check video files are named corrected and rename them if not when doing full scans
+    /// </summary>
+    public bool DirectoriesRenameVideoFilesForFullScansOnOff { get; set; }
+
+    /// <summary>
     ///     If an error occurs whilst monitoring Directories we wait for this long before attempting to Reset the Watcher in
     ///     seconds (120)
     /// </summary>

@@ -447,7 +447,7 @@ internal static partial class Utils
         {
             var hashSource = GetShortMd5HashFromFile(sourceFileName);
 
-            while (!IsFileAccessible(destFileName) || GetShortMd5HashFromFile(destFileName) != hashSource)
+            while (!FileIsAccessible(destFileName) || GetShortMd5HashFromFile(destFileName) != hashSource)
             {
                 Wait(1);
                 if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
@@ -542,7 +542,7 @@ internal static partial class Utils
         // InvalidOperationException is thrown if we access the Process and its already completed
         catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
         {
-            while (!IsFileAccessible(path))
+            while (!FileIsAccessible(path))
             {
                 Wait(1);
             }
@@ -1002,7 +1002,7 @@ internal static partial class Utils
     internal static string GetShortMd5HashFromFile(string path)
     {
         TraceIn(path);
-        if (string.IsNullOrEmpty(path) || !File.Exists(path) || !IsFileAccessible(path)) return null;
+        if (string.IsNullOrEmpty(path) || !File.Exists(path) || !FileIsAccessible(path)) return null;
 
         var size = new FileInfo(path).Length;
         if (size == 0) return string.Empty;
@@ -1070,6 +1070,8 @@ internal static partial class Utils
         if (!File.Exists(path)) throw new FileNotFoundException("File not found", path);
 
         if (!FileIsVideo(path)) return TraceOut(false);
+
+        if (!FileIsAccessible(path)) throw new NotSupportedException("File is not accessible");
 
         var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(path);
         var directoryName = Path.GetDirectoryName(path);
@@ -2424,7 +2426,7 @@ internal static partial class Utils
     /// </summary>
     /// <param name="path"></param>
     /// <returns>True if not locked or False if locked</returns>
-    internal static bool IsFileAccessible(string path)
+    internal static bool FileIsAccessible(string path)
     {
         try
         {

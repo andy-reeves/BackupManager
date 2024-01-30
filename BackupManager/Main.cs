@@ -696,7 +696,7 @@ internal sealed partial class Main : Form
             }
             ResetTokenSource();
             DisableControlsForAsyncTasks(mainCt);
-            ReadyToScan(e, SearchOption.TopDirectoryOnly, mainCt);
+            ReadyToScan(e, SearchOption.TopDirectoryOnly, true, mainCt);
             ResetAllControls();
         }
         finally
@@ -705,7 +705,8 @@ internal sealed partial class Main : Form
         }
     }
 
-    private void ReadyToScan(FileSystemWatcherEventArgs e, SearchOption searchOption, CancellationToken ct)
+    private void ReadyToScan(FileSystemWatcherEventArgs e, SearchOption searchOption, bool scanPathForVideoCodec,
+        CancellationToken ct)
     {
         try
         {
@@ -728,7 +729,7 @@ internal sealed partial class Main : Form
                 var fileCountInDirectoryBefore = mediaBackup.BackupFiles.Count(b =>
                     b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase));
 
-                if (ScanSingleDirectory(directoryToScan.Path, searchOption, ct))
+                if (ScanSingleDirectory(directoryToScan.Path, searchOption, scanPathForVideoCodec, ct))
                 {
                     UpdateSymbolicLinkForDirectory(directoryToScan.Path);
 

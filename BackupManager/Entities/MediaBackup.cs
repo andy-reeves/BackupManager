@@ -284,7 +284,7 @@ public sealed class MediaBackup
     public BackupFile GetBackupFile(string fullPath)
     {
         Utils.TraceIn(fullPath);
-        if (!File.Exists(fullPath) || !Utils.IsFileAccessible(fullPath)) return null;
+        if (!File.Exists(fullPath) || !Utils.FileIsAccessible(fullPath)) return null;
 
         if (!GetFoldersForPath(fullPath, out var directory, out var relativePath))
             throw new ArgumentException(Resources.MediaBackup_UnableToDetermineDirectoryOrRelativePath, nameof(fullPath));

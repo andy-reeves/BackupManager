@@ -26,9 +26,11 @@ internal sealed partial class Main
     /// </summary>
     /// <param name="directoryToCheck">The full path to scan</param>
     /// <param name="searchOption">Whether to search subdirectories</param>
+    /// <param name="scanPathForVideoCodec"></param>
     /// <param name="ct"></param>
     /// <returns>True if the scan was successful otherwise False. Returns True if the directories doesn't exist</returns>
-    private bool ScanSingleDirectory(string directoryToCheck, SearchOption searchOption, CancellationToken ct)
+    private bool ScanSingleDirectory(string directoryToCheck, SearchOption searchOption, bool scanPathForVideoCodec,
+        CancellationToken ct)
     {
         Utils.TraceIn(directoryToCheck, searchOption);
         if (!Directory.Exists(directoryToCheck)) return Utils.TraceOut(true);
@@ -39,7 +41,7 @@ internal sealed partial class Main
         var subDirectoryText = searchOption == SearchOption.TopDirectoryOnly ? "directories only" : "and subdirectories";
         Utils.Trace($"{directoryToCheck} {subDirectoryText}");
         var scanId = Guid.NewGuid().ToString();
-        return ProcessFiles(files, scanId, ct);
+        return ProcessFiles(files, scanId, scanPathForVideoCodec, ct);
     }
 
     /// <summary>
@@ -47,9 +49,11 @@ internal sealed partial class Main
     /// </summary>
     /// <param name="filesParam"></param>
     /// <param name="scanId"></param>
+    /// <param name="scanPathForVideoCodec"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    private bool ProcessFiles(IReadOnlyCollection<string> filesParam, string scanId, CancellationToken ct)
+    private bool ProcessFiles(IReadOnlyCollection<string> filesParam, string scanId, bool scanPathForVideoCodec,
+        CancellationToken ct)
     {
         Utils.TraceIn();
         DisableControlsForAsyncTasks(ct);
@@ -64,10 +68,10 @@ internal sealed partial class Main
 
         // One process thread for each disk
         tasks.AddRange(diskNames.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam)).Select(files =>
-            TaskWrapper(Task.Run(() => ProcessFilesInternal(files, scanId, ct), ct), ct)));
+            TaskWrapper(Task.Run(() => ProcessFilesInternal(files, scanId, scanPathForVideoCodec, ct), ct), ct)));
 
         // this is to have only 1 thread processing files
-        // tasks.Add(TaskWrapper(Task.Run(() => ProcessFilesInternal(filesParam.ToArray(), scanId, ct), ct), ct));
+        // tasks.Add(TaskWrapper(Task.Run(() => ProcessFilesInternal(filesParam.ToArray(), scanId, scanPathForVideoCodec, ct), ct), ct));
         Task.WhenAll(tasks).Wait(ct);
         var returnValue = !tasks.Any(static t => !t.Result);
         if (returnValue) Utils.LogWithPushover(BackupAction.ProcessFiles, Resources.Main_Completed, true, true);
@@ -81,8 +85,10 @@ internal sealed partial class Main
     /// </summary>
     /// <param name="filesParam"></param>
     /// <param name="scanId"></param>
+    /// <param name="scanPathForVideoCodec"></param>
     /// <param name="ct"></param>
-    private bool ProcessFilesInternal(IEnumerable<string> filesParam, string scanId, CancellationToken ct)
+    private bool ProcessFilesInternal(IEnumerable<string> filesParam, string scanId, bool scanPathForVideoCodec,
+        CancellationToken ct)
     {
         Utils.TraceIn();
 
@@ -116,7 +122,7 @@ internal sealed partial class Main
                 {
                     Utils.LogWithPushover(BackupAction.ProcessFiles, $"{file} has a fixed space so renaming it");
 
-                    if (Utils.IsFileAccessible(file))
+                    if (Utils.FileIsAccessible(file))
                         file = Utils.RenameFileToRemoveFixedSpaces(file);
                     else
                     {
@@ -124,6 +130,17 @@ internal sealed partial class Main
                         return Utils.TraceOut(false);
                     }
                 }
+
+                if (config.DirectoriesRenameVideoFilesOnOff && scanPathForVideoCodec && File.Exists(file) &&
+                    Utils.FileIsVideo(file) && Utils.FileIsAccessible(file) && Utils.RenameVideoCodec(file, out var newFile))
+                {
+                    Utils.LogWithPushover(BackupAction.ProcessFiles, $"{file} rename required for video codec to {newFile}");
+
+                    // change the file to the newFile to continue processing
+                    file = newFile;
+                }
+                if (file == null) return Utils.TraceOut(false);
+
                 fileCounterForMultiThreadProcessing++;
                 if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
                 currentPercentComplete = fileCounterForMultiThreadProcessing * 100 / toolStripProgressBar.Maximum;
@@ -169,15 +186,6 @@ internal sealed partial class Main
 
                 // If a rule has failed then break to avoid multiple messages sent
                 break;
-            }
-
-            if (config.DirectoriesRenameVideoFilesOnOff && File.Exists(file) && Utils.FileIsVideo(file) &&
-                Utils.IsFileAccessible(file) && Utils.RenameVideoCodec(file, out var newFile))
-            {
-                Utils.LogWithPushover(BackupAction.ProcessFiles, $"{file} rename required for video codec to {newFile}");
-
-                // change the file to the newFile to continue processing
-                file = newFile;
             }
             if (!mediaBackup.EnsureFile(file)) return Utils.TraceOut(false);
         }
@@ -303,7 +311,7 @@ internal sealed partial class Main
         mediaBackup.Save(ct);
         mediaBackup.ClearFlags();
 
-        if (!ProcessFiles(fileBlockingCollection, scanId, ct))
+        if (!ProcessFiles(fileBlockingCollection, scanId, config.DirectoriesRenameVideoFilesForFullScansOnOff, ct))
         {
             Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal,
                 Resources.Main_ScanDirectoriesAsync_Scan_Directories_failed);
@@ -349,7 +357,9 @@ internal sealed partial class Main
             if (longRunningActionExecutingRightNow) return;
 
             DisableControlsForAsyncTasks(ct);
-            ReadyToScan(new FileSystemWatcherEventArgs(directory), SearchOption.AllDirectories, ct);
+
+            ReadyToScan(new FileSystemWatcherEventArgs(directory), SearchOption.AllDirectories,
+                config.DirectoriesRenameVideoFilesForFullScansOnOff, ct);
             ResetAllControls();
         }
         finally
@@ -369,7 +379,7 @@ internal sealed partial class Main
             var files = mediaBackup.BackupFiles.Where(static file => !file.Deleted).Select(static file => file.FullPath).ToList();
             var scanId = Guid.NewGuid().ToString();
             mediaBackup.ClearFlags();
-            if (ProcessFiles(files, scanId, token)) mediaBackup.Save(token);
+            if (ProcessFiles(files, scanId, config.DirectoriesRenameVideoFilesForFullScansOnOff, token)) mediaBackup.Save(token);
             ResetAllControls();
         }
         finally
