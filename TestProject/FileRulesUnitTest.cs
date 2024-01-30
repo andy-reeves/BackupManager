@@ -91,5 +91,3 @@ public sealed class FileRulesUnitTest
         }
     }
 }
-
-// #endif
