@@ -138,8 +138,8 @@
       
 14.1  | D | True  | "X:\_TV\Chernobyl {tdb-360893}\Season 1\Chernobyl s01e01 12345 [Bluray-2160p Remux]-other.mkv"
 14.2  | D | True  | "X:\_TV\Chernobyl {tdb-360893}\Chernobyl s01e01 12345 [Bluray-2160p Remux]-other.mkv"
-14.3  | D | True  | "X:\_TV\Chernobyl {tdb-360893}\Season 1\Chernobyl s01e01 12345 [Bluray-2160p Remux]-bobby.mkv"
-14.4  | D | True  | "X:\_TV\Chernobyl {tdb-360893}\Chernobyl s01e01 12345 [Bluray-2160p Remux]-bobby.mkv"
+14.3  | D | False | "X:\_TV\Chernobyl {tdb-360893}\Season 1\Chernobyl s01e01 12345 [Bluray-2160p Remux]-bobby.mkv"
+14.4  | D | False | "X:\_TV\Chernobyl {tdb-360893}\Chernobyl s01e01 12345 [Bluray-2160p Remux]-bobby.mkv"
 14.5  | D | False | "K:\_TV\American Horror Story {tvdb-250487}\Season 1\American Horror Story s01e01 Pilot [HDTV-720p].mkv"
 14.6  | D | False | "Z:\_TV\MasterChef Australia {tvdb-92091}\Season 7\MasterChef Australia s07e34 Off-site Challenge Tokyo Tina vs. Saigon Sally [SDTV].mp4"
 14.7  | D | True  | "Z:\_TV\MasterChef Australia {tvdb-92091}\Season 7\MasterChef Australia s07e34 Off-site Challenge Tokyo Tina vs. Saigon Sally [SDTV]-other.mp4"
@@ -149,8 +149,9 @@
 14.11 | T | False | "Z:\_TV\MasterChef Australia {tvdb-92091}\Season 7\MasterChef Australia s07e34 Off-site Challenge Tokyo Tina vs. Saigon Sally [SDTV].mp4"
 14.12 | T | False | "Z:\_TV\MasterChef Australia {tvdb-92091}\Season 7\MasterChef Australia s07e34 Off-site Challenge Tokyo Tina vs. Saigon Sally [SDTV]-other.mp4"
 14.13 | D | False | "X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
-14.14 | D | True  | "X:\_TV (non-tvdb)\Blood Brothers (1989)\Example 1-behindscenes.mkv"
+14.14 | D | True  | "X:\_TV (non-tvdb)\Blood Brothers (1989)\Example 1-behindthescenes.mkv"
 14.15 | D | False | "X:\_Music\Blood Brothers (1989)\Example 1-behindscenes.mkv"
+14.16 | D | False | "\\nas5\assets2\_TV\The Bridge (2013) {tvdb-264085}\Season 1\The Bridge (2013) s01e13 The Crazy Place [Bluray-1080p][DTS 5.1][h264]-TdarrCacheFile-GWLejgTOOR.mkv"
 
 
 # Movies, Comedy, and Concerts files special features must be in the root folder of the movie with a correct suffix    

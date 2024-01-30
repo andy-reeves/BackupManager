@@ -97,7 +97,7 @@
       <Number>13</Number>
     </FileRule>
     <FileRule>
-      <FileDiscoveryRegEx>^.*\\_TV(\s\(non-tvdb\))?\\.*-[a-zA-Z]*\.(m(kv|p(4|e?g))|ts|avi)$</FileDiscoveryRegEx>
+      <FileDiscoveryRegEx>^.*\\_TV(\s\(non-tvdb\))?\\.*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer)\.(m(kv|p(4|e?g))|ts|avi)$</FileDiscoveryRegEx>
       <FileTestRegEx>^.*\\_TV(?:\s\(non-tvdb\))?\\.*\s{t(m|v)db-\d{1,7}?}\\[^\\]*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer)\.(m(kv|p(4|e?g))|avi)$</FileTestRegEx>
       <Message>TV files special features must be in the root folder of the show with a correct suffix</Message>
       <Name>Rule 14</Name>
