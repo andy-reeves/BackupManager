@@ -538,6 +538,7 @@ internal sealed class FileSystemWatcherEventArgs : EventArgs
         Utils.TraceOut();
     }
 
+    // ReSharper disable once UnusedMember.Global
     internal FileSystemWatcherEventArgs(BlockingCollection<FileSystemEntry> directoriesToScan)
     {
         Utils.TraceIn();

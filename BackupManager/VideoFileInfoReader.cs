@@ -17,7 +17,7 @@ namespace BackupManager;
 
 internal sealed class VideoFileInfoReader
 {
-    private const int CurrentMediaInfoSchemaRevision = 9;
+    private const int CURRENT_MEDIA_INFO_SCHEMA_REVISION = 9;
 
     private static readonly string[] _validHdrColourPrimaries = { "bt2020" };
 
@@ -97,7 +97,7 @@ internal sealed class VideoFileInfoReader
                     .Where(static l => l.IsNotNullOrWhiteSpace()).ToList(),
                 ScanType = "Progressive",
                 RawStreamData = ffprobeOutput,
-                SchemaRevision = CurrentMediaInfoSchemaRevision
+                SchemaRevision = CURRENT_MEDIA_INFO_SCHEMA_REVISION
             };
             if (analysis.Format.Tags?.TryGetValue("title", out var title) ?? false) mediaInfoModel.Title = title;
             FFProbeFrames frames = null;
@@ -130,12 +130,6 @@ internal sealed class VideoFileInfoReader
         return null;
     }
 
-    public TimeSpan? GetRunTime(string filename)
-    {
-        var info = GetMediaInfo(filename);
-        return info?.RunTime;
-    }
-
     private static TimeSpan GetBestRuntime(TimeSpan? audio, TimeSpan? video, TimeSpan general)
     {
         if (video.HasValue && video.Value.TotalMilliseconds != 0) return video.Value;
@@ -161,7 +155,8 @@ internal sealed class VideoFileInfoReader
         return pixelFormats.Find(x => x.Name == format);
     }
 
-    private static HdrFormat GetHdrFormat(int bitDepth, string colorPrimaries, string transferFunction, List<SideData> sideData)
+    private static HdrFormat GetHdrFormat(int bitDepth, string colorPrimaries, string transferFunction,
+        IReadOnlyCollection<SideData> sideData)
     {
         if (bitDepth < 10) return HdrFormat.None;
 

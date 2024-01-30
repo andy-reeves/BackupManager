@@ -62,7 +62,7 @@ public sealed class FileSystemWatcherTest5
         Utils.CreateFile(Path.Combine(monitoringPath2, "test2.txt"));
         Utils.CreateFile(Path.Combine(monitoringPath2, "subFolder", "test3.txt"));
         Utils.Wait(waitInMilliseconds);
-        Assert.True(test5EventsErrorCounter == 2);
+        Assert.Equal(2, test5EventsErrorCounter);
         Assert.True(watcher.Running);
         test5ExpectedEventFolderCount = 4;
         Utils.CreateFile(Path.Combine(monitoringPath1, "test1.txt"));
@@ -70,8 +70,8 @@ public sealed class FileSystemWatcherTest5
         Utils.CreateFile(Path.Combine(monitoringPath2, "subFolder", "test3.txt"));
         Utils.CreateFile(Path.Combine(monitoringPath3DeletedAfterABit, "test4.txt"));
         Utils.Wait(waitInMilliseconds);
-        Assert.True(test5EventsCounter == 1);
-        Assert.True(test5EventsErrorCounter == 2);
+        Assert.Equal(1, test5EventsCounter);
+        Assert.Equal(2, test5EventsErrorCounter);
         Assert.True(watcher.Running);
 
         // Stop everything

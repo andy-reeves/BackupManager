@@ -20,7 +20,7 @@ file static class Program
     private static readonly string _appGuid =
         ((GuidAttribute)Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(GuidAttribute), true)[0]).Value;
 
-    private static readonly Mutex _singleton = new(true, _appGuid + Utils._inDebugBuild);
+    private static readonly Mutex _singleton = new(true, _appGuid + Utils.InDebugBuild);
 
     /// <summary>
     ///     The main entry point for the application.
@@ -33,7 +33,7 @@ file static class Program
         {
             //there is already another instance running!
             //Application.Exit();
-            _ = MessageBox.Show(Resources.Program_Main_BackManager_is_already_running);
+            _ = MessageBox.Show(Resources.AlreadyRunning);
             Environment.Exit(-1);
         }
 

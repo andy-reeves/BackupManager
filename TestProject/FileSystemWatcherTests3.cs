@@ -55,7 +55,7 @@ public sealed class FileSystemWatcherTests3
         Utils.CreateFile(Path.Combine(monitoringPath2, "subFolder", "test3.txt"));
         Utils.CreateFile(Path.Combine(monitoringPath3DeletedAfterABit, "test4.txt"));
         Utils.Wait(waitInMilliseconds);
-        Assert.True(test3EventsCounter == 1);
+        Assert.Equal(1, test3EventsCounter);
         Assert.True(watcher.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));
         Assert.True(watcher.DirectoriesToScan.Count == 0, nameof(FileSystemWatcher.DirectoriesToScan.Count));
         Assert.True(watcher.Running);
@@ -79,7 +79,7 @@ public sealed class FileSystemWatcherTests3
         Utils.CreateFile(Path.Combine(monitoringPath2, "subFolder", "test3.txt"));
         Utils.CreateFile(Path.Combine(monitoringPath3DeletedAfterABit, "test4.txt"));
         Utils.Wait(waitInMilliseconds);
-        Assert.True(test3EventsCounter == 2);
+        Assert.Equal(2, test3EventsCounter);
 
         //delete a folder while we're monitoring it
         if (Directory.Exists(monitoringPath3DeletedAfterABit)) Directory.Delete(monitoringPath3DeletedAfterABit, true);
@@ -90,7 +90,7 @@ public sealed class FileSystemWatcherTests3
         Utils.CreateFile(Path.Combine(monitoringPath2, "test2.txt"));
         Utils.CreateFile(Path.Combine(monitoringPath2, "subFolder", "test3.txt"));
         Utils.Wait(waitInMilliseconds);
-        Assert.True(test3EventsErrorCounter == 1);
+        Assert.Equal(1, test3EventsErrorCounter);
         Assert.False(watcher.Running);
 
         // should fail to restart because a folder is missing now
@@ -107,13 +107,13 @@ public sealed class FileSystemWatcherTests3
         Utils.CreateFile(Path.Combine(monitoringPath2, "subFolder", "test3.txt"));
         Utils.CreateFile(Path.Combine(monitoringPath3DeletedAfterABit, "test4.txt"));
         Utils.Wait(waitInMilliseconds);
-        Assert.True(test3EventsCounter == 3);
-        Assert.True(test3EventsErrorCounter == 1);
+        Assert.Equal(3, test3EventsCounter);
+        Assert.Equal(1, test3EventsErrorCounter);
         Assert.True(watcher.Running);
         _ = watcher.Stop();
         Assert.False(watcher.Running);
-        Assert.True(watcher.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));
-        Assert.True(watcher.DirectoriesToScan.Count == 0, nameof(FileSystemWatcher.DirectoriesToScan.Count));
+        Assert.Empty(watcher.FileSystemChanges);
+        Assert.Empty(watcher.DirectoriesToScan);
 
         //Unhook event handlers
         watcher.ReadyToScan -= FileSystemWatcher_ReadyToScan3;

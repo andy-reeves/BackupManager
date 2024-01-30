@@ -21,8 +21,8 @@ internal sealed partial class Main
             if (longRunningActionExecutingRightNow) return;
 
             DisableControlsForAsyncTasks(ct);
-            Utils.LogWithPushover(BackupAction.ScheduledBackup, Resources.Main_Started, false, true);
-            UpdateStatusLabel(ct, string.Format(Resources.Main_Scanning, string.Empty));
+            Utils.LogWithPushover(BackupAction.ScheduledBackup, Resources.Started, false, true);
+            UpdateStatusLabel(ct, string.Format(Resources.Scanning, string.Empty));
 
             if (mediaBackup.Config.MonitoringOnOff)
             {
@@ -60,7 +60,7 @@ internal sealed partial class Main
             // Copy any files that need a backup
             CopyFiles(true, ct);
             Utils.Trace($"TriggerHour={_trigger.TriggerHour}");
-            Utils.LogWithPushover(BackupAction.ScheduledBackup, Resources.Main_Completed, true);
+            Utils.LogWithPushover(BackupAction.ScheduledBackup, Resources.Completed, true);
             ResetAllControls();
         }
         finally

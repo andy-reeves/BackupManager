@@ -36,7 +36,7 @@ internal sealed partial class Main
         if (!Directory.Exists(directoryToCheck)) return Utils.TraceOut(true);
 
         Utils.LogWithPushover(BackupAction.ScanDirectory, $"{directoryToCheck}", false, true);
-        UpdateStatusLabel(ct, string.Format(Resources.Main_Scanning, directoryToCheck));
+        UpdateStatusLabel(ct, string.Format(Resources.Scanning, directoryToCheck));
         var files = Utils.GetFiles(directoryToCheck, mediaBackup.GetFilters(), searchOption, ct);
         var subDirectoryText = searchOption == SearchOption.TopDirectoryOnly ? "directories only" : "and subdirectories";
         Utils.Trace($"{directoryToCheck} {subDirectoryText}");
@@ -74,7 +74,7 @@ internal sealed partial class Main
         // tasks.Add(TaskWrapper(Task.Run(() => ProcessFilesInternal(filesParam.ToArray(), scanId, scanPathForVideoCodec, ct), ct), ct));
         Task.WhenAll(tasks).Wait(ct);
         var returnValue = !tasks.Any(static t => !t.Result);
-        if (returnValue) Utils.LogWithPushover(BackupAction.ProcessFiles, Resources.Main_Completed, true, true);
+        if (returnValue) Utils.LogWithPushover(BackupAction.ProcessFiles, Resources.Completed, true, true);
         UpdateMediaFilesCountDisplay();
         ResetAllControls();
         return Utils.TraceOut(returnValue);
@@ -204,7 +204,7 @@ internal sealed partial class Main
         oldestBackupDiskTextBox.TextWithInvoke(oldestFile.Disk);
         var days = DateTime.Today.Subtract(DateTime.Parse(oldestFile.DiskChecked)).Days;
 
-        oldestBackupDiskAgeTextBox.TextWithInvoke(string.Format(Resources.Main_UpdateOldestBackupDiskNDaysAgo, days,
+        oldestBackupDiskAgeTextBox.TextWithInvoke(string.Format(Resources.UpdateOldestBackupDiskNDaysAgo, days,
             days == 1 ? string.Empty : "s"));
         Utils.TraceOut();
     }
@@ -219,7 +219,7 @@ internal sealed partial class Main
 
         if (mediaBackup.Config.SpeedTestOnOff)
         {
-            UpdateStatusLabel(ct, string.Format(Resources.Main_SpeedTesting, rootDirectory));
+            UpdateStatusLabel(ct, string.Format(Resources.SpeedTesting, rootDirectory));
 
             Utils.DiskSpeedTest(rootDirectory, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize),
                 mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed, ct);
@@ -250,7 +250,7 @@ internal sealed partial class Main
 
         if (freeSpaceOnRootDirectoryDisk < Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumCriticalSpace))
             Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"Free space on {rootDirectory} is too low");
-        UpdateStatusLabel(ct, string.Format(Resources.Main_Scanning, rootDirectory));
+        UpdateStatusLabel(ct, string.Format(Resources.Scanning, rootDirectory));
 
         // Check for files in this root directories 
         var files = Utils.GetFiles(rootDirectory, filters, SearchOption.TopDirectoryOnly, ct);
@@ -275,8 +275,8 @@ internal sealed partial class Main
             if (longRunningActionExecutingRightNow) return;
 
             DisableControlsForAsyncTasks(ct);
-            Utils.LogWithPushover(BackupAction.ScanDirectory, Resources.Main_Started, false, true);
-            UpdateStatusLabel(ct, string.Format(Resources.Main_Scanning, string.Empty));
+            Utils.LogWithPushover(BackupAction.ScanDirectory, Resources.Started, false, true);
+            UpdateStatusLabel(ct, string.Format(Resources.Scanning, string.Empty));
             ScanAllDirectories(false, ct);
             ResetAllControls();
         }
@@ -313,8 +313,7 @@ internal sealed partial class Main
 
         if (!ProcessFiles(fileBlockingCollection, scanId, config.DirectoriesRenameVideoFilesForFullScansOnOff, ct))
         {
-            Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal,
-                Resources.Main_ScanDirectoriesAsync_Scan_Directories_failed);
+            Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, Resources.ScanDirectoriesFailed);
         }
         var filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag).ToArray();
         RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out _, out _);
@@ -333,9 +332,9 @@ internal sealed partial class Main
             var directoryScan = new DirectoryScan(DirectoryScanType.GetFiles, directory, DateTime.Now, scanId);
 
             Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal,
-                string.Format(Resources.Main_Scanning, directory));
+                string.Format(Resources.Scanning, directory));
             if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
-            UpdateStatusLabel(ct, string.Format(Resources.Main_Scanning, directory));
+            UpdateStatusLabel(ct, string.Format(Resources.Scanning, directory));
             var files = Utils.GetFiles(directory, filters, SearchOption.AllDirectories, ct);
             directoryScan.EndDateTime = DateTime.Now;
 

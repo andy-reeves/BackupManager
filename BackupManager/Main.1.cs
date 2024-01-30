@@ -80,7 +80,7 @@ internal sealed partial class Main
             InitializeComponent();
             TraceConfiguration.Register();
 
-            if (Utils._inDebugBuild)
+            if (Utils.InDebugBuild)
             {
                 _ = Trace.Listeners.Add(new TextWriterTraceListener(
                     Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"),
@@ -94,10 +94,10 @@ internal sealed partial class Main
             config = mediaBackup.Config;
             Utils.Config = config;
             backupDiskTextBox.Text = config.BackupDisk;
-            if (Utils.IsRunningAsAdmin()) Text += Resources.Main_AdminTitle;
+            if (Utils.IsRunningAsAdmin()) Text += Resources.AdminTitle;
             UpdateMediaFilesCountDisplay();
             Utils.LogHeader();
-            Utils.LogWithPushover(BackupAction.General, "BackupManager started", false, true);
+            Utils.LogWithPushover(BackupAction.General, Resources.BackupManagerStarted, false, true);
             config.LogParameters();
             var directoriesArray = config.Directories.ToArray();
             listDirectoriesComboBox.Items.AddRange(directoriesArray.ToArray<object>());
@@ -107,7 +107,7 @@ internal sealed partial class Main
 
             foreach (var file in mediaBackup.BackupFiles.Where(static file => file.FullPath.Length > Utils.MAX_PATH))
             {
-                Utils.Log($"{file.FullPath} is longer than 256 characters");
+                Utils.Log(string.Format(Resources.PathIsLongerThan256Characters, file.FullPath));
             }
 
             foreach (var disk in mediaBackup.BackupDisks)
@@ -158,7 +158,7 @@ internal sealed partial class Main
         }
         catch (Exception ex)
         {
-            _ = MessageBox.Show(string.Format(Resources.Main_ExceptionOccured, ex));
+            _ = MessageBox.Show(string.Format(Resources.ExceptionOccured, ex));
             Environment.Exit(0);
         }
     }
@@ -183,8 +183,8 @@ internal sealed partial class Main
     private void UpdateSymbolicLinks(CancellationToken ct)
     {
         Utils.TraceIn();
-        Utils.LogWithPushover(BackupAction.CheckingSymbolicLinks, Resources.Main_Started, false, true);
-        UpdateStatusLabel(ct, Resources.Main_Started);
+        Utils.LogWithPushover(BackupAction.CheckingSymbolicLinks, Resources.Started, false, true);
+        UpdateStatusLabel(ct, Resources.Started);
         HashSet<string> hashSet = new();
 
         // HashSet of parent paths that match the RegEx's from config
@@ -220,11 +220,11 @@ internal sealed partial class Main
             {
                 percentCompleteReported = percentCompleteCurrent;
 
-                Utils.LogWithPushover(BackupAction.CheckingSymbolicLinks, PushoverPriority.Normal,
-                    $"Checking broken links {percentCompleteCurrent}%");
+                Utils.LogWithPushover(BackupAction.CheckingSymbolicLinks,
+                    string.Format(Resources.CheckingBrokenLinks, percentCompleteCurrent));
             }
             var directoryToCheck = directoriesToCheck[i];
-            UpdateStatusLabel(ct, string.Format(Resources.Main_Checking, directoryToCheck), i);
+            UpdateStatusLabel(ct, string.Format(Resources.Checking, directoryToCheck), i);
             var linksDeleted = Utils.DeleteBrokenSymbolicLinks(directoryToCheck, true);
 
             foreach (var link in linksDeleted)
@@ -232,7 +232,7 @@ internal sealed partial class Main
                 Utils.Log($"Symbolic link {link} deleted");
             }
         }
-        Utils.LogWithPushover(BackupAction.CheckingSymbolicLinks, PushoverPriority.Normal, "Checking broken links completed.");
+        Utils.LogWithPushover(BackupAction.CheckingSymbolicLinks, Resources.Completed);
         EnableProgressBar(0, 100);
         var counter = 0;
         percentCompleteReported = 0;
@@ -242,19 +242,19 @@ internal sealed partial class Main
             if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
             counter++;
             percentCompleteCurrent = Convert.ToInt32(counter * 100 / hashSet.Count);
-            UpdateStatusLabel(ct, string.Format(Resources.Main_Checking, path), percentCompleteCurrent);
+            UpdateStatusLabel(ct, string.Format(Resources.Checking, path), percentCompleteCurrent);
 
             if (percentCompleteCurrent % 25 == 0 && percentCompleteCurrent > percentCompleteReported && hashSet.Count > 100)
             {
                 percentCompleteReported = percentCompleteCurrent;
 
                 Utils.LogWithPushover(BackupAction.CheckingSymbolicLinks, PushoverPriority.Normal,
-                    $"Updating {percentCompleteCurrent}%");
+                    string.Format(Resources.UpdatingPercentage, percentCompleteCurrent));
             }
             UpdateSymbolicLinkForDirectory(path);
         }
-        Utils.LogWithPushover(BackupAction.CheckingSymbolicLinks, Resources.Main_Completed, true);
-        UpdateStatusLabel(ct, Resources.Main_Completed);
+        Utils.LogWithPushover(BackupAction.CheckingSymbolicLinks, Resources.Completed, true);
+        UpdateStatusLabel(ct, Resources.Completed);
         Utils.TraceOut();
     }
 
@@ -344,7 +344,7 @@ internal sealed partial class Main
             else
             {
                 Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
-                    $"{directory} is not available or writable");
+                    string.Format(Resources.DirectoryNotAvailable, directory));
             }
         }
         mediaBackup.Watcher.Directories = writableDirectories.ToArray();
@@ -381,18 +381,21 @@ internal sealed partial class Main
 
         foreach (var disk in disks)
         {
-            Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Backup disks not checked in {numberOfDays} days - {disk.Disk}");
+            Utils.LogWithPushover(BackupAction.CheckBackupDisk,
+                string.Format(Resources.CheckForOldBackupDisks, numberOfDays, disk.Disk));
         }
 
         Utils.Log(BackupAction.General,
             !backupFiles.Any()
-                ? $"All files checked in last {config.BackupDiskDaysToReportSinceFilesChecked} days"
-                : $"Listing files not checked in {config.BackupDiskDaysToReportSinceFilesChecked} days");
+                ? string.Format(Resources.AllFilesCheckedInLastNDays, config.BackupDiskDaysToReportSinceFilesChecked)
+                : string.Format(Resources.ListingFilesNotCheckedInDays, config.BackupDiskDaysToReportSinceFilesChecked));
 
         foreach (var file in backupFiles)
         {
             var days = DateTime.Today.Subtract(DateTime.Parse(file.DiskChecked)).Days;
-            Utils.Log(BackupAction.General, $"{file.FullPath} - not checked in {days} day(s) on disk {file.Disk}");
+
+            Utils.Log(BackupAction.General,
+                string.Format(Resources.ListingFileNotCheckedInDaysOnDisk, file.FullPath, days, file.Disk));
         }
         Utils.TraceOut();
     }
@@ -401,8 +404,8 @@ internal sealed partial class Main
     {
         Utils.TraceIn();
 
-        pushoverOnOffButton.Text = string.Format(Resources.Main_SendingPushoverButton,
-            config.PushoverOnOff ? Resources.Main_ON : Resources.Main_OFF);
+        pushoverOnOffButton.Text = string.Format(Resources.SendingPushoverButton,
+            config.PushoverOnOff ? Resources.ON : Resources.OFF);
         Utils.TraceOut();
     }
 
@@ -410,8 +413,8 @@ internal sealed partial class Main
     {
         Utils.TraceIn();
 
-        fileWatcherButton.Text = string.Format(Resources.Main_FileWatchersButton,
-            config.DirectoriesFileChangeWatcherOnOff ? Resources.Main_ON : Resources.Main_OFF);
+        fileWatcherButton.Text = string.Format(Resources.FileWatchersButton,
+            config.DirectoriesFileChangeWatcherOnOff ? Resources.ON : Resources.OFF);
 
         if (config.DirectoriesFileChangeWatcherOnOff)
             StartFileSystemWatchers();
@@ -429,8 +432,8 @@ internal sealed partial class Main
         Utils.TraceIn();
 
         monitoringButton.TextWithInvoke(config.MonitoringOnOff
-            ? string.Format(Resources.Main_MonitoringButton, Resources.Main_ON)
-            : string.Format(Resources.Main_MonitoringButton, Resources.Main_OFF));
+            ? string.Format(Resources.MonitoringButton, Resources.ON)
+            : string.Format(Resources.MonitoringButton, Resources.OFF));
         Utils.TraceOut();
     }
 
@@ -438,8 +441,8 @@ internal sealed partial class Main
     {
         Utils.TraceIn();
 
-        speedTestDisksButton.TextWithInvoke(string.Format(Resources.Main_SpeedTestDisksButton,
-            config.SpeedTestOnOff ? Resources.Main_ON : Resources.Main_OFF));
+        speedTestDisksButton.TextWithInvoke(string.Format(Resources.SpeedTestDisksButton,
+            config.SpeedTestOnOff ? Resources.ON : Resources.OFF));
         Utils.TraceOut();
     }
 
@@ -447,8 +450,8 @@ internal sealed partial class Main
     {
         Utils.TraceIn();
 
-        scheduledBackupTimerButton.TextWithInvoke(string.Format(Resources.Main_UpdateScheduledBackupButton,
-            config.ScheduledBackupOnOff ? Resources.Main_ON : Resources.Main_OFF));
+        scheduledBackupTimerButton.TextWithInvoke(string.Format(Resources.UpdateScheduledBackupButton,
+            config.ScheduledBackupOnOff ? Resources.ON : Resources.OFF));
         Utils.TraceOut();
     }
 
@@ -460,20 +463,20 @@ internal sealed partial class Main
             if (longRunningActionExecutingRightNow) return;
 
             DisableControlsForAsyncTasks(ct);
-            Utils.LogWithPushover(BackupAction.SpeedTest, Resources.Main_Started, false, true);
+            Utils.LogWithPushover(BackupAction.SpeedTest, Resources.Started, false, true);
             EnableProgressBar(0, config.Directories.Count);
 
             for (var i = 0; i < config.Directories.Count; i++)
             {
                 var directory = config.Directories[i];
-                UpdateStatusLabel(ct, $"Speed testing {directory}", i + 1);
+                UpdateStatusLabel(ct, string.Format(Resources.SpeedTesting, directory), i + 1);
                 if (!Utils.IsDirectoryWritable(directory)) continue;
 
                 Utils.DiskSpeedTest(directory, Utils.ConvertMBtoBytes(config.SpeedTestFileSize), config.SpeedTestIterations,
                     out var readSpeed, out var writeSpeed, ct);
                 Utils.Log($"testing {directory}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
             }
-            Utils.LogWithPushover(BackupAction.SpeedTest, Resources.Main_Completed, true);
+            Utils.LogWithPushover(BackupAction.SpeedTest, Resources.Completed, true);
             ResetAllControls();
         }
         finally

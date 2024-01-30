@@ -38,6 +38,8 @@ public sealed class UtilsUnitTests
             Utils.EnsureDirectoriesForDirectoryPath(path1);
             Utils.CreateFile(file);
             const string shareName = "TestShare";
+            var tempShare2 = Win32Share.GetNamedShare(shareName);
+            _ = tempShare2?.Delete();
             Assert.True(Utils.ShareFolder(path1, shareName, "Test"));
             var domain = Environment.UserDomainName;
             Utils.AddPermissions(shareName, domain, "Everyone");

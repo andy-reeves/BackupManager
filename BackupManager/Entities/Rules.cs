@@ -40,7 +40,7 @@ public sealed class Rules
             if (serializer.Deserialize(stream) is not Rules rules) return null;
 
             if (rules.FileRules.Select(static x => x.Number).Distinct().Count() != rules.FileRules.Count)
-                throw new ArgumentException(Resources.Rules_DuplicateRuleNumber, nameof(path));
+                throw new ArgumentException(Resources.DuplicateRuleNumber, nameof(path));
 
             return rules;
         }

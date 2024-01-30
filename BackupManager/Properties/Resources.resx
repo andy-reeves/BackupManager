@@ -117,88 +117,88 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Main_AdminTitle" xml:space="preserve">
+  <data name="AdminTitle" xml:space="preserve">
     <value> - Admin</value>
   </data>
-  <data name="Main_ExceptionOccured" xml:space="preserve">
+  <data name="ExceptionOccured" xml:space="preserve">
     <value>Exception occurred during application start. {0}</value>
   </data>
-  <data name="Main_AreYouSureDelete" xml:space="preserve">
+  <data name="AreYouSureDelete" xml:space="preserve">
     <value>Are you sure you want delete any extra files on the backup disk not in our list?</value>
   </data>
-  <data name="Main_DeleteExtraTitle" xml:space="preserve">
+  <data name="DeleteExtraTitle" xml:space="preserve">
     <value>Delete extra files</value>
   </data>
   <data name="Main_RestoreFiles" xml:space="preserve">
     <value>Are you sure you want to copy files from multiple backup disks to the new directory location?</value>
   </data>
-  <data name="Main_RestoreFilesTitle" xml:space="preserve">
+  <data name="RestoreFilesTitle" xml:space="preserve">
     <value>Restore backup files</value>
   </data>
-  <data name="Main_RestoreFilesSelectDirectory" xml:space="preserve">
+  <data name="RestoreFilesSelectDirectory" xml:space="preserve">
     <value>You must select a directory that you'd like from backup disks restored for. This is typically the drive that is now failing</value>
   </data>
-  <data name="Main_RestoreFilesDirectoryToRestoreTo" xml:space="preserve">
+  <data name="RestoreFilesDirectoryToRestoreTo" xml:space="preserve">
     <value>You must select a directory that you'd like files from backup copied to. This is typically a new drive that will replace the failing drive</value>
   </data>
-  <data name="Main_Cancelling" xml:space="preserve">
+  <data name="Cancelling" xml:space="preserve">
     <value>Cancelling</value>
   </data>
-  <data name="Main_FileWatchersButton" xml:space="preserve">
+  <data name="FileWatchersButton" xml:space="preserve">
     <value>File Watchers = {0}</value>
   </data>
-  <data name="Main_FoldersQueued" xml:space="preserve">
+  <data name="DirectoriesQueued" xml:space="preserve">
     <value>There are directories to scan queued. Would you like to scan them before closing?</value>
   </data>
-  <data name="Main_ScanFoldersTitle" xml:space="preserve">
+  <data name="ScanFoldersTitle" xml:space="preserve">
     <value>Scan directories</value>
   </data>
-  <data name="Main_CorrectDiskPrompt" xml:space="preserve">
+  <data name="CorrectDiskPrompt" xml:space="preserve">
     <value>Please connect backup disk {0} so we can continue restoring files. Have you connected this disk now?</value>
   </data>
-  <data name="Main_CorrectDiskTitle" xml:space="preserve">
+  <data name="CorrectDiskTitle" xml:space="preserve">
     <value>Connect correct backup disk</value>
   </data>
-  <data name="Main_RecalculateAllHashes" xml:space="preserve">
+  <data name="RecalculateAllHashes" xml:space="preserve">
     <value>Are you sure you want to recalculate the hash codes from the master files?</value>
   </data>
-  <data name="Main_RecalculateAllHashesTitle" xml:space="preserve">
+  <data name="RecalculateAllHashesTitle" xml:space="preserve">
     <value>Recalculate hash codes</value>
   </data>
-  <data name="Main_BackupDiskError" xml:space="preserve">
+  <data name="BackupDiskError" xml:space="preserve">
     <value>There was an error checking the connected backup disk</value>
   </data>
-  <data name="Main_BackupDiskTitle" xml:space="preserve">
+  <data name="BackupDisk" xml:space="preserve">
     <value>Backup disk</value>
   </data>
-  <data name="Main_TaskWrapperException" xml:space="preserve">
+  <data name="TaskWrapperException" xml:space="preserve">
     <value>Exception occurred. Cancelling operation. {0}</value>
   </data>
-  <data name="Main_UpdateMasterFiles" xml:space="preserve">
+  <data name="UpdateMasterFiles" xml:space="preserve">
     <value>Are you sure you want to scan all the directories?</value>
   </data>
-  <data name="Main_UpdateMasterFilesTitle" xml:space="preserve">
+  <data name="UpdateMasterFilesTitle" xml:space="preserve">
     <value>Rebuild master list</value>
   </data>
-  <data name="Main_RecreateAllSymbolicLinks" xml:space="preserve">
+  <data name="RecreateAllSymbolicLinks" xml:space="preserve">
     <value>Are you sure you want to check all the symbolic links?</value>
   </data>
-  <data name="Main_SymbolicLinksTitle" xml:space="preserve">
+  <data name="SymbolicLinksTitle" xml:space="preserve">
     <value>Symbolic Links</value>
   </data>
-  <data name="BackupFile_The_fullPathNotCorrect" xml:space="preserve">
+  <data name="FullPathNotCorrect" xml:space="preserve">
     <value>The fullPath must start with the masterFolder and indexFolder</value>
   </data>
   <data name="DirectoryNameNullOrEmpty" xml:space="preserve">
     <value>Directory is a null reference or an empty string</value>
   </data>
-  <data name="BackupFile_HashCodeNotNull" xml:space="preserve">
+  <data name="HashCodeNotNull" xml:space="preserve">
     <value>Hash code cannot be null</value>
   </data>
-  <data name="Rules_MissingFileRules" xml:space="preserve">
+  <data name="MissingFileRules" xml:space="preserve">
     <value>Missing file rules</value>
   </data>
-  <data name="Rules_DuplicateRuleNumber" xml:space="preserve">
+  <data name="DuplicateRuleNumber" xml:space="preserve">
     <value>Duplicate rule number detected in rules.xml</value>
   </data>
   <data name="InvalidDirName" xml:space="preserve">
@@ -213,7 +213,7 @@
   <data name="DirectoryEmpty" xml:space="preserve">
     <value>Directory is empty. Not supported</value>
   </data>
-  <data name="MediaBackup_UnableToDetermineDirectoryOrRelativePath" xml:space="preserve">
+  <data name="UnableToDetermineDirectoryOrRelativePath" xml:space="preserve">
     <value>Unable to determine Directory or Relative Path</value>
   </data>
   <data name="DuplicateHashCode" xml:space="preserve">
@@ -237,106 +237,136 @@
   <data name="DateTime_TimeFormat" xml:space="preserve">
     <value>h'h 'mm'm'</value>
   </data>
-  <data name="Main_Directory_scan_skipped" xml:space="preserve">
+  <data name="DirectoryScanSkipped" xml:space="preserve">
     <value>Directory scan skipped. It will be scanned again in {0}</value>
   </data>
-  <data name="Main_Saved" xml:space="preserve">
+  <data name="Saved" xml:space="preserve">
     <value>Saved.</value>
   </data>
-  <data name="Main_Checking" xml:space="preserve">
+  <data name="Checking" xml:space="preserve">
     <value>Checking {0}</value>
   </data>
-  <data name="Main_Completed" xml:space="preserve">
-    <value>Completed.</value>
-  </data>
-  <data name="Main_SendingPushoverButton" xml:space="preserve">
+  <data name="SendingPushoverButton" xml:space="preserve">
     <value>Sending = {0}</value>
   </data>
-  <data name="Main_MonitoringButton" xml:space="preserve">
+  <data name="MonitoringButton" xml:space="preserve">
     <value>Monitoring = {0}</value>
   </data>
-  <data name="Main_SpeedTestDisksButton" xml:space="preserve">
+  <data name="SpeedTestDisksButton" xml:space="preserve">
     <value>Speed Test Disks = {0}</value>
   </data>
-  <data name="Main_UpdateScheduledBackupButton" xml:space="preserve">
+  <data name="UpdateScheduledBackupButton" xml:space="preserve">
     <value>Backup = {0}</value>
   </data>
-  <data name="Main_ON" xml:space="preserve">
+  <data name="ON" xml:space="preserve">
     <value>ON</value>
   </data>
-  <data name="Main_OFF" xml:space="preserve">
+  <data name="OFF" xml:space="preserve">
     <value>OFF</value>
   </data>
-  <data name="Main_SpeedTesting" xml:space="preserve">
+  <data name="SpeedTesting" xml:space="preserve">
     <value>Speed testing {0}</value>
   </data>
-  <data name="Main_Scanning" xml:space="preserve">
+  <data name="Scanning" xml:space="preserve">
     <value>Scanning {0}</value>
   </data>
-  <data name="Main_Please_insert_the_next_backup_disk_now" xml:space="preserve">
+  <data name="PleaseInsertTheNextBackupDiskNow" xml:space="preserve">
     <value>Please insert the next backup disk now</value>
   </data>
-  <data name="Main_Copying" xml:space="preserve">
+  <data name="Copying" xml:space="preserve">
     <value>Copying {0}</value>
   </data>
-  <data name="Main_Skipping" xml:space="preserve">
+  <data name="Skipping" xml:space="preserve">
     <value>Skipping {0}</value>
   </data>
-  <data name="Main_Estimated_finish_by_" xml:space="preserve">
+  <data name="EstimatedFinishBy" xml:space="preserve">
     <value>. Estimated finish by </value>
   </data>
   <data name="DateTime_HHmm" xml:space="preserve">
     <value>HH:mm</value>
   </data>
-  <data name="Main_Estimated_finish_by_tomorrow_at_" xml:space="preserve">
+  <data name="EstimatedFinishByTomorrow" xml:space="preserve">
     <value>. Estimated finish by tomorrow at </value>
   </data>
-  <data name="Main_ScanFolders_Deleting_empty_folders_in__0_" xml:space="preserve">
+  <data name="DeletingEmptyDirectories" xml:space="preserve">
     <value>Deleting empty directories in {0}</value>
   </data>
-  <data name="Main_ScanDirectoriesAsync_Scan_Directories_failed" xml:space="preserve">
+  <data name="ScanDirectoriesFailed" xml:space="preserve">
     <value>Scan Directories Failed</value>
   </data>
-  <data name="Utils_Not_a_valid_application_name" xml:space="preserve">
+  <data name="NotValidApplicationName" xml:space="preserve">
     <value>Not a valid application name</value>
   </data>
-  <data name="Main_UpdateOldestBackupDiskNDaysAgo" xml:space="preserve">
+  <data name="UpdateOldestBackupDiskNDaysAgo" xml:space="preserve">
     <value>{0:n0} day{1} ago</value>
   </data>
-  <data name="Main_VersionCheckingButton_Click_" xml:space="preserve">
+  <data name="VersionCheckingButton" xml:space="preserve">
     <value>Version Checking = {0}</value>
   </data>
-  <data name="Program_Main_BackManager_is_already_running" xml:space="preserve">
+  <data name="AlreadyRunning" xml:space="preserve">
     <value>BackupManager is already running</value>
   </data>
-  <data name="Main_SetupBackupDisk_Backup_Disk" xml:space="preserve">
-    <value>Backup Disk</value>
-  </data>
-  <data name="Main_SetupBackupDisk_Can_t_find_a_valid_backup_share" xml:space="preserve">
+  <data name="NoValidBackupShare" xml:space="preserve">
     <value>Can't find a valid backup share</value>
   </data>
-  <data name="Fixed_space_inside" xml:space="preserve">
+  <data name="FixedSpace" xml:space="preserve">
     <value>Fixed space inside</value>
   </data>
-  <data name="Main_Started" xml:space="preserve">
+  <data name="Started" xml:space="preserve">
     <value>Started</value>
   </data>
-  <data name="Main_new_backup_disk_are_you_sure" xml:space="preserve">
+  <data name="PrepareNewBackupDiskAreYouSure" xml:space="preserve">
     <value>Are you sure you want to prepare a new backup disk?</value>
   </data>
-  <data name="Main_Create_new_disk" xml:space="preserve">
+  <data name="CreateNewDisk" xml:space="preserve">
     <value>Create new disk</value>
   </data>
-  <data name="Main_Click_Disk_is_not_empty" xml:space="preserve">
+  <data name="DiskNotEmpty" xml:space="preserve">
     <value>Disk is not empty. Please empty the disk before preparing for backup.</value>
   </data>
-  <data name="Main_Disk_not_empty" xml:space="preserve">
+  <data name="DiskNotEmptyTitle" xml:space="preserve">
     <value>Disk not empty</value>
   </data>
-  <data name="Utils_Unable_to_load_ffprobe_exe" xml:space="preserve">
+  <data name="UnableToLoadFFProbe" xml:space="preserve">
     <value>Unable to load ffprobe.exe for {0}</value>
   </data>
-  <data name="Utils_RenameVideoCodec_Failed_to_rename__0__to__1__as_it_already_exists" xml:space="preserve">
+  <data name="FileRenameFailed" xml:space="preserve">
     <value>Failed to rename {0} to {1} as it already exists</value>
+  </data>
+  <data name="FileIsNotAccessible" xml:space="preserve">
+    <value>File is not accessible</value>
+  </data>
+  <data name="FileNotFound" xml:space="preserve">
+    <value>File not found</value>
+  </data>
+  <data name="BackupManagerStarted" xml:space="preserve">
+    <value>BackupManager started</value>
+  </data>
+  <data name="PathIsLongerThan256Characters" xml:space="preserve">
+    <value>{0} is longer than 256 characters</value>
+  </data>
+  <data name="Completed" xml:space="preserve">
+    <value>Completed.</value>
+  </data>
+  <data name="CheckingBrokenLinks" xml:space="preserve">
+    <value>Checking broken links {0}%</value>
+  </data>
+  <data name="UpdatingPercentage" xml:space="preserve">
+    <value>Updating {0}%</value>
+  </data>
+  <data name="DirectoryNotAvailable" xml:space="preserve">
+    <value>{0} is not available or writable</value>
+  </data>
+  <data name="CheckForOldBackupDisks" xml:space="preserve">
+    <value>Backup disks not checked in {0} days - {1}</value>
+  </data>
+  <data name="AllFilesCheckedInLastNDays" xml:space="preserve">
+    <value>All files checked in last {0} days</value>
+  </data>
+  <data name="ListingFilesNotCheckedInDays" xml:space="preserve">
+    <value>Listing files not checked in {0} days</value>
+  </data>
+  <data name="ListingFileNotCheckedInDaysOnDisk" xml:space="preserve">
+    <value>{0} - not checked in {1} day(s) on disk {2}</value>
   </data>
 </root>

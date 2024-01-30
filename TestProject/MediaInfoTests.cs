@@ -38,6 +38,7 @@ public sealed class MediaInfoTests
 
     [Fact]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
+    [SuppressMessage("ReSharper", "CommentTypo")]
     public void RenameVideoFiles()
     {
         var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(UtilsUnitTests)), "TestData");
@@ -135,5 +136,3 @@ public sealed class MediaInfoTests
         Assert.True(File.Exists(mediaFileNameOutputIfRenamed));
     }
 }
-
-// #endif

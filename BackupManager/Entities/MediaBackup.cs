@@ -287,7 +287,7 @@ public sealed class MediaBackup
         if (!File.Exists(fullPath) || !Utils.FileIsAccessible(fullPath)) return null;
 
         if (!GetFoldersForPath(fullPath, out var directory, out var relativePath))
-            throw new ArgumentException(Resources.MediaBackup_UnableToDetermineDirectoryOrRelativePath, nameof(fullPath));
+            throw new ArgumentException(Resources.UnableToDetermineDirectoryOrRelativePath, nameof(fullPath));
         if (string.IsNullOrEmpty(directory)) throw new ArgumentException(Resources.DirectoryEmpty);
 
         // we hash the path of the file so we can look it up quickly

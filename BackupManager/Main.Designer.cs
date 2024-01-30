@@ -1302,7 +1302,7 @@
             videoCodecCheckButton.Text = "Check all files for correct Video Codec";
             toolTip.SetToolTip(videoCodecCheckButton, "Checks any file with [DV] in the path for Profile5. Can take 20 secs per file");
             videoCodecCheckButton.UseVisualStyleBackColor = true;
-            videoCodecCheckButton.Click += videoCodecCheckButton_Click;
+            videoCodecCheckButton.Click += VideoCodecCheckButton_Click;
             // 
             // Main
             // 

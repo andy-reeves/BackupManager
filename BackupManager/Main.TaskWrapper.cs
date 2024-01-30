@@ -23,13 +23,12 @@ internal sealed partial class Main
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
-            Utils.Trace(Resources.Main_Cancelling);
+            Utils.Trace(Resources.Cancelling);
             ASyncTasksCleanUp();
         }
         catch (Exception u)
         {
-            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
-                string.Format(Resources.Main_TaskWrapperException, u));
+            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High, string.Format(Resources.TaskWrapperException, u));
         }
         return false;
     }
@@ -44,13 +43,12 @@ internal sealed partial class Main
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
-            Utils.Trace(Resources.Main_Cancelling);
+            Utils.Trace(Resources.Cancelling);
             if (withAsyncTasksCleanup) ASyncTasksCleanUp();
         }
         catch (Exception u)
         {
-            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
-                string.Format(Resources.Main_TaskWrapperException, u));
+            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High, string.Format(Resources.TaskWrapperException, u));
         }
     }
 

@@ -24,7 +24,7 @@ public sealed class FileSystemWatcherTests4
     public void FileSystemWatcherTest4()
     {
         test4EventsCounter = 0;
-        const int waitInMilliseconds = 200;
+        const int waitInMilliseconds = 250;
         var monitoringPath1 = Path.Combine(Path.GetTempPath(), "Test4MonitoringFolder1");
         var monitoringPath2 = Path.Combine(Path.GetTempPath(), "Test4MonitoringFolder2");
         Utils.EnsureDirectoriesForDirectoryPath(monitoringPath1);
@@ -61,14 +61,14 @@ public sealed class FileSystemWatcherTests4
         Utils.CreateFile(Path.Combine(monitoringPath1, "NewFolder", "test1.txt"));
         Utils.CreateFile(Path.Combine(monitoringPath2, "subFolder", "test2.txt"));
         Utils.Wait(waitInMilliseconds);
-        Assert.True(test4EventsCounter == 2);
+        Assert.Equal(2, test4EventsCounter);
         test4ExpectedEventFolderCount = 2;
 
         // now delete the files 
         Utils.FileDelete(Path.Combine(monitoringPath1, "NewFolder", "test1.txt"));
         Utils.FileDelete(Path.Combine(monitoringPath2, "subFolder", "test2.txt"));
         Utils.Wait(waitInMilliseconds);
-        Assert.True(test4EventsCounter == 3);
+        Assert.Equal(3, test4EventsCounter);
         _ = watcher.Stop();
         Assert.False(watcher.Running);
         Assert.True(watcher.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));

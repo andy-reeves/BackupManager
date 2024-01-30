@@ -45,7 +45,7 @@ internal sealed partial class Main
             if (longRunningActionExecutingRightNow) return;
 
             DisableControlsForAsyncTasks(ct);
-            var nextDiskMessage = Resources.Main_Please_insert_the_next_backup_disk_now;
+            var nextDiskMessage = Resources.PleaseInsertTheNextBackupDiskNow;
 
             while (!ct.IsCancellationRequested)
             {
@@ -53,7 +53,7 @@ internal sealed partial class Main
 
                 if (lastBackupDiskChecked == null)
                 {
-                    _ = MessageBox.Show(Resources.Main_BackupDiskError, Resources.Main_BackupDiskTitle, MessageBoxButtons.OK);
+                    _ = MessageBox.Show(Resources.BackupDiskError, Resources.BackupDisk, MessageBoxButtons.OK);
                     continue;
                 }
                 if (copyFiles) CopyFiles(false, ct);
@@ -120,7 +120,7 @@ internal sealed partial class Main
         // force a recalculation of both the hashes to check the files can both be read correctly
         var disk = SetupBackupDisk(ct);
         var directoryToCheck = disk.BackupPath;
-        Utils.LogWithPushover(BackupAction.CheckBackupDisk, Resources.Main_Started, false, true);
+        Utils.LogWithPushover(BackupAction.CheckBackupDisk, Resources.Started, false, true);
         Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Checking {directoryToCheck}");
         UpdateStatusLabel(ct, $"Checking backup disk {directoryToCheck}");
         long readSpeed = 0, writeSpeed = 0;
@@ -130,7 +130,7 @@ internal sealed partial class Main
             var diskTestSize = disk.Free > Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize)
                 ? Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize)
                 : disk.Free - Utils.BYTES_IN_ONE_KILOBYTE;
-            UpdateStatusLabel(ct, string.Format(Resources.Main_SpeedTesting, directoryToCheck));
+            UpdateStatusLabel(ct, string.Format(Resources.SpeedTesting, directoryToCheck));
 
             Utils.DiskSpeedTest(directoryToCheck, diskTestSize, mediaBackup.Config.SpeedTestIterations, out readSpeed,
                 out writeSpeed, ct);
@@ -157,7 +157,7 @@ internal sealed partial class Main
             file.Disk = "-1"; // this is so we can reset them if we need to. DiskChecked is NOT cleared
         }
         UpdateMediaFilesCountDisplay();
-        UpdateStatusLabel(ct, string.Format(Resources.Main_Scanning, directoryToCheck));
+        UpdateStatusLabel(ct, string.Format(Resources.Scanning, directoryToCheck));
         var backupDiskFiles = Utils.GetFiles(directoryToCheck, "*", SearchOption.AllDirectories, FileAttributes.Hidden, ct);
         EnableProgressBar(0, backupDiskFiles.Length);
         var reportedPercent = 0;
@@ -168,7 +168,7 @@ internal sealed partial class Main
 
             var backupFileFullPath = backupDiskFiles[i];
             var backupFileIndexFolderRelativePath = backupFileFullPath[(directoryToCheck.Length + 1)..];
-            UpdateStatusLabel(string.Format(Resources.Main_Scanning, directoryToCheck), i + 1);
+            UpdateStatusLabel(string.Format(Resources.Scanning, directoryToCheck), i + 1);
             UpdateMediaFilesCountDisplay();
             var currentPercent = i * 100 / toolStripProgressBar.Maximum;
 
@@ -343,7 +343,7 @@ internal sealed partial class Main
                     $"{deletedFilesCount} files marked as deleted");
             }
             mediaBackup.Save(ct);
-            UpdateStatusLabel(Resources.Main_Saved);
+            UpdateStatusLabel(Resources.Saved);
 
             if (!diskInfoMessageWasTheLastSent)
             {
@@ -351,7 +351,7 @@ internal sealed partial class Main
                     $"Name: {disk.Name}\nTotal: {disk.CapacityFormatted}\nFree: {disk.FreeFormatted}\nFiles: {disk.TotalFiles:n0}";
                 Utils.LogWithPushover(BackupAction.CheckBackupDisk, text);
             }
-            Utils.LogWithPushover(BackupAction.CheckBackupDisk, Resources.Main_Completed, true);
+            Utils.LogWithPushover(BackupAction.CheckBackupDisk, Resources.Completed, true);
         }
         else
         {
@@ -382,8 +382,8 @@ internal sealed partial class Main
             Utils.LogWithPushover(BackupAction.Restore, PushoverPriority.High,
                 $"Connect new backup drive to restore from {backupDisk}");
 
-            var answer = MessageBox.Show(string.Format(Resources.Main_CorrectDiskPrompt, backupDisk),
-                Resources.Main_CorrectDiskTitle, MessageBoxButtons.YesNo);
+            var answer = MessageBox.Show(string.Format(Resources.CorrectDiskPrompt, backupDisk), Resources.CorrectDiskTitle,
+                MessageBoxButtons.YesNo);
 
             // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
             switch (answer)
@@ -415,7 +415,7 @@ internal sealed partial class Main
     private BackupDisk SetupBackupDisk(CancellationToken ct)
     {
         Utils.TraceIn();
-        var nextDiskMessage = Resources.Main_Please_insert_the_next_backup_disk_now;
+        var nextDiskMessage = Resources.PleaseInsertTheNextBackupDiskNow;
         var disk = mediaBackup.GetBackupDisk(backupDiskTextBox.Text);
 
         while (disk == null)
@@ -425,10 +425,7 @@ internal sealed partial class Main
         }
 
         if (!UpdateCurrentBackupDiskInfo(disk))
-        {
-            _ = MessageBox.Show(Resources.Main_SetupBackupDisk_Can_t_find_a_valid_backup_share,
-                Resources.Main_SetupBackupDisk_Backup_Disk, MessageBoxButtons.OK);
-        }
+            _ = MessageBox.Show(Resources.NoValidBackupShare, Resources.BackupDisk, MessageBoxButtons.OK);
         return Utils.TraceOut(disk);
     }
 }

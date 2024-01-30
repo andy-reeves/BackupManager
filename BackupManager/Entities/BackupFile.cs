@@ -44,8 +44,8 @@ public sealed class BackupFile : IEquatable<BackupFile>
     /// <param name="directory">The directory the file is in.</param>
     public BackupFile(string fullPath, string directory)
     {
-        if (Utils.StringContainsFixedSpace(fullPath)) throw new ArgumentException(Resources.Fixed_space_inside, fullPath);
-        if (Utils.StringContainsFixedSpace(directory)) throw new ArgumentException(Resources.Fixed_space_inside, directory);
+        if (Utils.StringContainsFixedSpace(fullPath)) throw new ArgumentException(Resources.FixedSpace, fullPath);
+        if (Utils.StringContainsFixedSpace(directory)) throw new ArgumentException(Resources.FixedSpace, directory);
 
         SetFullPath(fullPath, directory);
     }
@@ -250,7 +250,7 @@ public sealed class BackupFile : IEquatable<BackupFile>
     internal static string GetRelativePath(string fullPath, string directory)
     {
         return !fullPath.StartsWith(directory, StringComparison.CurrentCultureIgnoreCase)
-            ? throw new ArgumentException(Resources.BackupFile_The_fullPathNotCorrect, nameof(fullPath))
+            ? throw new ArgumentException(Resources.FullPathNotCorrect, nameof(fullPath))
             : fullPath.SubstringAfter(directory, StringComparison.CurrentCultureIgnoreCase).TrimStart(new[] { '\\' });
     }
 
@@ -260,8 +260,7 @@ public sealed class BackupFile : IEquatable<BackupFile>
     /// <exception cref="ApplicationException"></exception>
     private void UpdateContentsHash(string newContentsHash)
     {
-        contentsHash = newContentsHash ??
-                       throw new ArgumentNullException(nameof(newContentsHash), Resources.BackupFile_HashCodeNotNull);
+        contentsHash = newContentsHash ?? throw new ArgumentNullException(nameof(newContentsHash), Resources.HashCodeNotNull);
     }
 
     /// <summary>

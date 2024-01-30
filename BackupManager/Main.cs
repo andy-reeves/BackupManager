@@ -172,20 +172,19 @@ internal sealed partial class Main : Form
         // prompt for the back up disk to be inserted 
         // check we have it inserted
         // copy any files off this disk until we're all done to the new disk that we specified
-        if (MessageBox.Show(Resources.Main_RestoreFiles, Resources.Main_RestoreFilesTitle, MessageBoxButtons.YesNo) ==
+        if (MessageBox.Show(Resources.Main_RestoreFiles, Resources.RestoreFilesTitle, MessageBoxButtons.YesNo) ==
             DialogResult.Yes)
         {
             if (directoriesComboBox.SelectedItem == null)
             {
-                _ = MessageBox.Show(Resources.Main_RestoreFilesSelectDirectory, Resources.Main_RestoreFilesTitle,
-                    MessageBoxButtons.OK);
+                _ = MessageBox.Show(Resources.RestoreFilesSelectDirectory, Resources.RestoreFilesTitle, MessageBoxButtons.OK);
                 return;
             }
             var directory = directoriesComboBox.SelectedItem.ToString();
 
             if (restoreDirectoryComboBox.SelectedItem == null)
             {
-                _ = MessageBox.Show(Resources.Main_RestoreFilesDirectoryToRestoreTo, Resources.Main_RestoreFilesTitle,
+                _ = MessageBox.Show(Resources.RestoreFilesDirectoryToRestoreTo, Resources.RestoreFilesTitle,
                     MessageBoxButtons.OK);
                 return;
             }
@@ -206,8 +205,7 @@ internal sealed partial class Main : Form
                     //we need to check the correct disk is connected and prompt if not
                     if (!EnsureConnectedBackupDisk(file.Disk))
                     {
-                        _ = MessageBox.Show(Resources.Main_CorrectDiskTitle, Resources.Main_RestoreFilesTitle,
-                            MessageBoxButtons.OK);
+                        _ = MessageBox.Show(Resources.CorrectDiskTitle, Resources.RestoreFilesTitle, MessageBoxButtons.OK);
                         return;
                     }
 
@@ -417,7 +415,7 @@ internal sealed partial class Main : Form
             }
             else
             {
-                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, Resources.Main_Started, true);
+                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, Resources.Started, true);
                 MonitoringTimer_Tick(null, null);
             }
             monitoringTimer.Start();
@@ -567,8 +565,8 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         mainCancellationTokenSource.Cancel();
-        toolStripStatusLabel.Text = Resources.Main_Cancelling;
-        Utils.LogWithPushover(BackupAction.General, Resources.Main_Cancelling, true);
+        toolStripStatusLabel.Text = Resources.Cancelling;
+        Utils.LogWithPushover(BackupAction.General, Resources.Cancelling, true);
         if (Utils.CopyProcess != null && !Utils.CopyProcess.HasExited) Utils.CopyProcess?.Kill();
         Utils.TraceOut();
     }
@@ -762,7 +760,7 @@ internal sealed partial class Main : Form
                 }
                 else
                 {
-                    var text = string.Format(Resources.Main_Directory_scan_skipped,
+                    var text = string.Format(Resources.DirectoryScanSkipped,
                         Utils.FormatTimeFromSeconds(mediaBackup.Config.DirectoriesScanTimer));
                     Utils.LogWithPushover(BackupAction.ScanDirectory, text, true);
                     mediaBackup.Watcher.DirectoriesToScan.Add(directoryToScan, ct);
@@ -772,7 +770,7 @@ internal sealed partial class Main : Form
             if (toSave)
             {
                 mediaBackup.Save(ct);
-                UpdateStatusLabel(ct, Resources.Main_Saved);
+                UpdateStatusLabel(ct, Resources.Saved);
                 UpdateUI_Tick(null, null);
                 UpdateMediaFilesCountDisplay();
             }
@@ -860,8 +858,8 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
 
-        if (MessageBox.Show(Resources.Main_RecalculateAllHashes, Resources.Main_RecalculateAllHashesTitle,
-                MessageBoxButtons.YesNo) == DialogResult.Yes)
+        if (MessageBox.Show(Resources.RecalculateAllHashes, Resources.RecalculateAllHashesTitle, MessageBoxButtons.YesNo) ==
+            DialogResult.Yes)
         {
             foreach (var backupFile in mediaBackup.BackupFiles)
             {
@@ -877,8 +875,8 @@ internal sealed partial class Main : Form
         Utils.TraceIn();
         mediaBackup.Config.MonitoringCheckLatestVersions = !mediaBackup.Config.MonitoringCheckLatestVersions;
 
-        versionCheckingButton.Text = string.Format(Resources.Main_VersionCheckingButton_Click_,
-            mediaBackup.Config.MonitoringCheckLatestVersions ? Resources.Main_ON : Resources.Main_OFF);
+        versionCheckingButton.Text = string.Format(Resources.VersionCheckingButton,
+            mediaBackup.Config.MonitoringCheckLatestVersions ? Resources.ON : Resources.OFF);
         Utils.TraceOut();
     }
 
@@ -1002,7 +1000,7 @@ internal sealed partial class Main : Form
 
         foreach (var directory in directories)
         {
-            UpdateStatusLabel(ct, string.Format(Resources.Main_Scanning, directory));
+            UpdateStatusLabel(ct, string.Format(Resources.Scanning, directory));
 
             if (Directory.Exists(directory))
             {
@@ -1075,8 +1073,8 @@ internal sealed partial class Main : Form
 
         try
         {
-            if (MessageBox.Show(Resources.Main_new_backup_disk_are_you_sure, Resources.Main_Create_new_disk,
-                    MessageBoxButtons.YesNo) != DialogResult.Yes)
+            if (MessageBox.Show(Resources.PrepareNewBackupDiskAreYouSure, Resources.CreateNewDisk, MessageBoxButtons.YesNo) !=
+                DialogResult.Yes)
                 return;
 
             // get the next unused disk number
@@ -1092,7 +1090,7 @@ internal sealed partial class Main : Form
             if (directoryInfo.GetFileSystemInfos("*", SearchOption.TopDirectoryOnly)
                 .Where(static x => (x.Attributes & FileAttributes.Hidden) == 0).Any())
             {
-                _ = MessageBox.Show(Resources.Main_Click_Disk_is_not_empty, Resources.Main_Disk_not_empty, MessageBoxButtons.OK);
+                _ = MessageBox.Show(Resources.DiskNotEmpty, Resources.DiskNotEmptyTitle, MessageBoxButtons.OK);
                 return;
             }
             var i = 1;
@@ -1131,34 +1129,27 @@ internal sealed partial class Main : Form
         return mediaBackup.BackupFiles.Any(f => f.BackupDiskNumber == diskNumber);
     }
 
-    private void videoCodecCheckButton_Click(object sender, EventArgs e)
+    private void VideoCodecCheckButton_Click(object sender, EventArgs e)
     {
-        string[] specialFeatures =
+        foreach (var file in mediaBackup.BackupFiles
+                     .Where(static file => Utils.FileIsVideo(file.FullPath) &&
+                                           (file.FullPath.Contains("_TV") || file.FullPath.Contains("_Movies")))
+                     .Where(static file => !file.FullPath.ContainsAny(Utils.SpecialFeatures)))
         {
-            "-featurette", "-other", "-interview", "-scene", "-short", "-deleted", "-behindthescenes", "-trailer"
-        };
+            var c = Utils.GetVideoCodecFromFileName(file.FullPath, out var videoCodecFromFileName);
+            var a = Utils.GetVideoCodec(file.FullPath, out var actualVideoCodec);
+            if (!c) continue;
 
-        foreach (var file in mediaBackup.BackupFiles)
-        {
-            if (Utils.FileIsVideo(file.FullPath) && (file.FullPath.Contains("_TV") || file.FullPath.Contains("_Movies")))
+            if (!a)
             {
-                if (file.FullPath.ContainsAny(specialFeatures)) continue;
+                Utils.Log($"Couldn't get video code for {file.FullPath}");
+                continue;
+            }
 
-                var c = Utils.GetVideoCodecFromFileName(file.FullPath, out var videoCodecFromFileName);
-                var a = Utils.GetVideoCodec(file.FullPath, out var actualVideoCodec);
-                if (!c) continue;
-
-                if (!a)
-                {
-                    Utils.Log($"Couldn't get video code for {file.FullPath}");
-                    continue;
-                }
-
-                if (videoCodecFromFileName != actualVideoCodec)
-                {
-                    Utils.Log(
-                        $"VideoCodec to change for {file.FullPath}. Was {videoCodecFromFileName} and should be {actualVideoCodec}");
-                }
+            if (videoCodecFromFileName != actualVideoCodec)
+            {
+                Utils.Log(
+                    $"VideoCodec to change for {file.FullPath}. Was {videoCodecFromFileName} and should be {actualVideoCodec}");
             }
         }
     }

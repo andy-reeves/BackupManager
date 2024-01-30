@@ -71,7 +71,7 @@ public sealed class FileRulesUnitTest
 
             var ruleNumberTestNumber = cols[0];
             var a = ruleNumberTestNumber.Split(".");
-            Assert.True(a.Length == 2);
+            Assert.Equal(2, a.Length);
             var ruleNumber = Convert.ToInt32(a[0]);
             var testNumber = a[1];
             var testOrDiscovery = cols[1];

@@ -61,20 +61,146 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Hash code cannot be null.
+        ///   Looks up a localized string similar to  - Admin.
         /// </summary>
-        internal static string BackupFile_HashCodeNotNull {
+        internal static string AdminTitle {
             get {
-                return ResourceManager.GetString("BackupFile_HashCodeNotNull", resourceCulture);
+                return ResourceManager.GetString("AdminTitle", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The fullPath must start with the masterFolder and indexFolder.
+        ///   Looks up a localized string similar to All files checked in last {0} days.
         /// </summary>
-        internal static string BackupFile_The_fullPathNotCorrect {
+        internal static string AllFilesCheckedInLastNDays {
             get {
-                return ResourceManager.GetString("BackupFile_The_fullPathNotCorrect", resourceCulture);
+                return ResourceManager.GetString("AllFilesCheckedInLastNDays", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BackupManager is already running.
+        /// </summary>
+        internal static string AlreadyRunning {
+            get {
+                return ResourceManager.GetString("AlreadyRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want delete any extra files on the backup disk not in our list?.
+        /// </summary>
+        internal static string AreYouSureDelete {
+            get {
+                return ResourceManager.GetString("AreYouSureDelete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Backup disk.
+        /// </summary>
+        internal static string BackupDisk {
+            get {
+                return ResourceManager.GetString("BackupDisk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error checking the connected backup disk.
+        /// </summary>
+        internal static string BackupDiskError {
+            get {
+                return ResourceManager.GetString("BackupDiskError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BackupManager started.
+        /// </summary>
+        internal static string BackupManagerStarted {
+            get {
+                return ResourceManager.GetString("BackupManagerStarted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancelling.
+        /// </summary>
+        internal static string Cancelling {
+            get {
+                return ResourceManager.GetString("Cancelling", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Backup disks not checked in {0} days - {1}.
+        /// </summary>
+        internal static string CheckForOldBackupDisks {
+            get {
+                return ResourceManager.GetString("CheckForOldBackupDisks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Checking {0}.
+        /// </summary>
+        internal static string Checking {
+            get {
+                return ResourceManager.GetString("Checking", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Checking broken links {0}%.
+        /// </summary>
+        internal static string CheckingBrokenLinks {
+            get {
+                return ResourceManager.GetString("CheckingBrokenLinks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Completed..
+        /// </summary>
+        internal static string Completed {
+            get {
+                return ResourceManager.GetString("Completed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copying {0}.
+        /// </summary>
+        internal static string Copying {
+            get {
+                return ResourceManager.GetString("Copying", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please connect backup disk {0} so we can continue restoring files. Have you connected this disk now?.
+        /// </summary>
+        internal static string CorrectDiskPrompt {
+            get {
+                return ResourceManager.GetString("CorrectDiskPrompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connect correct backup disk.
+        /// </summary>
+        internal static string CorrectDiskTitle {
+            get {
+                return ResourceManager.GetString("CorrectDiskTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create new disk.
+        /// </summary>
+        internal static string CreateNewDisk {
+            get {
+                return ResourceManager.GetString("CreateNewDisk", resourceCulture);
             }
         }
         
@@ -115,6 +241,33 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete extra files.
+        /// </summary>
+        internal static string DeleteExtraTitle {
+            get {
+                return ResourceManager.GetString("DeleteExtraTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deleting empty directories in {0}.
+        /// </summary>
+        internal static string DeletingEmptyDirectories {
+            get {
+                return ResourceManager.GetString("DeletingEmptyDirectories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are directories to scan queued. Would you like to scan them before closing?.
+        /// </summary>
+        internal static string DirectoriesQueued {
+            get {
+                return ResourceManager.GetString("DirectoriesQueued", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Directory is empty. Not supported.
         /// </summary>
         internal static string DirectoryEmpty {
@@ -133,11 +286,47 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} is not available or writable.
+        /// </summary>
+        internal static string DirectoryNotAvailable {
+            get {
+                return ResourceManager.GetString("DirectoryNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Directory {0} not found.
         /// </summary>
         internal static string DirectoryNotFound {
             get {
                 return ResourceManager.GetString("DirectoryNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Directory scan skipped. It will be scanned again in {0}.
+        /// </summary>
+        internal static string DirectoryScanSkipped {
+            get {
+                return ResourceManager.GetString("DirectoryScanSkipped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disk is not empty. Please empty the disk before preparing for backup..
+        /// </summary>
+        internal static string DiskNotEmpty {
+            get {
+                return ResourceManager.GetString("DiskNotEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disk not empty.
+        /// </summary>
+        internal static string DiskNotEmptyTitle {
+            get {
+                return ResourceManager.GetString("DiskNotEmptyTitle", resourceCulture);
             }
         }
         
@@ -160,11 +349,101 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Duplicate rule number detected in rules.xml.
+        /// </summary>
+        internal static string DuplicateRuleNumber {
+            get {
+                return ResourceManager.GetString("DuplicateRuleNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to . Estimated finish by .
+        /// </summary>
+        internal static string EstimatedFinishBy {
+            get {
+                return ResourceManager.GetString("EstimatedFinishBy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to . Estimated finish by tomorrow at .
+        /// </summary>
+        internal static string EstimatedFinishByTomorrow {
+            get {
+                return ResourceManager.GetString("EstimatedFinishByTomorrow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exception occurred during application start. {0}.
+        /// </summary>
+        internal static string ExceptionOccured {
+            get {
+                return ResourceManager.GetString("ExceptionOccured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File is not accessible.
+        /// </summary>
+        internal static string FileIsNotAccessible {
+            get {
+                return ResourceManager.GetString("FileIsNotAccessible", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File not found.
+        /// </summary>
+        internal static string FileNotFound {
+            get {
+                return ResourceManager.GetString("FileNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to rename {0} to {1} as it already exists.
+        /// </summary>
+        internal static string FileRenameFailed {
+            get {
+                return ResourceManager.GetString("FileRenameFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File Watchers = {0}.
+        /// </summary>
+        internal static string FileWatchersButton {
+            get {
+                return ResourceManager.GetString("FileWatchersButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Fixed space inside.
         /// </summary>
-        internal static string Fixed_space_inside {
+        internal static string FixedSpace {
             get {
-                return ResourceManager.GetString("Fixed_space_inside", resourceCulture);
+                return ResourceManager.GetString("FixedSpace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The fullPath must start with the masterFolder and indexFolder.
+        /// </summary>
+        internal static string FullPathNotCorrect {
+            get {
+                return ResourceManager.GetString("FullPathNotCorrect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hash code cannot be null.
+        /// </summary>
+        internal static string HashCodeNotNull {
+            get {
+                return ResourceManager.GetString("HashCodeNotNull", resourceCulture);
             }
         }
         
@@ -196,254 +475,20 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to  - Admin.
+        ///   Looks up a localized string similar to {0} - not checked in {1} day(s) on disk {2}.
         /// </summary>
-        internal static string Main_AdminTitle {
+        internal static string ListingFileNotCheckedInDaysOnDisk {
             get {
-                return ResourceManager.GetString("Main_AdminTitle", resourceCulture);
+                return ResourceManager.GetString("ListingFileNotCheckedInDaysOnDisk", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Are you sure you want delete any extra files on the backup disk not in our list?.
+        ///   Looks up a localized string similar to Listing files not checked in {0} days.
         /// </summary>
-        internal static string Main_AreYouSureDelete {
+        internal static string ListingFilesNotCheckedInDays {
             get {
-                return ResourceManager.GetString("Main_AreYouSureDelete", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There was an error checking the connected backup disk.
-        /// </summary>
-        internal static string Main_BackupDiskError {
-            get {
-                return ResourceManager.GetString("Main_BackupDiskError", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Backup disk.
-        /// </summary>
-        internal static string Main_BackupDiskTitle {
-            get {
-                return ResourceManager.GetString("Main_BackupDiskTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cancelling.
-        /// </summary>
-        internal static string Main_Cancelling {
-            get {
-                return ResourceManager.GetString("Main_Cancelling", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Checking {0}.
-        /// </summary>
-        internal static string Main_Checking {
-            get {
-                return ResourceManager.GetString("Main_Checking", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Disk is not empty. Please empty the disk before preparing for backup..
-        /// </summary>
-        internal static string Main_Click_Disk_is_not_empty {
-            get {
-                return ResourceManager.GetString("Main_Click_Disk_is_not_empty", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Completed..
-        /// </summary>
-        internal static string Main_Completed {
-            get {
-                return ResourceManager.GetString("Main_Completed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Copying {0}.
-        /// </summary>
-        internal static string Main_Copying {
-            get {
-                return ResourceManager.GetString("Main_Copying", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Please connect backup disk {0} so we can continue restoring files. Have you connected this disk now?.
-        /// </summary>
-        internal static string Main_CorrectDiskPrompt {
-            get {
-                return ResourceManager.GetString("Main_CorrectDiskPrompt", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Connect correct backup disk.
-        /// </summary>
-        internal static string Main_CorrectDiskTitle {
-            get {
-                return ResourceManager.GetString("Main_CorrectDiskTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Create new disk.
-        /// </summary>
-        internal static string Main_Create_new_disk {
-            get {
-                return ResourceManager.GetString("Main_Create_new_disk", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Delete extra files.
-        /// </summary>
-        internal static string Main_DeleteExtraTitle {
-            get {
-                return ResourceManager.GetString("Main_DeleteExtraTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Directory scan skipped. It will be scanned again in {0}.
-        /// </summary>
-        internal static string Main_Directory_scan_skipped {
-            get {
-                return ResourceManager.GetString("Main_Directory_scan_skipped", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Disk not empty.
-        /// </summary>
-        internal static string Main_Disk_not_empty {
-            get {
-                return ResourceManager.GetString("Main_Disk_not_empty", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to . Estimated finish by .
-        /// </summary>
-        internal static string Main_Estimated_finish_by_ {
-            get {
-                return ResourceManager.GetString("Main_Estimated_finish_by_", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to . Estimated finish by tomorrow at .
-        /// </summary>
-        internal static string Main_Estimated_finish_by_tomorrow_at_ {
-            get {
-                return ResourceManager.GetString("Main_Estimated_finish_by_tomorrow_at_", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Exception occurred during application start. {0}.
-        /// </summary>
-        internal static string Main_ExceptionOccured {
-            get {
-                return ResourceManager.GetString("Main_ExceptionOccured", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to File Watchers = {0}.
-        /// </summary>
-        internal static string Main_FileWatchersButton {
-            get {
-                return ResourceManager.GetString("Main_FileWatchersButton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There are directories to scan queued. Would you like to scan them before closing?.
-        /// </summary>
-        internal static string Main_FoldersQueued {
-            get {
-                return ResourceManager.GetString("Main_FoldersQueued", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Monitoring = {0}.
-        /// </summary>
-        internal static string Main_MonitoringButton {
-            get {
-                return ResourceManager.GetString("Main_MonitoringButton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Are you sure you want to prepare a new backup disk?.
-        /// </summary>
-        internal static string Main_new_backup_disk_are_you_sure {
-            get {
-                return ResourceManager.GetString("Main_new_backup_disk_are_you_sure", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to OFF.
-        /// </summary>
-        internal static string Main_OFF {
-            get {
-                return ResourceManager.GetString("Main_OFF", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to ON.
-        /// </summary>
-        internal static string Main_ON {
-            get {
-                return ResourceManager.GetString("Main_ON", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Please insert the next backup disk now.
-        /// </summary>
-        internal static string Main_Please_insert_the_next_backup_disk_now {
-            get {
-                return ResourceManager.GetString("Main_Please_insert_the_next_backup_disk_now", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Are you sure you want to recalculate the hash codes from the master files?.
-        /// </summary>
-        internal static string Main_RecalculateAllHashes {
-            get {
-                return ResourceManager.GetString("Main_RecalculateAllHashes", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Recalculate hash codes.
-        /// </summary>
-        internal static string Main_RecalculateAllHashesTitle {
-            get {
-                return ResourceManager.GetString("Main_RecalculateAllHashesTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Are you sure you want to check all the symbolic links?.
-        /// </summary>
-        internal static string Main_RecreateAllSymbolicLinks {
-            get {
-                return ResourceManager.GetString("Main_RecreateAllSymbolicLinks", resourceCulture);
+                return ResourceManager.GetString("ListingFilesNotCheckedInDays", resourceCulture);
             }
         }
         
@@ -457,236 +502,254 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You must select a directory that you&apos;d like files from backup copied to. This is typically a new drive that will replace the failing drive.
+        ///   Looks up a localized string similar to Missing file rules.
         /// </summary>
-        internal static string Main_RestoreFilesDirectoryToRestoreTo {
+        internal static string MissingFileRules {
             get {
-                return ResourceManager.GetString("Main_RestoreFilesDirectoryToRestoreTo", resourceCulture);
+                return ResourceManager.GetString("MissingFileRules", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You must select a directory that you&apos;d like from backup disks restored for. This is typically the drive that is now failing.
+        ///   Looks up a localized string similar to Monitoring = {0}.
         /// </summary>
-        internal static string Main_RestoreFilesSelectDirectory {
+        internal static string MonitoringButton {
             get {
-                return ResourceManager.GetString("Main_RestoreFilesSelectDirectory", resourceCulture);
+                return ResourceManager.GetString("MonitoringButton", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Restore backup files.
+        ///   Looks up a localized string similar to Not a valid application name.
         /// </summary>
-        internal static string Main_RestoreFilesTitle {
+        internal static string NotValidApplicationName {
             get {
-                return ResourceManager.GetString("Main_RestoreFilesTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Saved..
-        /// </summary>
-        internal static string Main_Saved {
-            get {
-                return ResourceManager.GetString("Main_Saved", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Scan Directories Failed.
-        /// </summary>
-        internal static string Main_ScanDirectoriesAsync_Scan_Directories_failed {
-            get {
-                return ResourceManager.GetString("Main_ScanDirectoriesAsync_Scan_Directories_failed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Deleting empty directories in {0}.
-        /// </summary>
-        internal static string Main_ScanFolders_Deleting_empty_folders_in__0_ {
-            get {
-                return ResourceManager.GetString("Main_ScanFolders_Deleting_empty_folders_in__0_", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Scan directories.
-        /// </summary>
-        internal static string Main_ScanFoldersTitle {
-            get {
-                return ResourceManager.GetString("Main_ScanFoldersTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Scanning {0}.
-        /// </summary>
-        internal static string Main_Scanning {
-            get {
-                return ResourceManager.GetString("Main_Scanning", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Sending = {0}.
-        /// </summary>
-        internal static string Main_SendingPushoverButton {
-            get {
-                return ResourceManager.GetString("Main_SendingPushoverButton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Backup Disk.
-        /// </summary>
-        internal static string Main_SetupBackupDisk_Backup_Disk {
-            get {
-                return ResourceManager.GetString("Main_SetupBackupDisk_Backup_Disk", resourceCulture);
+                return ResourceManager.GetString("NotValidApplicationName", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Can&apos;t find a valid backup share.
         /// </summary>
-        internal static string Main_SetupBackupDisk_Can_t_find_a_valid_backup_share {
+        internal static string NoValidBackupShare {
             get {
-                return ResourceManager.GetString("Main_SetupBackupDisk_Can_t_find_a_valid_backup_share", resourceCulture);
+                return ResourceManager.GetString("NoValidBackupShare", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OFF.
+        /// </summary>
+        internal static string OFF {
+            get {
+                return ResourceManager.GetString("OFF", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ON.
+        /// </summary>
+        internal static string ON {
+            get {
+                return ResourceManager.GetString("ON", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} is longer than 256 characters.
+        /// </summary>
+        internal static string PathIsLongerThan256Characters {
+            get {
+                return ResourceManager.GetString("PathIsLongerThan256Characters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please insert the next backup disk now.
+        /// </summary>
+        internal static string PleaseInsertTheNextBackupDiskNow {
+            get {
+                return ResourceManager.GetString("PleaseInsertTheNextBackupDiskNow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to prepare a new backup disk?.
+        /// </summary>
+        internal static string PrepareNewBackupDiskAreYouSure {
+            get {
+                return ResourceManager.GetString("PrepareNewBackupDiskAreYouSure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to recalculate the hash codes from the master files?.
+        /// </summary>
+        internal static string RecalculateAllHashes {
+            get {
+                return ResourceManager.GetString("RecalculateAllHashes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Recalculate hash codes.
+        /// </summary>
+        internal static string RecalculateAllHashesTitle {
+            get {
+                return ResourceManager.GetString("RecalculateAllHashesTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to check all the symbolic links?.
+        /// </summary>
+        internal static string RecreateAllSymbolicLinks {
+            get {
+                return ResourceManager.GetString("RecreateAllSymbolicLinks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You must select a directory that you&apos;d like files from backup copied to. This is typically a new drive that will replace the failing drive.
+        /// </summary>
+        internal static string RestoreFilesDirectoryToRestoreTo {
+            get {
+                return ResourceManager.GetString("RestoreFilesDirectoryToRestoreTo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You must select a directory that you&apos;d like from backup disks restored for. This is typically the drive that is now failing.
+        /// </summary>
+        internal static string RestoreFilesSelectDirectory {
+            get {
+                return ResourceManager.GetString("RestoreFilesSelectDirectory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restore backup files.
+        /// </summary>
+        internal static string RestoreFilesTitle {
+            get {
+                return ResourceManager.GetString("RestoreFilesTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Saved..
+        /// </summary>
+        internal static string Saved {
+            get {
+                return ResourceManager.GetString("Saved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scan Directories Failed.
+        /// </summary>
+        internal static string ScanDirectoriesFailed {
+            get {
+                return ResourceManager.GetString("ScanDirectoriesFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scan directories.
+        /// </summary>
+        internal static string ScanFoldersTitle {
+            get {
+                return ResourceManager.GetString("ScanFoldersTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scanning {0}.
+        /// </summary>
+        internal static string Scanning {
+            get {
+                return ResourceManager.GetString("Scanning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sending = {0}.
+        /// </summary>
+        internal static string SendingPushoverButton {
+            get {
+                return ResourceManager.GetString("SendingPushoverButton", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Skipping {0}.
         /// </summary>
-        internal static string Main_Skipping {
+        internal static string Skipping {
             get {
-                return ResourceManager.GetString("Main_Skipping", resourceCulture);
+                return ResourceManager.GetString("Skipping", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Speed Test Disks = {0}.
         /// </summary>
-        internal static string Main_SpeedTestDisksButton {
+        internal static string SpeedTestDisksButton {
             get {
-                return ResourceManager.GetString("Main_SpeedTestDisksButton", resourceCulture);
+                return ResourceManager.GetString("SpeedTestDisksButton", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Speed testing {0}.
         /// </summary>
-        internal static string Main_SpeedTesting {
+        internal static string SpeedTesting {
             get {
-                return ResourceManager.GetString("Main_SpeedTesting", resourceCulture);
+                return ResourceManager.GetString("SpeedTesting", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Started.
         /// </summary>
-        internal static string Main_Started {
+        internal static string Started {
             get {
-                return ResourceManager.GetString("Main_Started", resourceCulture);
+                return ResourceManager.GetString("Started", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Symbolic Links.
         /// </summary>
-        internal static string Main_SymbolicLinksTitle {
+        internal static string SymbolicLinksTitle {
             get {
-                return ResourceManager.GetString("Main_SymbolicLinksTitle", resourceCulture);
+                return ResourceManager.GetString("SymbolicLinksTitle", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Exception occurred. Cancelling operation. {0}.
         /// </summary>
-        internal static string Main_TaskWrapperException {
+        internal static string TaskWrapperException {
             get {
-                return ResourceManager.GetString("Main_TaskWrapperException", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Are you sure you want to scan all the directories?.
-        /// </summary>
-        internal static string Main_UpdateMasterFiles {
-            get {
-                return ResourceManager.GetString("Main_UpdateMasterFiles", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Rebuild master list.
-        /// </summary>
-        internal static string Main_UpdateMasterFilesTitle {
-            get {
-                return ResourceManager.GetString("Main_UpdateMasterFilesTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0:n0} day{1} ago.
-        /// </summary>
-        internal static string Main_UpdateOldestBackupDiskNDaysAgo {
-            get {
-                return ResourceManager.GetString("Main_UpdateOldestBackupDiskNDaysAgo", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Backup = {0}.
-        /// </summary>
-        internal static string Main_UpdateScheduledBackupButton {
-            get {
-                return ResourceManager.GetString("Main_UpdateScheduledBackupButton", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Version Checking = {0}.
-        /// </summary>
-        internal static string Main_VersionCheckingButton_Click_ {
-            get {
-                return ResourceManager.GetString("Main_VersionCheckingButton_Click_", resourceCulture);
+                return ResourceManager.GetString("TaskWrapperException", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Unable to determine Directory or Relative Path.
         /// </summary>
-        internal static string MediaBackup_UnableToDetermineDirectoryOrRelativePath {
+        internal static string UnableToDetermineDirectoryOrRelativePath {
             get {
-                return ResourceManager.GetString("MediaBackup_UnableToDetermineDirectoryOrRelativePath", resourceCulture);
+                return ResourceManager.GetString("UnableToDetermineDirectoryOrRelativePath", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to BackupManager is already running.
+        ///   Looks up a localized string similar to Unable to load ffprobe.exe for {0}.
         /// </summary>
-        internal static string Program_Main_BackManager_is_already_running {
+        internal static string UnableToLoadFFProbe {
             get {
-                return ResourceManager.GetString("Program_Main_BackManager_is_already_running", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Duplicate rule number detected in rules.xml.
-        /// </summary>
-        internal static string Rules_DuplicateRuleNumber {
-            get {
-                return ResourceManager.GetString("Rules_DuplicateRuleNumber", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Missing file rules.
-        /// </summary>
-        internal static string Rules_MissingFileRules {
-            get {
-                return ResourceManager.GetString("Rules_MissingFileRules", resourceCulture);
+                return ResourceManager.GetString("UnableToLoadFFProbe", resourceCulture);
             }
         }
         
@@ -700,29 +763,56 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Not a valid application name.
+        ///   Looks up a localized string similar to Are you sure you want to scan all the directories?.
         /// </summary>
-        internal static string Utils_Not_a_valid_application_name {
+        internal static string UpdateMasterFiles {
             get {
-                return ResourceManager.GetString("Utils_Not_a_valid_application_name", resourceCulture);
+                return ResourceManager.GetString("UpdateMasterFiles", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to rename {0} to {1} as it already exists.
+        ///   Looks up a localized string similar to Rebuild master list.
         /// </summary>
-        internal static string Utils_RenameVideoCodec_Failed_to_rename__0__to__1__as_it_already_exists {
+        internal static string UpdateMasterFilesTitle {
             get {
-                return ResourceManager.GetString("Utils_RenameVideoCodec_Failed_to_rename__0__to__1__as_it_already_exists", resourceCulture);
+                return ResourceManager.GetString("UpdateMasterFilesTitle", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to load ffprobe.exe for {0}.
+        ///   Looks up a localized string similar to {0:n0} day{1} ago.
         /// </summary>
-        internal static string Utils_Unable_to_load_ffprobe_exe {
+        internal static string UpdateOldestBackupDiskNDaysAgo {
             get {
-                return ResourceManager.GetString("Utils_Unable_to_load_ffprobe_exe", resourceCulture);
+                return ResourceManager.GetString("UpdateOldestBackupDiskNDaysAgo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Backup = {0}.
+        /// </summary>
+        internal static string UpdateScheduledBackupButton {
+            get {
+                return ResourceManager.GetString("UpdateScheduledBackupButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updating {0}%.
+        /// </summary>
+        internal static string UpdatingPercentage {
+            get {
+                return ResourceManager.GetString("UpdatingPercentage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Version Checking = {0}.
+        /// </summary>
+        internal static string VersionCheckingButton {
+            get {
+                return ResourceManager.GetString("VersionCheckingButton", resourceCulture);
             }
         }
     }

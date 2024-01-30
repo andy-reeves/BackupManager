@@ -57,6 +57,20 @@ internal static partial class Utils
     private const int OPEN_EXISTING = 3;
 
     /// <summary>
+    ///     An array of the special feature prefixes for video files like -featurette, - other, etc.
+    /// </summary>
+    internal static readonly string[] SpecialFeatures =
+    {
+        // ReSharper disable once StringLiteralTypo
+        "-featurette", "-other", "-interview", "-scene", "-short", "-deleted", "-behindthescenes", "-trailer"
+    };
+
+    /// <summary>
+    ///     An array of file extensions for video file types like .mkv, .mp4, etc.
+    /// </summary>
+    private static readonly string[] _videoExtensions = { ".mkv", ".mp4", ".mpeg", ".mpg", ".ts", ".avi" };
+
+    /// <summary>
     ///     The end block size.
     /// </summary>
     internal const int END_BLOCK_SIZE = 16 * BYTES_IN_ONE_KILOBYTE; // 16K
@@ -110,7 +124,7 @@ internal static partial class Utils
     /// <summary>
     ///     True when we're in a DEBUG build otherwise False
     /// </summary>
-    internal static readonly bool _inDebugBuild;
+    internal static readonly bool InDebugBuild;
 
     private static readonly object _lock = new();
 
@@ -143,12 +157,12 @@ internal static partial class Utils
     static Utils()
     {
 #if DEBUG
-        _inDebugBuild = true;
+        InDebugBuild = true;
 #else
-        _inDebugBuild = false;
+        InDebugBuild = false;
 #endif
         _logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-            _inDebugBuild ? "BackupManager_Debug.log" : "BackupManager.log");
+            InDebugBuild ? "BackupManager_Debug.log" : "BackupManager.log");
     }
 
     /// <summary>
@@ -197,7 +211,7 @@ internal static partial class Utils
 
         // ReSharper disable once HeuristicUnreachableCode
 #pragma warning disable CS0162 // Unreachable code detected
-        var suffix = _inDebugBuild ? "_Debug" : string.Empty;
+        var suffix = InDebugBuild ? "_Debug" : string.Empty;
 #pragma warning restore CS0162 // Unreachable code detected
 
         var destLogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups",
@@ -237,7 +251,7 @@ internal static partial class Utils
     internal static string GetLatestApplicationVersionNumber(ApplicationType applicationTypeName, string branchName = "master")
     {
         if (!Enum.IsDefined(applicationTypeName))
-            throw new ArgumentOutOfRangeException(nameof(applicationTypeName), Resources.Utils_Not_a_valid_application_name);
+            throw new ArgumentOutOfRangeException(nameof(applicationTypeName), Resources.NotValidApplicationName);
 
         try
         {
@@ -309,7 +323,7 @@ internal static partial class Utils
     internal static string GetApplicationVersionNumber(ApplicationType applicationTypeName)
     {
         if (!Enum.IsDefined(applicationTypeName))
-            throw new ArgumentOutOfRangeException(nameof(applicationTypeName), Resources.Utils_Not_a_valid_application_name);
+            throw new ArgumentOutOfRangeException(nameof(applicationTypeName), Resources.NotValidApplicationName);
 
         string applicationPath;
         /*
@@ -927,7 +941,7 @@ internal static partial class Utils
     }
 
     /// <summary>
-    ///     Caclculates the short MD5 hash of the file.
+    ///     Calculates the short MD5 hash of the file.
     /// </summary>
     /// <param name="stream">
     ///     The stream.
@@ -963,7 +977,7 @@ internal static partial class Utils
     internal static long GetFileLength(string fileName)
     {
         ArgumentException.ThrowIfNullOrEmpty(fileName, nameof(fileName));
-        if (!File.Exists(fileName)) throw new FileNotFoundException("File not found", fileName);
+        if (!File.Exists(fileName)) throw new FileNotFoundException(Resources.FileNotFound, fileName);
 
         return new FileInfo(fileName).Length;
     }
@@ -971,7 +985,7 @@ internal static partial class Utils
     internal static DateTime GetFileLastWriteTime(string fileName)
     {
         ArgumentException.ThrowIfNullOrEmpty(fileName, nameof(fileName));
-        if (!File.Exists(fileName)) throw new FileNotFoundException("File not found", fileName);
+        if (!File.Exists(fileName)) throw new FileNotFoundException(Resources.FileNotFound, fileName);
 
         FileInfo fileInfo = new(fileName);
         DateTime returnValue;
@@ -1040,8 +1054,7 @@ internal static partial class Utils
     internal static bool FileIsVideo(string path)
     {
         ArgumentException.ThrowIfNullOrEmpty(path);
-        string[] videoExtensions = { ".mkv", ".mp4", ".mpeg", ".mpg", ".ts", ".avi" };
-        return Path.GetExtension(path).ToLowerInvariant().ContainsAny(videoExtensions);
+        return Path.GetExtension(path).ToLowerInvariant().ContainsAny(_videoExtensions);
     }
 
     /// <summary>
@@ -1056,7 +1069,7 @@ internal static partial class Utils
     }
 
     /// <summary>
-    ///     Returns True if a rename was required. newPath has the full path after the rename or the orginal path if not
+    ///     Returns True if a rename was required. newPath has the full path after the rename or the original path if not
     ///     renamed
     /// </summary>
     /// <param name="path"></param>
@@ -1067,11 +1080,11 @@ internal static partial class Utils
         TraceIn(path);
         newPath = path;
         ArgumentException.ThrowIfNullOrEmpty(path);
-        if (!File.Exists(path)) throw new FileNotFoundException("File not found", path);
+        if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
 
         if (!FileIsVideo(path)) return TraceOut(false);
 
-        if (!FileIsAccessible(path)) throw new NotSupportedException("File is not accessible");
+        if (!FileIsAccessible(path)) throw new NotSupportedException(Resources.FileIsNotAccessible);
 
         var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(path);
         var directoryName = Path.GetDirectoryName(path);
@@ -1086,10 +1099,8 @@ internal static partial class Utils
         Log($"Renaming {path} to {newPathInternal}");
 
         if (File.Exists(newPathInternal))
-        {
-            throw new ApplicationException(string.Format(
-                Resources.Utils_RenameVideoCodec_Failed_to_rename__0__to__1__as_it_already_exists, path, newPathInternal));
-        }
+            throw new ApplicationException(string.Format(Resources.FileRenameFailed, path, newPathInternal));
+
         FileMove(path, newPathInternal);
         Trace($"Renamed {path} to {newPathInternal}");
         newPath = newPathInternal;
@@ -1129,17 +1140,18 @@ internal static partial class Utils
     {
         TraceIn(path);
         ArgumentException.ThrowIfNullOrEmpty(path);
-        if (!File.Exists(path)) throw new FileNotFoundException("File not found", path);
+        if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
         if (!FileIsVideo(path)) throw new NotSupportedException("file is not video");
 
         actualVideoCodec = string.Empty;
 
         var info = new VideoFileInfoReader().GetMediaInfo(path) ??
-                   throw new ApplicationException(string.Format(Resources.Utils_Unable_to_load_ffprobe_exe, path));
+                   throw new ApplicationException(string.Format(Resources.UnableToLoadFFProbe, path));
         actualVideoCodec = FormatVideoCodec(info, Path.GetFileNameWithoutExtension(path));
         return TraceOut(true);
     }
 
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
     private static string FormatVideoCodec(MediaInfoModel mediaInfo, string fileName)
     {
         if (mediaInfo.VideoFormat == null) return null;
@@ -1148,14 +1160,8 @@ internal static partial class Utils
         var videoCodecId = mediaInfo.VideoCodecId ?? string.Empty;
         var result = videoFormat.Trim();
         if (videoFormat.Empty()) return result;
-
-        // see definitions here: https://github.com/FFmpeg/FFmpeg/blob/master/libavcodec/codec_desc.c
-        if (videoCodecId == "x264") return "h264";
-        if (videoFormat == "h264") return "h264";
+        if (videoCodecId == "x264" || videoFormat == "h264") return "h264";
         if (videoCodecId == "x265") return "h265";
-        if (videoFormat == "hevc") return "h265";
-        if (videoFormat == "mpeg2video") return "MPEG2";
-        if (videoFormat == "mpeg1video") return "MPEG";
 
         if (videoFormat == "mpeg4" || videoFormat.Contains("msmpeg4"))
         {
@@ -1164,18 +1170,40 @@ internal static partial class Utils
 
             return "MPEG4";
         }
-        if (videoFormat == "vc1") return "VC1";
-        if (videoFormat == "av1") return "AV1";
         if (videoFormat.Contains("vp6")) return "VP6";
-        if (videoFormat == "vp7" || videoFormat == "vp8" || videoFormat == "vp9") return videoFormat.ToUpperInvariant();
-        if (videoFormat == "wmv1" || videoFormat == "wmv2" || videoFormat == "wmv3") return "WMV";
-        if (videoFormat == "rawvideo") return "RGB";
 
-        if (videoFormat == "qtrle" || videoFormat == "rpza" || videoFormat == "rv10" || videoFormat == "rv20" ||
-            videoFormat == "rv30" || videoFormat == "rv40" || videoFormat == "cinepak" || videoFormat == "msvideo1")
+        switch (videoFormat)
         {
-            LogWithPushover(BackupAction.General, PushoverPriority.High, $"About to return string.Empty for {fileName}");
-            return "";
+            case "hevc":
+                return "h265";
+            case "mpeg2video":
+                return "MPEG2";
+            case "mpeg1video":
+                return "MPEG";
+            case "vc1":
+                return "VC1";
+            case "av1":
+                return "AV1";
+            case "vp7":
+            case "vp8":
+            case "vp9":
+                return videoFormat.ToUpperInvariant();
+            case "wmv1":
+            case "wmv2":
+            case "wmv3":
+                return "WMV";
+            case "rawvideo":
+                return "RGB";
+            case "qtrle":
+            case "rpza":
+            case "rv10":
+            case "rv20":
+            case "rv30":
+            case "rv40":
+            case "cinepak":
+            case "msvideo1":
+                LogWithPushover(BackupAction.General, PushoverPriority.High, $"About to return string.Empty for {fileName}");
+                return "";
         }
         return result;
     }
@@ -1186,7 +1214,7 @@ internal static partial class Utils
         ArgumentException.ThrowIfNullOrEmpty(path);
         if (!FileIsVideo(path) || !VideoFileIsDolbyVision(path)) return TraceOut(false);
 
-        if (!File.Exists(path)) throw new FileNotFoundException("File not found", path);
+        if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
 
         var info = new VideoFileInfoReader().GetMediaInfo(path);
 
@@ -1472,11 +1500,11 @@ internal static partial class Utils
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
-            Trace(Resources.Main_Cancelling);
+            Trace(Resources.Cancelling);
         }
         catch (Exception u)
         {
-            LogWithPushover(BackupAction.Error, PushoverPriority.High, string.Format(Resources.Main_TaskWrapperException, u));
+            LogWithPushover(BackupAction.Error, PushoverPriority.High, string.Format(Resources.TaskWrapperException, u));
         }
         finally
         {
@@ -2485,7 +2513,7 @@ internal static partial class Utils
     internal static string RenameFileToRemoveFixedSpaces(string path)
     {
         ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
-        if (!File.Exists(path)) throw new FileNotFoundException("File not found", path);
+        if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
 
         if (!StringContainsFixedSpace(path)) return path;
 
@@ -2559,9 +2587,8 @@ internal static partial class Utils
 
         if (securityDescriptor != null)
         {
-            var accessControlList = securityDescriptor.Properties["DACL"].Value as ManagementBaseObject[];
-
-            if (accessControlList == null)
+            // ReSharper disable once StringLiteralTypo
+            if (securityDescriptor.Properties["DACL"].Value is not ManagementBaseObject[] accessControlList)
             {
                 // If there aren't any entries in access control list or the list is empty - create one
                 accessControlList = new ManagementBaseObject[1];
@@ -2577,7 +2604,7 @@ internal static partial class Utils
             var userAccountObject = GetUserAccountObject(domain, userName);
 
             var securityIdentifierObject =
-                new ManagementObject(string.Format("Win32_SID.SID='{0}'", (string)userAccountObject.Properties["SID"].Value));
+                new ManagementObject($"Win32_SID.SID='{(string)userAccountObject.Properties["SID"].Value}'");
             securityIdentifierObject.Get();
 
             // Step 4 - Create Trustee Object
@@ -2589,11 +2616,12 @@ internal static partial class Utils
             // Step 6 - Add Access Control Entry to the Access Control List
             accessControlList[existingAccessControlEntriesCount] = accessControlEntry;
 
-            // Step 7 - Assign access Control list to security desciptor 
+            // Step 7 - Assign access Control list to security descriptor 
+            // ReSharper disable once StringLiteralTypo
             securityDescriptor.Properties["DACL"].Value = accessControlList;
         }
 
-        // Step 8 - Assign access Control list to security desciptor 
+        // Step 8 - Assign access Control list to security descriptor 
         var parameterForSetSecurityDescriptor = sharedFolder.GetMethodParameters("SetSecurityDescriptor");
         parameterForSetSecurityDescriptor["Descriptor"] = securityDescriptor;
         _ = sharedFolder.InvokeMethod("SetSecurityDescriptor", parameterForSetSecurityDescriptor, null);
@@ -2669,7 +2697,7 @@ internal static partial class Utils
     /// <param name="securityIdentifierOfUser">Object containing User's sid</param>
     /// <returns></returns>
     [SupportedOSPlatform("windows")]
-    private static ManagementObject CreateTrustee(string domain, string userName, ManagementObject securityIdentifierOfUser)
+    private static ManagementObject CreateTrustee(string domain, string userName, ManagementBaseObject securityIdentifierOfUser)
     {
         var trusteeObject = new ManagementClass("Win32_Trustee").CreateInstance();
         trusteeObject.Properties["Domain"].Value = domain;
@@ -2687,7 +2715,7 @@ internal static partial class Utils
     /// <param name="deny">boolean to say if user permissions should be assigned or denied</param>
     /// <returns></returns>
     [SupportedOSPlatform("windows")]
-    private static ManagementObject CreateAccessControlEntry(ManagementObject trustee, bool deny)
+    private static ManagementObject CreateAccessControlEntry(ICloneable trustee, bool deny)
     {
         var aceObject = new ManagementClass("Win32_ACE").CreateInstance();
 
@@ -2701,8 +2729,10 @@ internal static partial class Utils
 }
 
 [SupportedOSPlatform("windows")]
+[SuppressMessage("ReSharper", "UnusedMember.Global")]
 internal sealed class Win32Share
 {
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public enum ShareType : uint
     {
         DiskDrive = 0x0,
@@ -2729,30 +2759,30 @@ internal sealed class Win32Share
         mWinShareObject = obj;
     }
 
-    public uint AccessMask => Convert.ToUInt32(mWinShareObject["AccessMask"]);
+    public uint AccessMask => Convert.ToUInt32(mWinShareObject[nameof(AccessMask)]);
 
-    public bool AllowMaximum => Convert.ToBoolean(mWinShareObject["AllowMaximum"]);
+    public bool AllowMaximum => Convert.ToBoolean(mWinShareObject[nameof(AllowMaximum)]);
 
-    public string Caption => Convert.ToString(mWinShareObject["Caption"]);
+    public string Caption => Convert.ToString(mWinShareObject[nameof(Caption)]);
 
-    public string Description => Convert.ToString(mWinShareObject["Description"]);
+    public string Description => Convert.ToString(mWinShareObject[nameof(Description)]);
 
-    public DateTime InstallDate => Convert.ToDateTime(mWinShareObject["InstallDate"]);
+    public DateTime InstallDate => Convert.ToDateTime(mWinShareObject[nameof(InstallDate)]);
 
-    public uint MaximumAllowed => Convert.ToUInt32(mWinShareObject["MaximumAllowed"]);
+    public uint MaximumAllowed => Convert.ToUInt32(mWinShareObject[nameof(MaximumAllowed)]);
 
-    public string Name => Convert.ToString(mWinShareObject["Name"]);
+    public string Name => Convert.ToString(mWinShareObject[nameof(Name)]);
 
-    public string Path => Convert.ToString(mWinShareObject["Path"]);
+    public string Path => Convert.ToString(mWinShareObject[nameof(Path)]);
 
-    [SupportedOSPlatform("windows")] public string Status => Convert.ToString(mWinShareObject["Status"]);
+    [SupportedOSPlatform("windows")] public string Status => Convert.ToString(mWinShareObject[nameof(Status)]);
 
-    [SupportedOSPlatform("windows")] public ShareType Type => (ShareType)Convert.ToUInt32(mWinShareObject["Type"]);
+    [SupportedOSPlatform("windows")] public ShareType Type => (ShareType)Convert.ToUInt32(mWinShareObject[nameof(Type)]);
 
     [SupportedOSPlatform("windows")]
     public MethodStatus Delete()
     {
-        var result = mWinShareObject.InvokeMethod("Delete", new object[] { });
+        var result = mWinShareObject.InvokeMethod("Delete", Array.Empty<object>());
         var r = Convert.ToUInt32(result);
         return (MethodStatus)r;
     }
@@ -2787,6 +2817,7 @@ internal sealed class Win32Share
         return GetAllShares().FirstOrDefault(s => s.Name == name);
     }
 
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     internal enum MethodStatus : uint
     {
         Success = 0,

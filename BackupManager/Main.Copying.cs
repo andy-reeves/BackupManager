@@ -22,11 +22,11 @@ internal sealed partial class Main
     {
         Utils.TraceIn();
         var disk = SetupBackupDisk(ct);
-        UpdateStatusLabel(ct, string.Format(Resources.Main_Copying, string.Empty));
+        UpdateStatusLabel(ct, string.Format(Resources.Copying, string.Empty));
         IEnumerable<BackupFile> filesToBackup = mediaBackup.GetBackupFilesWithDiskEmpty().OrderByDescending(static q => q.Length);
         var backupFiles = filesToBackup.ToArray();
         var sizeOfFiles = backupFiles.Sum(static x => x.Length);
-        Utils.LogWithPushover(BackupAction.CopyFiles, Resources.Main_Started, true, true);
+        Utils.LogWithPushover(BackupAction.CopyFiles, Resources.Started, true, true);
 
         Utils.LogWithPushover(BackupAction.CopyFiles,
             $"{backupFiles.Length:n0} files to backup at {Utils.FormatSize(sizeOfFiles)}", false, true);
@@ -49,7 +49,7 @@ internal sealed partial class Main
             return;
         }
         mediaBackup.Save(ct);
-        UpdateStatusLabel(ct, Resources.Main_Saved);
+        UpdateStatusLabel(ct, Resources.Saved);
         var filesStillNotOnBackupDisk = mediaBackup.GetBackupFilesWithDiskEmpty();
         var text = string.Empty;
         var stillNotOnBackupDisk = filesStillNotOnBackupDisk as BackupFile[] ?? filesStillNotOnBackupDisk.ToArray();
@@ -130,7 +130,7 @@ internal sealed partial class Main
         // disk and copy the new one
         if (backupFile.CheckContentHashes(disk))
         {
-            UpdateStatusLabel(ct, string.Format(Resources.Main_Skipping, Path.GetFileName(sourceFileName)),
+            UpdateStatusLabel(ct, string.Format(Resources.Skipping, Path.GetFileName(sourceFileName)),
                 Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
 
             Utils.LogWithPushover(BackupAction.CopyFiles,
@@ -170,7 +170,7 @@ internal sealed partial class Main
         {
             UpdateMediaFilesCountDisplay();
 
-            UpdateStatusLabel(ct, string.Format(Resources.Main_Copying, Path.GetFileName(sourceFileName)),
+            UpdateStatusLabel(ct, string.Format(Resources.Copying, Path.GetFileName(sourceFileName)),
                 Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
             outOfDiskSpaceMessageSent = false;
             var formattedEndDateTime = string.Empty;
@@ -189,14 +189,13 @@ internal sealed partial class Main
                 var rightNow = DateTime.Now;
                 var estimatedFinishDateTime = rightNow.AddSeconds(numberOfSecondsOfCopyRemaining);
 
-                formattedEndDateTime = Resources.Main_Estimated_finish_by_ +
-                                       estimatedFinishDateTime.ToString(Resources.DateTime_HHmm) +
+                formattedEndDateTime = Resources.EstimatedFinishBy + estimatedFinishDateTime.ToString(Resources.DateTime_HHmm) +
                                        $" in {Utils.FormatTimeFromSeconds(Convert.ToInt32(numberOfSecondsOfCopyRemaining))}";
 
                 // could be the following day
                 if (estimatedFinishDateTime.DayOfWeek != rightNow.DayOfWeek)
                 {
-                    formattedEndDateTime = Resources.Main_Estimated_finish_by_tomorrow_at_ +
+                    formattedEndDateTime = Resources.EstimatedFinishByTomorrow +
                                            estimatedFinishDateTime.ToString(Resources.DateTime_HHmm) +
                                            $" in {Utils.FormatTimeFromSeconds(Convert.ToInt32(numberOfSecondsOfCopyRemaining))}";
                 }
@@ -241,7 +240,7 @@ internal sealed partial class Main
         }
         else
         {
-            UpdateStatusLabel(ct, string.Format(Resources.Main_Skipping, string.Empty),
+            UpdateStatusLabel(ct, string.Format(Resources.Skipping, string.Empty),
                 Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
             if (outOfDiskSpaceMessageSent) return;
 
