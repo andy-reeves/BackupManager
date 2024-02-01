@@ -1136,13 +1136,15 @@ internal sealed partial class Main : Form
                                            (file.FullPath.Contains("_TV") || file.FullPath.Contains("_Movies")))
                      .Where(static file => !file.FullPath.ContainsAny(Utils.SpecialFeatures)))
         {
-            var c = Utils.GetVideoCodecFromFileName(file.FullPath, out var videoCodecFromFileName);
-            var a = Utils.GetVideoCodec(file.FullPath, out var actualVideoCodec);
-            if (!c) continue;
-
-            if (!a)
+            if (!Utils.GetVideoCodecFromFileName(file.FullPath, out var videoCodecFromFileName))
             {
-                Utils.Log($"Couldn't get video code for {file.FullPath}");
+                Utils.Log($"Couldn't determine video codec from the path for {file.FullPath}");
+                continue;
+            }
+
+            if (!Utils.GetVideoCodec(file.FullPath, out var actualVideoCodec))
+            {
+                Utils.Log($"Couldn't get actual video codec for {file.FullPath}");
                 continue;
             }
 

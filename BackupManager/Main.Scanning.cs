@@ -312,9 +312,7 @@ internal sealed partial class Main
         mediaBackup.ClearFlags();
 
         if (!ProcessFiles(fileBlockingCollection, scanId, config.DirectoriesRenameVideoFilesForFullScansOnOff, ct))
-        {
-            Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, Resources.ScanDirectoriesFailed);
-        }
+            Utils.LogWithPushover(BackupAction.ScanDirectory, Resources.ScanDirectoriesFailed);
         var filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag).ToArray();
         RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out _, out _);
         if (updateLastFullScan) mediaBackup.UpdateLastFullScan();

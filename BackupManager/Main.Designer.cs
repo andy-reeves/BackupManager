@@ -62,6 +62,7 @@
             button2 = new System.Windows.Forms.Button();
             createNewBackupDiskButton = new System.Windows.Forms.Button();
             listBackupDiskStatusByFreeSpaceButton = new System.Windows.Forms.Button();
+            videoCodecCheckButton = new System.Windows.Forms.Button();
             scheduledBackupTimerButton = new System.Windows.Forms.Button();
             listFilesOnBackupDiskButton = new System.Windows.Forms.Button();
             listFilesInDirectoryButton = new System.Windows.Forms.Button();
@@ -134,7 +135,6 @@
             oldestBackupDiskTextBox = new System.Windows.Forms.TextBox();
             label16 = new System.Windows.Forms.Label();
             scanDirectoryComboBox = new System.Windows.Forms.ComboBox();
-            videoCodecCheckButton = new System.Windows.Forms.Button();
             pushoverGroupBox.SuspendLayout();
             groupBox2.SuspendLayout();
             listFilesInDirectoryGroupBox.SuspendLayout();
@@ -515,6 +515,18 @@
             toolTip.SetToolTip(listBackupDiskStatusByFreeSpaceButton, "Reports the status of each backup disk");
             listBackupDiskStatusByFreeSpaceButton.UseVisualStyleBackColor = true;
             listBackupDiskStatusByFreeSpaceButton.Click += ListBackupDiskStatusByFreeSpaceButton_Click;
+            // 
+            // videoCodecCheckButton
+            // 
+            videoCodecCheckButton.Location = new System.Drawing.Point(831, 448);
+            videoCodecCheckButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            videoCodecCheckButton.Name = "videoCodecCheckButton";
+            videoCodecCheckButton.Size = new System.Drawing.Size(234, 27);
+            videoCodecCheckButton.TabIndex = 102;
+            videoCodecCheckButton.Text = "Check all files for correct Video Codec";
+            toolTip.SetToolTip(videoCodecCheckButton, "Checks all files for correct video codec in the path. Can take 20secs per file");
+            videoCodecCheckButton.UseVisualStyleBackColor = true;
+            videoCodecCheckButton.Click += VideoCodecCheckButton_Click;
             // 
             // scheduledBackupTimerButton
             // 
@@ -1291,18 +1303,6 @@
             scanDirectoryComboBox.Name = "scanDirectoryComboBox";
             scanDirectoryComboBox.Size = new System.Drawing.Size(163, 23);
             scanDirectoryComboBox.TabIndex = 42;
-            // 
-            // videoCodecCheckButton
-            // 
-            videoCodecCheckButton.Location = new System.Drawing.Point(831, 448);
-            videoCodecCheckButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            videoCodecCheckButton.Name = "videoCodecCheckButton";
-            videoCodecCheckButton.Size = new System.Drawing.Size(234, 27);
-            videoCodecCheckButton.TabIndex = 102;
-            videoCodecCheckButton.Text = "Check all files for correct Video Codec";
-            toolTip.SetToolTip(videoCodecCheckButton, "Checks any file with [DV] in the path for Profile5. Can take 20 secs per file");
-            videoCodecCheckButton.UseVisualStyleBackColor = true;
-            videoCodecCheckButton.Click += VideoCodecCheckButton_Click;
             // 
             // Main
             // 
