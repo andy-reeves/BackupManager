@@ -23,40 +23,11 @@ public sealed class FileRulesUnitTest
     {
         _mediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)),
             "..\\BackupManager\\MediaBackup.xml"));
+        Utils.Config = _mediaBackup.Config;
     }
 
     [Fact]
-    public void FileRuleTests3()
-    {
-        var rule1 = _mediaBackup.Config.FileRules.SingleOrDefault(static p => p.Number == 1);
-        var rule2 = _mediaBackup.Config.FileRules.SingleOrDefault(static p => p.Number == 2);
-        Assert.NotNull(rule1);
-        Assert.NotNull(rule2);
-        Assert.NotEqual(rule1, rule2);
-        Assert.False(rule1.Equals(null));
-        object obj = rule1;
-        Assert.False(obj.Equals(rule2));
-        Assert.StartsWith("Rule 1 TV files must contain {t", rule1.ToString());
-        Assert.NotEqual(0, rule1.GetHashCode());
-    }
-
-    [Fact]
-    public void FileRuleTests2()
-    {
-        var path1 = Path.Combine(Path.GetTempPath(), "FileMove");
-        if (Directory.Exists(path1)) Directory.Delete(path1, true);
-        var file1 = Path.Combine(path1, "test1.txt");
-        Utils.EnsureDirectoriesForDirectoryPath(path1);
-        Utils.CreateFile(file1);
-        _ = Assert.Throws<ArgumentNullException>(static () => Rules.Load(null));
-        _ = Assert.Throws<XmlException>(() => Rules.Load(file1));
-
-        // Delete the folders we created
-        if (Directory.Exists(path1)) Directory.Delete(path1, true);
-    }
-
-    [Fact]
-    public void FileRuleTests1()
+    public void FileRuleMainTests()
     {
         var testsFromFile = File.ReadAllText(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)), "FileRuleTests.txt"));
         var lines = testsFromFile.Split('\n');
@@ -89,5 +60,35 @@ public sealed class FileRulesUnitTest
             else
                 Assert.False(testPath.IsMatch(regEx), $"Test {testNumber} of Rule {ruleNumber} {rule.Message} for {testPath}");
         }
+    }
+
+    [Fact]
+    public void FileRuleTests3()
+    {
+        var rule1 = _mediaBackup.Config.FileRules.SingleOrDefault(static p => p.Number == 1);
+        var rule2 = _mediaBackup.Config.FileRules.SingleOrDefault(static p => p.Number == 2);
+        Assert.NotNull(rule1);
+        Assert.NotNull(rule2);
+        Assert.NotEqual(rule1, rule2);
+        Assert.False(rule1.Equals(null));
+        object obj = rule1;
+        Assert.False(obj.Equals(rule2));
+        Assert.StartsWith("Rule 1 TV files must contain {t", rule1.ToString());
+        Assert.NotEqual(0, rule1.GetHashCode());
+    }
+
+    [Fact]
+    public void FileRuleTests2()
+    {
+        var path1 = Path.Combine(Path.GetTempPath(), "FileMove");
+        if (Directory.Exists(path1)) Directory.Delete(path1, true);
+        var file1 = Path.Combine(path1, "test1.txt");
+        Utils.EnsureDirectoriesForDirectoryPath(path1);
+        Utils.CreateFile(file1);
+        _ = Assert.Throws<ArgumentNullException>(static () => Rules.Load(null));
+        _ = Assert.Throws<XmlException>(() => Rules.Load(file1));
+
+        // Delete the folders we created
+        if (Directory.Exists(path1)) Directory.Delete(path1, true);
     }
 }

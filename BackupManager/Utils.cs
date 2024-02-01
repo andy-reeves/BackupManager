@@ -67,8 +67,16 @@ internal static partial class Utils
 
     /// <summary>
     ///     An array of file extensions for video file types like .mkv, .mp4, etc.
+    ///     Regex would be (m(kv|p(4|e?g))|ts|avi|(e(n|s)(\.hi)?\.)srt)
     /// </summary>
     private static readonly string[] _videoExtensions = { ".mkv", ".mp4", ".mpeg", ".mpg", ".ts", ".avi" };
+
+    /// <summary>
+    ///     An array of allowed Subtitles extensions in video folders like .en.srt, .en.hi.srt, etc.
+    /// </summary>
+
+    // ReSharper disable once UnusedMember.Local
+    private static readonly string[] _subtitlesExtensions = { ".en.srt", ".es.srt", "en.hi.srt", "es.hi.srt" };
 
     /// <summary>
     ///     The end block size.
@@ -1092,6 +1100,7 @@ internal static partial class Utils
         if (!GetVideoCodecFromFileName(Path.GetFileName(path), out var currentVideoCodecInFileName)) return TraceOut(false);
         if (!GetVideoCodec(path, out var actualVideoCodec)) return TraceOut(false);
         if (actualVideoCodec == currentVideoCodecInFileName) return TraceOut(false);
+        if (actualVideoCodec.HasNoValue()) return TraceOut(false);
 
         var newPathInternal = Path.Combine(directoryName,
             fileNameWithoutExtension.Replace(currentVideoCodecInFileName.WrapInSquareBrackets(),
@@ -1109,17 +1118,19 @@ internal static partial class Utils
 
     /// <summary>
     /// </summary>
-    /// <param name="path">Must have a video extension</param>
+    /// <param name="path">Must have a video extension and a valid video codec in square brackets in the path</param>
     /// <param name="videoCodec"></param>
-    /// <returns></returns>
+    /// <returns>False if the codec was not determined</returns>
     internal static bool GetVideoCodecFromFileName(string path, out string videoCodec)
     {
         TraceIn(path);
         ArgumentException.ThrowIfNullOrEmpty(path);
         var fileName = Path.GetFileName(path);
         videoCodec = string.Empty;
+        if (Config == null) return TraceOut(false);
+
         var videoCodecRegex = Config.DirectoriesRenameVideoFilesRegEx;
-        if (videoCodecRegex.HasNoValue()) return false;
+        if (videoCodecRegex.HasNoValue()) return TraceOut(false);
 
         var match = Regex.Match(fileName, videoCodecRegex);
         if (!match.Success) return TraceOut(false);
