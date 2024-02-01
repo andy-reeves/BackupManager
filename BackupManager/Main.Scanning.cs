@@ -122,22 +122,40 @@ internal sealed partial class Main
                 {
                     Utils.LogWithPushover(BackupAction.ProcessFiles, $"{file} has a fixed space so renaming it");
 
-                    if (Utils.FileIsAccessible(file))
-                        file = Utils.RenameFileToRemoveFixedSpaces(file);
-                    else
+                    try
                     {
-                        Utils.LogWithPushover(BackupAction.ProcessFiles, $"{file} is locked so can't be renamed now.");
+                        file = Utils.RenameFileToRemoveFixedSpaces(file);
+                    }
+                    catch (Exception ex)
+                    {
+                        if (ex is not (IOException or NotSupportedException)) throw;
+
+                        Utils.LogWithPushover(BackupAction.ProcessFiles, $"{file} is locked so can't be processed now.");
                         return Utils.TraceOut(false);
                     }
                 }
 
                 if (config.DirectoriesRenameVideoFilesOnOff && scanPathForVideoCodec && File.Exists(file) &&
-                    Utils.FileIsVideo(file) && Utils.FileIsAccessible(file) && Utils.RenameVideoCodec(file, out var newFile))
+                    Utils.FileIsVideo(file))
                 {
-                    Utils.LogWithPushover(BackupAction.ProcessFiles, $"{file} rename required for video codec to {newFile}");
+                    try
+                    {
+                        if (Utils.RenameVideoCodec(file, out var newFile))
+                        {
+                            Utils.LogWithPushover(BackupAction.ProcessFiles,
+                                $"{file} rename required for video codec to {newFile}");
 
-                    // change the file to the newFile to continue processing
-                    file = newFile;
+                            // change the file to the newFile to continue processing
+                            file = newFile;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        if (ex is not (IOException or NotSupportedException)) throw;
+
+                        Utils.LogWithPushover(BackupAction.ProcessFiles, $"{file} is locked so can't be processed now.");
+                        return Utils.TraceOut(false);
+                    }
                 }
                 if (file == null) return Utils.TraceOut(false);
 
@@ -170,29 +188,34 @@ internal sealed partial class Main
             if (CheckForFilesToDelete(file, filtersToDelete)) continue;
 
             // RegEx file name rules
-            foreach (var rule in mediaBackup.Config.FileRules.Where(rule => Regex.IsMatch(file, rule.FileDiscoveryRegEx)))
-            {
-                if (!rule.Matched)
-                {
-                    Utils.Trace($"{rule.Name} matched file {file}");
-                    rule.Matched = true;
-                }
-
-                // if it does then the second regex must be true
-                if (Regex.IsMatch(file, rule.FileTestRegEx)) continue;
-
-                Utils.Trace($"File {file} matched by {rule.FileDiscoveryRegEx} but doesn't match {rule.FileTestRegEx}");
-                Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High, $"{rule.Name} {rule.Message} {file}");
-
-                // If a rule has failed then break to avoid multiple messages sent
-                break;
-            }
+            ProcessFileRules(file);
             if (!mediaBackup.EnsureFile(file)) return Utils.TraceOut(false);
         }
 
         // Update the last scan endDateTime as it wasn't set in the loop
         if (scanInfo != null) scanInfo.EndDateTime = DateTime.Now;
         return Utils.TraceOut(true);
+    }
+
+    private void ProcessFileRules(string file)
+    {
+        foreach (var rule in mediaBackup.Config.FileRules.Where(rule => Regex.IsMatch(file, rule.FileDiscoveryRegEx)))
+        {
+            if (!rule.Matched)
+            {
+                Utils.Trace($"{rule.Name} matched file {file}");
+                rule.Matched = true;
+            }
+
+            // if it does then the second regex must be true
+            if (Regex.IsMatch(file, rule.FileTestRegEx)) continue;
+
+            Utils.Trace($"File {file} matched by {rule.FileDiscoveryRegEx} but doesn't match {rule.FileTestRegEx}");
+            Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High, $"{rule.Name} {rule.Message} {file}");
+
+            // If a rule has failed then break to avoid multiple messages sent
+            break;
+        }
     }
 
     private void UpdateOldestBackupDisk()
@@ -300,7 +323,7 @@ internal sealed partial class Main
         tasks.AddRange(diskNames.Select(diskName => Utils.GetDirectoriesForDisk(diskName, mediaBackup.Config.Directories)).Select(
             directoriesOnDisk => { return TaskWrapper(Task.Run(() => GetFilesAsync(directoriesOnDisk, scanId, ct), ct), ct); }));
         Task.WhenAll(tasks).Wait(ct);
-        Utils.LogWithPushover(BackupAction.ScanDirectory, "Scanning complete.", true);
+        Utils.LogWithPushover(BackupAction.ScanDirectory, Resources.Completed, true);
 
         foreach (var scan in directoryScanBlockingCollection)
         {

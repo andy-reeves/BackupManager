@@ -303,10 +303,10 @@ public sealed class BackupFile : IEquatable<BackupFile>
     /// </returns>
     public bool CheckContentHashes(BackupDisk backupDisk)
     {
-        if (!File.Exists(FullPath) || !Utils.FileIsAccessible(FullPath)) return false;
+        if (!File.Exists(FullPath)) return false;
 
         var pathToBackupDiskFile = Path.Combine(backupDisk.BackupPath, Utils.GetIndexFolder(Directory), RelativePath);
-        if (!File.Exists(pathToBackupDiskFile) || !Utils.FileIsAccessible(pathToBackupDiskFile)) return false;
+        if (!File.Exists(pathToBackupDiskFile)) return false;
 
         var hashFromSourceFile = Utils.GetShortMd5HashFromFile(FullPath);
         ContentsHash = hashFromSourceFile;

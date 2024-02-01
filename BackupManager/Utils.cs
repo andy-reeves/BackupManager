@@ -1024,7 +1024,8 @@ internal static partial class Utils
     internal static string GetShortMd5HashFromFile(string path)
     {
         TraceIn(path);
-        if (string.IsNullOrEmpty(path) || !File.Exists(path) || !FileIsAccessible(path)) return null;
+        ArgumentException.ThrowIfNullOrEmpty(path);
+        if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
 
         var size = new FileInfo(path).Length;
         if (size == 0) return string.Empty;
@@ -1083,6 +1084,7 @@ internal static partial class Utils
     /// <param name="path"></param>
     /// <param name="newPath"></param>
     /// <exception cref="FileNotFoundException"></exception>
+    /// <returns>False if a rename is not required</returns>
     internal static bool RenameVideoCodec(string path, out string newPath)
     {
         TraceIn(path);
@@ -1091,8 +1093,6 @@ internal static partial class Utils
         if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
 
         if (!FileIsVideo(path)) return TraceOut(false);
-
-        if (!FileIsAccessible(path)) throw new NotSupportedException(Resources.FileIsNotAccessible);
 
         var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(path);
         var directoryName = Path.GetDirectoryName(path);
@@ -1106,10 +1106,6 @@ internal static partial class Utils
             fileNameWithoutExtension.Replace(currentVideoCodecInFileName.WrapInSquareBrackets(),
                 actualVideoCodec.WrapInSquareBrackets())) + Path.GetExtension(path);
         Log($"Renaming {path} to {newPathInternal}");
-
-        if (File.Exists(newPathInternal))
-            throw new ApplicationException(string.Format(Resources.FileRenameFailed, path, newPathInternal));
-
         FileMove(path, newPathInternal);
         Trace($"Renamed {path} to {newPathInternal}");
         newPath = newPathInternal;
@@ -2465,7 +2461,7 @@ internal static partial class Utils
     /// </summary>
     /// <param name="path"></param>
     /// <returns>True if not locked or False if locked</returns>
-    internal static bool FileIsAccessible(string path)
+    private static bool FileIsAccessible(string path)
     {
         try
         {
