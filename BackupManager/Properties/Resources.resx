@@ -220,7 +220,7 @@
     <value>Duplicate hash found on load of {0}</value>
   </data>
   <data name="DuplicateContentsHashCode" xml:space="preserve">
-    <value>More than 1 file with same ContentsHashcode {0}</value>
+    <value>More than 1 file with same ContentsHashcode {0} at {1} and {2}</value>
   </data>
   <data name="DateTime_yyyyMMdd" xml:space="preserve">
     <value>yyyy-MM-dd</value>

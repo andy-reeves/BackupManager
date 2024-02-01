@@ -331,7 +331,7 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to More than 1 file with same ContentsHashcode {0}.
+        ///   Looks up a localized string similar to More than 1 file with same ContentsHashcode {0} at {1} and {2}.
         /// </summary>
         internal static string DuplicateContentsHashCode {
             get {

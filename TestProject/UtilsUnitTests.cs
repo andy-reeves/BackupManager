@@ -382,7 +382,7 @@ public sealed class UtilsUnitTests
         var result = Utils.TraceOut(true);
         Assert.True(result);
         var result2 = Utils.TraceOut("Test string");
-        Assert.True(result2 == "Test string");
+        Assert.Equal("Test string", result2);
         var result3 = Utils.TraceOut(this);
         Assert.True(result3 == this);
         var result4 = Utils.TraceOut(this, "Test");
@@ -402,9 +402,9 @@ public sealed class UtilsUnitTests
         result8 = Utils.TraceOut(a);
         Assert.True(result8 == a);
         var result9 = Utils.TraceOut(32);
-        Assert.True(result9 == 32);
+        Assert.Equal(32, result9);
         var result10 = Utils.TraceOut<BackupFile>("Test");
-        Assert.True(result10 == null);
+        Assert.Null(result10);
         var c = new BackupFile();
         var result11 = Utils.TraceOut(c, "Test");
         Assert.True(result11.Equals(c));

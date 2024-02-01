@@ -144,15 +144,12 @@ public sealed class MediaBackup
 
             foreach (var backupFile in mediaBackup.BackupFiles)
             {
-                if (!mediaBackup.indexFolderAndRelativePath.ContainsKey(backupFile.Hash))
-                    mediaBackup.indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
-                else
+                if (mediaBackup.indexFolderAndRelativePath.TryGetValue(backupFile.Hash, out var value))
                 {
-                    var otherFile = mediaBackup.indexFolderAndRelativePath[backupFile.Hash];
-
-                    throw new ApplicationException(string.Format(Resources.DuplicateContentsHashCode, backupFile.FileName) +
-                                                   $" at {backupFile.FullPath} and {otherFile.FullPath}");
+                    throw new ApplicationException(string.Format(Resources.DuplicateContentsHashCode, backupFile.FileName,
+                        backupFile.FullPath, value.FullPath));
                 }
+                mediaBackup.indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
                 if (!backupFile.DiskChecked.HasValue() || !backupFile.Disk.HasValue()) backupFile.ClearDiskChecked();
             }
             var directoryName = new FileInfo(path).DirectoryName;
