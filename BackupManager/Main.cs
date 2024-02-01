@@ -1131,11 +1131,15 @@ internal sealed partial class Main : Form
 
     private void VideoCodecCheckButton_Click(object sender, EventArgs e)
     {
-        foreach (var file in mediaBackup.BackupFiles
-                     .Where(static file => Utils.FileIsVideo(file.FullPath) &&
-                                           (file.FullPath.Contains("_TV") || file.FullPath.Contains("_Movies")))
-                     .Where(static file => !file.FullPath.ContainsAny(Utils.SpecialFeatures)))
+        var files = mediaBackup.BackupFiles.Where(static file =>
+            Utils.FileIsVideo(file.FullPath) && (file.FullPath.Contains("_TV") || file.FullPath.Contains("_Movies")) &&
+            !file.FullPath.ContainsAny(Utils.SpecialFeatures)).ToArray();
+
+        for (var index = 0; index < files.Length; index++)
         {
+            var file = files[index];
+            if (!File.Exists(file.FullPath)) continue;
+
             if (!Utils.GetVideoCodecFromFileName(file.FullPath, out var videoCodecFromFileName))
             {
                 Utils.Log($"Couldn't determine video codec from the path for {file.FullPath}");
@@ -1148,11 +1152,9 @@ internal sealed partial class Main : Form
                 continue;
             }
 
-            if (videoCodecFromFileName != actualVideoCodec)
-            {
-                Utils.Log(
-                    $"VideoCodec to change for {file.FullPath}. Was {videoCodecFromFileName} and should be {actualVideoCodec}");
-            }
+            Utils.Log(videoCodecFromFileName != actualVideoCodec
+                ? $"[{index + 1}/{files.Length}] VideoCodec to change for {file.FullPath}. Was {videoCodecFromFileName} and should be {actualVideoCodec}"
+                : $"[{index + 1}/{files.Length}] VideoCodec correct for {file.FullPath}");
         }
     }
 }
