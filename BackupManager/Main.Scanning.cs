@@ -189,7 +189,16 @@ internal sealed partial class Main
 
             // RegEx file name rules
             ProcessFileRules(file);
-            if (!mediaBackup.EnsureFile(file)) return Utils.TraceOut(false);
+
+            try
+            {
+                if (!mediaBackup.EnsureFile(file)) return Utils.TraceOut(false);
+            }
+            catch (IOException)
+            {
+                // exception accessing the file return false and we will try again 
+                return Utils.TraceOut(false);
+            }
         }
 
         // Update the last scan endDateTime as it wasn't set in the loop
