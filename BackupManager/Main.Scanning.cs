@@ -143,7 +143,7 @@ internal sealed partial class Main
                         if (Utils.RenameVideoCodec(file, out var newFile))
                         {
                             Utils.LogWithPushover(BackupAction.ProcessFiles,
-                                $"{file} rename required for video codec to {newFile}");
+                                $"{Path.GetFileName(file)} rename required for video codec");
 
                             // change the file to the newFile to continue processing
                             file = newFile;
