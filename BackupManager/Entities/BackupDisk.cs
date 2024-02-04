@@ -149,7 +149,7 @@ public sealed class BackupDisk : IEquatable<BackupDisk>
         if (inRootDirectory.Length != 1) return null;
 
         var firstDirectory = inRootDirectory.Single();
-        return !firstDirectory.Name.StartsWith("backup ", StringComparison.CurrentCultureIgnoreCase) ? null : firstDirectory.Name;
+        return !firstDirectory.Name.StartsWithIgnoreCase("backup ") ? null : firstDirectory.Name;
     }
 
     /// <summary>

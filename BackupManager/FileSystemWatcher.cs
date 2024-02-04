@@ -362,8 +362,8 @@ internal sealed class FileSystemWatcher
         // check the Regex to filter more
         if (!RegexFilter.HasValue() || Regex.IsMatch(e.FullPath, RegexFilter))
         {
-            if (e.FullPath.EndsWith(Utils.IS_DIRECTORY_WRITABLE_GUID + ".tmp", StringComparison.InvariantCultureIgnoreCase) ||
-                e.FullPath.EndsWith(Utils.SPEED_TEST_GUID + ".tmp", StringComparison.InvariantCultureIgnoreCase))
+            if (e.FullPath.EndsWithIgnoreCase(Utils.IS_DIRECTORY_WRITABLE_GUID + ".tmp") ||
+                e.FullPath.EndsWithIgnoreCase(Utils.SPEED_TEST_GUID + ".tmp"))
             {
                 _ = Utils.TraceOut("OnSomethingHappened exit as its the DirectoryWritable Guid or SpeedTest Guid");
                 return;

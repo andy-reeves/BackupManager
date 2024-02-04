@@ -283,7 +283,7 @@ public sealed class EntityTests
         Assert.Equal(backupDiskName, backupDisk.ToString());
         _ = backupDisk.Update(null);
 
-        if (!Utils.Config.PlexToken.HasValue())
+        if (Utils.Config.PlexToken.HasNoValue())
         {
             Assert.NotEqual(0, backupDisk.Capacity);
             Assert.NotEqual(string.Empty, backupDisk.CapacityFormatted);

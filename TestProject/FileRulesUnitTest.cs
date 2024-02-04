@@ -38,7 +38,7 @@ public sealed class FileRulesUnitTest
             {
                 cols[i] = cols[i].TrimStart(' ', '"').TrimEnd(' ', '"', '\r', '\n');
             }
-            if (cols[0].StartsWith("#", StringComparison.InvariantCultureIgnoreCase) || cols.Length != 4) continue;
+            if (cols[0].StartsWithIgnoreCase("#") || cols.Length != 4) continue;
 
             var ruleNumberTestNumber = cols[0];
             var a = ruleNumberTestNumber.Split(".");
@@ -50,10 +50,7 @@ public sealed class FileRulesUnitTest
             var testPath = cols[3];
             var rule = _mediaBackup.Config.FileRules.SingleOrDefault(p => p.Number == ruleNumber);
             Assert.NotNull(rule);
-
-            var regEx = testOrDiscovery.StartsWith("T", StringComparison.InvariantCulture)
-                ? rule.FileTestRegEx
-                : rule.FileDiscoveryRegEx;
+            var regEx = testOrDiscovery.StartsWithIgnoreCase("T") ? rule.FileTestRegEx : rule.FileDiscoveryRegEx;
 
             if (expectedResult)
                 Assert.True(testPath.IsMatch(regEx), $"Test {testNumber} of Rule {ruleNumber} {rule.Message} for {testPath}");

@@ -183,8 +183,7 @@ public sealed class MediaBackup
         var pathWithTerminatingString = Utils.EnsurePathHasATerminatingSeparator(path);
 
         foreach (var masterDirectory in Config.Directories.Where(masterDirectory =>
-                     pathWithTerminatingString.StartsWith(Utils.EnsurePathHasATerminatingSeparator(masterDirectory),
-                         StringComparison.InvariantCultureIgnoreCase)))
+                     pathWithTerminatingString.StartsWithIgnoreCase(Utils.EnsurePathHasATerminatingSeparator(masterDirectory))))
         {
             relativePath = BackupFile.GetRelativePath(path, masterDirectory);
             directory = masterDirectory;
@@ -385,7 +384,7 @@ public sealed class MediaBackup
     {
         return (from directory in Config.Directories
                 where path.Contains(directory + "\\")
-                select path.SubstringAfter(directory + "\\", StringComparison.CurrentCultureIgnoreCase)
+                select path.SubstringAfterIgnoreCase(directory + "\\")
                 into pathAfterSlash
                 let lastSlashLocation = pathAfterSlash.IndexOf('\\')
                 select lastSlashLocation < 0 ? null : path[..(lastSlashLocation + (path.Length - pathAfterSlash.Length))])

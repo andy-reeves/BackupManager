@@ -574,7 +574,7 @@ internal sealed partial class Main
         }
         else
         {
-            if (text != string.Empty && !text.EndsWith(".", StringComparison.Ordinal)) textToUse = text + " ...";
+            if (text != string.Empty && !text.EndsWithIgnoreCase(".")) textToUse = text + " ...";
         }
         UpdateProgressBar(value);
         if (toolStripStatusLabel.Text != textToUse) statusStrip.Invoke(_ => toolStripStatusLabel.Text = textToUse);

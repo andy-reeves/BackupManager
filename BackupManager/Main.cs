@@ -725,7 +725,7 @@ internal sealed partial class Main : Form
                 mediaBackup.ClearFlags();
 
                 var fileCountInDirectoryBefore = mediaBackup.BackupFiles.Count(b =>
-                    b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase));
+                    b.FullPath.StartsWithIgnoreCase(directoryToScan.Path));
 
                 if (ScanSingleDirectory(directoryToScan.Path, searchOption, scanPathForVideoCodec, ct))
                 {
@@ -738,9 +738,9 @@ internal sealed partial class Main : Form
                     if (searchOption == SearchOption.TopDirectoryOnly)
                     {
                         filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag)
-                            .Where(b => b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase))
-                            .Where(b => !b.FullPath.SubstringAfter(Utils.EnsurePathHasATerminatingSeparator(directoryToScan.Path),
-                                StringComparison.CurrentCultureIgnoreCase).Contains('\\')).ToArray();
+                            .Where(b => b.FullPath.StartsWithIgnoreCase(directoryToScan.Path)).Where(b =>
+                                !b.FullPath.SubstringAfterIgnoreCase(
+                                    Utils.EnsurePathHasATerminatingSeparator(directoryToScan.Path)).Contains('\\')).ToArray();
                     }
                     else
                     {
@@ -750,7 +750,7 @@ internal sealed partial class Main : Form
                     RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out var removedFilesCount, out var markedAsDeletedFilesCount);
 
                     var fileCountAfter = mediaBackup.BackupFiles.Count(b =>
-                        b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase));
+                        b.FullPath.StartsWithIgnoreCase(directoryToScan.Path));
                     var filesNotOnBackupDiskCount = mediaBackup.GetBackupFilesWithDiskEmpty().Count();
 
                     var text =

@@ -249,9 +249,9 @@ public sealed class BackupFile : IEquatable<BackupFile>
     /// <exception cref="ArgumentException"></exception>
     internal static string GetRelativePath(string fullPath, string directory)
     {
-        return !fullPath.StartsWith(directory, StringComparison.CurrentCultureIgnoreCase)
+        return !fullPath.StartsWithIgnoreCase(directory)
             ? throw new ArgumentException(Resources.FullPathNotCorrect, nameof(fullPath))
-            : fullPath.SubstringAfter(directory, StringComparison.CurrentCultureIgnoreCase).TrimStart(new[] { '\\' });
+            : fullPath.SubstringAfterIgnoreCase(directory).TrimStart(new[] { '\\' });
     }
 
     /// <summary>

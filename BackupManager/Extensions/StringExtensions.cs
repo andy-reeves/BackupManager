@@ -259,6 +259,12 @@ internal static partial class StringExtensions
         return index == -1 ? s : index < s.Length - 1 ? s[(index + value.Length)..] : string.Empty;
     }
 
+    public static string SubstringAfterIgnoreCase(this string s, string value)
+    {
+        var index = s.IndexOf(value, StringComparison.InvariantCultureIgnoreCase);
+        return index == -1 ? s : index < s.Length - 1 ? s[(index + value.Length)..] : string.Empty;
+    }
+
     /// <summary>
     ///     Retrieves a substring after the last instance of a character.
     /// </summary>
@@ -392,9 +398,9 @@ internal static partial class StringExtensions
         return text.StartsWith(startsWith, StringComparison.InvariantCultureIgnoreCase);
     }
 
-    public static bool EndsWithIgnoreCase(this string text, string startsWith)
+    public static bool EndsWithIgnoreCase(this string text, string endsWith)
     {
-        return text.EndsWith(startsWith, StringComparison.InvariantCultureIgnoreCase);
+        return text.EndsWith(endsWith, StringComparison.InvariantCultureIgnoreCase);
     }
 
     public static bool EqualsIgnoreCase(this string text, string equals)

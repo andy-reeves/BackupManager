@@ -251,7 +251,7 @@ internal static partial class Utils
         var response = task.Result;
         var lines = response.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 
-        return lines.Where(line => line.Trim().StartsWith(startsWith, StringComparison.CurrentCultureIgnoreCase))
+        return lines.Where(line => line.Trim().StartsWithIgnoreCase(startsWith))
             .Select(line => line.Split(splitOn)[indexToReturn].Replace("'", "").Replace("\"", "").Trim()).FirstOrDefault();
     }
 
@@ -502,7 +502,7 @@ internal static partial class Utils
             extension.ToLowerInvariant() != ".jpeg" && extension.ToLowerInvariant() != ".mp4")
             return true;
 
-        var creationTime = filename.StartsWith("IMG_", StringComparison.CurrentCultureIgnoreCase)
+        var creationTime = filename.StartsWithIgnoreCase("IMG_")
 
             // ReSharper disable once StringLiteralTypo
             ? DateTime.ParseExact(filename.SubstringAfter('.'), "yyyy'-'MM'-'dd'_'HHmmss", CultureInfo.InvariantCulture)
@@ -770,8 +770,7 @@ internal static partial class Utils
     {
         var diskNames = new HashSet<string>();
 
-        foreach (var diskName in directories.Select(static d =>
-                     d.SubstringAfter(@"\\", StringComparison.CurrentCultureIgnoreCase).SubstringBefore('\\')))
+        foreach (var diskName in directories.Select(static d => d.SubstringAfterIgnoreCase(@"\\").SubstringBefore('\\')))
         {
             _ = diskNames.Add(diskName);
         }
@@ -784,9 +783,9 @@ internal static partial class Utils
 
         foreach (var d in directories)
         {
-            var text = d.SubstringAfter(@"\\", StringComparison.CurrentCultureIgnoreCase);
+            var text = d.SubstringAfterIgnoreCase(@"\\");
             var machineName = text.SubstringBefore('\\');
-            var firstDirectory = text.SubstringAfter(@"\", StringComparison.CurrentCultureIgnoreCase).SubstringBefore('\\');
+            var firstDirectory = text.SubstringAfterIgnoreCase(@"\").SubstringBefore('\\');
             _ = diskAndFirstDirectoryNames.Add(Path.Combine(machineName, firstDirectory));
         }
         return diskAndFirstDirectoryNames.ToArray();
@@ -794,15 +793,14 @@ internal static partial class Utils
 
     internal static string[] GetFilesForDisk(string diskName, IEnumerable<string> backupFiles)
     {
-        var a = backupFiles.Where(file => file.StartsWith(@"\\" + diskName + @"\", StringComparison.CurrentCultureIgnoreCase));
+        var a = backupFiles.Where(file => file.StartsWithIgnoreCase(@"\\" + diskName + @"\"));
         var b = a.ToArray();
         return b;
     }
 
     internal static string[] GetDirectoriesForDisk(string diskName, IEnumerable<string> directories)
     {
-        return directories.Where(dir => dir.StartsWith(@"\\" + diskName + @"\", StringComparison.CurrentCultureIgnoreCase))
-            .ToArray();
+        return directories.Where(dir => dir.StartsWithIgnoreCase(@"\\" + diskName + @"\")).ToArray();
     }
 
     /// <summary>
@@ -1352,8 +1350,7 @@ internal static partial class Utils
     /// <exception cref="ArgumentException"></exception>
     internal static bool KillProcesses(string processName)
     {
-        var processes = Process.GetProcesses()
-            .Where(p => p.ProcessName.StartsWith(processName, StringComparison.CurrentCultureIgnoreCase));
+        var processes = Process.GetProcesses().Where(p => p.ProcessName.StartsWithIgnoreCase(processName));
 
         try
         {
@@ -1652,9 +1649,7 @@ internal static partial class Utils
     /// </returns>
     internal static string EnsurePathHasATerminatingSeparator(string path)
     {
-        return path.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.InvariantCultureIgnoreCase)
-            ? path
-            : path + Path.DirectorySeparatorChar;
+        return path.EndsWithIgnoreCase(Path.DirectorySeparatorChar.ToString()) ? path : path + Path.DirectorySeparatorChar;
     }
 
     /// <summary>
@@ -1758,9 +1753,8 @@ internal static partial class Utils
     /// <exception cref="ArgumentNullException"></exception>
     internal static bool GetDiskInfo(string path, out long freeSpace, out long totalBytes)
     {
-        if (string.IsNullOrEmpty(path)) throw new ArgumentNullException(nameof(path));
-
-        if (!path.EndsWith("\\", StringComparison.InvariantCultureIgnoreCase)) path += '\\';
+        ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
+        if (!path.EndsWithIgnoreCase("\\")) path += '\\';
         return GetDiskFreeSpaceEx(path, out freeSpace, out totalBytes, out _);
     }
 
@@ -1852,7 +1846,6 @@ internal static partial class Utils
     private static bool SymbolicLinkTargetExists(string path)
     {
         var linkTarget = new FileInfo(path).LinkTarget;
-        Debug.Assert(linkTarget != null, nameof(linkTarget) + " != null");
         return Directory.Exists(linkTarget);
     }
 
