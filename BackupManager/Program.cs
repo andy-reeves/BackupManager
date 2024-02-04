@@ -31,8 +31,6 @@ file static class Program
     {
         if (!_singleton.WaitOne(TimeSpan.Zero, true))
         {
-            //there is already another instance running!
-            //Application.Exit();
             _ = MessageBox.Show(Resources.AlreadyRunning);
             Environment.Exit(-1);
         }
@@ -67,7 +65,11 @@ file static class Program
 
     private static void ShowExceptionDetails(Exception ex)
     {
-        // Do logging of exception details
+        // text log first in case message sending is failing
+        Utils.Log(BackupAction.Error, ex.Message + " " + ex.TargetSite);
+
+        // show the message box before attempting pushover
         _ = MessageBox.Show(ex.Message, ex.TargetSite?.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error);
+        Utils.LogWithPushover(BackupAction.Error, ex.Message + " " + ex.TargetSite);
     }
 }
