@@ -1072,7 +1072,7 @@ internal static partial class Utils
     private static bool VideoFileIsDolbyVision(string path)
     {
         ArgumentException.ThrowIfNullOrEmpty(path);
-        return !string.IsNullOrEmpty(path) && path.ToUpperInvariant().Contains("[DV]");
+        return path.HasValue() && path.ContainsIgnoreCase("[DV]");
     }
 
     /// <summary>
@@ -2318,8 +2318,7 @@ internal static partial class Utils
     internal static IEnumerable<string> DeleteEmptyDirectories(string directory)
     {
         TraceIn();
-        if (string.IsNullOrEmpty(directory)) throw new ArgumentException(Resources.DirectoryNameNullOrEmpty, nameof(directory));
-
+        ArgumentException.ThrowIfNullOrEmpty(directory, nameof(directory));
         List<string> listOfDirectoriesDeleted = new();
         DeleteEmptyDirectories(directory, listOfDirectoriesDeleted, directory);
         return TraceOut(listOfDirectoriesDeleted.ToArray());
@@ -2418,8 +2417,7 @@ internal static partial class Utils
     internal static IEnumerable<string> DeleteBrokenSymbolicLinks(string directory, bool includeRoot)
     {
         TraceIn();
-        if (string.IsNullOrEmpty(directory)) throw new ArgumentException(Resources.DirectoryNameNullOrEmpty, nameof(directory));
-
+        ArgumentException.ThrowIfNullOrEmpty(directory, nameof(directory));
         List<string> listOfDirectoriesDeleted = new();
         DeleteBrokenSymbolicLinks(directory, includeRoot, listOfDirectoriesDeleted, directory);
         return TraceOut(listOfDirectoriesDeleted.ToArray());
@@ -2476,7 +2474,7 @@ internal static partial class Utils
     /// <returns>False if either are Null</returns>
     internal static bool VersionIsNewer(string installedVersion, string availableVersion)
     {
-        if (string.IsNullOrEmpty(installedVersion) || string.IsNullOrEmpty(availableVersion)) return false;
+        if (installedVersion.HasNoValue() || availableVersion.HasNoValue()) return false;
 
         var installed = new Version(installedVersion);
         var available = new Version(availableVersion);

@@ -85,7 +85,7 @@ public sealed class MediaBackup
 
     public string DirectoriesLastFullScan
     {
-        get => string.IsNullOrEmpty(directoriesLastFullScan) ? string.Empty : directoriesLastFullScan;
+        get => directoriesLastFullScan.HasValue() ? directoriesLastFullScan : string.Empty;
 
         set => directoriesLastFullScan = value;
     }
@@ -284,7 +284,7 @@ public sealed class MediaBackup
 
         if (!GetFoldersForPath(fullPath, out var directory, out var relativePath))
             throw new ArgumentException(Resources.UnableToDetermineDirectoryOrRelativePath, nameof(fullPath));
-        if (string.IsNullOrEmpty(directory)) throw new ArgumentException(Resources.DirectoryEmpty);
+        if (directory.HasNoValue()) throw new ArgumentException(Resources.DirectoryEmpty);
 
         // we hash the path of the file so we can look it up quickly
         // then we check the ModifiedTime and size
@@ -408,7 +408,7 @@ public sealed class MediaBackup
         // try and find a disk based on the disk name only
         // if more than 1 disk than return the first one
         var diskName = BackupDisk.GetBackupDirectoryName(backupShare);
-        if (string.IsNullOrEmpty(diskName)) return Utils.TraceOut<BackupDisk>();
+        if (diskName.HasNoValue()) return Utils.TraceOut<BackupDisk>();
 
         var backupDisk = BackupDisks.FirstOrDefault(x => x.Name == diskName);
 
@@ -484,7 +484,7 @@ public sealed class MediaBackup
     /// <returns></returns>
     public IEnumerable<BackupFile> GetBackupFilesWithDiskEmpty()
     {
-        return BackupFiles.Where(static p => string.IsNullOrEmpty(p.Disk) && !p.Deleted);
+        return BackupFiles.Where(static p => p.Disk.HasNoValue() && !p.Deleted);
     }
 
     /// <summary>

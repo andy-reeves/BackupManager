@@ -136,10 +136,10 @@ public sealed class BackupFile : IEquatable<BackupFile>
     {
         get
         {
-            if (string.IsNullOrEmpty(Disk)) return 0;
+            if (Disk.HasNoValue()) return 0;
 
             var diskNumberString = Disk.SubstringAfter(' ');
-            return string.IsNullOrEmpty(diskNumberString) ? 0 : int.Parse(diskNumberString);
+            return diskNumberString.HasValue() ? int.Parse(diskNumberString) : 0;
         }
     }
 
@@ -155,12 +155,12 @@ public sealed class BackupFile : IEquatable<BackupFile>
     /// </summary>
     public string DiskChecked
     {
-        get => string.IsNullOrEmpty(diskChecked) ? string.Empty : diskChecked;
+        get => diskChecked.HasValue() ? diskChecked : string.Empty;
 
         set
         {
             // If you clear the DiskChecked then we automatically clear the Disk property too
-            if (string.IsNullOrEmpty(value)) disk = null;
+            if (value.HasNoValue()) disk = null;
             diskChecked = value;
         }
     }
@@ -171,11 +171,11 @@ public sealed class BackupFile : IEquatable<BackupFile>
     /// </summary>
     public string Disk
     {
-        get => string.IsNullOrEmpty(disk) ? string.Empty : disk;
+        get => disk.HasValue() ? disk : string.Empty;
 
         set
         {
-            if (string.IsNullOrEmpty(value)) diskChecked = null;
+            if (value.HasNoValue()) diskChecked = null;
             disk = value;
         }
     }
@@ -188,7 +188,7 @@ public sealed class BackupFile : IEquatable<BackupFile>
     {
         get
         {
-            if (string.IsNullOrEmpty(fileName)) fileName = Path.GetFileName(FullPath);
+            if (fileName.HasNoValue()) fileName = Path.GetFileName(FullPath);
             return fileName;
         }
     }

@@ -369,4 +369,10 @@
   <data name="ListingFileNotCheckedInDaysOnDisk" xml:space="preserve">
     <value>{0} - not checked in {1} day(s) on disk {2}</value>
   </data>
+  <data name="VideoCodecNotCorrect" xml:space="preserve">
+    <value>[{0}/{1}] VideoCodec to change for {2}. Was {3} and should be {4}</value>
+  </data>
+  <data name="VideoCodecCorrect" xml:space="preserve">
+    <value>[{0}/{1}] VideoCodec correct for {2}</value>
+  </data>
 </root>

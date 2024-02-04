@@ -29,8 +29,7 @@ internal sealed partial class Main
     /// <param name="scanPathForVideoCodec"></param>
     /// <param name="ct"></param>
     /// <returns>True if the scan was successful otherwise False. Returns True if the directories doesn't exist</returns>
-    private bool ScanSingleDirectory(string directoryToCheck, SearchOption searchOption, bool scanPathForVideoCodec,
-        CancellationToken ct)
+    private bool ScanSingleDirectory(string directoryToCheck, SearchOption searchOption, bool scanPathForVideoCodec, CancellationToken ct)
     {
         Utils.TraceIn(directoryToCheck, searchOption);
         if (!Directory.Exists(directoryToCheck)) return Utils.TraceOut(true);
@@ -52,8 +51,7 @@ internal sealed partial class Main
     /// <param name="scanPathForVideoCodec"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    private bool ProcessFiles(IReadOnlyCollection<string> filesParam, string scanId, bool scanPathForVideoCodec,
-        CancellationToken ct)
+    private bool ProcessFiles(IReadOnlyCollection<string> filesParam, string scanId, bool scanPathForVideoCodec, CancellationToken ct)
     {
         Utils.TraceIn();
         DisableControlsForAsyncTasks(ct);
@@ -62,9 +60,7 @@ internal sealed partial class Main
         fileCounterForMultiThreadProcessing = 0;
         EnableProgressBar(0, filesParam.Count);
         var suffix = filesParam.Count == 1 ? string.Empty : "s";
-
-        Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal,
-            $"Processing {filesParam.Count:n0} file{suffix}", false, true);
+        Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal, $"Processing {filesParam.Count:n0} file{suffix}", false, true);
 
         // One process thread for each disk
         tasks.AddRange(diskNames.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam)).Select(files =>
@@ -87,8 +83,7 @@ internal sealed partial class Main
     /// <param name="scanId"></param>
     /// <param name="scanPathForVideoCodec"></param>
     /// <param name="ct"></param>
-    private bool ProcessFilesInternal(IEnumerable<string> filesParam, string scanId, bool scanPathForVideoCodec,
-        CancellationToken ct)
+    private bool ProcessFilesInternal(IEnumerable<string> filesParam, string scanId, bool scanPathForVideoCodec, CancellationToken ct)
     {
         Utils.TraceIn();
 
@@ -113,8 +108,7 @@ internal sealed partial class Main
             {
                 if (file.Length > Utils.MAX_PATH)
                 {
-                    Utils.LogWithPushover(BackupAction.ProcessFiles,
-                        $"{file} has a path longer than 256 characters. Please rename manually.");
+                    Utils.LogWithPushover(BackupAction.ProcessFiles, $"{file} has a path longer than 256 characters. Please rename manually.");
                     return Utils.TraceOut(false);
                 }
 
@@ -135,15 +129,13 @@ internal sealed partial class Main
                     }
                 }
 
-                if (config.DirectoriesRenameVideoFilesOnOff && scanPathForVideoCodec && File.Exists(file) &&
-                    Utils.FileIsVideo(file))
+                if (config.DirectoriesRenameVideoFilesOnOff && scanPathForVideoCodec && File.Exists(file) && Utils.FileIsVideo(file))
                 {
                     try
                     {
                         if (Utils.RenameVideoCodec(file, out var newFile))
                         {
-                            Utils.LogWithPushover(BackupAction.ProcessFiles,
-                                $"{Path.GetFileName(file)} rename required for video codec");
+                            Utils.LogWithPushover(BackupAction.ProcessFiles, $"{Path.GetFileName(file)} rename required for video codec");
 
                             // change the file to the newFile to continue processing
                             file = newFile;
@@ -235,9 +227,7 @@ internal sealed partial class Main
 
         oldestBackupDiskTextBox.TextWithInvoke(oldestFile.Disk);
         var days = DateTime.Today.Subtract(DateTime.Parse(oldestFile.DiskChecked)).Days;
-
-        oldestBackupDiskAgeTextBox.TextWithInvoke(string.Format(Resources.UpdateOldestBackupDiskNDaysAgo, days,
-            days == 1 ? string.Empty : "s"));
+        oldestBackupDiskAgeTextBox.TextWithInvoke(string.Format(Resources.UpdateOldestBackupDiskNDaysAgo, days, days == 1 ? string.Empty : "s"));
         Utils.TraceOut();
     }
 
@@ -253,8 +243,8 @@ internal sealed partial class Main
         {
             UpdateStatusLabel(ct, string.Format(Resources.SpeedTesting, rootDirectory));
 
-            Utils.DiskSpeedTest(rootDirectory, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize),
-                mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed, ct);
+            Utils.DiskSpeedTest(rootDirectory, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations,
+                out readSpeed, out writeSpeed, ct);
         }
         var totalBytesOnRootDirectoryDiskFormatted = Utils.FormatSize(totalBytesOnRootDirectoryDisk);
         var freeSpaceOnRootDirectoryDiskFormatted = Utils.FormatSize(freeSpaceOnRootDirectoryDisk);
@@ -329,8 +319,10 @@ internal sealed partial class Main
         RootDirectoryChecks(mediaBackup.Config.Directories, ct);
         var tasks = new List<Task>(diskNames.Length);
 
-        tasks.AddRange(diskNames.Select(diskName => Utils.GetDirectoriesForDisk(diskName, mediaBackup.Config.Directories)).Select(
-            directoriesOnDisk => { return TaskWrapper(Task.Run(() => GetFilesAsync(directoriesOnDisk, scanId, ct), ct), ct); }));
+        tasks.AddRange(diskNames.Select(diskName => Utils.GetDirectoriesForDisk(diskName, mediaBackup.Config.Directories)).Select(directoriesOnDisk =>
+        {
+            return TaskWrapper(Task.Run(() => GetFilesAsync(directoriesOnDisk, scanId, ct), ct), ct);
+        }));
         Task.WhenAll(tasks).Wait(ct);
         Utils.LogWithPushover(BackupAction.ScanDirectory, Resources.Completed, true);
 
@@ -360,9 +352,7 @@ internal sealed partial class Main
         foreach (var directory in directories)
         {
             var directoryScan = new DirectoryScan(DirectoryScanType.GetFiles, directory, DateTime.Now, scanId);
-
-            Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal,
-                string.Format(Resources.Scanning, directory));
+            Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, string.Format(Resources.Scanning, directory));
             if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
             UpdateStatusLabel(ct, string.Format(Resources.Scanning, directory));
             var files = Utils.GetFiles(directory, filters, SearchOption.AllDirectories, ct);
@@ -387,8 +377,8 @@ internal sealed partial class Main
 
             DisableControlsForAsyncTasks(ct);
 
-            ReadyToScan(new FileSystemWatcherEventArgs(directory), SearchOption.AllDirectories,
-                config.DirectoriesRenameVideoFilesForFullScansOnOff, ct);
+            ReadyToScan(new FileSystemWatcherEventArgs(directory), SearchOption.AllDirectories, config.DirectoriesRenameVideoFilesForFullScansOnOff,
+                ct);
             ResetAllControls();
         }
         finally
@@ -428,8 +418,7 @@ internal sealed partial class Main
         var fileName = new FileInfo(filePath).Name;
         if (!filters.Any(pattern => Regex.IsMatch(fileName, pattern))) return false;
 
-        Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal,
-            $"File matches RegEx and so will be deleted {filePath}");
+        Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, $"File matches RegEx and so will be deleted {filePath}");
         Utils.FileDelete(filePath);
         return true;
     }

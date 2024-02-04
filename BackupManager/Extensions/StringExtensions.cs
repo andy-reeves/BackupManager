@@ -52,7 +52,7 @@ internal static partial class StringExtensions
     /// </returns>
     public static string Capitalize(this string s)
     {
-        if (string.IsNullOrEmpty(s)) return string.Empty;
+        if (s.HasNoValue()) return string.Empty;
 
         var chars = s.ToCharArray();
         chars[0] = char.ToUpperInvariant(chars[0]);
@@ -226,7 +226,7 @@ internal static partial class StringExtensions
     /// </returns>
     public static string SubstringAfter(this string s, char c)
     {
-        if (string.IsNullOrEmpty(s)) return string.Empty;
+        if (s.HasNoValue()) return string.Empty;
 
         var index = s.IndexOf(c);
         return index == -1 ? s : index < s.Length - 1 ? s[(index + 1)..] : string.Empty;

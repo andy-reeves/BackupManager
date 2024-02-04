@@ -25,9 +25,7 @@ internal sealed partial class Main
         monitoringExecutingRightNow = true;
 
         foreach (var monitor in mediaBackup.Config.Monitors.Where(static monitor =>
-                     monitor.Port > 0
-                         ? !Utils.ConnectionExists(monitor.Url, monitor.Port)
-                         : !Utils.UrlExists(monitor.Url, monitor.Timeout * 1000)))
+                     monitor.Port > 0 ? !Utils.ConnectionExists(monitor.Url, monitor.Port) : !Utils.UrlExists(monitor.Url, monitor.Timeout * 1000)))
         {
             // The monitor is down
             monitor.UpdateFailures(DateTime.Now);
@@ -50,8 +48,7 @@ internal sealed partial class Main
                 Utils.Trace($"Installed is {installedVersion}");
                 Utils.Trace($"Available is {availableVersion}");
 
-                if (installedVersion != string.Empty && availableVersion != string.Empty &&
-                    Utils.VersionIsNewer(installedVersion, availableVersion))
+                if (installedVersion != string.Empty && availableVersion != string.Empty && Utils.VersionIsNewer(installedVersion, availableVersion))
                 {
                     Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
                         $"Newer version of service {monitor.ApplicationType} available so not stopping/starting service. Version {installedVersion} is installed and {availableVersion} is available.");
@@ -73,8 +70,7 @@ internal sealed partial class Main
 
             if (monitor.ApplicationToStart.HasValue())
             {
-                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal,
-                    $"Starting {monitor.ApplicationToStart}");
+                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal, $"Starting {monitor.ApplicationToStart}");
                 var processToStart = Environment.ExpandEnvironmentVariables(monitor.ApplicationToStart);
 
                 if (File.Exists(processToStart))
@@ -88,8 +84,7 @@ internal sealed partial class Main
                     }
                     else
                     {
-                        Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal,
-                            $"'{monitor.Name}' started");
+                        Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal, $"'{monitor.Name}' started");
                     }
                 }
                 else
@@ -100,15 +95,13 @@ internal sealed partial class Main
             }
             if (!monitor.ServiceToRestart.HasValue()) continue;
 
-            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal,
-                $"Restarting '{monitor.ServiceToRestart}'");
+            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal, $"Restarting '{monitor.ServiceToRestart}'");
 
             if (Utils.RestartService(monitor.ServiceToRestart, monitor.Timeout * 1000))
                 Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal, $"'{monitor.Name}' started");
             else
             {
-                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
-                    $"Failed to restart the service '{monitor.Name}'");
+                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, $"Failed to restart the service '{monitor.Name}'");
             }
         }
 
@@ -136,8 +129,7 @@ internal sealed partial class Main
         // check all the directories are writable
         foreach (var directory in mediaBackup.Config.Directories.Where(static directory => !Utils.IsDirectoryWritable(directory)))
         {
-            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
-                $"{directory} is not available or writable");
+            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, $"{directory} is not available or writable");
 
             // Turn off any more monitoring
             mediaBackup.Config.MonitoringOnOff = false;

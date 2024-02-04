@@ -131,9 +131,7 @@ internal sealed partial class Main
                 ? Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize)
                 : disk.Free - Utils.BYTES_IN_ONE_KILOBYTE;
             UpdateStatusLabel(ct, string.Format(Resources.SpeedTesting, directoryToCheck));
-
-            Utils.DiskSpeedTest(directoryToCheck, diskTestSize, mediaBackup.Config.SpeedTestIterations, out readSpeed,
-                out writeSpeed, ct);
+            Utils.DiskSpeedTest(directoryToCheck, diskTestSize, mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed, ct);
             disk.UpdateSpeeds(readSpeed, writeSpeed);
         }
 
@@ -220,8 +218,7 @@ internal sealed partial class Main
                             }
                             else
                             {
-                                Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
-                                    $"Deleting {backupFile.FullPath}. ");
+                                Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, $"Deleting {backupFile.FullPath}. ");
                                 Utils.FileDelete(backupFileFullPath);
                             }
                         }
@@ -291,8 +288,7 @@ internal sealed partial class Main
             }
             else
             {
-                Utils.LogWithPushover(BackupAction.CheckBackupDisk,
-                    $"Extra file {backupFileFullPath} on backup disk {disk.Name}");
+                Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Extra file {backupFileFullPath} on backup disk {disk.Name}");
                 diskInfoMessageWasTheLastSent = false;
             }
         }
@@ -323,8 +319,7 @@ internal sealed partial class Main
 
             if (!UpdateCurrentBackupDiskInfo(disk))
             {
-                Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Emergency,
-                    $"Error updating info for backup disk {disk.Name}");
+                Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Emergency, $"Error updating info for backup disk {disk.Name}");
                 return null;
             }
             UpdateMediaFilesCountDisplay();
@@ -333,22 +328,19 @@ internal sealed partial class Main
 
             if (removedFilesCount > 0)
             {
-                Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal,
-                    $"{removedFilesCount} files removed completely");
+                Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal, $"{removedFilesCount} files removed completely");
             }
 
             if (deletedFilesCount > 0)
             {
-                Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal,
-                    $"{deletedFilesCount} files marked as deleted");
+                Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal, $"{deletedFilesCount} files marked as deleted");
             }
             mediaBackup.Save(ct);
             UpdateStatusLabel(Resources.Saved);
 
             if (!diskInfoMessageWasTheLastSent)
             {
-                text =
-                    $"Name: {disk.Name}\nTotal: {disk.CapacityFormatted}\nFree: {disk.FreeFormatted}\nFiles: {disk.TotalFiles:n0}";
+                text = $"Name: {disk.Name}\nTotal: {disk.CapacityFormatted}\nFree: {disk.FreeFormatted}\nFiles: {disk.TotalFiles:n0}";
                 Utils.LogWithPushover(BackupAction.CheckBackupDisk, text);
             }
             Utils.LogWithPushover(BackupAction.CheckBackupDisk, Resources.Completed, true);
@@ -379,11 +371,8 @@ internal sealed partial class Main
 
         while (currentConnectedBackupDiskName != backupDisk)
         {
-            Utils.LogWithPushover(BackupAction.Restore, PushoverPriority.High,
-                $"Connect new backup drive to restore from {backupDisk}");
-
-            var answer = MessageBox.Show(string.Format(Resources.CorrectDiskPrompt, backupDisk), Resources.CorrectDiskTitle,
-                MessageBoxButtons.YesNo);
+            Utils.LogWithPushover(BackupAction.Restore, PushoverPriority.High, $"Connect new backup drive to restore from {backupDisk}");
+            var answer = MessageBox.Show(string.Format(Resources.CorrectDiskPrompt, backupDisk), Resources.CorrectDiskTitle, MessageBoxButtons.YesNo);
 
             // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
             switch (answer)
@@ -423,9 +412,7 @@ internal sealed partial class Main
             WaitForNewDisk(nextDiskMessage, ct);
             disk = mediaBackup.GetBackupDisk(backupDiskTextBox.Text);
         }
-
-        if (!UpdateCurrentBackupDiskInfo(disk))
-            _ = MessageBox.Show(Resources.NoValidBackupShare, Resources.BackupDisk, MessageBoxButtons.OK);
+        if (!UpdateCurrentBackupDiskInfo(disk)) _ = MessageBox.Show(Resources.NoValidBackupShare, Resources.BackupDisk, MessageBoxButtons.OK);
         return Utils.TraceOut(disk);
     }
 }

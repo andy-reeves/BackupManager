@@ -27,9 +27,7 @@ internal sealed partial class Main
         var backupFiles = filesToBackup.ToArray();
         var sizeOfFiles = backupFiles.Sum(static x => x.Length);
         Utils.LogWithPushover(BackupAction.CopyFiles, Resources.Started, true, true);
-
-        Utils.LogWithPushover(BackupAction.CopyFiles,
-            $"{backupFiles.Length:n0} files to backup at {Utils.FormatSize(sizeOfFiles)}", false, true);
+        Utils.LogWithPushover(BackupAction.CopyFiles, $"{backupFiles.Length:n0} files to backup at {Utils.FormatSize(sizeOfFiles)}", false, true);
         _ = Utils.GetDiskInfo(backupDiskTextBox.Text, out var availableSpace, out _);
         var remainingDiskSpace = availableSpace - Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave);
         var sizeOfCopy = remainingDiskSpace < sizeOfFiles ? remainingDiskSpace : sizeOfFiles;
@@ -44,8 +42,7 @@ internal sealed partial class Main
 
         if (!UpdateCurrentBackupDiskInfo(disk))
         {
-            Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.Emergency,
-                $"Error updating info for backup disk {disk.Name}");
+            Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.Emergency, $"Error updating info for backup disk {disk.Name}");
             return;
         }
         mediaBackup.Save(ct);
@@ -107,16 +104,15 @@ internal sealed partial class Main
             catch (IOException ex)
             {
                 // Sometimes during a copy we get this if we lose the connection to the source NAS drive
-                Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.Emergency,
-                    $"IOException during copy. Skipping file. Details {ex}");
+                Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.Emergency, $"IOException during copy. Skipping file. Details {ex}");
             }
             _ = UpdateCurrentBackupDiskInfo(disk);
             ClearEstimatedFinish();
         }
     }
 
-    private bool FileExistsInternal(long sizeOfCopy, BackupDisk disk, BackupFile backupFile, string sourceFileName,
-        long copiedSoFar, int fileCounter, int totalFileCount, CancellationToken ct)
+    private bool FileExistsInternal(long sizeOfCopy, BackupDisk disk, BackupFile backupFile, string sourceFileName, long copiedSoFar, int fileCounter,
+        int totalFileCount, CancellationToken ct)
     {
         Utils.TraceIn();
         var destinationFileName = backupFile.BackupDiskFullPath(disk.BackupPath);
@@ -156,9 +152,9 @@ internal sealed partial class Main
         return Utils.TraceOut(copyTheFile);
     }
 
-    private void CopyFileInternal(long sizeOfCopy, BackupDisk disk, string sourceFileName, long copiedSoFar,
-        FileInfo sourceFileInfo, ref bool outOfDiskSpaceMessageSent, long remainingSizeOfFilesToCopy, int fileCounter,
-        int totalFileCount, BackupFile backupFile, ref long lastCopySpeed, CancellationToken ct)
+    private void CopyFileInternal(long sizeOfCopy, BackupDisk disk, string sourceFileName, long copiedSoFar, FileInfo sourceFileInfo,
+        ref bool outOfDiskSpaceMessageSent, long remainingSizeOfFilesToCopy, int fileCounter, int totalFileCount, BackupFile backupFile,
+        ref long lastCopySpeed, CancellationToken ct)
     {
         Utils.TraceIn();
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
@@ -179,12 +175,8 @@ internal sealed partial class Main
             {
                 // remaining size is the smallest of remaining disk size-critical space to leave free OR
                 // size of remaining files to copy
-                var remainingDiskSpace =
-                    availableSpace - Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave);
-
-                var sizeOfCopyRemaining = remainingDiskSpace < remainingSizeOfFilesToCopy
-                    ? remainingDiskSpace
-                    : remainingSizeOfFilesToCopy;
+                var remainingDiskSpace = availableSpace - Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave);
+                var sizeOfCopyRemaining = remainingDiskSpace < remainingSizeOfFilesToCopy ? remainingDiskSpace : remainingSizeOfFilesToCopy;
                 var numberOfSecondsOfCopyRemaining = sizeOfCopyRemaining / (double)lastCopySpeed;
                 var rightNow = DateTime.Now;
                 var estimatedFinishDateTime = rightNow.AddSeconds(numberOfSecondsOfCopyRemaining);
@@ -195,8 +187,7 @@ internal sealed partial class Main
                 // could be the following day
                 if (estimatedFinishDateTime.DayOfWeek != rightNow.DayOfWeek)
                 {
-                    formattedEndDateTime = Resources.EstimatedFinishByTomorrow +
-                                           estimatedFinishDateTime.ToString(Resources.DateTime_HHmm) +
+                    formattedEndDateTime = Resources.EstimatedFinishByTomorrow + estimatedFinishDateTime.ToString(Resources.DateTime_HHmm) +
                                            $" in {Utils.FormatTimeFromSeconds(Convert.ToInt32(numberOfSecondsOfCopyRemaining))}";
                 }
                 UpdateEstimatedFinish(estimatedFinishDateTime);
@@ -234,14 +225,12 @@ internal sealed partial class Main
             {
                 Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.High,
                     $"There was an error with the hash codes on the source and backup disk. " +
-                    $"Its likely the source file has changed since the last backup of {backupFile.FullPath} to " +
-                    $"{destinationFileName}");
+                    $"Its likely the source file has changed since the last backup of {backupFile.FullPath} to " + $"{destinationFileName}");
             }
         }
         else
         {
-            UpdateStatusLabel(ct, string.Format(Resources.Skipping, string.Empty),
-                Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
+            UpdateStatusLabel(ct, string.Format(Resources.Skipping, string.Empty), Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
             if (outOfDiskSpaceMessageSent) return;
 
             var text = $"[{fileCounter}/{totalFileCount}] {Utils.FormatSize(availableSpace)} free.\n" +

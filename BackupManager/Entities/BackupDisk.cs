@@ -100,7 +100,7 @@ public sealed class BackupDisk : IEquatable<BackupDisk>
         get
         {
             var diskNumberString = Name.SubstringAfter(' ');
-            return string.IsNullOrEmpty(diskNumberString) ? 0 : int.Parse(diskNumberString);
+            return diskNumberString.HasValue() ? int.Parse(diskNumberString) : 0;
         }
     }
 
@@ -136,7 +136,7 @@ public sealed class BackupDisk : IEquatable<BackupDisk>
     /// <returns>The backup directory name or null if it couldn't be determined.</returns>
     public static string GetBackupDirectoryName(string path)
     {
-        if (string.IsNullOrEmpty(path)) return null;
+        if (path.HasNoValue()) return null;
 
         DirectoryInfo sharePathDirectoryInfo = new(path);
         if (!sharePathDirectoryInfo.Exists) return null;
@@ -159,7 +159,7 @@ public sealed class BackupDisk : IEquatable<BackupDisk>
     /// <returns>False is the path doesn't contain a valid directory.</returns>
     public static bool CheckForValidBackupShare(string sharePath)
     {
-        return !string.IsNullOrEmpty(GetBackupDirectoryName(sharePath));
+        return GetBackupDirectoryName(sharePath).HasValue();
     }
 
     /// <summary>

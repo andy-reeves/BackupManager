@@ -135,6 +135,7 @@
             oldestBackupDiskTextBox = new System.Windows.Forms.TextBox();
             label16 = new System.Windows.Forms.Label();
             scanDirectoryComboBox = new System.Windows.Forms.ComboBox();
+            h264FilesButton = new System.Windows.Forms.Button();
             pushoverGroupBox.SuspendLayout();
             groupBox2.SuspendLayout();
             listFilesInDirectoryGroupBox.SuspendLayout();
@@ -1304,11 +1305,23 @@
             scanDirectoryComboBox.Size = new System.Drawing.Size(163, 23);
             scanDirectoryComboBox.TabIndex = 42;
             // 
+            // h264FilesButton
+            // 
+            h264FilesButton.Location = new System.Drawing.Point(831, 479);
+            h264FilesButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            h264FilesButton.Name = "h264FilesButton";
+            h264FilesButton.Size = new System.Drawing.Size(234, 27);
+            h264FilesButton.TabIndex = 103;
+            h264FilesButton.Text = "Check all files for TV/Movies h264 size";
+            h264FilesButton.UseVisualStyleBackColor = true;
+            h264FilesButton.Click += H264FilesButton_Click;
+            // 
             // Main
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1416, 548);
+            Controls.Add(h264FilesButton);
             Controls.Add(videoCodecCheckButton);
             Controls.Add(createNewBackupDiskButton);
             Controls.Add(button2);
@@ -1499,6 +1512,7 @@
         private System.Windows.Forms.Button createNewBackupDiskButton;
         private System.Windows.Forms.Button listBackupDiskStatusByFreeSpaceButton;
         private System.Windows.Forms.Button videoCodecCheckButton;
+        private System.Windows.Forms.Button h264FilesButton;
     }
 }
 

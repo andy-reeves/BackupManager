@@ -815,5 +815,23 @@ namespace BackupManager.Properties {
                 return ResourceManager.GetString("VersionCheckingButton", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{0}/{1}] VideoCodec correct for {2}.
+        /// </summary>
+        internal static string VideoCodecCorrect {
+            get {
+                return ResourceManager.GetString("VideoCodecCorrect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{0}/{1}] VideoCodec to change for {2}. Was {3} and should be {4}.
+        /// </summary>
+        internal static string VideoCodecNotCorrect {
+            get {
+                return ResourceManager.GetString("VideoCodecNotCorrect", resourceCulture);
+            }
+        }
     }
 }
