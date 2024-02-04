@@ -354,9 +354,6 @@
   <data name="UpdatingPercentage" xml:space="preserve">
     <value>Updating {0}%</value>
   </data>
-  <data name="DirectoryIsNotWritable2" xml:space="preserve">
-    <value>{0} is not available or writable</value>
-  </data>
   <data name="CheckForOldBackupDisks" xml:space="preserve">
     <value>Backup disks not checked in {0} days - {1}</value>
   </data>
@@ -421,7 +418,7 @@ Write: {4}</value>
   <data name="ServiceIsDown" xml:space="preserve">
     <value>'{0}' is down. {1} failure{2} in the last {3}.</value>
   </data>
-  <data name="DirectoryIsNotWritable1" xml:space="preserve">
+  <data name="DirectoryIsNotWritable" xml:space="preserve">
     <value>{0} is not available or writable</value>
   </data>
 </root>

@@ -334,7 +334,7 @@ internal sealed partial class Main
             else
             {
                 Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
-                    string.Format(Resources.DirectoryIsNotWritable2, directory));
+                    string.Format(Resources.DirectoryIsNotWritable, directory));
             }
         }
         mediaBackup.Watcher.Directories = writableDirectories.ToArray();

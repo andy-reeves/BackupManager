@@ -56,7 +56,7 @@ internal sealed partial class Main
         foreach (var directory in mediaBackup.Config.Directories.Where(static directory => !Utils.IsDirectoryWritable(directory)))
         {
             Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
-                string.Format(Resources.DirectoryIsNotWritable1, directory));
+                string.Format(Resources.DirectoryIsNotWritable, directory));
 
             // Turn off any more monitoring
             mediaBackup.Config.MonitoringOnOff = false;

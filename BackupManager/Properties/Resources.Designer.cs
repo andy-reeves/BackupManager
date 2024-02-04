@@ -301,18 +301,9 @@ namespace BackupManager.Properties {
         /// <summary>
         ///   Looks up a localized string similar to {0} is not available or writable.
         /// </summary>
-        internal static string DirectoryIsNotWritable1 {
+        internal static string DirectoryIsNotWritable {
             get {
-                return ResourceManager.GetString("DirectoryIsNotWritable1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0} is not available or writable.
-        /// </summary>
-        internal static string DirectoryIsNotWritable2 {
-            get {
-                return ResourceManager.GetString("DirectoryIsNotWritable2", resourceCulture);
+                return ResourceManager.GetString("DirectoryIsNotWritable", resourceCulture);
             }
         }
         
