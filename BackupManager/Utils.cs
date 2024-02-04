@@ -57,28 +57,6 @@ internal static partial class Utils
     private const int OPEN_EXISTING = 3;
 
     /// <summary>
-    ///     An array of the special feature prefixes for video files like -featurette, - other, etc.
-    /// </summary>
-    internal static readonly string[] SpecialFeatures =
-    {
-        // ReSharper disable once StringLiteralTypo
-        "-featurette", "-other", "-interview", "-scene", "-short", "-deleted", "-behindthescenes", "-trailer"
-    };
-
-    /// <summary>
-    ///     An array of file extensions for video file types like .mkv, .mp4, etc.
-    ///     Regex would be (m(kv|p(4|e?g))|ts|avi|(e(n|s)(\.hi)?\.)srt)
-    /// </summary>
-    private static readonly string[] _videoExtensions = { ".mkv", ".mp4", ".mpeg", ".mpg", ".ts", ".avi" };
-
-    /// <summary>
-    ///     An array of allowed Subtitles extensions in video folders like .en.srt, .en.hi.srt, etc.
-    /// </summary>
-
-    // ReSharper disable once UnusedMember.Local
-    private static readonly string[] _subtitlesExtensions = { ".en.srt", ".es.srt", "en.hi.srt", "es.hi.srt" };
-
-    /// <summary>
     ///     The end block size.
     /// </summary>
     internal const int END_BLOCK_SIZE = 16 * BYTES_IN_ONE_KILOBYTE; // 16K
@@ -130,6 +108,28 @@ internal static partial class Utils
     internal const string SPEED_TEST_GUID = "{AFEF4827-0AA2-4C0E-8D90-9BEFB5DBEA62}";
 
     /// <summary>
+    ///     An array of the special feature prefixes for video files like -featurette, - other, etc.
+    /// </summary>
+    internal static readonly string[] SpecialFeatures =
+    {
+        // ReSharper disable once StringLiteralTypo
+        "-featurette", "-other", "-interview", "-scene", "-short", "-deleted", "-behindthescenes", "-trailer"
+    };
+
+    /// <summary>
+    ///     An array of file extensions for video file types like .mkv, .mp4, etc.
+    ///     Regex would be (m(kv|p(4|e?g))|ts|avi|(e(n|s)(\.hi)?\.)srt)
+    /// </summary>
+    private static readonly string[] _videoExtensions = { ".mkv", ".mp4", ".mpeg", ".mpg", ".ts", ".avi" };
+
+    /// <summary>
+    ///     An array of allowed Subtitles extensions in video folders like .en.srt, .en.hi.srt, etc.
+    /// </summary>
+
+    // ReSharper disable once UnusedMember.Local
+    private static readonly string[] _subtitlesExtensions = { ".en.srt", ".es.srt", "en.hi.srt", "es.hi.srt" };
+
+    /// <summary>
     ///     True when we're in a DEBUG build otherwise False
     /// </summary>
     internal static readonly bool InDebugBuild;
@@ -178,16 +178,14 @@ internal static partial class Utils
     /// </summary>
     internal static int PushoverMessagesRemaining { get; private set; }
 
-    [LibraryImport("kernel32.dll", EntryPoint = "GetDiskFreeSpaceExW", SetLastError = true,
-        StringMarshalling = StringMarshalling.Utf16)]
+    [LibraryImport("kernel32.dll", EntryPoint = "GetDiskFreeSpaceExW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool GetDiskFreeSpaceEx(string lpDirectoryName, out long lpFreeBytesAvailable,
-        out long lpTotalNumberOfBytes, out long lpTotalNumberOfFreeBytes);
+    private static partial bool GetDiskFreeSpaceEx(string lpDirectoryName, out long lpFreeBytesAvailable, out long lpTotalNumberOfBytes,
+        out long lpTotalNumberOfFreeBytes);
 
     [LibraryImport("kernel32.dll", EntryPoint = "CreateFileW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
-    private static partial SafeFileHandle CreateFile(string fileName, uint dwDesiredAccess, FileShare dwShareMode,
-        IntPtr securityAttrsMustBeZero, FileMode dwCreationDisposition, uint dwFlagsAndAttributes,
-        IntPtr hTemplateFileMustBeZero);
+    private static partial SafeFileHandle CreateFile(string fileName, uint dwDesiredAccess, FileShare dwShareMode, IntPtr securityAttrsMustBeZero,
+        FileMode dwCreationDisposition, uint dwFlagsAndAttributes, IntPtr hTemplateFileMustBeZero);
 
     [LibraryImport("kernel32.dll", EntryPoint = "SetFileTime", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -232,8 +230,8 @@ internal static partial class Utils
 
         foreach (var file in traceFiles)
         {
-            var destFileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                "BackupManager_Backups", $"{new FileInfo(file).Name}_{timeLog}.log");
+            var destFileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups",
+                $"{new FileInfo(file).Name}_{timeLog}.log");
 
             try
             {
@@ -282,9 +280,8 @@ internal static partial class Utils
                     var node = JsonNode.Parse(response);
                     return node?["computer"]?["Windows"]?["version"]?.ToString().SubstringBefore('-');
                 case ApplicationType.SABnzbd:
-                    return GitHubVersionNumberParser(
-                        $"https://raw.githubusercontent.com/sabnzbd/sabnzbd/{branchName}/sabnzbd/version.py", "__version__", "=",
-                        1);
+                    return GitHubVersionNumberParser($"https://raw.githubusercontent.com/sabnzbd/sabnzbd/{branchName}/sabnzbd/version.py",
+                        "__version__", "=", 1);
                 case ApplicationType.Sonarr:
                     // For up to v3 we did this
                     // GitHubVersionNumberParser($"https://raw.githubusercontent.com/Sonarr/Sonarr/{branchName}/version.sh", "packageVersion=", "=", 1);
@@ -293,17 +290,15 @@ internal static partial class Utils
                     var doc = new HtmlWeb().Load("https://github.com/Sonarr/Sonarr/releases/latest");
                     return doc.DocumentNode.SelectNodes("//html/head/title")[0].InnerText.Split(" ")[1];
                 case ApplicationType.Radarr:
-                    return GitHubVersionNumberParser(
-                        $"https://raw.githubusercontent.com/Radarr/Radarr/{branchName}/azure-pipelines.yml", "majorVersion:", ":",
-                        1);
+                    return GitHubVersionNumberParser($"https://raw.githubusercontent.com/Radarr/Radarr/{branchName}/azure-pipelines.yml",
+                        "majorVersion:", ":", 1);
                 case ApplicationType.Prowlarr:
-                    return GitHubVersionNumberParser(
-                        $"https://raw.githubusercontent.com/Prowlarr/Prowlarr/{branchName}/azure-pipelines.yml", "majorVersion:",
-                        ":", 1);
+                    return GitHubVersionNumberParser($"https://raw.githubusercontent.com/Prowlarr/Prowlarr/{branchName}/azure-pipelines.yml",
+                        "majorVersion:", ":", 1);
                 case ApplicationType.Bazarr:
                     return GitHubVersionNumberParser(
-                        $"https://raw.githubusercontent.com/morpheus65535/bazarr/{branchName}/libs/requests_oauthlib/__init__.py",
-                        "__version__", "=", 1);
+                        $"https://raw.githubusercontent.com/morpheus65535/bazarr/{branchName}/libs/requests_oauthlib/__init__.py", "__version__",
+                        "=", 1);
 
                 // ReSharper disable once RedundantEnumCaseLabelForDefaultSection
                 case ApplicationType.Unknown:
@@ -414,11 +409,8 @@ internal static partial class Utils
         TraceIn(sourceFileName, destFileName);
         if (destFileName == null || sourceFileName == null) return false;
 
-        if (sourceFileName.Length > 256)
-            throw new NotSupportedException($"Source file name {sourceFileName} exceeds 256 characters");
-
-        if (destFileName.Length > 256)
-            throw new NotSupportedException($"Destination file name {destFileName} exceeds 256 characters");
+        if (sourceFileName.Length > 256) throw new NotSupportedException($"Source file name {sourceFileName} exceeds 256 characters");
+        if (destFileName.Length > 256) throw new NotSupportedException($"Destination file name {destFileName} exceeds 256 characters");
         if (File.Exists(destFileName)) throw new NotSupportedException("Destination file already exists");
 
         EnsureDirectoriesForFilePath(destFileName);
@@ -498,8 +490,8 @@ internal static partial class Utils
         var filename = Path.GetFileNameWithoutExtension(path);
         var extension = Path.GetExtension(path);
 
-        if (extension.ToLowerInvariant() != ".png" && extension.ToLowerInvariant() != ".jpg" &&
-            extension.ToLowerInvariant() != ".jpeg" && extension.ToLowerInvariant() != ".mp4")
+        if (extension.ToLowerInvariant() != ".png" && extension.ToLowerInvariant() != ".jpg" && extension.ToLowerInvariant() != ".jpeg" &&
+            extension.ToLowerInvariant() != ".mp4")
             return true;
 
         var creationTime = filename.StartsWithIgnoreCase("IMG_")
@@ -529,10 +521,7 @@ internal static partial class Utils
         {
             StartInfo = new ProcessStartInfo
             {
-                UseShellExecute = true,
-                WindowStyle = ProcessWindowStyle.Hidden,
-                FileName = @"c:\tools\exiftool.exe",
-                Arguments = arguments
+                UseShellExecute = true, WindowStyle = ProcessWindowStyle.Hidden, FileName = @"c:\tools\exiftool.exe", Arguments = arguments
             }
         };
         if (!process.Start()) return TraceOut(false);
@@ -584,8 +573,7 @@ internal static partial class Utils
     /// </returns>
     private static bool AnyFlagSet(FileAttributes value, FileAttributes flagsToCheckFor)
     {
-        return flagsToCheckFor != 0 && Enum.GetValues(typeof(FileAttributes)).Cast<Enum>().Where(flagsToCheckFor.HasFlag)
-            .Any(value.HasFlag);
+        return flagsToCheckFor != 0 && Enum.GetValues(typeof(FileAttributes)).Cast<Enum>().Where(flagsToCheckFor.HasFlag).Any(value.HasFlag);
     }
 
     /// <summary>
@@ -642,12 +630,8 @@ internal static partial class Utils
         if (thirdByteArray != null) newSize += thirdByteArray.Length;
         var byteArrayToHash = new byte[newSize];
         Buffer.BlockCopy(firstByteArray, 0, byteArrayToHash, 0, firstByteArray.Length);
-
-        if (secondByteArray != null)
-            Buffer.BlockCopy(secondByteArray, 0, byteArrayToHash, firstByteArray.Length, secondByteArray.Length);
-
-        if (thirdByteArray != null)
-            Buffer.BlockCopy(thirdByteArray, 0, byteArrayToHash, thirdByteArrayDestinationOffset, thirdByteArray.Length);
+        if (secondByteArray != null) Buffer.BlockCopy(secondByteArray, 0, byteArrayToHash, firstByteArray.Length, secondByteArray.Length);
+        if (thirdByteArray != null) Buffer.BlockCopy(thirdByteArray, 0, byteArrayToHash, thirdByteArrayDestinationOffset, thirdByteArray.Length);
         return ByteArrayToString(MD5.HashData(byteArrayToHash));
     }
 
@@ -662,8 +646,7 @@ internal static partial class Utils
 
         foreach (var eventInfo in eventsToClear)
         {
-            var fieldInfo = instance.GetType()
-                .GetField(eventInfo.Name, BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+            var fieldInfo = instance.GetType().GetField(eventInfo.Name, BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
             if (fieldInfo?.GetValue(instance) is not Delegate eventHandler) continue;
 
             foreach (var item in eventHandler.GetInvocationList())
@@ -740,8 +723,8 @@ internal static partial class Utils
     /// <param name="ct"></param>
     /// <returns>
     /// </returns>
-    internal static string[] GetFiles(string path, string filters, SearchOption searchOption,
-        FileAttributes directoryAttributesToIgnore, CancellationToken ct)
+    internal static string[] GetFiles(string path, string filters, SearchOption searchOption, FileAttributes directoryAttributesToIgnore,
+        CancellationToken ct)
     {
         return GetFiles(path, filters, searchOption, directoryAttributesToIgnore, 0, false, ct);
     }
@@ -825,9 +808,8 @@ internal static partial class Utils
     /// <param name="ct"></param>
     /// <returns>
     /// </returns>
-    private static string[] GetFiles(string path, string filters, SearchOption searchOption,
-        FileAttributes directoryAttributesToIgnore, FileAttributes fileAttributesToIgnore, bool deleteEmptyDirectories,
-        CancellationToken ct)
+    private static string[] GetFiles(string path, string filters, SearchOption searchOption, FileAttributes directoryAttributesToIgnore,
+        FileAttributes fileAttributesToIgnore, bool deleteEmptyDirectories, CancellationToken ct)
     {
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
         var sw = Stopwatch.StartNew();
@@ -887,8 +869,7 @@ internal static partial class Utils
                          {
                              if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
                              return Directory.GetFiles(dir, filter, SearchOption.TopDirectoryOnly);
-                         }).Select(allFiles =>
-                             excludeAsArray.Any() ? allFiles.Where(p => !excludeRegex.Match(p).Success) : allFiles))
+                         }).Select(allFiles => excludeAsArray.Any() ? allFiles.Where(p => !excludeRegex.Match(p).Success) : allFiles))
                 {
                     foundFiles.AddRange(collection.Where(p => !AnyFlagSet(new FileInfo(p).Attributes, fileAttributesToIgnore)));
                 }
@@ -1101,8 +1082,9 @@ internal static partial class Utils
         if (actualVideoCodec.HasNoValue()) return TraceOut(false);
 
         var newPathInternal = Path.Combine(directoryName,
-            fileNameWithoutExtension.Replace(currentVideoCodecInFileName.WrapInSquareBrackets(),
-                actualVideoCodec.WrapInSquareBrackets())) + Path.GetExtension(path);
+                                  fileNameWithoutExtension.Replace(currentVideoCodecInFileName.WrapInSquareBrackets(),
+                                      actualVideoCodec.WrapInSquareBrackets())) +
+                              Path.GetExtension(path);
         Log($"Renaming {path} to {newPathInternal}");
         FileMove(path, newPathInternal);
         Trace($"Renamed {path} to {newPathInternal}");
@@ -1258,8 +1240,7 @@ internal static partial class Utils
         TraceOut();
     }
 
-    private static void SendPushoverMessage(string title, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires,
-        string message)
+    private static void SendPushoverMessage(string title, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires, string message)
     {
         TraceIn();
 
@@ -1271,11 +1252,10 @@ internal static partial class Utils
                 if (!Config.PushoverAppTokenToUse.HasValue()) return;
             }
 
-            if (!Config.PushoverOnOff ||
-                ((priority is not (PushoverPriority.Low or PushoverPriority.Lowest) || !Config.PushoverSendLowOnOff) &&
-                 (priority != PushoverPriority.Normal || !Config.PushoverSendNormalOnOff) &&
-                 (priority != PushoverPriority.High || !Config.PushoverSendHighOnOff) &&
-                 (priority != PushoverPriority.Emergency || !Config.PushoverSendEmergencyOnOff)))
+            if (!Config.PushoverOnOff || ((priority is not (PushoverPriority.Low or PushoverPriority.Lowest) || !Config.PushoverSendLowOnOff) &&
+                                          (priority != PushoverPriority.Normal || !Config.PushoverSendNormalOnOff) &&
+                                          (priority != PushoverPriority.High || !Config.PushoverSendHighOnOff) &&
+                                          (priority != PushoverPriority.Emergency || !Config.PushoverSendEmergencyOnOff)))
                 return;
 
             var timestamp = DateTime.Now.ToUnixTimeMilliseconds();
@@ -1297,9 +1277,7 @@ internal static partial class Utils
                 if (expires == PushoverExpires.Immediately) expires = PushoverExpires.FiveMinutes;
             }
             if (retry != PushoverRetry.None) parameters.Add("retry", Convert.ChangeType(retry, retry.GetTypeCode()).ToString());
-
-            if (expires != PushoverExpires.Immediately)
-                parameters.Add("expire", Convert.ChangeType(expires, expires.GetTypeCode()).ToString());
+            if (expires != PushoverExpires.Immediately) parameters.Add("expire", Convert.ChangeType(expires, expires.GetTypeCode()).ToString());
             using FormUrlEncodedContent postContent = new(parameters);
 
             // ReSharper disable once AccessToDisposedClosure
@@ -1316,8 +1294,8 @@ internal static partial class Utils
                 {
                     _alreadySendingPushoverMessage = true;
 
-                    SendPushoverMessage("Message Limit Warning", PushoverPriority.High, PushoverRetry.None,
-                        PushoverExpires.Immediately, $"{PushoverMessagesRemaining} remaining");
+                    SendPushoverMessage("Message Limit Warning", PushoverPriority.High, PushoverRetry.None, PushoverExpires.Immediately,
+                        $"{PushoverMessagesRemaining} remaining");
                     _alreadySendingPushoverMessage = false;
                     _sentAlertForLowPushoverMessages = true;
                 }
@@ -1456,9 +1434,7 @@ internal static partial class Utils
             Trace(text);
             var textArrayToWrite = text.Split('\n');
 
-            foreach (var textToWrite in from line in textArrayToWrite
-                     where line.HasValue()
-                     select $"{DateTime.Now:dd-MM-yy HH:mm:ss} {line}")
+            foreach (var textToWrite in from line in textArrayToWrite where line.HasValue() select $"{DateTime.Now:dd-MM-yy HH:mm:ss} {line}")
             {
                 Console.WriteLine(textToWrite);
                 if (_logFile.HasValue()) File.AppendAllLines(_logFile, new[] { textToWrite });
@@ -1473,8 +1449,7 @@ internal static partial class Utils
     /// <param name="text"></param>
     /// <param name="delayBeforeSending"></param>
     /// <param name="delayAfterSending"></param>
-    internal static void LogWithPushover(BackupAction backupAction, string text, bool delayBeforeSending = false,
-        bool delayAfterSending = false)
+    internal static void LogWithPushover(BackupAction backupAction, string text, bool delayBeforeSending = false, bool delayAfterSending = false)
     {
         LogWithPushover(backupAction, PushoverPriority.Normal, text, delayBeforeSending, delayAfterSending);
     }
@@ -1487,11 +1462,10 @@ internal static partial class Utils
     /// <param name="text"></param>
     /// <param name="delayBeforeSending"></param>
     /// <param name="delayAfterSending"></param>
-    internal static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, string text,
-        bool delayBeforeSending = false, bool delayAfterSending = false)
+    internal static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, string text, bool delayBeforeSending = false,
+        bool delayAfterSending = false)
     {
-        LogWithPushover(backupAction, priority, PushoverRetry.None, PushoverExpires.Immediately, text, delayBeforeSending,
-            delayAfterSending);
+        LogWithPushover(backupAction, priority, PushoverRetry.None, PushoverExpires.Immediately, text, delayBeforeSending, delayAfterSending);
     }
 
     private static async Task TaskWrapper(Task task, CancellationToken ct)
@@ -1528,16 +1502,14 @@ internal static partial class Utils
     /// <param name="text"></param>
     /// <param name="delayBeforeSending"></param>
     /// <param name="delayAfterSending"></param>
-    internal static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, PushoverRetry retry,
-        PushoverExpires expires, string text, bool delayBeforeSending = false, bool delayAfterSending = false)
+    internal static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires,
+        string text, bool delayBeforeSending = false, bool delayAfterSending = false)
     {
         Log(backupAction, text);
 
         if (backupAction == BackupAction.Error || (!delayBeforeSending && !delayAfterSending))
         {
-            _ = TaskWrapper(
-                Task.Run(() =>
-                    SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, text)),
+            _ = TaskWrapper(Task.Run(() => SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, text)),
                 new CancellationTokenSource().Token);
         }
         else
@@ -1588,9 +1560,7 @@ internal static partial class Utils
     private static string ByteArrayToString(IReadOnlyList<byte> value, int startIndex, int length)
     {
         ArgumentNullException.ThrowIfNull(value);
-
-        if (startIndex < 0 || (startIndex >= value.Count && startIndex > 0))
-            throw new ArgumentOutOfRangeException(nameof(startIndex));
+        if (startIndex < 0 || (startIndex >= value.Count && startIndex > 0)) throw new ArgumentOutOfRangeException(nameof(startIndex));
         if (length < 0) throw new ArgumentOutOfRangeException(nameof(length));
         if (startIndex > value.Count - length) throw new ArgumentException(null, nameof(length));
 
@@ -1630,9 +1600,7 @@ internal static partial class Utils
     /// </returns>
     internal static string CreateHashForByteArray(byte[] firstByteArray, byte[] endByteArray)
     {
-        var byteArrayToHash = endByteArray == null
-            ? new byte[firstByteArray.Length]
-            : new byte[firstByteArray.Length + endByteArray.Length];
+        var byteArrayToHash = endByteArray == null ? new byte[firstByteArray.Length] : new byte[firstByteArray.Length + endByteArray.Length];
         Buffer.BlockCopy(firstByteArray, 0, byteArrayToHash, 0, firstByteArray.Length);
         if (endByteArray != null) Buffer.BlockCopy(endByteArray, 0, byteArrayToHash, firstByteArray.Length, endByteArray.Length);
         return ByteArrayToString(MD5.HashData(byteArrayToHash));
@@ -1885,8 +1853,8 @@ internal static partial class Utils
 
     private static bool SetDirectoryLastWriteUtc(string dirPath, DateTime lastWriteDate)
     {
-        using var hDir = CreateFile(dirPath, FILE_ACCESS_GENERIC_READ | FILE_ACCESS_GENERIC_WRITE, FileShare.ReadWrite,
-            IntPtr.Zero, (FileMode)OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, IntPtr.Zero);
+        using var hDir = CreateFile(dirPath, FILE_ACCESS_GENERIC_READ | FILE_ACCESS_GENERIC_WRITE, FileShare.ReadWrite, IntPtr.Zero,
+            (FileMode)OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, IntPtr.Zero);
         var lastWriteTime = lastWriteDate.ToFileTime();
         return SetFileTime(hDir, IntPtr.Zero, IntPtr.Zero, ref lastWriteTime);
     }
@@ -1928,9 +1896,7 @@ internal static partial class Utils
     internal static string FormatTimeSpanMinutesOnly(TimeSpan timeSpan)
     {
         var totalMinutes = Convert.ToInt32(timeSpan.TotalMinutes);
-
-        if (totalMinutes < 1)
-            return timeSpan.TotalSeconds == 0 ? "0s" : timeSpan.TotalSeconds < 1 ? "1s" : $"{timeSpan.TotalSeconds:n0}s";
+        if (totalMinutes < 1) return timeSpan.TotalSeconds == 0 ? "0s" : timeSpan.TotalSeconds < 1 ? "1s" : $"{timeSpan.TotalSeconds:n0}s";
 
         return $"{totalMinutes}m";
     }
@@ -1969,8 +1935,8 @@ internal static partial class Utils
     /// <param name="writeSpeed">in bytes per second</param>
     /// <param name="testFileSize"></param>
     /// <param name="ct">A cancellation token so we can act on cancelling</param>
-    internal static void DiskSpeedTest(string pathToDiskToTest, long testFileSize, int testIterations, out long readSpeed,
-        out long writeSpeed, CancellationToken ct)
+    internal static void DiskSpeedTest(string pathToDiskToTest, long testFileSize, int testIterations, out long readSpeed, out long writeSpeed,
+        CancellationToken ct)
     {
         TraceIn(pathToDiskToTest, testFileSize, testIterations);
         var tempPath = Path.GetTempPath();
@@ -2120,8 +2086,7 @@ internal static partial class Utils
     /// <param name="testIterations"></param>
     /// <param name="ct">A cancellation token so we can act on cancelling</param>
     /// <returns>The bytes read/written in 1s</returns>
-    private static long DiskSpeedTest(string sourcePath, string destinationPath, long testFileSize, int testIterations,
-        CancellationToken ct)
+    private static long DiskSpeedTest(string sourcePath, string destinationPath, long testFileSize, int testIterations, CancellationToken ct)
     {
         TraceIn();
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
@@ -2324,8 +2289,7 @@ internal static partial class Utils
         return TraceOut(listOfDirectoriesDeleted.ToArray());
     }
 
-    private static void DeleteBrokenSymbolicLinks(string directory, bool includeRoot, ICollection<string> list,
-        string rootDirectory)
+    private static void DeleteBrokenSymbolicLinks(string directory, bool includeRoot, ICollection<string> list, string rootDirectory)
     {
         TraceIn(directory);
 
@@ -2565,17 +2529,15 @@ internal static partial class Utils
 
         if (securityDescriptorObject == null)
         {
-            Trace(string.Format(CultureInfo.InvariantCulture, "Error extracting security descriptor of the shared path {0}.",
-                sharedFolderName));
+            Trace(string.Format(CultureInfo.InvariantCulture, "Error extracting security descriptor of the shared path {0}.", sharedFolderName));
             return;
         }
         var returnCode = Convert.ToInt32(securityDescriptorObject.Properties["ReturnValue"].Value);
 
         if (returnCode != 0)
         {
-            Trace(string.Format(CultureInfo.InvariantCulture,
-                "Error extracting security descriptor of the shared path {0}. Error Code{1}.", sharedFolderName,
-                returnCode.ToString()));
+            Trace(string.Format(CultureInfo.InvariantCulture, "Error extracting security descriptor of the shared path {0}. Error Code{1}.",
+                sharedFolderName, returnCode.ToString()));
             return;
         }
         var securityDescriptor = securityDescriptorObject.Properties["Descriptor"].Value as ManagementBaseObject;
@@ -2600,9 +2562,7 @@ internal static partial class Utils
 
             // Step 3 - Getting the user Account Object
             var userAccountObject = GetUserAccountObject(domain, userName);
-
-            var securityIdentifierObject =
-                new ManagementObject($"Win32_SID.SID='{(string)userAccountObject.Properties["SID"].Value}'");
+            var securityIdentifierObject = new ManagementObject($"Win32_SID.SID='{(string)userAccountObject.Properties["SID"].Value}'");
             securityIdentifierObject.Get();
 
             // Step 4 - Create Trustee Object
@@ -2636,9 +2596,7 @@ internal static partial class Utils
         ManagementObject sharedFolderObject = null;
 
         //Creating a searcher object to search 
-        var searcher =
-            new ManagementObjectSearcher(
-                "Select * from Win32_LogicalShareSecuritySetting where Name = '" + sharedFolderName + "'");
+        var searcher = new ManagementObjectSearcher("Select * from Win32_LogicalShareSecuritySetting where Name = '" + sharedFolderName + "'");
         var resultOfSearch = searcher.Get();
         if (resultOfSearch.Count <= 0) return null;
 
@@ -2681,8 +2639,7 @@ internal static partial class Utils
     [SupportedOSPlatform("windows")]
     internal static ManagementObject GetAccountSecurityIdentifier(ManagementBaseObject userAccountObject)
     {
-        var securityIdentifierObject =
-            new ManagementObject($"Win32_SID.SID='{(string)userAccountObject.Properties["SID"].Value}'");
+        var securityIdentifierObject = new ManagementObject($"Win32_SID.SID='{(string)userAccountObject.Properties["SID"].Value}'");
         securityIdentifierObject.Get();
         return securityIdentifierObject;
     }
@@ -2717,8 +2674,8 @@ internal static partial class Utils
     {
         var aceObject = new ManagementClass("Win32_ACE").CreateInstance();
 
-        aceObject.Properties["AccessMask"].Value = 0x1U | 0x2U | 0x4U | 0x8U | 0x10U | 0x20U | 0x40U | 0x80U | 0x100U | 0x10000U |
-                                                   0x20000U | 0x40000U | 0x80000U | 0x100000U; // all permissions
+        aceObject.Properties["AccessMask"].Value = 0x1U | 0x2U | 0x4U | 0x8U | 0x10U | 0x20U | 0x40U | 0x80U | 0x100U | 0x10000U | 0x20000U |
+                                                   0x40000U | 0x80000U | 0x100000U; // all permissions
         aceObject.Properties["AceFlags"].Value = 0x0U; // no flags
         aceObject.Properties["AceType"].Value = deny ? 1U : 0U; // 0 = allow, 1 = deny
         aceObject.Properties["Trustee"].Value = trustee;
@@ -2786,8 +2743,7 @@ internal sealed class Win32Share
     }
 
     [SupportedOSPlatform("windows")]
-    internal static MethodStatus Create(string path, string name, ShareType type, uint maximumAllowed, string description,
-        string password)
+    internal static MethodStatus Create(string path, string name, ShareType type, uint maximumAllowed, string description, string password)
     {
         var mc = new ManagementClass("Win32_Share");
         object[] parameters = { path, name, (uint)type, maximumAllowed, description, password, null };

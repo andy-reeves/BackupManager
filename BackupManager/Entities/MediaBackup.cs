@@ -108,8 +108,8 @@ public sealed class MediaBackup
         {
             var destinationFileName = "MediaBackup-" + DateTime.Now.ToString("yy-MM-dd-HH-mm-ss.ff") + ".xml";
 
-            destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                "BackupManager_Backups", destinationFileName);
+            destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups",
+                destinationFileName);
         } while (File.Exists(destinationPath));
         return destinationPath;
     }
@@ -125,11 +125,7 @@ public sealed class MediaBackup
 
             Utils.Trace($"Time to validate xml was {sw.Elapsed}");
             sw.Restart();
-
-            var xRoot = new XmlRootAttribute
-            {
-                ElementName = "MediaBackup", Namespace = "MediaBackupSchema.xsd", IsNullable = true
-            };
+            var xRoot = new XmlRootAttribute { ElementName = "MediaBackup", Namespace = "MediaBackupSchema.xsd", IsNullable = true };
             MediaBackup mediaBackup;
             XmlSerializer serializer = new(typeof(MediaBackup), xRoot);
 
@@ -146,8 +142,8 @@ public sealed class MediaBackup
             {
                 if (mediaBackup.indexFolderAndRelativePath.TryGetValue(backupFile.Hash, out var value))
                 {
-                    throw new ApplicationException(string.Format(Resources.DuplicateContentsHashCode, backupFile.FileName,
-                        backupFile.FullPath, value.FullPath));
+                    throw new ApplicationException(string.Format(Resources.DuplicateContentsHashCode, backupFile.FileName, backupFile.FullPath,
+                        value.FullPath));
                 }
                 mediaBackup.indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
                 if (!backupFile.DiskChecked.HasValue() || !backupFile.Disk.HasValue()) backupFile.ClearDiskChecked();
@@ -383,12 +379,11 @@ public sealed class MediaBackup
     public string GetParentPath(string path)
     {
         return (from directory in Config.Directories
-                where path.Contains(directory + "\\")
-                select path.SubstringAfterIgnoreCase(directory + "\\")
-                into pathAfterSlash
-                let lastSlashLocation = pathAfterSlash.IndexOf('\\')
-                select lastSlashLocation < 0 ? null : path[..(lastSlashLocation + (path.Length - pathAfterSlash.Length))])
-            .FirstOrDefault();
+            where path.Contains(directory + "\\")
+            select path.SubstringAfterIgnoreCase(directory + "\\")
+            into pathAfterSlash
+            let lastSlashLocation = pathAfterSlash.IndexOf('\\')
+            select lastSlashLocation < 0 ? null : path[..(lastSlashLocation + (path.Length - pathAfterSlash.Length))]).FirstOrDefault();
     }
 
     public string GetFilters()

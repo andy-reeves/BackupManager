@@ -169,6 +169,19 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Name: {0}
+        ///Total: {1}
+        ///Free: {2}
+        ///Read: {3}
+        ///Write: {4}.
+        /// </summary>
+        internal static string ConnectedDiskInfo {
+            get {
+                return ResourceManager.GetString("ConnectedDiskInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Copying {0}.
         /// </summary>
         internal static string Copying {
@@ -279,27 +292,54 @@ namespace BackupManager.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Directory is a null reference or an empty string.
         /// </summary>
-        internal static string DirectoryNameNullOrEmpty {
+        internal static string DirectoryHasNoValue {
             get {
-                return ResourceManager.GetString("DirectoryNameNullOrEmpty", resourceCulture);
+                return ResourceManager.GetString("DirectoryHasNoValue", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to {0} is not available or writable.
         /// </summary>
-        internal static string DirectoryNotAvailable {
+        internal static string DirectoryIsNotWritable1 {
             get {
-                return ResourceManager.GetString("DirectoryNotAvailable", resourceCulture);
+                return ResourceManager.GetString("DirectoryIsNotWritable1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} is not available or writable.
+        /// </summary>
+        internal static string DirectoryIsNotWritable2 {
+            get {
+                return ResourceManager.GetString("DirectoryIsNotWritable2", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Directory {0} not found.
         /// </summary>
-        internal static string DirectoryNotFound {
+        internal static string DirectoryNotFound1 {
             get {
-                return ResourceManager.GetString("DirectoryNotFound", resourceCulture);
+                return ResourceManager.GetString("DirectoryNotFound1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The directory name &apos;{0}&apos; does not exist.
+        /// </summary>
+        internal static string DirectoryNotFound2 {
+            get {
+                return ResourceManager.GetString("DirectoryNotFound2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The directory name {0} is invalid.
+        /// </summary>
+        internal static string DirectoryNotFound3 {
+            get {
+                return ResourceManager.GetString("DirectoryNotFound3", resourceCulture);
             }
         }
         
@@ -358,6 +398,15 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error updating info for backup disk {0}.
+        /// </summary>
+        internal static string ErrorUpdatingInfoForBackupDisk {
+            get {
+                return ResourceManager.GetString("ErrorUpdatingInfoForBackupDisk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to . Estimated finish by .
         /// </summary>
         internal static string EstimatedFinishBy {
@@ -381,6 +430,42 @@ namespace BackupManager.Properties {
         internal static string ExceptionOccured {
             get {
                 return ResourceManager.GetString("ExceptionOccured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to restart the service &apos;{0}&apos;.
+        /// </summary>
+        internal static string FailedToRestartService {
+            get {
+                return ResourceManager.GetString("FailedToRestartService", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to start the new process &apos;{0}&apos;.
+        /// </summary>
+        internal static string FailedToStart {
+            get {
+                return ResourceManager.GetString("FailedToStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to start the new process &apos;{0}&apos; as its not found at {1} (expanded to {2}).
+        /// </summary>
+        internal static string FailedToStartAsNotFound {
+            get {
+                return ResourceManager.GetString("FailedToStartAsNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to stop the service &apos;{0}&apos;.
+        /// </summary>
+        internal static string FailedToStopTheService {
+            get {
+                return ResourceManager.GetString("FailedToStopTheService", resourceCulture);
             }
         }
         
@@ -448,24 +533,6 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The directory name {0} is invalid.
-        /// </summary>
-        internal static string InvalidDirName {
-            get {
-                return ResourceManager.GetString("InvalidDirName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The directory name &apos;{0}&apos; does not exist.
-        /// </summary>
-        internal static string InvalidDirNameNotExists {
-            get {
-                return ResourceManager.GetString("InvalidDirNameNotExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The value of argument &apos;{0}&apos;({1}) is invalid for Enum type &apos;{2}&apos;.
         /// </summary>
         internal static string InvalidEnumArgument {
@@ -493,15 +560,6 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Are you sure you want to copy files from multiple backup disks to the new directory location?.
-        /// </summary>
-        internal static string Main_RestoreFiles {
-            get {
-                return ResourceManager.GetString("Main_RestoreFiles", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Missing file rules.
         /// </summary>
         internal static string MissingFileRules {
@@ -516,6 +574,24 @@ namespace BackupManager.Properties {
         internal static string MonitoringButton {
             get {
                 return ResourceManager.GetString("MonitoringButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; started.
+        /// </summary>
+        internal static string MonitorServicesStarted {
+            get {
+                return ResourceManager.GetString("MonitorServicesStarted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Newer version of service {0} available so not stopping/starting service. Version {1} is installed and {2} is available..
+        /// </summary>
+        internal static string NewerVersionOfServiceAvailable {
+            get {
+                return ResourceManager.GetString("NewerVersionOfServiceAvailable", resourceCulture);
             }
         }
         
@@ -574,6 +650,15 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} free is very low. Prepare new backup disk.
+        /// </summary>
+        internal static string PrepareNewBackupDisk {
+            get {
+                return ResourceManager.GetString("PrepareNewBackupDisk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Are you sure you want to prepare a new backup disk?.
         /// </summary>
         internal static string PrepareNewBackupDiskAreYouSure {
@@ -610,6 +695,24 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Restarting &apos;{0}&apos;.
+        /// </summary>
+        internal static string Restarting {
+            get {
+                return ResourceManager.GetString("Restarting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to copy files from multiple backup disks to the new directory location?.
+        /// </summary>
+        internal static string RestoreFilesAreYouSure {
+            get {
+                return ResourceManager.GetString("RestoreFilesAreYouSure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You must select a directory that you&apos;d like files from backup copied to. This is typically a new drive that will replace the failing drive.
         /// </summary>
         internal static string RestoreFilesDirectoryToRestoreTo {
@@ -633,6 +736,24 @@ namespace BackupManager.Properties {
         internal static string RestoreFilesTitle {
             get {
                 return ResourceManager.GetString("RestoreFilesTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restoring files from directory {0}.
+        /// </summary>
+        internal static string RestoringFilesFromDirectory {
+            get {
+                return ResourceManager.GetString("RestoringFilesFromDirectory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restoring files to target directory {0}.
+        /// </summary>
+        internal static string RestoringFilesToTargetDirectory {
+            get {
+                return ResourceManager.GetString("RestoringFilesToTargetDirectory", resourceCulture);
             }
         }
         
@@ -682,6 +803,15 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; is down. {1} failure{2} in the last {3}..
+        /// </summary>
+        internal static string ServiceIsDown {
+            get {
+                return ResourceManager.GetString("ServiceIsDown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Skipping {0}.
         /// </summary>
         internal static string Skipping {
@@ -714,6 +844,15 @@ namespace BackupManager.Properties {
         internal static string Started {
             get {
                 return ResourceManager.GetString("Started", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Starting {0}.
+        /// </summary>
+        internal static string Starting {
+            get {
+                return ResourceManager.GetString("Starting", resourceCulture);
             }
         }
         

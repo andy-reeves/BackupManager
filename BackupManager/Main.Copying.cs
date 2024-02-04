@@ -111,8 +111,8 @@ internal sealed partial class Main
         }
     }
 
-    private bool FileExistsInternal(long sizeOfCopy, BackupDisk disk, BackupFile backupFile, string sourceFileName, long copiedSoFar, int fileCounter,
-        int totalFileCount, CancellationToken ct)
+    private bool FileExistsInternal(long sizeOfCopy, BackupDisk disk, BackupFile backupFile, string sourceFileName, long copiedSoFar,
+        int fileCounter, int totalFileCount, CancellationToken ct)
     {
         Utils.TraceIn();
         var destinationFileName = backupFile.BackupDiskFullPath(disk.BackupPath);

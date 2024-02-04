@@ -135,15 +135,15 @@ internal sealed partial class Main
             disk.UpdateSpeeds(readSpeed, writeSpeed);
         }
 
-        var text = $"Name: {disk.Name}\nTotal: {disk.CapacityFormatted}\nFree: {disk.FreeFormatted}\n" +
-                   $"Read: {Utils.FormatSpeed(readSpeed)}\nWrite: {Utils.FormatSpeed(writeSpeed)}";
+        var text = string.Format(Resources.ConnectedDiskInfo, disk.Name, disk.CapacityFormatted, disk.FreeFormatted, Utils.FormatSpeed(readSpeed),
+            Utils.FormatSpeed(writeSpeed));
         var diskInfoMessageWasTheLastSent = true;
         Utils.LogWithPushover(BackupAction.CheckBackupDisk, text);
 
         if (disk.Free < Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumCriticalSpace))
         {
             Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
-                $"{disk.FreeFormatted} free is very low. Prepare new backup disk");
+                string.Format(Resources.PrepareNewBackupDisk, disk.FreeFormatted));
         }
 
         // So we can cancel safely we only clear the disk.Name property and leave the DiskChecked value
@@ -177,7 +177,7 @@ internal sealed partial class Main
                 if (!UpdateCurrentBackupDiskInfo(disk))
                 {
                     Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Emergency,
-                        $"Error updating info for backup disk {disk.Name}");
+                        string.Format(Resources.ErrorUpdatingInfoForBackupDisk, disk.Name));
                 }
             }
 
@@ -319,7 +319,8 @@ internal sealed partial class Main
 
             if (!UpdateCurrentBackupDiskInfo(disk))
             {
-                Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Emergency, $"Error updating info for backup disk {disk.Name}");
+                Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Emergency,
+                    string.Format(Resources.ErrorUpdatingInfoForBackupDisk, disk.Name));
                 return null;
             }
             UpdateMediaFilesCountDisplay();
@@ -327,14 +328,10 @@ internal sealed partial class Main
             RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out var removedFilesCount, out var deletedFilesCount);
 
             if (removedFilesCount > 0)
-            {
                 Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal, $"{removedFilesCount} files removed completely");
-            }
 
             if (deletedFilesCount > 0)
-            {
                 Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal, $"{deletedFilesCount} files marked as deleted");
-            }
             mediaBackup.Save(ct);
             UpdateStatusLabel(Resources.Saved);
 
@@ -372,7 +369,9 @@ internal sealed partial class Main
         while (currentConnectedBackupDiskName != backupDisk)
         {
             Utils.LogWithPushover(BackupAction.Restore, PushoverPriority.High, $"Connect new backup drive to restore from {backupDisk}");
-            var answer = MessageBox.Show(string.Format(Resources.CorrectDiskPrompt, backupDisk), Resources.CorrectDiskTitle, MessageBoxButtons.YesNo);
+
+            var answer = MessageBox.Show(string.Format(Resources.CorrectDiskPrompt, backupDisk), Resources.CorrectDiskTitle,
+                MessageBoxButtons.YesNo);
 
             // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
             switch (answer)

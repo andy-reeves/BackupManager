@@ -243,8 +243,8 @@ internal sealed partial class Main
         {
             UpdateStatusLabel(ct, string.Format(Resources.SpeedTesting, rootDirectory));
 
-            Utils.DiskSpeedTest(rootDirectory, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations,
-                out readSpeed, out writeSpeed, ct);
+            Utils.DiskSpeedTest(rootDirectory, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize),
+                mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed, ct);
         }
         var totalBytesOnRootDirectoryDiskFormatted = Utils.FormatSize(totalBytesOnRootDirectoryDisk);
         var freeSpaceOnRootDirectoryDiskFormatted = Utils.FormatSize(freeSpaceOnRootDirectoryDisk);
@@ -319,10 +319,8 @@ internal sealed partial class Main
         RootDirectoryChecks(mediaBackup.Config.Directories, ct);
         var tasks = new List<Task>(diskNames.Length);
 
-        tasks.AddRange(diskNames.Select(diskName => Utils.GetDirectoriesForDisk(diskName, mediaBackup.Config.Directories)).Select(directoriesOnDisk =>
-        {
-            return TaskWrapper(Task.Run(() => GetFilesAsync(directoriesOnDisk, scanId, ct), ct), ct);
-        }));
+        tasks.AddRange(diskNames.Select(diskName => Utils.GetDirectoriesForDisk(diskName, mediaBackup.Config.Directories))
+            .Select(directoriesOnDisk => { return TaskWrapper(Task.Run(() => GetFilesAsync(directoriesOnDisk, scanId, ct), ct), ct); }));
         Task.WhenAll(tasks).Wait(ct);
         Utils.LogWithPushover(BackupAction.ScanDirectory, Resources.Completed, true);
 
@@ -377,8 +375,8 @@ internal sealed partial class Main
 
             DisableControlsForAsyncTasks(ct);
 
-            ReadyToScan(new FileSystemWatcherEventArgs(directory), SearchOption.AllDirectories, config.DirectoriesRenameVideoFilesForFullScansOnOff,
-                ct);
+            ReadyToScan(new FileSystemWatcherEventArgs(directory), SearchOption.AllDirectories,
+                config.DirectoriesRenameVideoFilesForFullScansOnOff, ct);
             ResetAllControls();
         }
         finally

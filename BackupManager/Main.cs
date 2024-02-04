@@ -172,7 +172,7 @@ internal sealed partial class Main : Form
         // prompt for the back up disk to be inserted 
         // check we have it inserted
         // copy any files off this disk until we're all done to the new disk that we specified
-        if (MessageBox.Show(Resources.Main_RestoreFiles, Resources.RestoreFilesTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
+        if (MessageBox.Show(Resources.RestoreFilesAreYouSure, Resources.RestoreFilesTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
         {
             if (directoriesComboBox.SelectedItem == null)
             {
@@ -188,8 +188,8 @@ internal sealed partial class Main : Form
             }
             var targetDirectory = restoreDirectoryComboBox.SelectedItem.ToString();
             var files = mediaBackup.GetBackupFilesInDirectory(directory, false).Where(static p => p.Disk.HasValue());
-            Utils.Log(BackupAction.Restore, $"Restoring files from directory {directory}");
-            Utils.Log(BackupAction.Restore, $"Restoring files to target directory {targetDirectory}");
+            Utils.Log(BackupAction.Restore, string.Format(Resources.RestoringFilesFromDirectory, directory));
+            Utils.Log(BackupAction.Restore, string.Format(Resources.RestoringFilesToTargetDirectory, targetDirectory));
             var backupShare = backupDiskTextBox.Text;
             var lastBackupDisk = string.Empty;
             var fileCounter = 0;
@@ -444,7 +444,10 @@ internal sealed partial class Main : Form
             Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal, $"Stopping '{monitor.ServiceToRestart}'");
 
             if (!Utils.StopService(monitor.ServiceToRestart, 5000))
-                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, $"Failed to stop the service '{monitor.Name}'");
+            {
+                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
+                    string.Format(Resources.FailedToStopTheService, monitor.Name));
+            }
         }
         Utils.TraceOut();
     }
@@ -492,7 +495,10 @@ internal sealed partial class Main : Form
                 Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal, $"Stopping '{monitor.ServiceToRestart}'");
 
                 if (!Utils.StopService(monitor.ServiceToRestart, 5000))
-                    Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, $"Failed to stop the service '{monitor.Name}'");
+                {
+                    Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
+                        string.Format(Resources.FailedToStopTheService, monitor.Name));
+                }
             }
         }
         Utils.TraceOut();
@@ -713,8 +719,8 @@ internal sealed partial class Main : Form
                     {
                         filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag)
                             .Where(b => b.FullPath.StartsWithIgnoreCase(directoryToScan.Path)).Where(b =>
-                                !b.FullPath.SubstringAfterIgnoreCase(Utils.EnsurePathHasATerminatingSeparator(directoryToScan.Path)).Contains('\\'))
-                            .ToArray();
+                                !b.FullPath.SubstringAfterIgnoreCase(Utils.EnsurePathHasATerminatingSeparator(directoryToScan.Path))
+                                    .Contains('\\')).ToArray();
                     }
                     else
                     {
@@ -1124,8 +1130,8 @@ internal sealed partial class Main : Form
 
     private void H264FilesButton_Click(object sender, EventArgs e)
     {
-        var files = mediaBackup.BackupFiles
-            .Where(static file => Utils.FileIsVideo(file.FullPath) && file.FullPath.Contains("_TV") && !file.FullPath.Contains("[h265")).ToArray();
+        var files = mediaBackup.BackupFiles.Where(static file =>
+            Utils.FileIsVideo(file.FullPath) && file.FullPath.Contains("_TV") && !file.FullPath.Contains("[h265")).ToArray();
         var totalSize = files.Sum(static file => file.Length);
         Utils.Log($"Total size of {files.Length} TV files is {Utils.FormatSize(totalSize)}");
 

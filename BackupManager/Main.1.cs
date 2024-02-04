@@ -334,7 +334,7 @@ internal sealed partial class Main
             else
             {
                 Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
-                    string.Format(Resources.DirectoryNotAvailable, directory));
+                    string.Format(Resources.DirectoryIsNotWritable2, directory));
             }
         }
         mediaBackup.Watcher.Directories = writableDirectories.ToArray();
@@ -397,7 +397,9 @@ internal sealed partial class Main
     private void SetupFileWatchers()
     {
         Utils.TraceIn();
-        fileWatcherButton.Text = string.Format(Resources.FileWatchersButton, config.DirectoriesFileChangeWatcherOnOff ? Resources.ON : Resources.OFF);
+
+        fileWatcherButton.Text =
+            string.Format(Resources.FileWatchersButton, config.DirectoriesFileChangeWatcherOnOff ? Resources.ON : Resources.OFF);
 
         if (config.DirectoriesFileChangeWatcherOnOff)
             StartFileSystemWatchers();

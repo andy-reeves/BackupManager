@@ -42,7 +42,8 @@ internal sealed partial class Main
 
             if (mediaBackup.Config.BackupDiskDifferenceInFileCountAllowedPercentage != 0)
             {
-                var minimumFileCountAllowed = oldFileCount - oldFileCount * mediaBackup.Config.BackupDiskDifferenceInFileCountAllowedPercentage / 100;
+                var minimumFileCountAllowed =
+                    oldFileCount - oldFileCount * mediaBackup.Config.BackupDiskDifferenceInFileCountAllowedPercentage / 100;
                 long newFileCount = mediaBackup.BackupFiles.Count;
 
                 if (newFileCount < minimumFileCountAllowed)

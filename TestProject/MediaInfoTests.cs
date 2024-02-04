@@ -17,8 +17,7 @@ public sealed class MediaInfoTests
 {
     static MediaInfoTests()
     {
-        var mediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(MediaInfoTests)),
-            "..\\BackupManager\\MediaBackup.xml"));
+        var mediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(MediaInfoTests)), "..\\BackupManager\\MediaBackup.xml"));
         Utils.Config = mediaBackup.Config;
     }
 

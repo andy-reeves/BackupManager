@@ -129,7 +129,7 @@
   <data name="DeleteExtraTitle" xml:space="preserve">
     <value>Delete extra files</value>
   </data>
-  <data name="Main_RestoreFiles" xml:space="preserve">
+  <data name="RestoreFilesAreYouSure" xml:space="preserve">
     <value>Are you sure you want to copy files from multiple backup disks to the new directory location?</value>
   </data>
   <data name="RestoreFilesTitle" xml:space="preserve">
@@ -189,7 +189,7 @@
   <data name="FullPathNotCorrect" xml:space="preserve">
     <value>The fullPath must start with the masterFolder and indexFolder</value>
   </data>
-  <data name="DirectoryNameNullOrEmpty" xml:space="preserve">
+  <data name="DirectoryHasNoValue" xml:space="preserve">
     <value>Directory is a null reference or an empty string</value>
   </data>
   <data name="HashCodeNotNull" xml:space="preserve">
@@ -201,10 +201,10 @@
   <data name="DuplicateRuleNumber" xml:space="preserve">
     <value>Duplicate rule number detected in rules.xml</value>
   </data>
-  <data name="InvalidDirName" xml:space="preserve">
+  <data name="DirectoryNotFound3" xml:space="preserve">
     <value>The directory name {0} is invalid</value>
   </data>
-  <data name="InvalidDirNameNotExists" xml:space="preserve">
+  <data name="DirectoryNotFound2" xml:space="preserve">
     <value>The directory name '{0}' does not exist</value>
   </data>
   <data name="InvalidEnumArgument" xml:space="preserve">
@@ -228,7 +228,7 @@
   <data name="UnableToLoadXml" xml:space="preserve">
     <value>Unable to load {0} {1}</value>
   </data>
-  <data name="DirectoryNotFound" xml:space="preserve">
+  <data name="DirectoryNotFound1" xml:space="preserve">
     <value>Directory {0} not found</value>
   </data>
   <data name="DateTime_ddMMMyy" xml:space="preserve">
@@ -354,7 +354,7 @@
   <data name="UpdatingPercentage" xml:space="preserve">
     <value>Updating {0}%</value>
   </data>
-  <data name="DirectoryNotAvailable" xml:space="preserve">
+  <data name="DirectoryIsNotWritable2" xml:space="preserve">
     <value>{0} is not available or writable</value>
   </data>
   <data name="CheckForOldBackupDisks" xml:space="preserve">
@@ -374,5 +374,54 @@
   </data>
   <data name="VideoCodecCorrect" xml:space="preserve">
     <value>[{0}/{1}] VideoCodec correct for {2}</value>
+  </data>
+  <data name="FailedToStopTheService" xml:space="preserve">
+    <value>Failed to stop the service '{0}'</value>
+  </data>
+  <data name="ErrorUpdatingInfoForBackupDisk" xml:space="preserve">
+    <value>Error updating info for backup disk {0}</value>
+  </data>
+  <data name="PrepareNewBackupDisk" xml:space="preserve">
+    <value>{0} free is very low. Prepare new backup disk</value>
+  </data>
+  <data name="ConnectedDiskInfo" xml:space="preserve">
+    <value>Name: {0}
+Total: {1}
+Free: {2}
+Read: {3}
+Write: {4}</value>
+  </data>
+  <data name="RestoringFilesFromDirectory" xml:space="preserve">
+    <value>Restoring files from directory {0}</value>
+  </data>
+  <data name="RestoringFilesToTargetDirectory" xml:space="preserve">
+    <value>Restoring files to target directory {0}</value>
+  </data>
+  <data name="NewerVersionOfServiceAvailable" xml:space="preserve">
+    <value>Newer version of service {0} available so not stopping/starting service. Version {1} is installed and {2} is available.</value>
+  </data>
+  <data name="Starting" xml:space="preserve">
+    <value>Starting {0}</value>
+  </data>
+  <data name="MonitorServicesStarted" xml:space="preserve">
+    <value>'{0}' started</value>
+  </data>
+  <data name="FailedToStart" xml:space="preserve">
+    <value>Failed to start the new process '{0}'</value>
+  </data>
+  <data name="FailedToStartAsNotFound" xml:space="preserve">
+    <value>Failed to start the new process '{0}' as its not found at {1} (expanded to {2})</value>
+  </data>
+  <data name="Restarting" xml:space="preserve">
+    <value>Restarting '{0}'</value>
+  </data>
+  <data name="FailedToRestartService" xml:space="preserve">
+    <value>Failed to restart the service '{0}'</value>
+  </data>
+  <data name="ServiceIsDown" xml:space="preserve">
+    <value>'{0}' is down. {1} failure{2} in the last {3}.</value>
+  </data>
+  <data name="DirectoryIsNotWritable1" xml:space="preserve">
+    <value>{0} is not available or writable</value>
   </data>
 </root>

@@ -21,8 +21,7 @@ public sealed class FileRulesUnitTest
 
     static FileRulesUnitTest()
     {
-        _mediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)),
-            "..\\BackupManager\\MediaBackup.xml"));
+        _mediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)), "..\\BackupManager\\MediaBackup.xml"));
         Utils.Config = _mediaBackup.Config;
     }
 

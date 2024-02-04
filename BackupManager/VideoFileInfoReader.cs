@@ -52,8 +52,7 @@ internal sealed class VideoFileInfoReader
     {
         try
         {
-            var ffprobeOutput =
-                FFProbe.GetStreamJson(filename, ffOptions: new FFOptions { ExtraArguments = "-probesize 50000000" });
+            var ffprobeOutput = FFProbe.GetStreamJson(filename, ffOptions: new FFOptions { ExtraArguments = "-probesize 50000000" });
             var analysis = FFProbe.AnalyseStreamJson(ffprobeOutput);
             var primaryVideoStream = GetPrimaryVideoStream(analysis);
 
@@ -75,26 +74,21 @@ internal sealed class VideoFileInfoReader
                 VideoColourPrimaries = primaryVideoStream?.ColorPrimaries,
                 VideoTransferCharacteristics = primaryVideoStream?.ColorTransfer,
                 DoviConfigurationRecord =
-                    primaryVideoStream?.SideDataList?.Find(static x =>
-                        x.GetType().Name == nameof(DoviConfigurationRecordSideData)) as DoviConfigurationRecordSideData,
+                    primaryVideoStream?.SideDataList?.Find(static x => x.GetType().Name == nameof(DoviConfigurationRecordSideData)) as
+                        DoviConfigurationRecordSideData,
                 Height = primaryVideoStream?.Height ?? 0,
                 Width = primaryVideoStream?.Width ?? 0,
                 AudioFormat = analysis.PrimaryAudioStream?.CodecName,
                 AudioCodecId = analysis.PrimaryAudioStream?.CodecTagString,
                 AudioProfile = analysis.PrimaryAudioStream?.Profile,
                 AudioBitrate = analysis.PrimaryAudioStream?.BitRate ?? 0,
-                RunTime =
-                    GetBestRuntime(analysis.PrimaryAudioStream?.Duration, primaryVideoStream?.Duration,
-                        analysis.Format.Duration),
+                RunTime = GetBestRuntime(analysis.PrimaryAudioStream?.Duration, primaryVideoStream?.Duration, analysis.Format.Duration),
                 AudioStreamCount = analysis.AudioStreams.Count,
                 AudioChannels = analysis.PrimaryAudioStream?.Channels ?? 0,
                 AudioChannelPositions = analysis.PrimaryAudioStream?.ChannelLayout,
                 VideoFps = primaryVideoStream?.FrameRate ?? 0,
-                AudioLanguages =
-                    analysis.AudioStreams?.Select(static x => x.Language).Where(static l => l.IsNotNullOrWhiteSpace())
-                        .ToList(),
-                Subtitles = analysis.SubtitleStreams?.Select(static x => x.Language)
-                    .Where(static l => l.IsNotNullOrWhiteSpace()).ToList(),
+                AudioLanguages = analysis.AudioStreams?.Select(static x => x.Language).Where(static l => l.IsNotNullOrWhiteSpace()).ToList(),
+                Subtitles = analysis.SubtitleStreams?.Select(static x => x.Language).Where(static l => l.IsNotNullOrWhiteSpace()).ToList(),
                 ScanType = "Progressive",
                 RawStreamData = ffprobeOutput,
                 SchemaRevision = CURRENT_MEDIA_INFO_SCHEMA_REVISION
@@ -145,9 +139,7 @@ internal sealed class VideoFileInfoReader
         // motion image codec streams are often in front of the main video stream
         // ReSharper disable once StringLiteralTypo
         var codecFilter = new[] { "mjpeg", "png" };
-
-        return mediaAnalysis.VideoStreams.FirstOrDefault(s => !codecFilter.Contains(s.CodecName)) ??
-               mediaAnalysis.PrimaryVideoStream;
+        return mediaAnalysis.VideoStreams.FirstOrDefault(s => !codecFilter.Contains(s.CodecName)) ?? mediaAnalysis.PrimaryVideoStream;
     }
 
     private FFProbePixelFormat GetPixelFormat(string format)
@@ -155,8 +147,7 @@ internal sealed class VideoFileInfoReader
         return pixelFormats.Find(x => x.Name == format);
     }
 
-    private static HdrFormat GetHdrFormat(int bitDepth, string colorPrimaries, string transferFunction,
-        IReadOnlyCollection<SideData> sideData)
+    private static HdrFormat GetHdrFormat(int bitDepth, string colorPrimaries, string transferFunction, IReadOnlyCollection<SideData> sideData)
     {
         if (bitDepth < 10) return HdrFormat.None;
 
@@ -174,15 +165,12 @@ internal sealed class VideoFileInfoReader
                 _ => HdrFormat.DolbyVision
             };
         }
-
-        if (!_validHdrColourPrimaries.Contains(colorPrimaries) || !_validHdrTransferFunctions.Contains(transferFunction))
-            return HdrFormat.None;
+        if (!_validHdrColourPrimaries.Contains(colorPrimaries) || !_validHdrTransferFunctions.Contains(transferFunction)) return HdrFormat.None;
         if (_hlgTransferFunctions.Contains(transferFunction)) return HdrFormat.Hlg10;
         if (!_pqTransferFunctions.Contains(transferFunction)) return HdrFormat.None;
         if (TryGetSideData<HdrDynamicMetadataSpmte2094>(sideData, out _)) return HdrFormat.Hdr10Plus;
 
-        if (TryGetSideData<MasteringDisplayMetadata>(sideData, out _) ||
-            TryGetSideData<ContentLightLevelMetadata>(sideData, out _))
+        if (TryGetSideData<MasteringDisplayMetadata>(sideData, out _) || TryGetSideData<ContentLightLevelMetadata>(sideData, out _))
             return HdrFormat.Hdr10;
 
         return HdrFormat.Pq10;

@@ -291,9 +291,8 @@ public sealed class Config
         {
             foreach (var property in properties)
             {
-                if (property.PropertyType == typeof(Collection<ProcessServiceMonitor>) ||
-                    property.PropertyType == typeof(Collection<FileRule>) || property.PropertyType == typeof(List<DateTime>) ||
-                    property.PropertyType == typeof(Collection<string>) ||
+                if (property.PropertyType == typeof(Collection<ProcessServiceMonitor>) || property.PropertyType == typeof(Collection<FileRule>) ||
+                    property.PropertyType == typeof(List<DateTime>) || property.PropertyType == typeof(Collection<string>) ||
                     property.PropertyType == typeof(Collection<SymbolicLink>))
                 {
                     Utils.Log(BackupAction.General, $"{property.Name}:");
@@ -315,9 +314,7 @@ public sealed class Config
                     }
                     else
                     {
-                        parameterText = myType.Name == "String"
-                            ? $"{obj}\n"
-                            : $"{myType.Name}.{property.Name} : {property.GetValue(obj)}\n";
+                        parameterText = myType.Name == "String" ? $"{obj}\n" : $"{myType.Name}.{property.Name} : {property.GetValue(obj)}\n";
                         Utils.Log(BackupAction.General, parameterText);
                     }
                 }

@@ -22,9 +22,8 @@ namespace BackupManager;
 
 internal sealed class FileSystemWatcher
 {
-    private const int NOTIFY_FILTERS_VALID_MASK = (int)(NotifyFilters.Attributes | NotifyFilters.CreationTime |
-                                                        NotifyFilters.DirectoryName | NotifyFilters.FileName |
-                                                        NotifyFilters.LastAccess | NotifyFilters.LastWrite |
+    private const int NOTIFY_FILTERS_VALID_MASK = (int)(NotifyFilters.Attributes | NotifyFilters.CreationTime | NotifyFilters.DirectoryName |
+                                                        NotifyFilters.FileName | NotifyFilters.LastAccess | NotifyFilters.LastWrite |
                                                         NotifyFilters.Security | NotifyFilters.Size);
 
     private static readonly object _lock = new();
@@ -133,8 +132,7 @@ internal sealed class FileSystemWatcher
         {
             if (((int)value & ~NOTIFY_FILTERS_VALID_MASK) != 0)
             {
-                throw new ArgumentException(string.Format(Resources.InvalidEnumArgument, nameof(value), (int)value,
-                    nameof(NotifyFilters)));
+                throw new ArgumentException(string.Format(Resources.InvalidEnumArgument, nameof(value), (int)value, nameof(NotifyFilters)));
             }
             if (notifyFilter == value) return;
 
@@ -219,10 +217,8 @@ internal sealed class FileSystemWatcher
         ArgumentNullException.ThrowIfNull(path);
 
         // Early check for directory parameter so that an exception can be thrown as early as possible
-        if (path.Length == 0) throw new ArgumentException(string.Format(Resources.InvalidDirName, path), nameof(path));
-
-        if (!Directory.Exists(path))
-            throw new ArgumentException(string.Format(Resources.InvalidDirNameNotExists, path), nameof(path));
+        if (path.Length == 0) throw new ArgumentException(string.Format(Resources.DirectoryNotFound3, path), nameof(path));
+        if (!Directory.Exists(path)) throw new ArgumentException(string.Format(Resources.DirectoryNotFound2, path), nameof(path));
     }
 
     /// <summary>
@@ -510,7 +506,7 @@ internal sealed class FileSystemWatcher
 
         if (!Directory.Exists(watcherPath))
         {
-            var ex = new DirectoryNotFoundException(string.Format(Resources.DirectoryNotFound, watcherPath), e.GetException());
+            var ex = new DirectoryNotFoundException(string.Format(Resources.DirectoryNotFound1, watcherPath), e.GetException());
             e = new ErrorEventArgs(ex);
         }
 
