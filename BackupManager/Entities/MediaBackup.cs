@@ -424,7 +424,7 @@ public sealed class MediaBackup
     /// <returns>Null if it doesn't exist.</returns>
     public BackupFile GetBackupFileFromHashKey(string path)
     {
-        return indexFolderAndRelativePath.TryGetValue(path, out var backupFile) ? backupFile : null;
+        return indexFolderAndRelativePath.GetValueOrDefault(path);
     }
 
     /// <summary>

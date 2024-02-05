@@ -112,8 +112,10 @@ internal sealed partial class Main
             var newProcess = Process.Start(processToStart, monitor.ApplicationToStartArguments);
 
             if (newProcess == null)
+            {
                 Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
                     string.Format(Resources.FailedToStart, monitor.Name));
+            }
             else
             {
                 Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal,
@@ -146,13 +148,10 @@ internal sealed partial class Main
         var availableVersion = Utils.GetLatestApplicationVersionNumber(monitor.ApplicationType, monitor.BranchName);
         Utils.Trace($"Installed is {installedVersion}");
         Utils.Trace($"Available is {availableVersion}");
+        if (!Utils.VersionIsNewer(installedVersion, availableVersion)) return false;
 
-        if (installedVersion.HasValue() && availableVersion.HasValue() && Utils.VersionIsNewer(installedVersion, availableVersion))
-        {
-            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
-                string.Format(Resources.NewerVersionOfServiceAvailable, monitor.ApplicationType, installedVersion, availableVersion));
-            return true;
-        }
-        return false;
+        Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
+            string.Format(Resources.NewerVersionOfServiceAvailable, monitor.ApplicationType, installedVersion, availableVersion));
+        return true;
     }
 }
