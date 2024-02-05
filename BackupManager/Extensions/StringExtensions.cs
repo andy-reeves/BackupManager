@@ -6,8 +6,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -19,11 +21,20 @@ namespace BackupManager.Extensions;
 [SuppressMessage("ReSharper", "UnusedMember.Global")]
 internal static partial class StringExtensions
 {
+    public static bool ContainsInvalidPathChars(this string text)
+    {
+        if (text.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(text));
+
+        return text.IndexOfAny(Path.GetInvalidPathChars()) >= 0;
+    }
+
+    [DebuggerStepThrough]
     public static bool ContainsAny(this string haystack, params string[] needles)
     {
         return needles.Any(haystack.Contains);
     }
 
+    [DebuggerStepThrough]
     public static string WrapInSquareBrackets(this string text)
     {
         return $"[{text}]";
