@@ -295,7 +295,7 @@ internal sealed partial class Main
             var backupFilesWithoutDeleted = mediaBackup.GetBackupFiles(false).ToArray();
 
             var backupFilesWithDiskEmpty =
-                mediaBackup.BackupFiles.Where(static p => (p.Disk.HasNoValue() || p.Disk == "-1") && !p.Deleted).ToArray();
+                mediaBackup.BackupFiles.Where(static p => (p.Disk.HasNoValue() || p.BeingCheckedNow) && !p.Deleted).ToArray();
             var backupFilesMarkedAsDeleted = mediaBackup.GetBackupFilesMarkedAsDeleted(false).ToArray();
             totalFilesTextBox.TextWithInvoke(backupFilesWithoutDeleted.Length.ToString("N0"));
             totalFilesSizeTextBox.TextWithInvoke(Utils.FormatSize(backupFilesWithoutDeleted.Sum(static y => y.Length)));

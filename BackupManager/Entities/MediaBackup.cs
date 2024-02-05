@@ -493,13 +493,14 @@ public sealed class MediaBackup
     }
 
     /// <summary>
-    ///     Sets the Flag to False on all BackupFiles
+    ///     Sets the Flag to False and BeingCheckedNow to False on all BackupFiles
     /// </summary>
     public void ClearFlags()
     {
         foreach (var backupFile in BackupFiles)
         {
             backupFile.Flag = false;
+            backupFile.BeingCheckedNow = false;
         }
     }
 

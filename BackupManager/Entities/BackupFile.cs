@@ -216,7 +216,7 @@ public sealed class BackupFile : IEquatable<BackupFile>
     /// <param name="backupDisk">The disk this file was checked on.</param>
     public void UpdateDiskChecked(string backupDisk)
     {
-        if (backupDisk != Disk && Disk != "-1" && Disk.HasValue()) Utils.Log($"{FullPath} was on {Disk} but now on {backupDisk}");
+        if (backupDisk != Disk && Disk.HasValue()) Utils.Log($"{FullPath} was on {Disk} but now on {backupDisk}");
         disk = backupDisk;
         diskChecked = DateTime.Now.ToString(Resources.DateTime_yyyyMMdd);
     }
