@@ -173,9 +173,7 @@ internal sealed partial class Main
         ConnectedDiskDeleteEmptyDirectories(directoryToCheck, disk, ct);
 
         // This updates any remaining files that were on this disk to be empty and ready for copying again
-        var filesWithMinusOne = filesPreviouslyOnThisBackupDisk.Where(static f => f.BeingCheckedNow).ToArray();
-
-        foreach (var file in filesWithMinusOne)
+        foreach (var file in filesPreviouslyOnThisBackupDisk.Where(static f => f.BeingCheckedNow).ToArray())
         {
             file.Disk = string.Empty;
             file.BeingCheckedNow = false;
