@@ -317,7 +317,7 @@ internal sealed partial class Main
 
             if (!diskInfoMessageWasTheLastSent)
             {
-                text = $"Name: {disk.Name}\nTotal: {disk.CapacityFormatted}\nFree: {disk.FreeFormatted}\nFiles: {disk.TotalFiles:n0}";
+                var text = $"Name: {disk.Name}\nTotal: {disk.CapacityFormatted}\nFree: {disk.FreeFormatted}\nFiles: {disk.TotalFiles:n0}";
                 Utils.LogWithPushover(BackupAction.CheckBackupDisk, text);
             }
             Utils.LogWithPushover(BackupAction.CheckBackupDisk, Resources.Completed, true);
