@@ -421,4 +421,10 @@ Write: {4}</value>
   <data name="DirectoryIsNotWritable" xml:space="preserve">
     <value>{0} is not available or writable</value>
   </data>
+  <data name="HashCodesError" xml:space="preserve">
+    <value>There was an error with the hash codes on the source and backup disk. It's likely the source file has changed since the last backup of {0}. It could be that the source file or destination file are corrupted or in use by another process.</value>
+  </data>
+  <data name="FileExistsAlreadySoDeleting" xml:space="preserve">
+    <value>File exists already so deleting {0} instead</value>
+  </data>
 </root>

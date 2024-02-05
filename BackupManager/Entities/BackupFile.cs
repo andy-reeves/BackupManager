@@ -112,6 +112,8 @@ public sealed class BackupFile : IEquatable<BackupFile>
 
     [XmlIgnore] public bool Flag { get; set; }
 
+    [XmlIgnore] public bool BeingCheckedNow { get; set; }
+
     /// <summary>
     ///     The full path to the backup file on the source disk. Returns String.Empty if any of Master, Index or RelativePath
     ///     are null

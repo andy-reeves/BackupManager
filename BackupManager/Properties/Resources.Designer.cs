@@ -461,6 +461,15 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to File exists already so deleting {0} instead.
+        /// </summary>
+        internal static string FileExistsAlreadySoDeleting {
+            get {
+                return ResourceManager.GetString("FileExistsAlreadySoDeleting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to File is not accessible.
         /// </summary>
         internal static string FileIsNotAccessible {
@@ -520,6 +529,15 @@ namespace BackupManager.Properties {
         internal static string HashCodeNotNull {
             get {
                 return ResourceManager.GetString("HashCodeNotNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error with the hash codes on the source and backup disk. It&apos;s likely the source file has changed since the last backup of {0}. It could be that the source file or destination file are corrupted or in use by another process..
+        /// </summary>
+        internal static string HashCodesError {
+            get {
+                return ResourceManager.GetString("HashCodesError", resourceCulture);
             }
         }
         
