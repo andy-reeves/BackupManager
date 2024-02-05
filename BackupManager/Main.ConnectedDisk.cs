@@ -148,18 +148,7 @@ internal sealed partial class Main
             var backupFileIndexFolderRelativePath = backupFileFullPath[(directoryToCheck.Length + 1)..];
             UpdateStatusLabel(string.Format(Resources.Scanning, directoryToCheck), i + 1);
             UpdateMediaFilesCountDisplay();
-            var currentPercent = i * 100 / toolStripProgressBar.Maximum;
-
-            if (currentPercent % 10 == 0 && currentPercent > reportedPercent && backupDiskFiles.Length > 100)
-            {
-                reportedPercent = currentPercent;
-
-                if (!UpdateCurrentBackupDiskInfo(disk))
-                {
-                    Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Emergency,
-                        string.Format(Resources.ErrorUpdatingInfoForBackupDisk, disk.Name));
-                }
-            }
+            if (backupDiskFiles.Length > 100) ConnectedDiskUpdatePercentComplete(i, ref reportedPercent, disk);
 
             if (mediaBackup.Contains(backupFileIndexFolderRelativePath))
             {
@@ -333,6 +322,20 @@ internal sealed partial class Main
             ct.ThrowIfCancellationRequested();
         }
         return Utils.TraceOut(disk);
+    }
+
+    private void ConnectedDiskUpdatePercentComplete(int i, ref int reportedPercent, BackupDisk disk)
+    {
+        var currentPercent = i * 100 / toolStripProgressBar.Maximum;
+        if (currentPercent % 10 != 0 || currentPercent <= reportedPercent) return;
+
+        reportedPercent = currentPercent;
+
+        if (!UpdateCurrentBackupDiskInfo(disk))
+        {
+            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Emergency,
+                string.Format(Resources.ErrorUpdatingInfoForBackupDisk, disk.Name));
+        }
     }
 
     private void ConnectedDiskSpeedTest(BackupDisk disk, string directoryToCheck, CancellationToken ct)
