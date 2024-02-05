@@ -427,4 +427,13 @@ Write: {4}</value>
   <data name="FileExistsAlreadySoDeleting" xml:space="preserve">
     <value>File exists already so deleting {0} instead</value>
   </data>
+  <data name="PathHasAFixedSpace" xml:space="preserve">
+    <value>{0} has a fixed space so renaming it</value>
+  </data>
+  <data name="PathTooLong" xml:space="preserve">
+    <value>{0} has a path longer than 256 characters. Please rename manually.</value>
+  </data>
+  <data name="FileIsLocked" xml:space="preserve">
+    <value>{0} is locked so can't be processed now</value>
+  </data>
 </root>

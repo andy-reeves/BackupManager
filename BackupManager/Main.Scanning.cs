@@ -87,14 +87,14 @@ internal sealed partial class Main
     {
         Utils.TraceIn();
 
-        // we need a blocking collection and then copy it back when its all done
+        // we need a blocking collection and then copy it back when it's all done
         // then split by disk name and have a Task for each of them like the directory scanner
 
         var filtersToDelete = mediaBackup.Config.FilesToDelete
             .Select(static filter => new { filter, replace = filter.Replace(".", @"\.").Replace("*", ".*").Replace("?", ".") })
             .Select(static t => $"^{t.replace}$").ToArray();
 
-        // order the files by path so we can track when the monitored directories are changing for scan timings
+        // order the files by path so that we can track when the monitored directories are changing for scan timings
         var files = filesParam.OrderBy(static f => f.ToString()).ToList();
         var directoryScanning = string.Empty;
         var firstDir = true;
@@ -108,13 +108,13 @@ internal sealed partial class Main
             {
                 if (file.Length > Utils.MAX_PATH)
                 {
-                    Utils.LogWithPushover(BackupAction.ProcessFiles, $"{file} has a path longer than 256 characters. Please rename manually.");
+                    Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.PathTooLong, file));
                     return Utils.TraceOut(false);
                 }
 
                 if (Utils.StringContainsFixedSpace(file))
                 {
-                    Utils.LogWithPushover(BackupAction.ProcessFiles, $"{file} has a fixed space so renaming it");
+                    Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.PathHasAFixedSpace, file));
 
                     try
                     {
@@ -124,7 +124,7 @@ internal sealed partial class Main
                     {
                         if (ex is not (IOException or NotSupportedException)) throw;
 
-                        Utils.LogWithPushover(BackupAction.ProcessFiles, $"{file} is locked so can't be processed now.");
+                        Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.FileIsLocked, file));
                         return Utils.TraceOut(false);
                     }
                 }
@@ -143,9 +143,9 @@ internal sealed partial class Main
                     }
                     catch (Exception ex)
                     {
-                        if (ex is not (IOException or NotSupportedException)) throw;
+                        if (ex is not (IOException or NotSupportedException or ApplicationException)) throw;
 
-                        Utils.LogWithPushover(BackupAction.ProcessFiles, $"{file} is locked so can't be processed now.");
+                        Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.FileIsLocked, file));
                         return Utils.TraceOut(false);
                     }
                 }

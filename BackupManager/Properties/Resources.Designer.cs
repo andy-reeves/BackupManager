@@ -470,6 +470,15 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} is locked so can&apos;t be processed now.
+        /// </summary>
+        internal static string FileIsLocked {
+            get {
+                return ResourceManager.GetString("FileIsLocked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to File is not accessible.
         /// </summary>
         internal static string FileIsNotAccessible {
@@ -641,11 +650,29 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} has a fixed space so renaming it.
+        /// </summary>
+        internal static string PathHasAFixedSpace {
+            get {
+                return ResourceManager.GetString("PathHasAFixedSpace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} is longer than 256 characters.
         /// </summary>
         internal static string PathIsLongerThan256Characters {
             get {
                 return ResourceManager.GetString("PathIsLongerThan256Characters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} has a path longer than 256 characters. Please rename manually..
+        /// </summary>
+        internal static string PathTooLong {
+            get {
+                return ResourceManager.GetString("PathTooLong", resourceCulture);
             }
         }
         
