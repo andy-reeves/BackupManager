@@ -88,11 +88,20 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Are you sure you want delete any extra files on the backup disk not in our list?.
+        ///   Looks up a localized string similar to Are you sure you want to delete any extra files on the backup disk not in our list?.
         /// </summary>
         internal static string AreYouSureDelete {
             get {
                 return ResourceManager.GetString("AreYouSureDelete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to a very fast speed.
+        /// </summary>
+        internal static string AVeryFastSpeed {
+            get {
+                return ResourceManager.GetString("AVeryFastSpeed", resourceCulture);
             }
         }
         
@@ -178,6 +187,64 @@ namespace BackupManager.Properties {
         internal static string ConnectedDiskInfo {
             get {
                 return ResourceManager.GetString("ConnectedDiskInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{0}/{1}] {2} free.
+        ///Skipping {3} as not enough free space.
+        /// </summary>
+        internal static string CopyFileInternalSkipping {
+            get {
+                return ResourceManager.GetString("CopyFileInternalSkipping", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{0}/{1}]
+        ///Skipping copy of {2} as it exists already..
+        /// </summary>
+        internal static string CopyFilesFileExists {
+            get {
+                return ResourceManager.GetString("CopyFilesFileExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} free on backup disk.
+        /// </summary>
+        internal static string CopyFilesFreeOnBackupDisk {
+            get {
+                return ResourceManager.GetString("CopyFilesFreeOnBackupDisk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{0}/{1}] {2} free.
+        ///Copying {3} at {4}{5}.
+        /// </summary>
+        internal static string CopyFilesMainMessage {
+            get {
+                return ResourceManager.GetString("CopyFilesMainMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0:n0} files still to backup at {1}.
+        ///.
+        /// </summary>
+        internal static string CopyFilesStillToCopy {
+            get {
+                return ResourceManager.GetString("CopyFilesStillToCopy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0:n0} files to backup at {1}.
+        /// </summary>
+        internal static string CopyFilesToBackup {
+            get {
+                return ResourceManager.GetString("CopyFilesToBackup", resourceCulture);
             }
         }
         
@@ -470,6 +537,15 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to IOException during copy. Skipping file. Details {0}.
+        /// </summary>
+        internal static string FileIOExceptionDuringCopy {
+            get {
+                return ResourceManager.GetString("FileIOExceptionDuringCopy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} is locked so can&apos;t be processed now.
         /// </summary>
         internal static string FileIsLocked {
@@ -493,6 +569,15 @@ namespace BackupManager.Properties {
         internal static string FileNotFound {
             get {
                 return ResourceManager.GetString("FileNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} is not found. It&apos;s most likely been replaced since our scan..
+        /// </summary>
+        internal static string FileNotFound2 {
+            get {
+                return ResourceManager.GetString("FileNotFound2", resourceCulture);
             }
         }
         
@@ -556,6 +641,15 @@ namespace BackupManager.Properties {
         internal static string HashCodesError {
             get {
                 return ResourceManager.GetString("HashCodesError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error with the hash codes on the source directory and the backup disk..
+        /// </summary>
+        internal static string HashCodesError2 {
+            get {
+                return ResourceManager.GetString("HashCodesError2", resourceCulture);
             }
         }
         

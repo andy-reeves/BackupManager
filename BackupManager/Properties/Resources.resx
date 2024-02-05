@@ -124,7 +124,7 @@
     <value>Exception occurred during application start. {0}</value>
   </data>
   <data name="AreYouSureDelete" xml:space="preserve">
-    <value>Are you sure you want delete any extra files on the backup disk not in our list?</value>
+    <value>Are you sure you want to delete any extra files on the backup disk not in our list?</value>
   </data>
   <data name="DeleteExtraTitle" xml:space="preserve">
     <value>Delete extra files</value>
@@ -444,5 +444,39 @@ Write: {4}</value>
   </data>
   <data name="Processing" xml:space="preserve">
     <value>Processing</value>
+  </data>
+  <data name="FileIOExceptionDuringCopy" xml:space="preserve">
+    <value>IOException during copy. Skipping file. Details {0}</value>
+  </data>
+  <data name="FileNotFound2" xml:space="preserve">
+    <value>{0} is not found. It's most likely been replaced since our scan.</value>
+  </data>
+  <data name="CopyFilesFileExists" xml:space="preserve">
+    <value>[{0}/{1}]
+Skipping copy of {2} as it exists already.</value>
+  </data>
+  <data name="HashCodesError2" xml:space="preserve">
+    <value>There was an error with the hash codes on the source directory and the backup disk.</value>
+  </data>
+  <data name="CopyFilesMainMessage" xml:space="preserve">
+    <value>[{0}/{1}] {2} free.
+Copying {3} at {4}{5}</value>
+  </data>
+  <data name="AVeryFastSpeed" xml:space="preserve">
+    <value>a very fast speed</value>
+  </data>
+  <data name="CopyFilesFreeOnBackupDisk" xml:space="preserve">
+    <value>{0} free on backup disk</value>
+  </data>
+  <data name="CopyFilesStillToCopy" xml:space="preserve">
+    <value>{0:n0} files still to backup at {1}.
+</value>
+  </data>
+  <data name="CopyFilesToBackup" xml:space="preserve">
+    <value>{0:n0} files to backup at {1}</value>
+  </data>
+  <data name="CopyFileInternalSkipping" xml:space="preserve">
+    <value>[{0}/{1}] {2} free.
+Skipping {3} as not enough free space</value>
   </data>
 </root>

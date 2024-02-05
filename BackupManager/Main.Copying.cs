@@ -27,7 +27,9 @@ internal sealed partial class Main
         var backupFiles = filesToBackup.ToArray();
         var sizeOfFiles = backupFiles.Sum(static x => x.Length);
         Utils.LogWithPushover(BackupAction.CopyFiles, Resources.Started, true, true);
-        Utils.LogWithPushover(BackupAction.CopyFiles, $"{backupFiles.Length:n0} files to backup at {Utils.FormatSize(sizeOfFiles)}", false, true);
+
+        Utils.LogWithPushover(BackupAction.CopyFiles,
+            string.Format(Resources.CopyFilesToBackup, backupFiles.Length, Utils.FormatSize(sizeOfFiles)), false, true);
         _ = Utils.GetDiskInfo(backupDiskTextBox.Text, out var availableSpace, out _);
         var remainingDiskSpace = availableSpace - Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave);
         var sizeOfCopy = remainingDiskSpace < sizeOfFiles ? remainingDiskSpace : sizeOfFiles;
@@ -42,7 +44,8 @@ internal sealed partial class Main
 
         if (!UpdateCurrentBackupDiskInfo(disk))
         {
-            Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.Emergency, $"Error updating info for backup disk {disk.Name}");
+            Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.Emergency,
+                string.Format(Resources.ErrorUpdatingInfoForBackupDisk, disk.Name));
             return;
         }
         mediaBackup.Save(ct);
@@ -52,9 +55,11 @@ internal sealed partial class Main
         var stillNotOnBackupDisk = filesStillNotOnBackupDisk as BackupFile[] ?? filesStillNotOnBackupDisk.ToArray();
 
         if (stillNotOnBackupDisk.Any())
-            text =
-                $"{stillNotOnBackupDisk.Length:n0} files still to backup at {Utils.FormatSize(stillNotOnBackupDisk.Sum(static p => p.Length))}.\n";
-        Utils.LogWithPushover(BackupAction.CopyFiles, text + $"{disk.FreeFormatted} free on backup disk");
+        {
+            text = string.Format(Resources.CopyFilesStillToCopy, stillNotOnBackupDisk.Length,
+                Utils.FormatSize(stillNotOnBackupDisk.Sum(static p => p.Length)));
+        }
+        Utils.LogWithPushover(BackupAction.CopyFiles, text + string.Format(Resources.CopyFilesFreeOnBackupDisk, disk.FreeFormatted));
         if (showCompletedMessage) Utils.LogWithPushover(BackupAction.CopyFiles, Resources.Completed, true);
         Utils.TraceOut();
     }
@@ -96,13 +101,12 @@ internal sealed partial class Main
             }
             catch (FileNotFoundException)
             {
-                Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.High,
-                    $"{backupFile.FullPath} is not found. It's most likely been replaced since our scan.");
+                Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.High, string.Format(Resources.FileNotFound2, backupFile.FullPath));
             }
             catch (IOException ex)
             {
                 // Sometimes during a copy we get this if we lose the connection to the source NAS drive
-                Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.Emergency, $"IOException during copy. Skipping file. Details {ex}");
+                Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.Emergency, string.Format(Resources.FileIOExceptionDuringCopy, ex));
             }
             _ = UpdateCurrentBackupDiskInfo(disk);
             ClearEstimatedFinish();
@@ -120,7 +124,7 @@ internal sealed partial class Main
 
         // it could be that the source file hash changed after we read it (we read the hash, updated the master file and then copied it)
         // in which case check the source hash again and then check the copied file 
-        // if the hash has changed we check the ModifiedTime. If its been modified at source and its newer then we delete from the backup
+        // if the hash has changed we check the ModifiedTime. If it's been modified at source and its newer then we delete from the backup
         // disk and copy the new one
         if (backupFile.CheckContentHashes(disk))
         {
@@ -128,7 +132,7 @@ internal sealed partial class Main
                 Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
 
             Utils.LogWithPushover(BackupAction.CopyFiles,
-                $"[{fileCounter}/{totalFileCount}]\nSkipping copy of {sourceFileName} as it exists already.", true);
+                string.Format(Resources.CopyFilesFileExists, fileCounter, totalFileCount, sourceFileName), true);
         }
         else
         {
@@ -137,10 +141,7 @@ internal sealed partial class Main
             var lastWriteTimeOfFileOnBackupDisk = Utils.GetFileLastWriteTime(destinationFileName);
 
             if (sourceLastWriteTime == lastWriteTimeOfFileOnBackupDisk)
-            {
-                Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.High,
-                    "There was an error with the hash codes on the source directory and the backup disk.");
-            }
+                Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.High, Resources.HashCodesError2);
             else
             {
                 Utils.FileDelete(destinationFileName);
@@ -193,8 +194,8 @@ internal sealed partial class Main
             var sourceFileSize = Utils.FormatSize(sourceFileInfo.Length);
 
             Utils.LogWithPushover(BackupAction.CopyFiles,
-                $"[{fileCounter}/{totalFileCount}] {Utils.FormatSize(availableSpace)} free.\n" +
-                $"Copying {sourceFileName} at {sourceFileSize}{formattedEndDateTime}", false, true);
+                string.Format(Resources.CopyFilesMainMessage, fileCounter, totalFileCount, Utils.FormatSize(availableSpace), sourceFileName,
+                    sourceFileSize, formattedEndDateTime), false, true);
             Utils.FileDelete(destinationFileNameTemp);
             var sw = Stopwatch.StartNew();
             _ = Utils.FileCopy(sourceFileName, destinationFileNameTemp, ct);
@@ -207,10 +208,10 @@ internal sealed partial class Main
             Utils.Trace($"timeTaken {timeTaken}");
             Utils.Trace($"sourceFileInfo.Length {sourceFileInfo.Length}");
             lastCopySpeed = timeTaken > 0 ? Convert.ToInt64(sourceFileInfo.Length / timeTaken) : 0;
-            var copySpeed = lastCopySpeed > 0 ? Utils.FormatSpeed(lastCopySpeed) : "a very fast speed";
+            var copySpeed = lastCopySpeed > 0 ? Utils.FormatSpeed(lastCopySpeed) : Resources.AVeryFastSpeed;
             Utils.Trace($"Copy complete at {copySpeed}");
 
-            // Make sure its not readonly
+            // Make sure it's not readonly
             Utils.ClearFileAttribute(destinationFileName, FileAttributes.ReadOnly);
 
             // it could be that the source file hash changed after we read it (we read the hash, updated the master file and
@@ -220,19 +221,15 @@ internal sealed partial class Main
             if (!backupFile.CheckContentHashes(disk))
 
                 // There was an error with the hash codes of the source file anf the file on the backup disk
-            {
-                Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.High,
-                    $"There was an error with the hash codes on the source and backup disk. " +
-                    $"Its likely the source file has changed since the last backup of {backupFile.FullPath} to " + $"{destinationFileName}");
-            }
+                Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.High, string.Format(Resources.HashCodesError, backupFile.FullPath));
         }
         else
         {
             UpdateStatusLabel(ct, string.Format(Resources.Skipping, string.Empty), Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
             if (outOfDiskSpaceMessageSent) return;
 
-            var text = $"[{fileCounter}/{totalFileCount}] {Utils.FormatSize(availableSpace)} free.\n" +
-                       $"Skipping {sourceFileName} as not enough free space";
+            var text = string.Format(Resources.CopyFileInternalSkipping, fileCounter, totalFileCount, Utils.FormatSize(availableSpace),
+                sourceFileName);
             Utils.LogWithPushover(BackupAction.CopyFiles, text, false, true);
             outOfDiskSpaceMessageSent = true;
         }
