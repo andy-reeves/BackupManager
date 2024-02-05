@@ -143,7 +143,7 @@ internal sealed partial class Main
                     }
                     catch (Exception ex)
                     {
-                        if (ex is not (IOException or NotSupportedException or ApplicationException)) throw;
+                        if (ex is not (IOException or NotSupportedException)) throw;
 
                         Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.FileIsLocked, file));
                         return Utils.TraceOut(false);

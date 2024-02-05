@@ -1063,6 +1063,7 @@ internal static partial class Utils
     /// <param name="path"></param>
     /// <param name="newPath"></param>
     /// <exception cref="FileNotFoundException"></exception>
+    /// <exception cref="IOException">If the file is locked and can't be read for info</exception>
     /// <returns>False if a rename was not required</returns>
     internal static bool RenameVideoCodec(string path, out string newPath)
     {
@@ -1131,9 +1132,7 @@ internal static partial class Utils
         if (!FileIsVideo(path)) throw new NotSupportedException("file is not video");
 
         actualVideoCodec = string.Empty;
-
-        var info = new VideoFileInfoReader().GetMediaInfo(path) ??
-                   throw new ApplicationException(string.Format(Resources.UnableToLoadFFProbe, path));
+        var info = new VideoFileInfoReader().GetMediaInfo(path) ?? throw new IOException(string.Format(Resources.UnableToLoadFFProbe, path));
         actualVideoCodec = FormatVideoCodec(info, Path.GetFileNameWithoutExtension(path));
         if (actualVideoCodec.HasNoValue()) LogWithPushover(BackupAction.Error, $"Actual video codec for {path} is string.Empty");
         return TraceOut(true);
