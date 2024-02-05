@@ -135,7 +135,8 @@ internal sealed partial class Main
                     {
                         if (Utils.RenameVideoCodec(file, out var newFile))
                         {
-                            Utils.LogWithPushover(BackupAction.ProcessFiles, $"{Path.GetFileName(file)} rename required for video codec");
+                            Utils.LogWithPushover(BackupAction.ProcessFiles,
+                                string.Format(Resources.FileRenameRequiredForVideoCodec, Path.GetFileName(file)));
 
                             // change the file to the newFile to continue processing
                             file = newFile;
@@ -158,7 +159,7 @@ internal sealed partial class Main
                 if (currentPercentComplete % 25 == 0 && currentPercentComplete > reportedPercentComplete && files.Count > 100)
                 {
                     reportedPercentComplete = currentPercentComplete;
-                    Utils.LogWithPushover(BackupAction.ProcessFiles, $"Processing {currentPercentComplete}%");
+                    Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.ProcessingPercentage, currentPercentComplete));
                 }
                 Utils.Trace($"{fileCounterForMultiThreadProcessing} Processing {file}");
             }
@@ -176,7 +177,7 @@ internal sealed partial class Main
                 directoryScanning = directory;
                 firstDir = false;
             }
-            UpdateStatusLabel(ct, "Processing", fileCounterForMultiThreadProcessing);
+            UpdateStatusLabel(ct, Resources.Processing, fileCounterForMultiThreadProcessing);
             if (CheckForFilesToDelete(file, filtersToDelete)) continue;
 
             // RegEx file name rules

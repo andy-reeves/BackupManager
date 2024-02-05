@@ -1122,8 +1122,9 @@ internal static partial class Utils
     /// <param name="path">Path to the video file</param>
     /// <param name="actualVideoCodec">The actual video codec of the file</param>
     /// <returns>True if the video codec was determined</returns>
-    /// <exception cref="FileNotFoundException"></exception>
-    /// <exception cref="ApplicationException"></exception>
+    /// <exception cref="FileNotFoundException">If the file is not found</exception>
+    /// <exception cref="IOException">If the file is locked</exception>
+    /// <exception cref="NotSupportedException">If the file is not a video file</exception>
     internal static bool GetVideoCodec(string path, out string actualVideoCodec)
     {
         TraceIn(path);

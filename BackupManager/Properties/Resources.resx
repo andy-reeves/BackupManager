@@ -436,4 +436,13 @@ Write: {4}</value>
   <data name="FileIsLocked" xml:space="preserve">
     <value>{0} is locked so can't be processed now</value>
   </data>
+  <data name="FileRenameRequiredForVideoCodec" xml:space="preserve">
+    <value>{0} rename required for video codec</value>
+  </data>
+  <data name="ProcessingPercentage" xml:space="preserve">
+    <value>Processing {0}%</value>
+  </data>
+  <data name="Processing" xml:space="preserve">
+    <value>Processing</value>
+  </data>
 </root>

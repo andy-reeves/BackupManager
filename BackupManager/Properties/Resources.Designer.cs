@@ -506,6 +506,15 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} rename required for video codec.
+        /// </summary>
+        internal static string FileRenameRequiredForVideoCodec {
+            get {
+                return ResourceManager.GetString("FileRenameRequiredForVideoCodec", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to File Watchers = {0}.
         /// </summary>
         internal static string FileWatchersButton {
@@ -700,6 +709,24 @@ namespace BackupManager.Properties {
         internal static string PrepareNewBackupDiskAreYouSure {
             get {
                 return ResourceManager.GetString("PrepareNewBackupDiskAreYouSure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Processing.
+        /// </summary>
+        internal static string Processing {
+            get {
+                return ResourceManager.GetString("Processing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Processing {0}%.
+        /// </summary>
+        internal static string ProcessingPercentage {
+            get {
+                return ResourceManager.GetString("ProcessingPercentage", resourceCulture);
             }
         }
         
