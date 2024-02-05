@@ -121,30 +121,10 @@ internal sealed partial class Main
         var disk = SetupBackupDisk(ct);
         var directoryToCheck = disk.BackupPath;
         Utils.LogWithPushover(BackupAction.CheckBackupDisk, Resources.Started, false, true);
-        Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Checking {directoryToCheck}");
-        UpdateStatusLabel(ct, $"Checking backup disk {directoryToCheck}");
-        long readSpeed = 0, writeSpeed = 0;
-
-        if (mediaBackup.Config.SpeedTestOnOff)
-        {
-            var diskTestSize = disk.Free > Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize)
-                ? Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize)
-                : disk.Free - Utils.BYTES_IN_ONE_KILOBYTE;
-            UpdateStatusLabel(ct, string.Format(Resources.SpeedTesting, directoryToCheck));
-            Utils.DiskSpeedTest(directoryToCheck, diskTestSize, mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed, ct);
-            disk.UpdateSpeeds(readSpeed, writeSpeed);
-        }
-
-        var text = string.Format(Resources.ConnectedDiskInfo, disk.Name, disk.CapacityFormatted, disk.FreeFormatted, Utils.FormatSpeed(readSpeed),
-            Utils.FormatSpeed(writeSpeed));
+        Utils.LogWithPushover(BackupAction.CheckBackupDisk, string.Format(Resources.Checking, directoryToCheck));
+        UpdateStatusLabel(ct, string.Format(Resources.Scanning, directoryToCheck));
+        ConnectedDiskSpeedTest(disk, directoryToCheck, ct);
         var diskInfoMessageWasTheLastSent = true;
-        Utils.LogWithPushover(BackupAction.CheckBackupDisk, text);
-
-        if (disk.Free < Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumCriticalSpace))
-        {
-            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
-                string.Format(Resources.PrepareNewBackupDisk, disk.FreeFormatted));
-        }
 
         // So we can cancel safely we only clear the disk.Name property and leave the DiskChecked value
         // Then if a cancel is requested we can put the disk.Name back how it was before we started scanning
@@ -353,6 +333,31 @@ internal sealed partial class Main
             ct.ThrowIfCancellationRequested();
         }
         return Utils.TraceOut(disk);
+    }
+
+    private void ConnectedDiskSpeedTest(BackupDisk disk, string directoryToCheck, CancellationToken ct)
+    {
+        long readSpeed = 0, writeSpeed = 0;
+
+        if (config.SpeedTestOnOff)
+        {
+            var diskTestSize = disk.Free > Utils.ConvertMBtoBytes(config.SpeedTestFileSize)
+                ? Utils.ConvertMBtoBytes(config.SpeedTestFileSize)
+                : disk.Free - Utils.BYTES_IN_ONE_KILOBYTE;
+            UpdateStatusLabel(ct, string.Format(Resources.SpeedTesting, directoryToCheck));
+            Utils.DiskSpeedTest(directoryToCheck, diskTestSize, config.SpeedTestIterations, out readSpeed, out writeSpeed, ct);
+            disk.UpdateSpeeds(readSpeed, writeSpeed);
+        }
+
+        var text = string.Format(Resources.ConnectedDiskInfo, disk.Name, disk.CapacityFormatted, disk.FreeFormatted, Utils.FormatSpeed(readSpeed),
+            Utils.FormatSpeed(writeSpeed));
+        Utils.LogWithPushover(BackupAction.CheckBackupDisk, text);
+
+        if (disk.Free < Utils.ConvertMBtoBytes(config.BackupDiskMinimumCriticalSpace))
+        {
+            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
+                string.Format(Resources.PrepareNewBackupDisk, disk.FreeFormatted));
+        }
     }
 
     private bool EnsureConnectedBackupDisk(string backupDisk)
