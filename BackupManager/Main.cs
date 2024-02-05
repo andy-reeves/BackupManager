@@ -637,15 +637,22 @@ internal sealed partial class Main : Form
     private void ListFilesMarkedAsDeletedButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        var files = mediaBackup.GetBackupFilesMarkedAsDeleted(true);
         Utils.Log("Listing files marked as deleted");
-        var backupFiles = files as BackupFile[] ?? files.ToArray();
+        var backupFiles = mediaBackup.GetBackupFilesMarkedAsDeleted(true).ToArray();
 
         foreach (var file in backupFiles)
         {
             Utils.Log($"{file.FullPath} at {Utils.FormatSize(file.Length)} on {file.Disk}");
         }
         Utils.Log($"{backupFiles.Length} files at {Utils.FormatSize(backupFiles.Sum(static p => p.Length))}");
+        Utils.Log("Listing files marked as deleted ordered by size on backup disk");
+
+        foreach (var d in backupFiles.Select(static f => f.Disk).Distinct()
+                     .ToDictionary(static disk => disk, disk => backupFiles.Where(f => f.Disk == disk).Sum(static f => f.Length))
+                     .OrderByDescending(static i => i.Value))
+        {
+            Utils.Log($"{d.Key,-10} has {Utils.FormatSize(d.Value),-8}");
+        }
         Utils.TraceOut();
     }
 
