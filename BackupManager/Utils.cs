@@ -1063,7 +1063,7 @@ internal static partial class Utils
     /// <param name="path"></param>
     /// <param name="newPath"></param>
     /// <exception cref="FileNotFoundException"></exception>
-    /// <returns>False if a rename is not required</returns>
+    /// <returns>False if a rename was not required</returns>
     internal static bool RenameVideoCodec(string path, out string newPath)
     {
         TraceIn(path);
@@ -1135,9 +1135,18 @@ internal static partial class Utils
         var info = new VideoFileInfoReader().GetMediaInfo(path) ??
                    throw new ApplicationException(string.Format(Resources.UnableToLoadFFProbe, path));
         actualVideoCodec = FormatVideoCodec(info, Path.GetFileNameWithoutExtension(path));
+        if (actualVideoCodec.HasNoValue()) LogWithPushover(BackupAction.Error, $"Actual video codec for {path} is string.Empty");
         return TraceOut(true);
     }
 
+    /// <summary>
+    /// </summary>
+    /// <param name="mediaInfo"></param>
+    /// <param name="fileName"></param>
+    /// <returns>
+    ///     The following values are possibly returned: null, string.Empty, h264, h265, XviD, DivX, MPEG4, VP6, MPEG2,
+    ///     MPEG, VC1, AV1, VP7,VP8, VP9, WMV, RGB
+    /// </returns>
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     private static string FormatVideoCodec(MediaInfoModel mediaInfo, string fileName)
     {
@@ -1152,10 +1161,12 @@ internal static partial class Utils
 
         if (videoFormat == "mpeg4" || videoFormat.Contains("msmpeg4"))
         {
-            if (videoCodecId.ToLowerInvariant() == "xvid") return "XviD";
-            if (videoCodecId == "DIV3" || videoCodecId == "DX50" || videoCodecId.ToUpperInvariant() == "DIVX") return "DivX";
-
-            return "MPEG4";
+            return videoCodecId.ToLowerInvariant() switch
+            {
+                "xvid" => "XviD",
+                "div3" or "dx50" or "divx" => "DivX",
+                _ => "MPEG4"
+            };
         }
         if (videoFormat.Contains("vp6")) return "VP6";
 

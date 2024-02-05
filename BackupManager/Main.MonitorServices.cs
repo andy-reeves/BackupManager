@@ -45,8 +45,6 @@ internal sealed partial class Main
             if (monitor.ServiceToRestart.HasValue()) MonitorServiceToRestart(monitor);
         }
         if (mediaBackup.Config.MonitoringCheckLatestVersions) MonitorCheckLatestVersions();
-
-        // check all the directories are writable
         CheckDirectoriesAreWritable();
         monitoringExecutingRightNow = false;
     }
