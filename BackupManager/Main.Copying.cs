@@ -52,12 +52,10 @@ internal sealed partial class Main
         var stillNotOnBackupDisk = filesStillNotOnBackupDisk as BackupFile[] ?? filesStillNotOnBackupDisk.ToArray();
 
         if (stillNotOnBackupDisk.Any())
-        {
-            sizeOfFiles = stillNotOnBackupDisk.Sum(static p => p.Length);
-            text = $"{stillNotOnBackupDisk.Length:n0} files still to backup at {Utils.FormatSize(sizeOfFiles)}.\n";
-        }
+            text =
+                $"{stillNotOnBackupDisk.Length:n0} files still to backup at {Utils.FormatSize(stillNotOnBackupDisk.Sum(static p => p.Length))}.\n";
         Utils.LogWithPushover(BackupAction.CopyFiles, text + $"{disk.FreeFormatted} free on backup disk");
-        if (showCompletedMessage) Utils.LogWithPushover(BackupAction.CopyFiles, "Completed");
+        if (showCompletedMessage) Utils.LogWithPushover(BackupAction.CopyFiles, Resources.Completed, true);
         Utils.TraceOut();
     }
 
