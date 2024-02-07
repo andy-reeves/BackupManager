@@ -58,7 +58,7 @@ internal sealed partial class Main
     /// </summary>
     private bool longRunningActionExecutingRightNow;
 
-    // Always create a new one before running a long running task
+    // Always create a new one before running a long-running task
     private CancellationTokenSource mainCancellationTokenSource;
 
     private CancellationToken mainCt;
@@ -89,7 +89,7 @@ internal sealed partial class Main
             mediaBackup = MediaBackup.Load(File.Exists(localMediaXml) ? localMediaXml : ConfigurationManager.AppSettings.Get("MediaBackupXml"));
             config = mediaBackup.Config;
             Utils.Config = config;
-            backupDiskTextBox.Text = config.BackupDisk;
+            UpdateBackupDiskTextBoxFromConfig();
             if (Utils.IsRunningAsAdmin()) Text += Resources.AdminTitle;
             UpdateMediaFilesCountDisplay();
             Utils.LogHeader();
@@ -157,6 +157,11 @@ internal sealed partial class Main
             _ = MessageBox.Show(string.Format(Resources.ExceptionOccured, ex));
             Environment.Exit(0);
         }
+    }
+
+    internal void UpdateBackupDiskTextBoxFromConfig()
+    {
+        backupDiskTextBox.Text = config.BackupDisk;
     }
 
     private void UpdateSymbolicLinksAsync(CancellationToken ct)

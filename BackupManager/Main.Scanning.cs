@@ -309,7 +309,7 @@ internal sealed partial class Main
         }
     }
 
-    private void ScanAllDirectories(bool updateLastFullScan, CancellationToken ct)
+    internal void ScanAllDirectories(bool updateLastFullScan, CancellationToken ct)
     {
         var scanId = Guid.NewGuid().ToString();
         fileBlockingCollection = new BlockingCollection<string>();

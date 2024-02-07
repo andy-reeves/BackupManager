@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config xmlns="ConfigSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema">  
+  
+  <!-- The backup disk path -->
+  <BackupDisk>test</BackupDisk> 
+
+  <!-- After this many days the backup warns to check the disks again -->
+  <BackupDiskDaysToReportSinceFilesChecked>180</BackupDiskDaysToReportSinceFilesChecked>
+
+  <!-- A bigger percentage difference than this and the backup stops -->
+  <BackupDiskDifferenceInFileCountAllowedPercentage>1</BackupDiskDifferenceInFileCountAllowedPercentage> 
+
+  <!-- MinimumCriticalBackupDiskSpace in MB -->
+  <BackupDiskMinimumCriticalSpace>210</BackupDiskMinimumCriticalSpace>
+
+  <!-- MinimumFreeSpaceToLeaveOnBackupDisk in MB -->
+  <BackupDiskMinimumFreeSpaceToLeave>201</BackupDiskMinimumFreeSpaceToLeave>
+
+  <!-- number of days before the next scan will be a full scan of the Directories --> 
+  <DirectoriesDaysBetweenFullScan>7</DirectoriesDaysBetweenFullScan>
+
+  <!-- True and the Directories are monitored for changes and not scanned fully each day -->
+  <DirectoriesFileChangeWatcherOnOff>false</DirectoriesFileChangeWatcherOnOff>
+
+  <!-- If an error occurs whilst monitoring Directories we wait for this long before attempting to Reset the Watcher in seconds (120 - 2 mins) -->
+  <DirectoriesFileChangeWatcherRestartDelay>120</DirectoriesFileChangeWatcherRestartDelay>
+
+  <!-- Only files matching this filter are used for File System scanning -->
+  <DirectoriesFilterRegEx />
+
+  <!-- Minimum age of the last change to a directory before we will scan it in seconds (3600=1h) -->
+  <DirectoriesMinimumAgeBeforeScanning>3600</DirectoriesMinimumAgeBeforeScanning>
+
+  <!-- MinimumCriticalMasterFolderSpace in MB -->
+  <DirectoriesMinimumCriticalSpace>150000</DirectoriesMinimumCriticalSpace>
+
+  <!-- Minimum read speed in MB/s -->
+  <DirectoriesMinimumReadSpeed>20</DirectoriesMinimumReadSpeed>
+
+  <!-- Minimum write speed in MB/s -->
+  <DirectoriesMinimumWriteSpeed>20</DirectoriesMinimumWriteSpeed>
+
+  <!-- Number of seconds between checking all the changed file notifications for folders to scan later (3600=1h) -->
+  <DirectoriesProcessChangesTimer>3600</DirectoriesProcessChangesTimer>
+
+  <!-- Whether to check video files are named corrected and rename them if not -->
+  <DirectoriesRenameVideoFilesOnOff>true</DirectoriesRenameVideoFilesOnOff>
+ 
+  <!-- Whether to check video files are named corrected and rename them if not when doing full scans -->
+  <DirectoriesRenameVideoFilesForFullScansOnOff>false</DirectoriesRenameVideoFilesForFullScansOnOff>
+
+  <!-- Any files matching this will be checked for correct name and renamed if not correct -->
+  <DirectoriesRenameVideoFilesRegEx>^.*\[([hx]26[45]|MPEG([24])?|HEVC|XviD|V(C1|P9)|AVC|DivX|RGB)\]\.(?:m(?:kv|p(4|e?g))|avi)$</DirectoriesRenameVideoFilesRegEx>
+
+  <!-- Number of seconds between checking all the directories ready to scan to see if they are old enough now (3600=1h) -->
+  <DirectoriesScanTimer>3600</DirectoriesScanTimer>
+
+  <!-- Regex to match files we will check for duplicate hash codes -->
+  <DuplicateContentHashCodesDiscoveryRegex>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$</DuplicateContentHashCodesDiscoveryRegex>
+ 
+  <!-- The capturing group is this Regex must be unique for all matching files -->
+  <DuplicateFilesRegex>^.*\\_Movies(?:\s\(non-tmdb\))?\\.*\s({tmdb-\d{1,7}?}).*\.(?:m(?:kv|p(4|e?g))|ts|avi)$</DuplicateFilesRegex>
+  
+  <!-- When true check for latest versions of applications-->
+  <MonitoringCheckLatestVersions>false</MonitoringCheckLatestVersions>
+
+  <!-- Monitor interval in seconds (60=1m) -->
+  <MonitoringInterval>60</MonitoringInterval>
+
+  <!-- When true the service monitoring starts when the app starts -->
+  <MonitoringOnOff>false</MonitoringOnOff>
+  
+  <!-- Delay before Application monitoring starts -->
+  <MonitoringStartDelayOnOff>true</MonitoringStartDelayOnOff>
+  
+  <PlexToken>df_s2aZXWFiAmvJU-QFM</PlexToken>
+
+  <!-- Pushover messages are sent to this App Token until any limit reached and then the next -->
+  <PushoverAppTokens>
+    <Token>acdzfbwibfev3bzis73vv9dzy81tqb</Token>
+    <Token>a68hubsd9egvubjmwsvh5ndawwtuda</Token>
+    <Token>antpms12oumk3u3wzw2xauchjss7qp</Token>
+    <Token>az32yr5t8uptjaya29oanz8heb8vxg</Token>
+    <Token>aboc69s75i5mc3cvnqukrq65wcsumw</Token>
+  </PushoverAppTokens>
+  
+  <!-- True to enable sending Pushover messages -->
+  <PushoverOnOff>false</PushoverOnOff>
+
+  <PushoverSendLowOnOff>true</PushoverSendLowOnOff>
+
+  <PushoverSendNormalOnOff>true</PushoverSendNormalOnOff>
+
+  <PushoverSendHighOnOff>true</PushoverSendHighOnOff>
+
+  <PushoverSendEmergencyOnOff>true</PushoverSendEmergencyOnOff>
+
+  <PushoverUserKey>u94guozp6xu2qpbgqpvdzxxj6hpxad</PushoverUserKey>
+
+  <!-- Sends a high priority message once this limit is passed -->
+  <PushoverWarningMessagesRemaining>500</PushoverWarningMessagesRemaining>
+
+  <!-- When true a backup scan will run when scheduled -->
+  <ScheduledBackupOnOff>false</ScheduledBackupOnOff>
+
+  <!-- When true a backup scan will run when the app starts -->
+  <ScheduledBackupRunOnStartup>false</ScheduledBackupRunOnStartup>
+
+  <!--  ScheduledBackupStartTime as hh:mm:ss -->
+  <ScheduledBackupStartTime>13:30:00</ScheduledBackupStartTime>
+
+  <!-- Size of disk speed test file in MB -->
+  <SpeedTestFileSize>100</SpeedTestFileSize>
+
+  <!-- Number of disk speed test iterations to run -->
+  <SpeedTestIterations>1</SpeedTestIterations>
+ 
+  <!-- If True we test the speed of the disks -->
+  <SpeedTestOnOff>false</SpeedTestOnOff>
+
+  <Monitors />
+
+  <Directories>
+    <Directory>C:\Users\RemoteUser011071\source\repos\andy-reeves\BackupManager\TestProject\TestData\FullTestARunning\DirectoryA\_TV</Directory>
+    <Directory>C:\Users\RemoteUser011071\source\repos\andy-reeves\BackupManager\TestProject\TestData\FullTestARunning\DirectoryB\_Movies</Directory>
+    <Directory>C:\Users\RemoteUser011071\source\repos\andy-reeves\BackupManager\TestProject\TestData\FullTestARunning\DirectoryB\_TV</Directory>
+  </Directories>
+  
+  <Filters />
+
+  <FilesToDelete>
+    <FilesToDeleteRegEx>._.DS_Store</FilesToDeleteRegEx>
+    <FilesToDeleteRegEx>.DS_Store</FilesToDeleteRegEx>
+  </FilesToDelete>
+
+  <SymbolicLinks />
+  
+  <DisksToSkipOnRestore />
+
+</Config>

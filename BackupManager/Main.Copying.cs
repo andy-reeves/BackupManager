@@ -18,7 +18,7 @@ namespace BackupManager;
 
 internal sealed partial class Main
 {
-    private void CopyFiles(bool showCompletedMessage, CancellationToken ct)
+    internal void CopyFiles(bool showCompletedMessage, CancellationToken ct)
     {
         Utils.TraceIn();
         var disk = SetupBackupDisk(ct);

@@ -107,7 +107,7 @@ internal sealed partial class Main
     /// <param name="ct"></param>
     /// <returns>null if there was an error</returns>
     [SuppressMessage("ReSharper", "MethodSupportsCancellation")]
-    private BackupDisk CheckConnectedDisk(bool deleteExtraFiles, CancellationToken ct)
+    internal BackupDisk CheckConnectedDisk(bool deleteExtraFiles, CancellationToken ct)
     {
         Utils.TraceIn();
 
@@ -133,6 +133,7 @@ internal sealed partial class Main
         mediaBackup.ClearFlags();
         var filesPreviouslyOnThisBackupDisk = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, true).ToArray();
 
+        // scenario 102 - file in our xml but not on disk anymore needs to show as deleted now
         foreach (var file in filesPreviouslyOnThisBackupDisk)
         {
             file.BeingCheckedNow = true;
@@ -155,11 +156,16 @@ internal sealed partial class Main
 
             if (mediaBackup.Contains(backupFileIndexFolderRelativePath))
             {
+                // scenario 103 or 105 on disk and in xml but could be different
+
                 ConnectedDiskBackupDiskFileIsInTheHashtable(disk, backupFileIndexFolderRelativePath, ref diskInfoMessageWasTheLastSent,
                     deleteExtraFiles);
             }
             else
+            {
+                // scenario 104 on disk but not in xml
                 ConnectedDiskBackupDiskFileIsNotInTheHashtable(backupFileFullPath, disk, ref diskInfoMessageWasTheLastSent, deleteExtraFiles);
+            }
         }
 
         if (ct.IsCancellationRequested)
@@ -271,7 +277,12 @@ internal sealed partial class Main
             Utils.FileMove(backupFileFullPath, destFileName);
 
         // This forces a hash check on the source and backup disk files
-        if (file.CheckContentHashes(disk)) return;
+        if (file.CheckContentHashes(disk))
+        {
+            // file is checked so flag it as such
+            file.BeingCheckedNow = false;
+            return;
+        }
 
         // There was an error with the hash codes of the source file anf the file on the backup disk
         Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, string.Format(Resources.HashCodesError, file.FullPath));
@@ -296,9 +307,8 @@ internal sealed partial class Main
             // sometimes we get the same file on multiple backup disks
             // calling CheckContentHashes will switch it from one disk to another, and they'll keep doing it
             // so if it was last seen on another disk delete it from this one
-            if (disk.Name != backupFile.Disk && backupFile.Disk.HasValue()) // && backupFile.Disk != "-1")
+            if (disk.Name != backupFile.Disk && backupFile.Disk.HasValue())
             {
-                //if (backupFile.Disk != "-1" && backupFile.Disk.HasValue())
                 if (backupFile.Disk.HasValue()) Utils.Log($"{backupFile.FullPath} was on {backupFile.Disk} but now found on {disk.Name}");
 
                 // we will fall through from here to the delete further down and remove the file
@@ -315,19 +325,30 @@ internal sealed partial class Main
 
                 // check the modifiedTime and if its different copy it
                 var sourceLastWriteTime = backupFile.LastWriteTime;
-                var lastWriteTimeOfFileOnBackupDisk = Utils.GetFileLastWriteTime(backupFileFullPath);
+                var backupFilePathOnBackupDisk = backupFile.BackupDiskFullPath(disk.BackupPath);
+                var lastWriteTimeOfFileOnBackupDisk = Utils.GetFileLastWriteTime(backupFilePathOnBackupDisk);
 
-                if (sourceLastWriteTime == lastWriteTimeOfFileOnBackupDisk)
+                if (sourceLastWriteTime >= lastWriteTimeOfFileOnBackupDisk)
                 {
-                    // There was an error with the hash codes of the source file anf the file on the backup disk
+                    // There was an error with the hash codes of the source file and the file on the backup disk
                     Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
                         string.Format(Resources.HashCodesError, backupFile.FullPath));
                     diskInfoMessageWasTheLastSent = false;
                 }
                 else
                 {
-                    Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, $"Deleting {backupFile.FullPath}. ");
-                    Utils.FileDelete(backupFileFullPath);
+                    if (deleteExtraFiles)
+                    {
+                        Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, $"Deleting {backupFilePathOnBackupDisk}. ");
+
+                        Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
+                            $"Would be deleting {backupFilePathOnBackupDisk}. ");
+
+                        // TODO Utils.FileDelete(backupFilePathOnBackupDisk);
+                    }
+                    else
+                        Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
+                            $"Would be deleting {backupFilePathOnBackupDisk}. ");
                 }
                 return;
             }

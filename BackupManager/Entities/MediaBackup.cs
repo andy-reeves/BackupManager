@@ -118,25 +118,37 @@ public sealed class MediaBackup
     {
         try
         {
-            var sw = Stopwatch.StartNew();
-
-            if (!Utils.ValidateXmlFromResources(path, "BackupManager.MediaBackupSchema.xsd"))
-                throw new XmlSchemaValidationException("MediaBackup.xml failed validation");
-
-            Utils.Trace($"Time to validate xml was {sw.Elapsed}");
-            sw.Restart();
-            var xRoot = new XmlRootAttribute { ElementName = "MediaBackup", Namespace = "MediaBackupSchema.xsd", IsNullable = true };
             MediaBackup mediaBackup;
-            XmlSerializer serializer = new(typeof(MediaBackup), xRoot);
 
-            using (FileStream stream = new(path, FileMode.Open, FileAccess.Read))
+            // The path is null when tests are running as config is loaded separately
+            if (path != null)
             {
-                mediaBackup = serializer.Deserialize(stream) as MediaBackup;
-            }
-            Utils.Trace($"Time to Deserialize xml was {sw.Elapsed}");
-            if (mediaBackup == null) return null;
+                var sw = Stopwatch.StartNew();
 
-            mediaBackup.mediaBackupPath = path;
+                if (!Utils.ValidateXmlFromResources(path, "BackupManager.MediaBackupSchema.xsd"))
+                    throw new XmlSchemaValidationException("MediaBackup.xml failed validation");
+
+                Utils.Trace($"Time to validate xml was {sw.Elapsed}");
+                sw.Restart();
+                var xRoot = new XmlRootAttribute { ElementName = "MediaBackup", Namespace = "MediaBackupSchema.xsd", IsNullable = true };
+                XmlSerializer serializer = new(typeof(MediaBackup), xRoot);
+
+                using (FileStream stream = new(path, FileMode.Open, FileAccess.Read))
+                {
+                    mediaBackup = serializer.Deserialize(stream) as MediaBackup;
+                }
+                Utils.Trace($"Time to Deserialize xml was {sw.Elapsed}");
+                if (mediaBackup == null) return null;
+
+                mediaBackup.mediaBackupPath = path;
+                var directoryName = new FileInfo(path).DirectoryName;
+                if (directoryName == null) return null;
+
+                var config = Config.Load(Path.Combine(directoryName, "Config.xml"));
+                if (config != null) mediaBackup.Config = config;
+            }
+            else
+                mediaBackup = Utils.MediaBackup;
 
             foreach (var backupFile in mediaBackup.BackupFiles)
             {
@@ -148,11 +160,6 @@ public sealed class MediaBackup
                 mediaBackup.indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
                 if (!backupFile.DiskChecked.HasValue() || !backupFile.Disk.HasValue()) backupFile.ClearDiskChecked();
             }
-            var directoryName = new FileInfo(path).DirectoryName;
-            if (directoryName == null) return null;
-
-            var config = Config.Load(Path.Combine(directoryName, "Config.xml"));
-            if (config != null) mediaBackup.Config = config;
             return mediaBackup;
         }
         catch (InvalidOperationException ex)

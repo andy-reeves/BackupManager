@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<MediaBackup xmlns="MediaBackupSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <BackupFiles />
+  <BackupDisks />
+  <DirectoriesToScan />
+  <DirectoryChanges />
+  <DirectoriesLastFullScan>2023-01-01</DirectoriesLastFullScan>
+  <DirectoryScans />
+</MediaBackup>

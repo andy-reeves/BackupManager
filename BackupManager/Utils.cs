@@ -40,6 +40,8 @@ using HtmlAgilityPack;
 
 using Microsoft.Win32.SafeHandles;
 
+using DirectoryNotFoundException = System.IO.DirectoryNotFoundException;
+
 namespace BackupManager;
 
 /// <summary>
@@ -178,6 +180,8 @@ internal static partial class Utils
     /// </summary>
     internal static int PushoverMessagesRemaining { get; private set; }
 
+    public static MediaBackup MediaBackup { get; internal set; }
+
     [LibraryImport("kernel32.dll", EntryPoint = "GetDiskFreeSpaceExW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool GetDiskFreeSpaceEx(string lpDirectoryName, out long lpFreeBytesAvailable, out long lpTotalNumberOfBytes,
@@ -209,6 +213,34 @@ internal static partial class Utils
         var notePadPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "notepad.exe");
         process.StartInfo.Arguments = $"/c start /max \"{notePadPath}\" \"{_logFile}\"";
         _ = process.Start();
+    }
+
+    public static void CopyDirectory(string sourceDirectory, string targetDirectory)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(sourceDirectory);
+        ArgumentException.ThrowIfNullOrEmpty(targetDirectory);
+        if (!Directory.Exists(sourceDirectory)) throw new DirectoryNotFoundException();
+        if (Directory.Exists(targetDirectory)) throw new NotSupportedException("Target Directory exists");
+
+        var diSource = new DirectoryInfo(sourceDirectory);
+        var diTarget = new DirectoryInfo(targetDirectory);
+        CopyAllFiles(diSource, diTarget);
+    }
+
+    private static void CopyAllFiles(DirectoryInfo source, DirectoryInfo target)
+    {
+        _ = Directory.CreateDirectory(target.FullName);
+
+        foreach (var fi in source.GetFiles())
+        {
+            _ = fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
+        }
+
+        foreach (var diSourceSubDir in source.GetDirectories())
+        {
+            var nextTargetSubDir = target.CreateSubdirectory(diSourceSubDir.Name);
+            CopyAllFiles(diSourceSubDir, nextTargetSubDir);
+        }
     }
 
     internal static void BackupLogFile(CancellationToken ct)
@@ -753,8 +785,14 @@ internal static partial class Utils
     {
         var diskNames = new HashSet<string>();
 
-        foreach (var diskName in directories.Select(static d => d.SubstringAfterIgnoreCase(@"\\").SubstringBefore('\\')))
+        foreach (var d in directories)
         {
+            string diskName;
+
+            if (d.StartsWithIgnoreCase(@"\\"))
+                diskName = d.SubstringAfterIgnoreCase(@"\\").SubstringBefore('\\');
+            else
+                diskName = new DirectoryInfo(d).Parent.FullName;
             _ = diskNames.Add(diskName);
         }
         return diskNames.ToArray();
@@ -776,14 +814,41 @@ internal static partial class Utils
 
     internal static string[] GetFilesForDisk(string diskName, IEnumerable<string> backupFiles)
     {
-        var a = backupFiles.Where(file => file.StartsWithIgnoreCase(@"\\" + diskName + @"\"));
-        var b = a.ToArray();
-        return b;
+        if (diskName.StartsWithIgnoreCase("nas"))
+        {
+            var a = backupFiles.Where(file => file.StartsWithIgnoreCase(@"\\" + diskName + @"\"));
+            var b = a.ToArray();
+            return b;
+        }
+
+        // TODO nas fix
+        return backupFiles.Where(file =>
+        {
+            if (file.StartsWithIgnoreCase(diskName + @"\")) return true;
+
+            return false;
+        }).ToArray();
     }
 
     internal static string[] GetDirectoriesForDisk(string diskName, IEnumerable<string> directories)
     {
-        return directories.Where(dir => dir.StartsWithIgnoreCase(@"\\" + diskName + @"\")).ToArray();
+        // TODO nas fix
+        if (diskName.StartsWithIgnoreCase("nas"))
+        {
+            return directories.Where(dir =>
+            {
+                if (dir.StartsWithIgnoreCase(@"\\" + diskName + @"\")) return true;
+
+                return false;
+            }).ToArray();
+        }
+
+        return directories.Where(dir =>
+        {
+            if (dir.StartsWithIgnoreCase(diskName + @"\")) return true;
+
+            return false;
+        }).ToArray();
     }
 
     /// <summary>
@@ -989,6 +1054,24 @@ internal static partial class Utils
             returnValue = fileInfo.LastWriteTime;
         }
         return returnValue;
+    }
+
+    internal static bool SetFileLastWriteTime(string fileName, DateTime writeTimeToUse)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(fileName, nameof(fileName));
+        if (!File.Exists(fileName)) throw new FileNotFoundException(Resources.FileNotFound, fileName);
+
+        FileInfo fileInfo = new(fileName);
+
+        try
+        {
+            fileInfo.LastWriteTime = writeTimeToUse;
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            return false;
+        }
+        return true;
     }
 
     /// <summary>
@@ -1517,6 +1600,12 @@ internal static partial class Utils
         string text, bool delayBeforeSending = false, bool delayAfterSending = false)
     {
         Log(backupAction, text);
+
+        if (!Config.PushoverOnOff || ((priority is not (PushoverPriority.Low or PushoverPriority.Lowest) || !Config.PushoverSendLowOnOff) &&
+                                      (priority != PushoverPriority.Normal || !Config.PushoverSendNormalOnOff) &&
+                                      (priority != PushoverPriority.High || !Config.PushoverSendHighOnOff) &&
+                                      (priority != PushoverPriority.Emergency || !Config.PushoverSendEmergencyOnOff)))
+            return;
 
         if (backupAction == BackupAction.Error || (!delayBeforeSending && !delayAfterSending))
         {
