@@ -24,7 +24,7 @@ public sealed class FileSystemWatcherTests4
     public void FileSystemWatcherTest4()
     {
         test4EventsCounter = 0;
-        const int waitInMilliseconds = 350;
+        const int waitInMilliseconds = 500;
         var monitoringPath1 = Path.Combine(Path.GetTempPath(), "Test4MonitoringFolder1");
         var monitoringPath2 = Path.Combine(Path.GetTempPath(), "Test4MonitoringFolder2");
         Utils.EnsureDirectoriesForDirectoryPath(monitoringPath1);

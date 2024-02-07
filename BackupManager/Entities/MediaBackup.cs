@@ -482,7 +482,7 @@ public sealed class MediaBackup
     }
 
     /// <summary>
-    ///     Get BackupFiles where Disk is null or Empty (does not included MarkedAsDeleted files)
+    ///     Get BackupFiles where Disk is null or Empty (does not include MarkedAsDeleted files)
     /// </summary>
     /// <returns></returns>
     public IEnumerable<BackupFile> GetBackupFilesWithDiskEmpty()

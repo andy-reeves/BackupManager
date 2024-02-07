@@ -344,7 +344,8 @@ internal sealed partial class Main
                         Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
                             $"Would be deleting {backupFilePathOnBackupDisk}. ");
 
-                        // TODO Utils.FileDelete(backupFilePathOnBackupDisk);
+                        // TODO put this back when we are certain
+                        // Utils.FileDelete(backupFilePathOnBackupDisk);
                     }
                     else
                         Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
