@@ -792,11 +792,10 @@ internal static partial class Utils
     {
         var diskNames = new HashSet<string>();
 
-        foreach (var d in directories)
+        foreach (var diskName in directories.Select(static d => d.StartsWithIgnoreCase(@"\\")
+                     ? @"\\" + d.SubstringAfterIgnoreCase(@"\\").SubstringBefore('\\') + @"\"
+                     : d.SubstringBefore('\\') + @"\"))
         {
-            var diskName = d.StartsWithIgnoreCase(@"\\")
-                ? @"\\" + d.SubstringAfterIgnoreCase(@"\\").SubstringBefore('\\') + @"\"
-                : d.SubstringBefore('\\') + @"\";
             _ = diskNames.Add(diskName);
         }
         return diskNames.ToArray();
