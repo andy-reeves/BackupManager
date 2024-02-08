@@ -9,10 +9,12 @@ using System.Globalization;
 
 namespace BackupManager.Extensions;
 
+// ReSharper disable once UnusedType.Global
 public static class Int64Extensions
 {
     private static readonly string[] _sizeSuffixes = { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
 
+    // ReSharper disable once UnusedMember.Global
     public static string SizeSuffix(this long bytes)
     {
         switch (bytes)

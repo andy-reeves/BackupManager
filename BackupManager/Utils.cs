@@ -781,18 +781,22 @@ internal static partial class Utils
         return GetFiles(path, filters, searchOption, 0, 0, true, ct);
     }
 
+    /// <summary>
+    ///     Returns the disk names for the directories provided. If it's a UNC path its returns the path up to the first '\' so
+    ///     for \\nas1\assets1 it will
+    ///     return \\nas1\ and for c:\path1 it will return c:\ so they are always terminated
+    /// </summary>
+    /// <param name="directories"></param>
+    /// <returns></returns>
     internal static string[] GetDiskNames(IEnumerable<string> directories)
     {
         var diskNames = new HashSet<string>();
 
         foreach (var d in directories)
         {
-            string diskName;
-
-            if (d.StartsWithIgnoreCase(@"\\"))
-                diskName = d.SubstringAfterIgnoreCase(@"\\").SubstringBefore('\\');
-            else
-                diskName = new DirectoryInfo(d).Parent.FullName;
+            var diskName = d.StartsWithIgnoreCase(@"\\")
+                ? @"\\" + d.SubstringAfterIgnoreCase(@"\\").SubstringBefore('\\') + @"\"
+                : d.SubstringBefore('\\') + @"\";
             _ = diskNames.Add(diskName);
         }
         return diskNames.ToArray();
@@ -812,43 +816,30 @@ internal static partial class Utils
         return diskAndFirstDirectoryNames.ToArray();
     }
 
+    /// <summary>
+    ///     Returns an array of paths to files that are on the disk provided.
+    /// </summary>
+    /// <param name="diskName"></param>
+    /// <param name="backupFiles"></param>
+    /// <returns></returns>
     internal static string[] GetFilesForDisk(string diskName, IEnumerable<string> backupFiles)
     {
-        if (diskName.StartsWithIgnoreCase("nas"))
-        {
-            var a = backupFiles.Where(file => file.StartsWithIgnoreCase(@"\\" + diskName + @"\"));
-            var b = a.ToArray();
-            return b;
-        }
-
-        // TODO nas fix
-        return backupFiles.Where(file =>
-        {
-            if (file.StartsWithIgnoreCase(diskName + @"\")) return true;
-
-            return false;
-        }).ToArray();
+        ArgumentException.ThrowIfNullOrEmpty(diskName);
+        var terminatedDiskName = EnsurePathHasATerminatingSeparator(diskName);
+        return backupFiles.Where(file => file.StartsWithIgnoreCase(terminatedDiskName)).ToArray();
     }
 
+    /// <summary>
+    ///     Returns an array of paths to directories that are on the disk provided.
+    /// </summary>
+    /// <param name="diskName"></param>
+    /// <param name="directories"></param>
+    /// <returns></returns>
     internal static string[] GetDirectoriesForDisk(string diskName, IEnumerable<string> directories)
     {
-        // TODO nas fix
-        if (diskName.StartsWithIgnoreCase("nas"))
-        {
-            return directories.Where(dir =>
-            {
-                if (dir.StartsWithIgnoreCase(@"\\" + diskName + @"\")) return true;
-
-                return false;
-            }).ToArray();
-        }
-
-        return directories.Where(dir =>
-        {
-            if (dir.StartsWithIgnoreCase(diskName + @"\")) return true;
-
-            return false;
-        }).ToArray();
+        ArgumentException.ThrowIfNullOrEmpty(diskName);
+        var terminatedDiskName = EnsurePathHasATerminatingSeparator(diskName);
+        return directories.Where(dir => dir.StartsWithIgnoreCase(terminatedDiskName)).ToArray();
     }
 
     /// <summary>
