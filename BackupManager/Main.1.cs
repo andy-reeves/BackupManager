@@ -518,6 +518,7 @@ internal sealed partial class Main
     /// </summary>
     private void ResetAllControls()
     {
+        longRunningActionExecutingRightNow = false;
         if (!IsHandleCreated || IsDisposed) return;
 
         foreach (Control c in Controls)
@@ -530,7 +531,6 @@ internal sealed partial class Main
         statusStrip.Invoke(_ => toolStripProgressBar.Visible = false);
         statusStrip.Invoke(_ => toolStripStatusLabel.Text = string.Empty);
         ClearEstimatedFinish();
-        longRunningActionExecutingRightNow = false;
     }
 
     private void UpdateStatusLabel(CancellationToken ct, string text = "", int value = 0)

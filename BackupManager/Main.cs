@@ -676,7 +676,7 @@ internal sealed partial class Main : Form
 
             if (longRunningActionExecutingRightNow)
             {
-                // If another long running task is already executing then add these directories back to the list to be scanned later
+                // If another long-running task is already executing then add these directories back to the list to be scanned later
                 foreach (var dir in e.Directories)
                 {
                     mediaBackup.Watcher.DirectoriesToScan.Add(dir, mainCt);
@@ -964,8 +964,7 @@ internal sealed partial class Main : Form
             if (scanDirectoryComboBox.SelectedIndex <= -1 || longRunningActionExecutingRightNow) return;
 
             ResetTokenSource();
-            var param1 = scanDirectoryComboBox.Text;
-            _ = TaskWrapper(Task.Run(() => ScanDirectoryAsync(param1, mainCt), mainCt), mainCt);
+            _ = TaskWrapper(Task.Run(() => ScanDirectoryAsync(scanDirectoryComboBox.Text, mainCt), mainCt), mainCt);
         }
         finally
         {

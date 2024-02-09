@@ -36,10 +36,10 @@
   <DirectoriesMinimumCriticalSpace>150000</DirectoriesMinimumCriticalSpace>
 
   <!-- Minimum read speed in MB/s -->
-  <DirectoriesMinimumReadSpeed>20</DirectoriesMinimumReadSpeed>
+  <DirectoriesMinimumReadSpeed>20000</DirectoriesMinimumReadSpeed>
 
   <!-- Minimum write speed in MB/s -->
-  <DirectoriesMinimumWriteSpeed>20</DirectoriesMinimumWriteSpeed>
+  <DirectoriesMinimumWriteSpeed>20000</DirectoriesMinimumWriteSpeed>
 
   <!-- Number of seconds between checking all the changed file notifications for folders to scan later (3600=1h) -->
   <DirectoriesProcessChangesTimer>3600</DirectoriesProcessChangesTimer>
@@ -48,7 +48,7 @@
   <DirectoriesRenameVideoFilesOnOff>true</DirectoriesRenameVideoFilesOnOff>
  
   <!-- Whether to check video files are named corrected and rename them if not when doing full scans -->
-  <DirectoriesRenameVideoFilesForFullScansOnOff>false</DirectoriesRenameVideoFilesForFullScansOnOff>
+  <DirectoriesRenameVideoFilesForFullScansOnOff>true</DirectoriesRenameVideoFilesForFullScansOnOff>
 
   <!-- Any files matching this will be checked for correct name and renamed if not correct -->
   <DirectoriesRenameVideoFilesRegEx>^.*\[([hx]26[45]|MPEG([24])?|HEVC|XviD|V(C1|P9)|AVC|DivX|RGB)\]\.(?:m(?:kv|p(4|e?g))|avi)$</DirectoriesRenameVideoFilesRegEx>
@@ -111,13 +111,13 @@
   <ScheduledBackupStartTime>13:30:00</ScheduledBackupStartTime>
 
   <!-- Size of disk speed test file in MB -->
-  <SpeedTestFileSize>100</SpeedTestFileSize>
+  <SpeedTestFileSize>10</SpeedTestFileSize>
 
   <!-- Number of disk speed test iterations to run -->
   <SpeedTestIterations>1</SpeedTestIterations>
  
   <!-- If True we test the speed of the disks -->
-  <SpeedTestOnOff>false</SpeedTestOnOff>
+  <SpeedTestOnOff>true</SpeedTestOnOff>
 
   <Monitors />
 

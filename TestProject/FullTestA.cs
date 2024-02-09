@@ -35,25 +35,27 @@ public sealed class FullTestA
 
         // Step 2 - Scan the 2 directories and Process Files
         var mainForm = new Main();
-        mainForm.ScanAllDirectories(true, ct);
+        mainForm.ScanAllDirectoriesAsync(ct);
+        mainForm.ScanDirectoryAsync(mediaBackup.Config.Directories[0], ct);
+        mainForm.ProcessFilesAsync(ct);
 
         // Step 3 - Assert state after scan
-        Assert.Equal(5, mediaBackup.BackupFiles.Count);
-        Assert.Equal(6, mediaBackup.DirectoryScans.Count);
+        Assert.Equal(7, mediaBackup.BackupFiles.Count);
+        Assert.Equal(10, mediaBackup.DirectoryScans.Count);
         Assert.NotNull(mediaBackup.DirectoriesLastFullScan);
 
         // Step 4 - Check BackupDisks
         Utils.Config.BackupDisk = Path.Combine(targetDirectory, "BackupDisk 1001");
         mainForm.UpdateBackupDiskTextBoxFromConfig();
 
-        // should be 2 files on the disk
+        // should be 3 files on the disk
         var files = Utils.GetFiles(Utils.Config.BackupDisk, ct);
-        Assert.Equal(2, files.Length);
+        Assert.Equal(3, files.Length);
 
-        // should be still 2 files on the disk
+        // should be still 3 files on the disk
         _ = mainForm.CheckConnectedDisk(false, ct);
         files = Utils.GetFiles(Utils.Config.BackupDisk, ct);
-        Assert.Equal(2, files.Length);
+        Assert.Equal(3, files.Length);
 
         // set timestamp to be the same on both files
         var timestampToUse = DateTime.Now;
@@ -64,7 +66,7 @@ public sealed class FullTestA
         var file5Path = Path.Combine(Utils.Config.BackupDisk, @"backup 1001\_Movies\File5.txt");
         Assert.True(Utils.SetFileLastWriteTime(file5Path, timestampToUse));
 
-        // should still be 2 because the file only differed by hashcode so wasn't deleted
+        // should be 2 because the file only differed by hashcode so wasn't deleted but extra file was 
         _ = mainForm.CheckConnectedDisk(true, ct);
         files = Utils.GetFiles(Utils.Config.BackupDisk, ct);
         Assert.Equal(2, files.Length);
@@ -79,17 +81,15 @@ public sealed class FullTestA
         _ = Assert.Single(files);
 
         // Step 5 - Assert status after checking disk with delete option
-        Assert.Equal(4, mediaBackup.GetBackupFilesWithDiskEmpty().Count());
+        Assert.Equal(6, mediaBackup.GetBackupFilesWithDiskEmpty().Count());
 
         // Step 6 - Copy files
         mainForm.CopyFiles(true, ct);
 
         // Step 7 - Assert
         Assert.Empty(mediaBackup.GetBackupFilesWithDiskEmpty());
-
-        // should be 5 now after a copy
         files = Utils.GetFiles(Utils.Config.BackupDisk, ct);
-        Assert.Equal(5, files.Length);
+        Assert.Equal(7, files.Length);
         if (Directory.Exists(targetDirectory)) Directory.Delete(targetDirectory, true);
     }
 }

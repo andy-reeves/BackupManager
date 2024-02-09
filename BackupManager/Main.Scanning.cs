@@ -290,7 +290,7 @@ internal sealed partial class Main
         Utils.TraceOut();
     }
 
-    private void ScanAllDirectoriesAsync(CancellationToken ct)
+    internal void ScanAllDirectoriesAsync(CancellationToken ct)
     {
         try
         {
@@ -309,7 +309,7 @@ internal sealed partial class Main
         }
     }
 
-    internal void ScanAllDirectories(bool updateLastFullScan, CancellationToken ct)
+    private void ScanAllDirectories(bool updateLastFullScan, CancellationToken ct)
     {
         var scanId = Guid.NewGuid().ToString();
         fileBlockingCollection = new BlockingCollection<string>();
@@ -367,7 +367,7 @@ internal sealed partial class Main
         Utils.TraceOut();
     }
 
-    private void ScanDirectoryAsync(string directory, CancellationToken ct)
+    internal void ScanDirectoryAsync(string directory, CancellationToken ct)
     {
         try
         {
@@ -386,7 +386,7 @@ internal sealed partial class Main
         }
     }
 
-    private void ProcessFilesAsync(CancellationToken token)
+    internal void ProcessFilesAsync(CancellationToken token)
     {
         try
         {
