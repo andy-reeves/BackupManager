@@ -254,7 +254,7 @@ internal static partial class Utils
 
         var destLogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups",
             $"BackupManager{suffix}_{timeLog}.log");
-        if (File.Exists(_logFile)) FileMove(_logFile, destLogFile);
+        if (File.Exists(_logFile)) _ = FileMove(_logFile, destLogFile);
 
         var traceFiles = GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "*BackupManager_Trace.log",
             SearchOption.TopDirectoryOnly, ct);
@@ -267,7 +267,7 @@ internal static partial class Utils
 
             try
             {
-                FileMove(file, destFileName);
+                _ = FileMove(file, destFileName);
             }
             catch (IOException) { }
         }
@@ -420,12 +420,12 @@ internal static partial class Utils
     /// </summary>
     /// <param name="sourceFileName">The name of the file to move. Can include a relative or absolute path.</param>
     /// <param name="destFileName">The new path and name for the file.</param>
-    internal static void FileMove(string sourceFileName, string destFileName)
+    internal static bool FileMove(string sourceFileName, string destFileName)
     {
         TraceIn(sourceFileName, destFileName);
         EnsureDirectoriesForFilePath(destFileName);
         File.Move(sourceFileName, destFileName);
-        TraceOut();
+        return TraceOut(true);
     }
 
     /// <summary>
@@ -1160,7 +1160,7 @@ internal static partial class Utils
                                       actualVideoCodec.WrapInSquareBrackets())) +
                               Path.GetExtension(path);
         Log($"Renaming {path} to {newPathInternal}");
-        FileMove(path, newPathInternal);
+        _ = FileMove(path, newPathInternal);
         Trace($"Renamed {path} to {newPathInternal}");
         newPath = newPathInternal;
         return TraceOut(true);
@@ -2190,8 +2190,8 @@ internal static partial class Utils
         {
             var firstPathFilename = sourcePath + "\\" + j + SPEED_TEST_GUID + "test.tmp";
             var secondPathFilename = destinationPath + "\\" + j + SPEED_TEST_GUID + "test.tmp";
-            if (File.Exists(firstPathFilename)) FileDelete(firstPathFilename);
-            if (File.Exists(secondPathFilename)) FileDelete(secondPathFilename);
+            if (File.Exists(firstPathFilename)) _ = FileDelete(firstPathFilename);
+            if (File.Exists(secondPathFilename)) _ = FileDelete(secondPathFilename);
 
             using (StreamWriter sWriter = new(firstPathFilename, true, Encoding.UTF8, streamWriteBufferSize))
             {
@@ -2205,8 +2205,8 @@ internal static partial class Utils
 
             if (ct.IsCancellationRequested)
             {
-                if (File.Exists(firstPathFilename)) FileDelete(firstPathFilename);
-                if (File.Exists(secondPathFilename)) FileDelete(secondPathFilename);
+                if (File.Exists(firstPathFilename)) _ = FileDelete(firstPathFilename);
+                if (File.Exists(secondPathFilename)) _ = FileDelete(secondPathFilename);
                 ct.ThrowIfCancellationRequested();
             }
             var sw = Stopwatch.StartNew();
@@ -2214,14 +2214,14 @@ internal static partial class Utils
 
             if (ct.IsCancellationRequested)
             {
-                if (File.Exists(firstPathFilename)) FileDelete(firstPathFilename);
-                if (File.Exists(secondPathFilename)) FileDelete(secondPathFilename);
+                if (File.Exists(firstPathFilename)) _ = FileDelete(firstPathFilename);
+                if (File.Exists(secondPathFilename)) _ = FileDelete(secondPathFilename);
                 ct.ThrowIfCancellationRequested();
             }
             Trace($"{firstPathFilename} copied as {secondPathFilename}");
             var interval = sw.Elapsed;
-            if (File.Exists(firstPathFilename)) FileDelete(firstPathFilename);
-            if (File.Exists(secondPathFilename)) FileDelete(secondPathFilename);
+            if (File.Exists(firstPathFilename)) _ = FileDelete(firstPathFilename);
+            if (File.Exists(secondPathFilename)) _ = FileDelete(secondPathFilename);
             Trace($"testFileSize: {testFileSize}, interval.TotalSeconds: {interval.TotalSeconds}");
             totalPerf += testFileSize / interval.TotalSeconds;
         }
@@ -2323,15 +2323,17 @@ internal static partial class Utils
     }
 
     /// <summary>
-    ///     Deletes the file specified if it exists even if it was readonly.
+    ///     Deletes the file specified if it exists even if it was readonly. Returns true if the file doesn't exist or if it
+    ///     was deleted succesfully
     /// </summary>
     /// <param name="path"></param>
-    internal static void FileDelete(string path)
+    internal static bool FileDelete(string path)
     {
-        if (!File.Exists(path)) return;
+        if (!File.Exists(path)) return true;
 
         ClearFileAttribute(path, FileAttributes.ReadOnly);
         File.Delete(path);
+        return true;
     }
 
     private static void DeleteEmptyDirectories(string directory, ICollection<string> list, string rootDirectory)
@@ -2365,7 +2367,7 @@ internal static partial class Utils
     }
 
     /// <summary>
-    ///     Deletes any empty directories in the directory specified and checks recursively all its sub-directories.
+    ///     Deletes any empty directories in the directory specified and checks recursively all its subdirectories.
     /// </summary>
     /// <param name="directory">The directory to check</param>
     /// <exception cref="ArgumentException"></exception>
@@ -2570,7 +2572,7 @@ internal static partial class Utils
         if (!StringContainsFixedSpace(path)) return path;
 
         var newPath = ReplaceFixedSpace(path);
-        FileMove(path, newPath);
+        _ = FileMove(path, newPath);
         if (!File.Exists(newPath)) throw new ApplicationException("Unable to rename file to remove fixed spaces");
 
         return newPath;

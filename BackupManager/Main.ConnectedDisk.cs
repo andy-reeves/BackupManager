@@ -19,7 +19,7 @@ namespace BackupManager;
 
 internal sealed partial class Main
 {
-    private void CheckConnectedDiskAndCopyFilesAsync(bool deleteExtraFiles, bool copyFiles, CancellationToken ct)
+    internal void CheckConnectedDiskAndCopyFilesAsync(bool deleteExtraFiles, bool copyFiles, CancellationToken ct)
     {
         try
         {
@@ -37,7 +37,7 @@ internal sealed partial class Main
         }
     }
 
-    private void CheckConnectedDiskAndCopyFilesRepeaterAsync(bool copyFiles, CancellationToken ct)
+    internal void CheckConnectedDiskAndCopyFilesRepeaterAsync(bool copyFiles, CancellationToken ct)
     {
         try
         {
@@ -152,7 +152,7 @@ internal sealed partial class Main
             var backupFileIndexFolderRelativePath = backupFileFullPath[(directoryToCheck.Length + 1)..];
             UpdateStatusLabel(string.Format(Resources.Scanning, directoryToCheck), i + 1);
             UpdateMediaFilesCountDisplay();
-            if (backupDiskFiles.Length > 100) ConnectedDiskUpdatePercentComplete(i, ref reportedPercent, disk);
+            if (backupDiskFiles.Length > (Utils.InDebugBuild ? 2 : 100)) ConnectedDiskUpdatePercentComplete(i, ref reportedPercent, disk);
 
             if (mediaBackup.Contains(backupFileIndexFolderRelativePath))
             {
@@ -193,7 +193,7 @@ internal sealed partial class Main
             return null;
         }
         UpdateMediaFilesCountDisplay();
-        var filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => b.Deleted && !b.Disk.HasValue()).ToArray();
+        var filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => b.Deleted && b.Disk.HasNoValue()).ToArray();
         RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out var removedFilesCount, out var deletedFilesCount);
 
         if (removedFilesCount > 0)
@@ -234,7 +234,7 @@ internal sealed partial class Main
         {
             Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
                 $"Extra file {backupFileFullPath} on backup disk {disk.Name} now deleted");
-            Utils.FileDelete(backupFileFullPath);
+            _ = Utils.FileDelete(backupFileFullPath);
         }
         else
             Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Extra file {backupFileFullPath} on backup disk {disk.Name}");
@@ -252,7 +252,7 @@ internal sealed partial class Main
         var hashToCheck = Utils.GetShortMd5HashFromFile(backupFileFullPath);
         var file = mediaBackup.GetBackupFileFromContentsHashcode(hashToCheck);
 
-        if (file == null || file.Length == 0 || !file.Disk.HasValue())
+        if (file == null || file.Length == 0 || file.Disk.HasNoValue())
         {
             ConnectedDiskRemoveExtraFile(deleteExtraFiles, backupFileFullPath, disk);
             diskInfoMessageWasTheLastSent = false;
@@ -270,11 +270,11 @@ internal sealed partial class Main
             {
                 Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal,
                     string.Format(Resources.FileExistsAlreadySoDeleting, backupFileFullPath));
-                Utils.FileDelete(backupFileFullPath);
+                _ = Utils.FileDelete(backupFileFullPath);
             }
         }
         else
-            Utils.FileMove(backupFileFullPath, destFileName);
+            _ = Utils.FileMove(backupFileFullPath, destFileName);
 
         // This forces a hash check on the source and backup disk files
         if (file.CheckContentHashes(disk))
@@ -345,7 +345,7 @@ internal sealed partial class Main
                             $"Would be deleting {backupFilePathOnBackupDisk}. ");
 
                         // TODO put this back when we are certain
-                        if (Utils.InDebugBuild) Utils.FileDelete(backupFilePathOnBackupDisk);
+                        if (Utils.InDebugBuild) _ = Utils.FileDelete(backupFilePathOnBackupDisk);
                     }
                     else
                         Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
@@ -403,7 +403,7 @@ internal sealed partial class Main
         }
     }
 
-    private bool EnsureConnectedBackupDisk(string backupDisk)
+    internal bool EnsureConnectedBackupDisk(string backupDisk)
     {
         Utils.TraceIn();
 
@@ -414,7 +414,7 @@ internal sealed partial class Main
 
         var currentConnectedBackupDiskName = BackupDisk.GetBackupDirectoryName(backupDiskTextBox.Text);
 
-        while (currentConnectedBackupDiskName != backupDisk)
+        while (!currentConnectedBackupDiskName.EqualsIgnoreCase(backupDisk))
         {
             Utils.LogWithPushover(BackupAction.Restore, PushoverPriority.High, $"Connect new backup drive to restore from {backupDisk}");
 

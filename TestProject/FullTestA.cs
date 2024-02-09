@@ -5,6 +5,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Versioning;
 
 using BackupManager;
 using BackupManager.Entities;
@@ -21,6 +22,7 @@ public sealed class FullTestA
         _testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaInfoTests)), "TestData");
     }
 
+    [SupportedOSPlatform("windows")]
     [Fact]
     public void Test()
     {
@@ -28,6 +30,7 @@ public sealed class FullTestA
         var targetDirectory = Path.Combine(_testDataPath, "FullTestARunning");
         if (Directory.Exists(targetDirectory)) Directory.Delete(targetDirectory, true);
         Utils.CopyDirectory(Path.Combine(_testDataPath, "FullTestA"), targetDirectory);
+        _ = Directory.CreateDirectory(Path.Combine(targetDirectory, @"BackupDisk 1001\backup 1001\_Movies\EmptyDirectory"));
         var mediaBackup = MediaBackup.Load(Path.Combine(targetDirectory, "ConfigA\\MediaBackup.xml"));
         Utils.Config = mediaBackup.Config;
         Utils.MediaBackup = mediaBackup;
@@ -45,17 +48,18 @@ public sealed class FullTestA
         Assert.NotNull(mediaBackup.DirectoriesLastFullScan);
 
         // Step 4 - Check BackupDisks
-        Utils.Config.BackupDisk = Path.Combine(targetDirectory, "BackupDisk 1001");
+        const string backupDisk = "BackupDisk 1001";
+        Utils.Config.BackupDisk = Path.Combine(targetDirectory, backupDisk);
         mainForm.UpdateBackupDiskTextBoxFromConfig();
 
         // should be 3 files on the disk
         var files = Utils.GetFiles(Utils.Config.BackupDisk, ct);
-        Assert.Equal(3, files.Length);
+        Assert.Equal(4, files.Length);
 
         // should be still 3 files on the disk
-        _ = mainForm.CheckConnectedDisk(false, ct);
+        mainForm.CheckConnectedDiskAndCopyFilesAsync(false, false, ct);
         files = Utils.GetFiles(Utils.Config.BackupDisk, ct);
-        Assert.Equal(3, files.Length);
+        Assert.Equal(4, files.Length);
 
         // set timestamp to be the same on both files
         var timestampToUse = DateTime.Now;
@@ -63,25 +67,25 @@ public sealed class FullTestA
         Assert.True(Utils.SetFileLastWriteTime(file5PathOnSource, timestampToUse));
         var backupFile = mediaBackup.BackupFiles.Single(static f => f.FileName == "File5.txt");
         backupFile.UpdateLastWriteTime();
-        var file5Path = Path.Combine(Utils.Config.BackupDisk, @"backup 1001\_Movies\File5.txt");
-        Assert.True(Utils.SetFileLastWriteTime(file5Path, timestampToUse));
+        var file5PathOnBackupDisk = Path.Combine(Utils.Config.BackupDisk, @"backup 1001\_Movies\File5.txt");
+        Assert.True(Utils.SetFileLastWriteTime(file5PathOnBackupDisk, timestampToUse));
 
-        // should be 2 because the file only differed by hashcode so wasn't deleted but extra file was 
+        //  because the file only differed by hashcode so wasn't deleted but extra file was 
         _ = mainForm.CheckConnectedDisk(true, ct);
         files = Utils.GetFiles(Utils.Config.BackupDisk, ct);
-        Assert.Equal(2, files.Length);
+        Assert.Equal(3, files.Length);
 
         // stamp the backup disk file again now
-        file5Path = Path.Combine(Utils.Config.BackupDisk, @"backup 1001\_Movies\File5.txt");
-        Assert.True(Utils.SetFileLastWriteTime(file5Path, DateTime.Now));
+        file5PathOnBackupDisk = Path.Combine(Utils.Config.BackupDisk, @"backup 1001\_Movies\File5.txt");
+        Assert.True(Utils.SetFileLastWriteTime(file5PathOnBackupDisk, DateTime.Now));
         _ = mainForm.CheckConnectedDisk(true, ct);
 
         // should be only 1 file now as the timestamp was different and it was deleted
         files = Utils.GetFiles(Utils.Config.BackupDisk, ct);
-        _ = Assert.Single(files);
+        Assert.Equal(2, files.Length);
 
         // Step 5 - Assert status after checking disk with delete option
-        Assert.Equal(6, mediaBackup.GetBackupFilesWithDiskEmpty().Count());
+        Assert.Equal(5, mediaBackup.GetBackupFilesWithDiskEmpty().Count());
 
         // Step 6 - Copy files
         mainForm.CopyFiles(true, ct);
@@ -90,6 +94,40 @@ public sealed class FullTestA
         Assert.Empty(mediaBackup.GetBackupFilesWithDiskEmpty());
         files = Utils.GetFiles(Utils.Config.BackupDisk, ct);
         Assert.Equal(7, files.Length);
+
+        // Now remove a file from the backup disk and check it again to check we detect the deletion correctly
+        _ = Utils.FileDelete(file5PathOnBackupDisk);
+        _ = mainForm.CheckConnectedDisk(true, ct);
+
+        // now delete one of the files from the source directory and scan again
+        _ = Utils.FileDelete(file5PathOnSource);
+        _ = mainForm.CheckConnectedDisk(true, ct);
+        _ = Assert.Single(mediaBackup.GetBackupFilesWithDiskEmpty().AsEnumerable());
+        files = Utils.GetFiles(Utils.Config.BackupDisk, ct);
+        Assert.Equal(6, files.Length);
+        var file4PathOnBackupDisk = Path.Combine(Utils.Config.BackupDisk, @"backup 1001\_Movies\File4.txt");
+        var file4PathOnSourceDisk = Path.Combine(targetDirectory, @"DirectoryB\_Movies\File4.txt");
+        Assert.True(Utils.FileCopy(file4PathOnBackupDisk, file4PathOnBackupDisk + "toRename", ct));
+        _ = mainForm.CheckConnectedDisk(true, ct);
+        _ = Assert.Single(mediaBackup.GetBackupFilesWithDiskEmpty().AsEnumerable());
+        files = Utils.GetFiles(Utils.Config.BackupDisk, ct);
+        Assert.Equal(6, files.Length);
+        Assert.True(Utils.FileMove(file4PathOnBackupDisk, file4PathOnBackupDisk + "toRename"));
+        _ = mainForm.CheckConnectedDisk(true, ct);
+        _ = Assert.Single(mediaBackup.GetBackupFilesWithDiskEmpty().AsEnumerable());
+        files = Utils.GetFiles(Utils.Config.BackupDisk, ct);
+        Assert.Equal(6, files.Length);
+
+        // now delete a file from the source and check the disk again
+        Assert.True(Utils.FileDelete(file4PathOnSourceDisk));
+        _ = Directory.CreateDirectory(Path.Combine(targetDirectory, backupDisk, @"backup 1001\_Movies\EmptyDirectory"));
+        _ = mainForm.CheckConnectedDisk(true, ct);
+        _ = Assert.Single(mediaBackup.GetBackupFilesWithDiskEmpty().AsEnumerable());
+        files = Utils.GetFiles(Utils.Config.BackupDisk, ct);
+        Assert.Equal(6, files.Length);
+        _ = mainForm.EnsureConnectedBackupDisk("backup 1001");
+
+        // and now remove the directory we created
         if (Directory.Exists(targetDirectory)) Directory.Delete(targetDirectory, true);
     }
 }
