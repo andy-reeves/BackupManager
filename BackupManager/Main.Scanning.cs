@@ -133,10 +133,15 @@ internal sealed partial class Main
                 {
                     try
                     {
-                        if (Utils.RenameVideoCodec(file, out var newFile))
+                        if (Utils.RenameVideoCodec(file, out var newFile, out var oldCodec, out var newCodec))
                         {
+                            Utils.LogWithPushover(BackupAction.ProcessFiles, $"{file} had codec of {oldCodec} in its path and now has {newCodec}");
+
                             Utils.LogWithPushover(BackupAction.ProcessFiles,
                                 string.Format(Resources.FileRenameRequiredForVideoCodec, Path.GetFileName(file)));
+
+                            // TODO find any files in this folder that end in 'srt'
+                            // foreach replace the '[oldCodec]' in the file name with '[newCodec]'
 
                             // change the file to the newFile to continue processing
                             file = newFile;

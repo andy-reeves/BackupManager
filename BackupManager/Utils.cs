@@ -1142,13 +1142,17 @@ internal static partial class Utils
     /// </summary>
     /// <param name="path"></param>
     /// <param name="newPath"></param>
+    /// <param name="oldCodec">The old codec in the file path</param>
+    /// <param name="newCodec">The new codec</param>
     /// <exception cref="FileNotFoundException"></exception>
     /// <exception cref="IOException">If the file is locked and can't be read for info</exception>
     /// <returns>False if a rename was not required</returns>
-    internal static bool RenameVideoCodec(string path, out string newPath)
+    internal static bool RenameVideoCodec(string path, out string newPath, out string oldCodec, out string newCodec)
     {
         TraceIn(path);
         newPath = path;
+        oldCodec = null;
+        newCodec = null;
         ArgumentException.ThrowIfNullOrEmpty(path);
         if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
 
@@ -1158,9 +1162,18 @@ internal static partial class Utils
         var directoryName = Path.GetDirectoryName(path);
         if (directoryName == null) return TraceOut(false);
         if (!GetVideoCodecFromFileName(Path.GetFileName(path), out var currentVideoCodecInFileName)) return TraceOut(false);
+
+        oldCodec = currentVideoCodecInFileName;
         if (!GetVideoCodec(path, out var actualVideoCodec)) return TraceOut(false);
-        if (actualVideoCodec == currentVideoCodecInFileName) return TraceOut(false);
+
+        if (actualVideoCodec == currentVideoCodecInFileName)
+        {
+            newCodec = oldCodec;
+            return TraceOut(false);
+        }
         if (actualVideoCodec.HasNoValue()) return TraceOut(false);
+
+        newCodec = actualVideoCodec;
 
         var newPathInternal = Path.Combine(directoryName,
                                   fileNameWithoutExtension.Replace(currentVideoCodecInFileName.WrapInSquareBrackets(),
