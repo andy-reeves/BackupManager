@@ -600,6 +600,15 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ERROR: The count of files to backup is too low. Check connections to nas drives.
+        /// </summary>
+        internal static string FilesCountIsTooLow {
+            get {
+                return ResourceManager.GetString("FilesCountIsTooLow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to File Watchers = {0}.
         /// </summary>
         internal static string FileWatchersButton {

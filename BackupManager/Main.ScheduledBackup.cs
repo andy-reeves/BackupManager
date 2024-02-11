@@ -45,9 +45,7 @@ internal sealed partial class Main
                 var minimumFileCountAllowed =
                     oldFileCount - oldFileCount * mediaBackup.Config.BackupDiskDifferenceInFileCountAllowedPercentage / 100;
                 long newFileCount = mediaBackup.BackupFiles.Count;
-
-                if (newFileCount < minimumFileCountAllowed)
-                    throw new Exception("ERROR: The count of files to backup is too low. Check connections to nas drives");
+                if (newFileCount < minimumFileCountAllowed) throw new ApplicationException(Resources.FilesCountIsTooLow);
             }
 
             // checks for backup disks not verified in > xx days

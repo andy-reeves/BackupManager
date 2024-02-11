@@ -488,4 +488,7 @@ Skipping {3} as not enough free space</value>
   <data name="StoppingAllProcessesThatMatch" xml:space="preserve">
     <value>Stopping all '{0}' processes that match</value>
   </data>
+  <data name="FilesCountIsTooLow" xml:space="preserve">
+    <value>ERROR: The count of files to backup is too low. Check connections to nas drives</value>
+  </data>
 </root>
