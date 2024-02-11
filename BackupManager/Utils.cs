@@ -360,48 +360,55 @@ internal static partial class Utils
         if (!Enum.IsDefined(applicationTypeName))
             throw new ArgumentOutOfRangeException(nameof(applicationTypeName), Resources.NotValidApplicationName);
 
-        string applicationPath;
-        /*
-           ProgramData=C:\ProgramData
-           ProgramFiles=C:\Program Files
-           ProgramFiles(x86)=C:\Program Files (x86)
-           ProgramW6432=C:\Program Files
-        */
-
-        switch (applicationTypeName)
+        try
         {
-            case ApplicationType.Plex:
-            case ApplicationType.PlexPass:
-                applicationPath = @"%ProgramW6432%\Plex\Plex Media Server\Plex Media Server.exe";
-                break;
-            case ApplicationType.Prowlarr:
-                applicationPath = @"%ProgramData%\Prowlarr\bin\Prowlarr.exe";
-                break;
-            case ApplicationType.Radarr:
-                applicationPath = @"%ProgramData%\Radarr\bin\Radarr.exe";
-                break;
-            case ApplicationType.SABnzbd:
-                applicationPath = @"%ProgramW6432%\SABnzbd\SABnzbd.exe";
-                break;
-            case ApplicationType.Sonarr:
-                applicationPath = @"%ProgramData%\Sonarr\bin\Sonarr.exe";
-                break;
-            case ApplicationType.Bazarr:
-            {
-                applicationPath = @"%SystemDrive%\Bazarr\Version";
-                applicationPath = Environment.ExpandEnvironmentVariables(applicationPath);
-                return File.ReadAllText(applicationPath).Trim().TrimStart('v');
-            }
+            string applicationPath;
+            /*
+               ProgramData=C:\ProgramData
+               ProgramFiles=C:\Program Files
+               ProgramFiles(x86)=C:\Program Files (x86)
+               ProgramW6432=C:\Program Files
+            */
 
-            // ReSharper disable once RedundantEnumCaseLabelForDefaultSection
-            case ApplicationType.Unknown:
-            default:
-                throw new ArgumentOutOfRangeException(nameof(applicationTypeName), applicationTypeName, null);
+            switch (applicationTypeName)
+            {
+                case ApplicationType.Plex:
+                case ApplicationType.PlexPass:
+                    applicationPath = @"%ProgramW6432%\Plex\Plex Media Server\Plex Media Server.exe";
+                    break;
+                case ApplicationType.Prowlarr:
+                    applicationPath = @"%ProgramData%\Prowlarr\bin\Prowlarr.exe";
+                    break;
+                case ApplicationType.Radarr:
+                    applicationPath = @"%ProgramData%\Radarr\bin\Radarr.exe";
+                    break;
+                case ApplicationType.SABnzbd:
+                    applicationPath = @"%ProgramW6432%\SABnzbd\SABnzbd.exe";
+                    break;
+                case ApplicationType.Sonarr:
+                    applicationPath = @"%ProgramData%\Sonarr\bin\Sonarr.exe";
+                    break;
+                case ApplicationType.Bazarr:
+                {
+                    applicationPath = @"%SystemDrive%\Bazarr\Version";
+                    applicationPath = Environment.ExpandEnvironmentVariables(applicationPath);
+                    return File.ReadAllText(applicationPath).Trim().TrimStart('v');
+                }
+
+                // ReSharper disable once RedundantEnumCaseLabelForDefaultSection
+                case ApplicationType.Unknown:
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(applicationTypeName), applicationTypeName, null);
+            }
+            applicationPath = Environment.ExpandEnvironmentVariables(applicationPath);
+            var versionInfo = FileVersionInfo.GetVersionInfo(applicationPath);
+            var version = versionInfo.FileVersion;
+            return version;
         }
-        applicationPath = Environment.ExpandEnvironmentVariables(applicationPath);
-        var versionInfo = FileVersionInfo.GetVersionInfo(applicationPath);
-        var version = versionInfo.FileVersion;
-        return version;
+        catch (FileNotFoundException ex)
+        {
+            throw new NotSupportedException($"{applicationTypeName} version cannot be found.", ex);
+        }
     }
 
     /// <summary>

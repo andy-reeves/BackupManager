@@ -67,19 +67,27 @@ internal sealed partial class Main
         // all services checked so now just check for new versions and report
         foreach (var monitor in mediaBackup.Config.Monitors)
         {
-            if (monitor.ApplicationType == ApplicationType.Unknown) continue;
+            try
+            {
+                if (monitor.ApplicationType == ApplicationType.Unknown) continue;
 
-            var installedVersion = Utils.GetApplicationVersionNumber(monitor.ApplicationType);
-            var availableVersion = Utils.GetLatestApplicationVersionNumber(monitor.ApplicationType);
+                var installedVersion = Utils.GetApplicationVersionNumber(monitor.ApplicationType);
+                var availableVersion = Utils.GetLatestApplicationVersionNumber(monitor.ApplicationType);
 
-            if (!monitor.LogIssues || installedVersion == string.Empty || availableVersion == string.Empty ||
-                !Utils.VersionIsNewer(installedVersion, availableVersion))
-                continue;
+                if (!monitor.LogIssues || installedVersion == string.Empty || availableVersion == string.Empty ||
+                    !Utils.VersionIsNewer(installedVersion, availableVersion))
+                    continue;
 
-            monitor.LogIssues = false;
+                monitor.LogIssues = false;
 
-            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
-                $"Newer version of service {monitor.ApplicationType} is available. Version {installedVersion} is installed and {availableVersion} is available.");
+                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
+                    $"Newer version of service {monitor.ApplicationType} is available. Version {installedVersion} is installed and {availableVersion} is available.");
+            }
+            catch (NotSupportedException)
+            {
+                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
+                    $"{monitor.ApplicationType} version could not be checked.");
+            }
         }
     }
 
