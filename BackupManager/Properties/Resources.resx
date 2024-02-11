@@ -292,7 +292,7 @@
     <value>Deleting empty directories in {0}</value>
   </data>
   <data name="ScanDirectoriesFailed" xml:space="preserve">
-    <value>Scan Directories Failed</value>
+    <value>Scan directories failed. It may be a file was locked by another process.</value>
   </data>
   <data name="NotValidApplicationName" xml:space="preserve">
     <value>Not a valid application name</value>

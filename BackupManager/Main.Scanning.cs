@@ -140,8 +140,10 @@ internal sealed partial class Main
                             Utils.LogWithPushover(BackupAction.ProcessFiles,
                                 string.Format(Resources.FileRenameRequiredForVideoCodec, Path.GetFileName(file)));
 
-                            // TODO find any files in this folder that end in 'srt'
+                            // TODO find any files in this folder that end in one of our srt valid extensions
                             // foreach replace the '[oldCodec]' in the file name with '[newCodec]'
+                            // check if any of these files are in the array of files passed in and if they are rename them there too
+                            // return false if anything fails and the caller will catch and retry
 
                             // change the file to the newFile to continue processing
                             file = newFile;
@@ -341,9 +343,13 @@ internal sealed partial class Main
 
         if (!ProcessFiles(fileBlockingCollection, scanId, config.DirectoriesRenameVideoFilesForFullScansOnOff, ct))
             Utils.LogWithPushover(BackupAction.ScanDirectory, Resources.ScanDirectoriesFailed);
+        else
+        {
+            // only update the last full scan date if ProcessFiles returned True
+            if (updateLastFullScan) mediaBackup.UpdateLastFullScan();
+        }
         var filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag).ToArray();
         RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out _, out _);
-        if (updateLastFullScan) mediaBackup.UpdateLastFullScan();
         mediaBackup.Save(ct);
         UpdateMediaFilesCountDisplay();
     }

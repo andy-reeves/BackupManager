@@ -951,7 +951,7 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Scan Directories Failed.
+        ///   Looks up a localized string similar to Scan directories failed. It may be a file was locked by another process..
         /// </summary>
         internal static string ScanDirectoriesFailed {
             get {
