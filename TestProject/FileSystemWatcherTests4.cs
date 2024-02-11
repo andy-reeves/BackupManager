@@ -65,8 +65,8 @@ public sealed class FileSystemWatcherTests4
         test4ExpectedEventFolderCount = 2;
 
         // now delete the files 
-        Utils.FileDelete(Path.Combine(monitoringPath1, "NewFolder", "test1.txt"));
-        Utils.FileDelete(Path.Combine(monitoringPath2, "subFolder", "test2.txt"));
+        _ = Utils.FileDelete(Path.Combine(monitoringPath1, "NewFolder", "test1.txt"));
+        _ = Utils.FileDelete(Path.Combine(monitoringPath2, "subFolder", "test2.txt"));
         Utils.Wait(waitInMilliseconds);
         Assert.Equal(3, test4EventsCounter);
         _ = watcher.Stop();

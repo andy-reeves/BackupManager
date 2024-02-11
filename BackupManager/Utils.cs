@@ -456,7 +456,7 @@ internal static partial class Utils
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
 
         // ReSharper disable once CommentTypo
-        // we create the destination file so xcopy knows its a file and can copy over it
+        // we create the destination file so xcopy knows it's a file and can copy over it
         File.WriteAllText(destFileName, "Temp file"); // hash of this is 88f85bbea58fbff062050bcb2d2aafcf
 
         CopyProcess = new Process
@@ -866,7 +866,7 @@ internal static partial class Utils
     /// <param name="fileAttributesToIgnore">
     ///     The file attributes to ignore.
     /// </param>
-    /// <param name="deleteEmptyDirectories"></param>
+    /// <param name="deleteEmptyDirectories">Deletes empty directories if True</param>
     /// <param name="ct"></param>
     /// <returns>
     /// </returns>
@@ -2331,7 +2331,7 @@ internal static partial class Utils
 
     /// <summary>
     ///     Deletes the file specified if it exists even if it was readonly. Returns true if the file doesn't exist or if it
-    ///     was deleted succesfully
+    ///     was deleted successfully
     /// </summary>
     /// <param name="path"></param>
     internal static bool FileDelete(string path)

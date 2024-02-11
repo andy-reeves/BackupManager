@@ -81,12 +81,12 @@ internal sealed partial class Main
                 monitor.LogIssues = false;
 
                 Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
-                    $"Newer version of service {monitor.ApplicationType} is available. Version {installedVersion} is installed and {availableVersion} is available.");
+                    string.Format(Resources.NewerVersionOfApplicationAvailable, monitor.ApplicationType, installedVersion, availableVersion));
             }
             catch (NotSupportedException)
             {
                 Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
-                    $"{monitor.ApplicationType} version could not be checked.");
+                    string.Format(Resources.MonitorCheckLatestVersionsCouldNotBeChecked, monitor.ApplicationType));
             }
         }
     }
@@ -143,7 +143,8 @@ internal sealed partial class Main
 
         foreach (var toKill in processesToKill)
         {
-            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal, $"Stopping all '{toKill}' processes that match");
+            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal,
+                string.Format(Resources.StoppingAllProcessesThatMatch, toKill));
             _ = Utils.KillProcesses(toKill);
         }
     }

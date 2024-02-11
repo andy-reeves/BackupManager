@@ -479,4 +479,13 @@ Copying {3} at {4}{5}</value>
     <value>[{0}/{1}] {2} free.
 Skipping {3} as not enough free space</value>
   </data>
+  <data name="NewerVersionOfApplicationAvailable" xml:space="preserve">
+    <value>Newer version of service {0} is available. Version {1} is installed and {2} is available.</value>
+  </data>
+  <data name="MonitorCheckLatestVersionsCouldNotBeChecked" xml:space="preserve">
+    <value>{0} version could not be checked.</value>
+  </data>
+  <data name="StoppingAllProcessesThatMatch" xml:space="preserve">
+    <value>Stopping all '{0}' processes that match</value>
+  </data>
 </root>

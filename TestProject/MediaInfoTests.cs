@@ -119,7 +119,7 @@ public sealed class MediaInfoTests
         Assert.Equal(mediaFileNameOutputIfRenamed, newPath);
 
         // reset the file
-        Utils.FileMove(mediaFileNameOutputIfRenamed, mediaFileName);
+        _ = Utils.FileMove(mediaFileNameOutputIfRenamed, mediaFileName);
         Assert.False(File.Exists(mediaFileNameOutputIfRenamed));
         Assert.True(File.Exists(mediaFileName));
 

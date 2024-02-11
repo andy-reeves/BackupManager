@@ -110,7 +110,7 @@ public sealed class UtilsUnitTests
         var file2 = Path.Combine(path1, "test2.txt");
         Utils.EnsureDirectoriesForDirectoryPath(path1);
         Utils.CreateFile(file1);
-        Utils.FileMove(file1, file2);
+        _ = Utils.FileMove(file1, file2);
         Assert.False(File.Exists(file1));
         Assert.True(File.Exists(file2));
 

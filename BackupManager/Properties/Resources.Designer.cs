@@ -690,6 +690,15 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} version could not be checked..
+        /// </summary>
+        internal static string MonitorCheckLatestVersionsCouldNotBeChecked {
+            get {
+                return ResourceManager.GetString("MonitorCheckLatestVersionsCouldNotBeChecked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Monitoring = {0}.
         /// </summary>
         internal static string MonitoringButton {
@@ -704,6 +713,15 @@ namespace BackupManager.Properties {
         internal static string MonitorServicesStarted {
             get {
                 return ResourceManager.GetString("MonitorServicesStarted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Newer version of service {0} is available. Version {1} is installed and {2} is available..
+        /// </summary>
+        internal static string NewerVersionOfApplicationAvailable {
+            get {
+                return ResourceManager.GetString("NewerVersionOfApplicationAvailable", resourceCulture);
             }
         }
         
@@ -1010,6 +1028,15 @@ namespace BackupManager.Properties {
         internal static string Starting {
             get {
                 return ResourceManager.GetString("Starting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stopping all &apos;{0}&apos; processes that match.
+        /// </summary>
+        internal static string StoppingAllProcessesThatMatch {
+            get {
+                return ResourceManager.GetString("StoppingAllProcessesThatMatch", resourceCulture);
             }
         }
         
