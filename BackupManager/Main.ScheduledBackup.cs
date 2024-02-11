@@ -27,10 +27,10 @@ internal sealed partial class Main
             if (mediaBackup.Config.MonitoringOnOff)
             {
                 Utils.LogWithPushover(BackupAction.ScheduledBackup,
-                    $"Service monitoring is running every {Utils.FormatTimeFromSeconds(mediaBackup.Config.MonitoringInterval)}");
+                    string.Format(Resources.ServiceMonitoringIsRunning, Utils.FormatTimeFromSeconds(mediaBackup.Config.MonitoringInterval)));
             }
             else
-                Utils.LogWithPushover(BackupAction.ScheduledBackup, PushoverPriority.High, "Service monitoring is not running");
+                Utils.LogWithPushover(BackupAction.ScheduledBackup, PushoverPriority.High, Resources.ServiceMonitoringNotRunning);
             long oldFileCount = mediaBackup.BackupFiles.Count;
             _ = DateTime.TryParse(mediaBackup.DirectoriesLastFullScan, out var backupFileDate);
 

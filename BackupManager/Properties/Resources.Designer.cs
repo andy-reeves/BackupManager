@@ -996,6 +996,24 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Service monitoring is running every {0}.
+        /// </summary>
+        internal static string ServiceMonitoringIsRunning {
+            get {
+                return ResourceManager.GetString("ServiceMonitoringIsRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Service monitoring is not running.
+        /// </summary>
+        internal static string ServiceMonitoringNotRunning {
+            get {
+                return ResourceManager.GetString("ServiceMonitoringNotRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Skipping {0}.
         /// </summary>
         internal static string Skipping {

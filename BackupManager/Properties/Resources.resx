@@ -491,4 +491,10 @@ Skipping {3} as not enough free space</value>
   <data name="FilesCountIsTooLow" xml:space="preserve">
     <value>ERROR: The count of files to backup is too low. Check connections to nas drives</value>
   </data>
+  <data name="ServiceMonitoringNotRunning" xml:space="preserve">
+    <value>Service monitoring is not running</value>
+  </data>
+  <data name="ServiceMonitoringIsRunning" xml:space="preserve">
+    <value>Service monitoring is running every {0}</value>
+  </data>
 </root>
