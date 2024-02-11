@@ -37,7 +37,7 @@ internal sealed partial class Main
         }
     }
 
-    internal void CheckConnectedDiskAndCopyFilesRepeaterAsync(bool copyFiles, CancellationToken ct)
+    private void CheckConnectedDiskAndCopyFilesRepeaterAsync(bool copyFiles, CancellationToken ct)
     {
         try
         {

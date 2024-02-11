@@ -60,7 +60,7 @@ internal sealed partial class Main
                 Utils.FormatSize(stillNotOnBackupDisk.Sum(static p => p.Length)));
         }
         Utils.LogWithPushover(BackupAction.CopyFiles, text + string.Format(Resources.CopyFilesFreeOnBackupDisk, disk.FreeFormatted));
-        if (showCompletedMessage) Utils.LogWithPushover(BackupAction.CopyFiles, Resources.Completed, true);
+        if (showCompletedMessage) Utils.LogWithPushover(BackupAction.CopyFiles, Resources.Completed, true, true);
         Utils.TraceOut();
     }
 
@@ -144,7 +144,7 @@ internal sealed partial class Main
                 Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.High, Resources.HashCodesError2);
             else
             {
-                Utils.FileDelete(destinationFileName);
+                _ = Utils.FileDelete(destinationFileName);
                 copyTheFile = true;
             }
         }
@@ -196,7 +196,7 @@ internal sealed partial class Main
             Utils.LogWithPushover(BackupAction.CopyFiles,
                 string.Format(Resources.CopyFilesMainMessage, fileCounter, totalFileCount, Utils.FormatSize(availableSpace), sourceFileName,
                     sourceFileSize, formattedEndDateTime), false, true);
-            Utils.FileDelete(destinationFileNameTemp);
+            _ = Utils.FileDelete(destinationFileNameTemp);
             var sw = Stopwatch.StartNew();
             _ = Utils.FileCopy(sourceFileName, destinationFileNameTemp, ct);
             sw.Stop();
@@ -204,7 +204,7 @@ internal sealed partial class Main
 
             // We need to check this here in case Cancel was clicked during the copy of the file
             if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
-            Utils.FileMove(destinationFileNameTemp, destinationFileName);
+            _ = Utils.FileMove(destinationFileNameTemp, destinationFileName);
             Utils.Trace($"timeTaken {timeTaken}");
             Utils.Trace($"sourceFileInfo.Length {sourceFileInfo.Length}");
             lastCopySpeed = timeTaken > 0 ? Convert.ToInt64(sourceFileInfo.Length / timeTaken) : 0;

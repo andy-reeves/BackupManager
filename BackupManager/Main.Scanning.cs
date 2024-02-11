@@ -418,7 +418,7 @@ internal sealed partial class Main
         if (!filters.Any(pattern => Regex.IsMatch(fileName, pattern))) return false;
 
         Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, $"File matches RegEx and so will be deleted {filePath}");
-        Utils.FileDelete(filePath);
+        _ = Utils.FileDelete(filePath);
         return true;
     }
 }

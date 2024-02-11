@@ -532,16 +532,18 @@ public sealed class MediaBackup
     /// <summary>
     ///     Returns the oldest BackupFile we have using the DiskChecked property.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>Null if there are no files</returns>
     public BackupFile GetOldestFile()
     {
         var oldestFileDate = DateTime.Today;
-        BackupFile oldestFile = null;
         var backupFilesArray = BackupFiles.ToArray();
+        if (backupFilesArray.Length == 0) return null;
+
+        BackupFile oldestFile = null;
 
         foreach (var backupFile in backupFilesArray)
         {
-            if (!backupFile.DiskChecked.HasValue() || backupFile.Disk == "-1") continue;
+            if (backupFile.DiskChecked.HasNoValue() || backupFile.BeingCheckedNow) continue;
 
             var backupFileDate = DateTime.Parse(backupFile.DiskChecked);
             if (backupFileDate >= oldestFileDate && oldestFile != null) continue;
