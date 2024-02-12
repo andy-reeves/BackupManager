@@ -5,6 +5,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -108,55 +109,12 @@ internal sealed partial class Main
             {
                 if (ProcessFilesMaxPathCheck(file)) return Utils.TraceOut(false);
                 if (ProcessFilesFixedSpaceCheck(ref file)) return Utils.TraceOut(false);
-
-                if (config.DirectoriesRenameVideoFilesOnOff && scanPathForVideoCodec && File.Exists(file) && Utils.FileIsVideo(file))
-                {
-                    try
-                    {
-                        if (Utils.RenameVideoCodec(file, out var newFile, out var oldCodec, out var newCodec))
-                        {
-                            Utils.LogWithPushover(BackupAction.ProcessFiles, $"{file} had codec of {oldCodec} in its path and now has {newCodec}");
-
-                            Utils.LogWithPushover(BackupAction.ProcessFiles,
-                                string.Format(Resources.FileRenameRequiredForVideoCodec, Path.GetFileName(file)));
-
-                            // change the file to the newFile to continue processing
-                            file = newFile;
-
-                            // find any files in this folder that end in one of our srt valid extensions
-                            var oldCodecInBrackets = oldCodec.WrapInSquareBrackets();
-                            var newCodecInBrackets = newCodec.WrapInSquareBrackets();
-                            var directoryPath = Path.GetDirectoryName(file);
-                            var filesInSameDirectory = Utils.GetFiles(directoryPath, ct);
-
-                            if ((from f in filesInSameDirectory
-                                    where f.ContainsAny(Utils.SubtitlesExtensions)
-                                    where f.Contains(oldCodecInBrackets)
-                                    let newName = f.Replace(oldCodecInBrackets, newCodecInBrackets)
-                                    where !Utils.FileMove(f, newName)
-                                    select f).Any())
-                                return Utils.TraceOut(false);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        if (ex is not (IOException or NotSupportedException)) throw;
-
-                        Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.FileIsLocked, file));
-                        return Utils.TraceOut(false);
-                    }
-                }
+                if (ProcessFilesVideoCodecCheck(scanPathForVideoCodec, ref file, ct)) return Utils.TraceOut(false);
                 if (file == null) return Utils.TraceOut(false);
 
                 fileCounterForMultiThreadProcessing++;
                 if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
-                currentPercentComplete = fileCounterForMultiThreadProcessing * 100 / toolStripProgressBar.Maximum;
-
-                if (currentPercentComplete % 25 == 0 && currentPercentComplete > reportedPercentComplete && files.Count > 100)
-                {
-                    reportedPercentComplete = currentPercentComplete;
-                    Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.ProcessingPercentage, currentPercentComplete));
-                }
+                ProcessFilesUpdatePercentComplete(files);
                 Utils.Trace($"{fileCounterForMultiThreadProcessing} Processing {file}");
             }
             _ = mediaBackup.GetFoldersForPath(file, out var directory, out _);
@@ -176,7 +134,6 @@ internal sealed partial class Main
             UpdateStatusLabel(ct, Resources.Processing, fileCounterForMultiThreadProcessing);
             if (CheckForFilesToDelete(file, filtersToDelete)) continue;
 
-            // RegEx file name rules
             ProcessFileRules(file);
 
             try
@@ -193,6 +150,55 @@ internal sealed partial class Main
         // Update the last scan endDateTime as it wasn't set in the loop
         if (scanInfo != null) scanInfo.EndDateTime = DateTime.Now;
         return Utils.TraceOut(true);
+    }
+
+    private void ProcessFilesUpdatePercentComplete(ICollection files)
+    {
+        currentPercentComplete = fileCounterForMultiThreadProcessing * 100 / toolStripProgressBar.Maximum;
+        if (currentPercentComplete % 25 != 0 || currentPercentComplete <= reportedPercentComplete || files.Count <= 100) return;
+
+        reportedPercentComplete = currentPercentComplete;
+        Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.ProcessingPercentage, currentPercentComplete));
+    }
+
+    private bool ProcessFilesVideoCodecCheck(bool scan, ref string file, CancellationToken ct)
+    {
+        Utils.TraceIn();
+        if (!File.Exists(file) || !Utils.FileIsVideo(file) || !config.DirectoriesRenameVideoFilesOnOff || !scan) return Utils.TraceOut(false);
+
+        try
+        {
+            if (Utils.RenameVideoCodec(file, out var newFile, out var oldCodec, out var newCodec))
+            {
+                Utils.Log(BackupAction.ProcessFiles, $"{file} had codec of {oldCodec} in its path and now has {newCodec}");
+                Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.FileRenameRequiredForVideoCodec, Path.GetFileName(file)));
+
+                // change the file to the newFile to continue processing
+                file = newFile;
+
+                // find any files in this folder that end in one of our srt valid extensions
+                var oldCodecInBrackets = oldCodec.WrapInSquareBrackets();
+                var newCodecInBrackets = newCodec.WrapInSquareBrackets();
+                var directoryPath = Path.GetDirectoryName(file);
+                var filesInSameDirectory = Utils.GetFiles(directoryPath, ct);
+
+                if ((from f in filesInSameDirectory
+                        where f.ContainsAny(Utils.SubtitlesExtensions)
+                        where f.Contains(oldCodecInBrackets)
+                        let newName = f.Replace(oldCodecInBrackets, newCodecInBrackets)
+                        where !Utils.FileMove(f, newName)
+                        select f).Any())
+                    return Utils.TraceOut(true);
+            }
+        }
+        catch (Exception ex)
+        {
+            if (ex is not (IOException or NotSupportedException)) throw;
+
+            Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.FileIsLocked, file));
+            return Utils.TraceOut(true);
+        }
+        return Utils.TraceOut(false);
     }
 
     private static bool ProcessFilesFixedSpaceCheck(ref string file)
