@@ -109,9 +109,9 @@ internal sealed partial class Main
 
                 lock (_lock)
                 {
-                    if (ProcessFilesMaxPathCheck(file)) return Utils.TraceOut(false);
-                    if (ProcessFilesFixedSpaceCheck(ref file)) return Utils.TraceOut(false);
-                    if (ProcessFilesVideoCodecCheck(scanPathForVideoCodec, ref file, ct)) return Utils.TraceOut(false);
+                    if (!ProcessFilesMaxPathCheck(file)) return Utils.TraceOut(false);
+                    if (!ProcessFilesFixedSpaceCheck(ref file)) return Utils.TraceOut(false);
+                    if (!ProcessFilesVideoCodecCheck(scanPathForVideoCodec, ref file, ct)) return Utils.TraceOut(false);
                     if (file == null) return Utils.TraceOut(false);
 
                     if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
@@ -160,10 +160,17 @@ internal sealed partial class Main
         Utils.Trace($"{fileCounterForMultiThreadProcessing} Processing {file}");
     }
 
+    /// <summary>
+    ///     Returns True if all OK otherwise False
+    /// </summary>
+    /// <param name="scan"></param>
+    /// <param name="file"></param>
+    /// <param name="ct"></param>
+    /// <returns></returns>
     private bool ProcessFilesVideoCodecCheck(bool scan, ref string file, CancellationToken ct)
     {
         Utils.TraceIn();
-        if (!File.Exists(file) || !Utils.FileIsVideo(file) || !config.DirectoriesRenameVideoFilesOnOff || !scan) return Utils.TraceOut(false);
+        if (!File.Exists(file) || !Utils.FileIsVideo(file) || !config.DirectoriesRenameVideoFilesOnOff || !scan) return Utils.TraceOut(true);
 
         try
         {
@@ -187,7 +194,7 @@ internal sealed partial class Main
                         let newName = f.Replace(oldCodecInBrackets, newCodecInBrackets)
                         where !Utils.FileMove(f, newName)
                         select f).Any())
-                    return Utils.TraceOut(true);
+                    return Utils.TraceOut(false);
             }
         }
         catch (Exception ex)
@@ -195,22 +202,27 @@ internal sealed partial class Main
             if (ex is not (IOException or NotSupportedException)) throw;
 
             Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.FileIsLocked, file));
-            return Utils.TraceOut(true);
+            return Utils.TraceOut(false);
         }
-        return Utils.TraceOut(false);
+        return Utils.TraceOut(true);
     }
 
+    /// <summary>
+    ///     Return True if all ok otherwise False
+    /// </summary>
+    /// <param name="file"></param>
+    /// <returns></returns>
     private static bool ProcessFilesFixedSpaceCheck(ref string file)
     {
         Utils.TraceIn();
-        if (!Utils.StringContainsFixedSpace(file)) return Utils.TraceOut(false);
+        if (!Utils.StringContainsFixedSpace(file)) return Utils.TraceOut(true);
 
         Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.PathHasAFixedSpace, file));
 
         try
         {
             file = Utils.RenameFileToRemoveFixedSpaces(file);
-            return Utils.TraceOut(false);
+            return Utils.TraceOut(true);
         }
         catch (Exception ex)
         {
@@ -219,20 +231,25 @@ internal sealed partial class Main
             Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.FileIsLocked, file));
 
             {
-                return Utils.TraceOut(true);
+                return Utils.TraceOut(false);
             }
         }
     }
 
+    /// <summary>
+    ///     Returns True if all ok and False if any issues
+    /// </summary>
+    /// <param name="file"></param>
+    /// <returns></returns>
     private static bool ProcessFilesMaxPathCheck(string file)
     {
         Utils.TraceIn();
-        if (file.Length <= Utils.MAX_PATH) return Utils.TraceOut(false);
+        if (file.Length <= Utils.MAX_PATH) return Utils.TraceOut(true);
 
         Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.PathTooLong, file));
 
         {
-            return Utils.TraceOut(true);
+            return Utils.TraceOut(false);
         }
     }
 
