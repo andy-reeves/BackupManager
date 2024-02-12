@@ -129,7 +129,7 @@ internal static partial class Utils
     /// </summary>
 
     // ReSharper disable once UnusedMember.Local
-    private static readonly string[] _subtitlesExtensions = { ".en.srt", ".es.srt", "en.hi.srt", "es.hi.srt" };
+    internal static readonly string[] SubtitlesExtensions = { ".en.srt", ".es.srt", "en.hi.srt", "es.hi.srt" };
 
     /// <summary>
     ///     True when we're in a DEBUG build otherwise False

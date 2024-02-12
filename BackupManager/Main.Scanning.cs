@@ -140,13 +140,22 @@ internal sealed partial class Main
                             Utils.LogWithPushover(BackupAction.ProcessFiles,
                                 string.Format(Resources.FileRenameRequiredForVideoCodec, Path.GetFileName(file)));
 
-                            // TODO find any files in this folder that end in one of our srt valid extensions
-                            // foreach replace the '[oldCodec]' in the file name with '[newCodec]'
-                            // check if any of these files are in the array of files passed in and if they are rename them there too
-                            // return false if anything fails and the caller will catch and retry
-
                             // change the file to the newFile to continue processing
                             file = newFile;
+
+                            // find any files in this folder that end in one of our srt valid extensions
+                            var oldCodecInBrackets = oldCodec.WrapInSquareBrackets();
+                            var newCodecInBrackets = newCodec.WrapInSquareBrackets();
+                            var directoryPath = Path.GetDirectoryName(file);
+                            var filesInSameDirectory = Utils.GetFiles(directoryPath, ct);
+
+                            if ((from f in filesInSameDirectory
+                                    where f.ContainsAny(Utils.SubtitlesExtensions)
+                                    where f.Contains(oldCodecInBrackets)
+                                    let newName = f.Replace(oldCodecInBrackets, newCodecInBrackets)
+                                    where !Utils.FileMove(f, newName)
+                                    select f).Any())
+                                return Utils.TraceOut(false);
                         }
                     }
                     catch (Exception ex)
