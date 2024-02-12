@@ -219,8 +219,6 @@ internal sealed partial class Main
             // in which case check the source hash again and then check the copied file 
 
             if (!backupFile.CheckContentHashes(disk))
-
-                // There was an error with the hash codes of the source file anf the file on the backup disk
                 Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.High, string.Format(Resources.HashCodesError, backupFile.FullPath));
         }
         else

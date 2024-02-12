@@ -103,41 +103,38 @@ internal sealed partial class Main
 
         foreach (var fileInsideForEach in files)
         {
-            var file = fileInsideForEach;
-
-            lock (_lock)
-            {
-                if (ProcessFilesMaxPathCheck(file)) return Utils.TraceOut(false);
-                if (ProcessFilesFixedSpaceCheck(ref file)) return Utils.TraceOut(false);
-                if (ProcessFilesVideoCodecCheck(scanPathForVideoCodec, ref file, ct)) return Utils.TraceOut(false);
-                if (file == null) return Utils.TraceOut(false);
-
-                fileCounterForMultiThreadProcessing++;
-                if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
-                ProcessFilesUpdatePercentComplete(files);
-                Utils.Trace($"{fileCounterForMultiThreadProcessing} Processing {file}");
-            }
-            _ = mediaBackup.GetFoldersForPath(file, out var directory, out _);
-
-            if (directory != directoryScanning)
-            {
-                if (!firstDir) scanInfo.EndDateTime = DateTime.Now;
-
-                scanInfo = new DirectoryScan(DirectoryScanType.ProcessingFiles, directory, DateTime.Now, scanId)
-                {
-                    TotalFiles = files.Count(f => f.StartsWithIgnoreCase(directory))
-                };
-                mediaBackup.DirectoryScans.Add(scanInfo);
-                directoryScanning = directory;
-                firstDir = false;
-            }
-            UpdateStatusLabel(ct, Resources.Processing, fileCounterForMultiThreadProcessing);
-            if (CheckForFilesToDelete(file, filtersToDelete)) continue;
-
-            ProcessFileRules(file);
-
             try
             {
+                var file = fileInsideForEach;
+
+                lock (_lock)
+                {
+                    if (ProcessFilesMaxPathCheck(file)) return Utils.TraceOut(false);
+                    if (ProcessFilesFixedSpaceCheck(ref file)) return Utils.TraceOut(false);
+                    if (ProcessFilesVideoCodecCheck(scanPathForVideoCodec, ref file, ct)) return Utils.TraceOut(false);
+                    if (file == null) return Utils.TraceOut(false);
+
+                    if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+                    ProcessFilesUpdatePercentComplete(files, file);
+                }
+                _ = mediaBackup.GetFoldersForPath(file, out var directory, out _);
+
+                if (directory != directoryScanning)
+                {
+                    if (!firstDir) scanInfo.EndDateTime = DateTime.Now;
+
+                    scanInfo = new DirectoryScan(DirectoryScanType.ProcessingFiles, directory, DateTime.Now, scanId)
+                    {
+                        TotalFiles = files.Count(f => f.StartsWithIgnoreCase(directory))
+                    };
+                    mediaBackup.DirectoryScans.Add(scanInfo);
+                    directoryScanning = directory;
+                    firstDir = false;
+                }
+                UpdateStatusLabel(ct, Resources.Processing, fileCounterForMultiThreadProcessing);
+                if (CheckForFilesToDelete(file, filtersToDelete)) continue;
+
+                ProcessFileRules(file);
                 if (!mediaBackup.EnsureFile(file)) return Utils.TraceOut(false);
             }
             catch (IOException)
@@ -152,13 +149,15 @@ internal sealed partial class Main
         return Utils.TraceOut(true);
     }
 
-    private void ProcessFilesUpdatePercentComplete(ICollection files)
+    private void ProcessFilesUpdatePercentComplete(ICollection files, string file)
     {
+        fileCounterForMultiThreadProcessing++;
         currentPercentComplete = fileCounterForMultiThreadProcessing * 100 / toolStripProgressBar.Maximum;
         if (currentPercentComplete % 25 != 0 || currentPercentComplete <= reportedPercentComplete || files.Count <= 100) return;
 
         reportedPercentComplete = currentPercentComplete;
         Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.ProcessingPercentage, currentPercentComplete));
+        Utils.Trace($"{fileCounterForMultiThreadProcessing} Processing {file}");
     }
 
     private bool ProcessFilesVideoCodecCheck(bool scan, ref string file, CancellationToken ct)

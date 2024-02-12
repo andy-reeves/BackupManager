@@ -283,8 +283,6 @@ internal sealed partial class Main
             file.BeingCheckedNow = false;
             return;
         }
-
-        // There was an error with the hash codes of the source file anf the file on the backup disk
         Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, string.Format(Resources.HashCodesError, file.FullPath));
         diskInfoMessageWasTheLastSent = false;
     }
@@ -328,9 +326,8 @@ internal sealed partial class Main
                 var backupFilePathOnBackupDisk = backupFile.BackupDiskFullPath(disk.BackupPath);
                 var lastWriteTimeOfFileOnBackupDisk = Utils.GetFileLastWriteTime(backupFilePathOnBackupDisk);
 
-                if (sourceLastWriteTime >= lastWriteTimeOfFileOnBackupDisk)
+                if (sourceLastWriteTime == lastWriteTimeOfFileOnBackupDisk)
                 {
-                    // There was an error with the hash codes of the source file and the file on the backup disk
                     Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
                         string.Format(Resources.HashCodesError, backupFile.FullPath));
                     diskInfoMessageWasTheLastSent = false;
@@ -348,8 +345,10 @@ internal sealed partial class Main
                         if (Utils.InDebugBuild) _ = Utils.FileDelete(backupFilePathOnBackupDisk);
                     }
                     else
+                    {
                         Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
                             $"Would be deleting {backupFilePathOnBackupDisk}. ");
+                    }
                 }
                 return;
             }
