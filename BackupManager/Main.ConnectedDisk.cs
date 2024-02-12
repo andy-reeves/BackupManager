@@ -321,7 +321,7 @@ internal sealed partial class Main
                     return;
                 }
 
-                // check the modifiedTime and if its different copy it
+                // check the modifiedTime and if its different delete the file from the backup disk so that it will be copied again
                 var sourceLastWriteTime = backupFile.LastWriteTime;
                 var backupFilePathOnBackupDisk = backupFile.BackupDiskFullPath(disk.BackupPath);
                 var lastWriteTimeOfFileOnBackupDisk = Utils.GetFileLastWriteTime(backupFilePathOnBackupDisk);
