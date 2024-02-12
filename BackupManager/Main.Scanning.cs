@@ -106,28 +106,8 @@ internal sealed partial class Main
 
             lock (_lock)
             {
-                if (file.Length > Utils.MAX_PATH)
-                {
-                    Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.PathTooLong, file));
-                    return Utils.TraceOut(false);
-                }
-
-                if (Utils.StringContainsFixedSpace(file))
-                {
-                    Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.PathHasAFixedSpace, file));
-
-                    try
-                    {
-                        file = Utils.RenameFileToRemoveFixedSpaces(file);
-                    }
-                    catch (Exception ex)
-                    {
-                        if (ex is not (IOException or NotSupportedException)) throw;
-
-                        Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.FileIsLocked, file));
-                        return Utils.TraceOut(false);
-                    }
-                }
+                if (ProcessFilesMaxPathCheck(file)) return Utils.TraceOut(false);
+                if (ProcessFilesFixedSpaceCheck(ref file)) return Utils.TraceOut(false);
 
                 if (config.DirectoriesRenameVideoFilesOnOff && scanPathForVideoCodec && File.Exists(file) && Utils.FileIsVideo(file))
                 {
@@ -213,6 +193,42 @@ internal sealed partial class Main
         // Update the last scan endDateTime as it wasn't set in the loop
         if (scanInfo != null) scanInfo.EndDateTime = DateTime.Now;
         return Utils.TraceOut(true);
+    }
+
+    private static bool ProcessFilesFixedSpaceCheck(ref string file)
+    {
+        Utils.TraceIn();
+        if (!Utils.StringContainsFixedSpace(file)) return Utils.TraceOut(false);
+
+        Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.PathHasAFixedSpace, file));
+
+        try
+        {
+            file = Utils.RenameFileToRemoveFixedSpaces(file);
+            return Utils.TraceOut(false);
+        }
+        catch (Exception ex)
+        {
+            if (ex is not (IOException or NotSupportedException)) throw;
+
+            Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.FileIsLocked, file));
+
+            {
+                return Utils.TraceOut(true);
+            }
+        }
+    }
+
+    private static bool ProcessFilesMaxPathCheck(string file)
+    {
+        Utils.TraceIn();
+        if (file.Length <= Utils.MAX_PATH) return Utils.TraceOut(false);
+
+        Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.PathTooLong, file));
+
+        {
+            return Utils.TraceOut(true);
+        }
     }
 
     private void ProcessFileRules(string file)
