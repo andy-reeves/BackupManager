@@ -471,11 +471,20 @@ internal sealed class FileSystemWatcher
 
             if (DirectoriesToScan.Any(f => f.Path == directoryToScan))
             {
-                var fileSystemEntry = DirectoriesToScan.First(f => f.Path == directoryToScan);
-                if (fileOrDirectoryChange.ModifiedDateTime <= fileSystemEntry.ModifiedDateTime) continue;
+                var fileSystemEntry = DirectoriesToScan.FirstOrDefault(f => f.Path == directoryToScan);
 
-                Utils.Trace($"Updating ModifiedDateTime to {fileOrDirectoryChange.ModifiedDateTime}");
-                fileSystemEntry.ModifiedDateTime = fileOrDirectoryChange.ModifiedDateTime;
+                if (fileSystemEntry != null)
+                {
+                    if (fileOrDirectoryChange.ModifiedDateTime <= fileSystemEntry.ModifiedDateTime) continue;
+
+                    Utils.Trace($"Updating ModifiedDateTime to {fileOrDirectoryChange.ModifiedDateTime}");
+                    fileSystemEntry.ModifiedDateTime = fileOrDirectoryChange.ModifiedDateTime;
+                }
+                else
+                {
+                    Utils.Trace("Adding to collection as FSE was null");
+                    DirectoriesToScan.Add(new FileSystemEntry(directoryToScan, fileOrDirectoryChange.ModifiedDateTime));
+                }
             }
             else
             {
