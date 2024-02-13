@@ -368,13 +368,21 @@ internal sealed class FileSystemWatcher
             if (FileSystemChanges.Contains(entry))
             {
                 Utils.Trace($"Updating ModifiedTime for {e.FullPath}");
-                var fileSystemEntry = FileSystemChanges.First(f => f.Path == e.FullPath);
-                fileSystemEntry.ModifiedDateTime = DateTime.Now;
+                var fileSystemEntry = FileSystemChanges.FirstOrDefault(f => f.Path == e.FullPath);
+
+                if (fileSystemEntry != null)
+                    fileSystemEntry.ModifiedDateTime = DateTime.Now;
+                else
+                {
+                    Utils.Trace($"Adding {e.FullPath} as FSE returned null");
+                    Utils.Trace($"Adding {e.FullPath}");
+                    FileSystemChanges.Add(entry);
+                }
             }
             else
             {
                 Utils.Trace($"Adding {e.FullPath}");
-                FileSystemChanges.Add(new FileSystemEntry(e.FullPath, DateTime.Now));
+                FileSystemChanges.Add(entry);
             }
 
             // As soon as there's something changed we start our event timers
