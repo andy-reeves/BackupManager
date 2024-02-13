@@ -11,7 +11,7 @@
       <Message>TV files must contain {tvdb-xxxxxxx} or {tmdb-xxxxxxx} in the file name</Message>
       <Name>Rule 1</Name>
       <Number>1</Number>
-      <Priority>Low</Priority>
+      <Priority>High</Priority>
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_TV(\s\(non-tvdb\))?\\.*$</FileDiscoveryRegEx>
@@ -19,6 +19,7 @@
       <Message>TV files must not contain TBA in the file name</Message>
       <Name>Rule 2</Name>
       <Number>2</Number>
+      <Priority>High</Priority>
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_Music\\.*$</FileDiscoveryRegEx>
@@ -26,6 +27,7 @@
       <Message>Music files must be named correctly</Message>
       <Name>Rule 3</Name>
       <Number>3</Number>
+      <Priority>High</Priority>
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_TV(\s\(non-tvdb\))?\\.*$</FileDiscoveryRegEx>
@@ -33,6 +35,7 @@
       <Message>TV files must either be a special feature or start with the TV show name followed by a Season/Specials folder and then the file name</Message>
       <Name>Rule 4</Name>
       <Number>4</Number>
+      <Priority>High</Priority>
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts)\\.*$</FileDiscoveryRegEx>
@@ -40,6 +43,7 @@
       <Message>Movies, Comedy and Concerts files must be a special feature or have {tmdb- in the file name</Message>
       <Name>Rule 5</Name>
       <Number>5</Number>
+      <Priority>High</Priority>
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts)(\s\(non-tmdb\))?\\.*$</FileDiscoveryRegEx>
@@ -47,6 +51,7 @@
       <Message>Movies, Comedy and Concerts files must either be a special feature or start with the folder name in the file name</Message>
       <Name>Rule 6</Name>
       <Number>6</Number>
+      <Priority>High</Priority>
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts)(\s\(non-tmdb\))?\\(.*)\\.* {edition-.*$</FileDiscoveryRegEx>
@@ -54,6 +59,7 @@
       <Message>Movies, Comedy and Concerts files that have {edition-} specified must have a valid value in the file name</Message>
       <Name>Rule 7</Name>
       <Number>7</Number>
+      <Priority>High</Priority>
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$</FileDiscoveryRegEx>
@@ -61,6 +67,7 @@
       <Message>Movies, Comedy, Concerts and TV files must not contain subtitles in the file name</Message>
       <Name>Rule 8</Name>
       <Number>8</Number>
+      <Priority>High</Priority>
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$</FileDiscoveryRegEx>
@@ -68,7 +75,7 @@
       <Message>Movies, Comedy, Concerts and TV files must not contain () in the file name</Message>
       <Name>Rule 9</Name>
       <Number>9</Number>
-      <Priority>Low</Priority>
+      <Priority>High</Priority>
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$</FileDiscoveryRegEx>
@@ -84,6 +91,7 @@
       <Message>Movies, Comedy, Concerts and TV files must not contain Proper] in the name</Message>
       <Name>Rule 11</Name>
       <Number>11</Number>
+      <Priority>High</Priority>
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$</FileDiscoveryRegEx>
@@ -91,6 +99,7 @@
       <Message>Movies, Comedy, Concerts and TV files must not contain REAL] in the file name</Message>
       <Name>Rule 12</Name>
       <Number>12</Number>
+      <Priority>High</Priority>
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts)(\s\(non-t[mv]db\))?\\.*$</FileDiscoveryRegEx>
@@ -98,6 +107,7 @@
       <Message>Movies, Comedy and Concerts files must end with a valid file extension in the file name</Message>
       <Name>Rule 13</Name>
       <Number>13</Number>
+      <Priority>High</Priority>
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_TV(\s\(non-tvdb\))?\\.*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer)\.(m(kv|p(4|e?g))|ts|avi)$</FileDiscoveryRegEx>
@@ -105,6 +115,7 @@
       <Message>TV files special features must be in the root folder of the show with a correct suffix</Message>
       <Name>Rule 14</Name>
       <Number>14</Number>
+      <Priority>High</Priority>
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts)(\s\(non-t[mv]db\))?\\.*-[a-zA-Z]*\.(m(kv|p(4|e?g))|ts|avi)$</FileDiscoveryRegEx>
@@ -112,6 +123,7 @@
       <Message>Movies, Comedy, and Concerts files special features must be in the root folder of the movie with a correct suffix</Message>
       <Name>Rule 15</Name>
       <Number>15</Number>
+      <Priority>High</Priority>
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$</FileDiscoveryRegEx>
@@ -119,6 +131,7 @@
       <Message>Movies, Comedy, Concerts and TV files must not have double '.' if they are not a special feature</Message>
       <Name>Rule 16</Name>
       <Number>16</Number>
+      <Priority>High</Priority>
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_Movies(\s\(non-tmdb\))?\\.*$</FileDiscoveryRegEx>
@@ -126,6 +139,7 @@
       <Message>Movies files must either be a special feature or named correctly</Message>
       <Name>Rule 17</Name>
       <Number>17</Number>
+      <Priority>High</Priority>
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_Movies(\s\(non-tmdb\))?\\.*$</FileDiscoveryRegEx>
@@ -134,6 +148,7 @@
       <Message>Movies, Comedy, Concerts and TV files must either be a special feature or have a valid Quality specified</Message>
       <Name>Rule 18</Name>
       <Number>18</Number>
+      <Priority>High</Priority>
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_TV(\s\(non-tvdb\))?\\.*$</FileDiscoveryRegEx>
@@ -141,6 +156,7 @@
       <Message>TV files must either be a special feature or be named correctly</Message>
       <Name>Rule 19</Name>
       <Number>19</Number>
+      <Priority>High</Priority>
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$</FileDiscoveryRegEx>
@@ -148,6 +164,7 @@
       <Message>Movies, Comedy, Concerts and TV files need to be checked manually for DolbyVision Profile 5 as the path contains [DV]</Message>
       <Name>Rule 20</Name>
       <Number>20</Number>
+      <Priority>High</Priority>
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$</FileDiscoveryRegEx>
@@ -155,6 +172,7 @@
       <Message>Movies, Comedy, Concerts and TV files need to have a maximum path length of 256 characters</Message>
       <Name>Rule 21</Name>
       <Number>21</Number>
+      <Priority>High</Priority>
     </FileRule>
   </FileRules>
 </Rules>
