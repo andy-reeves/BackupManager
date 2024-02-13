@@ -11,6 +11,7 @@
       <Message>TV files must contain {tvdb-xxxxxxx} or {tmdb-xxxxxxx} in the file name</Message>
       <Name>Rule 1</Name>
       <Number>1</Number>
+      <Priority>Low</Priority>
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_TV(\s\(non-tvdb\))?\\.*$</FileDiscoveryRegEx>

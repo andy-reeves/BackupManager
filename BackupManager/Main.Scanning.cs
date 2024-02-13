@@ -268,7 +268,7 @@ internal sealed partial class Main
             if (Regex.IsMatch(file, rule.FileTestRegEx)) continue;
 
             Utils.Trace($"File {file} matched by {rule.FileDiscoveryRegEx} but doesn't match {rule.FileTestRegEx}");
-            Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High, $"{rule.Name} {rule.Message} {file}");
+            Utils.LogWithPushover(BackupAction.ProcessFiles, rule.Priority, $"{rule.Name} {rule.Message} {file}");
 
             // If a rule has failed then break to avoid multiple messages sent
             break;

@@ -11,6 +11,7 @@
       <Message>TV files must contain {tvdb-xxxxxxx} or {tmdb-xxxxxxx} in the file name</Message>
       <Name>Rule 1</Name>
       <Number>1</Number>
+      <Priority>Low</Priority>
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_TV(\s\(non-tvdb\))?\\.*$</FileDiscoveryRegEx>
@@ -67,6 +68,7 @@
       <Message>Movies, Comedy, Concerts and TV files must not contain () in the file name</Message>
       <Name>Rule 9</Name>
       <Number>9</Number>
+      <Priority>Low</Priority>
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$</FileDiscoveryRegEx>
@@ -74,6 +76,7 @@
       <Message>Movies, Comedy, Concerts and TV files must not contain (0) in the file name</Message>
       <Name>Rule 10</Name>
       <Number>10</Number>
+      <Priority>High</Priority>
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$</FileDiscoveryRegEx>

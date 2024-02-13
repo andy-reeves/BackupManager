@@ -47,6 +47,11 @@ public class FileRule : IEquatable<FileRule>
     public string Name { get; set; }
 
     /// <summary>
+    ///     The priority of the rule
+    /// </summary>
+    public PushoverPriority Priority { get; set; }
+
+    /// <summary>
     ///     The number of the rule. Must be unique
     /// </summary>
     public int Number { get; set; }
