@@ -300,7 +300,7 @@ public sealed class BackupFile : IEquatable<BackupFile>
     /// <param name="backupDisk">The BackupDisk the BackupFile is on</param>
     /// <exception cref="ApplicationException"></exception>
     /// <returns>
-    ///     False is the hashes are different, or if the files are not found or or the source or backup file are not
+    ///     False is the hashes are different, or if the files are not found or the source or backup file are not
     ///     accessible
     /// </returns>
     public bool CheckContentHashes(BackupDisk backupDisk)
@@ -312,12 +312,19 @@ public sealed class BackupFile : IEquatable<BackupFile>
 
         var hashFromSourceFile = Utils.GetShortMd5HashFromFile(FullPath);
         ContentsHash = hashFromSourceFile;
+
+        // Update the LastWriteTime and Length because that may be checked next
+        UpdateLastWriteTime();
+        UpdateFileLength();
+
+        // now check the hashes
         var hashFromBackupDiskFile = Utils.GetShortMd5HashFromFile(pathToBackupDiskFile);
 
         if (hashFromBackupDiskFile != hashFromSourceFile)
-
-            // Hashes are now different on source and backup
+        {
+            // Hashes are now different on source and backup 
             return false;
+        }
 
         // Hashes match so update it as checked and the backup checked date too
         UpdateDiskChecked(backupDisk.Name);

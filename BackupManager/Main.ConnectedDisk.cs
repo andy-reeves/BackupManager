@@ -320,11 +320,15 @@ internal sealed partial class Main
                     backupFile.BeingCheckedNow = false;
                     return;
                 }
+                Utils.Log("Checking LastWriteTime on files as the hash codes are different");
 
-                // check the modifiedTime and if its different delete the file from the backup disk so that it will be copied again
+                // check the LastWriteTime and if its different delete the file from the backup disk so that it will be copied again
+                // We Update the LastWriteTime from disk in case it's not been scanned since it changed
+                backupFile.UpdateLastWriteTime();
                 var sourceLastWriteTime = backupFile.LastWriteTime;
                 var backupFilePathOnBackupDisk = backupFile.BackupDiskFullPath(disk.BackupPath);
                 var lastWriteTimeOfFileOnBackupDisk = Utils.GetFileLastWriteTime(backupFilePathOnBackupDisk);
+                Utils.Trace($"{backupFile.FileName} xml LastWriteTime={sourceLastWriteTime}. On disk is {lastWriteTimeOfFileOnBackupDisk}");
 
                 if (sourceLastWriteTime == lastWriteTimeOfFileOnBackupDisk)
                 {
@@ -336,13 +340,8 @@ internal sealed partial class Main
                 {
                     if (deleteExtraFiles)
                     {
-                        Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, $"Deleting {backupFilePathOnBackupDisk}. ");
-
-                        Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
-                            $"Would be deleting {backupFilePathOnBackupDisk}. ");
-
-                        // TODO put this back when we are certain
-                        if (Utils.InDebugBuild) _ = Utils.FileDelete(backupFilePathOnBackupDisk);
+                        Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, $"Deleting {backupFilePathOnBackupDisk}.");
+                        _ = Utils.FileDelete(backupFilePathOnBackupDisk);
                     }
                     else
                     {
