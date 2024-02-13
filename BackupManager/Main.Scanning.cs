@@ -177,7 +177,7 @@ internal sealed partial class Main
             if (Utils.RenameVideoCodec(file, out var newFile, out var oldCodec, out var newCodec))
             {
                 Utils.Log(BackupAction.ProcessFiles, $"{file} had codec of {oldCodec} in its path and now has {newCodec}");
-                Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.FileRenameRequiredForVideoCodec, Path.GetFileName(file)));
+                Utils.Log(BackupAction.ProcessFiles, string.Format(Resources.FileRenameRequiredForVideoCodec, Path.GetFileName(file)));
 
                 // change the file to the newFile to continue processing
                 file = newFile;
@@ -188,19 +188,20 @@ internal sealed partial class Main
                 var directoryPath = Path.GetDirectoryName(file);
                 var filesInSameDirectory = Utils.GetFiles(directoryPath, ct);
 
-                if ((from f in filesInSameDirectory
-                        where f.ContainsAny(Utils.SubtitlesExtensions)
-                        where f.Contains(oldCodecInBrackets)
-                        let newName = f.Replace(oldCodecInBrackets, newCodecInBrackets)
-                        where !Utils.FileMove(f, newName)
-                        select f).Any())
-                    return Utils.TraceOut(false);
+                foreach (var f in filesInSameDirectory.Where(static f => f.ContainsAny(Utils.SubtitlesExtensions))
+                             .Where(f => f.Contains(oldCodecInBrackets)))
+                {
+                    Utils.Log(BackupAction.ProcessFiles, $"{f} had codec of {oldCodec} in its path and will be renamed with {newCodec}");
+                    var newName = f.Replace(oldCodecInBrackets, newCodecInBrackets);
+                    if (!Utils.FileMove(f, newName)) return Utils.TraceOut(false);
+                }
             }
         }
         catch (Exception ex)
         {
             if (ex is not (IOException or NotSupportedException)) throw;
 
+            Utils.Log(BackupAction.ProcessFiles, $"Exception was {ex}");
             Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.FileIsLocked, file));
             return Utils.TraceOut(false);
         }
