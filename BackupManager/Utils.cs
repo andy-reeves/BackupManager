@@ -430,8 +430,12 @@ internal static partial class Utils
     internal static bool FileMove(string sourceFileName, string destFileName)
     {
         TraceIn(sourceFileName, destFileName);
+#if FILEMOVE
         EnsureDirectoriesForFilePath(destFileName);
         File.Move(sourceFileName, destFileName);
+#else
+        LogWithPushover(BackupAction.General, PushoverPriority.High, $"FileMove with {sourceFileName} to {destFileName} - NOT MOVING", true, true);
+#endif
         return TraceOut(true);
     }
 
@@ -913,7 +917,7 @@ internal static partial class Utils
             if (deleteEmptyDirectories && IsDirectoryEmpty(dir))
             {
                 Log($"Directory {dir} is empty so deleting.");
-                Directory.Delete(dir);
+                _ = DirectoryDelete(dir);
             }
             else
             {
@@ -2342,6 +2346,20 @@ internal static partial class Utils
         }
     }
 
+    internal static bool DirectoryDelete(string path, bool recursive = false)
+    {
+        TraceIn(path);
+        if (!Directory.Exists(path)) return TraceOut(true);
+
+#if DIRECTORYDELETE
+        ClearFileAttribute(path, FileAttributes.ReadOnly);
+        Directory.Delete(path, recursive);
+#else
+        LogWithPushover(BackupAction.General, PushoverPriority.High, $"DirectoryDelete with {path} - NOT DELETING", true, true);
+#endif
+        return TraceOut(true);
+    }
+
     /// <summary>
     ///     Deletes the file specified if it exists even if it was readonly. Returns true if the file doesn't exist or if it
     ///     was deleted successfully
@@ -2349,11 +2367,16 @@ internal static partial class Utils
     /// <param name="path"></param>
     internal static bool FileDelete(string path)
     {
-        if (!File.Exists(path)) return true;
+        TraceIn(path);
+        if (!File.Exists(path)) return TraceOut(true);
 
+#if FILEDELETE
         ClearFileAttribute(path, FileAttributes.ReadOnly);
         File.Delete(path);
-        return true;
+#else
+        LogWithPushover(BackupAction.General, PushoverPriority.High, $"FileDelete with {path} - NOT DELETING", true, true);
+#endif
+        return TraceOut(true);
     }
 
     private static void DeleteEmptyDirectories(string directory, ICollection<string> list, string rootDirectory)
@@ -2375,7 +2398,7 @@ internal static partial class Utils
                     {
                         Trace($"Deleting empty directory {directory}");
                         list.Add(directory);
-                        Directory.Delete(directory);
+                        _ = DirectoryDelete(directory);
                     }
                 }
                 catch (UnauthorizedAccessException) { }
@@ -2415,7 +2438,7 @@ internal static partial class Utils
                     {
                         Trace($"Deleting broken symbolic link directory {directory}");
                         list.Add(directory);
-                        Directory.Delete(directory);
+                        _ = DirectoryDelete(directory);
                     }
                 }
                 catch (UnauthorizedAccessException) { }

@@ -57,9 +57,9 @@ public sealed class EntityTests
         var pathToMovies = Path.Combine(pathToFiles, "_Movies");
         var pathToMovies2 = Path.Combine(pathToBackupFile2, "_Movies");
         var pathToTv = Path.Combine(pathToBackupFile2, "_TV");
-        if (Directory.Exists(pathToFiles)) Directory.Delete(pathToFiles, true);
-        if (Directory.Exists(pathToBackupFile2)) Directory.Delete(pathToBackupFile2, true);
-        if (Directory.Exists(pathToBackupShare)) Directory.Delete(pathToBackupShare, true);
+        if (Directory.Exists(pathToFiles)) _ = Utils.DirectoryDelete(pathToFiles, true);
+        if (Directory.Exists(pathToBackupFile2)) _ = Utils.DirectoryDelete(pathToBackupFile2, true);
+        if (Directory.Exists(pathToBackupShare)) _ = Utils.DirectoryDelete(pathToBackupShare, true);
         var pathToFile1 = Path.Combine(pathToMovies, "test1.txt");
         var pathToFile2 = Path.Combine(pathToTv, "test2.txt");
         var pathToFile3 = Path.Combine(pathToMovies2, "test1.txt");
@@ -199,9 +199,9 @@ public sealed class EntityTests
         }
 
         // Tidy up folders
-        if (Directory.Exists(pathToFiles)) Directory.Delete(pathToFiles, true);
-        if (Directory.Exists(pathToBackupFile2)) Directory.Delete(pathToBackupFile2, true);
-        if (Directory.Exists(pathToBackupShare)) Directory.Delete(pathToBackupShare, true);
+        if (Directory.Exists(pathToFiles)) _ = Utils.DirectoryDelete(pathToFiles, true);
+        if (Directory.Exists(pathToBackupFile2)) _ = Utils.DirectoryDelete(pathToBackupFile2, true);
+        if (Directory.Exists(pathToBackupShare)) _ = Utils.DirectoryDelete(pathToBackupShare, true);
     }
 
     [Fact]
@@ -214,9 +214,9 @@ public sealed class EntityTests
         var pathToMovies = Path.Combine(pathToFiles, "_Movies");
         var pathToTv = Path.Combine(pathToBackupFile2, "_TV");
         var pathToMoviesOnBackupDisk = Path.Combine(pathToBackupDisk, "_Movies");
-        if (Directory.Exists(pathToFiles)) Directory.Delete(pathToFiles, true);
-        if (Directory.Exists(pathToBackupFile2)) Directory.Delete(pathToBackupFile2, true);
-        if (Directory.Exists(pathToBackupShare)) Directory.Delete(pathToBackupShare, true);
+        if (Directory.Exists(pathToFiles)) _ = Utils.DirectoryDelete(pathToFiles, true);
+        if (Directory.Exists(pathToBackupFile2)) _ = Utils.DirectoryDelete(pathToBackupFile2, true);
+        if (Directory.Exists(pathToBackupShare)) _ = Utils.DirectoryDelete(pathToBackupShare, true);
         var pathToFile1 = Path.Combine(pathToMovies, "test1.txt");
         var pathToFile2 = Path.Combine(pathToTv, "test2.txt");
         var pathToFile1OnBackupDisk = Path.Combine(pathToMoviesOnBackupDisk, "test1.txt");
@@ -263,9 +263,9 @@ public sealed class EntityTests
         Assert.True(backupFile1.CheckContentHashes(backupDisk));
         File.AppendAllText(pathToFile1OnBackupDisk, "test");
         Assert.False(backupFile1.CheckContentHashes(backupDisk));
-        if (Directory.Exists(pathToFiles)) Directory.Delete(pathToFiles, true);
-        if (Directory.Exists(pathToBackupFile2)) Directory.Delete(pathToBackupFile2, true);
-        if (Directory.Exists(pathToBackupShare)) Directory.Delete(pathToBackupShare, true);
+        if (Directory.Exists(pathToFiles)) _ = Utils.DirectoryDelete(pathToFiles, true);
+        if (Directory.Exists(pathToBackupFile2)) _ = Utils.DirectoryDelete(pathToBackupFile2, true);
+        if (Directory.Exists(pathToBackupShare)) _ = Utils.DirectoryDelete(pathToBackupShare, true);
     }
 
     [Fact]
@@ -332,8 +332,6 @@ public sealed class EntityTests
             collection2 = serializer2.Deserialize(stream) as Collection<FileSystemEntry>;
         }
         Assert.True(collection2 != null && collection1.SequenceEqual(collection2));
-        File.Delete(path);
+        _ = Utils.FileDelete(path);
     }
 }
-
-//#endif

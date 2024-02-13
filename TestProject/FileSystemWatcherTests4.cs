@@ -78,8 +78,8 @@ public sealed class FileSystemWatcherTests4
         watcher.ReadyToScan -= FileSystemWatcher_ReadyToScan4;
 
         // Delete the folders we created
-        if (Directory.Exists(monitoringPath1)) Directory.Delete(monitoringPath1, true);
-        if (Directory.Exists(monitoringPath2)) Directory.Delete(monitoringPath2, true);
+        if (Directory.Exists(monitoringPath1)) _ = Utils.DirectoryDelete(monitoringPath1, true);
+        if (Directory.Exists(monitoringPath2)) _ = Utils.DirectoryDelete(monitoringPath2, true);
     }
 
     private void FileSystemWatcher_ReadyToScan4(object? sender, FileSystemWatcherEventArgs e)

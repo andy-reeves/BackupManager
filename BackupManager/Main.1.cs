@@ -283,7 +283,7 @@ internal sealed partial class Main
             if (Directory.Exists(path) && Utils.IsDirectoryEmpty(path))
             {
                 Utils.Trace("Deleting link directory as its empty");
-                Directory.Delete(path, true);
+                _ = Utils.DirectoryDelete(path, true);
             }
             if (path != null && Directory.Exists(path)) continue;
 

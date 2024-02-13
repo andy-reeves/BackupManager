@@ -63,7 +63,7 @@ public sealed class FileSystemWatcherTests3
         Assert.False(watcher.Running);
 
         // Now delete a folder we are monitoring after we've stopped
-        if (Directory.Exists(monitoringPath3DeletedAfterABit)) Directory.Delete(monitoringPath3DeletedAfterABit, true);
+        if (Directory.Exists(monitoringPath3DeletedAfterABit)) _ = Utils.DirectoryDelete(monitoringPath3DeletedAfterABit, true);
 
         // should fail to restart because a folder is missing now
         _ = Assert.Throws<ArgumentException>(() => watcher.Start());
@@ -82,7 +82,7 @@ public sealed class FileSystemWatcherTests3
         Assert.Equal(2, test3EventsCounter);
 
         //delete a folder while we're monitoring it
-        if (Directory.Exists(monitoringPath3DeletedAfterABit)) Directory.Delete(monitoringPath3DeletedAfterABit, true);
+        if (Directory.Exists(monitoringPath3DeletedAfterABit)) _ = Utils.DirectoryDelete(monitoringPath3DeletedAfterABit, true);
         test3ExpectedEventFolderCount = 4;
 
         // now create the folders and file again
@@ -120,9 +120,9 @@ public sealed class FileSystemWatcherTests3
         watcher.Error -= FileSystemWatcher_ErrorTest3;
 
         // Delete the folders we created
-        if (Directory.Exists(monitoringPath1)) Directory.Delete(monitoringPath1, true);
-        if (Directory.Exists(monitoringPath2)) Directory.Delete(monitoringPath2, true);
-        if (Directory.Exists(monitoringPath3DeletedAfterABit)) Directory.Delete(monitoringPath3DeletedAfterABit, true);
+        if (Directory.Exists(monitoringPath1)) _ = Utils.DirectoryDelete(monitoringPath1, true);
+        if (Directory.Exists(monitoringPath2)) _ = Utils.DirectoryDelete(monitoringPath2, true);
+        if (Directory.Exists(monitoringPath3DeletedAfterABit)) _ = Utils.DirectoryDelete(monitoringPath3DeletedAfterABit, true);
     }
 
     private void FileSystemWatcher_ErrorTest3(object? sender, ErrorEventArgs e)

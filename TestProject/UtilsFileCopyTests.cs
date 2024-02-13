@@ -28,7 +28,7 @@ public sealed class UtilsFileCopyTests
         for (var i = 0; i < 5; i++)
         {
             var path1 = Path.Combine(Path.GetTempPath(), "FileCopy");
-            if (Directory.Exists(path1)) Directory.Delete(path1, true);
+            if (Directory.Exists(path1)) _ = Utils.DirectoryDelete(path1, true);
             var file1 = Path.Combine(path1, "test1.txt");
             var file2 = Path.Combine(path1, "test2.txt");
             Utils.EnsureDirectoriesForDirectoryPath(path1);
@@ -40,7 +40,7 @@ public sealed class UtilsFileCopyTests
             Assert.Equal("098f6bcd4621d373cade4e832627b4f6", Utils.GetShortMd5HashFromFile(file2));
 
             // Delete the folders we created
-            if (Directory.Exists(path1)) Directory.Delete(path1, true);
+            if (Directory.Exists(path1)) _ = Utils.DirectoryDelete(path1, true);
         }
     }
 
@@ -57,7 +57,7 @@ public sealed class UtilsFileCopyTests
             @"FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy" +
             @"FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy");
         Assert.True(path1.Length > 256);
-        if (Directory.Exists(path1)) Directory.Delete(path1, true);
+        if (Directory.Exists(path1)) _ = Utils.DirectoryDelete(path1, true);
         var file1 = Path.Combine(path1, "test1.txt");
         var file2 = Path.Combine(path1, "test2.txt");
         Utils.CreateFile(file1);
@@ -68,6 +68,6 @@ public sealed class UtilsFileCopyTests
         Assert.False(File.Exists(file2));
 
         // Delete the folders we created
-        if (Directory.Exists(path1)) Directory.Delete(path1, true);
+        if (Directory.Exists(path1)) _ = Utils.DirectoryDelete(path1, true);
     }
 }

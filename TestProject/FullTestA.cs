@@ -28,7 +28,7 @@ public sealed class FullTestA
     {
         // Step 1 - set up the directories and config
         var targetDirectory = Path.Combine(_testDataPath, "FullTestARunning");
-        if (Directory.Exists(targetDirectory)) Directory.Delete(targetDirectory, true);
+        if (Directory.Exists(targetDirectory)) _ = Utils.DirectoryDelete(targetDirectory, true);
         Utils.CopyDirectory(Path.Combine(_testDataPath, "FullTestA"), targetDirectory);
         _ = Directory.CreateDirectory(Path.Combine(targetDirectory, @"BackupDisk 1001\backup 1001\_Movies\EmptyDirectory"));
         var mediaBackup = MediaBackup.Load(Path.Combine(targetDirectory, "ConfigA\\MediaBackup.xml"));
@@ -139,6 +139,6 @@ public sealed class FullTestA
         Assert.Empty(mediaBackup.GetBackupFilesWithDiskEmpty().ToArray());
 
         // and now remove the directory we created
-        if (Directory.Exists(targetDirectory)) Directory.Delete(targetDirectory, true);
+        if (Directory.Exists(targetDirectory)) _ = Utils.DirectoryDelete(targetDirectory, true);
     }
 }
