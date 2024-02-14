@@ -134,18 +134,17 @@
       <Priority>High</Priority>
     </FileRule>
     <FileRule>
-      <FileDiscoveryRegEx>^.*\\_Movies(\s\(non-tmdb\))?\\.*$</FileDiscoveryRegEx>
-      <FileTestRegEx>^(?:.*\\_Movies(?:\s\(non-tmdb\))?\\(.*\(\d{4}\)(-other)?)\\(\1)(?:\s{tmdb-\d{1,7}?})?\s({edition-(([1-7][05]TH\sANNIVERSARY)|4K|BLURAY|CHRONOLOGICAL|COLLECTORS|(CRITERION|KL\sSTUDIO)\sCOLLECTION|DIAMOND|DVD|IMAX|REDUX|REMASTERED|RESTORED|SPECIAL|(THE\sCOMPLETE\s)?EXTENDED|THE\sGODFATHER\sCODA|(THE\sRICHARD\sDONNER|DIRECTORS|FINAL)\sCUT|THEATRICAL|ULTIMATE|UNCUT|UNRATED)}\s)?\[(DVD|SDTV|(WEB(Rip|DL)|Bluray|HDTV|Remux)-(48|72|108|216)0p)\](\[((DV)?((\s)?HDR10(Plus)?)?|PQ|HLG|3D)\])?\[(DTS(\sHD|-(X|ES|HD\s(M|HR)A))?|(TrueHD|EAC3)(\sAtmos)?|AC3|FLAC|PCM|MP3|A[AV]C|Opus)\s([1-8]\.[01])\]\[(h26[45]|MPEG[24]|XviD|V(C1|P9))\]|.*TdarrCacheFile-.*|.*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(kv|p(4|e?g))|ts|avi|(e(n|s)(\.hi)?\.)srt)$</FileTestRegEx>
+      <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts)(\s\(non-t[mv]db\))?\\.*$</FileDiscoveryRegEx>
+      <FileTestRegEx>^(?:.*\\_(?:Movies|Comedy|Concerts)(?:\s\(non-t[mv]db\))?\\(.*\(\d{4}\)(-other)?)\\(\1)(?:\s{tmdb-\d{1,7}?})?\s({edition-(([1-7][05]TH\sANNIVERSARY)|4K|BLURAY|CHRONOLOGICAL|COLLECTORS|(CRITERION|KL\sSTUDIO)\sCOLLECTION|DIAMOND|DVD|IMAX|REDUX|REMASTERED|RESTORED|SPECIAL|(THE\sCOMPLETE\s)?EXTENDED|THE\sGODFATHER\sCODA|(THE\sRICHARD\sDONNER|DIRECTORS|FINAL)\sCUT|THEATRICAL|ULTIMATE|UNCUT|UNRATED)}\s)?\[(DVD|SDTV|(WEB(Rip|DL)|Bluray|HDTV|Remux)-(48|72|108|216)0p)\](\[((DV)?((\s)?HDR10(Plus)?)?|PQ|HLG|3D)\])?\[(DTS(\sHD|-(X|ES|HD\s(M|HR)A))?|(TrueHD|EAC3)(\sAtmos)?|AC3|FLAC|PCM|MP3|A[AV]C|Opus)\s([1-8]\.[01])\]\[(h26[45]|MPEG[24]|DivX|XviD|V(C1|P9))\]|.*TdarrCacheFile-.*|.*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(kv|p(4|e?g))|ts|avi|(e(n|s)(\.hi)?\.)srt)$</FileTestRegEx>
       <Message>Movies files must either be a special feature or named correctly</Message>
       <Name>Rule 17</Name>
       <Number>17</Number>
       <Priority>High</Priority>
     </FileRule>
     <FileRule>
-      <FileDiscoveryRegEx>^.*\\_Movies(\s\(non-tmdb\))?\\.*$</FileDiscoveryRegEx>
-      <!-- <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$</FileDiscoveryRegEx> -->
-      <FileTestRegEx>^(?:.*\\_Movies(?:\s\(non-tmdb\))?\\.*\\.*\[(DVD|SDTV|(WEB(Rip|DL)|Bluray|HDTV|Remux)-(48|72|108|216)0p)\].*$|.*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer)\..*)$</FileTestRegEx>
-      <Message>Movies, Comedy, Concerts and TV files must either be a special feature or have a valid Quality specified</Message>
+      <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$</FileDiscoveryRegEx>
+      <FileTestRegEx>^.{1,256}$</FileTestRegEx>
+      <Message>Movies, Comedy, Concerts and TV files need to have a maximum path length of 256 characters</Message>
       <Name>Rule 18</Name>
       <Number>18</Number>
       <Priority>High</Priority>
@@ -164,14 +163,6 @@
       <Message>Movies, Comedy, Concerts and TV files need to be checked manually for DolbyVision Profile 5 as the path contains [DV]</Message>
       <Name>Rule 20</Name>
       <Number>20</Number>
-      <Priority>High</Priority>
-    </FileRule>
-    <FileRule>
-      <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$</FileDiscoveryRegEx>
-      <FileTestRegEx>^.{1,256}$</FileTestRegEx>
-      <Message>Movies, Comedy, Concerts and TV files need to have a maximum path length of 256 characters</Message>
-      <Name>Rule 21</Name>
-      <Number>21</Number>
       <Priority>High</Priority>
     </FileRule>
   </FileRules>

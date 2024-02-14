@@ -73,18 +73,7 @@
   
   <!-- Delay before Application monitoring starts -->
   <MonitoringStartDelayOnOff>true</MonitoringStartDelayOnOff>
-  
-  <PlexToken>df_s2aZXWFiAmvJU-QFM</PlexToken>
 
-  <!-- Pushover messages are sent to this App Token until any limit reached and then the next -->
-  <PushoverAppTokens>
-    <Token>acdzfbwibfev3bzis73vv9dzy81tqb</Token>
-    <Token>a68hubsd9egvubjmwsvh5ndawwtuda</Token>
-    <Token>antpms12oumk3u3wzw2xauchjss7qp</Token>
-    <Token>az32yr5t8uptjaya29oanz8heb8vxg</Token>
-    <Token>aboc69s75i5mc3cvnqukrq65wcsumw</Token>
-  </PushoverAppTokens>
-  
   <!-- True to enable sending Pushover messages -->
   <PushoverOnOff>false</PushoverOnOff>
 

@@ -109,10 +109,10 @@ internal sealed partial class Main
 
                 lock (_lock)
                 {
-                    if (!ProcessFilesMaxPathCheck(file)) return Utils.TraceOut(false);
-                    if (!ProcessFilesFixedSpaceCheck(ref file)) return Utils.TraceOut(false);
-                    if (!ProcessFilesVideoCodecCheck(scanPathForVideoCodec, ref file, ct)) return Utils.TraceOut(false);
-                    if (file == null) return Utils.TraceOut(false);
+                    if (!ProcessFilesMaxPathCheck(file)) continue;
+                    if (!ProcessFilesFixedSpaceCheck(ref file)) continue;
+                    if (!ProcessFilesVideoCodecCheck(scanPathForVideoCodec, ref file, ct)) continue;
+                    if (file == null) continue;
 
                     if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
                     ProcessFilesUpdatePercentComplete(files, file);
@@ -135,11 +135,12 @@ internal sealed partial class Main
                 if (CheckForFilesToDelete(file, filtersToDelete)) continue;
 
                 ProcessFileRules(file);
-                if (!mediaBackup.EnsureFile(file)) return Utils.TraceOut(false);
+                if (!mediaBackup.EnsureFile(file)) continue;
             }
-            catch (IOException)
+            catch (IOException ex)
             {
                 // exception accessing the file return false and we will try again 
+                Utils.Trace($"IOException in ProcessFilesInternal {ex}");
                 return Utils.TraceOut(false);
             }
         }

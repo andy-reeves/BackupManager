@@ -1628,9 +1628,9 @@ internal static partial class Utils
         }
         else
         {
-            if (delayBeforeSending) Task.Delay(1000).Wait();
+            if (delayBeforeSending) Task.Delay(2000).Wait();
             SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, text);
-            if (delayAfterSending) Task.Delay(1000).Wait();
+            if (delayAfterSending) Task.Delay(2000).Wait();
         }
     }
 
