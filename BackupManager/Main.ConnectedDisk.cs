@@ -148,8 +148,8 @@ internal sealed partial class Main
         {
             if (ct.IsCancellationRequested) continue;
 
-            var backupFileFullPath = backupDiskFiles[i];
-            var backupFileIndexFolderRelativePath = backupFileFullPath[(directoryToCheck.Length + 1)..];
+            var backupDiskFileFullPath = backupDiskFiles[i];
+            var backupFileIndexFolderRelativePath = backupDiskFileFullPath[(directoryToCheck.Length + 1)..];
             UpdateStatusLabel(string.Format(Resources.Scanning, directoryToCheck), i + 1);
             UpdateMediaFilesCountDisplay();
             if (backupDiskFiles.Length > (Utils.InDebugBuild ? 2 : 100)) ConnectedDiskUpdatePercentComplete(i, ref reportedPercent, disk);
@@ -158,13 +158,13 @@ internal sealed partial class Main
             {
                 // scenario 103 or 105 on disk and in xml but could be different
 
-                ConnectedDiskBackupDiskFileIsInTheHashtable(disk, backupFileIndexFolderRelativePath, ref diskInfoMessageWasTheLastSent,
-                    deleteExtraFiles);
+                ConnectedDiskBackupDiskFileIsInTheHashtable(backupDiskFileFullPath, disk, ref diskInfoMessageWasTheLastSent, deleteExtraFiles,
+                    backupFileIndexFolderRelativePath);
             }
             else
             {
                 // scenario 104 on disk but not in xml
-                ConnectedDiskBackupDiskFileIsNotInTheHashtable(backupFileFullPath, disk, ref diskInfoMessageWasTheLastSent, deleteExtraFiles);
+                ConnectedDiskBackupDiskFileIsNotInTheHashtable(backupDiskFileFullPath, disk, ref diskInfoMessageWasTheLastSent, deleteExtraFiles);
             }
         }
 
@@ -226,22 +226,22 @@ internal sealed partial class Main
         }
     }
 
-    private static void ConnectedDiskRemoveExtraFile(bool deleteExtraFiles, string backupFileFullPath, BackupDisk disk)
+    private static void ConnectedDiskRemoveExtraFile(bool deleteExtraFiles, string backupDiskFileFullPath, BackupDisk disk)
     {
         // One of the checks above returned False to we will delete the file now
         // as it's an extra file on the backup disk
         if (deleteExtraFiles)
         {
             Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
-                $"Extra file {backupFileFullPath} on backup disk {disk.Name} now deleted");
-            _ = Utils.FileDelete(backupFileFullPath);
+                $"Extra file {backupDiskFileFullPath} on backup disk {disk.Name} now deleted");
+            _ = Utils.FileDelete(backupDiskFileFullPath);
         }
         else
-            Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Extra file {backupFileFullPath} on backup disk {disk.Name}");
+            Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Extra file {backupDiskFileFullPath} on backup disk {disk.Name}");
     }
 
-    private void ConnectedDiskBackupDiskFileIsNotInTheHashtable(string backupFileFullPath, BackupDisk disk, ref bool diskInfoMessageWasTheLastSent,
-        bool deleteExtraFiles)
+    private void ConnectedDiskBackupDiskFileIsNotInTheHashtable(string backupDiskFileFullPath, BackupDisk disk,
+        ref bool diskInfoMessageWasTheLastSent, bool deleteExtraFiles)
     {
         // The file on the backup disk isn't found in the directory anymore
         // it could be that we've renamed it in the directory
@@ -249,19 +249,20 @@ internal sealed partial class Main
         // Alternatively, find it by the contents hashcode as that's (almost guaranteed unique)
         // and then rename it 
         // if we try to rename, and it exists at the destination already then we delete the file instead
-        var hashToCheck = Utils.GetShortMd5HashFromFile(backupFileFullPath);
+        var hashToCheck = Utils.GetShortMd5HashFromFile(backupDiskFileFullPath);
         var file = mediaBackup.GetBackupFileFromContentsHashcode(hashToCheck);
 
         if (file == null || file.Length == 0 || file.Disk.HasNoValue())
         {
-            ConnectedDiskRemoveExtraFile(deleteExtraFiles, backupFileFullPath, disk);
+            ConnectedDiskRemoveExtraFile(deleteExtraFiles, backupDiskFileFullPath, disk);
             diskInfoMessageWasTheLastSent = false;
             return;
         }
         var destFileName = file.BackupDiskFullPath(disk.BackupPath);
 
-        // TODO put back after next full disk check Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Renaming {backupFileFullPath} to {destFileName}");
-        Utils.Log(BackupAction.CheckBackupDisk, $"Renaming {backupFileFullPath} to {destFileName}");
+        // TODO put back after next full disk check
+        // Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Renaming {backupDiskFileFullPath} to {destFileName}");
+        Utils.Log(BackupAction.CheckBackupDisk, $"Renaming {backupDiskFileFullPath} to {destFileName}");
 
         if (File.Exists(destFileName))
         {
@@ -269,12 +270,12 @@ internal sealed partial class Main
             if (Utils.GetShortMd5HashFromFile(destFileName) == hashToCheck)
             {
                 Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal,
-                    string.Format(Resources.FileExistsAlreadySoDeleting, backupFileFullPath));
-                _ = Utils.FileDelete(backupFileFullPath);
+                    string.Format(Resources.FileExistsAlreadySoDeleting, backupDiskFileFullPath));
+                _ = Utils.FileDelete(backupDiskFileFullPath);
             }
         }
         else
-            _ = Utils.FileMove(backupFileFullPath, destFileName);
+            _ = Utils.FileMove(backupDiskFileFullPath, destFileName);
 
         // This forces a hash check on the source and backup disk files
         if (file.CheckContentHashes(disk))
@@ -289,25 +290,26 @@ internal sealed partial class Main
 
     /// <summary>
     /// </summary>
+    /// <param name="backupDiskFileFullPath"></param>
     /// <param name="disk"></param>
-    /// <param name="hashKey"></param>
     /// <param name="diskInfoMessageWasTheLastSent"></param>
     /// <param name="deleteExtraFiles"></param>
+    /// <param name="hashKey"></param>
     /// <returns></returns>
-    private void ConnectedDiskBackupDiskFileIsInTheHashtable(BackupDisk disk, string hashKey, ref bool diskInfoMessageWasTheLastSent,
-        bool deleteExtraFiles)
+    private void ConnectedDiskBackupDiskFileIsInTheHashtable(string backupDiskFileFullPath, BackupDisk disk,
+        ref bool diskInfoMessageWasTheLastSent, bool deleteExtraFiles, string hashKey)
     {
         var backupFile = mediaBackup.GetBackupFileFromHashKey(hashKey);
-        var backupFileFullPath = backupFile.FullPath;
+        var backupFileSourceDiskFullPath = backupFile.FullPath;
 
-        if (File.Exists(backupFile.FullPath))
+        if (File.Exists(backupFileSourceDiskFullPath))
         {
             // sometimes we get the same file on multiple backup disks
             // calling CheckContentHashes will switch it from one disk to another, and they'll keep doing it
             // so if it was last seen on another disk delete it from this one
             if (disk.Name != backupFile.Disk && backupFile.Disk.HasValue())
             {
-                if (backupFile.Disk.HasValue()) Utils.Log($"{backupFile.FullPath} was on {backupFile.Disk} but now found on {disk.Name}");
+                if (backupFile.Disk.HasValue()) Utils.Log($"{backupFileSourceDiskFullPath} was on {backupFile.Disk} but now found on {disk.Name}");
 
                 // we will fall through from here to the delete further down and remove the file
             }
@@ -326,8 +328,7 @@ internal sealed partial class Main
                 // We Update the LastWriteTime from disk in case it's not been scanned since it changed
                 backupFile.UpdateLastWriteTime();
                 var sourceLastWriteTime = backupFile.LastWriteTime;
-                var backupFilePathOnBackupDisk = backupFile.BackupDiskFullPath(disk.BackupPath);
-                var lastWriteTimeOfFileOnBackupDisk = Utils.GetFileLastWriteTime(backupFilePathOnBackupDisk);
+                var lastWriteTimeOfFileOnBackupDisk = Utils.GetFileLastWriteTime(backupDiskFileFullPath);
                 Utils.Trace($"{backupFile.FileName} xml LastWriteTime={sourceLastWriteTime}. On disk is {lastWriteTimeOfFileOnBackupDisk}");
 
                 if (sourceLastWriteTime == lastWriteTimeOfFileOnBackupDisk)
@@ -340,13 +341,13 @@ internal sealed partial class Main
                 {
                     if (deleteExtraFiles)
                     {
-                        Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, $"Deleting {backupFilePathOnBackupDisk}.");
-                        _ = Utils.FileDelete(backupFilePathOnBackupDisk);
+                        Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, $"Deleting {backupDiskFileFullPath}.");
+                        _ = Utils.FileDelete(backupDiskFileFullPath);
                     }
                     else
                     {
                         Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
-                            $"Would be deleting {backupFilePathOnBackupDisk}. ");
+                            $"Would be deleting {backupDiskFileFullPath}. ");
                     }
                 }
                 return;
@@ -358,7 +359,7 @@ internal sealed partial class Main
             // so delete it
             mediaBackup.RemoveFile(backupFile);
         }
-        ConnectedDiskRemoveExtraFile(deleteExtraFiles, backupFileFullPath, disk);
+        ConnectedDiskRemoveExtraFile(deleteExtraFiles, backupDiskFileFullPath, disk);
         diskInfoMessageWasTheLastSent = false;
     }
 

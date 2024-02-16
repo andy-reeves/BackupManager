@@ -131,7 +131,7 @@ public sealed class FullTestA
         _ = mainForm.CheckConnectedDisk(true, ct);
         Assert.Equal(2, mediaBackup.GetBackupFilesWithDiskEmpty().Count());
         files = Utils.GetFiles(Utils.Config.BackupDisk, ct);
-        Assert.Equal(6, files.Length);
+        Assert.Equal(5, files.Length);
         _ = mainForm.EnsureConnectedBackupDisk("backup 1001");
         mainForm.ScanAllDirectoriesAsync(ct);
         _ = mainForm.CheckConnectedDisk(true, ct);
