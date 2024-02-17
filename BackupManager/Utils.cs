@@ -427,6 +427,7 @@ internal static partial class Utils
     /// </summary>
     /// <param name="sourceFileName">The name of the file to move. Can include a relative or absolute path.</param>
     /// <param name="destFileName">The new path and name for the file.</param>
+    /// <returns>True if successfully renamed otherwise False</returns>
     internal static bool FileMove(string sourceFileName, string destFileName)
     {
         TraceIn(sourceFileName, destFileName);

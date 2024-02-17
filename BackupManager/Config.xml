@@ -26,7 +26,20 @@
 
   <!-- If an error occurs whilst monitoring Directories we wait for this long before attempting to Reset the Watcher in seconds (120) -->
   <DirectoriesFileChangeWatcherRestartDelay>120</DirectoriesFileChangeWatcherRestartDelay>
-
+ 
+  <FileRenameRules>   
+    <FileRenameRule>
+      <FileDiscoveryRegex>^.*\\_TV(\s\(non-tvdb\))?\\.*\.srt$</FileDiscoveryRegex>
+      <Search>avc,AVC,x264,X264</Search>
+      <Replace>h264</Replace>
+    </FileRenameRule>
+    <FileRenameRule>
+      <FileDiscoveryRegex>^.*\\_TV(\s\(non-tvdb\))?\\.*\.srt$</FileDiscoveryRegex>
+      <Search>hevc,HEVC,x265,X265</Search>
+      <Replace>h265</Replace>
+    </FileRenameRule>
+  </FileRenameRules>
+  
   <!-- Only files matching this filter are used for File System scanning -->
   <DirectoriesFilterRegEx>(.*(?&lt;!\.tmp)|.*\\_Backup\\.*)$</DirectoriesFilterRegEx>
 

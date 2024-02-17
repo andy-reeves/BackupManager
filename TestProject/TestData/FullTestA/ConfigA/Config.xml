@@ -62,6 +62,19 @@
   <!-- The capturing group is this Regex must be unique for all matching files -->
   <DuplicateFilesRegex>^.*\\_Movies(?:\s\(non-tmdb\))?\\.*\s({tmdb-\d{1,7}?}).*\.(?:m(?:kv|p(4|e?g))|ts|avi)$</DuplicateFilesRegex>
   
+  <FileRenameRules>   
+    <FileRenameRule>
+      <FileDiscoveryRegex>^.*\\_TV(\s\(non-tvdb\))?\\.*\.srt$</FileDiscoveryRegex>
+      <Search>avc,AVC,x264,X264</Search>
+      <Replace>h264</Replace>
+    </FileRenameRule>
+    <FileRenameRule>
+      <FileDiscoveryRegex>^.*\\_TV(\s\(non-tvdb\))?\\.*\.srt$</FileDiscoveryRegex>
+      <Search>hevc,HEVC,x265,X265</Search>
+      <Replace>h265</Replace>
+    </FileRenameRule>
+  </FileRenameRules>
+  
   <!-- When true check for latest versions of applications-->
   <MonitoringCheckLatestVersions>false</MonitoringCheckLatestVersions>
 

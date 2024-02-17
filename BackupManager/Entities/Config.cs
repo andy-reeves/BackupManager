@@ -38,6 +38,8 @@ public sealed class Config
 
     [XmlArrayItem("Monitor")] public Collection<ProcessServiceMonitor> Monitors { get; set; }
 
+    [XmlArrayItem("FileRenameRule")] public Collection<FileRenameRule> FileRenameRules { get; set; }
+
     [XmlIgnore] public Collection<FileRule> FileRules { get; set; }
 
     [XmlArrayItem("SymbolicLink")] public Collection<SymbolicLink> SymbolicLinks { get; set; }

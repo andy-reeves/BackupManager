@@ -111,6 +111,7 @@ internal sealed partial class Main
                 {
                     if (!ProcessFilesMaxPathCheck(file)) continue;
                     if (!ProcessFilesFixedSpaceCheck(ref file)) continue;
+                    if (!ProcessFilesRenameFileRules(ref file)) continue;
                     if (!ProcessFilesVideoCodecCheck(scanPathForVideoCodec, ref file, ct)) continue;
                     if (file == null) continue;
 
@@ -135,7 +136,7 @@ internal sealed partial class Main
                 if (CheckForFilesToDelete(file, filtersToDelete)) continue;
 
                 ProcessFileRules(file);
-                if (!mediaBackup.EnsureFile(file)) continue;
+                _ = mediaBackup.EnsureFile(file);
             }
             catch (IOException ex)
             {
@@ -147,6 +148,32 @@ internal sealed partial class Main
 
         // Update the last scan endDateTime as it wasn't set in the loop
         if (scanInfo != null) scanInfo.EndDateTime = DateTime.Now;
+        return Utils.TraceOut(true);
+    }
+
+    /// <summary>
+    ///     Returns false if a rename was required but failed
+    /// </summary>
+    /// <param name="file"></param>
+    /// <returns></returns>
+    private bool ProcessFilesRenameFileRules(ref string file)
+    {
+        Utils.TraceIn();
+        var newFilePath = file;
+
+        foreach (var fileRenameRule in config.FileRenameRules
+                     .Select(static fileRenameRule => new { fileRenameRule, a = fileRenameRule.FileDiscoveryRegex })
+                     .Where(static t => !t.a.HasNoValue()).Select(t => new { t, match = Regex.Match(newFilePath, t.a) })
+                     .Where(static t => t.match.Success).Select(static t => t.t.fileRenameRule))
+        {
+            newFilePath = fileRenameRule.Search.Split(',').Aggregate(newFilePath, (current, b) => current.Replace(b, fileRenameRule.Replace));
+        }
+        if (newFilePath == file) return Utils.TraceOut(true);
+
+        Utils.Log(BackupAction.ProcessFiles, $"{file} being renamed to {newFilePath}");
+        if (!Utils.FileMove(file, newFilePath)) return Utils.TraceOut(false);
+
+        file = newFilePath;
         return Utils.TraceOut(true);
     }
 

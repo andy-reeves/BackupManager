@@ -151,6 +151,21 @@
             <xs:documentation>If True we test the speed of the disks</xs:documentation>
           </xs:annotation>
         </xs:element>
+        <xs:element name="FileRenameRules" maxOccurs="1" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="FileRenameRule" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:all>
+                    <xs:element type="xs:string" name="FileDiscoveryRegex" maxOccurs="1" minOccurs="1" />
+                    <xs:element type="xs:string" name="Search" maxOccurs="1" minOccurs="1" />
+                    <xs:element type="xs:string" name="Replace" maxOccurs="1" minOccurs="1" />
+                  </xs:all>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>      
         <xs:element name="Monitors" maxOccurs="1" minOccurs="0">
           <xs:complexType>
             <xs:sequence>
@@ -200,6 +215,7 @@
         </xs:element>
         <xs:element name="Directories" maxOccurs="1" minOccurs="0">
           <xs:annotation>
+            <!-- ReSharper disable once GrammarMistakeInMarkupText -->
             <xs:documentation>List each UNC path that you want to scan for files to backup here</xs:documentation>
           </xs:annotation>
           <xs:complexType>

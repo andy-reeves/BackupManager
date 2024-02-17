@@ -259,10 +259,7 @@ internal sealed partial class Main
             return;
         }
         var destFileName = file.BackupDiskFullPath(disk.BackupPath);
-
-        // TODO put back after next full disk check
-        // Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Renaming {backupDiskFileFullPath} to {destFileName}");
-        Utils.Log(BackupAction.CheckBackupDisk, $"Renaming {backupDiskFileFullPath} to {destFileName}");
+        Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Renaming {backupDiskFileFullPath} to {destFileName}");
 
         if (File.Exists(destFileName))
         {
