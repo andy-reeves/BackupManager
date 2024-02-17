@@ -294,8 +294,8 @@ public sealed class Config
             foreach (var property in properties)
             {
                 if (property.PropertyType == typeof(Collection<ProcessServiceMonitor>) || property.PropertyType == typeof(Collection<FileRule>) ||
-                    property.PropertyType == typeof(List<DateTime>) || property.PropertyType == typeof(Collection<string>) ||
-                    property.PropertyType == typeof(Collection<SymbolicLink>))
+                    property.PropertyType == typeof(List<DateTime>) || property.PropertyType == typeof(Collection<FileRenameRule>) ||
+                    property.PropertyType == typeof(Collection<string>) || property.PropertyType == typeof(Collection<SymbolicLink>))
                 {
                     Utils.Log(BackupAction.General, $"{property.Name}:");
                     var propertyValues = (ICollection)property.GetValue(obj);
