@@ -41,7 +41,7 @@ public sealed class UtilsGetLatestApplicationVersion
         Assert.Equal("1.40.0.7998", Utils.GetLatestApplicationVersionNumber(ApplicationType.Plex));
         Assert.Equal("1.3.1", Utils.GetLatestApplicationVersionNumber(ApplicationType.Bazarr));
         Assert.Equal("1.13.3", Utils.GetLatestApplicationVersionNumber(ApplicationType.Prowlarr));
-        Assert.Equal("5.2.6", Utils.GetLatestApplicationVersionNumber(ApplicationType.Radarr));
+        Assert.Equal("5.3.6", Utils.GetLatestApplicationVersionNumber(ApplicationType.Radarr));
         Assert.Equal("4.2.2", Utils.GetLatestApplicationVersionNumber(ApplicationType.SABnzbd));
         Assert.Equal("4.0.1.929", Utils.GetLatestApplicationVersionNumber(ApplicationType.Sonarr));
 
