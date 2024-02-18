@@ -268,7 +268,8 @@ public sealed class MediaBackup
             case 0:
                 return Utils.TraceOut<BackupFile>("exit1");
             case > 1:
-                Utils.Trace(string.Format(Resources.DuplicateContentsHashCode, value));
+                var files = BackupFiles.Where(q => q.ContentsHash == value && !q.Deleted).Take(2).ToArray();
+                Utils.Trace(string.Format(Resources.DuplicateContentsHashCode, value, files[0].FullPath, files[1].FullPath));
                 return Utils.TraceOut<BackupFile>("exit2");
         }
         var file = BackupFiles.First(q => q.ContentsHash == value && !q.Deleted);
