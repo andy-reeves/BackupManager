@@ -38,7 +38,7 @@ internal sealed partial class Main
             Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
                 string.Format(Resources.ServiceIsDown, monitor.Name, monitor.Failures.Count, s,
                     Utils.FormatTimeFromSeconds(monitor.FailureTimePeriod)));
-            if (monitor.ApplicationType > ApplicationType.Unknown && MonitorTypeUnknown(monitor)) continue;
+            if (monitor.ApplicationType > ApplicationType.Unknown && ApplicationMonitorNewerVersionCheck(monitor)) continue;
 
             if (monitor.ProcessToKill.HasValue()) MonitorKillProcesses(monitor);
             if (monitor.ApplicationToStart.HasValue()) MonitorApplicationToStart(monitor);
@@ -58,6 +58,7 @@ internal sealed partial class Main
 
             // Turn off any more monitoring
             mediaBackup.Config.MonitoringOnOff = false;
+            monitoringTimer.Stop();
             UpdateMonitoringButton();
         }
     }
@@ -149,7 +150,7 @@ internal sealed partial class Main
         }
     }
 
-    private static bool MonitorTypeUnknown(ProcessServiceMonitor monitor)
+    private static bool ApplicationMonitorNewerVersionCheck(ProcessServiceMonitor monitor)
     {
         Utils.Trace($"ApplicationType is {monitor.ApplicationType}");
         Utils.Trace($"BranchName is {monitor.BranchName}");
