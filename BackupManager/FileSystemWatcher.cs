@@ -241,7 +241,7 @@ internal sealed class FileSystemWatcher
                      EnableRaisingEvents = true,
                      Filter = Filter,
                      IncludeSubdirectories = IncludeSubdirectories,
-                     InternalBufferSize = 48 * 1024,
+                     InternalBufferSize = 65536,
                      NotifyFilter = NotifyFilter
                  }))
         {

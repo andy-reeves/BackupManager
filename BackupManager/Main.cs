@@ -1146,4 +1146,34 @@ internal sealed partial class Main : Form
         totalSize = files.Sum(static file => file.Length);
         Utils.Log($"Total size of {files.Length} of Movie files is {Utils.FormatSize(totalSize)}");
     }
+
+    private void ScanDirectoriesWithChangesButton_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            Utils.TraceIn();
+            if (longRunningActionExecutingRightNow) return;
+
+            ResetTokenSource();
+
+            _ = TaskWrapper(Task.Run(() =>
+            {
+                if (longRunningActionExecutingRightNow) return;
+
+                DisableControlsForAsyncTasks(mainCt);
+
+                ReadyToScan(new FileSystemWatcherEventArgs(mediaBackup.Watcher.DirectoriesToScan.ToArray()), SearchOption.AllDirectories, true,
+                    mainCt);
+
+                // Empty the DirectoriesToScan because we've processed all of them now
+                // we do it here so if we get cancelled before this we leave the directories ready to scan for next time
+                while (mediaBackup.Watcher.DirectoriesToScan.TryTake(out _)) { }
+                ResetAllControls();
+            }, mainCt), mainCt);
+        }
+        finally
+        {
+            Utils.TraceOut();
+        }
+    }
 }

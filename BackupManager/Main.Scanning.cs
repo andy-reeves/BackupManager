@@ -63,9 +63,9 @@ internal sealed partial class Main
         var suffix = filesParam.Count == 1 ? string.Empty : "s";
         Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal, $"Processing {filesParam.Count:n0} file{suffix}", false, true);
 
-        // One process thread for each disk
-        tasks.AddRange(diskNames.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam)).Select(files =>
-            TaskWrapper(Task.Run(() => ProcessFilesInternal(files, scanId, scanPathForVideoCodec, ct), ct), ct)));
+        // One process thread for each disk that has files on it to scan
+        tasks.AddRange(diskNames.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam)).Select(files => TaskWrapper(
+            Task.Run(() => files == null || files.Length == 0 || ProcessFilesInternal(files, scanId, scanPathForVideoCodec, ct), ct), ct)));
 
         // this is to have only 1 thread processing files
         // tasks.Add(TaskWrapper(Task.Run(() => ProcessFilesInternal(filesParam.ToArray(), scanId, scanPathForVideoCodec, ct), ct), ct));
@@ -90,10 +90,7 @@ internal sealed partial class Main
 
         // we need a blocking collection and then copy it back when it's all done
         // then split by disk name and have a Task for each of them like the directory scanner
-
-        var filtersToDelete = mediaBackup.Config.FilesToDelete
-            .Select(static filter => new { filter, replace = filter.Replace(".", @"\.").Replace("*", ".*").Replace("?", ".") })
-            .Select(static t => $"^{t.replace}$").ToArray();
+        var filtersToDelete = FiltersToDelete();
 
         // order the files by path so that we can track when the monitored directories are changing for scan timings
         var files = filesParam.OrderBy(static f => f.ToString()).ToList();
@@ -118,20 +115,7 @@ internal sealed partial class Main
                     if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
                     ProcessFilesUpdatePercentComplete(files, file);
                 }
-                _ = mediaBackup.GetFoldersForPath(file, out var directory, out _);
-
-                if (directory != directoryScanning)
-                {
-                    if (!firstDir) scanInfo.EndDateTime = DateTime.Now;
-
-                    scanInfo = new DirectoryScan(DirectoryScanType.ProcessingFiles, directory, DateTime.Now, scanId)
-                    {
-                        TotalFiles = files.Count(f => f.StartsWithIgnoreCase(directory))
-                    };
-                    mediaBackup.DirectoryScans.Add(scanInfo);
-                    directoryScanning = directory;
-                    firstDir = false;
-                }
+                directoryScanning = DirectoryScanning(scanId, file, directoryScanning, files, ref firstDir, ref scanInfo);
                 UpdateStatusLabel(ct, Resources.Processing, fileCounterForMultiThreadProcessing);
                 if (CheckForFilesToDelete(file, filtersToDelete)) continue;
 
@@ -149,6 +133,33 @@ internal sealed partial class Main
         // Update the last scan endDateTime as it wasn't set in the loop
         if (scanInfo != null) scanInfo.EndDateTime = DateTime.Now;
         return Utils.TraceOut(true);
+    }
+
+    private string DirectoryScanning(string scanId, string file, string directoryScanning, List<string> files, ref bool firstDir,
+        ref DirectoryScan scanInfo)
+    {
+        _ = mediaBackup.GetFoldersForPath(file, out var directory, out _);
+
+        if (directory != directoryScanning)
+        {
+            if (!firstDir) scanInfo.EndDateTime = DateTime.Now;
+
+            scanInfo = new DirectoryScan(DirectoryScanType.ProcessingFiles, directory, DateTime.Now, scanId)
+            {
+                TotalFiles = files.Count(f => f.StartsWithIgnoreCase(directory))
+            };
+            mediaBackup.DirectoryScans.Add(scanInfo);
+            directoryScanning = directory;
+            firstDir = false;
+        }
+        return directoryScanning;
+    }
+
+    private string[] FiltersToDelete()
+    {
+        return mediaBackup.Config.FilesToDelete
+            .Select(static filter => new { filter, replace = filter.Replace(".", @"\.").Replace("*", ".*").Replace("?", ".") })
+            .Select(static t => $"^{t.replace}$").ToArray();
     }
 
     /// <summary>

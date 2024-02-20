@@ -63,6 +63,7 @@
             createNewBackupDiskButton = new System.Windows.Forms.Button();
             listBackupDiskStatusByFreeSpaceButton = new System.Windows.Forms.Button();
             videoCodecCheckButton = new System.Windows.Forms.Button();
+            scanDirectoriesWithChangesButton = new System.Windows.Forms.Button();
             scheduledBackupTimerButton = new System.Windows.Forms.Button();
             listFilesOnBackupDiskButton = new System.Windows.Forms.Button();
             listFilesInDirectoryButton = new System.Windows.Forms.Button();
@@ -423,7 +424,7 @@
             // 
             // directoryScanReportButton
             // 
-            directoryScanReportButton.Location = new System.Drawing.Point(312, 426);
+            directoryScanReportButton.Location = new System.Drawing.Point(312, 391);
             directoryScanReportButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             directoryScanReportButton.Name = "directoryScanReportButton";
             directoryScanReportButton.Size = new System.Drawing.Size(234, 27);
@@ -435,7 +436,7 @@
             // 
             // openLogFileButton
             // 
-            openLogFileButton.Location = new System.Drawing.Point(589, 395);
+            openLogFileButton.Location = new System.Drawing.Point(589, 466);
             openLogFileButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             openLogFileButton.Name = "openLogFileButton";
             openLogFileButton.Size = new System.Drawing.Size(234, 27);
@@ -459,7 +460,7 @@
             // 
             // directoryScanReportLastRunOnlyButton
             // 
-            directoryScanReportLastRunOnlyButton.Location = new System.Drawing.Point(312, 458);
+            directoryScanReportLastRunOnlyButton.Location = new System.Drawing.Point(312, 422);
             directoryScanReportLastRunOnlyButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             directoryScanReportLastRunOnlyButton.Name = "directoryScanReportLastRunOnlyButton";
             directoryScanReportLastRunOnlyButton.Size = new System.Drawing.Size(234, 27);
@@ -483,10 +484,10 @@
             // 
             // button2
             // 
-            button2.Location = new System.Drawing.Point(589, 448);
+            button2.Location = new System.Drawing.Point(1156, 330);
             button2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             button2.Name = "button2";
-            button2.Size = new System.Drawing.Size(234, 27);
+            button2.Size = new System.Drawing.Size(232, 27);
             button2.TabIndex = 100;
             button2.Text = "Check all files for Dolby Vision Profile5";
             toolTip.SetToolTip(button2, "Checks any file with [DV] in the path for Profile5. Can take 20 secs per file");
@@ -519,15 +520,27 @@
             // 
             // videoCodecCheckButton
             // 
-            videoCodecCheckButton.Location = new System.Drawing.Point(831, 448);
+            videoCodecCheckButton.Location = new System.Drawing.Point(1156, 363);
             videoCodecCheckButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             videoCodecCheckButton.Name = "videoCodecCheckButton";
-            videoCodecCheckButton.Size = new System.Drawing.Size(234, 27);
+            videoCodecCheckButton.Size = new System.Drawing.Size(232, 27);
             videoCodecCheckButton.TabIndex = 102;
             videoCodecCheckButton.Text = "Check all files for correct Video Codec";
             toolTip.SetToolTip(videoCodecCheckButton, "Checks all files for correct video codec in the path. Can take 20secs per file");
             videoCodecCheckButton.UseVisualStyleBackColor = true;
             videoCodecCheckButton.Click += VideoCodecCheckButton_Click;
+            // 
+            // scanDirectoriesWithChangesButton
+            // 
+            scanDirectoriesWithChangesButton.Location = new System.Drawing.Point(589, 390);
+            scanDirectoriesWithChangesButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            scanDirectoriesWithChangesButton.Name = "scanDirectoriesWithChangesButton";
+            scanDirectoriesWithChangesButton.Size = new System.Drawing.Size(232, 27);
+            scanDirectoriesWithChangesButton.TabIndex = 104;
+            scanDirectoriesWithChangesButton.Text = "Scan directories with changes";
+            toolTip.SetToolTip(scanDirectoriesWithChangesButton, "Starts/Stops the service version checking");
+            scanDirectoriesWithChangesButton.UseVisualStyleBackColor = true;
+            scanDirectoriesWithChangesButton.Click += ScanDirectoriesWithChangesButton_Click;
             // 
             // scheduledBackupTimerButton
             // 
@@ -992,7 +1005,7 @@
             // cancelButton
             // 
             cancelButton.Enabled = false;
-            cancelButton.Location = new System.Drawing.Point(1143, 395);
+            cancelButton.Location = new System.Drawing.Point(1143, 488);
             cancelButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             cancelButton.Name = "cancelButton";
             cancelButton.Size = new System.Drawing.Size(253, 27);
@@ -1178,7 +1191,7 @@
             // 
             // estimatedFinishTimeTextBox
             // 
-            estimatedFinishTimeTextBox.Location = new System.Drawing.Point(1290, 353);
+            estimatedFinishTimeTextBox.Location = new System.Drawing.Point(1290, 446);
             estimatedFinishTimeTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             estimatedFinishTimeTextBox.Name = "estimatedFinishTimeTextBox";
             estimatedFinishTimeTextBox.ReadOnly = true;
@@ -1188,7 +1201,7 @@
             // label11
             // 
             label11.AutoSize = true;
-            label11.Location = new System.Drawing.Point(1169, 355);
+            label11.Location = new System.Drawing.Point(1169, 448);
             label11.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label11.Name = "label11";
             label11.Size = new System.Drawing.Size(118, 15);
@@ -1231,7 +1244,7 @@
             // label14
             // 
             label14.AutoSize = true;
-            label14.Location = new System.Drawing.Point(615, 363);
+            label14.Location = new System.Drawing.Point(615, 353);
             label14.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label14.Name = "label14";
             label14.Size = new System.Drawing.Size(104, 15);
@@ -1240,7 +1253,7 @@
             // 
             // fileChangesDetectedTextBox
             // 
-            fileChangesDetectedTextBox.Location = new System.Drawing.Point(729, 327);
+            fileChangesDetectedTextBox.Location = new System.Drawing.Point(729, 317);
             fileChangesDetectedTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             fileChangesDetectedTextBox.Name = "fileChangesDetectedTextBox";
             fileChangesDetectedTextBox.ReadOnly = true;
@@ -1250,7 +1263,7 @@
             // label15
             // 
             label15.AutoSize = true;
-            label15.Location = new System.Drawing.Point(598, 329);
+            label15.Location = new System.Drawing.Point(598, 319);
             label15.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label15.Name = "label15";
             label15.Size = new System.Drawing.Size(121, 15);
@@ -1259,7 +1272,7 @@
             // 
             // directoriesToScanTextBox
             // 
-            directoriesToScanTextBox.Location = new System.Drawing.Point(729, 361);
+            directoriesToScanTextBox.Location = new System.Drawing.Point(729, 351);
             directoriesToScanTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             directoriesToScanTextBox.Name = "directoriesToScanTextBox";
             directoriesToScanTextBox.ReadOnly = true;
@@ -1307,10 +1320,10 @@
             // 
             // h264FilesButton
             // 
-            h264FilesButton.Location = new System.Drawing.Point(831, 479);
+            h264FilesButton.Location = new System.Drawing.Point(1156, 395);
             h264FilesButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             h264FilesButton.Name = "h264FilesButton";
-            h264FilesButton.Size = new System.Drawing.Size(234, 27);
+            h264FilesButton.Size = new System.Drawing.Size(232, 27);
             h264FilesButton.TabIndex = 103;
             h264FilesButton.Text = "Check all files for TV/Movies h264 size";
             h264FilesButton.UseVisualStyleBackColor = true;
@@ -1321,6 +1334,7 @@
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1416, 548);
+            Controls.Add(scanDirectoriesWithChangesButton);
             Controls.Add(h264FilesButton);
             Controls.Add(videoCodecCheckButton);
             Controls.Add(createNewBackupDiskButton);
@@ -1513,6 +1527,7 @@
         private System.Windows.Forms.Button listBackupDiskStatusByFreeSpaceButton;
         private System.Windows.Forms.Button videoCodecCheckButton;
         private System.Windows.Forms.Button h264FilesButton;
+        private System.Windows.Forms.Button scanDirectoriesWithChangesButton;
     }
 }
 
