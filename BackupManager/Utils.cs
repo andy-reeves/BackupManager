@@ -1360,6 +1360,7 @@ internal static partial class Utils
 
             var timestamp = DateTime.Now.ToUnixTimeMilliseconds();
             Trace($"timestamp is {timestamp} for {message}");
+            if (priority is PushoverPriority.Emergency or PushoverPriority.High) message = $"Priority={priority}\n{message}";
 
             Dictionary<string, string> parameters = new()
             {
