@@ -729,7 +729,7 @@ internal static partial class Utils
     /// <param name="ct"></param>
     internal static string[] GetFiles(string path, CancellationToken ct)
     {
-        return GetFiles(path, "*", SearchOption.AllDirectories, 0, 0, true, ct);
+        return GetFiles(path, "*", SearchOption.AllDirectories, 0, 0, ct);
     }
 
     /// <summary>
@@ -746,7 +746,7 @@ internal static partial class Utils
     /// </returns>
     internal static string[] GetFiles(string path, string filters, CancellationToken ct)
     {
-        return GetFiles(path, filters, SearchOption.AllDirectories, 0, 0, true, ct);
+        return GetFiles(path, filters, SearchOption.AllDirectories, 0, 0, ct);
     }
 
     /// <summary>
@@ -770,7 +770,7 @@ internal static partial class Utils
     internal static string[] GetFiles(string path, string filters, SearchOption searchOption, FileAttributes directoryAttributesToIgnore,
         CancellationToken ct)
     {
-        return GetFiles(path, filters, searchOption, directoryAttributesToIgnore, 0, false, ct);
+        return GetFiles(path, filters, searchOption, directoryAttributesToIgnore, 0, ct);
     }
 
     /// <summary>
@@ -790,7 +790,7 @@ internal static partial class Utils
     /// </returns>
     internal static string[] GetFiles(string path, string filters, SearchOption searchOption, CancellationToken ct)
     {
-        return GetFiles(path, filters, searchOption, 0, 0, true, ct);
+        return GetFiles(path, filters, searchOption, 0, 0, ct);
     }
 
     /// <summary>
@@ -871,12 +871,11 @@ internal static partial class Utils
     /// <param name="fileAttributesToIgnore">
     ///     The file attributes to ignore.
     /// </param>
-    /// <param name="deleteEmptyDirectories">Deletes empty directories if True</param>
     /// <param name="ct"></param>
     /// <returns>
     /// </returns>
     private static string[] GetFiles(string path, string filters, SearchOption searchOption, FileAttributes directoryAttributesToIgnore,
-        FileAttributes fileAttributesToIgnore, bool deleteEmptyDirectories, CancellationToken ct)
+        FileAttributes fileAttributesToIgnore, CancellationToken ct)
     {
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
         var sw = Stopwatch.StartNew();
@@ -915,31 +914,23 @@ internal static partial class Utils
             var dir = pathsToSearch.Dequeue();
             Trace($"Dequeued {dir}");
 
-            if (deleteEmptyDirectories && IsDirectoryEmpty(dir))
+            if (searchOption == SearchOption.AllDirectories)
             {
-                Log($"Directory {dir} is empty so deleting.");
-                _ = DirectoryDelete(dir);
+                foreach (var subDir in Directory.GetDirectories(dir).Where(subDir =>
+                             !AnyFlagSet(new DirectoryInfo(subDir).Attributes, directoryAttributesToIgnore)))
+                {
+                    if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+                    pathsToSearch.Enqueue(subDir);
+                }
             }
-            else
-            {
-                if (searchOption == SearchOption.AllDirectories)
-                {
-                    foreach (var subDir in Directory.GetDirectories(dir).Where(subDir =>
-                                 !AnyFlagSet(new DirectoryInfo(subDir).Attributes, directoryAttributesToIgnore)))
-                    {
-                        if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
-                        pathsToSearch.Enqueue(subDir);
-                    }
-                }
 
-                foreach (var collection in includeAsArray2.Select(filter =>
-                         {
-                             if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
-                             return Directory.GetFiles(dir, filter, SearchOption.TopDirectoryOnly);
-                         }).Select(allFiles => excludeAsArray.Any() ? allFiles.Where(p => !excludeRegex.Match(p).Success) : allFiles))
-                {
-                    foundFiles.AddRange(collection.Where(p => !AnyFlagSet(new FileInfo(p).Attributes, fileAttributesToIgnore)));
-                }
+            foreach (var collection in includeAsArray2.Select(filter =>
+                     {
+                         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+                         return Directory.GetFiles(dir, filter, SearchOption.TopDirectoryOnly);
+                     }).Select(allFiles => excludeAsArray.Any() ? allFiles.Where(p => !excludeRegex.Match(p).Success) : allFiles))
+            {
+                foundFiles.AddRange(collection.Where(p => !AnyFlagSet(new FileInfo(p).Attributes, fileAttributesToIgnore)));
             }
         }
         sw.Stop();
@@ -1629,9 +1620,9 @@ internal static partial class Utils
         }
         else
         {
-            if (delayBeforeSending) Task.Delay(2000).Wait();
+            if (delayBeforeSending) Task.Delay(1000).Wait();
             SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, text);
-            if (delayAfterSending) Task.Delay(2000).Wait();
+            if (delayAfterSending) Task.Delay(1000).Wait();
         }
     }
 
@@ -2502,8 +2493,15 @@ internal static partial class Utils
     {
         // consider \\nas1.local/assets1/_TV or \\nas1/assets1/_TV/Show1/Season 1/Episode1.mkv or c:\folder1\folder2
         // first we need to process UNC paths differently to local paths
-        var directoryInfo = new FileInfo(path).Directory;
-        var fullName = directoryInfo?.Root.FullName;
+        string fullName;
+
+        if (new FileInfo(path).Directory == null)
+            fullName = path;
+        else
+        {
+            var directoryInfo = new FileInfo(path).Directory;
+            fullName = directoryInfo?.Root.FullName;
+        }
         return IsDirectoryWritable(fullName) ? fullName : null;
     }
 
