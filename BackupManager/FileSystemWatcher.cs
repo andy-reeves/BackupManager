@@ -254,7 +254,7 @@ internal sealed class FileSystemWatcher
         }
         Utils.Trace($"Creating FSW took {sw.Elapsed}");
 
-        // Setup the timers
+        // Set-up the timers
         if (processChangesTimer == null)
         {
             processChangesTimer = new Timer();
@@ -354,6 +354,7 @@ internal sealed class FileSystemWatcher
             return;
         }
 
+        // TODO we should just put the changes into our collection and check them against the regex later
         // check the Regex to filter more
         if (!RegexFilter.HasValue() || Regex.IsMatch(e.FullPath, RegexFilter))
         {
