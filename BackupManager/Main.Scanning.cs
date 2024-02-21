@@ -192,7 +192,7 @@ internal sealed partial class Main
     {
         fileCounterForMultiThreadProcessing++;
         currentPercentComplete = fileCounterForMultiThreadProcessing * 100 / toolStripProgressBar.Maximum;
-        if (currentPercentComplete % 25 != 0 || currentPercentComplete <= reportedPercentComplete || files.Count <= 100) return;
+        if (currentPercentComplete % 20 != 0 || currentPercentComplete <= reportedPercentComplete || files.Count < 50) return;
 
         reportedPercentComplete = currentPercentComplete;
         Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.ProcessingPercentage, currentPercentComplete));
