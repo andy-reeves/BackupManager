@@ -14,7 +14,7 @@ namespace TestProject;
 
 [SuppressMessage("ReSharper", "MemberCanBeFileLocal")]
 [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
-public sealed class FileSystemWatcherTests
+public sealed class FileSystemWatcherTests1
 {
     private int test1EventsCounter;
 
@@ -23,7 +23,7 @@ public sealed class FileSystemWatcherTests
     private int test2ExpectedEventFolderCount;
 
     [Fact]
-    public void FileSystemWatcherTest1()
+    public void FileSystemWatcherTest1A()
     {
         test1EventsCounter = 0;
         test1ExpectedEventFolderCount = 3;
@@ -78,7 +78,7 @@ public sealed class FileSystemWatcherTests
     ///     Checks the watcher will not start with missing folders
     /// </summary>
     [Fact]
-    public void FileSystemWatcherTest2()
+    public void FileSystemWatcherTest1B()
     {
         test2ExpectedEventFolderCount = 3;
         var monitoringPath1 = Path.Combine(Path.GetTempPath(), "Test2MonitoringFolder1");

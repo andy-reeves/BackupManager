@@ -1591,6 +1591,13 @@ internal static partial class Utils
         }
     }
 
+    internal static FileSystemEntryType GetFileSystemEntryType(string fullPath)
+    {
+        if (Directory.Exists(fullPath)) return FileSystemEntryType.Directory;
+
+        return File.Exists(fullPath) ? FileSystemEntryType.File : FileSystemEntryType.Missing;
+    }
+
     /// <summary>
     ///     Logs the text to the LogFile and sends a Pushover message
     ///     Messages can be delayed before sending for 1s.
@@ -2929,4 +2936,25 @@ internal sealed class Win32Share
 
         NetNameNotFound = 25
     }
+}
+
+/// <summary>
+///     Type of file system object
+/// </summary>
+internal enum FileSystemEntryType
+{
+    /// <summary>
+    ///     File and Directory do not exist
+    /// </summary>
+    Missing = 0,
+
+    /// <summary>
+    ///     A file.
+    /// </summary>
+    File,
+
+    /// <summary>
+    ///     A directory
+    /// </summary>
+    Directory
 }

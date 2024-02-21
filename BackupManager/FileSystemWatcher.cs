@@ -12,6 +12,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Timers;
 
 using BackupManager.Entities;
@@ -241,20 +242,20 @@ internal sealed class FileSystemWatcher
                      EnableRaisingEvents = true,
                      Filter = Filter,
                      IncludeSubdirectories = IncludeSubdirectories,
-                     InternalBufferSize = 65536,
+                     InternalBufferSize = 64 * Utils.BYTES_IN_ONE_KILOBYTE,
                      NotifyFilter = NotifyFilter
                  }))
         {
             watcher.Error += OnError;
-            watcher.Changed += OnSomethingHappened;
-            watcher.Deleted += OnSomethingHappened;
-            watcher.Renamed += OnSomethingHappened;
-            watcher.Created += OnSomethingHappened;
+            watcher.Changed += (sender, e) => Task.Run(() => OnSomethingHappened(sender, e));
+            watcher.Deleted += (sender, e) => Task.Run(() => OnSomethingHappened(sender, e));
+            watcher.Renamed += (sender, e) => Task.Run(() => OnSomethingHappened(sender, e));
+            watcher.Created += (sender, e) => Task.Run(() => OnSomethingHappened(sender, e));
             watcherList.Add(watcher);
         }
         Utils.Trace($"Creating FSW took {sw.Elapsed}");
 
-        // Set-up the timers
+        // Set up the timers
         if (processChangesTimer == null)
         {
             processChangesTimer = new Timer();
@@ -347,12 +348,7 @@ internal sealed class FileSystemWatcher
             _ = Utils.TraceOut("OnSomethingHappened exit as not created/changed/deleted/renamed");
             return;
         }
-
-        if (Directory.Exists(e.FullPath))
-        {
-            _ = Utils.TraceOut("OnSomethingHappened exit as its a directory and not a file");
-            return;
-        }
+        if (Utils.GetFileSystemEntryType(e.FullPath) == FileSystemEntryType.Directory) return;
 
         // TODO we should just put the changes into our collection and check them against the regex later
         // check the Regex to filter more
