@@ -100,7 +100,7 @@ public sealed class EntityTests
         Assert.Null(mediaBackup.GetParentPath(pathToFile1));
 
         // GetFilters
-        if (!Utils.Config.PlexToken.HasValue()) Assert.Equal("!*.bup", mediaBackup.GetFilters());
+        if (Utils.Config.PlexToken.HasNoValue()) Assert.Equal("!*.bup", mediaBackup.GetFilters());
 
         // GetBackupDisk
         var disk = mediaBackup.GetBackupDisk(pathToBackupShare);
@@ -120,7 +120,7 @@ public sealed class EntityTests
         Assert.NotNull(backupFiles);
         _ = Assert.Single(backupFiles);
 
-        if (!Utils.Config.PlexToken.HasValue())
+        if (Utils.Config.PlexToken.HasNoValue())
         {
             // GetOldestFile
             Assert.Null(mediaBackup.GetOldestFile());
@@ -137,7 +137,7 @@ public sealed class EntityTests
         IEnumerable<BackupFile> c = mediaBackup.GetBackupFiles(false);
         Assert.NotNull(c);
 
-        if (!Utils.Config.PlexToken.HasValue())
+        if (Utils.Config.PlexToken.HasNoValue())
         {
             Assert.Equal(2, c.Count());
             backupFile.Deleted = true;
@@ -172,7 +172,7 @@ public sealed class EntityTests
             Assert.False(file.Flag);
         }
 
-        if (!Utils.Config.PlexToken.HasValue())
+        if (Utils.Config.PlexToken.HasNoValue())
         {
             // DirectoriesLastFullScan
             Assert.Equal("2023-01-01", mediaBackup.DirectoriesLastFullScan);
@@ -189,7 +189,7 @@ public sealed class EntityTests
         Assert.NotNull(k);
         Assert.Equal("test1.txt", k.RelativePath);
 
-        if (!Utils.Config.PlexToken.HasValue())
+        if (Utils.Config.PlexToken.HasNoValue())
         {
             // Remove 
             mediaBackup.RemoveFile(backupFile);

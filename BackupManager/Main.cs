@@ -439,7 +439,7 @@ internal sealed partial class Main : Form
                     _ = Utils.KillProcesses(toKill);
                 }
             }
-            if (!monitor.ServiceToRestart.HasValue()) continue;
+            if (monitor.ServiceToRestart.HasNoValue()) continue;
 
             Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal, $"Stopping '{monitor.ServiceToRestart}'");
 
@@ -511,7 +511,7 @@ internal sealed partial class Main : Form
             Utils.TraceIn();
             Dictionary<string, BackupFile> allFilesUniqueContentsHash = new();
             List<BackupFile> backupFilesWithDuplicates = new();
-            if (!config.DuplicateContentHashCodesDiscoveryRegex.HasValue()) return;
+            if (config.DuplicateContentHashCodesDiscoveryRegex.HasNoValue()) return;
 
             foreach (var backupFile in mediaBackup.BackupFiles.Where(file => !file.Deleted &&
                                                                              Regex.Match(file.FullPath,

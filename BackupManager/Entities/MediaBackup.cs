@@ -158,7 +158,7 @@ public sealed class MediaBackup
                         value.FullPath));
                 }
                 mediaBackup.indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
-                if (!backupFile.DiskChecked.HasValue() || !backupFile.Disk.HasValue()) backupFile.ClearDiskChecked();
+                if (backupFile.DiskChecked.HasNoValue() || backupFile.Disk.HasNoValue()) backupFile.ClearDiskChecked();
             }
             return mediaBackup;
         }

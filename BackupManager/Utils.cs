@@ -1314,7 +1314,7 @@ internal static partial class Utils
     private static bool PushoverServiceAvailable(string pushoverAppToken)
     {
         TraceIn();
-        if (!pushoverAppToken.HasValue() || pushoverAppToken == "InsertYourPushoverAppTokenHere") return TraceOut(false);
+        if (pushoverAppToken.HasNoValue() || pushoverAppToken == "InsertYourPushoverAppTokenHere") return TraceOut(false);
 
         try
         {
@@ -1346,10 +1346,10 @@ internal static partial class Utils
 
         try
         {
-            if (!Config.PushoverAppTokenToUse.HasValue())
+            if (Config.PushoverAppTokenToUse.HasNoValue())
             {
                 SetupPushoverAppToken();
-                if (!Config.PushoverAppTokenToUse.HasValue()) return;
+                if (Config.PushoverAppTokenToUse.HasNoValue()) return;
             }
 
             if (!Config.PushoverOnOff || ((priority is not (PushoverPriority.Low or PushoverPriority.Lowest) || !Config.PushoverSendLowOnOff) &&
