@@ -352,7 +352,7 @@ internal sealed class FileSystemWatcher
 
         // TODO we should just put the changes into our collection and check them against the regex later
         // check the Regex to filter more
-        if (!RegexFilter.HasValue() || Regex.IsMatch(e.FullPath, RegexFilter))
+        if (RegexFilter.HasNoValue() || Regex.IsMatch(e.FullPath, RegexFilter))
         {
             if (e.FullPath.EndsWithIgnoreCase(Utils.IS_DIRECTORY_WRITABLE_GUID + ".tmp") ||
                 e.FullPath.EndsWithIgnoreCase(Utils.SPEED_TEST_GUID + ".tmp"))

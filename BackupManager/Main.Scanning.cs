@@ -135,23 +135,21 @@ internal sealed partial class Main
         return Utils.TraceOut(true);
     }
 
-    private string DirectoryScanning(string scanId, string file, string directoryScanning, List<string> files, ref bool firstDir,
+    private string DirectoryScanning(string scanId, string file, string directoryScanning, IEnumerable<string> files, ref bool firstDir,
         ref DirectoryScan scanInfo)
     {
         _ = mediaBackup.GetFoldersForPath(file, out var directory, out _);
+        if (directory == directoryScanning) return directoryScanning;
 
-        if (directory != directoryScanning)
+        if (!firstDir) scanInfo.EndDateTime = DateTime.Now;
+
+        scanInfo = new DirectoryScan(DirectoryScanType.ProcessingFiles, directory, DateTime.Now, scanId)
         {
-            if (!firstDir) scanInfo.EndDateTime = DateTime.Now;
-
-            scanInfo = new DirectoryScan(DirectoryScanType.ProcessingFiles, directory, DateTime.Now, scanId)
-            {
-                TotalFiles = files.Count(f => f.StartsWithIgnoreCase(directory))
-            };
-            mediaBackup.DirectoryScans.Add(scanInfo);
-            directoryScanning = directory;
-            firstDir = false;
-        }
+            TotalFiles = files.Count(f => f.StartsWithIgnoreCase(directory))
+        };
+        mediaBackup.DirectoryScans.Add(scanInfo);
+        directoryScanning = directory;
+        firstDir = false;
         return directoryScanning;
     }
 
@@ -435,8 +433,7 @@ internal sealed partial class Main
             // only update the last full scan date if ProcessFiles returned True
             if (updateLastFullScan) mediaBackup.UpdateLastFullScan();
         }
-        var filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag).ToArray();
-        RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out _, out _);
+        RemoveOrDeleteFiles(mediaBackup.BackupFiles.Where(static b => !b.Flag).ToArray());
         mediaBackup.Save(ct);
         UpdateMediaFilesCountDisplay();
     }

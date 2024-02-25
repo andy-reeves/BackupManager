@@ -734,12 +734,12 @@ internal sealed partial class Main : Form
                         filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag).Where(b =>
                             b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase)).ToArray();
                     }
-                    RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out var removedFilesCount, out var markedAsDeletedFilesCount);
+                    RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted);
                     var fileCountAfter = mediaBackup.BackupFiles.Count(b => b.FullPath.StartsWithIgnoreCase(directoryToScan.Path));
                     var filesNotOnBackupDiskCount = mediaBackup.GetBackupFilesWithDiskEmpty().Count();
 
                     var text =
-                        $"Directory scan {directoryToScan.Path} completed. {fileCountInDirectoryBefore} files before and now {fileCountAfter} files. {markedAsDeletedFilesCount} marked as deleted and {removedFilesCount} removed. {filesNotOnBackupDiskCount} to backup.";
+                        $"Directory scan {directoryToScan.Path} completed. {fileCountInDirectoryBefore} files before and now {fileCountAfter} files. {filesNotOnBackupDiskCount} to backup.";
                     Utils.Log(BackupAction.ScanDirectory, text);
                     toSave = true;
                 }
@@ -766,13 +766,14 @@ internal sealed partial class Main : Form
         }
     }
 
-    private void RemoveOrDeleteFiles(IReadOnlyList<BackupFile> files, out int removedFilesCount, out int markedAsDeletedFilesCount)
+    private void RemoveOrDeleteFiles(IReadOnlyList<BackupFile> files)
     {
+        var removedFilesCount = 0;
+        var markedAsDeletedFilesCount = 0;
+
         lock (_lock)
         {
             Utils.TraceIn();
-            removedFilesCount = 0;
-            markedAsDeletedFilesCount = 0;
 
             for (var j = files.Count - 1; j >= 0; j--)
             {
@@ -793,6 +794,12 @@ internal sealed partial class Main : Form
             }
             Utils.TraceOut();
         }
+
+        if (removedFilesCount > 0)
+            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal, $"{removedFilesCount} files removed completely");
+
+        if (markedAsDeletedFilesCount > 0)
+            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal, $"{markedAsDeletedFilesCount} files marked as deleted");
     }
 
     private void Main_FormClosing(object sender, FormClosingEventArgs e)

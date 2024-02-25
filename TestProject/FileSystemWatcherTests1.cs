@@ -34,7 +34,7 @@ public sealed class FileSystemWatcherTests1
         Utils.EnsureDirectoriesForDirectoryPath(monitoringPath2);
         var watcher = new FileSystemWatcher();
         Assert.True(watcher.Filter == "*.*", nameof(watcher.Filter));
-        Assert.True(watcher.IncludeSubdirectories == false, nameof(watcher.IncludeSubdirectories));
+        Assert.False(watcher.IncludeSubdirectories, nameof(watcher.IncludeSubdirectories));
         Assert.True(watcher.ScanInterval == 60_000, nameof(watcher.ScanInterval));
         Assert.True(watcher.Directories.Length == 0, nameof(watcher.Directories.Length));
 
@@ -59,7 +59,7 @@ public sealed class FileSystemWatcherTests1
         Utils.CreateFile(Path.Combine(monitoringPath2, "test2.txt"));
         Utils.CreateFile(Path.Combine(monitoringPath2, "subFolder", "test3.txt"));
         Utils.Wait(waitInMilliseconds);
-        Assert.True(test1EventsCounter == 1);
+        Assert.Equal(1, test1EventsCounter);
         Assert.True(watcher.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));
         Assert.True(watcher.DirectoriesToScan.Count == 0, nameof(FileSystemWatcher.DirectoriesToScan.Count));
         Assert.True(watcher.Running);

@@ -193,14 +193,7 @@ internal sealed partial class Main
             return null;
         }
         UpdateMediaFilesCountDisplay();
-        var filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => b.Deleted && b.Disk.HasNoValue()).ToArray();
-        RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted, out var removedFilesCount, out var deletedFilesCount);
-
-        if (removedFilesCount > 0)
-            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal, $"{removedFilesCount} files removed completely");
-
-        if (deletedFilesCount > 0)
-            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal, $"{deletedFilesCount} files marked as deleted");
+        RemoveOrDeleteFiles(mediaBackup.BackupFiles.Where(static b => b.Deleted && b.Disk.HasNoValue()).ToArray());
         mediaBackup.Save(ct);
         UpdateStatusLabel(Resources.Saved);
 
