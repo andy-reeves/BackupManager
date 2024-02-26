@@ -768,9 +768,6 @@ internal sealed partial class Main : Form
 
     private void RemoveOrDeleteFiles(IReadOnlyList<BackupFile> files)
     {
-        var removedFilesCount = 0;
-        var markedAsDeletedFilesCount = 0;
-
         lock (_lock)
         {
             Utils.TraceIn();
@@ -783,23 +780,15 @@ internal sealed partial class Main : Form
                 {
                     Utils.Trace($"Removing {backupFile.FullPath}");
                     mediaBackup.RemoveFile(backupFile);
-                    removedFilesCount++;
                 }
                 else
                 {
                     Utils.Trace($"Marking {backupFile.FullPath} as Deleted");
                     backupFile.Deleted = true;
-                    markedAsDeletedFilesCount++;
                 }
             }
             Utils.TraceOut();
         }
-
-        if (removedFilesCount > 0)
-            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal, $"{removedFilesCount} files removed completely");
-
-        if (markedAsDeletedFilesCount > 0)
-            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal, $"{markedAsDeletedFilesCount} files marked as deleted");
     }
 
     private void Main_FormClosing(object sender, FormClosingEventArgs e)
