@@ -123,11 +123,11 @@
 
   <Monitors />
 
-  <Directories>
+  <DirectoriesToBackup>
     <Directory>C:\Users\RemoteUser011071\source\repos\andy-reeves\BackupManager\TestProject\TestData\FullTestARunning\DirectoryA\_TV</Directory>
     <Directory>C:\Users\RemoteUser011071\source\repos\andy-reeves\BackupManager\TestProject\TestData\FullTestARunning\DirectoryB\_Movies</Directory>
     <Directory>C:\Users\RemoteUser011071\source\repos\andy-reeves\BackupManager\TestProject\TestData\FullTestARunning\DirectoryB\_TV</Directory>
-  </Directories>
+  </DirectoriesToBackup>
   
   <Filters />
 

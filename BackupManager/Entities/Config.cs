@@ -28,7 +28,9 @@ namespace BackupManager.Entities;
 [SuppressMessage("ReSharper", "CommentTypo")]
 public sealed class Config
 {
-    [XmlArrayItem("Directory")] public Collection<string> Directories { get; set; } = new();
+    [XmlArrayItem("Directory")] public Collection<string> DirectoriesToBackup { get; set; } = new();
+
+    [XmlArrayItem("Directory")] public Collection<string> DirectoriesToHealthCheck { get; set; } = new();
 
     [XmlArrayItem("FilterRegEx")] public Collection<string> Filters { get; set; } = new();
 

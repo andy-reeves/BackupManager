@@ -185,7 +185,7 @@ public sealed class MediaBackup
         relativePath = null;
         var pathWithTerminatingString = Utils.EnsurePathHasATerminatingSeparator(path);
 
-        foreach (var masterDirectory in Config.Directories.Where(masterDirectory =>
+        foreach (var masterDirectory in Config.DirectoriesToBackup.Where(masterDirectory =>
                      pathWithTerminatingString.StartsWithIgnoreCase(Utils.EnsurePathHasATerminatingSeparator(masterDirectory))))
         {
             relativePath = BackupFile.GetRelativePath(path, masterDirectory);
@@ -198,7 +198,7 @@ public sealed class MediaBackup
     internal string[] GetLastScans(IEnumerable<DirectoryScan> scans, DirectoryScanType scanType, int howMany)
     {
         Utils.TraceIn();
-        var directoriesCount = Config.Directories.Count;
+        var directoriesCount = Config.DirectoriesToBackup.Count;
         const int marginOfErrorOnDirectoryCount = 5;
         var minCount = directoriesCount - marginOfErrorOnDirectoryCount;
         var maxCount = directoriesCount + marginOfErrorOnDirectoryCount;
@@ -387,7 +387,7 @@ public sealed class MediaBackup
     /// <returns>Null if the Path doesn't contain a backup Directory or if its in the root of the backup directory</returns>
     public string GetParentPath(string path)
     {
-        return (from directory in Config.Directories
+        return (from directory in Config.DirectoriesToBackup
             where path.Contains(directory + "\\")
             select path.SubstringAfterIgnoreCase(directory + "\\")
             into pathAfterSlash

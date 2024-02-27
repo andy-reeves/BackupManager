@@ -39,7 +39,7 @@ public sealed class FullTestA
         // Step 2 - Scan the 2 directories and Process Files
         var mainForm = new Main();
         mainForm.ScanAllDirectoriesAsync(ct);
-        mainForm.ScanDirectoryAsync(mediaBackup.Config.Directories[0], ct);
+        mainForm.ScanDirectoryAsync(mediaBackup.Config.DirectoriesToBackup[0], ct);
         mainForm.ProcessFilesAsync(ct);
 
         // Step 3 - Assert state after scan

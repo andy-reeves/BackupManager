@@ -45,13 +45,15 @@ internal sealed partial class Main
             if (monitor.ServiceToRestart.HasValue()) MonitorServiceToRestart(monitor);
         }
         if (mediaBackup.Config.MonitoringCheckLatestVersions) MonitorCheckLatestVersions();
-        CheckDirectoriesAreWritable();
+        DirectoriesHealthCheck();
         monitoringExecutingRightNow = false;
     }
 
-    private void CheckDirectoriesAreWritable()
+    private void DirectoriesHealthCheck()
     {
-        foreach (var directory in mediaBackup.Config.Directories.Where(static directory => !Utils.IsDirectoryWritable(directory)))
+        // check the backup directories and the health check directories too
+        foreach (var directory in mediaBackup.Config.DirectoriesToBackup.Concat(mediaBackup.Config.DirectoriesToHealthCheck)
+                     .Where(static directory => !Utils.IsDirectoryWritable(directory)))
         {
             Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
                 string.Format(Resources.DirectoryIsNotWritable, directory));

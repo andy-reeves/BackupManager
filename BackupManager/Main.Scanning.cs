@@ -56,7 +56,7 @@ internal sealed partial class Main
     {
         Utils.TraceIn();
         DisableControlsForAsyncTasks(ct);
-        var diskNames = Utils.GetDiskNames(mediaBackup.Config.Directories);
+        var diskNames = Utils.GetDiskNames(mediaBackup.Config.DirectoriesToBackup);
         var tasks = new List<Task<bool>>(diskNames.Length);
         fileCounterForMultiThreadProcessing = 0;
         EnableProgressBar(0, filesParam.Count);
@@ -408,11 +408,11 @@ internal sealed partial class Main
         directoryScanBlockingCollection = new BlockingCollection<DirectoryScan>();
 
         // split the directories into group by the disk name
-        var diskNames = Utils.GetDiskNames(mediaBackup.Config.Directories);
-        RootDirectoryChecks(mediaBackup.Config.Directories, ct);
+        var diskNames = Utils.GetDiskNames(mediaBackup.Config.DirectoriesToBackup);
+        RootDirectoryChecks(mediaBackup.Config.DirectoriesToBackup, ct);
         var tasks = new List<Task>(diskNames.Length);
 
-        tasks.AddRange(diskNames.Select(diskName => Utils.GetDirectoriesForDisk(diskName, mediaBackup.Config.Directories))
+        tasks.AddRange(diskNames.Select(diskName => Utils.GetDirectoriesForDisk(diskName, mediaBackup.Config.DirectoriesToBackup))
             .Select(directoriesOnDisk => { return TaskWrapper(Task.Run(() => GetFilesAsync(directoriesOnDisk, scanId, ct), ct), ct); }));
         Task.WhenAll(tasks).Wait(ct);
         Utils.LogWithPushover(BackupAction.ScanDirectory, Resources.Completed, true);

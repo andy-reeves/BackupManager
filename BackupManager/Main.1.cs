@@ -95,7 +95,7 @@ internal sealed partial class Main
             Utils.LogHeader();
             Utils.LogWithPushover(BackupAction.General, Resources.BackupManagerStarted, false, true);
             config.LogParameters();
-            var directoriesArray = config.Directories.ToArray();
+            var directoriesArray = config.DirectoriesToBackup.ToArray();
             listDirectoriesComboBox.Items.AddRange(directoriesArray.ToArray<object>());
             directoriesComboBox.Items.AddRange(directoriesArray.ToArray<object>());
             restoreDirectoryComboBox.Items.AddRange(directoriesArray.ToArray<object>());
@@ -332,7 +332,7 @@ internal sealed partial class Main
         // check directories are writable and only monitor those that are
         var writableDirectories = new List<string>();
 
-        foreach (var directory in config.Directories)
+        foreach (var directory in config.DirectoriesToBackup)
         {
             if (Utils.IsDirectoryWritable(directory))
                 writableDirectories.Add(directory);
@@ -452,11 +452,11 @@ internal sealed partial class Main
 
             DisableControlsForAsyncTasks(ct);
             Utils.LogWithPushover(BackupAction.SpeedTest, Resources.Started, false, true);
-            EnableProgressBar(0, config.Directories.Count);
+            EnableProgressBar(0, config.DirectoriesToBackup.Count);
 
-            for (var i = 0; i < config.Directories.Count; i++)
+            for (var i = 0; i < config.DirectoriesToBackup.Count; i++)
             {
-                var directory = config.Directories[i];
+                var directory = config.DirectoriesToBackup[i];
                 UpdateStatusLabel(ct, string.Format(Resources.SpeedTesting, directory), i + 1);
                 if (!Utils.IsDirectoryWritable(directory)) continue;
 

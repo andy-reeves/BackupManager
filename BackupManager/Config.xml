@@ -136,11 +136,11 @@
     </Monitor>
   </Monitors>
 
-  <!-- List each UNC path that you want to scan for files to backup here -->
-  <Directories>
+  <!-- List each UNC path that you want to scan for files to back up here -->
+  <DirectoriesToBackup>
     <Directory>\\nas1\assets1\_Test\_Movies</Directory>
     <Directory>\\nas1\assets1\_Test\_TV</Directory>
-  </Directories>
+  </DirectoriesToBackup>
 
   <Filters>
     <!-- RegEx's of file to ignore when executing a scan -->

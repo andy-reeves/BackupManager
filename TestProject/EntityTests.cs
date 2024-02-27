@@ -73,9 +73,9 @@ public sealed class EntityTests
         var mediaBackup = BackupManager.Entities.MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)),
             "..\\BackupManager\\MediaBackup.xml"));
         mediaBackup.BackupMediaFile(new CancellationToken());
-        mediaBackup.Config.Directories.Add(pathToMovies);
-        mediaBackup.Config.Directories.Add(pathToTv);
-        mediaBackup.Config.Directories.Add(pathToMovies2);
+        mediaBackup.Config.DirectoriesToBackup.Add(pathToMovies);
+        mediaBackup.Config.DirectoriesToBackup.Add(pathToTv);
+        mediaBackup.Config.DirectoriesToBackup.Add(pathToMovies2);
 
         // GetFoldersForPath
         Assert.True(mediaBackup.GetFoldersForPath(pathToFile1, out var directory, out var relativePath));

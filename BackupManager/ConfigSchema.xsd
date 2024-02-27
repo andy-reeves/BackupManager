@@ -213,10 +213,21 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-        <xs:element name="Directories" maxOccurs="1" minOccurs="0">
+        <xs:element name="DirectoriesToBackup" maxOccurs="1" minOccurs="0">
           <xs:annotation>
             <!-- ReSharper disable once GrammarMistakeInMarkupText -->
             <xs:documentation>List each UNC path that you want to scan for files to backup here</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="xs:string" name="Directory" maxOccurs="unbounded" minOccurs="1" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="DirectoriesToHealthCheck" maxOccurs="1" minOccurs="0">
+          <xs:annotation>
+            <!-- ReSharper disable once GrammarMistakeInMarkupText -->
+            <xs:documentation>List each UNC path that you want to check for health here</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:sequence>
