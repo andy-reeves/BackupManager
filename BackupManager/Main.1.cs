@@ -354,12 +354,14 @@ internal sealed partial class Main
 
         foreach (var item in mediaBackup.DirectoryChanges)
         {
-            mediaBackup.Watcher.FileSystemChanges.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime), mainCt);
+            // mediaBackup.Watcher.FileSystemChanges.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime), mainCt);
+            _ = mediaBackup.Watcher.FileSystemChanges.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime));
         }
 
         foreach (var item in mediaBackup.DirectoriesToScan)
         {
-            mediaBackup.Watcher.DirectoriesToScan.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime), mainCt);
+            //  mediaBackup.Watcher.DirectoriesToScan.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime), mainCt);
+            _ = mediaBackup.Watcher.DirectoriesToScan.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime));
         }
         Utils.TraceOut();
     }

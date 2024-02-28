@@ -90,6 +90,46 @@ public sealed class UtilsUnitTests
     }
 
     [Fact]
+    public void TestBlockingCollection()
+    {
+        //var collection = new BlockingCollection<FileSystemEntry>();
+        var item1 = new FileSystemEntry(@"c:\testitem1");
+
+        //collection.Add(item1);
+        var item2 = new FileSystemEntry(@"c:\testitem2");
+
+        //collection.Add(item2);
+        var item3 = new FileSystemEntry(@"c:\testitem1", DateTime.MinValue);
+
+        //collection.Add(item3);
+        //var bob = new ConcurrentDictionary<string, FileSystemEntry>();
+        //_ = bob.AddOrUpdate(item1.Path, item1, (_, _) => item1);
+        //_ = bob.AddOrUpdate(item2.Path, item2, (_, _) => item2);
+        //_ = bob.AddOrUpdate(item3.Path, item3, (_, _) => item3);
+        //var bob2 = new ConcurrentDictionary<FileSystemEntry, byte>();
+        // _ = bob2.AddOrUpdate(item1, 0, static (_, _) => 0);
+        // _ = bob2.AddOrUpdate(item2, 0, static (_, _) => 0);
+        // _ = bob2.AddOrUpdate(item3, 0, static (_, _) => 0);
+
+        //var bob3 = new HashSet<FileSystemEntry>();
+        //_ = bob3.Add(item1);
+        //_ = bob3.Add(item2);
+        //_ = bob3.Add(item3);
+        //var bob4 = new ConcurrentHashSet<FileSystemEntry>();
+        //_ = bob4.Add(item1);
+        //_ = bob4.Add(item2);
+        //_ = bob4.Add(item3);
+        //var bob5 = new ConcurrentHashSet<FileSystemEntry>();
+        // _ = bob5.AddOrUpdate(item1);
+        // _ = bob5.AddOrUpdate(item2);
+        //  _ = bob5.AddOrUpdate(item3);
+        var bob7 = new ConcurrentSet<FileSystemEntry>();
+        _ = bob7.AddOrUpdate(item1);
+        _ = bob7.AddOrUpdate(item2);
+        _ = bob7.AddOrUpdate(item3);
+    }
+
+    [Fact]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     public void StringContainsFixedSpace()
     {

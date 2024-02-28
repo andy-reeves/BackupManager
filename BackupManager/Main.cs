@@ -679,7 +679,8 @@ internal sealed partial class Main : Form
                 // If another long-running task is already executing then add these directories back to the list to be scanned later
                 foreach (var dir in e.Directories)
                 {
-                    mediaBackup.Watcher.DirectoriesToScan.Add(dir, mainCt);
+                    // mediaBackup.Watcher.DirectoriesToScan.Add(dir, mainCt);
+                    _ = mediaBackup.Watcher.DirectoriesToScan.Add(dir);
                 }
                 return;
             }
@@ -747,7 +748,9 @@ internal sealed partial class Main : Form
                 {
                     var text = string.Format(Resources.DirectoryScanSkipped, Utils.FormatTimeFromSeconds(mediaBackup.Config.DirectoriesScanTimer));
                     Utils.LogWithPushover(BackupAction.ScanDirectory, text, true);
-                    mediaBackup.Watcher.DirectoriesToScan.Add(directoryToScan, ct);
+
+                    //mediaBackup.Watcher.DirectoriesToScan.Add(directoryToScan, ct);
+                    _ = mediaBackup.Watcher.DirectoriesToScan.Add(directoryToScan);
                 }
             }
 
@@ -1163,7 +1166,8 @@ internal sealed partial class Main : Form
 
                 // Empty the DirectoriesToScan because we've processed all of them now
                 // we do it here so if we get cancelled before this we leave the directories ready to scan for next time
-                while (mediaBackup.Watcher.DirectoriesToScan.TryTake(out _)) { }
+                // while (mediaBackup.Watcher.DirectoriesToScan.TryTake(out _)) { }
+                mediaBackup.Watcher.DirectoriesToScan.Clear();
                 ResetAllControls();
             }, mainCt), mainCt);
         }

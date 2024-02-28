@@ -113,12 +113,12 @@ internal sealed class FileSystemWatcher
     /// <summary>
     ///     This is a Collection of files/directories where changes have been detected and the last time they changed.
     /// </summary>
-    internal BlockingCollection<FileSystemEntry> FileSystemChanges { get; } = new();
+    internal ConcurrentSet<FileSystemEntry> FileSystemChanges { get; } = new();
 
     /// <summary>
     ///     These are the directories we will raise events on when they are old enough.
     /// </summary>
-    internal BlockingCollection<FileSystemEntry> DirectoriesToScan { get; } = new();
+    internal ConcurrentSet<FileSystemEntry> DirectoriesToScan { get; } = new();
 
     /// <summary>
     ///     If you change these after starting then we stop and start again.
@@ -247,10 +247,10 @@ internal sealed class FileSystemWatcher
                  }))
         {
             watcher.Error += OnError;
-            watcher.Changed += (sender, e) => Task.Run(() => OnSomethingHappened(sender, e));
-            watcher.Deleted += (sender, e) => Task.Run(() => OnSomethingHappened(sender, e));
-            watcher.Renamed += (sender, e) => Task.Run(() => OnSomethingHappened(sender, e));
-            watcher.Created += (sender, e) => Task.Run(() => OnSomethingHappened(sender, e));
+            watcher.Changed += (_, e) => Task.Run(() => OnSomethingHappened(e));
+            watcher.Deleted += (_, e) => Task.Run(() => OnSomethingHappened(e));
+            watcher.Renamed += (_, e) => Task.Run(() => OnSomethingHappened(e));
+            watcher.Created += (_, e) => Task.Run(() => OnSomethingHappened(e));
             watcherList.Add(watcher);
         }
         Utils.Trace($"Creating FSW took {sw.Elapsed}");
@@ -336,9 +336,8 @@ internal sealed class FileSystemWatcher
     /// <summary>
     ///     Executes when any changes to items in the monitored directories are detected.
     /// </summary>
-    /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void OnSomethingHappened(object sender, FileSystemEventArgs e)
+    private void OnSomethingHappened(FileSystemEventArgs e)
     {
         Utils.TraceIn($"e.FullPath = {e.FullPath}");
 
@@ -361,7 +360,8 @@ internal sealed class FileSystemWatcher
                 return;
             }
             var entry = new FileSystemEntry(e.FullPath, DateTime.Now);
-
+            _ = FileSystemChanges.AddOrUpdate(entry);
+            /*
             if (FileSystemChanges.Contains(entry))
             {
                 Utils.Trace($"Updating ModifiedTime for {e.FullPath}");
@@ -381,6 +381,7 @@ internal sealed class FileSystemWatcher
                 Utils.Trace($"Adding {e.FullPath}");
                 FileSystemChanges.Add(entry);
             }
+            */
 
             // As soon as there's something changed we start our event timers
             StartTimers();
@@ -405,11 +406,13 @@ internal sealed class FileSystemWatcher
             //select the directories that are old enough now
             // raise event for them only
             // remove them from our list and set another timer
+
             var dirsToRaiseEventFor = DirectoriesToScan.Where(
                 d => d.ModifiedDateTime.AddMilliseconds(MinimumAgeBeforeScanEventRaised) < DateTime.Now).ToArray();
 
             if (dirsToRaiseEventFor.Any())
             {
+                /*
                 var collection = new BlockingCollection<FileSystemEntry>();
 
                 while (DirectoriesToScan.TryTake(out var dir))
@@ -419,7 +422,13 @@ internal sealed class FileSystemWatcher
 
                 foreach (var d in collection)
                 {
-                    DirectoriesToScan.Add(d);
+                    _ = DirectoriesToScan.Add(d);
+                }
+                */
+
+                foreach (var a in dirsToRaiseEventFor)
+                {
+                    _ = DirectoriesToScan.Remove(a);
                 }
 
                 //  raise the ReadyToScan event for directories that are old enough
@@ -449,7 +458,9 @@ internal sealed class FileSystemWatcher
             return;
         }
 
-        foreach (var fileOrDirectoryChange in FileSystemChanges.GetConsumingEnumerable())
+        //foreach (var fileOrDirectoryChange in FileSystemChanges.GetConsumingEnumerable())
+
+        foreach (var fileOrDirectoryChange in FileSystemChanges)
         {
             Utils.Trace($"fileOrFolderChange.Path = {fileOrDirectoryChange.Path}");
 
@@ -465,7 +476,9 @@ internal sealed class FileSystemWatcher
             else if (Directory.Exists(fileOrDirectoryChange.Path) || !File.Exists(fileOrDirectoryChange.Path))
                 directoryToScan = fileOrDirectoryChange.Path;
             Utils.Trace($"directoryToScan = {directoryToScan}");
-
+            var newItem = new FileSystemEntry(directoryToScan, fileOrDirectoryChange.ModifiedDateTime);
+            _ = DirectoriesToScan.AddOrUpdate(newItem);
+            /*
             if (DirectoriesToScan.Any(f => f.Path == directoryToScan))
             {
                 var fileSystemEntry = DirectoriesToScan.FirstOrDefault(f => f.Path == directoryToScan);
@@ -480,14 +493,15 @@ internal sealed class FileSystemWatcher
                 else
                 {
                     Utils.Trace("Adding to collection as FSE was null");
-                    DirectoriesToScan.Add(new FileSystemEntry(directoryToScan, fileOrDirectoryChange.ModifiedDateTime));
+                    _ = DirectoriesToScan.Add(new FileSystemEntry(directoryToScan, fileOrDirectoryChange.ModifiedDateTime));
                 }
             }
             else
             {
                 Utils.Trace("Adding to collection");
-                DirectoriesToScan.Add(new FileSystemEntry(directoryToScan, fileOrDirectoryChange.ModifiedDateTime));
-            }
+                _ = DirectoriesToScan.Add(new FileSystemEntry(directoryToScan, fileOrDirectoryChange.ModifiedDateTime));
+            }*/
+            _ = FileSystemChanges.Remove(fileOrDirectoryChange);
         }
         if (DirectoriesToScan.Count > 0) scanDirectoriesTimer.Start();
         Utils.Trace($"FileSystemChanges.Count = {FileSystemChanges.Count}");
