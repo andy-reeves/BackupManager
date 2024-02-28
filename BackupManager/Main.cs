@@ -709,7 +709,7 @@ internal sealed partial class Main : Form
 
                 if (Utils.StringContainsFixedSpace(directoryToScan.Path))
                 {
-                    Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"{directoryToScan.Path} contains a Fixed Space");
+                    Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"{directoryToScan.Path} contains a fixed space");
                     return;
                 }
                 mediaBackup.ClearFlags();
