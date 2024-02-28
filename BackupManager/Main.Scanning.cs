@@ -73,7 +73,8 @@ internal sealed partial class Main
         var returnValue = !tasks.Any(static t => !t.Result);
         if (returnValue) Utils.LogWithPushover(BackupAction.ProcessFiles, Resources.Completed, true, true);
         UpdateMediaFilesCountDisplay();
-        ResetAllControls();
+
+        // Do NOT call ResetAllControls here because we are often part of a much longer task
         return Utils.TraceOut(returnValue);
     }
 
