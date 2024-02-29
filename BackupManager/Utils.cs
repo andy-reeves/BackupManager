@@ -1908,8 +1908,9 @@ internal static partial class Utils
     /// </summary>
     /// <param name="path">The directory to check</param>
     /// <returns>
-    ///     True if the directory exists as a normal directory and it's empty. If its a Symbolic link and the target is missing
-    ///     or the target is empty it returns True. Otherwise False.
+    ///     True if the directory exists as a normal directory and it's empty. If it's a Symbolic link and the target is
+    ///     missing
+    ///     or the target is empty it returns True, otherwise False.
     /// </returns>
     internal static bool IsDirectoryEmpty(string path)
     {
@@ -1924,7 +1925,7 @@ internal static partial class Utils
     ///     Checks to see if the directory is a Symbolic link and its LinkTarget exists
     /// </summary>
     /// <param name="path"></param>
-    /// <returns>True if its a symbolic Link with a target that exists otherwise False</returns>
+    /// <returns>True if it's a symbolic Link with a target that exists otherwise False</returns>
     private static bool SymbolicLinkTargetExists(string path)
     {
         var linkTarget = new FileInfo(path).LinkTarget;
