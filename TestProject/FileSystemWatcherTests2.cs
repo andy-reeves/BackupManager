@@ -33,7 +33,19 @@ public sealed class FileSystemWatcherTests2
     public void FileSystemWatcherTest2A()
     {
         const int itemsToCreate = 100;
-        const int milliSecondsToWaitForCompletion = 250;
+        const int milliSecondsToWaitForCompletion = 50;
+
+        // before:
+        // 10 in 1s and 100 in 5s but 10_000 fails with max buffer in 10s
+
+        // now working:
+        // 100 in 50ms  64k buffer
+        // 100 in 250ms 64k buffer
+        // 10k in  5s   64k buffer
+        // 50k in 10s   64k buffer 
+
+        //and also:
+        // 50k in 20s   10k buffer
 
         // Set up the FSW
         // create xxx files in xxx directories in the source folder and keep a list
@@ -58,15 +70,6 @@ public sealed class FileSystemWatcherTests2
         fileSystemWatcher.Error += FileSystemWatcher_OnError;
         _ = fileSystemWatcher.Start();
 
-        //before:
-        // 10 in 1s and 100 in 5s but 10_000 fails with max buffer in 10s
-
-        //now:
-        // 10k in 10s 64k buffer works
-        // 50k in 10s 64k buffer works
-        // 50k in 20s 10k buffer works
-        // 10k in  5s 64k buffer works
-
         // Create the number of folders and put a file in each
         for (var i = 0; i < itemsToCreate; i++)
         {
@@ -86,6 +89,8 @@ public sealed class FileSystemWatcherTests2
             Assert.True(returnValue, $"Couldn't get value for {dirPath}");
             Assert.True(value, $"{dirPath} is still False");
         }
+        Assert.Empty(fileSystemWatcher.FileSystemChanges);
+        Assert.Empty(fileSystemWatcher.DirectoriesToScan);
         Utils.Trace($"event count ended = {_eventCounter}");
     }
 

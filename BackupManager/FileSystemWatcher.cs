@@ -5,7 +5,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -361,27 +360,6 @@ internal sealed class FileSystemWatcher
             }
             var entry = new FileSystemEntry(e.FullPath, DateTime.Now);
             _ = FileSystemChanges.AddOrUpdate(entry);
-            /*
-            if (FileSystemChanges.Contains(entry))
-            {
-                Utils.Trace($"Updating ModifiedTime for {e.FullPath}");
-                var fileSystemEntry = FileSystemChanges.FirstOrDefault(f => f.Path == e.FullPath);
-
-                if (fileSystemEntry != null)
-                    fileSystemEntry.ModifiedDateTime = DateTime.Now;
-                else
-                {
-                    Utils.Trace($"Adding {e.FullPath} as FSE returned null");
-                    Utils.Trace($"Adding {e.FullPath}");
-                    FileSystemChanges.Add(entry);
-                }
-            }
-            else
-            {
-                Utils.Trace($"Adding {e.FullPath}");
-                FileSystemChanges.Add(entry);
-            }
-            */
 
             // As soon as there's something changed we start our event timers
             StartTimers();
@@ -412,20 +390,6 @@ internal sealed class FileSystemWatcher
 
             if (dirsToRaiseEventFor.Any())
             {
-                /*
-                var collection = new BlockingCollection<FileSystemEntry>();
-
-                while (DirectoriesToScan.TryTake(out var dir))
-                {
-                    if (!dirsToRaiseEventFor.Contains(dir)) _ = collection.TryAdd(dir);
-                }
-
-                foreach (var d in collection)
-                {
-                    _ = DirectoriesToScan.Add(d);
-                }
-                */
-
                 foreach (var a in dirsToRaiseEventFor)
                 {
                     _ = DirectoriesToScan.Remove(a);
@@ -458,49 +422,18 @@ internal sealed class FileSystemWatcher
             return;
         }
 
-        //foreach (var fileOrDirectoryChange in FileSystemChanges.GetConsumingEnumerable())
-
-        foreach (var fileOrDirectoryChange in FileSystemChanges)
+        foreach (var fileOrDirectoryChange in FileSystemChanges.ToArray())
         {
             Utils.Trace($"fileOrFolderChange.Path = {fileOrDirectoryChange.Path}");
 
-            // if its a file or NOT a directory
-            // Add its directory path
-            // OR
-            // if its a directory or NOT a file
-            // add the directory path
-            var directoryToScan = string.Empty;
-
-            if (File.Exists(fileOrDirectoryChange.Path) || !Directory.Exists(fileOrDirectoryChange.Path))
-                directoryToScan = new FileInfo(fileOrDirectoryChange.Path).DirectoryName;
-            else if (Directory.Exists(fileOrDirectoryChange.Path) || !File.Exists(fileOrDirectoryChange.Path))
-                directoryToScan = fileOrDirectoryChange.Path;
+            var directoryToScan = Utils.GetFileSystemEntryType(fileOrDirectoryChange.Path) switch
+            {
+                FileSystemEntryType.File or FileSystemEntryType.Missing => new FileInfo(fileOrDirectoryChange.Path).DirectoryName,
+                _ => fileOrDirectoryChange.Path
+            };
             Utils.Trace($"directoryToScan = {directoryToScan}");
             var newItem = new FileSystemEntry(directoryToScan, fileOrDirectoryChange.ModifiedDateTime);
             _ = DirectoriesToScan.AddOrUpdate(newItem);
-            /*
-            if (DirectoriesToScan.Any(f => f.Path == directoryToScan))
-            {
-                var fileSystemEntry = DirectoriesToScan.FirstOrDefault(f => f.Path == directoryToScan);
-
-                if (fileSystemEntry != null)
-                {
-                    if (fileOrDirectoryChange.ModifiedDateTime <= fileSystemEntry.ModifiedDateTime) continue;
-
-                    Utils.Trace($"Updating ModifiedDateTime to {fileOrDirectoryChange.ModifiedDateTime}");
-                    fileSystemEntry.ModifiedDateTime = fileOrDirectoryChange.ModifiedDateTime;
-                }
-                else
-                {
-                    Utils.Trace("Adding to collection as FSE was null");
-                    _ = DirectoriesToScan.Add(new FileSystemEntry(directoryToScan, fileOrDirectoryChange.ModifiedDateTime));
-                }
-            }
-            else
-            {
-                Utils.Trace("Adding to collection");
-                _ = DirectoriesToScan.Add(new FileSystemEntry(directoryToScan, fileOrDirectoryChange.ModifiedDateTime));
-            }*/
             _ = FileSystemChanges.Remove(fileOrDirectoryChange);
         }
         if (DirectoriesToScan.Count > 0) scanDirectoriesTimer.Start();
@@ -558,17 +491,6 @@ internal sealed class FileSystemWatcherEventArgs : EventArgs
     {
         Utils.TraceIn();
         Directories = directoriesToScan;
-        Utils.TraceOut();
-    }
-
-    // ReSharper disable once UnusedMember.Global
-    internal FileSystemWatcherEventArgs(BlockingCollection<FileSystemEntry> directoriesToScan)
-    {
-        Utils.TraceIn();
-        Directories = directoriesToScan.ToArray();
-
-        // Empty the DirectoriesToScan because we've copied it into the List to return
-        while (directoriesToScan.TryTake(out _)) { }
         Utils.TraceOut();
     }
 
