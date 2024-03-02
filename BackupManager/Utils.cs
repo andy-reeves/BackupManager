@@ -2578,14 +2578,11 @@ internal static partial class Utils
     /// </summary>
     /// <param name="installedVersion"></param>
     /// <param name="availableVersion"></param>
-    /// <returns>False if either are Null</returns>
+    /// <returns>False if either are Null or string.Empty or not valid version numbers</returns>
     internal static bool VersionIsNewer(string installedVersion, string availableVersion)
     {
-        if (installedVersion.HasNoValue() || availableVersion.HasNoValue()) return false;
-
-        var installed = new Version(installedVersion);
-        var available = new Version(availableVersion);
-        return installed.CompareTo(available) < 0;
+        return installedVersion.HasValue() && availableVersion.HasValue() && Version.TryParse(installedVersion, out var installed) &&
+               Version.TryParse(availableVersion, out var available) && installed.CompareTo(available) < 0;
     }
 
     internal static bool StringContainsFixedSpace(string stringToTest)

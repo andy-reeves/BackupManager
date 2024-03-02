@@ -13,6 +13,16 @@ internal sealed class ConcurrentSet<T> : ISet<T>
 
     private readonly ReaderWriterLockSlim @lock = new(LockRecursionPolicy.SupportsRecursion);
 
+    public ConcurrentSet(IEnumerable<T> collection)
+    {
+        foreach (var v in collection)
+        {
+            _ = TryAdd(v);
+        }
+    }
+
+    public ConcurrentSet() { }
+
     /// <summary>
     ///     Returns an enumerator that iterates through the collection.
     /// </summary>

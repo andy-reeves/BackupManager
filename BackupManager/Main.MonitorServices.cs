@@ -77,7 +77,7 @@ internal sealed partial class Main
                 var installedVersion = Utils.GetApplicationVersionNumber(monitor.ApplicationType);
                 var availableVersion = Utils.GetLatestApplicationVersionNumber(monitor.ApplicationType);
 
-                if (!monitor.LogIssues || installedVersion == string.Empty || availableVersion == string.Empty ||
+                if (!monitor.LogIssues || installedVersion.HasNoValue() || availableVersion.HasNoValue() ||
                     !Utils.VersionIsNewer(installedVersion, availableVersion))
                     continue;
 
