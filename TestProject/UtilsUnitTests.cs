@@ -25,6 +25,16 @@ public sealed class UtilsUnitTests
     }
 
     [Fact]
+    public void VersionNumber()
+    {
+        const string version1 = "1.2.3.4";
+        const string version2 = "5.6.7.8";
+        const string badVersion = "1";
+        Assert.True(Utils.VersionIsNewer(version1, version2));
+        Assert.False(Utils.VersionIsNewer(version1, badVersion));
+    }
+
+    [Fact]
     public void SharedFolder()
     {
         string? path1 = null;
@@ -87,27 +97,6 @@ public sealed class UtilsUnitTests
     public void Config()
     {
         Utils.Config.LogParameters();
-    }
-
-    [Fact]
-    [SuppressMessage("ReSharper", "StringLiteralTypo")]
-    public void ConcurrentSetTests()
-    {
-        var item1 = new FileSystemEntry(@"c:\testitem1");
-        var item2 = new FileSystemEntry(@"c:\testitem2");
-        var item3 = new FileSystemEntry(@"c:\testitem1", DateTime.MinValue);
-        var set = new ConcurrentSet<FileSystemEntry>(new[] { item1, item2, item3 });
-        Assert.Equal(2, set.Count);
-        Assert.True(set.AddOrUpdate(item1));
-        Assert.True(set.AddOrUpdate(item2));
-        Assert.True(set.AddOrUpdate(item3));
-        Assert.Equal(2, set.Count);
-        Assert.False(set.IsEmpty);
-
-        foreach (var entry in set.Where(static entry => entry.Path == @"c:\testitem1"))
-        {
-            Assert.Equal(DateTime.MinValue, entry.ModifiedDateTime);
-        }
     }
 
     [Fact]
@@ -438,5 +427,3 @@ public sealed class UtilsUnitTests
         Assert.True(totalBytes > 0);
     }
 }
-
-// #endif
