@@ -110,7 +110,9 @@ internal sealed partial class Main
                     if (!ProcessFilesMaxPathCheck(file)) continue;
                     if (!ProcessFilesFixedSpaceCheck(ref file)) continue;
                     if (!ProcessFilesRenameFileRules(ref file)) continue;
-                    if (!ProcessFilesVideoCodecCheck(scanPathForVideoCodec, ref file, ct)) continue;
+                    if (!ProcessFilesCheckAllMediaInfo(scanPathForVideoCodec, ref file, ct)) continue;
+
+                    // if (!ProcessFilesVideoCodecCheck(scanPathForVideoCodec, ref file, ct)) continue;
                     if (file == null) continue;
 
                     if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
@@ -198,6 +200,64 @@ internal sealed partial class Main
         Utils.Trace($"{fileCounterForMultiThreadProcessing} Processing {file}");
     }
 
+    private bool ProcessFilesCheckAllMediaInfo(bool scan, ref string file, CancellationToken ct)
+    {
+        Utils.TraceIn();
+        if (!File.Exists(file) || !Utils.FileIsVideo(file) || !config.DirectoriesRenameVideoFilesOnOff || !scan) return Utils.TraceOut(true);
+
+        if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+
+        try
+        {
+            // TODO only movie files for now
+            if (file.Contains(@"\_Movies"))
+            {
+                var movie = new Movie(file);
+
+                // TODO check this
+                if (!movie.Valid) return Utils.TraceOut(true);
+
+                _ = movie.RefreshMediaInfo();
+                var newName = movie.GetFullName();
+
+                if (newName != file)
+                {
+                    // renaming time
+                    Utils.Log($"Renaming {file} to {newName}");
+                    _ = Utils.FileMove(file, newName);
+                    Utils.Trace($"Renamed {file} to {newName}");
+
+                    // Pass the new file name back to continue processing
+                    file = newName;
+
+                    // TODO rename any subtitles files in the same folder
+                    // find any files in this folder that end in one of our srt valid extensions
+                    /*var oldCodecInBrackets = oldCodec.WrapInSquareBrackets();
+                    var newCodecInBrackets = newCodec.WrapInSquareBrackets();
+                    var directoryPath = Path.GetDirectoryName(file);
+                    var filesInSameDirectory = Utils.GetFiles(directoryPath, ct);
+
+                    foreach (var f in filesInSameDirectory.Where(static f => f.ContainsAny(Utils.SubtitlesExtensions))
+                                 .Where(f => f.Contains(oldCodecInBrackets)))
+                    {
+                        Utils.Log(BackupAction.ProcessFiles, $"{f} had codec of {oldCodec} in its path and will be renamed with {newCodec}");
+                        var newName = f.Replace(oldCodecInBrackets, newCodecInBrackets);
+                        if (!Utils.FileMove(f, newName)) return Utils.TraceOut(false);
+                    }*/
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            if (ex is not (IOException or NotSupportedException)) throw;
+
+            Utils.Log(BackupAction.ProcessFiles, $"Exception was {ex}");
+            Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.FileIsLocked, file));
+            return Utils.TraceOut(false);
+        }
+        return Utils.TraceOut(true);
+    }
+    /*
     /// <summary>
     ///     Returns True if all OK otherwise False
     /// </summary>
@@ -244,7 +304,7 @@ internal sealed partial class Main
             return Utils.TraceOut(false);
         }
         return Utils.TraceOut(true);
-    }
+    }*/
 
     /// <summary>
     ///     Return True if all ok otherwise False

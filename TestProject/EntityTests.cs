@@ -18,7 +18,6 @@ namespace TestProject;
 [SuppressMessage("ReSharper", "MemberCanBeFileLocal")]
 public sealed class EntityTests
 {
-    // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
     private static readonly MediaBackup _mediaBackup;
 
     static EntityTests()
@@ -46,7 +45,7 @@ public sealed class EntityTests
 
     [Theory]
     [InlineData(@"\\nas1\assets4\_Movies\Aliens (1986)-other\Aliens (1986)-other {tmdb-679} [Remux-2160p][HDR10][AC3 5.1][h265].mkv", true)]
-    [InlineData(@"\\nas1\assets4\_Movies\Aliens (1986)\Aliens (1986) {tmdb-679} [Remux-2160p][HDR10][AC3 5.1][h265].mkv", true)]
+    [InlineData(@"\\nas2\assets3\_Movies\Aliens (1986)\Aliens (1986) {tmdb-679} [Remux-2160p][HDR10][AC3 5.1][h265].mkv", true)]
     [InlineData("Battlestar Galactica (1978) {tmdb-148980} {edition-EXTENDED} [Remux-2160p][HDR10][DTS-HD MA 5.1][h265].mkv", true)]
     [InlineData("Battlestar Galactica (1978) {tmdb-148980} [Remux-2160p][PQ][DTS-HD MA 5.1][h265].mkv", true)]
     [InlineData("Battlestar Galactica (1978) {tmdb-148980} [Remux-1080p][DTS-HD MA 5.1][h264].mkv", true)]
@@ -77,14 +76,36 @@ public sealed class EntityTests
         var movie = new Movie(fileName);
         Assert.Equal(isValidFileName, movie.Valid);
         if (movie.Valid) Assert.Equal(fileName, movie.Directory.HasValue() ? movie.GetFullName() : movie.GetFileName());
-        /* foreach (var file in _mediaBackup.BackupFiles.Where(static f => !f.Deleted &&
-                                                                         (f.FullPath.Contains(@"_Concerts") || f.FullPath.Contains(@"_Comedy") ||
-                                                                          f.FullPath.Contains(@"_Movies"))))
-         {
-             movie = new Movie(file.FullPath);
-             Assert.True(movie.Valid);
-             if (movie.Valid) Assert.Equal(file.FullPath, movie.Directory.HasValue() ? movie.GetFullName() : movie.GetFileName());
-         }*/
+    }
+
+    [Fact]
+    public void MovieTests2()
+    {
+        var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaInfoTests)), "TestData");
+        var fileName = Path.Combine(testDataPath, "File13 (2024) [Remux-1080p][DTS-HD MA 5.1][h264].mkv");
+        var movie = new Movie(fileName);
+        Assert.Equal(Path.GetFileName(fileName), movie.GetFileName());
+        Assert.True(movie.RefreshMediaInfo());
+        Assert.Equal(Path.GetFileName(fileName), movie.GetFileName());
+        fileName = Path.Combine(testDataPath, "File14 (2024) [WEBDL-1080p][EAC3 5.1][h264].mkv");
+        const string expectedFileName = "File14 (2024) [WEBDL-1080p][EAC3 5.1][h265].mkv";
+        movie = new Movie(fileName);
+        Assert.Equal(Path.GetFileName(fileName), movie.GetFileName());
+        Assert.True(movie.RefreshMediaInfo());
+        Assert.Equal(expectedFileName, movie.GetFileName());
+    }
+
+    // [Fact]
+    public void MovieTestsAllMoviesFromBackupXml()
+    {
+        foreach (var file in _mediaBackup.BackupFiles.Where(static f => !f.Deleted &&
+                                                                        (f.FullPath.Contains(@"_Concerts") || f.FullPath.Contains(@"_Comedy") ||
+                                                                         f.FullPath.Contains(@"_Movies"))))
+        {
+            var movie = new Movie(file.FullPath);
+            Assert.True(movie.Valid);
+            if (movie.Valid) Assert.Equal(file.FullPath, movie.Directory.HasValue() ? movie.GetFullName() : movie.GetFileName());
+        }
     }
 
     [Fact]

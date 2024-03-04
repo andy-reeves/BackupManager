@@ -20,6 +20,7 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 using System.Runtime.Versioning;
 using System.Security.Cryptography;
 using System.Security.Principal;
@@ -57,6 +58,8 @@ internal static partial class Utils
     private const int FILE_FLAG_BACKUP_SEMANTICS = 0x02000000;
 
     private const int OPEN_EXISTING = 3;
+
+    private static readonly Regex _positionRegex = MediaInfoAudioPositionRegex();
 
     internal const string STANDARD_MOVIE_FORMAT = "{Movie Title} " + //
                                                   "({Release Year}) " + //
@@ -1259,6 +1262,49 @@ internal static partial class Utils
         return TraceOut(true);
     }
 
+    private static decimal? FormatAudioChannelsFromAudioChannelPositions(MediaInfoModel mediaInfo)
+    {
+        if (mediaInfo.AudioChannelPositions == null) return 0;
+
+        var match = _positionRegex.Match(mediaInfo.AudioChannelPositions);
+        return match.Success ? decimal.Parse(match.Groups["position"].Value, NumberStyles.Number, CultureInfo.InvariantCulture) : 0;
+    }
+
+    public static string FormatVideoDynamicRangeType(MediaInfoModel mediaInfo)
+    {
+        return mediaInfo.VideoHdrFormat switch
+        {
+            HdrFormat.DolbyVision => "DV",
+            HdrFormat.DolbyVisionHdr10 => "DV HDR10",
+            HdrFormat.DolbyVisionHdr10Plus => "DV HDR10Plus",
+            HdrFormat.DolbyVisionHlg => "DV HLG",
+            HdrFormat.DolbyVisionSdr => "DV SDR",
+            HdrFormat.Hdr10 => "HDR10",
+            HdrFormat.Hdr10Plus => "HDR10Plus",
+            HdrFormat.Hlg10 => "HLG",
+            HdrFormat.Pq10 => "PQ",
+            _ => ""
+        };
+    }
+
+    public static decimal FormatAudioChannels(MediaInfoModel mediaInfo)
+    {
+        var audioChannels = FormatAudioChannelsFromAudioChannelPositions(mediaInfo);
+        if (audioChannels == null || audioChannels == 0.0m) audioChannels = mediaInfo.AudioChannels;
+        return audioChannels.Value;
+    }
+
+    internal static MediaInfoModel GetMediaInfoModel(string path)
+    {
+        TraceIn(path);
+        ArgumentException.ThrowIfNullOrEmpty(path);
+        if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
+        if (!FileIsVideo(path)) throw new NotSupportedException("file is not video");
+
+        var info = new VideoFileInfoReader().GetMediaInfo(path) ?? throw new IOException(string.Format(Resources.UnableToLoadFFProbe, path));
+        return TraceOut(info);
+    }
+
     internal static bool GetAudioCodec(string path, out string actualAudioCodec)
     {
         TraceIn(path);
@@ -1273,7 +1319,8 @@ internal static partial class Utils
         return TraceOut(true);
     }
 
-    private static string FormatAudioCodec(MediaInfoModel mediaInfo, string sceneName)
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
+    internal static string FormatAudioCodec(MediaInfoModel mediaInfo, string sceneName)
     {
         if (mediaInfo.AudioFormat == null) return null;
 
@@ -1281,42 +1328,57 @@ internal static partial class Utils
         var audioCodecId = mediaInfo.AudioCodecId ?? string.Empty;
         var audioProfile = mediaInfo.AudioProfile ?? string.Empty;
         if (audioFormat.Empty()) return string.Empty;
-
-        // see definitions here https://github.com/FFmpeg/FFmpeg/blob/master/libavcodec/codec_desc.c
         if (audioCodecId == "thd+") return "TrueHD Atmos";
-        if (audioFormat == "truehd") return "TrueHD";
-        if (audioFormat == "flac") return "FLAC";
 
-        if (audioFormat == "dts")
+        switch (audioFormat)
         {
-            if (audioProfile == "DTS:X") return "DTS-X";
-            if (audioProfile == "DTS-HD MA") return "DTS-HD MA";
-            if (audioProfile == "DTS-ES") return "DTS-ES";
-            if (audioProfile == "DTS-HD HRA") return "DTS-HD HRA";
-            if (audioProfile == "DTS Express") return "DTS Express";
-            if (audioProfile == "DTS 96/24") return "DTS 96/24";
-
-            return "DTS";
+            case "truehd":
+                return "TrueHD";
+            case "flac":
+                return "FLAC";
+            case "dts":
+                return audioProfile switch
+                {
+                    "DTS:X" => "DTS-X",
+                    "DTS-HD MA" => "DTS-HD MA",
+                    "DTS-ES" => "DTS-ES",
+                    "DTS-HD HRA" => "DTS-HD HRA",
+                    "DTS Express" => "DTS Express",
+                    "DTS 96/24" => "DTS 96/24",
+                    _ => "DTS"
+                };
         }
         if (audioCodecId == "ec+3") return "EAC3 Atmos";
-        if (audioFormat == "eac3") return "EAC3";
-        if (audioFormat == "ac3") return "AC3";
 
-        if (audioFormat == "aac")
+        switch (audioFormat)
         {
-            if (audioCodecId == "A_AAC/MPEG4/LC/SBR") return "HE-AAC";
-
-            return "AAC";
+            case "eac3":
+                return "EAC3";
+            case "ac3":
+                return "AC3";
+            case "aac" when audioCodecId == "A_AAC/MPEG4/LC/SBR":
+                return "HE-AAC";
+            case "aac":
+                return "AAC";
+            case "mp3":
+                return "MP3";
+            case "mp2":
+                return "MP2";
+            case "opus":
+                return "Opus";
         }
-        if (audioFormat == "mp3") return "MP3";
-        if (audioFormat == "mp2") return "MP2";
-        if (audioFormat == "opus") return "Opus";
-        if (audioFormat.StartsWith("pcm_") || audioFormat.StartsWith("adpcm_")) return "PCM";
-        if (audioFormat == "vorbis") return "Vorbis";
-        if (audioFormat == "wmav1" || audioFormat == "wmav2" || audioFormat == "wmapro") return "WMA";
+        if (audioFormat.StartsWithIgnoreCase("pcm_") || audioFormat.StartsWithIgnoreCase("adpcm_")) return "PCM";
 
-        Trace($"Unknown audio format: '{audioFormat}' in '{sceneName}'. Streams: {mediaInfo.RawStreamData}");
-        return mediaInfo.AudioFormat;
+        switch (audioFormat)
+        {
+            case "vorbis":
+                return "Vorbis";
+            case "wmav1" or "wmav2" or "wmapro":
+                return "WMA";
+            default:
+                Trace($"Unknown audio format: '{audioFormat}' in '{sceneName}'. Streams: {mediaInfo.RawStreamData}");
+                return mediaInfo.AudioFormat;
+        }
     }
 
     /// <summary>
@@ -1328,7 +1390,7 @@ internal static partial class Utils
     ///     MPEG, VC1, AV1, VP7,VP8, VP9, WMV, RGB
     /// </returns>
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
-    private static string FormatVideoCodec(MediaInfoModel mediaInfo, string fileName)
+    internal static string FormatVideoCodec(MediaInfoModel mediaInfo, string fileName)
     {
         if (mediaInfo.VideoFormat == null) return null;
 
@@ -2152,6 +2214,18 @@ internal static partial class Utils
         TraceOut();
     }
 
+    internal static T GetEnumFromAttributeValue<T>(string value)
+    {
+        foreach (var enumFromAttributeValue in from memberInfo in typeof(T).GetTypeInfo().DeclaredMembers
+                 let attributeValue = memberInfo.GetCustomAttribute<EnumMemberAttribute>(false)?.Value
+                 where string.Equals(attributeValue, value, StringComparison.InvariantCultureIgnoreCase)
+                 select (T)Enum.Parse(typeof(T), memberInfo.Name))
+        {
+            return enumFromAttributeValue;
+        }
+        return default;
+    }
+
     /// <summary>
     ///     Stops the Windows Service specified if its running
     /// </summary>
@@ -2913,6 +2987,9 @@ internal static partial class Utils
         aceObject.Properties["Trustee"].Value = trustee;
         return aceObject;
     }
+
+    [GeneratedRegex("(?<position>^\\d\\.\\d)", RegexOptions.Compiled)]
+    private static partial Regex MediaInfoAudioPositionRegex();
 }
 
 [SupportedOSPlatform("windows")]
