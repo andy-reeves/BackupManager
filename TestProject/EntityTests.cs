@@ -18,6 +18,7 @@ namespace TestProject;
 [SuppressMessage("ReSharper", "MemberCanBeFileLocal")]
 public sealed class EntityTests
 {
+    // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
     private static readonly MediaBackup _mediaBackup;
 
     static EntityTests()
