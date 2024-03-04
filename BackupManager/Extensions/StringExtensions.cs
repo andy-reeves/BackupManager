@@ -276,6 +276,12 @@ internal static partial class StringExtensions
         return index == -1 ? s : index < s.Length - 1 ? s[(index + value.Length)..] : string.Empty;
     }
 
+    public static string SubstringAfterLastIgnoreCase(this string s, string value)
+    {
+        var index = s.LastIndexOf(value, StringComparison.InvariantCultureIgnoreCase);
+        return index == -1 ? s : index < s.Length - 1 ? s[(index + value.Length)..] : string.Empty;
+    }
+
     /// <summary>
     ///     Retrieves a substring after the last instance of a character.
     /// </summary>
@@ -336,6 +342,12 @@ internal static partial class StringExtensions
         return index != -1 ? s[..index] : s;
     }
 
+    public static string SubstringBeforeIgnoreCase(this string s, string value)
+    {
+        var index = s.IndexOf(value, StringComparison.InvariantCultureIgnoreCase);
+        return index != -1 ? s[..index] : s;
+    }
+
     /// <summary>
     ///     Retrieves a substring before the last instance of a character.
     /// </summary>
@@ -352,6 +364,12 @@ internal static partial class StringExtensions
     public static string SubstringBeforeLast(this string s, char c)
     {
         var index = s.LastIndexOf(c);
+        return index != -1 ? s[..index] : s;
+    }
+
+    public static string SubstringBeforeLastIgnoreCase(this string s, string v)
+    {
+        var index = s.LastIndexOf(v, StringComparison.InvariantCultureIgnoreCase);
         return index != -1 ? s[..index] : s;
     }
 

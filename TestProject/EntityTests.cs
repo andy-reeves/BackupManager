@@ -18,11 +18,13 @@ namespace TestProject;
 [SuppressMessage("ReSharper", "MemberCanBeFileLocal")]
 public sealed class EntityTests
 {
+    private static readonly MediaBackup _mediaBackup;
+
     static EntityTests()
     {
-        var mediaBackup = BackupManager.Entities.MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(EntityTests)),
+        _mediaBackup = BackupManager.Entities.MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(EntityTests)),
             "..\\BackupManager\\MediaBackup.xml"));
-        Utils.Config = mediaBackup.Config;
+        Utils.Config = _mediaBackup.Config;
     }
 
     [Fact]
@@ -39,12 +41,49 @@ public sealed class EntityTests
         Assert.Equal(dateTime, a.StartDateTime);
         Assert.Equal(endDate, a.EndDateTime);
         Assert.Equal(new TimeSpan(1, 0, 0, 0), a.ScanDuration);
-        _ = TestMethod();
     }
 
-    private static bool TestMethod()
+    [Theory]
+    [InlineData(@"\\nas1\assets4\_Movies\Aliens (1986)-other\Aliens (1986)-other {tmdb-679} [Remux-2160p][HDR10][AC3 5.1][h265].mkv", true)]
+    [InlineData(@"\\nas1\assets4\_Movies\Aliens (1986)\Aliens (1986) {tmdb-679} [Remux-2160p][HDR10][AC3 5.1][h265].mkv", true)]
+    [InlineData("Battlestar Galactica (1978) {tmdb-148980} {edition-EXTENDED} [Remux-2160p][HDR10][DTS-HD MA 5.1][h265].mkv", true)]
+    [InlineData("Battlestar Galactica (1978) {tmdb-148980} [Remux-2160p][DTS-HD MA 5.1][h265].mkv", true)]
+    [InlineData("Battlestar Galactica (1978) {tmdb-148980} [Remux-1080p][DTS-HD MA 5.1][h264].mkv", true)]
+    [InlineData("Battlestar Galactica (1978) [Remux-1080p][DTS-HD MA 5.1][h264].mkv", true)]
+    [InlineData("Battlestar Galactica (1978) [Remux-1080p][audio][h264].mkv", false)]
+    [InlineData("A (2022) {tmdb-1} [DVD][DTS 1.0][h264].mkv", true)]
+    [InlineData("A (2022) {tmdb-1} [DVD][DTS-X 2.0][h265].mkv", true)]
+    [InlineData("A (2022) {tmdb-1} [DVD][DTS-ES 3.0][VP9].mkv", true)]
+    [InlineData("A (2022) {tmdb-1} [DVD][DTS HD 3.1][VC1].mkv", true)]
+    [InlineData("A (2022) {tmdb-1} [DVD][DTS-HD MA 4.0][MPEG2].mkv", true)]
+    [InlineData("A (2022) {tmdb-1} [DVD][DTS-HD HRA 5.0][VP9].mkv", true)]
+    [InlineData("A (2022) {tmdb-1} [DVD][TrueHD Atmos 5.1][VP9].mkv", true)]
+    [InlineData("A (2022) {tmdb-1} [DVD][EAC3 6.0][VP9].mkv", true)]
+    [InlineData("A (2022) {tmdb-1} [DVD][EAC3 Atmos 6.1][VP9].mkv", true)]
+    [InlineData("A (2022) {tmdb-1} [DVD][AC3 7.1][VP9].mkv", true)]
+    [InlineData("A (2022) {tmdb-1} [DVD][FLAC 8.0][VP9].mkv", true)]
+    [InlineData("A (2022) {tmdb-1} [DVD][PCM 2.0][VP9].mkv", true)]
+    [InlineData("A (2022) {tmdb-1} [DVD][MP3 2.0][VP9].mkv", true)]
+    [InlineData("A (2022) {tmdb-1} [DVD][AAC 2.0][VP9].mkv", true)]
+    [InlineData("A (2022) {tmdb-1} [DVD][TrueHD 2.0][VP9].mkv", true)]
+    [InlineData("A (2022) {tmdb-1} [DVD][AVC 2.0][VP9].mkv", true)]
+    [InlineData("A (2022) {tmdb-1} [DVD][Opus 2.0][VP9].mkv", true)]
+    [InlineData("Asterix and Obelix The Middle Kingdom (2023) {tmdb-643215} [Remux-1080p][DTS-HD MA 5.1][h264].en.srt", true)]
+    [InlineData("Special video-featurette.mkv", true)]
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
+    public void MovieTests(string fileName, bool isValidFileName)
     {
-        return false;
+        var movie = new Movie(fileName);
+        Assert.Equal(isValidFileName, movie.Valid);
+        if (movie.Valid) Assert.Equal(fileName, movie.Directory.HasValue() ? movie.GetFullName() : movie.GetFileName());
+        /* foreach (var file in _mediaBackup.BackupFiles.Where(static f => !f.Deleted &&
+                                                                         (f.FullPath.Contains(@"_Concerts") || f.FullPath.Contains(@"_Comedy") ||
+                                                                          f.FullPath.Contains(@"_Movies"))))
+         {
+             movie = new Movie(file.FullPath);
+             Assert.True(movie.Valid);
+             if (movie.Valid) Assert.Equal(file.FullPath, movie.Directory.HasValue() ? movie.GetFullName() : movie.GetFileName());
+         }*/
     }
 
     [Fact]

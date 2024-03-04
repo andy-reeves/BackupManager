@@ -50,6 +50,14 @@ public sealed class MediaInfoTests
         Assert.True(File.Exists(mediaFileName));
         Assert.False(Utils.RenameVideoCodec(mediaFileName, out _, out _, out _));
         Assert.True(File.Exists(mediaFileNameOutputIfRenamed));
+        Assert.True(Utils.GetAudioCodec(mediaFileName, out var actualAudioCodec));
+        Assert.Equal("AAC", actualAudioCodec);
+
+        // File 12
+        mediaFileName = Path.Combine(testDataPath, "File12 [Remux-1080p][ ][h264].mkv");
+        Assert.True(File.Exists(mediaFileName));
+        Assert.True(Utils.GetAudioCodec(mediaFileName, out actualAudioCodec));
+        Assert.Null(actualAudioCodec);
 
         // ID                                       : 1
         // Format                                   : MPEG-4 Visual

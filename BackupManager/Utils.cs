@@ -58,6 +58,37 @@ internal static partial class Utils
 
     private const int OPEN_EXISTING = 3;
 
+    internal const string STANDARD_MOVIE_FORMAT = "{Movie Title} " + //
+                                                  "({Release Year}) " + //
+                                                  "{tmdb-{TmdbId}} " + //
+                                                  "{edition-{EDITION TAGS}} " + //
+                                                  "[{Quality Full}]" + //
+                                                  "[{MediaInfo 3D}]" + //
+                                                  "[{MediaInfo VideoDynamicRangeType}]" + //
+                                                  "[{Mediainfo AudioCodec} {Mediainfo AudioChannels}]" + //
+                                                  "[{Mediainfo VideoCodec}]";
+
+    internal const string MOVIE_FOLDER_FORMAT = "{Movie Title} " + //
+                                                "({Release Year})";
+
+    internal const string STANDARD_EPISODE_FORMAT = "{Series Title} " + "s{season:00}e{episode:00} " + "{Episode Title} " + "[{Quality Full}]" +
+                                                    "[{MediaInfo VideoDynamicRangeType]}" + "[{Mediainfo AudioCodec} {Mediainfo AudioChannels}]" +
+                                                    "[{Mediainfo VideoCodec}]";
+
+    internal const string DAILY_EPISODE_FORMAT =
+        "{Series Title} {Air-Date} {[Quality Full]}{[MediaInfo VideoDynamicRangeType]}{[Mediainfo AudioCodec}{ Mediainfo AudioChannels}][{Mediainfo VideoCodec}]";
+
+    internal const string ANIME_EPISODE_FORMAT =
+        "{Series Title} s{season:00}e{episode:00} {[Quality Full]}{[MediaInfo VideoDynamicRangeType]}{[Mediainfo AudioCodec}{ Mediainfo AudioChannels}][{Mediainfo VideoCodec}]";
+
+    internal const string SERIES_FOLDER_FORMAT = "{Series Title} {tvdb-{tvdbId}}";
+
+    internal const string SEASON_FOLDER_FORMAT = "Season {season}";
+
+    internal const string SPECIALS_FOLDER_FORMAT = "Specials";
+
+    internal const string MULTI_EPISODE_STYLE = "PrefixedRange"; //s01e01-e03
+
     /// <summary>
     ///     The end block size.
     /// </summary>
@@ -1228,6 +1259,66 @@ internal static partial class Utils
         return TraceOut(true);
     }
 
+    internal static bool GetAudioCodec(string path, out string actualAudioCodec)
+    {
+        TraceIn(path);
+        ArgumentException.ThrowIfNullOrEmpty(path);
+        if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
+        if (!FileIsVideo(path)) throw new NotSupportedException("file is not video");
+
+        actualAudioCodec = string.Empty;
+        var info = new VideoFileInfoReader().GetMediaInfo(path) ?? throw new IOException(string.Format(Resources.UnableToLoadFFProbe, path));
+        actualAudioCodec = FormatAudioCodec(info, Path.GetFileNameWithoutExtension(path));
+        if (actualAudioCodec.HasNoValue()) LogWithPushover(BackupAction.Error, $"Actual audio codec for {path} is string.Empty");
+        return TraceOut(true);
+    }
+
+    private static string FormatAudioCodec(MediaInfoModel mediaInfo, string sceneName)
+    {
+        if (mediaInfo.AudioFormat == null) return null;
+
+        var audioFormat = mediaInfo.AudioFormat;
+        var audioCodecId = mediaInfo.AudioCodecId ?? string.Empty;
+        var audioProfile = mediaInfo.AudioProfile ?? string.Empty;
+        if (audioFormat.Empty()) return string.Empty;
+
+        // see definitions here https://github.com/FFmpeg/FFmpeg/blob/master/libavcodec/codec_desc.c
+        if (audioCodecId == "thd+") return "TrueHD Atmos";
+        if (audioFormat == "truehd") return "TrueHD";
+        if (audioFormat == "flac") return "FLAC";
+
+        if (audioFormat == "dts")
+        {
+            if (audioProfile == "DTS:X") return "DTS-X";
+            if (audioProfile == "DTS-HD MA") return "DTS-HD MA";
+            if (audioProfile == "DTS-ES") return "DTS-ES";
+            if (audioProfile == "DTS-HD HRA") return "DTS-HD HRA";
+            if (audioProfile == "DTS Express") return "DTS Express";
+            if (audioProfile == "DTS 96/24") return "DTS 96/24";
+
+            return "DTS";
+        }
+        if (audioCodecId == "ec+3") return "EAC3 Atmos";
+        if (audioFormat == "eac3") return "EAC3";
+        if (audioFormat == "ac3") return "AC3";
+
+        if (audioFormat == "aac")
+        {
+            if (audioCodecId == "A_AAC/MPEG4/LC/SBR") return "HE-AAC";
+
+            return "AAC";
+        }
+        if (audioFormat == "mp3") return "MP3";
+        if (audioFormat == "mp2") return "MP2";
+        if (audioFormat == "opus") return "Opus";
+        if (audioFormat.StartsWith("pcm_") || audioFormat.StartsWith("adpcm_")) return "PCM";
+        if (audioFormat == "vorbis") return "Vorbis";
+        if (audioFormat == "wmav1" || audioFormat == "wmav2" || audioFormat == "wmapro") return "WMA";
+
+        Trace($"Unknown audio format: '{audioFormat}' in '{sceneName}'. Streams: {mediaInfo.RawStreamData}");
+        return mediaInfo.AudioFormat;
+    }
+
     /// <summary>
     /// </summary>
     /// <param name="mediaInfo"></param>
@@ -1292,6 +1383,7 @@ internal static partial class Utils
                 LogWithPushover(BackupAction.General, PushoverPriority.High, $"About to return string.Empty for {fileName}");
                 return "";
         }
+        Trace($"Unknown video format: '{videoFormat}'. Streams: {mediaInfo.RawStreamData}");
         return result;
     }
 
@@ -2774,7 +2866,7 @@ internal static partial class Utils
     /// <summary>
     ///     Returns the Security Identifier Sid of the given user
     /// </summary>
-    /// <param name="userAccountObject">The user object who's Sid needs to be returned</param>
+    /// <param name="userAccountObject">The user object whose Sid needs to be returned</param>
     /// <returns></returns>
     [SupportedOSPlatform("windows")]
     internal static ManagementObject GetAccountSecurityIdentifier(ManagementBaseObject userAccountObject)
