@@ -1,4 +1,10 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿// --------------------------------------------------------------------------------------------------------------------
+//  <copyright file="Edition.cs" company="Andy Reeves">
+// 
+//  </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
 namespace BackupManager.Entities;
@@ -92,4 +98,3 @@ internal enum Edition
 
     [EnumMember(Value = "Unrated")] Unrated
 }
-

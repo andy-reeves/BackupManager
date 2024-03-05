@@ -212,7 +212,7 @@ internal sealed partial class Main
             // TODO only movie files for now
             if (file.Contains(@"\_Movies"))
             {
-                var movie = new Movie(file);
+                var movie = new MovieBackupFile(file);
 
                 // TODO check this
                 if (!movie.Valid) return Utils.TraceOut(true);

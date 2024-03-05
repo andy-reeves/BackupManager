@@ -22,7 +22,7 @@ namespace BackupManager.Entities;
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 [DebuggerDisplay("RelativePath = {" + nameof(RelativePath) + "}")]
 [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
-public sealed class BackupFile : IEquatable<BackupFile>
+public class BackupFile : IEquatable<BackupFile>
 {
     private string contentsHash;
 
@@ -115,7 +115,7 @@ public sealed class BackupFile : IEquatable<BackupFile>
     [XmlIgnore] public bool BeingCheckedNow { get; set; }
 
     /// <summary>
-    ///     The full path to the backup file on the source disk. Returns String.Empty if any of Master, Index or RelativePath
+    ///     The full path to the backup file on the source disk. Returns string.Empty if Directory or RelativePath
     ///     are null
     /// </summary>
     [XmlIgnore]

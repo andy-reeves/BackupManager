@@ -68,14 +68,31 @@ public sealed class EntityTests
     [InlineData("A (2022) {tmdb-1} [DVD][TrueHD 2.0][VP9].mkv", true)]
     [InlineData("A (2022) {tmdb-1} [DVD][AVC 2.0][VP9].mkv", true)]
     [InlineData("A (2022) {tmdb-1} [DVD][Opus 2.0][VP9].mkv", true)]
-    [InlineData("Asterix and Obelix The Middle Kingdom (2023) {tmdb-643215} [Remux-1080p][DTS-HD MA 5.1][h264].en.srt", true)]
+    [InlineData("Asterix and Obelix The Middle Kingdom (2023) {tmdb-643215} [Remux-1080p][DTS-HD MA 5.1][h264].en.srt", false)]
     [InlineData("Special video-featurette.mkv", true)]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     public void MovieTests(string fileName, bool isValidFileName)
     {
-        var movie = new Movie(fileName);
+        var movie = new MovieBackupFile(fileName);
         Assert.Equal(isValidFileName, movie.Valid);
-        if (movie.Valid) Assert.Equal(fileName, movie.Directory.HasValue() ? movie.GetFullName() : movie.GetFileName());
+        if (movie.Valid) Assert.Equal(fileName, movie.FullDirectory.HasValue() ? movie.GetFullName() : movie.GetFileName());
+    }
+
+    [Theory]
+    [InlineData("A(2023) {tmdb-1} [DVD][DTS 5.1][h264].en.srt", true, "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].mkv",
+        "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].en.srt")]
+    [InlineData("A(2023) {tmdb-1} [DVD][DTS 5.1][h264].es.hi.srt", true, "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].mkv",
+        "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].es.hi.srt")]
+    [InlineData("Special video-featurette.mkv", false, "", "")]
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
+    public void SubtitlesTests(string fileName, bool isValidFileName, string newMovieName, string newSubtitlesName)
+    {
+        var file = new SubtitlesBackupFile(fileName);
+        Assert.Equal(isValidFileName, file.Valid);
+        if (file.Valid) Assert.Equal(fileName, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());
+        var movie = new MovieBackupFile(newMovieName);
+        _ = file.RefreshInfo(movie);
+        if (file.Valid) Assert.Equal(newSubtitlesName, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());
     }
 
     [Fact]
@@ -83,13 +100,13 @@ public sealed class EntityTests
     {
         var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaInfoTests)), "TestData");
         var fileName = Path.Combine(testDataPath, "File13 (2024) [Remux-1080p][DTS-HD MA 5.1][h264].mkv");
-        var movie = new Movie(fileName);
+        var movie = new MovieBackupFile(fileName);
         Assert.Equal(Path.GetFileName(fileName), movie.GetFileName());
         Assert.True(movie.RefreshMediaInfo());
         Assert.Equal(Path.GetFileName(fileName), movie.GetFileName());
         fileName = Path.Combine(testDataPath, "File14 (2024) [WEBDL-1080p][EAC3 5.1][h264].mkv");
         const string expectedFileName = "File14 (2024) [WEBDL-1080p][EAC3 5.1][h265].mkv";
-        movie = new Movie(fileName);
+        movie = new MovieBackupFile(fileName);
         Assert.Equal(Path.GetFileName(fileName), movie.GetFileName());
         Assert.True(movie.RefreshMediaInfo());
         Assert.Equal(expectedFileName, movie.GetFileName());
@@ -102,9 +119,9 @@ public sealed class EntityTests
                                                                         (f.FullPath.Contains(@"_Concerts") || f.FullPath.Contains(@"_Comedy") ||
                                                                          f.FullPath.Contains(@"_Movies"))))
         {
-            var movie = new Movie(file.FullPath);
+            var movie = new MovieBackupFile(file.FullPath);
             Assert.True(movie.Valid);
-            if (movie.Valid) Assert.Equal(file.FullPath, movie.Directory.HasValue() ? movie.GetFullName() : movie.GetFileName());
+            if (movie.Valid) Assert.Equal(file.FullPath, movie.FullDirectory.HasValue() ? movie.GetFullName() : movie.GetFileName());
         }
     }
 
