@@ -1309,6 +1309,12 @@ internal static partial class Utils
         var file = ExtendedBackupFileBase(path);
         if (file == null) return;
 
+        if (!file.IsValid)
+        {
+            LogWithPushover(BackupAction.Error, $"{path} is not valid. Name not checked");
+            return;
+        }
+
         if (file.RefreshMediaInfo())
         {
             var newFullPath = file.GetFullName();

@@ -17,23 +17,6 @@ namespace BackupManager.Entities;
 [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
 internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
 {
-    protected override string FileNameRegex => @"^(.*)\.(e[ns](?:\.hi)?)\.srt$";
-
-    protected override string DirectoryRegex => @"^.*\\_(?:Movies|Comedy|Concerts)(?:\s\(non-t[mv]db\))?\\(.*)\((\d{4})\)(-other)?.*$";
-
-    private MovieBackupFile GetMovie()
-    {
-        if (FullDirectory.HasNoValue()) return null;
-
-        var files = Utils.GetFiles(FullDirectory, new CancellationToken());
-        var videoFiles = files.Where(static f => Utils.FileIsVideo(f) && !Utils.FileIsSpecialFeature(f)).ToArray();
-
-        // if more than 1 movie file in this folder, we can't pick one
-        return videoFiles.Length is 0 or > 1 ? null : new MovieBackupFile(videoFiles[0]);
-    }
-
-    public string Subtitles { get; private set; }
-
     public SubtitlesBackupFile(string path)
     {
         string fileName;
@@ -58,6 +41,23 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
 
         IsValid = ParseInfoFromDirectory(directoryPath);
         if (IsValid) Extension = Path.GetExtension(path);
+    }
+
+    protected override string FileNameRegex => @"^(.*)\.(e[ns](?:\.hi)?)\.srt$";
+
+    protected override string DirectoryRegex => @"^.*\\_(?:Movies|Comedy|Concerts)(?:\s\(non-t[mv]db\))?\\(.*)\((\d{4})\)(-other)?.*$";
+
+    public string Subtitles { get; private set; }
+
+    private MovieBackupFile GetMovie()
+    {
+        if (FullDirectory.HasNoValue()) return null;
+
+        var files = Utils.GetFiles(FullDirectory, new CancellationToken());
+        var videoFiles = files.Where(static f => Utils.FileIsVideo(f) && !Utils.FileIsSpecialFeature(f)).ToArray();
+
+        // if more than 1 movie file in this folder, we can't pick one
+        return videoFiles.Length is 0 or > 1 ? null : new MovieBackupFile(videoFiles[0]);
     }
 
     private bool ParseInfoFromDirectory(string directoryPath)

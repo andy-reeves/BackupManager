@@ -45,9 +45,12 @@ public sealed class FullTestA
         // Step 3 - Assert state after scan
 
         //file8 should be renamed 
-        var file8PathOnSource = Path.Combine(targetDirectory, @"DirectoryB\_TV\File8 s01e01 [Bluray-1080p Remux][DTS-HD MA 5.1][h264].mkv");
+        var file8PathOnSource = Path.Combine(targetDirectory,
+            @"DirectoryB\_TV\File8 {tvdb-250487}\Season 1\File8 s01e01 [Bluray-1080p Remux][DTS-HD MA 5.1][h264].mkv");
         Assert.True(File.Exists(file8PathOnSource));
-        var file8SrtPathOnSource = Path.Combine(targetDirectory, @"DirectoryB\_TV\File8 s01e01 [Bluray-1080p Remux][DTS-HD MA 5.1][h264].en.srt");
+
+        var file8SrtPathOnSource = Path.Combine(targetDirectory,
+            @"DirectoryB\_TV\File8 {tvdb-250487}\Season 1\File8 s01e01 [Bluray-1080p Remux][DTS-HD MA 5.1][h264].en.srt");
         Assert.True(File.Exists(file8SrtPathOnSource));
         Assert.Equal(8, mediaBackup.BackupFiles.Count);
         Assert.Equal(10, mediaBackup.DirectoryScans.Count);
