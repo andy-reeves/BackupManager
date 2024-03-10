@@ -19,28 +19,15 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
 {
     public SubtitlesBackupFile(string path)
     {
-        string fileName;
-        string directoryPath;
-
-        // check if we have a path to the file or just the filename
-        if (path.Contains('\\'))
-        {
-            directoryPath = path.SubstringBeforeLastIgnoreCase(@"\");
-            fileName = path.SubstringAfterLastIgnoreCase(@"\");
-        }
-        else
-        {
-            fileName = path;
-            directoryPath = string.Empty;
-        }
+        OriginalPath = path;
+        Extension = Path.GetExtension(path);
+        var fileName = Path.GetFileName(path);
+        var directoryPath = Path.GetDirectoryName(path);
         var regex = new Regex(FileNameRegex);
         if (!regex.IsMatch(fileName)) return;
 
         IsValid = ParseInfoFromFileName(fileName);
-        if (!IsValid || !directoryPath.HasValue()) return;
-
-        IsValid = ParseInfoFromDirectory(directoryPath);
-        if (IsValid) Extension = Path.GetExtension(path);
+        if (IsValid && directoryPath.HasValue()) IsValid = ParseInfoFromDirectory(directoryPath);
     }
 
     protected override string FileNameRegex => @"^(.*)\.(e[ns](?:\.hi)?)\.srt$";

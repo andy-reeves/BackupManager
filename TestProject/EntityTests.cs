@@ -49,7 +49,7 @@ public sealed class EntityTests
         true)]
     [InlineData(@"Z:\_TV (non-tvdb)\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV][MP3 2.0][XviD].mkv",
         true)]
-    [InlineData(@"K:\\_TV\\Westworld {tvdb-296762}\Westworld s02e64 - The Delos Experiment-other.mkv", true)]
+    [InlineData(@"K:\_TV\Westworld {tvdb-296762}\Westworld s02e64 - The Delos Experiment-other.mkv", true)]
     [InlineData(
         @"\\nas1\assets1\_TV\Charlie's Angels {tvdb-77170}\Season 5\Charlie's Angels s05e01e03 Angel in Hiding (1) [Bluray-1080p Remux][DTS-HD MA 2.0][h264].mkv",
         true)]

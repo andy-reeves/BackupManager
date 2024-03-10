@@ -35,12 +35,25 @@ internal abstract class ExtendedBackupFileBase
 
     [XmlIgnore] protected string Extension { get; set; }
 
-    [XmlIgnore] public bool IsValid { get; protected set; }
+    /// <summary>
+    ///     Returns True if the current file is valid
+    /// </summary>
+    [XmlIgnore]
+    public bool IsValid { get; protected set; }
 
+    /// <summary>
+    ///     The original path and filename of the file before any Refresh may have updated properties
+    /// </summary>
     protected string OriginalPath { get; init; }
 
+    /// <summary>
+    ///     The title of the file
+    /// </summary>
     protected string Title { get; set; }
 
+    /// <summary>
+    ///     THe full directory path to the file not including the filename.
+    /// </summary>
     public string FullDirectory { get; protected set; }
 
     public abstract bool RefreshMediaInfo();

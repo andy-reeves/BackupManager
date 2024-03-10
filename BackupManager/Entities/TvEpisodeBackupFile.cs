@@ -23,22 +23,10 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
 
     public TvEpisodeBackupFile(string path)
     {
-        string fileName;
-        string directoryPath;
-        Extension = Path.GetExtension(path);
         OriginalPath = path;
-
-        // check if we have a path to the file or just the filename
-        if (path.Contains('\\'))
-        {
-            directoryPath = path.SubstringBeforeLastIgnoreCase(@"\");
-            fileName = path.SubstringAfterLastIgnoreCase(@"\");
-        }
-        else
-        {
-            fileName = path;
-            directoryPath = string.Empty;
-        }
+        Extension = Path.GetExtension(path);
+        var fileName = Path.GetFileName(path);
+        var directoryPath = Path.GetDirectoryName(path);
         var regex = new Regex(FileNameRegex);
         if (!regex.IsMatch(fileName)) return;
 
