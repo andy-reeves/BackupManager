@@ -35,6 +35,8 @@ internal enum MediaInfoAudioCodec
 
     [EnumMember(Value = "FLAC")] FLAC,
 
+    [EnumMember(Value = "MP2")] MP2,
+
     [EnumMember(Value = "MP3")] MP3,
 
     [EnumMember(Value = "Opus")] Opus,
@@ -43,5 +45,9 @@ internal enum MediaInfoAudioCodec
 
     [EnumMember(Value = "TrueHD")] TrueHD,
 
-    [EnumMember(Value = "TrueHD Atmos")] TrueHD_Atmos
+    [EnumMember(Value = "TrueHD Atmos")] TrueHD_Atmos,
+
+    [EnumMember(Value = "Vorbis")] Vorbis,
+
+    [EnumMember(Value = "WMA")] WMA
 }

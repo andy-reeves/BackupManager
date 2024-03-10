@@ -44,6 +44,34 @@ public sealed class EntityTests
     }
 
     [Theory]
+    [InlineData(@"Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV][MP3 2.0][XviD].mkv", true)]
+    [InlineData(@"Z:\_TV (non-tvdb)\Tom and Jerry {tmdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV][MP3 2.0][XviD].mkv",
+        true)]
+    [InlineData(@"Z:\_TV (non-tvdb)\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV][MP3 2.0][XviD].mkv",
+        true)]
+    [InlineData(@"K:\\_TV\\Westworld {tvdb-296762}\Westworld s02e64 - The Delos Experiment-other.mkv", true)]
+    [InlineData(
+        @"\\nas1\assets1\_TV\Charlie's Angels {tvdb-77170}\Season 5\Charlie's Angels s05e01e03 Angel in Hiding (1) [Bluray-1080p Remux][DTS-HD MA 2.0][h264].mkv",
+        true)]
+    [InlineData(@"\\nas2\assets3\_TV\Lost {tvdb-73739}\Season 2\Lost s02e21 [HDTV-720p][DTS 5.1][h264].mkv", true)]
+    [InlineData(@"\\nas5\assets4\_TV\Automan {tvdb-72589}\Season 1\Automan s01e01 Automan [SDTV][MP2 2.0][MPEG].mpg", true)]
+    [InlineData(
+        @"\\nas2\assets4\_TV\Criminal Record {tvdb-421495}\Season 1\Criminal Record s01e03 Kid in the Park [WEBDL-2160p][DV HDR10Plus][EAC3 Atmos 5.1][h265].mkv",
+        true)]
+    [InlineData(@"Tom and Jerry 2023-01-23 Puss Gets The Boot [SDTV][MP3 2.0][XviD].mkv", true)]
+    [InlineData(@"Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\File8 s01e01 [Bluray-1080p Remux][DTS-HD MA 5.1][AVC].mkv", false)]
+    [InlineData(@"Z:\_TV (non-tvdb)\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV][MP3 2.0][AVC].mkv",
+        true)]
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
+    public void TvEpisodeTests(string fileName, bool isValidFileName)
+    {
+        var file = new TvEpisodeBackupFile(fileName);
+        Assert.Equal(isValidFileName, file.IsValid);
+        if (file.IsValid) Assert.Equal(fileName, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());
+    }
+
+    [Theory]
+    [InlineData(@"\\nas2\assets3\_Movies (non-tmdb)\Aliens (1986)\Aliens (1986) [Remux-2160p][HDR10][AC3 5.1][h265].mkv", true)]
     [InlineData(@"\\nas1\assets4\_Movies\Aliens (1986)-other\Aliens (1986)-other {tmdb-679} [Remux-2160p][HDR10][AC3 5.1][h265].mkv", true)]
     [InlineData(@"\\nas2\assets3\_Movies\Aliens (1986)\Aliens (1986) {tmdb-679} [Remux-2160p][HDR10][AC3 5.1][h265].mkv", true)]
     [InlineData("Battlestar Galactica (1978) {tmdb-148980} {edition-EXTENDED} [Remux-2160p][HDR10][DTS-HD MA 5.1][h265].mkv", true)]
@@ -73,9 +101,9 @@ public sealed class EntityTests
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     public void MovieTests(string fileName, bool isValidFileName)
     {
-        var movie = new MovieBackupFile(fileName);
-        Assert.Equal(isValidFileName, movie.Valid);
-        if (movie.Valid) Assert.Equal(fileName, movie.FullDirectory.HasValue() ? movie.GetFullName() : movie.GetFileName());
+        var file = new MovieBackupFile(fileName);
+        Assert.Equal(isValidFileName, file.IsValid);
+        if (file.IsValid) Assert.Equal(fileName, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());
     }
 
     [Theory]
@@ -88,11 +116,11 @@ public sealed class EntityTests
     public void SubtitlesTests(string fileName, bool isValidFileName, string newMovieName, string newSubtitlesName)
     {
         var file = new SubtitlesBackupFile(fileName);
-        Assert.Equal(isValidFileName, file.Valid);
-        if (file.Valid) Assert.Equal(fileName, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());
+        Assert.Equal(isValidFileName, file.IsValid);
+        if (file.IsValid) Assert.Equal(fileName, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());
         var movie = new MovieBackupFile(newMovieName);
-        _ = file.RefreshInfo(movie);
-        if (file.Valid) Assert.Equal(newSubtitlesName, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());
+        _ = file.RefreshMediaInfo(movie);
+        if (file.IsValid) Assert.Equal(newSubtitlesName, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());
     }
 
     [Fact]
@@ -112,16 +140,64 @@ public sealed class EntityTests
         Assert.Equal(expectedFileName, movie.GetFileName());
     }
 
+    [Theory]
+    [InlineData("File15 s01e03 Kid in the Park [WEBDL-2160p][DV HDR10Plus][EAC3 Atmos 5.1][h264].mkv", true,
+        "File15 s01e03 Kid in the Park [WEBDL-2160p][EAC3 5.1][h265].mkv")]
+    [InlineData(@"File8 s01e01 [Bluray-1080p Remux][DTS-HD MA 5.1][AVC].mkv", true, "File8 s01e01 [Bluray-1080p Remux][DTS-HD MA 5.1][h264].mkv")]
+    [InlineData(@"Percy Jackson and the Olympians s01e01 I Accidentally Vaporize My Pre-Algebra Teacher [SDTV][MP3 2.0][].avi", false,
+        "Percy Jackson and the Olympians s01e01 I Accidentally Vaporize My Pre-Algebra Teacher [SDTV][MP3 2.0][].avi")]
+    public void TvTests2(string param1, bool refreshReturnValue, string mediaFileNameOutputIfRenamed)
+    {
+        var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaInfoTests)), "TestData");
+        var mediaFileName = Path.Combine(testDataPath, param1);
+        var tvEpisodeBackupFile = new TvEpisodeBackupFile(mediaFileName);
+        if (tvEpisodeBackupFile.IsValid) Assert.Equal(Path.GetFileName(mediaFileName), tvEpisodeBackupFile.GetFileName());
+        Assert.Equal(refreshReturnValue, tvEpisodeBackupFile.RefreshMediaInfo());
+        Assert.Equal(refreshReturnValue, tvEpisodeBackupFile.IsValid);
+        if (refreshReturnValue) Assert.Equal(mediaFileNameOutputIfRenamed, tvEpisodeBackupFile.GetFileName());
+    }
+
     // [Fact]
     public void MovieTestsAllMoviesFromBackupXml()
     {
-        foreach (var file in _mediaBackup.BackupFiles.Where(static f => !f.Deleted &&
-                                                                        (f.FullPath.Contains(@"_Concerts") || f.FullPath.Contains(@"_Comedy") ||
-                                                                         f.FullPath.Contains(@"_Movies"))))
+        foreach (var backupFile in _mediaBackup.BackupFiles.Where(static f => !f.Deleted &&
+                                                                              (f.FullPath.Contains(@"_Concerts") ||
+                                                                               f.FullPath.Contains(@"_Comedy") ||
+                                                                               f.FullPath.Contains(@"_Movies")) &&
+                                                                              !f.FullPath.Contains("TdarrCacheFile") &&
+                                                                              !f.FullPath.EndsWithIgnoreCase(".srt")))
         {
-            var movie = new MovieBackupFile(file.FullPath);
-            Assert.True(movie.Valid);
-            if (movie.Valid) Assert.Equal(file.FullPath, movie.FullDirectory.HasValue() ? movie.GetFullName() : movie.GetFileName());
+            var file = new MovieBackupFile(backupFile.FullPath);
+            Assert.True(file.IsValid);
+            if (file.IsValid) Assert.Equal(backupFile.FullPath, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());
+        }
+    }
+
+    //[Fact]
+    public void TestsAllFilesFromBackupXml()
+    {
+        var files = _mediaBackup.BackupFiles.Where(static f => !f.Deleted && !f.FullPath.Contains("TdarrCacheFile")).ToArray();
+
+        for (var index = 0; index < files.Length; index++)
+        {
+            var fullPath = files[index].FullPath;
+            Utils.Trace($"[{index}/{files.Length}] {fullPath}");
+            if (!File.Exists(fullPath)) continue;
+
+            Utils.CheckVideoFileAndRenameIfRequired(ref fullPath);
+        }
+    }
+
+    //[Fact]
+    public void TestsAllTvFromBackupXml()
+    {
+        foreach (var backupFile in _mediaBackup.BackupFiles.Where(static f => !f.Deleted && f.FullPath.Contains(@"_TV") &&
+                                                                              !f.FullPath.Contains("TdarrCacheFile") &&
+                                                                              !f.FullPath.EndsWithIgnoreCase(".srt")))
+        {
+            var file = new TvEpisodeBackupFile(backupFile.FullPath);
+            Assert.True(file.IsValid);
+            if (file.IsValid) Assert.Equal(backupFile.FullPath, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());
         }
     }
 

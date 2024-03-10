@@ -146,6 +146,7 @@ internal static partial class StringExtensions
     /// <returns>
     ///     <c>false</c> if the value is null or an <see cref="string.Empty" /> string; otherwise, <c>true</c>.
     /// </returns>
+    [DebuggerStepThrough]
     public static bool HasValue(this string s)
     {
         return !string.IsNullOrEmpty(s);
@@ -160,6 +161,7 @@ internal static partial class StringExtensions
     /// <returns>
     ///     <c>true</c> if the value is null or an <see cref="string.Empty" /> string; otherwise, <c>false</c>.
     /// </returns>
+    [DebuggerStepThrough]
     public static bool HasNoValue(this string s)
     {
         return string.IsNullOrEmpty(s);
@@ -295,6 +297,7 @@ internal static partial class StringExtensions
     ///     The substring after the last occurrence of <paramref name="c" />, or <paramref name="s" /> if <paramref name="c" />
     ///     is not found.
     /// </returns>
+    [DebuggerStepThrough]
     public static string SubstringAfterLast(this string s, char c)
     {
         var index = s.LastIndexOf(c);
@@ -314,6 +317,7 @@ internal static partial class StringExtensions
     ///     The substring before the first occurrence of <paramref name="c" />, or <paramref name="s" /> if
     ///     <paramref name="c" /> is not found.
     /// </returns>
+    [DebuggerStepThrough]
     public static string SubstringBefore(this string s, char c)
     {
         var index = s.IndexOf(c);
@@ -336,12 +340,14 @@ internal static partial class StringExtensions
     ///     The substring before the first occurrence of <paramref name="value" />, or <paramref name="s" /> if
     ///     <paramref name="value" /> is not found.
     /// </returns>
+    [DebuggerStepThrough]
     public static string SubstringBefore(this string s, string value, StringComparison comparisonType)
     {
         var index = s.IndexOf(value, comparisonType);
         return index != -1 ? s[..index] : s;
     }
 
+    [DebuggerStepThrough]
     public static string SubstringBeforeIgnoreCase(this string s, string value)
     {
         var index = s.IndexOf(value, StringComparison.InvariantCultureIgnoreCase);
@@ -361,12 +367,14 @@ internal static partial class StringExtensions
     ///     The substring before the last occurrence of <paramref name="c" />, or <paramref name="s" /> if
     ///     <paramref name="c" /> is not found.
     /// </returns>
+    [DebuggerStepThrough]
     public static string SubstringBeforeLast(this string s, char c)
     {
         var index = s.LastIndexOf(c);
         return index != -1 ? s[..index] : s;
     }
 
+    [DebuggerStepThrough]
     public static string SubstringBeforeLastIgnoreCase(this string s, string v)
     {
         var index = s.LastIndexOf(v, StringComparison.InvariantCultureIgnoreCase);
@@ -389,6 +397,7 @@ internal static partial class StringExtensions
     ///     The substring before the last occurrence of <paramref name="value" />, or <paramref name="s" /> if
     ///     <paramref name="value" /> is not found.
     /// </returns>
+    [DebuggerStepThrough]
     public static string SubstringBeforeLast(this string s, string value, StringComparison comparisonType)
     {
         var index = s.LastIndexOf(value, comparisonType);
@@ -412,26 +421,31 @@ internal static partial class StringExtensions
         return s.Length > length ? s[..(length - 1)] + "…" : s;
     }
 
+    [DebuggerStepThrough]
     public static bool IsNullOrWhiteSpace(this string text)
     {
         return string.IsNullOrWhiteSpace(text);
     }
 
+    [DebuggerStepThrough]
     public static bool IsNotNullOrWhiteSpace(this string text)
     {
         return !string.IsNullOrWhiteSpace(text);
     }
 
+    [DebuggerStepThrough]
     public static bool StartsWithIgnoreCase(this string text, string startsWith)
     {
         return text.StartsWith(startsWith, StringComparison.InvariantCultureIgnoreCase);
     }
 
+    [DebuggerStepThrough]
     public static bool EndsWithIgnoreCase(this string text, string endsWith)
     {
         return text.EndsWith(endsWith, StringComparison.InvariantCultureIgnoreCase);
     }
 
+    [DebuggerStepThrough]
     public static bool EqualsIgnoreCase(this string text, string equals)
     {
         return text.Equals(equals, StringComparison.InvariantCultureIgnoreCase);

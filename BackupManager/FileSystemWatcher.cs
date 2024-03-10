@@ -487,6 +487,24 @@ internal sealed class FileSystemWatcherEventArgs : EventArgs
         Directories = new FileSystemEntry[] { new(directory) };
     }
 
+    internal FileSystemWatcherEventArgs(IEnumerable<BackupFile> backupFiles)
+    {
+        var hash = new HashSet<string>();
+
+        foreach (var directoryName in backupFiles.Select(static dir => Path.GetDirectoryName(dir.FullPath)))
+        {
+            _ = hash.Add(directoryName);
+        }
+        var fse = new FileSystemEntry[hash.Count];
+        var i = 0;
+
+        foreach (var h in hash)
+        {
+            fse[i++] = new FileSystemEntry(h);
+        }
+        Directories = fse;
+    }
+
     internal FileSystemWatcherEventArgs(FileSystemEntry[] directoriesToScan)
     {
         Utils.TraceIn();

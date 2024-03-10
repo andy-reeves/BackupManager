@@ -321,3 +321,11 @@
 20.5  | T | False | "\\nas4\assets1\_TV\Curfew {tvdb-79556}\Season 1\Curfew s01e01 Episode 1 [HDTV-720p][DV][Vorbis 6.0][x264].mkv"
 20.6  | T | True  | "\\nas4\assets2\_Movies\Accused (2023)\Accused (2023) {tmdb-912974} [WEBDL-1080p][EAC3 5.1][x264].es.srt"
 
+# Subtitle files must not end in _dut.srt, _eng.srt or _2.srt
+21.1  | D | True  | "Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].en.srt"
+21.2  | D | True  | "Z:\_TV (non-tvdb)\The Queen's Christmas Broadcast\Season 1\The Queen's Christmas Broadcast s01e2015 2015 [HDTV-720p].es.srt"
+21.3  | D | True  | "X:\_Movies\Cheers {tvdb-77623}\Season 11\Cheers s11e26-e28 One for the Road [SDTV][MP3 2.0][XviD].en.srt"  
+21.4  | T | True  | "X:\_Movies\Cheers {tvdb-77623}\Season 11\Cheers s11e26-e28 One for the Road [SDTV][MP3 2.0][XviD].en.srt"  
+21.5  | T | False | "X:\_Movies\Cheers {tvdb-77623}\Season 11\Cheers s11e26-e28 One for the Road [SDTV][MP3 2.0][XviD]._eng.srt" 
+21.6  | T | False | "X:\_Movies\Cheers {tvdb-77623}\Season 11\Cheers s11e26-e28 One for the Road [SDTV][MP3 2.0][XviD]._dut.srt" 
+21.7  | T | False | "X:\_Movies\Cheers {tvdb-77623}\Season 11\Cheers s11e26-e28 One for the Road [SDTV][MP3 2.0][XviD]._2.srt" 

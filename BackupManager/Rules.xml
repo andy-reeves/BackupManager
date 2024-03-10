@@ -165,6 +165,14 @@
       <Number>20</Number>
       <Priority>High</Priority>
     </FileRule>
+    <FileRule>
+      <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*.srt$</FileDiscoveryRegEx>
+      <FileTestRegEx>^((?!._(2|eng|dut).srt).)*$</FileTestRegEx>
+      <Message>All subtitle files must not end in _dut.srt, _eng.srt or _2.srt</Message>
+      <Name>Rule 21</Name>
+      <Number>21</Number>
+      <Priority>High</Priority>
+    </FileRule>
   </FileRules>
 </Rules>
 <!-- ReSharper restore MarkupTextTypo -->

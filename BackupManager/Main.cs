@@ -1106,7 +1106,7 @@ internal sealed partial class Main : Form
     {
         var files = mediaBackup.BackupFiles.Where(static file =>
             Utils.FileIsVideo(file.FullPath) && (file.FullPath.Contains("_TV") || file.FullPath.Contains("_Movies")) &&
-            !file.FullPath.ContainsAny(Utils.SpecialFeatures)).ToArray();
+            !Utils.FileIsSpecialFeature(file.FullPath)).ToArray();
 
         for (var index = 0; index < files.Length; index++)
         {
@@ -1166,6 +1166,34 @@ internal sealed partial class Main : Form
                 // we do it here so if we get cancelled before this we leave the directories ready to scan for next time
                 // while (mediaBackup.Watcher.DirectoriesToScan.TryTake(out _)) { }
                 mediaBackup.Watcher.DirectoriesToScan.Clear();
+                ResetAllControls();
+            }, mainCt), mainCt);
+        }
+        finally
+        {
+            Utils.TraceOut();
+        }
+    }
+
+    private void ScanLastDirectoriesButton_Click(object sender, EventArgs e)
+    {
+        const int count = 200;
+
+        try
+        {
+            Utils.TraceIn();
+            if (longRunningActionExecutingRightNow) return;
+
+            ResetTokenSource();
+
+            _ = TaskWrapper(Task.Run(() =>
+            {
+                if (longRunningActionExecutingRightNow) return;
+
+                DisableControlsForAsyncTasks(mainCt);
+
+                ReadyToScan(new FileSystemWatcherEventArgs(mediaBackup.BackupFiles.OrderBy(static f => f.LastWriteTime).TakeLast(count).ToArray()),
+                    SearchOption.AllDirectories, true, mainCt);
                 ResetAllControls();
             }, mainCt), mainCt);
         }

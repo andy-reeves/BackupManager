@@ -146,10 +146,10 @@ internal static partial class Utils
     /// <summary>
     ///     An array of the special feature prefixes for video files like -featurette, - other, etc.
     /// </summary>
-    internal static readonly string[] SpecialFeatures =
+    private static readonly string[] _specialFeatures =
     {
         // ReSharper disable once StringLiteralTypo
-        "-featurette", "-other", "-interview", "-scene", "-short", "-deleted", "-behindthescenes", "-trailer"
+        "-featurette.", "-other.", "-interview.", "-scene.", "-short.", "-deleted.", "-behindthescenes.", "-trailer."
     };
 
     /// <summary>
@@ -1148,11 +1148,16 @@ internal static partial class Utils
     ///     Checks the path is a video file
     /// </summary>
     /// <param name="path"></param>
-    /// <returns>False if its not a video file, True if its a video file. Exception if path is null or empty</returns>
+    /// <returns>False if it's not a video file, True if it's a video file. Exception if path is null or empty</returns>
     internal static bool FileIsVideo(string path)
     {
         ArgumentException.ThrowIfNullOrEmpty(path);
         return Path.GetExtension(path).ToLowerInvariant().ContainsAny(_videoExtensions);
+    }
+
+    internal static bool FileIsSpecialFeature(string path)
+    {
+        return path.ContainsAny(_specialFeatures);
     }
 
     /// <summary>
@@ -1287,10 +1292,64 @@ internal static partial class Utils
         };
     }
 
+    private static ExtendedBackupFileBase ExtendedBackupFileBase(string path)
+    {
+        if (path.EndsWithIgnoreCase("_dut.srt"))
+        {
+            LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High, $"_dut.srt file found at {path}");
+            return null;
+        }
+
+        if (path.EndsWithIgnoreCase("_eng.srt"))
+        {
+            LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High, $"_eng.srt file found at {path}");
+            return null;
+        }
+
+        if (path.EndsWithIgnoreCase("_2.srt"))
+        {
+            LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High, $"_2.srt file found at {path}");
+            return null;
+        }
+
+        // ReSharper disable once StringLiteralTypo
+        if (path.Contains("TdarrCacheFile-")) return null;
+        if (path.Contains(@"\_TV")) return new TvEpisodeBackupFile(path);
+
+        if (path.Contains(@"\_Movies") || path.Contains(@"\_Concerts") || path.Contains(@"\_Comedy"))
+            return path.EndsWithIgnoreCase(".srt") ? new SubtitlesBackupFile(path) : new MovieBackupFile(path);
+
+        return null;
+    }
+
+    internal static void CheckVideoFileAndRenameIfRequired(ref string path)
+    {
+        var file = ExtendedBackupFileBase(path);
+        if (file == null) return;
+
+        if (file.RefreshMediaInfo())
+        {
+            var newFullPath = file.GetFullName();
+            if (newFullPath == path) return;
+
+            if (File.Exists(newFullPath))
+                LogWithPushover(BackupAction.Error, $"Renaming {path} failed as {newFullPath} already exists");
+            else
+            {
+                Log($"Renaming {path} to {newFullPath}");
+                _ = FileMove(path, newFullPath);
+                Trace($"Renamed {path} to {newFullPath}");
+            }
+            path = newFullPath;
+        }
+        else
+            LogWithPushover(BackupAction.Error, $"Refreshing media info for {path} failed");
+    }
+
     public static decimal FormatAudioChannels(MediaInfoModel mediaInfo)
     {
         var audioChannels = FormatAudioChannelsFromAudioChannelPositions(mediaInfo);
-        if (audioChannels == null || audioChannels == 0.0m) audioChannels = mediaInfo.AudioChannels;
+        if (audioChannels is null or 0.0m) audioChannels = mediaInfo.AudioChannels;
         return audioChannels.Value;
     }
 
@@ -2424,6 +2483,7 @@ internal static partial class Utils
         return TraceOut(returnValue);
     }
 
+    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static string GetFullyQualifiedCurrentMethodName()
     {
@@ -2439,6 +2499,7 @@ internal static partial class Utils
         return $"{sf.GetMethod()?.DeclaringType?.FullName}.{name}";
     }
 
+    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.NoInlining)]
     internal static void TraceIn()
     {
@@ -2459,6 +2520,7 @@ internal static partial class Utils
         }
     }
 
+    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.NoInlining)]
     internal static T TraceOut<T>(T t, string text = "")
     {
@@ -2478,6 +2540,7 @@ internal static partial class Utils
         return t;
     }
 
+    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.NoInlining)]
     internal static T TraceOut<T>(string text = "")
     {
@@ -2486,6 +2549,7 @@ internal static partial class Utils
         return default;
     }
 
+    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.NoInlining)]
     internal static string TraceOut(string value)
     {
@@ -2494,6 +2558,7 @@ internal static partial class Utils
         return value;
     }
 
+    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.NoInlining)]
     internal static void TraceOut()
     {
@@ -2501,6 +2566,7 @@ internal static partial class Utils
         Trace($"{methodName} exit");
     }
 
+    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.NoInlining)]
     internal static void Trace(string value)
     {

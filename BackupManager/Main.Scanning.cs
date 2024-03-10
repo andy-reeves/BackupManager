@@ -111,8 +111,6 @@ internal sealed partial class Main
                     if (!ProcessFilesFixedSpaceCheck(ref file)) continue;
                     if (!ProcessFilesRenameFileRules(ref file)) continue;
                     if (!ProcessFilesCheckAllMediaInfo(scanPathForVideoCodec, ref file, ct)) continue;
-
-                    // if (!ProcessFilesVideoCodecCheck(scanPathForVideoCodec, ref file, ct)) continue;
                     if (file == null) continue;
 
                     if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
@@ -209,43 +207,7 @@ internal sealed partial class Main
 
         try
         {
-            // TODO only movie files for now
-            if (file.Contains(@"\_Movies"))
-            {
-                var movie = new MovieBackupFile(file);
-
-                // TODO check this
-                if (!movie.Valid) return Utils.TraceOut(true);
-
-                _ = movie.RefreshMediaInfo();
-                var newName = movie.GetFullName();
-
-                if (newName != file)
-                {
-                    // renaming time
-                    Utils.Log($"Renaming {file} to {newName}");
-                    _ = Utils.FileMove(file, newName);
-                    Utils.Trace($"Renamed {file} to {newName}");
-
-                    // Pass the new file name back to continue processing
-                    file = newName;
-
-                    // TODO rename any subtitles files in the same folder
-                    // find any files in this folder that end in one of our srt valid extensions
-                    /*var oldCodecInBrackets = oldCodec.WrapInSquareBrackets();
-                    var newCodecInBrackets = newCodec.WrapInSquareBrackets();
-                    var directoryPath = Path.GetDirectoryName(file);
-                    var filesInSameDirectory = Utils.GetFiles(directoryPath, ct);
-
-                    foreach (var f in filesInSameDirectory.Where(static f => f.ContainsAny(Utils.SubtitlesExtensions))
-                                 .Where(f => f.Contains(oldCodecInBrackets)))
-                    {
-                        Utils.Log(BackupAction.ProcessFiles, $"{f} had codec of {oldCodec} in its path and will be renamed with {newCodec}");
-                        var newName = f.Replace(oldCodecInBrackets, newCodecInBrackets);
-                        if (!Utils.FileMove(f, newName)) return Utils.TraceOut(false);
-                    }*/
-                }
-            }
+            Utils.CheckVideoFileAndRenameIfRequired(ref file);
         }
         catch (Exception ex)
         {

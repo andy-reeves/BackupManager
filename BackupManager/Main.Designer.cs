@@ -64,6 +64,7 @@
             listBackupDiskStatusByFreeSpaceButton = new System.Windows.Forms.Button();
             videoCodecCheckButton = new System.Windows.Forms.Button();
             scanDirectoriesWithChangesButton = new System.Windows.Forms.Button();
+            scanLastDirectoriesButton = new System.Windows.Forms.Button();
             scheduledBackupTimerButton = new System.Windows.Forms.Button();
             listFilesOnBackupDiskButton = new System.Windows.Forms.Button();
             listFilesInDirectoryButton = new System.Windows.Forms.Button();
@@ -541,6 +542,18 @@
             toolTip.SetToolTip(scanDirectoriesWithChangesButton, "Starts/Stops the service version checking");
             scanDirectoriesWithChangesButton.UseVisualStyleBackColor = true;
             scanDirectoriesWithChangesButton.Click += ScanDirectoriesWithChangesButton_Click;
+            // 
+            // scanLastDirectoriesButton
+            // 
+            scanLastDirectoriesButton.Location = new System.Drawing.Point(589, 426);
+            scanLastDirectoriesButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            scanLastDirectoriesButton.Name = "scanLastDirectoriesButton";
+            scanLastDirectoriesButton.Size = new System.Drawing.Size(232, 27);
+            scanLastDirectoriesButton.TabIndex = 105;
+            scanLastDirectoriesButton.Text = "Scan last 200 files for changes";
+            toolTip.SetToolTip(scanLastDirectoriesButton, "Starts/Stops the service version checking");
+            scanLastDirectoriesButton.UseVisualStyleBackColor = true;
+            scanLastDirectoriesButton.Click += ScanLastDirectoriesButton_Click;
             // 
             // scheduledBackupTimerButton
             // 
@@ -1334,6 +1347,7 @@
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1416, 548);
+            Controls.Add(scanLastDirectoriesButton);
             Controls.Add(scanDirectoriesWithChangesButton);
             Controls.Add(h264FilesButton);
             Controls.Add(videoCodecCheckButton);
@@ -1528,6 +1542,7 @@
         private System.Windows.Forms.Button videoCodecCheckButton;
         private System.Windows.Forms.Button h264FilesButton;
         private System.Windows.Forms.Button scanDirectoriesWithChangesButton;
+        private System.Windows.Forms.Button scanLastDirectoriesButton;
     }
 }
 

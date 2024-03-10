@@ -9,7 +9,7 @@ using System.Xml.Serialization;
 
 namespace BackupManager.Entities;
 
-internal abstract class ExtendedBackupFileBase : BackupFile
+internal abstract class ExtendedBackupFileBase
 {
     public string GetFileNameWithoutExtension()
     {
@@ -20,14 +20,18 @@ internal abstract class ExtendedBackupFileBase : BackupFile
 
     public abstract string GetFullName();
 
-    [XmlIgnore] public string Extension { get; set; }
+    [XmlIgnore] protected string Extension { get; set; }
 
-    [XmlIgnore] public bool Valid { get; set; }
+    [XmlIgnore] public bool IsValid { get; protected set; }
 
-    public string OriginalPath { get; set; }
+    protected string OriginalPath { get; init; }
 
-    public string Title { get; set; }
+    protected string Title { get; set; }
 
-    public string FullDirectory { get; set; }
+    public string FullDirectory { get; protected set; }
+
+    public abstract bool RefreshMediaInfo();
+
+    protected abstract bool Validate();
 }
 
