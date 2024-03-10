@@ -1318,11 +1318,19 @@ internal static partial class Utils
                 LogWithPushover(BackupAction.Error, $"Renaming {path} failed as {newFullPath} already exists");
             else
             {
-                LogWithPushover(BackupAction.General, PushoverPriority.High, $"Renaming {path} to {newFullPath}");
-                _ = FileMove(path, newFullPath);
-                Trace($"Renamed {path} to {newFullPath}");
+                if (Path.GetDirectoryName(path) == Path.GetDirectoryName(newFullPath))
+                {
+                    LogWithPushover(BackupAction.General, PushoverPriority.High, $"Renaming {path} to {newFullPath}");
+                    _ = FileMove(path, newFullPath);
+                    Trace($"Renamed {path} to {newFullPath}");
+                    path = newFullPath;
+                }
+                else
+                {
+                    LogWithPushover(BackupAction.General, PushoverPriority.High,
+                        $"Renaming {path} to {newFullPath} and directories do not match anymore");
+                }
             }
-            path = newFullPath;
         }
         else
             LogWithPushover(BackupAction.Error, $"Refreshing media info for {path} failed");
