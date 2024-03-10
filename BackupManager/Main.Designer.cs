@@ -550,7 +550,7 @@
             scanLastDirectoriesButton.Name = "scanLastDirectoriesButton";
             scanLastDirectoriesButton.Size = new System.Drawing.Size(232, 27);
             scanLastDirectoriesButton.TabIndex = 105;
-            scanLastDirectoriesButton.Text = "Scan last 200 files for changes";
+            scanLastDirectoriesButton.Text = "Scan last 500 files for changes";
             toolTip.SetToolTip(scanLastDirectoriesButton, "Starts/Stops the service version checking");
             scanLastDirectoriesButton.UseVisualStyleBackColor = true;
             scanLastDirectoriesButton.Click += ScanLastDirectoriesButton_Click;

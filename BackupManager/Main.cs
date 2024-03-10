@@ -1177,7 +1177,7 @@ internal sealed partial class Main : Form
 
     private void ScanLastDirectoriesButton_Click(object sender, EventArgs e)
     {
-        const int count = 200;
+        const int count = 500;
 
         try
         {
