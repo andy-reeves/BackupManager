@@ -16,10 +16,10 @@ namespace BackupManager.Entities;
 [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
 internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
 {
-    private const string FILE_NAME_PATTERN =
+    protected override string FileNameRegex =>
         @"^(?:(.*)\s(?:s?(\d{1,4})?(e\d{2,4}-?(?:e\d{2,4})?|\d{4}-\d\d-\d\d))(\s.*)?(?:\[(DVD|SDTV|WEB(?:Rip|DL)|Bluray|HDTV)(?:-((?:48|72|108|216)0p(?:\sRemux)?))?\](?:\[((?:DV)?(?:(?:\s)?HDR10(?:Plus)?)?|PQ|HLG)\])?\[(DTS(?:\sHD|-(?:X|ES|HD\s(?:M|HR)A))?|(?:TrueHD|EAC3)(?:\sAtmos)?|AC3|FLAC|PCM|MP[23]|A[AV]C|Opus|Vorbis|WMA)\s([1-8]\.[01])\]\[([hx]26[45]|MPEG(?:[24])?|XviD|V(?:C1|P9)|DivX|HEVC|AVC|RGB)\])|(.*)-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(?:kv|p(?:4|e?g))|avi)$";
 
-    private const string DIRECTORY_ONLY_PATTERN = @"^.*\\_TV(?:\s\(non-tvdb\))?\\(.*)\s{t[mv]db-(\d{1,7}?)}(?:\\(?:Season\s(\d+)|(Specials)))?$";
+    protected override string DirectoryRegex => @"^.*\\_TV(?:\s\(non-tvdb\))?\\(.*)\s{t[mv]db-(\d{1,7}?)}(?:\\(?:Season\s(\d+)|(Specials)))?$";
 
     public TvEpisodeBackupFile(string path)
     {
@@ -39,7 +39,7 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
             fileName = path;
             directoryPath = string.Empty;
         }
-        var regex = new Regex(FILE_NAME_PATTERN);
+        var regex = new Regex(FileNameRegex);
         if (!regex.IsMatch(fileName)) return;
 
         IsValid = ParseMediaInfoFromFileName(fileName);
@@ -67,18 +67,10 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
         }
     }
 
-    protected override bool Validate()
-    {
-        var fileName = GetFileName();
-        var regex = new Regex(FILE_NAME_PATTERN);
-        IsValid = regex.IsMatch(fileName);
-        return IsValid;
-    }
-
     private bool ParseMediaInfoFromDirectory(string directoryPath)
     {
         FullDirectory = directoryPath;
-        var match = Regex.Match(directoryPath, DIRECTORY_ONLY_PATTERN);
+        var match = Regex.Match(directoryPath, DirectoryRegex);
         if (!match.Success) return false;
 
         const int titleGroup = 1;
@@ -137,7 +129,7 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
         const int specialFeatureTitleGroup = 11;
         const int specialFeatureGroup = 12;
         const int extensionGroup = 13;
-        var match = Regex.Match(filename, FILE_NAME_PATTERN);
+        var match = Regex.Match(filename, FileNameRegex);
         var videoCodec = match.Groups[videoCodecGroup].Value;
         var audioCodec = match.Groups[audioCodecGroup].Value;
         var audioChannels = match.Groups[audioChannelsGroup].Value;

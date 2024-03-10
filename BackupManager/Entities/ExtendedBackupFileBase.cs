@@ -5,12 +5,25 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 
 namespace BackupManager.Entities;
 
 internal abstract class ExtendedBackupFileBase
 {
+    protected abstract string DirectoryRegex { get; }
+
+    protected abstract string FileNameRegex { get; }
+
+    protected virtual bool Validate()
+    {
+        var fileName = GetFileName();
+        var regex = new Regex(FileNameRegex);
+        IsValid = regex.IsMatch(fileName);
+        return IsValid;
+    }
+
     public string GetFileNameWithoutExtension()
     {
         return Path.GetFileNameWithoutExtension(GetFileName());
@@ -31,7 +44,5 @@ internal abstract class ExtendedBackupFileBase
     public string FullDirectory { get; protected set; }
 
     public abstract bool RefreshMediaInfo();
-
-    protected abstract bool Validate();
 }
 

@@ -17,9 +17,9 @@ namespace BackupManager.Entities;
 [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
 internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
 {
-    private const string FILE_NAME_PATTERN = @"^(.*)\.(e[ns](?:\.hi)?)\.srt$";
+    protected override string FileNameRegex => @"^(.*)\.(e[ns](?:\.hi)?)\.srt$";
 
-    private const string DIRECTORY_ONLY_PATTERN = @"^.*\\_(?:Movies|Comedy|Concerts)(?:\s\(non-t[mv]db\))?\\(.*)\((\d{4})\)(-other)?.*$";
+    protected override string DirectoryRegex => @"^.*\\_(?:Movies|Comedy|Concerts)(?:\s\(non-t[mv]db\))?\\(.*)\((\d{4})\)(-other)?.*$";
 
     private MovieBackupFile GetMovie()
     {
@@ -33,14 +33,6 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
     }
 
     public string Subtitles { get; private set; }
-
-    protected override bool Validate()
-    {
-        var fileName = GetFileName();
-        var regex = new Regex(FILE_NAME_PATTERN);
-        IsValid = regex.IsMatch(fileName);
-        return IsValid;
-    }
 
     public SubtitlesBackupFile(string path)
     {
@@ -58,7 +50,7 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
             fileName = path;
             directoryPath = string.Empty;
         }
-        var regex = new Regex(FILE_NAME_PATTERN);
+        var regex = new Regex(FileNameRegex);
         if (!regex.IsMatch(fileName)) return;
 
         IsValid = ParseInfoFromFileName(fileName);
@@ -71,7 +63,7 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
     private bool ParseInfoFromDirectory(string directoryPath)
     {
         FullDirectory = directoryPath;
-        return Regex.Match(directoryPath, DIRECTORY_ONLY_PATTERN).Success;
+        return Regex.Match(directoryPath, DirectoryRegex).Success;
     }
 
     public override string GetFileName()
@@ -91,7 +83,7 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
     {
         const int subtitlesGroup = 2;
         const int title = 1;
-        var match = Regex.Match(filename, FILE_NAME_PATTERN);
+        var match = Regex.Match(filename, FileNameRegex);
         if (!match.Success) return false;
 
         Title = match.Groups[title].Value;
