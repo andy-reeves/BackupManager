@@ -539,7 +539,7 @@
             scanDirectoriesWithChangesButton.Size = new System.Drawing.Size(232, 27);
             scanDirectoriesWithChangesButton.TabIndex = 104;
             scanDirectoriesWithChangesButton.Text = "Scan directories with changes";
-            toolTip.SetToolTip(scanDirectoriesWithChangesButton, "Starts/Stops the service version checking");
+            toolTip.SetToolTip(scanDirectoriesWithChangesButton, "Scan all pending directories for changes immediately");
             scanDirectoriesWithChangesButton.UseVisualStyleBackColor = true;
             scanDirectoriesWithChangesButton.Click += ScanDirectoriesWithChangesButton_Click;
             // 
@@ -551,7 +551,7 @@
             scanLastDirectoriesButton.Size = new System.Drawing.Size(232, 27);
             scanLastDirectoriesButton.TabIndex = 105;
             scanLastDirectoriesButton.Text = "Scan last nn files for changes";
-            toolTip.SetToolTip(scanLastDirectoriesButton, "Starts/Stops the service version checking");
+            toolTip.SetToolTip(scanLastDirectoriesButton, "Scan the last nn files for directories to scan");
             scanLastDirectoriesButton.UseVisualStyleBackColor = true;
             scanLastDirectoriesButton.Click += ScanLastFilesButton_Click;
             // 
