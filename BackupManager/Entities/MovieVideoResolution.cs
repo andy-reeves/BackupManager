@@ -12,6 +12,7 @@ namespace BackupManager.Entities;
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 [SuppressMessage("ReSharper", "IdentifierTypo")]
 [SuppressMessage("ReSharper", "StringLiteralTypo")]
+[SuppressMessage("ReSharper", "UnusedMember.Global")]
 internal enum MovieVideoResolution
 {
     [EnumMember(Value = "")] Unknown = 0,

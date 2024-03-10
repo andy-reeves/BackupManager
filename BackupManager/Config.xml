@@ -69,6 +69,8 @@
 
   <!-- Number of seconds between checking all the directories ready to scan to see if they are old enough now (300) -->
   <DirectoriesScanTimer>20</DirectoriesScanTimer>
+  
+  <FilesToScanForChanges>5</FilesToScanForChanges>
 
   <!-- When true check for latest versions of applications -->
   <MonitoringCheckLatestVersions>true</MonitoringCheckLatestVersions>

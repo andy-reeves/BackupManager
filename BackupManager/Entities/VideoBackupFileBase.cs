@@ -12,6 +12,7 @@ namespace BackupManager.Entities;
 
 internal abstract class VideoBackupFileBase : ExtendedBackupFileBase
 {
+    // ReSharper disable once UnusedMemberInSuper.Global
     public abstract string QualityFull { get; }
 
     protected MediaInfoVideoDynamicRangeType MediaInfoVideoDynamicRangeType { get; set; }

@@ -1,7 +1,9 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Serialization;
 
 namespace BackupManager.Entities;
 
+[SuppressMessage("ReSharper", "UnusedMember.Global")]
 internal enum SpecialFeature
 {
     [EnumMember(Value = "")] None = 0,

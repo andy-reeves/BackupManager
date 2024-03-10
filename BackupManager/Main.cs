@@ -1167,6 +1167,8 @@ internal sealed partial class Main : Form
                 // while (mediaBackup.Watcher.DirectoriesToScan.TryTake(out _)) { }
                 mediaBackup.Watcher.DirectoriesToScan.Clear();
                 ResetAllControls();
+                UpdateUI_Tick(null, null);
+                UpdateMediaFilesCountDisplay();
             }, mainCt), mainCt);
         }
         finally
@@ -1175,9 +1177,9 @@ internal sealed partial class Main : Form
         }
     }
 
-    private void ScanLastDirectoriesButton_Click(object sender, EventArgs e)
+    private void ScanLastFilesButton_Click(object sender, EventArgs e)
     {
-        const int count = 500;
+        var count = mediaBackup.Config.FilesToScanForChanges;
 
         try
         {
@@ -1191,10 +1193,13 @@ internal sealed partial class Main : Form
                 if (longRunningActionExecutingRightNow) return;
 
                 DisableControlsForAsyncTasks(mainCt);
+                Utils.LogWithPushover(BackupAction.General, $"Scanning {count} files for changed directories");
 
                 ReadyToScan(new FileSystemWatcherEventArgs(mediaBackup.BackupFiles.OrderBy(static f => f.LastWriteTime).TakeLast(count).ToArray()),
                     SearchOption.AllDirectories, true, mainCt);
                 ResetAllControls();
+                UpdateUI_Tick(null, null);
+                UpdateMediaFilesCountDisplay();
             }, mainCt), mainCt);
         }
         finally

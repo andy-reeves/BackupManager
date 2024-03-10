@@ -4,6 +4,7 @@ using System.Runtime.Serialization;
 namespace BackupManager.Entities;
 
 [SuppressMessage("ReSharper", "InconsistentNaming")]
+[SuppressMessage("ReSharper", "UnusedMember.Global")]
 internal enum MediaInfoVideoCodec
 {
     [EnumMember(Value = "")] Unknown = 0,

@@ -22,7 +22,7 @@ namespace BackupManager.Entities;
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 [DebuggerDisplay("RelativePath = {" + nameof(RelativePath) + "}")]
 [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
-public class BackupFile : IEquatable<BackupFile>
+public sealed class BackupFile : IEquatable<BackupFile>
 {
     private string contentsHash;
 

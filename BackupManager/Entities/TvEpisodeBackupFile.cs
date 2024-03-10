@@ -53,6 +53,7 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
     public SpecialFeature SpecialFeature { get; set; }
 
     // ReSharper disable once IdentifierTypo
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public string TvdbId { get; set; }
 
     public override string QualityFull

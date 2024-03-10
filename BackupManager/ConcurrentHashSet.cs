@@ -7,10 +7,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 
 namespace BackupManager;
 
+// ReSharper disable once UnusedType.Global
+[SuppressMessage("ReSharper", "UnusedMember.Global")]
 internal class ConcurrentHashSet<T> : IDisposable, IEnumerable<T>
 {
     private readonly HashSet<T> hashSet = new();

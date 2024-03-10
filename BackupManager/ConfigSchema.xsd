@@ -86,6 +86,11 @@
           <xs:annotation>
             <xs:documentation>in seconds</xs:documentation>
           </xs:annotation>
+        </xs:element>     
+        <xs:element type="xs:int" name="FilesToScanForChanges" maxOccurs="1" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>The number of recent file changes to scan for changed directories</xs:documentation>
+          </xs:annotation>
         </xs:element>
         <xs:element type="xs:string" name="DuplicateContentHashCodesDiscoveryRegex" maxOccurs="1" minOccurs="0" />
         <xs:element type="xs:string" name="DuplicateFilesRegex" maxOccurs="1" minOccurs="0" />

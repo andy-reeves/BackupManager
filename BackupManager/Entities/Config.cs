@@ -138,6 +138,11 @@ public sealed class Config
     public int DirectoriesScanTimer { get; set; }
 
     /// <summary>
+    ///     The number of recent file changes to scan for changed directories
+    /// </summary>
+    public int FilesToScanForChanges { get; set; }
+
+    /// <summary>
     ///     Any files matching this will be checked to report unique content hash codes
     /// </summary>
     public string DuplicateContentHashCodesDiscoveryRegex { get; set; }

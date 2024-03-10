@@ -1294,24 +1294,6 @@ internal static partial class Utils
 
     private static ExtendedBackupFileBase ExtendedBackupFileBase(string path)
     {
-        if (path.EndsWithIgnoreCase("_dut.srt"))
-        {
-            LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High, $"_dut.srt file found at {path}");
-            return null;
-        }
-
-        if (path.EndsWithIgnoreCase("_eng.srt"))
-        {
-            LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High, $"_eng.srt file found at {path}");
-            return null;
-        }
-
-        if (path.EndsWithIgnoreCase("_2.srt"))
-        {
-            LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High, $"_2.srt file found at {path}");
-            return null;
-        }
-
         // ReSharper disable once StringLiteralTypo
         if (path.Contains("TdarrCacheFile-")) return null;
         if (path.Contains(@"\_TV")) return new TvEpisodeBackupFile(path);
@@ -1336,7 +1318,7 @@ internal static partial class Utils
                 LogWithPushover(BackupAction.Error, $"Renaming {path} failed as {newFullPath} already exists");
             else
             {
-                Log($"Renaming {path} to {newFullPath}");
+                LogWithPushover(BackupAction.General, PushoverPriority.High, $"Renaming {path} to {newFullPath}");
                 _ = FileMove(path, newFullPath);
                 Trace($"Renamed {path} to {newFullPath}");
             }

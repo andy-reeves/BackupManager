@@ -158,6 +158,9 @@ public sealed class EntityTests
     }
 
     // [Fact]
+    // ReSharper disable once UnusedMember.Global
+    [SuppressMessage("Usage", "xUnit1013:Public method should be marked as test", Justification = "<Pending>")]
+    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>")]
     public void MovieTestsAllMoviesFromBackupXml()
     {
         foreach (var backupFile in _mediaBackup.BackupFiles.Where(static f => !f.Deleted &&
@@ -174,6 +177,9 @@ public sealed class EntityTests
     }
 
     //[Fact]
+    // ReSharper disable once UnusedMember.Global
+    [SuppressMessage("Usage", "xUnit1013:Public method should be marked as test", Justification = "<Pending>")]
+    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>")]
     public void TestsAllFilesFromBackupXml()
     {
         var files = _mediaBackup.BackupFiles.Where(static f => !f.Deleted && !f.FullPath.Contains("TdarrCacheFile")).ToArray();
@@ -189,6 +195,9 @@ public sealed class EntityTests
     }
 
     //[Fact]
+    // ReSharper disable once UnusedMember.Global
+    [SuppressMessage("Usage", "xUnit1013:Public method should be marked as test", Justification = "<Pending>")]
+    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>")]
     public void TestsAllTvFromBackupXml()
     {
         foreach (var backupFile in _mediaBackup.BackupFiles.Where(static f => !f.Deleted && f.FullPath.Contains(@"_TV") &&
