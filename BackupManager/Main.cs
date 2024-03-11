@@ -1103,7 +1103,8 @@ internal sealed partial class Main : Form
 
     private void VideoFilesCheckNameButton_Click(object sender, EventArgs e)
     {
-        var files = mediaBackup.GetBackupFiles(false).ToArray();
+        var files = mediaBackup.BackupFiles
+            .Where(static bf => !bf.Deleted && (Utils.FileIsVideo(bf.FullPath) || Utils.FileIsSubtitles(bf.FullPath))).ToArray();
 
         for (var index = 0; index < files.Length; index++)
         {

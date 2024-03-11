@@ -19,6 +19,8 @@ internal enum MovieVideoResolution
 
     [EnumMember(Value = "480p")] P480,
 
+    [EnumMember(Value = "576p")] P576,
+
     [EnumMember(Value = "720p")] P720,
 
     [EnumMember(Value = "1080p")] P1080,

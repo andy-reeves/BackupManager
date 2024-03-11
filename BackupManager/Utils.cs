@@ -1306,8 +1306,6 @@ internal static partial class Utils
 
     private static ExtendedBackupFileBase ExtendedBackupFileBase(string path)
     {
-        if (!FileIsVideo(path) && !FileIsSubtitles(path)) return null;
-
         // ReSharper disable once StringLiteralTypo
         if (path.Contains("TdarrCacheFile-")) return null;
         if (path.Contains(@"\_TV")) return new TvEpisodeBackupFile(path);

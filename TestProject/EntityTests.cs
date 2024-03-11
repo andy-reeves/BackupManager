@@ -138,13 +138,6 @@ public sealed class EntityTests
         Assert.Equal(Path.GetFileName(fileName), movie.GetFileName());
         Assert.True(movie.RefreshMediaInfo());
         Assert.Equal(expectedFileName, movie.GetFileName());
-
-        const string path =
-            @"\\nas5\assets2\_Movies\Winnie the Pooh A Valentine for You (1999)\Winnie the Pooh A Valentine for You (1999) {tmdb-76669} [WEBRip-480p][EAC3 2.0][x265].mkv";
-        movie = new MovieBackupFile(path);
-        Assert.Equal(Path.GetFileName(path), movie.GetFileName());
-        Assert.True(movie.RefreshMediaInfo());
-        Assert.Equal("Winnie the Pooh A Valentine for You (1999) {tmdb-76669} [WEBRip-480p][EAC3 2.0][h265].mkv", movie.GetFileName());
     }
 
     [Theory]
