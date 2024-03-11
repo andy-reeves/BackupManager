@@ -163,7 +163,7 @@ internal static partial class Utils
     /// </summary>
 
     // ReSharper disable once UnusedMember.Local
-    internal static readonly string[] SubtitlesExtensions = { ".en.srt", ".es.srt", "en.hi.srt", "es.hi.srt" };
+    private static readonly string[] _subtitlesExtensions = { ".en.srt", ".es.srt", ".en.hi.srt", ".es.hi.srt", ".hi.srt", ".srt" };
 
     /// <summary>
     ///     True when we're in a DEBUG build otherwise False
@@ -1155,8 +1155,20 @@ internal static partial class Utils
         return Path.GetExtension(path).ToLowerInvariant().ContainsAny(_videoExtensions);
     }
 
+    /// <summary>
+    ///     Checks the path is a subtitles file
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns>False if it's not a subtitles file, True if it's a subtitles file. Exception if path is null or empty</returns>
+    internal static bool FileIsSubtitles(string path)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(path);
+        return Path.GetExtension(path).ToLowerInvariant().ContainsAny(_subtitlesExtensions);
+    }
+
     internal static bool FileIsSpecialFeature(string path)
     {
+        ArgumentException.ThrowIfNullOrEmpty(path);
         return path.ContainsAny(_specialFeatures);
     }
 
@@ -1294,6 +1306,8 @@ internal static partial class Utils
 
     private static ExtendedBackupFileBase ExtendedBackupFileBase(string path)
     {
+        if (!FileIsVideo(path) && !FileIsSubtitles(path)) return null;
+
         // ReSharper disable once StringLiteralTypo
         if (path.Contains("TdarrCacheFile-")) return null;
         if (path.Contains(@"\_TV")) return new TvEpisodeBackupFile(path);
