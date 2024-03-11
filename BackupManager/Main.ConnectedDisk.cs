@@ -360,7 +360,9 @@ internal sealed partial class Main
 
         reportedPercent = currentPercent;
 
-        if (!UpdateCurrentBackupDiskInfo(disk))
+        if (UpdateCurrentBackupDiskInfo(disk))
+            Utils.LogWithPushover(BackupAction.CheckBackupDisk, string.Format(Resources.ProcessingPercentage, currentPercent));
+        else
         {
             Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Emergency,
                 string.Format(Resources.ErrorUpdatingInfoForBackupDisk, disk.Name));

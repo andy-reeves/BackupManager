@@ -5,7 +5,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -114,7 +113,7 @@ internal sealed partial class Main
                     if (file == null) continue;
 
                     if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
-                    ProcessFilesUpdatePercentComplete(files, file);
+                    if (files.Count > 50) ProcessFilesUpdatePercentComplete(file);
                 }
                 directoryScanning = DirectoryScanning(scanId, file, directoryScanning, files, ref firstDir, ref scanInfo);
                 UpdateStatusLabel(ct, Resources.Processing, fileCounterForMultiThreadProcessing);
@@ -187,14 +186,14 @@ internal sealed partial class Main
         return Utils.TraceOut(true);
     }
 
-    private void ProcessFilesUpdatePercentComplete(ICollection files, string file)
+    private void ProcessFilesUpdatePercentComplete(string file)
     {
         fileCounterForMultiThreadProcessing++;
         currentPercentComplete = fileCounterForMultiThreadProcessing * 100 / toolStripProgressBar.Maximum;
-        if (currentPercentComplete % 20 != 0 || currentPercentComplete <= reportedPercentComplete || files.Count < 50) return;
+        if (currentPercentComplete % 20 != 0 || currentPercentComplete <= reportedPercentComplete) return;
 
         reportedPercentComplete = currentPercentComplete;
-        Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.ProcessingPercentage, currentPercentComplete));
+        Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.ProcessingPercentage, currentPercentComplete), true, true);
         Utils.Trace($"{fileCounterForMultiThreadProcessing} Processing {file}");
     }
 
