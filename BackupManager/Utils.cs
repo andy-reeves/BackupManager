@@ -1304,7 +1304,7 @@ internal static partial class Utils
         return null;
     }
 
-    internal static void CheckVideoFileAndRenameIfRequired(ref string path)
+    internal static void CheckVideoFileAndRenameIfRequired(ref string path, bool renameFile = true)
     {
         var file = ExtendedBackupFileBase(path);
         if (file == null) return;
@@ -1326,10 +1326,15 @@ internal static partial class Utils
             {
                 if (Path.GetDirectoryName(path) == Path.GetDirectoryName(newFullPath))
                 {
-                    LogWithPushover(BackupAction.General, PushoverPriority.High, $"Renaming {path} to {newFullPath}");
-                    _ = FileMove(path, newFullPath);
-                    Trace($"Renamed {path} to {newFullPath}");
-                    path = newFullPath;
+                    if (renameFile)
+                    {
+                        LogWithPushover(BackupAction.General, PushoverPriority.High, $"Renaming {path} to {newFullPath}");
+                        _ = FileMove(path, newFullPath);
+                        Trace($"Renamed {path} to {newFullPath}");
+                        path = newFullPath;
+                    }
+                    else
+                        Log($"File needs to be renamed from {path} to {newFullPath}");
                 }
                 else
                 {

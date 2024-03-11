@@ -1101,32 +1101,17 @@ internal sealed partial class Main : Form
         return mediaBackup.BackupFiles.Any(f => f.BackupDiskNumber == diskNumber);
     }
 
-    private void VideoCodecCheckButton_Click(object sender, EventArgs e)
+    private void VideoFilesCheckNameButton_Click(object sender, EventArgs e)
     {
-        var files = mediaBackup.BackupFiles.Where(static file =>
-            Utils.FileIsVideo(file.FullPath) && (file.FullPath.Contains("_TV") || file.FullPath.Contains("_Movies")) &&
-            !Utils.FileIsSpecialFeature(file.FullPath)).ToArray();
+        var files = mediaBackup.GetBackupFiles(false).ToArray();
 
         for (var index = 0; index < files.Length; index++)
         {
-            var file = files[index];
-            if (!File.Exists(file.FullPath)) continue;
+            var fullPath = files[index].FullPath;
+            Utils.Log($"[{index}/{files.Length}] {fullPath}");
+            if (!File.Exists(fullPath)) continue;
 
-            if (!Utils.GetVideoCodecFromFileName(file.FullPath, out var videoCodecFromFileName))
-            {
-                Utils.Log($"Couldn't determine video codec from the path for {file.FullPath}");
-                continue;
-            }
-
-            if (!Utils.GetVideoCodec(file.FullPath, out var actualVideoCodec))
-            {
-                Utils.Log($"Couldn't get actual video codec for {file.FullPath}");
-                continue;
-            }
-
-            Utils.Log(videoCodecFromFileName != actualVideoCodec
-                ? string.Format(Resources.VideoCodecNotCorrect, index + 1, files.Length, file.FullPath, videoCodecFromFileName, actualVideoCodec)
-                : string.Format(Resources.VideoCodecCorrect, index + 1, files.Length, file.FullPath));
+            Utils.CheckVideoFileAndRenameIfRequired(ref fullPath, false);
         }
     }
 
