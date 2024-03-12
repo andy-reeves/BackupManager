@@ -35,33 +35,35 @@ internal abstract class VideoBackupFileBase : ExtendedBackupFileBase
         return FullDirectory.HasValue() ? Path.Combine(FullDirectory, GetFileName()) : GetFileName();
     }
 
+    protected SpecialFeature SpecialFeature { get; set; }
+
     public override bool RefreshMediaInfo()
     {
         try
         {
-            var model = Utils.GetMediaInfoModel(OriginalPath);
-            if (model == null) return false;
-
-            var resolutionFromMediaInfo = Utils.GetResolutionFromMediaInfo(model);
-
-            if (VideoQuality != VideoQuality.DVD && VideoQuality != VideoQuality.SDTV && resolutionFromMediaInfo != VideoResolution)
+            if (SpecialFeature == SpecialFeature.None)
             {
-                if (this is MovieBackupFile { SpecialFeature: SpecialFeature.None })
+                var model = Utils.GetMediaInfoModel(OriginalPath);
+                if (model == null) return false;
+
+                var resolutionFromMediaInfo = Utils.GetResolutionFromMediaInfo(model);
+
+                if (VideoQuality != VideoQuality.DVD && VideoQuality != VideoQuality.SDTV && resolutionFromMediaInfo != VideoResolution)
                 {
                     Utils.LogWithPushover(BackupAction.Error,
                         $"Video resolution for {OriginalPath} was {VideoResolution} from the file name but {resolutionFromMediaInfo} from the MediaInfo");
                     VideoResolution = resolutionFromMediaInfo;
                 }
+                var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(OriginalPath);
+                var videoCodec = Utils.FormatVideoCodec(model, fileNameWithoutExtension);
+                var audioCodec = Utils.FormatAudioCodec(model, fileNameWithoutExtension);
+                var audioChannels = Utils.FormatAudioChannels(model);
+                var dynamicRangeType = Utils.FormatVideoDynamicRangeType(model);
+                MediaInfoVideoCodec = Utils.GetEnumFromAttributeValue<MediaInfoVideoCodec>(videoCodec);
+                if (audioCodec != null) MediaInfoAudioCodec = Utils.GetEnumFromAttributeValue<MediaInfoAudioCodec>(audioCodec);
+                if (audioChannels > 0) MediaInfoAudioChannels = Utils.GetEnumFromAttributeValue<MediaInfoAudioChannels>($"{audioChannels:0.0}");
+                MediaInfoVideoDynamicRangeType = Utils.GetEnumFromAttributeValue<MediaInfoVideoDynamicRangeType>(dynamicRangeType);
             }
-            var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(OriginalPath);
-            var videoCodec = Utils.FormatVideoCodec(model, fileNameWithoutExtension);
-            var audioCodec = Utils.FormatAudioCodec(model, fileNameWithoutExtension);
-            var audioChannels = Utils.FormatAudioChannels(model);
-            var dynamicRangeType = Utils.FormatVideoDynamicRangeType(model);
-            MediaInfoVideoCodec = Utils.GetEnumFromAttributeValue<MediaInfoVideoCodec>(videoCodec);
-            if (audioCodec != null) MediaInfoAudioCodec = Utils.GetEnumFromAttributeValue<MediaInfoAudioCodec>(audioCodec);
-            if (audioChannels > 0) MediaInfoAudioChannels = Utils.GetEnumFromAttributeValue<MediaInfoAudioChannels>($"{audioChannels:0.0}");
-            MediaInfoVideoDynamicRangeType = Utils.GetEnumFromAttributeValue<MediaInfoVideoDynamicRangeType>(dynamicRangeType);
 
             // Check if we're valid now
             _ = Validate();

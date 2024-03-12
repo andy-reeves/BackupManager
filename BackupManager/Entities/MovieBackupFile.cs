@@ -35,8 +35,6 @@ internal sealed class MovieBackupFile : VideoBackupFileBase
 
     public string AlternateMovieFolder { get; set; }
 
-    public SpecialFeature SpecialFeature { get; set; }
-
     public Edition Edition { get; set; }
 
     public string ReleaseYear { get; set; }
