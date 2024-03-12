@@ -48,7 +48,7 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
         {
             var s = $"[{VideoQuality.ToEnumMember()}";
             if (VideoResolution != VideoResolution.Unknown) s += $"-{VideoResolution.ToEnumMember()}";
-            if (IsRemux) s += " " + REMUX;
+            if (IsRemux) s += " " + Utils.REMUX;
             s += "]";
             return s;
         }
@@ -135,10 +135,10 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
         MediaInfoAudioChannels = Utils.GetEnumFromAttributeValue<MediaInfoAudioChannels>(audioChannels);
         MediaInfoVideoDynamicRangeType = Utils.GetEnumFromAttributeValue<MediaInfoVideoDynamicRangeType>(videoDynamicRangeType);
 
-        if (videoResolution.Contains(REMUX))
+        if (videoResolution.Contains(Utils.REMUX))
         {
             IsRemux = true;
-            videoResolution = videoResolution.SubstringBeforeLastIgnoreCase(REMUX).Trim();
+            videoResolution = videoResolution.SubstringBeforeLastIgnoreCase(Utils.REMUX).Trim();
         }
         VideoResolution = Utils.GetEnumFromAttributeValue<VideoResolution>(videoResolution);
         VideoQuality = Utils.GetEnumFromAttributeValue<VideoQuality>(videoQuality);

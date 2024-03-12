@@ -32,7 +32,8 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
 
     protected override string FileNameRegex => @"^(.*)\.(e[ns](?:\.hi)?)\.srt$";
 
-    protected override string DirectoryRegex => @"^.*\\_(?:Movies|Comedy|Concerts)(?:\s\(non-t[mv]db\))?\\(.*)\((\d{4})\)(-other)?.*$";
+    protected override string DirectoryRegex =>
+        @"^.*\\_(?:Movies|Comedy|Concerts|TV)(?:\s\(non-t[mv]db\))?\\(.*)((\((\d{4})\)(-other)?)|(\s{t(m|v)db-\d{1,7}?}\\(Season\s\d+|Specials))).*$";
 
     public string Subtitles { get; private set; }
 
@@ -58,11 +59,11 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
         return $"{Title}.{Subtitles}{Extension}";
     }
 
-    public bool RefreshMediaInfo(MovieBackupFile movie)
+    public bool RefreshMediaInfo(ExtendedBackupFileBase video)
     {
-        if (movie == null) return false;
+        if (video == null) return false;
 
-        Title = movie.GetFileNameWithoutExtension();
+        Title = video.GetFileNameWithoutExtension();
         return true;
     }
 
@@ -86,8 +87,17 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
 
     public override bool RefreshMediaInfo()
     {
-        var movie = GetMovie();
-        _ = RefreshMediaInfo(movie);
+        if (FullDirectory.HasNoValue()) return false;
+
+        var files = Utils.GetFiles(FullDirectory, new CancellationToken());
+        var videoFiles = files.Where(static f => Utils.FileIsVideo(f) && !Utils.FileIsSpecialFeature(f)).ToArray();
+        if (videoFiles.Any(file => Path.GetFileName(file).StartsWithIgnoreCase(Title))) return Validate();
+
+        // if more than 1 movie file in this folder, we can't pick one
+        if (videoFiles.Length is 0 or > 1) return Validate();
+
+        var video = Utils.ExtendedBackupFileBase(videoFiles[0]);
+        _ = RefreshMediaInfo(video);
         return Validate();
     }
 }

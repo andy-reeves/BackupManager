@@ -92,6 +92,12 @@ internal static partial class Utils
 
     internal const string MULTI_EPISODE_STYLE = "PrefixedRange"; //s01e01-e03
 
+    // ReSharper disable once IdentifierTypo
+    internal const string REMUX = "Remux";
+
+    // ReSharper disable once IdentifierTypo
+    internal const string BLURAY = "Bluray";
+
     /// <summary>
     ///     The end block size.
     /// </summary>
@@ -1238,7 +1244,7 @@ internal static partial class Utils
     /// <param name="path">Must have a video extension and a valid video codec in square brackets in the path</param>
     /// <param name="videoCodec"></param>
     /// <returns>False if the codec was not determined</returns>
-    internal static bool GetVideoCodecFromFileName(string path, out string videoCodec)
+    private static bool GetVideoCodecFromFileName(string path, out string videoCodec)
     {
         TraceIn(path);
         ArgumentException.ThrowIfNullOrEmpty(path);
@@ -1265,7 +1271,7 @@ internal static partial class Utils
     /// <exception cref="FileNotFoundException">If the file is not found</exception>
     /// <exception cref="IOException">If the file is locked</exception>
     /// <exception cref="NotSupportedException">If the file is not a video file</exception>
-    internal static bool GetVideoCodec(string path, out string actualVideoCodec)
+    private static bool GetVideoCodec(string path, out string actualVideoCodec)
     {
         TraceIn(path);
         ArgumentException.ThrowIfNullOrEmpty(path);
@@ -1304,11 +1310,11 @@ internal static partial class Utils
         };
     }
 
-    private static ExtendedBackupFileBase ExtendedBackupFileBase(string path)
+    internal static ExtendedBackupFileBase ExtendedBackupFileBase(string path)
     {
         // ReSharper disable once StringLiteralTypo
         if (path.Contains("TdarrCacheFile-")) return null;
-        if (path.Contains(@"\_TV")) return new TvEpisodeBackupFile(path);
+        if (path.Contains(@"\_TV")) return path.EndsWithIgnoreCase(".srt") ? new SubtitlesBackupFile(path) : new TvEpisodeBackupFile(path);
 
         if (path.Contains(@"\_Movies") || path.Contains(@"\_Concerts") || path.Contains(@"\_Comedy"))
             return path.EndsWithIgnoreCase(".srt") ? new SubtitlesBackupFile(path) : new MovieBackupFile(path);
@@ -1859,6 +1865,21 @@ internal static partial class Utils
             SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, text);
             if (delayAfterSending) Task.Delay(1000).Wait();
         }
+    }
+
+    internal static VideoResolution GetResolutionFromMediaInfo(MediaInfoModel model)
+    {
+        if (model == null) return VideoResolution.Unknown;
+
+        var height = model.Height;
+        var width = model.Width;
+        if (width > 3200 || height > 2100) return VideoResolution.R2160p;
+        if (width > 1800 || height > 1000) return VideoResolution.R1080p;
+        if (width > 1200 || height > 700) return VideoResolution.R720p;
+        if (width > 1000 || height > 560) return VideoResolution.R576p;
+        if (width > 0 || height > 0) return VideoResolution.R480p;
+
+        return VideoResolution.Unknown;
     }
 
     /// <summary>

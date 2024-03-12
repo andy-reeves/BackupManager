@@ -16,6 +16,7 @@ internal abstract class ExtendedBackupFileBase
 
     protected abstract string FileNameRegex { get; }
 
+    // ReSharper disable once VirtualMemberNeverOverridden.Global
     protected virtual bool Validate()
     {
         var fileName = GetFileName();

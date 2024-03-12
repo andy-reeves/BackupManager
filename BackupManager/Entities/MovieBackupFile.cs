@@ -49,7 +49,7 @@ internal sealed class MovieBackupFile : VideoBackupFileBase
         get
         {
             var s = "[";
-            s += IsRemux ? REMUX : $"{VideoQuality.ToEnumMember()}";
+            s += IsRemux ? Utils.REMUX : $"{VideoQuality.ToEnumMember()}";
             if (VideoResolution != VideoResolution.Unknown) s += $"-{VideoResolution.ToEnumMember()}";
             s += "]";
             return s;
@@ -133,10 +133,10 @@ internal sealed class MovieBackupFile : VideoBackupFileBase
         MediaInfoAudioChannels = Utils.GetEnumFromAttributeValue<MediaInfoAudioChannels>(audioChannels);
         MediaInfoVideoDynamicRangeType = Utils.GetEnumFromAttributeValue<MediaInfoVideoDynamicRangeType>(videoDynamicRangeType);
 
-        if (videoQuality.Contains(REMUX))
+        if (videoQuality.Contains(Utils.REMUX))
         {
             IsRemux = true;
-            videoQuality = "Bluray";
+            videoQuality = Utils.BLURAY;
         }
         VideoResolution = Utils.GetEnumFromAttributeValue<VideoResolution>(videoResolution);
         VideoQuality = Utils.GetEnumFromAttributeValue<VideoQuality>(videoQuality);
