@@ -1840,6 +1840,7 @@ internal static partial class Utils
         string text, bool delayBeforeSending = false, bool delayAfterSending = false)
     {
         Log(backupAction, text);
+        if (backupAction == BackupAction.Error && priority == PushoverPriority.Normal) priority = PushoverPriority.High;
 
         if (!Config.PushoverOnOff || ((priority is not (PushoverPriority.Low or PushoverPriority.Lowest) || !Config.PushoverSendLowOnOff) &&
                                       (priority != PushoverPriority.Normal || !Config.PushoverSendNormalOnOff) &&

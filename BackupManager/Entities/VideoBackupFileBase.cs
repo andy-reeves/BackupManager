@@ -15,7 +15,7 @@ internal abstract class VideoBackupFileBase : ExtendedBackupFileBase
     // ReSharper disable once IdentifierTypo
     protected const string REMUX = "Remux";
 
-    public VideoResolution VideoResolution { get; set; }
+    protected VideoResolution VideoResolution { get; set; }
 
     // ReSharper disable once UnusedMemberInSuper.Global
     public abstract string QualityFull { get; }
@@ -38,9 +38,17 @@ internal abstract class VideoBackupFileBase : ExtendedBackupFileBase
         return FullDirectory.HasValue() ? Path.Combine(FullDirectory, GetFileName()) : GetFileName();
     }
 
-    private VideoResolution GetResolutionFromMediaInfo(MediaInfoModel model)
+    private static VideoResolution GetResolutionFromMediaInfo(MediaInfoModel model)
     {
         if (model == null) return VideoResolution.Unknown;
+
+        var height = model.Height;
+        var width = model.Width;
+        if (width > 3200 || height > 2100) return VideoResolution.R2160p;
+        if (width > 1800 || height > 1000) return VideoResolution.R1080p;
+        if (width > 1200 || height > 700) return VideoResolution.R720p;
+        if (width > 1000 || height > 560) return VideoResolution.R576p;
+        if (width > 0 || height > 0) return VideoResolution.R480p;
 
         return VideoResolution.Unknown;
     }
@@ -52,9 +60,13 @@ internal abstract class VideoBackupFileBase : ExtendedBackupFileBase
             var model = Utils.GetMediaInfoModel(OriginalPath);
             if (model == null) return false;
 
-            if (this is MovieBackupFile)
+            var resolutionFromMediaInfo = GetResolutionFromMediaInfo(model);
+
+            if (resolutionFromMediaInfo != VideoResolution)
             {
-                var resolutionFromMediaInfo = GetResolutionFromMediaInfo(model);
+                Utils.LogWithPushover(BackupAction.Error,
+                    $"Video resolution for {OriginalPath} was {VideoResolution} from the file name but {resolutionFromMediaInfo} from the MediaInfo");
+                VideoResolution = resolutionFromMediaInfo;
             }
             var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(OriginalPath);
             var videoCodec = Utils.FormatVideoCodec(model, fileNameWithoutExtension);
