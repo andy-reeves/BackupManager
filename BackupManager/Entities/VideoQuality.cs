@@ -21,7 +21,5 @@ internal enum VideoQuality
 
     [EnumMember(Value = "DVD")] DVD,
 
-    [EnumMember(Value = "Bluray")] Bluray,
-
-    [EnumMember(Value = "Remux")] Remux
+    [EnumMember(Value = "Bluray")] Bluray
 }

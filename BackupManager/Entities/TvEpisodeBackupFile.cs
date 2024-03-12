@@ -36,8 +36,6 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
 
     public string EpisodeTitle { get; private set; }
 
-    public TvVideoResolution VideoResolution { get; set; }
-
     public SpecialFeature SpecialFeature { get; set; }
 
     // ReSharper disable once IdentifierTypo
@@ -49,7 +47,8 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
         get
         {
             var s = $"[{VideoQuality.ToEnumMember()}";
-            if (VideoResolution != TvVideoResolution.Unknown) s += $"-{VideoResolution.ToEnumMember()}";
+            if (VideoResolution != VideoResolution.Unknown) s += $"-{VideoResolution.ToEnumMember()}";
+            if (IsRemux) s += " " + REMUX;
             s += "]";
             return s;
         }
@@ -135,7 +134,13 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
         MediaInfoAudioCodec = Utils.GetEnumFromAttributeValue<MediaInfoAudioCodec>(audioCodec);
         MediaInfoAudioChannels = Utils.GetEnumFromAttributeValue<MediaInfoAudioChannels>(audioChannels);
         MediaInfoVideoDynamicRangeType = Utils.GetEnumFromAttributeValue<MediaInfoVideoDynamicRangeType>(videoDynamicRangeType);
-        VideoResolution = Utils.GetEnumFromAttributeValue<TvVideoResolution>(videoResolution);
+
+        if (videoResolution.Contains(REMUX))
+        {
+            IsRemux = true;
+            videoResolution = videoResolution.SubstringBeforeLastIgnoreCase(REMUX).Trim();
+        }
+        VideoResolution = Utils.GetEnumFromAttributeValue<VideoResolution>(videoResolution);
         VideoQuality = Utils.GetEnumFromAttributeValue<VideoQuality>(videoQuality);
         Title = showTitle.Trim();
         EpisodeTitle = episodeTitle.Trim();

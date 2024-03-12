@@ -44,14 +44,13 @@ internal sealed class MovieBackupFile : VideoBackupFileBase
     // ReSharper disable once IdentifierTypo
     public string TmdbId { get; set; }
 
-    public MovieVideoResolution VideoResolution { get; set; }
-
     public override string QualityFull
     {
         get
         {
-            var s = $"[{VideoQuality.ToEnumMember()}";
-            if (VideoResolution != MovieVideoResolution.Unknown) s += $"-{VideoResolution.ToEnumMember()}";
+            var s = "[";
+            s += IsRemux ? REMUX : $"{VideoQuality.ToEnumMember()}";
+            if (VideoResolution != VideoResolution.Unknown) s += $"-{VideoResolution.ToEnumMember()}";
             s += "]";
             return s;
         }
@@ -133,7 +132,13 @@ internal sealed class MovieBackupFile : VideoBackupFileBase
         MediaInfoAudioCodec = Utils.GetEnumFromAttributeValue<MediaInfoAudioCodec>(audioCodec);
         MediaInfoAudioChannels = Utils.GetEnumFromAttributeValue<MediaInfoAudioChannels>(audioChannels);
         MediaInfoVideoDynamicRangeType = Utils.GetEnumFromAttributeValue<MediaInfoVideoDynamicRangeType>(videoDynamicRangeType);
-        VideoResolution = Utils.GetEnumFromAttributeValue<MovieVideoResolution>(videoResolution);
+
+        if (videoQuality.Contains(REMUX))
+        {
+            IsRemux = true;
+            videoQuality = "Bluray";
+        }
+        VideoResolution = Utils.GetEnumFromAttributeValue<VideoResolution>(videoResolution);
         VideoQuality = Utils.GetEnumFromAttributeValue<VideoQuality>(videoQuality);
         Edition = Utils.GetEnumFromAttributeValue<Edition>(edition);
         TmdbId = id.HasValue() ? id : string.Empty;

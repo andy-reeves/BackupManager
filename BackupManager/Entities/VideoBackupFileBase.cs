@@ -12,6 +12,11 @@ namespace BackupManager.Entities;
 
 internal abstract class VideoBackupFileBase : ExtendedBackupFileBase
 {
+    // ReSharper disable once IdentifierTypo
+    protected const string REMUX = "Remux";
+
+    public VideoResolution VideoResolution { get; set; }
+
     // ReSharper disable once UnusedMemberInSuper.Global
     public abstract string QualityFull { get; }
 
@@ -25,9 +30,19 @@ internal abstract class VideoBackupFileBase : ExtendedBackupFileBase
 
     protected MediaInfoVideoCodec MediaInfoVideoCodec { get; set; }
 
+    // ReSharper disable once IdentifierTypo
+    protected bool IsRemux { get; set; }
+
     public override string GetFullName()
     {
         return FullDirectory.HasValue() ? Path.Combine(FullDirectory, GetFileName()) : GetFileName();
+    }
+
+    private VideoResolution GetResolutionFromMediaInfo(MediaInfoModel model)
+    {
+        if (model == null) return VideoResolution.Unknown;
+
+        return VideoResolution.Unknown;
     }
 
     public override bool RefreshMediaInfo()
@@ -37,6 +52,10 @@ internal abstract class VideoBackupFileBase : ExtendedBackupFileBase
             var model = Utils.GetMediaInfoModel(OriginalPath);
             if (model == null) return false;
 
+            if (this is MovieBackupFile)
+            {
+                var resolutionFromMediaInfo = GetResolutionFromMediaInfo(model);
+            }
             var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(OriginalPath);
             var videoCodec = Utils.FormatVideoCodec(model, fileNameWithoutExtension);
             var audioCodec = Utils.FormatAudioCodec(model, fileNameWithoutExtension);
