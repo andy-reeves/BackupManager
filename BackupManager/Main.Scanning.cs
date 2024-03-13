@@ -93,7 +93,7 @@ internal sealed partial class Main
         var filtersToDelete = FiltersToDelete();
 
         // order the files by path so that we can track when the monitored directories are changing for scan timings
-        var files = filesParam.OrderBy(static f => f.ToString()).ToList();
+        var files = filesParam.OrderBy(static f => f.ToString()).ToArray();
         var directoryScanning = string.Empty;
         var firstDir = true;
         DirectoryScan scanInfo = null;
@@ -113,7 +113,7 @@ internal sealed partial class Main
                     if (file == null) continue;
 
                     if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
-                    if (files.Count > 50) ProcessFilesUpdatePercentComplete(file);
+                    if (files.Length > 50) ProcessFilesUpdatePercentComplete(file);
                 }
                 directoryScanning = DirectoryScanning(scanId, file, directoryScanning, files, ref firstDir, ref scanInfo);
                 UpdateStatusLabel(ct, Resources.Processing, fileCounterForMultiThreadProcessing);

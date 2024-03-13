@@ -1346,7 +1346,7 @@ internal static partial class Utils
                 {
                     if (renameFile)
                     {
-                        LogWithPushover(BackupAction.General, PushoverPriority.High, $"Renaming {path} to {newFullPath}");
+                        Log(BackupAction.General, $"Renaming {path} to {newFullPath}");
                         _ = FileMove(path, newFullPath);
                         Trace($"Renamed {path} to {newFullPath}");
                         path = newFullPath;

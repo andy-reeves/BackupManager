@@ -4,6 +4,7 @@
 //  </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System;
 using System.IO;
 
 using BackupManager.Extensions;
@@ -48,11 +49,48 @@ internal abstract class VideoBackupFileBase : ExtendedBackupFileBase
 
                 var resolutionFromMediaInfo = Utils.GetResolutionFromMediaInfo(model);
 
-                if (VideoQuality != VideoQuality.DVD && VideoQuality != VideoQuality.SDTV && resolutionFromMediaInfo != VideoResolution)
+                if (resolutionFromMediaInfo != VideoResolution)
                 {
-                    Utils.LogWithPushover(BackupAction.Error,
-                        $"Video resolution for {OriginalPath} was {VideoResolution} from the file name but {resolutionFromMediaInfo} from the MediaInfo");
+                    //Utils.Log(BackupAction.Error,
+                    //    $"Video resolution for {OriginalPath} was {VideoResolution} from the file name but {resolutionFromMediaInfo} from the MediaInfo");
                     VideoResolution = resolutionFromMediaInfo;
+                }
+
+                // ReSharper disable once CommentTypo
+                // if the resolution is actually 576 or 480 then the Quality must be SDTV and not anything else 
+                if (VideoResolution is VideoResolution.R576p or VideoResolution.R480p && VideoQuality == VideoQuality.HDTV)
+                    VideoQuality = VideoQuality.SDTV;
+
+                if (VideoResolution is VideoResolution.R720p or VideoResolution.R1080p && VideoQuality is VideoQuality.SDTV or VideoQuality.DVD)
+                    VideoQuality = VideoQuality.HDTV;
+
+                switch (VideoResolution)
+                {
+                    case VideoResolution.R1080p:
+                    case VideoResolution.R2160p:
+                        if (VideoQuality is VideoQuality.SDTV or VideoQuality.DVD)
+                            Utils.LogWithPushover(BackupAction.Error, $"{OriginalPath} is {VideoQuality} and so can't be {VideoResolution}");
+                        break;
+                    case VideoResolution.R720p:
+                        if (VideoQuality == VideoQuality.SDTV || VideoQuality == VideoQuality.DVD || IsRemux)
+                        {
+                            Utils.LogWithPushover(BackupAction.Error,
+                                $"{OriginalPath} is {VideoQuality} and so can't be {VideoResolution} or Remux");
+                        }
+                        break;
+                    case VideoResolution.R480p:
+                    case VideoResolution.R576p:
+                        if (VideoQuality == VideoQuality.HDTV || IsRemux)
+                        {
+                            Utils.LogWithPushover(BackupAction.Error,
+                                $"{OriginalPath} is {VideoQuality} and so can't be {VideoResolution} or Remux");
+                        }
+                        break;
+                    case VideoResolution.Unknown:
+                        Utils.LogWithPushover(BackupAction.Error, $"{OriginalPath} can't be {VideoResolution}");
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
                 var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(OriginalPath);
                 var videoCodec = Utils.FormatVideoCodec(model, fileNameWithoutExtension);

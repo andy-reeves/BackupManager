@@ -257,22 +257,25 @@ public sealed class MediaBackup
     ///     Gets a BackupFile representing the file from the contents Hashcode provided. Doesn't check files marked Deleted
     /// </summary>
     /// <param name="value">The contents Hashcode of the file to find.</param>
-    /// <returns>Null if it wasn't found or null if more than 1</returns>
+    /// <returns>Null if it wasn't found or more than 1 file found</returns>
     public BackupFile GetBackupFileFromContentsHashcode(string value)
     {
         Utils.TraceIn();
-        var count = BackupFiles.Count(a => a.ContentsHash == value && !a.Deleted);
+
+        // Copy to Array to avoid modified collection errors
+        var bFiles = BackupFiles.ToArray();
+        var count = bFiles.Count(a => a.ContentsHash == value && !a.Deleted);
 
         switch (count)
         {
             case 0:
                 return Utils.TraceOut<BackupFile>("exit1");
             case > 1:
-                var files = BackupFiles.Where(q => q.ContentsHash == value && !q.Deleted).Take(2).ToArray();
+                var files = bFiles.Where(q => q.ContentsHash == value && !q.Deleted).Take(2).ToArray();
                 Utils.Trace(string.Format(Resources.DuplicateContentsHashCode, value, files[0].FullPath, files[1].FullPath));
                 return Utils.TraceOut<BackupFile>("exit2");
         }
-        var file = BackupFiles.First(q => q.ContentsHash == value && !q.Deleted);
+        var file = bFiles.First(q => q.ContentsHash == value && !q.Deleted);
         return Utils.TraceOut(file);
     }
 
@@ -351,9 +354,24 @@ public sealed class MediaBackup
             }
 
             // Now we check the full path has not changed the UPPER or lowercase anywhere
-            // we're not case sensitive but we want it to match the casing in the directory
+            // we're not case-sensitive, but we want it to match the casing in the directory
             if (fullPath != backupFile.FullPath) backupFile.SetFullPath(fullPath, directory);
             return Utils.TraceOut(backupFile);
+        }
+
+        //TODO If we get to here then the file path is not know to use
+        // We need to check the contents hash only because maybe we renamed the source file 
+        var contents = Utils.GetShortMd5HashFromFile(fullPath);
+        var f = GetBackupFileFromContentsHashcode(contents);
+
+        if (f != null)
+        {
+            if (GetFoldersForPath(fullPath, out var dir, out _))
+            {
+                // we have a matching file from contents only
+                f.SetFullPath(fullPath, dir);
+                return Utils.TraceOut(f);
+            }
         }
         backupFile = new BackupFile(fullPath, directory);
         Utils.Trace($"Adding backup file {backupFile.RelativePath}");
