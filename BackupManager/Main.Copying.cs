@@ -93,11 +93,9 @@ internal sealed partial class Main
 
                 if (FileExistsInternal(sizeOfCopy, disk, backupFile, sourceFileName, copiedSoFar, counter, totalFileCount, ct))
                 {
-                    CopyFileInternal(sizeOfCopy, disk, sourceFileName, copiedSoFar, sourceFileInfo, ref outOfDiskSpaceMessageSent,
-                        remainingSizeOfFilesToCopy, counter, totalFileCount, backupFile, ref lastCopySpeed, ct);
+                    CopyFileInternal(sizeOfCopy, disk, sourceFileName, ref copiedSoFar, sourceFileInfo, ref outOfDiskSpaceMessageSent,
+                        ref remainingSizeOfFilesToCopy, counter, totalFileCount, backupFile, ref lastCopySpeed, ct);
                 }
-                remainingSizeOfFilesToCopy -= backupFile.Length;
-                copiedSoFar += backupFile.Length;
             }
             catch (FileNotFoundException)
             {
@@ -151,8 +149,8 @@ internal sealed partial class Main
         return Utils.TraceOut(copyTheFile);
     }
 
-    private void CopyFileInternal(long sizeOfCopy, BackupDisk disk, string sourceFileName, long copiedSoFar, FileInfo sourceFileInfo,
-        ref bool outOfDiskSpaceMessageSent, long remainingSizeOfFilesToCopy, int fileCounter, int totalFileCount, BackupFile backupFile,
+    private void CopyFileInternal(long sizeOfCopy, BackupDisk disk, string sourceFileName, ref long copiedSoFar, FileInfo sourceFileInfo,
+        ref bool outOfDiskSpaceMessageSent, ref long remainingSizeOfFilesToCopy, int fileCounter, int totalFileCount, BackupFile backupFile,
         ref long lastCopySpeed, CancellationToken ct)
     {
         Utils.TraceIn();
@@ -210,6 +208,8 @@ internal sealed partial class Main
             lastCopySpeed = timeTaken > 0 ? Convert.ToInt64(sourceFileInfo.Length / timeTaken) : 0;
             var copySpeed = lastCopySpeed > 0 ? Utils.FormatSpeed(lastCopySpeed) : Resources.AVeryFastSpeed;
             Utils.Trace($"Copy complete at {copySpeed}");
+            remainingSizeOfFilesToCopy -= backupFile.Length;
+            copiedSoFar += backupFile.Length;
 
             // Make sure it's not readonly
             Utils.ClearFileAttribute(destinationFileName, FileAttributes.ReadOnly);
@@ -223,7 +223,8 @@ internal sealed partial class Main
         }
         else
         {
-            UpdateStatusLabel(ct, string.Format(Resources.Skipping, string.Empty), Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
+            UpdateStatusLabel(ct, $"[{fileCounter}/{totalFileCount}] Skipping due to low disk space",
+                Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
             if (outOfDiskSpaceMessageSent) return;
 
             var text = string.Format(Resources.CopyFileInternalSkipping, fileCounter, totalFileCount, Utils.FormatSize(availableSpace),
