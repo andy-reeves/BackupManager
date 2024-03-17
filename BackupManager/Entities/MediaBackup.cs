@@ -284,6 +284,8 @@ public sealed class MediaBackup
     /// </summary>
     /// <param name="fullPath">The fullPath to the file.</param>
     /// <returns>Null if it wasn't found or couldn't be created maybe locked by another process</returns>
+    [SuppressMessage("ReSharper", "CommentTypo")]
+    [SuppressMessage("ReSharper", "GrammarMistakeInComment")]
     public BackupFile GetBackupFile(string fullPath)
     {
         Utils.TraceIn(fullPath);
@@ -304,13 +306,13 @@ public sealed class MediaBackup
         if (indexFolderAndRelativePath.TryGetValue(hashKey, out var backupFile))
         {
             // consider a file a.txt that's on //nas1/assets1/_TV and on //nas1/assets4/_TV too
-            // this has same index folder and path but its a different file
+            // this has same index folder and path but it's a different file
             string hashOfContents;
 
             if (backupFile.Directory != directory)
             {
                 // This is similar file in different directories
-                // This also happens if a file is moved from 1 directory to another
+                // This also happens if a file is moved from 1 directory to another one
                 // its old location is still in the xml but the new location will be found on disk
                 Utils.Trace($"Duplicate file detected at {fullPath} and {backupFile.FullPath}");
 
@@ -359,8 +361,10 @@ public sealed class MediaBackup
             return Utils.TraceOut(backupFile);
         }
 
-        //TODO If we get to here then the file path is not know to use
-        // We need to check the contents hash only because maybe we renamed the source file 
+        // If we get to here then we couldn't get the file from the path
+        // We need to check the contents hash only because maybe we renamed the source file
+
+        // this happened when we changed files from [SDTV-576p] to [DVD-576p]
         var contents = Utils.GetShortMd5HashFromFile(fullPath);
         var f = GetBackupFileFromContentsHashcode(contents);
 

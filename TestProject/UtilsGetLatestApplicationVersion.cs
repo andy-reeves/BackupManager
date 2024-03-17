@@ -27,7 +27,7 @@ public sealed class UtilsGetLatestApplicationVersion
     public void GetVersionNumber()
     {
         Assert.Equal("1.4.2", Utils.GetApplicationVersionNumber(ApplicationType.Bazarr));
-        Assert.Equal("1.40.1.8173", Utils.GetApplicationVersionNumber(ApplicationType.PlexPass));
+        Assert.Equal("1.40.1.8227", Utils.GetApplicationVersionNumber(ApplicationType.PlexPass));
         Assert.Equal("1.13.3.4273", Utils.GetApplicationVersionNumber(ApplicationType.Prowlarr));
         Assert.Equal("5.3.6.8612", Utils.GetApplicationVersionNumber(ApplicationType.Radarr));
         Assert.Equal("4.2.3", Utils.GetApplicationVersionNumber(ApplicationType.SABnzbd));
@@ -38,7 +38,7 @@ public sealed class UtilsGetLatestApplicationVersion
     [SuppressMessage("ReSharper", "CommentTypo")]
     public void GetLatestApplicationVersionNumber()
     {
-        Assert.Equal("1.40.0.7998", Utils.GetLatestApplicationVersionNumber(ApplicationType.Plex));
+        Assert.Equal("1.40.1.8227", Utils.GetLatestApplicationVersionNumber(ApplicationType.Plex));
         Assert.Equal("1.3.1", Utils.GetLatestApplicationVersionNumber(ApplicationType.Bazarr));
         Assert.Equal("1.13.3", Utils.GetLatestApplicationVersionNumber(ApplicationType.Prowlarr));
         Assert.Equal("5.3.6", Utils.GetLatestApplicationVersionNumber(ApplicationType.Radarr));
@@ -47,7 +47,7 @@ public sealed class UtilsGetLatestApplicationVersion
 
         // These are the latest or develop branches
 
-        Assert.Equal(Utils.Config.PlexToken.HasValue() ? "1.40.1.8173" : "1.40.0.7998",
+        Assert.Equal(Utils.Config.PlexToken.HasValue() ? "1.40.1.8227" : "1.40.1.8227",
             Utils.GetLatestApplicationVersionNumber(ApplicationType.PlexPass));
         Assert.Equal("1.14.3", Utils.GetLatestApplicationVersionNumber(ApplicationType.Prowlarr, "develop"));
         Assert.Equal("5.4.3", Utils.GetLatestApplicationVersionNumber(ApplicationType.Radarr, "develop"));

@@ -100,17 +100,26 @@ internal sealed class VideoFileInfoReader
             if (_pqTransferFunctions.Contains(mediaInfoModel.VideoTransferCharacteristics))
             {
                 var frameOutput = FFProbe.GetFrameJson(filename,
-                    ffOptions: new FFOptions { ExtraArguments = "-read_intervals \"%+#1\" -select_streams v" });
+                    ffOptions: new FFOptions { ExtraArguments = "-read_intervals \"%+#10\" -select_streams v" });
                 mediaInfoModel.RawFrameData = frameOutput;
                 frames = FFProbe.AnalyseFrameJson(frameOutput);
             }
             var streamSideData = primaryVideoStream?.SideDataList ?? new List<SideData>();
+            /* var framesSideData = frames?.Frames?.Count > 0
 
-            var framesSideData = frames?.Frames?.Count > 0
+                 // ReSharper disable once ConstantNullCoalescingCondition
+                 ? frames?.Frames[0]?.SideDataList ?? new List<SideData>()
+                 : new List<SideData>();*/
+            List<SideData> framesSideData = new();
 
-                // ReSharper disable once ConstantNullCoalescingCondition
-                ? frames?.Frames[0]?.SideDataList ?? new List<SideData>()
-                : new List<SideData>();
+            if (frames?.Frames?.Count > 0)
+            {
+                for (var i = 0; i < frames.Frames.Count; i++)
+                {
+                    var f = frames?.Frames[i];
+                    if (f.SideDataList is { Count: > 0 }) framesSideData.AddRange(f.SideDataList);
+                }
+            }
             var sideData = streamSideData.Concat(framesSideData).ToList();
 
             mediaInfoModel.VideoHdrFormat = GetHdrFormat(mediaInfoModel.VideoBitDepth, mediaInfoModel.VideoColourPrimaries,
