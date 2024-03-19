@@ -4,6 +4,17 @@
 //  </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
+// Notes
+// This is from Radarr 5.3.6.8612 at https://github.com/Radarr/Radarr/releases/tag/v5.3.6.8612
+// It uses the packages: Servarr.FFMpegCore (4.7.0-26) and Servarr.FFprobe (5.1.4.112)
+// With a few fixes and changes
+// you also need:
+// MediaInfoModel.cs
+// These use ffprobe.exe (which needs libcrypto-3-x64.dll, libcurl.dll, libmediainfo.dll and libssl-3-x64.dll
+// These were last copied from Radarr on 19.03.24 
+// main changes/fixes are: check the first 10 frames to determine [HDR10] instead of [PQ]
+//
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -99,8 +110,12 @@ internal sealed class VideoFileInfoReader
             // if it looks like PQ10 or similar HDR, do a frame analysis to figure out which type it is
             if (_pqTransferFunctions.Contains(mediaInfoModel.VideoTransferCharacteristics))
             {
+                // var frameOutput = FFProbe.GetFrameJson(filename,
+                //    ffOptions: new FFOptions { ExtraArguments = "-read_intervals \"%+#10\" -select_streams v" });
+
+                // Andy get 10 frames side data not just the first one
                 var frameOutput = FFProbe.GetFrameJson(filename,
-                    ffOptions: new FFOptions { ExtraArguments = "-read_intervals \"%+#10\" -select_streams v" });
+                    ffOptions: new FFOptions { ExtraArguments = $"-read_intervals \"%+#10\" -select_streams v:{primaryVideoStream?.Index ?? 0}" });
                 mediaInfoModel.RawFrameData = frameOutput;
                 frames = FFProbe.AnalyseFrameJson(frameOutput);
             }

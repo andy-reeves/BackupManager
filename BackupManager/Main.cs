@@ -1114,7 +1114,6 @@ internal sealed partial class Main : Form
 
             Utils.CheckVideoFileAndRenameIfRequired(ref fullPath);
         }
-       // mediaBackup.Save(mainCt);
     }
 
     private void H264FilesButton_Click(object sender, EventArgs e)

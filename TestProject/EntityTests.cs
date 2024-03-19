@@ -157,6 +157,13 @@ public sealed class EntityTests
         Assert.Equal(Path.GetFileName(fileName), movie.GetFileName());
         Assert.True(movie.RefreshMediaInfo());
         Assert.Equal(expectedFileName, movie.GetFileName());
+
+        // Test [HDR10]
+        fileName = Path.Combine(testDataPath, "Avengers Infinity War (2018) {tmdb-299536} [Remux-2160p][HDR10][TrueHD Atmos 7.1][h265].mkv");
+        movie = new MovieBackupFile(fileName);
+        Assert.Equal(Path.GetFileName(fileName), movie.GetFileName());
+        Assert.True(movie.RefreshMediaInfo());
+        Assert.Equal(Path.GetFileName(fileName), movie.GetFileName());
     }
 
     [Theory]
