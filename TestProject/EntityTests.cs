@@ -256,6 +256,9 @@ public sealed class EntityTests
         Utils.EnsureDirectoriesForDirectoryPath(pathToTv);
         Utils.EnsureDirectoriesForDirectoryPath(pathToBackupDisk);
         Utils.CreateFile(pathToFile1);
+
+        //var andy = Utils.GetShortMd5HashFromFile(pathToFile1);
+        //Utils.Log(andy);
         Utils.CreateFile(pathToFile2);
         Utils.CreateFile(pathToFile3);
 
@@ -274,7 +277,7 @@ public sealed class EntityTests
         // GetBackupFile
         var backupFile = mediaBackup.GetBackupFile(pathToFile1);
         Assert.Equal("test1.txt", backupFile.RelativePath);
-        var f1 = mediaBackup.GetBackupFileFromContentsHashcode("098f6bcd4621d373cade4e832627b4f6");
+        var f1 = mediaBackup.GetBackupFileFromContentsHashcode("b3d5cf638ed2f6a94d6b3c628f946196");
         Assert.Equal("test1.txt", f1.RelativePath);
         var backupFile2 = mediaBackup.GetBackupFile(pathToFile1);
         Assert.Equal("test1.txt", backupFile2.RelativePath);
@@ -415,16 +418,16 @@ public sealed class EntityTests
         Utils.CreateFile(pathToFile2);
         var backupFile1 = new BackupFile(pathToFile1, pathToMovies);
         Assert.Equal("test1.txt", backupFile1.RelativePath);
-        Assert.Equal(4, backupFile1.Length);
+        Assert.Equal(9, backupFile1.Length);
         var backupFile2 = new BackupFile(pathToFile2, pathToTv);
         Assert.NotEqual(backupFile2, backupFile1);
         Assert.False(backupFile1.Equals(null));
         object obj = backupFile1;
         Assert.False(obj.Equals(backupFile2));
-        Assert.Equal("098f6bcd4621d373cade4e832627b4f6", backupFile1.ContentsHash);
-        Assert.Equal("098f6bcd4621d373cade4e832627b4f6", backupFile1.ContentsHash);
+        Assert.Equal("b3d5cf638ed2f6a94d6b3c628f946196", backupFile1.ContentsHash);
+        Assert.Equal("c91e47329777637e2370464651ba47aa", backupFile2.ContentsHash);
         backupFile1.ContentsHash = null;
-        Assert.Equal("098f6bcd4621d373cade4e832627b4f6", backupFile1.ContentsHash);
+        Assert.Equal("b3d5cf638ed2f6a94d6b3c628f946196", backupFile1.ContentsHash);
         backupFile1.Deleted = true;
         Assert.True(backupFile1.Deleted);
         backupFile1.Flag = true;

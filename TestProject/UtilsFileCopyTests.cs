@@ -34,10 +34,10 @@ public sealed class UtilsFileCopyTests
             Utils.EnsureDirectoriesForDirectoryPath(path1);
             Assert.False(File.Exists(file2));
             Utils.CreateFile(file1);
-            Assert.Equal("098f6bcd4621d373cade4e832627b4f6", Utils.GetShortMd5HashFromFile(file1));
+            Assert.Equal("b3d5cf638ed2f6a94d6b3c628f946196", Utils.GetShortMd5HashFromFile(file1));
             Assert.True(Utils.FileCopy(file1, file2, new CancellationToken()));
             Assert.True(File.Exists(file2));
-            Assert.Equal("098f6bcd4621d373cade4e832627b4f6", Utils.GetShortMd5HashFromFile(file2));
+            Assert.Equal("b3d5cf638ed2f6a94d6b3c628f946196", Utils.GetShortMd5HashFromFile(file2));
 
             // Delete the folders we created
             if (Directory.Exists(path1)) _ = Utils.DirectoryDelete(path1, true);

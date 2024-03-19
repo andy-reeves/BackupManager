@@ -193,7 +193,7 @@ public sealed class UtilsUnitTests
         using (BufferedStream stream = new(File.OpenRead(file1), Utils.BYTES_IN_ONE_MEGABYTE))
         {
             var byteArray = Utils.GetRemoteFileByteArray(stream, Utils.BYTES_IN_ONE_MEGABYTE);
-            Assert.Equal(4, byteArray.Length);
+            Assert.Equal(9, byteArray.Length);
         }
 
         // Delete the folders we created
@@ -211,9 +211,9 @@ public sealed class UtilsUnitTests
 
         using (var stream = File.OpenRead(file1))
         {
-            Assert.Equal("098f6bcd4621d373cade4e832627b4f6", Utils.GetShortMd5HashFromFile(stream, Utils.BYTES_IN_ONE_MEGABYTE));
+            Assert.Equal("b3d5cf638ed2f6a94d6b3c628f946196", Utils.GetShortMd5HashFromFile(stream, Utils.BYTES_IN_ONE_MEGABYTE));
         }
-        Assert.Equal("098f6bcd4621d373cade4e832627b4f6", Utils.GetShortMd5HashFromFile(file1));
+        Assert.Equal("b3d5cf638ed2f6a94d6b3c628f946196", Utils.GetShortMd5HashFromFile(file1));
 
         // Delete the folders we created
         if (Directory.Exists(path1)) _ = Utils.DirectoryDelete(path1, true);
@@ -224,11 +224,14 @@ public sealed class UtilsUnitTests
     {
         var path1 = Path.Combine(Path.GetTempPath(), "GetHashFromFile");
         var file1 = Path.Combine(path1, "test1.txt");
+
+        // Delete the folders we create
+        if (Directory.Exists(path1)) _ = Utils.DirectoryDelete(path1, true);
         Utils.EnsureDirectoriesForDirectoryPath(path1);
         Utils.CreateFile(file1);
         var md5 = MD5.Create();
         var hash = Utils.GetHashFromFile(file1, md5);
-        Assert.Equal("098f6bcd4621d373cade4e832627b4f6", hash);
+        Assert.Equal("b3d5cf638ed2f6a94d6b3c628f946196", hash);
 
         // Delete the folders we created
         if (Directory.Exists(path1)) _ = Utils.DirectoryDelete(path1, true);

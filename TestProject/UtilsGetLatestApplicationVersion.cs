@@ -28,7 +28,7 @@ public sealed class UtilsGetLatestApplicationVersion
     {
         Assert.Equal("1.4.2", Utils.GetApplicationVersionNumber(ApplicationType.Bazarr));
         Assert.Equal("1.40.1.8227", Utils.GetApplicationVersionNumber(ApplicationType.PlexPass));
-        Assert.Equal("1.13.3.4273", Utils.GetApplicationVersionNumber(ApplicationType.Prowlarr));
+        Assert.Equal("1.14.3.4333", Utils.GetApplicationVersionNumber(ApplicationType.Prowlarr));
         Assert.Equal("5.3.6.8612", Utils.GetApplicationVersionNumber(ApplicationType.Radarr));
         Assert.Equal("4.2.3", Utils.GetApplicationVersionNumber(ApplicationType.SABnzbd));
         Assert.Equal("4.0.2.1183", Utils.GetApplicationVersionNumber(ApplicationType.Sonarr));
@@ -40,7 +40,7 @@ public sealed class UtilsGetLatestApplicationVersion
     {
         Assert.Equal("1.40.1.8227", Utils.GetLatestApplicationVersionNumber(ApplicationType.Plex));
         Assert.Equal("1.3.1", Utils.GetLatestApplicationVersionNumber(ApplicationType.Bazarr));
-        Assert.Equal("1.13.3", Utils.GetLatestApplicationVersionNumber(ApplicationType.Prowlarr));
+        Assert.Equal("1.14.3", Utils.GetLatestApplicationVersionNumber(ApplicationType.Prowlarr));
         Assert.Equal("5.3.6", Utils.GetLatestApplicationVersionNumber(ApplicationType.Radarr));
         Assert.Equal("4.2.3", Utils.GetLatestApplicationVersionNumber(ApplicationType.SABnzbd));
         Assert.Equal("4.0.2.1183", Utils.GetLatestApplicationVersionNumber(ApplicationType.Sonarr));
@@ -49,7 +49,7 @@ public sealed class UtilsGetLatestApplicationVersion
 
         Assert.Equal(Utils.Config.PlexToken.HasValue() ? "1.40.1.8227" : "1.40.1.8227",
             Utils.GetLatestApplicationVersionNumber(ApplicationType.PlexPass));
-        Assert.Equal("1.14.3", Utils.GetLatestApplicationVersionNumber(ApplicationType.Prowlarr, "develop"));
-        Assert.Equal("5.4.3", Utils.GetLatestApplicationVersionNumber(ApplicationType.Radarr, "develop"));
+        Assert.Equal("1.15.0", Utils.GetLatestApplicationVersionNumber(ApplicationType.Prowlarr, "develop"));
+        Assert.Equal("5.4.4", Utils.GetLatestApplicationVersionNumber(ApplicationType.Radarr, "develop"));
     }
 }

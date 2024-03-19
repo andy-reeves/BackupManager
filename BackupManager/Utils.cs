@@ -237,13 +237,14 @@ internal static partial class Utils
         ref long lpLastWriteTime);
 
     /// <summary>
-    ///     This file has a hash of 098f6bcd4621d373cade4e832627b4f6 and length of 4 containing the text 'test'
+    ///     Hash is now different depending on the filename as we write that into the file
+    ///     for test1.txt the hash is b3d5cf638ed2f6a94d6b3c628f946196
     /// </summary>
     /// <param name="filePath"></param>
     internal static void CreateFile(string filePath)
     {
         EnsureDirectoriesForFilePath(filePath);
-        File.AppendAllText(filePath, "test");
+        File.AppendAllText(filePath, Path.GetFileName(filePath));
     }
 
     internal static void OpenLogFile()
