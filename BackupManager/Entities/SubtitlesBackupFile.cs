@@ -38,23 +38,6 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
 
     public string Subtitles { get; private set; }
 
-    private MovieBackupFile GetMovie()
-    {
-        if (FullDirectory.HasNoValue()) return null;
-
-        var files = Utils.File.GetFiles(FullDirectory, new CancellationToken());
-
-        var videoFiles = files.Where(static f =>
-        {
-            ArgumentException.ThrowIfNullOrEmpty(f);
-            ArgumentException.ThrowIfNullOrEmpty(f);
-            return Utils.File.IsVideo(f) && !Utils.File.IsSpecialFeature(f);
-        }).ToArray();
-
-        // if more than 1 movie file in this folder, we can't pick one
-        return videoFiles.Length is 0 or > 1 ? null : new MovieBackupFile(videoFiles[0]);
-    }
-
     private bool ParseInfoFromDirectory(string directoryPath)
     {
         FullDirectory = directoryPath;
