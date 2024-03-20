@@ -12,6 +12,7 @@ namespace BackupManager.Entities;
 
 internal abstract class ExtendedBackupFileBase
 {
+    // ReSharper disable once UnusedMemberInSuper.Global
     protected abstract string DirectoryRegex { get; }
 
     protected abstract string FileNameRegex { get; }

@@ -22,7 +22,7 @@ public sealed class FileSystemWatcherTests2
 
     static FileSystemWatcherTests2()
     {
-        _testPath = Path.Combine(Utils.GetProjectPath(typeof(MediaInfoTests)), @"..\..\FSWTest");
+        _testPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), @"..\..\FSWTest");
         _testPath = Path.GetFullPath(_testPath);
     }
 

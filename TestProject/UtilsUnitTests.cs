@@ -192,7 +192,7 @@ public sealed class UtilsUnitTests
 
         using (BufferedStream stream = new(File.OpenRead(file1), Utils.BYTES_IN_ONE_MEGABYTE))
         {
-            var byteArray = Utils.GetRemoteFileByteArray(stream, Utils.BYTES_IN_ONE_MEGABYTE);
+            var byteArray = Utils.File.GetByteArray(stream, Utils.BYTES_IN_ONE_MEGABYTE);
             Assert.Equal(9, byteArray.Length);
         }
 

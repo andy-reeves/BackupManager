@@ -207,7 +207,7 @@ internal sealed partial class Main
 
         try
         {
-            Utils.CheckVideoFileAndRenameIfRequired(ref file);
+            Utils.MediaHelper.CheckVideoFileAndRenameIfRequired(ref file);
         }
         catch (Exception ex)
         {

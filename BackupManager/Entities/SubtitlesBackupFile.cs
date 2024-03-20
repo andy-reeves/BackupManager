@@ -92,7 +92,7 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
         // if more than 1 movie file in this folder, we can't pick one
         if (videoFiles.Length is 0 or > 1) return Validate();
 
-        var video = Utils.ExtendedBackupFileBase(videoFiles[0]);
+        var video = Utils.MediaHelper.ExtendedBackupFileBase(videoFiles[0]);
         _ = RefreshMediaInfo(video);
         return Validate();
     }

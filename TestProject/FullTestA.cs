@@ -19,7 +19,7 @@ public sealed class FullTestA
 
     static FullTestA()
     {
-        _testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaInfoTests)), "TestData");
+        _testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
     }
 
     [SupportedOSPlatform("windows")]

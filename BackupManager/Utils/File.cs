@@ -17,6 +17,7 @@ using System.Threading;
 
 using BackupManager.Extensions;
 using BackupManager.Properties;
+using BackupManager.Radarr;
 
 using Microsoft.Win32.SafeHandles;
 
@@ -102,12 +103,12 @@ internal static partial class Utils
             {
                 var startDownloadPositionForEndBlock = size - END_BLOCK_SIZE;
                 var startDownloadPositionForMiddleBlock = size / 2;
-                startBlock = GetLocalFileByteArray(stream, 0, START_BLOCK_SIZE);
-                middleBlock = GetLocalFileByteArray(stream, startDownloadPositionForMiddleBlock, MIDDLE_BLOCK_SIZE);
-                endBlock = GetLocalFileByteArray(stream, startDownloadPositionForEndBlock, END_BLOCK_SIZE);
+                startBlock = GetByteArray(stream, 0, START_BLOCK_SIZE);
+                middleBlock = GetByteArray(stream, startDownloadPositionForMiddleBlock, MIDDLE_BLOCK_SIZE);
+                endBlock = GetByteArray(stream, startDownloadPositionForEndBlock, END_BLOCK_SIZE);
             }
             else
-                startBlock = GetLocalFileByteArray(stream, 0, size);
+                startBlock = GetByteArray(stream, 0, size);
             return CreateHashForByteArray(startBlock, middleBlock, endBlock);
         }
 
@@ -137,12 +138,12 @@ internal static partial class Utils
             {
                 var startDownloadPositionForEndBlock = size - END_BLOCK_SIZE;
                 var startDownloadPositionForMiddleBlock = size / 2;
-                startBlock = GetLocalFileByteArray(path, 0, START_BLOCK_SIZE);
-                middleBlock = GetLocalFileByteArray(path, startDownloadPositionForMiddleBlock, MIDDLE_BLOCK_SIZE);
-                endBlock = GetLocalFileByteArray(path, startDownloadPositionForEndBlock, END_BLOCK_SIZE);
+                startBlock = GetByteArray(path, 0, START_BLOCK_SIZE);
+                middleBlock = GetByteArray(path, startDownloadPositionForMiddleBlock, MIDDLE_BLOCK_SIZE);
+                endBlock = GetByteArray(path, startDownloadPositionForEndBlock, END_BLOCK_SIZE);
             }
             else
-                startBlock = GetLocalFileByteArray(path, 0, size);
+                startBlock = GetByteArray(path, 0, size);
             return TraceOut(CreateHashForByteArray(startBlock, middleBlock, endBlock));
         }
 
@@ -258,7 +259,7 @@ internal static partial class Utils
             TraceIn(path);
             ArgumentException.ThrowIfNullOrEmpty(path);
             ArgumentException.ThrowIfNullOrEmpty(path);
-            if (!IsVideo(path) || !VideoFileIsDolbyVision(path)) return TraceOut(false);
+            if (!IsVideo(path) || !MediaHelper.VideoFileIsDolbyVision(path)) return TraceOut(false);
 
             if (!Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
 
@@ -268,6 +269,84 @@ internal static partial class Utils
             return info == null
                 ? throw new ApplicationException("Unable to load ffprobe.exe")
                 : TraceOut(info is { DoviConfigurationRecord.DvProfile: 5 });
+        }
+
+        /// <summary>
+        ///     The get file byte array.
+        /// </summary>
+        /// <param name="fileName">
+        ///     The file name.
+        /// </param>
+        /// <param name="offset">
+        ///     The offset.
+        /// </param>
+        /// <param name="byteCountToReturn">
+        ///     The byte count to return.
+        /// </param>
+        /// <returns>
+        ///     The byte[]
+        /// </returns>
+        internal static byte[] GetByteArray(string fileName, long offset, long byteCountToReturn)
+        {
+            byte[] buffer;
+            FileStream fileStream = new(fileName, FileMode.Open, FileAccess.Read);
+            _ = fileStream.Seek(offset, SeekOrigin.Begin);
+            var sum = 0;
+
+            try
+            {
+                buffer = new byte[byteCountToReturn];
+                var length = Convert.ToInt32(byteCountToReturn);
+                int count;
+
+                while ((count = fileStream.Read(buffer, sum, length - sum)) > 0)
+                {
+                    sum += count; // sum is a buffer offset for next reading
+                }
+            }
+            finally
+            {
+                fileStream.Close();
+            }
+            if (sum >= byteCountToReturn) return buffer;
+
+            var byteArray = new byte[sum];
+            Buffer.BlockCopy(buffer, 0, byteArray, 0, sum);
+            return byteArray;
+        }
+
+        /// <summary>
+        ///     The get local file byte array.
+        /// </summary>
+        /// <param name="stream">
+        ///     The file stream.
+        /// </param>
+        /// <param name="offset">
+        ///     The offset.
+        /// </param>
+        /// <param name="byteCountToReturn">
+        ///     The byte count to return.
+        /// </param>
+        /// <returns>
+        ///     The byte[]
+        /// </returns>
+        private static byte[] GetByteArray(Stream stream, long offset, long byteCountToReturn)
+        {
+            _ = stream.Seek(offset, SeekOrigin.Begin);
+            var buffer = new byte[byteCountToReturn];
+            int count;
+            var sum = 0;
+            var length = Convert.ToInt32(byteCountToReturn);
+
+            while ((count = stream.Read(buffer, sum, length - sum)) > 0)
+            {
+                sum += count; // sum is a buffer offset for next reading
+            }
+            if (sum >= byteCountToReturn) return buffer;
+
+            var byteArray = new byte[sum];
+            Buffer.BlockCopy(buffer, 0, byteArray, 0, sum);
+            return byteArray;
         }
 
         /// <summary>
@@ -417,7 +496,7 @@ internal static partial class Utils
             return System.IO.File.OpenRead(path);
         }
 
-        internal static void AppendAllLines(string path, string[] contents)
+        internal static void AppendAllLines(string path, IEnumerable<string> contents)
         {
             System.IO.File.AppendAllLines(path, contents);
         }
@@ -425,11 +504,6 @@ internal static partial class Utils
         internal static FileStream Create(string path, int bufferSize, FileOptions options)
         {
             return System.IO.File.Create(path, bufferSize, options);
-        }
-
-        internal static void Copy(string sourceFileName, string destFileName)
-        {
-            System.IO.File.Copy(sourceFileName, destFileName);
         }
 
         /// <summary>
@@ -503,6 +577,35 @@ internal static partial class Utils
         internal static string[] GetFiles(string path, string filters, SearchOption searchOption, CancellationToken ct)
         {
             return GetFiles(path, filters, searchOption, 0, 0, ct);
+        }
+
+        /// <summary>
+        ///     The get remote file byte array.
+        /// </summary>
+        /// <param name="fileStream">
+        ///     The file stream.
+        /// </param>
+        /// <param name="byteCountToReturn">
+        ///     The byte count to return.
+        /// </param>
+        /// <returns>
+        /// </returns>
+        internal static byte[] GetByteArray(Stream fileStream, long byteCountToReturn)
+        {
+            var buffer = new byte[byteCountToReturn];
+            int count;
+            var sum = 0;
+            var length = Convert.ToInt32(byteCountToReturn);
+
+            while ((count = fileStream.Read(buffer, sum, length - sum)) > 0)
+            {
+                sum += count; // sum is a buffer offset for next reading
+            }
+            if (sum >= byteCountToReturn) return buffer;
+
+            var byteArray = new byte[sum];
+            Buffer.BlockCopy(buffer, 0, byteArray, 0, sum);
+            return byteArray;
         }
 
         /// <summary>

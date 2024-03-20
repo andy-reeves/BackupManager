@@ -129,7 +129,7 @@ public sealed class EntityTests
         @"_TV\File15 {tvdb-1}\Season 1\File15 s01e03 Kid in the Park [WEBDL-2160p][DV HDR10Plus][EAC3 Atmos 5.1][h264].en.hi.srt")]
     public void SubtitlesTests2(string subtitlesFullName, bool isValidSubtitleFullName, string newSubtitlesFullName)
     {
-        var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaInfoTests)), "TestData");
+        var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
         var fileName = Path.Combine(testDataPath, subtitlesFullName);
         var newFileName = Path.Combine(testDataPath, newSubtitlesFullName);
         var file = new SubtitlesBackupFile(fileName);
@@ -147,7 +147,7 @@ public sealed class EntityTests
         "Avengers Infinity War (2018) {tmdb-299536} [Remux-2160p][HDR10][TrueHD Atmos 7.1][h265].mkv")]
     public void MovieRefreshInfoTests(string sourceFileName, string expectedFileName)
     {
-        var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaInfoTests)), "TestData");
+        var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
         var fileName = Path.Combine(testDataPath, sourceFileName);
         var movie = new MovieBackupFile(fileName);
         Assert.Equal(Path.GetFileName(fileName), movie.GetFileName());
@@ -163,7 +163,7 @@ public sealed class EntityTests
         "Percy Jackson and the Olympians s01e01 I Accidentally Vaporize My Pre-Algebra Teacher [SDTV][MP3 2.0][].avi")]
     public void TvTests2(string param1, bool refreshReturnValue, string mediaFileNameOutputIfRenamed)
     {
-        var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaInfoTests)), "TestData");
+        var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
         var mediaFileName = Path.Combine(testDataPath, param1);
         var tvEpisodeBackupFile = new TvEpisodeBackupFile(mediaFileName);
         if (tvEpisodeBackupFile.IsValid) Assert.Equal(Path.GetFileName(mediaFileName), tvEpisodeBackupFile.GetFileName());
@@ -205,7 +205,7 @@ public sealed class EntityTests
             Utils.Trace($"[{index}/{files.Length}] {fullPath}");
             if (!File.Exists(fullPath)) continue;
 
-            Utils.CheckVideoFileAndRenameIfRequired(ref fullPath);
+            Utils.MediaHelper.CheckVideoFileAndRenameIfRequired(ref fullPath);
         }
     }
 

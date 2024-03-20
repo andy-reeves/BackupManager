@@ -38,16 +38,17 @@ internal abstract class VideoBackupFileBase : ExtendedBackupFileBase
 
     protected SpecialFeature SpecialFeature { get; set; }
 
+    // ReSharper disable once FunctionComplexityOverflow
     public override bool RefreshMediaInfo()
     {
         try
         {
             if (SpecialFeature == SpecialFeature.None)
             {
-                var model = Utils.GetMediaInfoModel(OriginalPath);
+                var model = Utils.MediaHelper.GetMediaInfoModel(OriginalPath);
                 if (model == null) return false;
 
-                var resolutionFromMediaInfo = Utils.GetResolutionFromMediaInfo(model);
+                var resolutionFromMediaInfo = Utils.MediaHelper.GetResolutionFromMediaInfo(model);
 
                 if (resolutionFromMediaInfo != VideoResolution)
                 {
@@ -56,13 +57,15 @@ internal abstract class VideoBackupFileBase : ExtendedBackupFileBase
                     VideoResolution = resolutionFromMediaInfo;
                 }
 
-                // ReSharper disable once CommentTypo
-                // if the resolution is actually 576 or 480 then the Quality must be SDTV and not anything else 
-                if (VideoResolution is VideoResolution.R576p or VideoResolution.R480p && VideoQuality == VideoQuality.HDTV)
-                    VideoQuality = VideoQuality.SDTV;
-
-                if (VideoResolution is VideoResolution.R720p or VideoResolution.R1080p && VideoQuality is VideoQuality.SDTV or VideoQuality.DVD)
-                    VideoQuality = VideoQuality.HDTV;
+                VideoQuality = VideoResolution switch
+                {
+                    // ReSharper disable once CommentTypo
+                    // if the resolution is actually 576 or 480 then the Quality must be SDTV and not anything else 
+                    VideoResolution.R576p or VideoResolution.R480p when VideoQuality == VideoQuality.HDTV => VideoQuality.SDTV,
+                    VideoResolution.R720p or VideoResolution.R1080p when VideoQuality is VideoQuality.SDTV or VideoQuality.DVD =>
+                        VideoQuality.HDTV,
+                    _ => VideoQuality
+                };
 
                 switch (VideoResolution)
                 {
@@ -93,10 +96,10 @@ internal abstract class VideoBackupFileBase : ExtendedBackupFileBase
                         throw new ArgumentOutOfRangeException();
                 }
                 var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(OriginalPath);
-                var videoCodec = Utils.FormatVideoCodec(model, fileNameWithoutExtension);
-                var audioCodec = Utils.FormatAudioCodec(model, fileNameWithoutExtension);
-                var audioChannels = Utils.FormatAudioChannels(model);
-                var dynamicRangeType = Utils.FormatVideoDynamicRangeType(model);
+                var videoCodec = Utils.MediaHelper.FormatVideoCodec(model, fileNameWithoutExtension);
+                var audioCodec = Utils.MediaHelper.FormatAudioCodec(model, fileNameWithoutExtension);
+                var audioChannels = Utils.MediaHelper.FormatAudioChannels(model);
+                var dynamicRangeType = Utils.MediaHelper.FormatVideoDynamicRangeType(model);
                 MediaInfoVideoCodec = Utils.GetEnumFromAttributeValue<MediaInfoVideoCodec>(videoCodec);
                 if (audioCodec != null) MediaInfoAudioCodec = Utils.GetEnumFromAttributeValue<MediaInfoAudioCodec>(audioCodec);
                 if (audioChannels > 0) MediaInfoAudioChannels = Utils.GetEnumFromAttributeValue<MediaInfoAudioChannels>($"{audioChannels:0.0}");

@@ -13,18 +13,18 @@ namespace TestProject;
 
 [SuppressMessage("ReSharper", "MemberCanBeFileLocal")]
 [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
-public sealed class MediaInfoTests
+public sealed class MediaHelperTests
 {
-    static MediaInfoTests()
+    static MediaHelperTests()
     {
-        var mediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(MediaInfoTests)), "..\\BackupManager\\MediaBackup.xml"));
+        var mediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "..\\BackupManager\\MediaBackup.xml"));
         Utils.Config = mediaBackup.Config;
     }
 
     [Fact]
     public void MediaInfo()
     {
-        var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaInfoTests)), "TestData");
+        var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
         var mediaFileName = Path.Combine(testDataPath, "File1 [DV].mkv");
         Assert.True(Utils.File.IsDolbyVisionProfile5(mediaFileName));
         mediaFileName = Path.Combine(testDataPath, "File2 [DV].mkv");
