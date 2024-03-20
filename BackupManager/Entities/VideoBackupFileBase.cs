@@ -49,13 +49,7 @@ internal abstract class VideoBackupFileBase : ExtendedBackupFileBase
                 if (model == null) return false;
 
                 var resolutionFromMediaInfo = Utils.MediaHelper.GetResolutionFromMediaInfo(model);
-
-                if (resolutionFromMediaInfo != VideoResolution)
-                {
-                    //Utils.Log(BackupAction.Error,
-                    //    $"Video resolution for {OriginalPath} was {VideoResolution} from the file name but {resolutionFromMediaInfo} from the MediaInfo");
-                    VideoResolution = resolutionFromMediaInfo;
-                }
+                if (resolutionFromMediaInfo != VideoResolution) VideoResolution = resolutionFromMediaInfo;
 
                 VideoQuality = VideoResolution switch
                 {
