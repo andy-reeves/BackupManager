@@ -55,9 +55,9 @@ public sealed class FileSystemWatcherTests1
         Assert.False(watcher.Running);
         _ = watcher.Start();
         Assert.True(watcher.Running);
-        Utils.CreateFile(Path.Combine(monitoringPath1, "test1.txt"));
-        Utils.CreateFile(Path.Combine(monitoringPath2, "test2.txt"));
-        Utils.CreateFile(Path.Combine(monitoringPath2, "subFolder", "test3.txt"));
+        Utils.File.Create(Path.Combine(monitoringPath1, "test1.txt"));
+        Utils.File.Create(Path.Combine(monitoringPath2, "test2.txt"));
+        Utils.File.Create(Path.Combine(monitoringPath2, "subFolder", "test3.txt"));
         Utils.Wait(waitInMilliseconds);
         Assert.Equal(1, test1EventsCounter);
         Assert.True(watcher.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));

@@ -33,7 +33,7 @@ public sealed class UtilsFileCopyTests
             var file2 = Path.Combine(path1, "test2.txt");
             Utils.Directory.EnsurePath(path1);
             Assert.False(File.Exists(file2));
-            Utils.CreateFile(file1);
+            Utils.File.Create(file1);
             Assert.Equal("b3d5cf638ed2f6a94d6b3c628f946196", Utils.File.GetShortMd5Hash(file1));
             var ct = new CancellationToken();
             Assert.True(Utils.File.Copy(file1, file2, ct));
@@ -61,7 +61,7 @@ public sealed class UtilsFileCopyTests
         if (Directory.Exists(path1)) _ = Utils.Directory.Delete(path1, true);
         var file1 = Path.Combine(path1, "test1.txt");
         var file2 = Path.Combine(path1, "test2.txt");
-        Utils.CreateFile(file1);
+        Utils.File.Create(file1);
         Assert.True(File.Exists(file1));
         Assert.False(File.Exists(file2));
 

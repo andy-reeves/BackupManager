@@ -75,7 +75,7 @@ public sealed class FileSystemWatcherTests2
         {
             var dirPath = Path.Combine(_testPath, $"Dir{i}");
             var filePath = Path.Combine(dirPath, $"file{i}.txt");
-            Utils.CreateFile(filePath);
+            Utils.File.Create(filePath);
             _ = _filesDictionary.TryAdd(filePath, false);
             _ = _dirDictionary.TryAdd(dirPath, false);
         }

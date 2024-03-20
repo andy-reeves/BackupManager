@@ -1,10 +1,17 @@
-﻿using System;
+﻿// --------------------------------------------------------------------------------------------------------------------
+//  <copyright file="File.cs" company="Andy Reeves">
+// 
+//  </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
 
@@ -13,6 +20,7 @@ using BackupManager.Properties;
 
 using Microsoft.Win32.SafeHandles;
 
+// ReSharper disable once CheckNamespace
 namespace BackupManager;
 
 internal static partial class Utils
@@ -20,6 +28,10 @@ internal static partial class Utils
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     internal static partial class File
     {
+        [LibraryImport("kernel32.dll", EntryPoint = "CreateFileW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
+        internal static partial SafeFileHandle CreateFile(string fileName, uint dwDesiredAccess, FileShare dwShareMode,
+            IntPtr securityAttrsMustBeZero, FileMode dwCreationDisposition, uint dwFlagsAndAttributes, IntPtr hTemplateFileMustBeZero);
+
         [LibraryImport("kernel32.dll", EntryPoint = "SetFileTime", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static partial bool SetFileTime(SafeFileHandle hFile, IntPtr lpCreationTimeUnused, IntPtr lpLastAccessTimeUnused,
@@ -34,6 +46,35 @@ internal static partial class Utils
         {
             ArgumentException.ThrowIfNullOrEmpty(path);
             return Path.GetExtension(path).ToLowerInvariant().ContainsAny(_videoExtensions);
+        }
+
+        /// <summary>
+        ///     Hash is now different depending on the filename as we write that into the file
+        ///     for test1.txt the hash is b3d5cf638ed2f6a94d6b3c628f946196
+        /// </summary>
+        /// <param name="filePath"></param>
+        internal static void Create(string filePath)
+        {
+            Directory.EnsureForFilePath(filePath);
+            AppendAllText(filePath, Path.GetFileName(filePath));
+        }
+
+        /// <summary>
+        ///     The hash from file.
+        /// </summary>
+        /// <param name="fileName">
+        ///     The file name.
+        /// </param>
+        /// <param name="algorithm">
+        ///     The algorithm.
+        /// </param>
+        /// <returns>
+        ///     The <see cref="string" />.
+        /// </returns>
+        internal static string GetHash(string fileName, HashAlgorithm algorithm)
+        {
+            using BufferedStream stream = new(OpenRead(fileName), BYTES_IN_ONE_MEGABYTE);
+            return ByteArrayToString(algorithm.ComputeHash(stream));
         }
 
         /// <summary>
@@ -317,7 +358,7 @@ internal static partial class Utils
             ClearFileAttribute(path, FileAttributes.ReadOnly);
             System.IO.File.Delete(path);
 #else
-        LogWithPushover(BackupAction.General, PushoverPriority.High, $"FileDelete with {path} - NOT DELETING", true, true);
+            LogWithPushover(BackupAction.General, PushoverPriority.High, $"FileDelete with {path} - NOT DELETING", true, true);
 #endif
             return TraceOut(true);
         }
@@ -336,7 +377,7 @@ internal static partial class Utils
             Directory.EnsureForFilePath(destFileName);
             System.IO.File.Move(sourceFileName, destFileName);
 #else
-        LogWithPushover(BackupAction.General, PushoverPriority.High, $"FileMove with {sourceFileName} to {destFileName} - NOT MOVING", true, true);
+            LogWithPushover(BackupAction.General, PushoverPriority.High, $"FileMove with {sourceFileName} to {destFileName} - NOT MOVING", true, true);
 #endif
             return TraceOut(true);
         }

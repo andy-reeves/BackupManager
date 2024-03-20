@@ -1,8 +1,15 @@
-﻿using System;
+﻿// --------------------------------------------------------------------------------------------------------------------
+//  <copyright file="Directory.cs" company="Andy Reeves">
+// 
+//  </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+// ReSharper disable once CheckNamespace
 namespace BackupManager;
 
 internal static partial class Utils
@@ -67,7 +74,7 @@ internal static partial class Utils
 
         private static bool SetLastWriteUtc(string dirPath, DateTime lastWriteDate)
         {
-            using var hDir = CreateFile(dirPath, FILE_ACCESS_GENERIC_READ | FILE_ACCESS_GENERIC_WRITE, FileShare.ReadWrite, IntPtr.Zero,
+            using var hDir = File.CreateFile(dirPath, FILE_ACCESS_GENERIC_READ | FILE_ACCESS_GENERIC_WRITE, FileShare.ReadWrite, IntPtr.Zero,
                 (FileMode)OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, IntPtr.Zero);
             var lastWriteTime = lastWriteDate.ToFileTime();
             return File.SetFileTime(hDir, IntPtr.Zero, IntPtr.Zero, ref lastWriteTime);
@@ -123,7 +130,7 @@ internal static partial class Utils
             File.ClearFileAttribute(path, FileAttributes.ReadOnly);
             System.IO.Directory.Delete(path, recursive);
 #else
-        LogWithPushover(BackupAction.General, PushoverPriority.High, $"DirectoryDelete with {path} - NOT DELETING", true, true);
+            LogWithPushover(BackupAction.General, PushoverPriority.High, $"DirectoryDelete with {path} - NOT DELETING", true, true);
 #endif
             return TraceOut(true);
         }

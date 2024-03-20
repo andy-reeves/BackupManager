@@ -244,9 +244,9 @@ public sealed class EntityTests
         Utils.Directory.EnsurePath(pathToMovies);
         Utils.Directory.EnsurePath(pathToTv);
         Utils.Directory.EnsurePath(pathToBackupDisk);
-        Utils.CreateFile(pathToFile1);
-        Utils.CreateFile(pathToFile2);
-        Utils.CreateFile(pathToFile3);
+        Utils.File.Create(pathToFile1);
+        Utils.File.Create(pathToFile2);
+        Utils.File.Create(pathToFile3);
 
         var mediaBackup = BackupManager.Entities.MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)),
             "..\\BackupManager\\MediaBackup.xml"));
@@ -400,8 +400,8 @@ public sealed class EntityTests
         var pathToFile1OnBackupDisk = Path.Combine(pathToMoviesOnBackupDisk, "test1.txt");
         Utils.Directory.EnsurePath(pathToMovies);
         Utils.Directory.EnsurePath(pathToTv);
-        Utils.CreateFile(pathToFile1);
-        Utils.CreateFile(pathToFile2);
+        Utils.File.Create(pathToFile1);
+        Utils.File.Create(pathToFile2);
         var backupFile1 = new BackupFile(pathToFile1, pathToMovies);
         Assert.Equal("test1.txt", backupFile1.RelativePath);
         Assert.Equal(9, backupFile1.Length);

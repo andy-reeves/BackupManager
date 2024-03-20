@@ -45,7 +45,7 @@ public sealed class UtilsUnitTests
             var file = Path.Combine(path1, "test1.txt");
             if (Directory.Exists(path1)) _ = Utils.Directory.Delete(path1, true);
             Utils.Directory.EnsurePath(path1);
-            Utils.CreateFile(file);
+            Utils.File.Create(file);
             const string shareName = "TestShare";
             var tempShare2 = Win32Share.GetNamedShare(shareName);
             _ = tempShare2?.Delete();
@@ -81,7 +81,7 @@ public sealed class UtilsUnitTests
         var path1 = Path.Combine(Path.GetTempPath(), "RenameFileToRemoveFixedSpaces");
         var filePathWithFixedSpaces = Path.Combine(path1, "test" + Convert.ToChar(160) + "1.txt");
         Utils.Directory.EnsurePath(path1);
-        Utils.CreateFile(filePathWithFixedSpaces);
+        Utils.File.Create(filePathWithFixedSpaces);
         Assert.True(Utils.StringContainsFixedSpace(filePathWithFixedSpaces));
         var filePathWithFixedSpacesRemoved = Utils.ReplaceFixedSpace(filePathWithFixedSpaces);
         var newFilePath = Utils.RenameFileToRemoveFixedSpaces(filePathWithFixedSpaces);
@@ -119,7 +119,7 @@ public sealed class UtilsUnitTests
         var file1 = Path.Combine(path1, "test1.txt");
         var file2 = Path.Combine(path1, "test2.txt");
         Utils.Directory.EnsurePath(path1);
-        Utils.CreateFile(file1);
+        Utils.File.Create(file1);
         _ = Utils.File.Move(file1, file2);
         Assert.False(File.Exists(file1));
         Assert.True(File.Exists(file2));
@@ -145,7 +145,7 @@ public sealed class UtilsUnitTests
         Utils.Directory.EnsurePath(path1);
         Assert.True(Utils.Directory.IsEmpty(path1));
         Assert.False(Utils.Directory.IsEmpty(path1 + "bob"));
-        Utils.CreateFile(file1);
+        Utils.File.Create(file1);
         _ = Directory.CreateSymbolicLink(path2, path1);
         Assert.False(Utils.Directory.IsEmpty(path1));
         Assert.False(Utils.Directory.IsEmpty(path2));
@@ -188,7 +188,7 @@ public sealed class UtilsUnitTests
         if (Directory.Exists(path1)) _ = Utils.Directory.Delete(path1, true);
         var file1 = Path.Combine(path1, "test1.txt");
         Utils.Directory.EnsurePath(path1);
-        Utils.CreateFile(file1);
+        Utils.File.Create(file1);
 
         using (BufferedStream stream = new(File.OpenRead(file1), Utils.BYTES_IN_ONE_MEGABYTE))
         {
@@ -207,7 +207,7 @@ public sealed class UtilsUnitTests
         if (Directory.Exists(path1)) _ = Utils.Directory.Delete(path1, true);
         var file1 = Path.Combine(path1, "test1.txt");
         Utils.Directory.EnsurePath(path1);
-        Utils.CreateFile(file1);
+        Utils.File.Create(file1);
 
         using (var stream = File.OpenRead(file1))
         {
@@ -228,9 +228,9 @@ public sealed class UtilsUnitTests
         // Delete the folders we create
         if (Directory.Exists(path1)) _ = Utils.Directory.Delete(path1, true);
         Utils.Directory.EnsurePath(path1);
-        Utils.CreateFile(file1);
+        Utils.File.Create(file1);
         var md5 = MD5.Create();
-        var hash = Utils.GetHashFromFile(file1, md5);
+        var hash = Utils.File.GetHash(file1, md5);
         Assert.Equal("b3d5cf638ed2f6a94d6b3c628f946196", hash);
 
         // Delete the folders we created
@@ -243,7 +243,7 @@ public sealed class UtilsUnitTests
         var cancellationTokenSource = new CancellationTokenSource();
         var path1 = Path.Combine(Path.GetTempPath(), "TestGetFilesFolder");
         var file1 = Path.Combine(path1, "test1.txt");
-        Utils.CreateFile(Path.Combine(path1, "test1.txt"));
+        Utils.File.Create(Path.Combine(path1, "test1.txt"));
         var files = Utils.File.GetFiles(path1, cancellationTokenSource.Token);
         Assert.Single(files, file1);
         files = Utils.File.GetFiles(path1, "*.txt", cancellationTokenSource.Token);
@@ -311,7 +311,7 @@ public sealed class UtilsUnitTests
         var path = Path.Combine(Path.GetTempPath(), "Folder1");
         Utils.Directory.EnsurePath(path);
         var file1 = Path.Combine(path, "test.tmp");
-        Utils.CreateFile(file1);
+        Utils.File.Create(file1);
         a = Utils.GetRootPath(path);
         Assert.NotNull(a);
         Assert.Equal(@"C:\", a);

@@ -80,7 +80,7 @@ public sealed class FileRulesUnitTest
         if (Directory.Exists(path1)) _ = Utils.Directory.Delete(path1, true);
         var file1 = Path.Combine(path1, "test1.txt");
         Utils.Directory.EnsurePath(path1);
-        Utils.CreateFile(file1);
+        Utils.File.Create(file1);
         _ = Assert.Throws<ArgumentNullException>(static () => Rules.Load(null));
         _ = Assert.Throws<XmlException>(() => Rules.Load(file1));
 

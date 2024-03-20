@@ -39,8 +39,6 @@ using BackupManager.Properties;
 
 using HtmlAgilityPack;
 
-using Microsoft.Win32.SafeHandles;
-
 using DirectoryNotFoundException = System.IO.DirectoryNotFoundException;
 
 namespace BackupManager;
@@ -226,21 +224,6 @@ internal static partial class Utils
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool GetDiskFreeSpaceEx(string lpDirectoryName, out long lpFreeBytesAvailable, out long lpTotalNumberOfBytes,
         out long lpTotalNumberOfFreeBytes);
-
-    [LibraryImport("kernel32.dll", EntryPoint = "CreateFileW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
-    private static partial SafeFileHandle CreateFile(string fileName, uint dwDesiredAccess, FileShare dwShareMode, IntPtr securityAttrsMustBeZero,
-        FileMode dwCreationDisposition, uint dwFlagsAndAttributes, IntPtr hTemplateFileMustBeZero);
-
-    /// <summary>
-    ///     Hash is now different depending on the filename as we write that into the file
-    ///     for test1.txt the hash is b3d5cf638ed2f6a94d6b3c628f946196
-    /// </summary>
-    /// <param name="filePath"></param>
-    internal static void CreateFile(string filePath)
-    {
-        Directory.EnsureForFilePath(filePath);
-        File.AppendAllText(filePath, Path.GetFileName(filePath));
-    }
 
     internal static void OpenLogFile()
     {
@@ -653,24 +636,6 @@ internal static partial class Utils
     }
 
     /// <summary>
-    ///     The hash from file.
-    /// </summary>
-    /// <param name="fileName">
-    ///     The file name.
-    /// </param>
-    /// <param name="algorithm">
-    ///     The algorithm.
-    /// </param>
-    /// <returns>
-    ///     The <see cref="string" />.
-    /// </returns>
-    internal static string GetHashFromFile(string fileName, HashAlgorithm algorithm)
-    {
-        using BufferedStream stream = new(File.OpenRead(fileName), BYTES_IN_ONE_MEGABYTE);
-        return ByteArrayToString(algorithm.ComputeHash(stream));
-    }
-
-    /// <summary>
     ///     The get remote file byte array.
     /// </summary>
     /// <param name="fileStream">
@@ -716,105 +681,6 @@ internal static partial class Utils
     {
         ArgumentException.ThrowIfNullOrEmpty(path);
         return path.HasValue() && path.ContainsIgnoreCase("[DV]");
-    }
-
-    /// <summary>
-    ///     Returns True if a rename was required. newPath has the full path after the rename or the original path if not
-    ///     renamed
-    /// </summary>
-    /// <param name="path"></param>
-    /// <param name="newPath"></param>
-    /// <param name="oldCodec">The old codec in the file path</param>
-    /// <param name="newCodec">The new codec</param>
-    /// <exception cref="FileNotFoundException"></exception>
-    /// <exception cref="IOException">If the file is locked and can't be read for info</exception>
-    /// <returns>False if a rename was not required</returns>
-    internal static bool RenameVideoCodec(string path, out string newPath, out string oldCodec, out string newCodec)
-    {
-        TraceIn(path);
-        newPath = path;
-        oldCodec = null;
-        newCodec = null;
-        ArgumentException.ThrowIfNullOrEmpty(path);
-        if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
-
-        ArgumentException.ThrowIfNullOrEmpty(path);
-        if (!File.IsVideo(path)) return TraceOut(false);
-
-        var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(path);
-        var directoryName = Path.GetDirectoryName(path);
-        if (directoryName == null) return TraceOut(false);
-        if (!GetVideoCodecFromFileName(Path.GetFileName(path), out var currentVideoCodecInFileName)) return TraceOut(false);
-
-        oldCodec = currentVideoCodecInFileName;
-        if (!GetVideoCodec(path, out var actualVideoCodec)) return TraceOut(false);
-
-        if (actualVideoCodec == currentVideoCodecInFileName)
-        {
-            newCodec = oldCodec;
-            return TraceOut(false);
-        }
-        if (actualVideoCodec.HasNoValue()) return TraceOut(false);
-
-        newCodec = actualVideoCodec;
-
-        var newPathInternal = Path.Combine(directoryName,
-                                  fileNameWithoutExtension.Replace(currentVideoCodecInFileName.WrapInSquareBrackets(),
-                                      actualVideoCodec.WrapInSquareBrackets())) +
-                              Path.GetExtension(path);
-        Log($"Renaming {path} to {newPathInternal}");
-        _ = File.Move(path, newPathInternal);
-        Trace($"Renamed {path} to {newPathInternal}");
-        newPath = newPathInternal;
-        return TraceOut(true);
-    }
-
-    /// <summary>
-    /// </summary>
-    /// <param name="path">Must have a video extension and a valid video codec in square brackets in the path</param>
-    /// <param name="videoCodec"></param>
-    /// <returns>False if the codec was not determined</returns>
-    private static bool GetVideoCodecFromFileName(string path, out string videoCodec)
-    {
-        TraceIn(path);
-        ArgumentException.ThrowIfNullOrEmpty(path);
-        var fileName = Path.GetFileName(path);
-        videoCodec = string.Empty;
-        if (Config == null) return TraceOut(false);
-
-        var videoCodecRegex = Config.DirectoriesRenameVideoFilesRegEx;
-        if (videoCodecRegex.HasNoValue()) return TraceOut(false);
-
-        var match = Regex.Match(fileName, videoCodecRegex);
-        if (!match.Success) return TraceOut(false);
-
-        videoCodec = match.Groups[1].Value;
-        return TraceOut(true);
-    }
-
-    /// <summary>
-    ///     Gets the actual video codec of the file
-    /// </summary>
-    /// <param name="path">Path to the video file</param>
-    /// <param name="actualVideoCodec">The actual video codec of the file</param>
-    /// <returns>True if the video codec was determined</returns>
-    /// <exception cref="FileNotFoundException">If the file is not found</exception>
-    /// <exception cref="IOException">If the file is locked</exception>
-    /// <exception cref="NotSupportedException">If the file is not a video file</exception>
-    private static bool GetVideoCodec(string path, out string actualVideoCodec)
-    {
-        TraceIn(path);
-        ArgumentException.ThrowIfNullOrEmpty(path);
-        if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
-
-        ArgumentException.ThrowIfNullOrEmpty(path);
-        if (!File.IsVideo(path)) throw new NotSupportedException("file is not video");
-
-        actualVideoCodec = string.Empty;
-        var info = new VideoFileInfoReader().GetMediaInfo(path) ?? throw new IOException(string.Format(Resources.UnableToLoadFFProbe, path));
-        actualVideoCodec = FormatVideoCodec(info, Path.GetFileNameWithoutExtension(path));
-        if (actualVideoCodec.HasNoValue()) LogWithPushover(BackupAction.Error, $"Actual video codec for {path} is string.Empty");
-        return TraceOut(true);
     }
 
     private static decimal? FormatAudioChannelsFromAudioChannelPositions(MediaInfoModel mediaInfo)
