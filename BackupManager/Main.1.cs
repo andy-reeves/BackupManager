@@ -280,10 +280,10 @@ internal sealed partial class Main
                 return;
             }
 
-            if (Directory.Exists(path) && Utils.IsDirectoryEmpty(path))
+            if (Directory.Exists(path) && Utils.Directory.IsEmpty(path))
             {
                 Utils.Trace("Deleting link directory as its empty");
-                _ = Utils.DirectoryDelete(path, true);
+                _ = Utils.Directory.Delete(path, true);
             }
             if (path != null && Directory.Exists(path)) continue;
 
@@ -334,7 +334,7 @@ internal sealed partial class Main
 
         foreach (var directory in config.DirectoriesToBackup)
         {
-            if (Utils.IsDirectoryWritable(directory))
+            if (Utils.Directory.IsWritable(directory))
                 writableDirectories.Add(directory);
             else
             {
@@ -458,7 +458,7 @@ internal sealed partial class Main
             {
                 var directory = config.DirectoriesToBackup[i];
                 UpdateStatusLabel(ct, string.Format(Resources.SpeedTesting, directory), i + 1);
-                if (!Utils.IsDirectoryWritable(directory)) continue;
+                if (!Utils.Directory.IsWritable(directory)) continue;
 
                 Utils.DiskSpeedTest(directory, Utils.ConvertMBtoBytes(config.SpeedTestFileSize), config.SpeedTestIterations, out var readSpeed,
                     out var writeSpeed, ct);

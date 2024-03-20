@@ -53,7 +53,7 @@ internal sealed partial class Main
     {
         // check the backup directories and the health check directories too
         foreach (var directory in mediaBackup.Config.DirectoriesToBackup.Concat(mediaBackup.Config.DirectoriesToHealthCheck)
-                     .Where(static directory => !Utils.IsDirectoryWritable(directory)))
+                     .Where(static directory => !Utils.Directory.IsWritable(directory)))
         {
             Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
                 string.Format(Resources.DirectoryIsNotWritable, directory));

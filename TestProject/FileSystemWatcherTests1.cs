@@ -30,8 +30,8 @@ public sealed class FileSystemWatcherTests1
         const int waitInMilliseconds = 250;
         var monitoringPath1 = Path.Combine(Path.GetTempPath(), "Test1MonitoringFolder1");
         var monitoringPath2 = Path.Combine(Path.GetTempPath(), "Test1MonitoringFolder2");
-        Utils.EnsureDirectoriesForDirectoryPath(monitoringPath1);
-        Utils.EnsureDirectoriesForDirectoryPath(monitoringPath2);
+        Utils.Directory.EnsurePath(monitoringPath1);
+        Utils.Directory.EnsurePath(monitoringPath2);
         var watcher = new FileSystemWatcher();
         Assert.True(watcher.Filter == "*.*", nameof(watcher.Filter));
         Assert.False(watcher.IncludeSubdirectories, nameof(watcher.IncludeSubdirectories));
@@ -70,8 +70,8 @@ public sealed class FileSystemWatcherTests1
         watcher.ReadyToScan -= FileSystemWatcher_ReadyToScan1;
 
         // Delete the folders we created
-        if (Directory.Exists(monitoringPath1)) _ = Utils.DirectoryDelete(monitoringPath1, true);
-        if (Directory.Exists(monitoringPath2)) _ = Utils.DirectoryDelete(monitoringPath2, true);
+        if (Directory.Exists(monitoringPath1)) _ = Utils.Directory.Delete(monitoringPath1, true);
+        if (Directory.Exists(monitoringPath2)) _ = Utils.Directory.Delete(monitoringPath2, true);
     }
 
     /// <summary>
@@ -84,9 +84,9 @@ public sealed class FileSystemWatcherTests1
         var monitoringPath1 = Path.Combine(Path.GetTempPath(), "Test2MonitoringFolder1");
         var monitoringPath2 = Path.Combine(Path.GetTempPath(), "Test2MonitoringFolder2");
         var monitoringPath3Missing = Path.Combine(Path.GetTempPath(), "Test2MonitoringFolder3");
-        if (Directory.Exists(monitoringPath3Missing)) _ = Utils.DirectoryDelete(monitoringPath3Missing, true);
-        Utils.EnsureDirectoriesForDirectoryPath(monitoringPath1);
-        Utils.EnsureDirectoriesForDirectoryPath(monitoringPath2);
+        if (Directory.Exists(monitoringPath3Missing)) _ = Utils.Directory.Delete(monitoringPath3Missing, true);
+        Utils.Directory.EnsurePath(monitoringPath1);
+        Utils.Directory.EnsurePath(monitoringPath2);
 
         var watcher = new FileSystemWatcher
         {
@@ -101,8 +101,8 @@ public sealed class FileSystemWatcherTests1
         watcher.ReadyToScan -= FileSystemWatcher_ReadyToScan2;
 
         // Delete the folders we created
-        if (Directory.Exists(monitoringPath1)) _ = Utils.DirectoryDelete(monitoringPath1, true);
-        if (Directory.Exists(monitoringPath2)) _ = Utils.DirectoryDelete(monitoringPath2, true);
+        if (Directory.Exists(monitoringPath1)) _ = Utils.Directory.Delete(monitoringPath1, true);
+        if (Directory.Exists(monitoringPath2)) _ = Utils.Directory.Delete(monitoringPath2, true);
     }
 
     private void FileSystemWatcher_ReadyToScan1(object? sender, FileSystemWatcherEventArgs e)

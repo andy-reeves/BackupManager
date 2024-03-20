@@ -4,6 +4,7 @@
 //  </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -42,7 +43,13 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
         if (FullDirectory.HasNoValue()) return null;
 
         var files = Utils.GetFiles(FullDirectory, new CancellationToken());
-        var videoFiles = files.Where(static f => Utils.FileIsVideo(f) && !Utils.FileIsSpecialFeature(f)).ToArray();
+
+        var videoFiles = files.Where(static f =>
+        {
+            ArgumentException.ThrowIfNullOrEmpty(f);
+            ArgumentException.ThrowIfNullOrEmpty(f);
+            return Utils.File.IsVideo(f) && !Utils.File.IsSpecialFeature(f);
+        }).ToArray();
 
         // if more than 1 movie file in this folder, we can't pick one
         return videoFiles.Length is 0 or > 1 ? null : new MovieBackupFile(videoFiles[0]);
@@ -90,7 +97,13 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
         if (FullDirectory.HasNoValue()) return false;
 
         var files = Utils.GetFiles(FullDirectory, new CancellationToken());
-        var videoFiles = files.Where(static f => Utils.FileIsVideo(f) && !Utils.FileIsSpecialFeature(f)).ToArray();
+
+        var videoFiles = files.Where(static f =>
+        {
+            ArgumentException.ThrowIfNullOrEmpty(f);
+            ArgumentException.ThrowIfNullOrEmpty(f);
+            return Utils.File.IsVideo(f) && !Utils.File.IsSpecialFeature(f);
+        }).ToArray();
         if (videoFiles.Any(file => Path.GetFileName(file).StartsWithIgnoreCase(Title))) return Validate();
 
         // if more than 1 movie file in this folder, we can't pick one

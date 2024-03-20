@@ -232,15 +232,15 @@ internal sealed partial class Main : Form
                     {
                         var targetFilePath = Path.Combine(targetDirectory, file.RelativePath);
 
-                        if (File.Exists(targetFilePath))
+                        if (Utils.File.Exists(targetFilePath))
                             Utils.LogWithPushover(BackupAction.Restore, $"[{fileCounter}/{countOfFiles}] {targetFilePath} Already exists");
                         else
                         {
-                            if (File.Exists(sourceFileFullPath))
+                            if (Utils.File.Exists(sourceFileFullPath))
                             {
                                 Utils.LogWithPushover(BackupAction.Restore,
                                     $"[{fileCounter}/{countOfFiles}] Copying {sourceFileFullPath} as {targetFilePath}");
-                                _ = Utils.FileCopy(sourceFileFullPath, targetFilePath, mainCt);
+                                _ = Utils.File.Copy(sourceFileFullPath, targetFilePath, mainCt);
                             }
                             else
                             {
@@ -249,9 +249,9 @@ internal sealed partial class Main : Form
                             }
                         }
 
-                        if (File.Exists(targetFilePath))
+                        if (Utils.File.Exists(targetFilePath))
                         {
-                            if (file.ContentsHash == Utils.GetShortMd5HashFromFile(targetFilePath))
+                            if (file.ContentsHash == Utils.File.GetShortMd5Hash(targetFilePath))
                                 file.Directory = targetDirectory;
                             else
                             {
@@ -977,9 +977,9 @@ internal sealed partial class Main : Form
         {
             UpdateStatusLabel(ct, string.Format(Resources.Scanning, directory));
 
-            if (Directory.Exists(directory))
+            if (Utils.Directory.Exists(directory))
             {
-                if (Utils.IsDirectoryWritable(directory))
+                if (Utils.Directory.IsWritable(directory))
                 {
                     var rootPath = Utils.GetRootPath(directory);
                     if (directoriesChecked.Contains(rootPath)) continue;
@@ -1021,9 +1021,9 @@ internal sealed partial class Main : Form
         {
             foreach (var file in files)
             {
-                if (File.Exists(file.FullPath))
+                if (Utils.File.Exists(file.FullPath))
                 {
-                    Utils.Log(Utils.FileIsDolbyVisionProfile5(file.FullPath)
+                    Utils.Log(Utils.File.IsDolbyVisionProfile5(file.FullPath)
                         ? $"{file.FullPath} is DV Profile 5"
                         : $"{file.FullPath} is DV but not Profile 5");
                 }
@@ -1074,7 +1074,7 @@ internal sealed partial class Main : Form
             var newDiskName = $"Backup {i}";
 
             //create the directory
-            _ = Directory.CreateDirectory(Path.Combine(backupDiskTextBox.Text, newDiskName.ToLowerInvariant()));
+            _ = Utils.Directory.CreateDirectory(Path.Combine(backupDiskTextBox.Text, newDiskName.ToLowerInvariant()));
 
             //rename the disk
             _ = new DriveInfo(backupDiskTextBox.Text) { VolumeLabel = newDiskName };
@@ -1103,14 +1103,18 @@ internal sealed partial class Main : Form
 
     private void VideoFilesCheckNameButton_Click(object sender, EventArgs e)
     {
-        var files = mediaBackup.BackupFiles
-            .Where(static bf => !bf.Deleted && (Utils.FileIsVideo(bf.FullPath) || Utils.FileIsSubtitles(bf.FullPath))).ToArray();
+        var files = mediaBackup.BackupFiles.Where(static bf =>
+        {
+            ArgumentException.ThrowIfNullOrEmpty(bf.FullPath);
+            ArgumentException.ThrowIfNullOrEmpty(bf.FullPath);
+            return !bf.Deleted && (Utils.File.IsVideo(bf.FullPath) || Utils.File.IsSubtitles(bf.FullPath));
+        }).ToArray();
 
         for (var index = 0; index < files.Length; index++)
         {
             var fullPath = files[index].FullPath;
             Utils.Log($"[{index}/{files.Length}] {fullPath}");
-            if (!File.Exists(fullPath)) continue;
+            if (!Utils.File.Exists(fullPath)) continue;
 
             Utils.CheckVideoFileAndRenameIfRequired(ref fullPath);
         }
@@ -1119,12 +1123,18 @@ internal sealed partial class Main : Form
     private void H264FilesButton_Click(object sender, EventArgs e)
     {
         var files = mediaBackup.BackupFiles.Where(static file =>
-            Utils.FileIsVideo(file.FullPath) && file.FullPath.Contains("_TV") && !file.FullPath.Contains("[h265")).ToArray();
+        {
+            ArgumentException.ThrowIfNullOrEmpty(file.FullPath);
+            return Utils.File.IsVideo(file.FullPath) && file.FullPath.Contains("_TV") && !file.FullPath.Contains("[h265");
+        }).ToArray();
         var totalSize = files.Sum(static file => file.Length);
         Utils.Log($"Total size of {files.Length} TV files is {Utils.FormatSize(totalSize)}");
 
         files = mediaBackup.BackupFiles.Where(static file =>
-            Utils.FileIsVideo(file.FullPath) && file.FullPath.Contains("_Movies") && !file.FullPath.Contains("[h265]")).ToArray();
+        {
+            ArgumentException.ThrowIfNullOrEmpty(file.FullPath);
+            return Utils.File.IsVideo(file.FullPath) && file.FullPath.Contains("_Movies") && !file.FullPath.Contains("[h265]");
+        }).ToArray();
         totalSize = files.Sum(static file => file.Length);
         Utils.Log($"Total size of {files.Length} of Movie files is {Utils.FormatSize(totalSize)}");
     }

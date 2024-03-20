@@ -211,7 +211,7 @@ internal sealed partial class Main
         UpdateStatusLabel(ct, string.Format(Resources.DeletingEmptyDirectories, directoryToCheck));
         if (!mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, true).Any()) return;
 
-        var directoriesDeleted = Utils.DeleteEmptyDirectories(directoryToCheck);
+        var directoriesDeleted = Utils.Directory.DeleteEmpty(directoryToCheck);
 
         foreach (var directory in directoriesDeleted)
         {
@@ -227,7 +227,7 @@ internal sealed partial class Main
         {
             Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
                 $"Extra file {backupDiskFileFullPath} on backup disk {disk.Name} now deleted");
-            _ = Utils.FileDelete(backupDiskFileFullPath);
+            _ = Utils.File.Delete(backupDiskFileFullPath);
         }
         else
             Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Extra file {backupDiskFileFullPath} on backup disk {disk.Name}");
@@ -242,7 +242,7 @@ internal sealed partial class Main
         // Alternatively, find it by the contents hashcode as that's (almost guaranteed unique)
         // and then rename it 
         // if we try to rename, and it exists at the destination already then we delete the file instead
-        var hashToCheck = Utils.GetShortMd5HashFromFile(backupDiskFileFullPath);
+        var hashToCheck = Utils.File.GetShortMd5Hash(backupDiskFileFullPath);
         var file = mediaBackup.GetBackupFileFromContentsHashcode(hashToCheck);
 
         if (file == null || file.Length == 0 || file.Disk.HasNoValue())
@@ -257,15 +257,15 @@ internal sealed partial class Main
         if (File.Exists(destFileName))
         {
             // check the hash of the destination file to check it's the same as what we would've renamed too
-            if (Utils.GetShortMd5HashFromFile(destFileName) == hashToCheck)
+            if (Utils.File.GetShortMd5Hash(destFileName) == hashToCheck)
             {
                 Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal,
                     string.Format(Resources.FileExistsAlreadySoDeleting, backupDiskFileFullPath));
-                _ = Utils.FileDelete(backupDiskFileFullPath);
+                _ = Utils.File.Delete(backupDiskFileFullPath);
             }
         }
         else
-            _ = Utils.FileMove(backupDiskFileFullPath, destFileName);
+            _ = Utils.File.Move(backupDiskFileFullPath, destFileName);
 
         // This forces a hash check on the source and backup disk files
         if (file.CheckContentHashes(disk))
@@ -318,7 +318,7 @@ internal sealed partial class Main
                 // We Update the LastWriteTime from disk in case it's not been scanned since it changed
                 backupFile.UpdateLastWriteTime();
                 var sourceLastWriteTime = backupFile.LastWriteTime;
-                var lastWriteTimeOfFileOnBackupDisk = Utils.GetFileLastWriteTime(backupDiskFileFullPath);
+                var lastWriteTimeOfFileOnBackupDisk = Utils.File.GetLastWriteTime(backupDiskFileFullPath);
                 Utils.Trace($"{backupFile.FileName} xml LastWriteTime={sourceLastWriteTime}. On disk is {lastWriteTimeOfFileOnBackupDisk}");
 
                 if (sourceLastWriteTime == lastWriteTimeOfFileOnBackupDisk)
@@ -332,7 +332,7 @@ internal sealed partial class Main
                     if (deleteExtraFiles)
                     {
                         Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, $"Deleting {backupDiskFileFullPath}.");
-                        _ = Utils.FileDelete(backupDiskFileFullPath);
+                        _ = Utils.File.Delete(backupDiskFileFullPath);
                     }
                     else
                     {

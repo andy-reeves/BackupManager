@@ -43,8 +43,8 @@ public sealed class UtilsUnitTests
         {
             path1 = Path.Combine(Path.GetTempPath(), "SharedFolder");
             var file = Path.Combine(path1, "test1.txt");
-            if (Directory.Exists(path1)) _ = Utils.DirectoryDelete(path1, true);
-            Utils.EnsureDirectoriesForDirectoryPath(path1);
+            if (Directory.Exists(path1)) _ = Utils.Directory.Delete(path1, true);
+            Utils.Directory.EnsurePath(path1);
             Utils.CreateFile(file);
             const string shareName = "TestShare";
             var tempShare2 = Win32Share.GetNamedShare(shareName);
@@ -62,7 +62,7 @@ public sealed class UtilsUnitTests
                 if (Directory.Exists(path1))
                 {
                     // Tidy up directories we created 
-                    _ = Utils.DirectoryDelete(path1, true);
+                    _ = Utils.Directory.Delete(path1, true);
                 }
             }
         }
@@ -71,8 +71,8 @@ public sealed class UtilsUnitTests
     [Fact]
     public void IsDirectoryWritable()
     {
-        Assert.True(Utils.IsDirectoryWritable(Utils.Config.DirectoriesToBackup[0]));
-        Assert.False(Utils.IsDirectoryWritable(Utils.Config.DirectoriesToBackup[0] + "2"));
+        Assert.True(Utils.Directory.IsWritable(Utils.Config.DirectoriesToBackup[0]));
+        Assert.False(Utils.Directory.IsWritable(Utils.Config.DirectoriesToBackup[0] + "2"));
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public sealed class UtilsUnitTests
     {
         var path1 = Path.Combine(Path.GetTempPath(), "RenameFileToRemoveFixedSpaces");
         var filePathWithFixedSpaces = Path.Combine(path1, "test" + Convert.ToChar(160) + "1.txt");
-        Utils.EnsureDirectoriesForDirectoryPath(path1);
+        Utils.Directory.EnsurePath(path1);
         Utils.CreateFile(filePathWithFixedSpaces);
         Assert.True(Utils.StringContainsFixedSpace(filePathWithFixedSpaces));
         var filePathWithFixedSpacesRemoved = Utils.ReplaceFixedSpace(filePathWithFixedSpaces);
@@ -88,9 +88,9 @@ public sealed class UtilsUnitTests
         Assert.Equal(filePathWithFixedSpacesRemoved, newFilePath);
         Assert.True(File.Exists(newFilePath));
         Assert.False(File.Exists(filePathWithFixedSpaces));
-        _ = Utils.FileDelete(newFilePath);
+        _ = Utils.File.Delete(newFilePath);
         Assert.False(File.Exists(newFilePath));
-        if (Directory.Exists(path1)) _ = Utils.DirectoryDelete(path1, true);
+        if (Directory.Exists(path1)) _ = Utils.Directory.Delete(path1, true);
     }
 
     [Fact]
@@ -115,17 +115,17 @@ public sealed class UtilsUnitTests
     public void FileMove()
     {
         var path1 = Path.Combine(Path.GetTempPath(), "FileMove");
-        if (Directory.Exists(path1)) _ = Utils.DirectoryDelete(path1, true);
+        if (Directory.Exists(path1)) _ = Utils.Directory.Delete(path1, true);
         var file1 = Path.Combine(path1, "test1.txt");
         var file2 = Path.Combine(path1, "test2.txt");
-        Utils.EnsureDirectoriesForDirectoryPath(path1);
+        Utils.Directory.EnsurePath(path1);
         Utils.CreateFile(file1);
-        _ = Utils.FileMove(file1, file2);
+        _ = Utils.File.Move(file1, file2);
         Assert.False(File.Exists(file1));
         Assert.True(File.Exists(file2));
 
         // Delete the folders we created
-        if (Directory.Exists(path1)) _ = Utils.DirectoryDelete(path1, true);
+        if (Directory.Exists(path1)) _ = Utils.Directory.Delete(path1, true);
     }
 
     [Fact]
@@ -139,21 +139,21 @@ public sealed class UtilsUnitTests
     {
         var path1 = Path.Combine(Path.GetTempPath(), "IsDirectoryEmpty");
         var path2 = Path.Combine(Path.GetTempPath(), "IsDirectoryEmpty2");
-        if (Directory.Exists(path1)) _ = Utils.DirectoryDelete(path1, true);
-        if (Directory.Exists(path2)) _ = Utils.DirectoryDelete(path2, true);
+        if (Directory.Exists(path1)) _ = Utils.Directory.Delete(path1, true);
+        if (Directory.Exists(path2)) _ = Utils.Directory.Delete(path2, true);
         var file1 = Path.Combine(path1, "test1.txt");
-        Utils.EnsureDirectoriesForDirectoryPath(path1);
-        Assert.True(Utils.IsDirectoryEmpty(path1));
-        Assert.False(Utils.IsDirectoryEmpty(path1 + "bob"));
+        Utils.Directory.EnsurePath(path1);
+        Assert.True(Utils.Directory.IsEmpty(path1));
+        Assert.False(Utils.Directory.IsEmpty(path1 + "bob"));
         Utils.CreateFile(file1);
         _ = Directory.CreateSymbolicLink(path2, path1);
-        Assert.False(Utils.IsDirectoryEmpty(path1));
-        Assert.False(Utils.IsDirectoryEmpty(path2));
+        Assert.False(Utils.Directory.IsEmpty(path1));
+        Assert.False(Utils.Directory.IsEmpty(path2));
 
         // Delete the folders we created
-        if (Directory.Exists(path1)) _ = Utils.DirectoryDelete(path1, true);
-        Assert.True(Utils.IsDirectoryEmpty(path2));
-        if (Directory.Exists(path2)) _ = Utils.DirectoryDelete(path2, true);
+        if (Directory.Exists(path1)) _ = Utils.Directory.Delete(path1, true);
+        Assert.True(Utils.Directory.IsEmpty(path2));
+        if (Directory.Exists(path2)) _ = Utils.Directory.Delete(path2, true);
     }
 
     [Fact]
@@ -185,9 +185,9 @@ public sealed class UtilsUnitTests
     public void GetRemoteFileByteArray()
     {
         var path1 = Path.Combine(Path.GetTempPath(), "GetRemoteFileByteArray");
-        if (Directory.Exists(path1)) _ = Utils.DirectoryDelete(path1, true);
+        if (Directory.Exists(path1)) _ = Utils.Directory.Delete(path1, true);
         var file1 = Path.Combine(path1, "test1.txt");
-        Utils.EnsureDirectoriesForDirectoryPath(path1);
+        Utils.Directory.EnsurePath(path1);
         Utils.CreateFile(file1);
 
         using (BufferedStream stream = new(File.OpenRead(file1), Utils.BYTES_IN_ONE_MEGABYTE))
@@ -197,26 +197,26 @@ public sealed class UtilsUnitTests
         }
 
         // Delete the folders we created
-        if (Directory.Exists(path1)) _ = Utils.DirectoryDelete(path1, true);
+        if (Directory.Exists(path1)) _ = Utils.Directory.Delete(path1, true);
     }
 
     [Fact]
     public void GetShortMd5HashFromFile()
     {
         var path1 = Path.Combine(Path.GetTempPath(), "GetShortMd5HashFromFile");
-        if (Directory.Exists(path1)) _ = Utils.DirectoryDelete(path1, true);
+        if (Directory.Exists(path1)) _ = Utils.Directory.Delete(path1, true);
         var file1 = Path.Combine(path1, "test1.txt");
-        Utils.EnsureDirectoriesForDirectoryPath(path1);
+        Utils.Directory.EnsurePath(path1);
         Utils.CreateFile(file1);
 
         using (var stream = File.OpenRead(file1))
         {
-            Assert.Equal("b3d5cf638ed2f6a94d6b3c628f946196", Utils.GetShortMd5HashFromFile(stream, Utils.BYTES_IN_ONE_MEGABYTE));
+            Assert.Equal("b3d5cf638ed2f6a94d6b3c628f946196", Utils.File.GetShortMd5HashFromFile(stream, Utils.BYTES_IN_ONE_MEGABYTE));
         }
-        Assert.Equal("b3d5cf638ed2f6a94d6b3c628f946196", Utils.GetShortMd5HashFromFile(file1));
+        Assert.Equal("b3d5cf638ed2f6a94d6b3c628f946196", Utils.File.GetShortMd5Hash(file1));
 
         // Delete the folders we created
-        if (Directory.Exists(path1)) _ = Utils.DirectoryDelete(path1, true);
+        if (Directory.Exists(path1)) _ = Utils.Directory.Delete(path1, true);
     }
 
     [Fact]
@@ -226,15 +226,15 @@ public sealed class UtilsUnitTests
         var file1 = Path.Combine(path1, "test1.txt");
 
         // Delete the folders we create
-        if (Directory.Exists(path1)) _ = Utils.DirectoryDelete(path1, true);
-        Utils.EnsureDirectoriesForDirectoryPath(path1);
+        if (Directory.Exists(path1)) _ = Utils.Directory.Delete(path1, true);
+        Utils.Directory.EnsurePath(path1);
         Utils.CreateFile(file1);
         var md5 = MD5.Create();
         var hash = Utils.GetHashFromFile(file1, md5);
         Assert.Equal("b3d5cf638ed2f6a94d6b3c628f946196", hash);
 
         // Delete the folders we created
-        if (Directory.Exists(path1)) _ = Utils.DirectoryDelete(path1, true);
+        if (Directory.Exists(path1)) _ = Utils.Directory.Delete(path1, true);
     }
 
     [Fact]
@@ -254,7 +254,7 @@ public sealed class UtilsUnitTests
         Assert.Single(files, file1);
 
         // Delete the folders we created
-        if (Directory.Exists(path1)) _ = Utils.DirectoryDelete(path1, true);
+        if (Directory.Exists(path1)) _ = Utils.Directory.Delete(path1, true);
         files = Utils.GetFiles(path1 + "bob", "*.txt", SearchOption.AllDirectories, FileAttributes.Hidden, cancellationTokenSource.Token);
         Assert.Empty(files);
     }
@@ -309,7 +309,7 @@ public sealed class UtilsUnitTests
         Assert.NotNull(a);
         Assert.Equal(@"\\nas2\assets1", a);
         var path = Path.Combine(Path.GetTempPath(), "Folder1");
-        Utils.EnsureDirectoriesForDirectoryPath(path);
+        Utils.Directory.EnsurePath(path);
         var file1 = Path.Combine(path, "test.tmp");
         Utils.CreateFile(file1);
         a = Utils.GetRootPath(path);
@@ -318,8 +318,8 @@ public sealed class UtilsUnitTests
         a = Utils.GetRootPath(file1);
         Assert.NotNull(a);
         Assert.Equal(@"C:\", a);
-        _ = Utils.FileDelete(file1);
-        _ = Utils.DirectoryDelete(path);
+        _ = Utils.File.Delete(file1);
+        _ = Utils.Directory.Delete(path);
     }
 
     [Fact]

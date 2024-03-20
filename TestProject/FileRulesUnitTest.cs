@@ -77,14 +77,14 @@ public sealed class FileRulesUnitTest
     public void FileRuleTests2()
     {
         var path1 = Path.Combine(Path.GetTempPath(), "FileMove");
-        if (Directory.Exists(path1)) _ = Utils.DirectoryDelete(path1, true);
+        if (Directory.Exists(path1)) _ = Utils.Directory.Delete(path1, true);
         var file1 = Path.Combine(path1, "test1.txt");
-        Utils.EnsureDirectoriesForDirectoryPath(path1);
+        Utils.Directory.EnsurePath(path1);
         Utils.CreateFile(file1);
         _ = Assert.Throws<ArgumentNullException>(static () => Rules.Load(null));
         _ = Assert.Throws<XmlException>(() => Rules.Load(file1));
 
         // Delete the folders we created
-        if (Directory.Exists(path1)) _ = Utils.DirectoryDelete(path1, true);
+        if (Directory.Exists(path1)) _ = Utils.Directory.Delete(path1, true);
     }
 }

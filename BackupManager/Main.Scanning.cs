@@ -180,7 +180,7 @@ internal sealed partial class Main
         if (newFilePath == file) return Utils.TraceOut(true);
 
         Utils.Log(BackupAction.ProcessFiles, $"{file} being renamed to {newFilePath}");
-        if (!Utils.FileMove(file, newFilePath)) return Utils.TraceOut(false);
+        if (!Utils.File.Move(file, newFilePath)) return Utils.TraceOut(false);
 
         file = newFilePath;
         return Utils.TraceOut(true);
@@ -200,7 +200,8 @@ internal sealed partial class Main
     private bool ProcessFilesCheckAllMediaInfo(bool scan, ref string file, CancellationToken ct)
     {
         Utils.TraceIn();
-        if (!File.Exists(file) || !Utils.FileIsVideo(file) || !config.DirectoriesRenameVideoFilesOnOff || !scan) return Utils.TraceOut(true);
+        ArgumentException.ThrowIfNullOrEmpty(file);
+        if (!File.Exists(file) || !Utils.File.IsVideo(file) || !config.DirectoriesRenameVideoFilesOnOff || !scan) return Utils.TraceOut(true);
 
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
 
@@ -535,7 +536,7 @@ internal sealed partial class Main
         if (!filters.Any(pattern => Regex.IsMatch(fileName, pattern))) return false;
 
         Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, $"File matches RegEx and so will be deleted {filePath}");
-        _ = Utils.FileDelete(filePath);
+        _ = Utils.File.Delete(filePath);
         return true;
     }
 }

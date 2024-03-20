@@ -136,13 +136,13 @@ internal sealed partial class Main
         {
             // check the modifiedTime and if its different copy it
             var sourceLastWriteTime = backupFile.LastWriteTime;
-            var lastWriteTimeOfFileOnBackupDisk = Utils.GetFileLastWriteTime(destinationFileName);
+            var lastWriteTimeOfFileOnBackupDisk = Utils.File.GetLastWriteTime(destinationFileName);
 
             if (sourceLastWriteTime == lastWriteTimeOfFileOnBackupDisk)
                 Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.High, Resources.HashCodesError2);
             else
             {
-                _ = Utils.FileDelete(destinationFileName);
+                _ = Utils.File.Delete(destinationFileName);
                 copyTheFile = true;
             }
         }
@@ -194,15 +194,15 @@ internal sealed partial class Main
             Utils.LogWithPushover(BackupAction.CopyFiles,
                 string.Format(Resources.CopyFilesMainMessage, fileCounter, totalFileCount, Utils.FormatSize(availableSpace), sourceFileName,
                     sourceFileSize, formattedEndDateTime), false, true);
-            _ = Utils.FileDelete(destinationFileNameTemp);
+            _ = Utils.File.Delete(destinationFileNameTemp);
             var sw = Stopwatch.StartNew();
-            _ = Utils.FileCopy(sourceFileName, destinationFileNameTemp, ct);
+            _ = Utils.File.Copy(sourceFileName, destinationFileNameTemp, ct);
             sw.Stop();
             var timeTaken = sw.Elapsed.TotalSeconds;
 
             // We need to check this here in case Cancel was clicked during the copy of the file
             if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
-            _ = Utils.FileMove(destinationFileNameTemp, destinationFileName);
+            _ = Utils.File.Move(destinationFileNameTemp, destinationFileName);
             Utils.Trace($"timeTaken {timeTaken}");
             Utils.Trace($"sourceFileInfo.Length {sourceFileInfo.Length}");
             lastCopySpeed = timeTaken > 0 ? Convert.ToInt64(sourceFileInfo.Length / timeTaken) : 0;
@@ -212,7 +212,7 @@ internal sealed partial class Main
             copiedSoFar += backupFile.Length;
 
             // Make sure it's not readonly
-            Utils.ClearFileAttribute(destinationFileName, FileAttributes.ReadOnly);
+            Utils.File.ClearFileAttribute(destinationFileName, FileAttributes.ReadOnly);
 
             // it could be that the source file hash changed after we read it (we read the hash, updated the master file and
             // then copied it)

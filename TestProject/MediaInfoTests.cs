@@ -26,12 +26,12 @@ public sealed class MediaInfoTests
     {
         var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaInfoTests)), "TestData");
         var mediaFileName = Path.Combine(testDataPath, "File1 [DV].mkv");
-        Assert.True(Utils.FileIsDolbyVisionProfile5(mediaFileName));
+        Assert.True(Utils.File.IsDolbyVisionProfile5(mediaFileName));
         mediaFileName = Path.Combine(testDataPath, "File2 [DV].mkv");
-        Assert.False(Utils.FileIsDolbyVisionProfile5(mediaFileName));
+        Assert.False(Utils.File.IsDolbyVisionProfile5(mediaFileName));
         mediaFileName = Path.Combine(testDataPath, "File3 [DV].mkv");
-        Assert.True(Utils.FileIsDolbyVisionProfile5(mediaFileName));
+        Assert.True(Utils.File.IsDolbyVisionProfile5(mediaFileName));
         mediaFileName = Path.Combine(testDataPath, "File4 [DV] profile8.mkv");
-        Assert.False(Utils.FileIsDolbyVisionProfile5(mediaFileName));
+        Assert.False(Utils.File.IsDolbyVisionProfile5(mediaFileName));
     }
 }

@@ -97,7 +97,7 @@ public sealed class MediaBackup
     {
         // take a copy of the xml file
         var destinationPath = GetMediaBackupDestinationPath();
-        _ = Utils.FileCopy(mediaBackupPath, destinationPath, ct);
+        _ = Utils.File.Copy(mediaBackupPath, destinationPath, ct);
     }
 
     private static string GetMediaBackupDestinationPath()
@@ -318,7 +318,7 @@ public sealed class MediaBackup
 
                 // First we can check the hash of both
                 // its its the same hash then we can assume the file has just been moved
-                hashOfContents = Utils.GetShortMd5HashFromFile(fullPath);
+                hashOfContents = Utils.File.GetShortMd5Hash(fullPath);
 
                 if (hashOfContents == backupFile.ContentsHash)
                 {
@@ -334,14 +334,14 @@ public sealed class MediaBackup
             else
             {
                 // check the timestamp against what we have
-                var lastWriteTimeFromMasterFile = Utils.GetFileLastWriteTime(fullPath);
+                var lastWriteTimeFromMasterFile = Utils.File.GetLastWriteTime(fullPath);
 
                 // if the file on disk is different then check the hash 
                 if (backupFile.LastWriteTime != lastWriteTimeFromMasterFile)
                 {
                     // update the timestamp as its changed/missing
                     backupFile.LastWriteTime = lastWriteTimeFromMasterFile;
-                    hashOfContents = Utils.GetShortMd5HashFromFile(fullPath);
+                    hashOfContents = Utils.File.GetShortMd5Hash(fullPath);
 
                     // has the contents hash changed too?
                     if (hashOfContents != backupFile.ContentsHash)
@@ -365,7 +365,7 @@ public sealed class MediaBackup
         // We need to check the contents hash only because maybe we renamed the source file
 
         // this happened when we changed files from [SDTV-576p] to [DVD-576p]
-        var contents = Utils.GetShortMd5HashFromFile(fullPath);
+        var contents = Utils.File.GetShortMd5Hash(fullPath);
         var f = GetBackupFileFromContentsHashcode(contents);
 
         if (f != null)

@@ -59,8 +59,6 @@ internal static partial class Utils
 
     private const int OPEN_EXISTING = 3;
 
-    private static readonly Regex _positionRegex = MediaInfoAudioPositionRegex();
-
     internal const string STANDARD_MOVIE_FORMAT = "{Movie Title} " + //
                                                   "({Release Year}) " + //
                                                   "{tmdb-{TmdbId}} " + //
@@ -149,6 +147,8 @@ internal static partial class Utils
 
     internal const string SPEED_TEST_GUID = "{AFEF4827-0AA2-4C0E-8D90-9BEFB5DBEA62}";
 
+    private static readonly Regex _positionRegex = MediaInfoAudioPositionRegex();
+
     /// <summary>
     ///     An array of the special feature prefixes for video files like -featurette, - other, etc.
     /// </summary>
@@ -231,11 +231,6 @@ internal static partial class Utils
     private static partial SafeFileHandle CreateFile(string fileName, uint dwDesiredAccess, FileShare dwShareMode, IntPtr securityAttrsMustBeZero,
         FileMode dwCreationDisposition, uint dwFlagsAndAttributes, IntPtr hTemplateFileMustBeZero);
 
-    [LibraryImport("kernel32.dll", EntryPoint = "SetFileTime", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool SetFileTime(SafeFileHandle hFile, IntPtr lpCreationTimeUnused, IntPtr lpLastAccessTimeUnused,
-        ref long lpLastWriteTime);
-
     /// <summary>
     ///     Hash is now different depending on the filename as we write that into the file
     ///     for test1.txt the hash is b3d5cf638ed2f6a94d6b3c628f946196
@@ -243,7 +238,7 @@ internal static partial class Utils
     /// <param name="filePath"></param>
     internal static void CreateFile(string filePath)
     {
-        EnsureDirectoriesForFilePath(filePath);
+        Directory.EnsureForFilePath(filePath);
         File.AppendAllText(filePath, Path.GetFileName(filePath));
     }
 
@@ -254,34 +249,6 @@ internal static partial class Utils
         var notePadPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "notepad.exe");
         process.StartInfo.Arguments = $"/c start /max \"{notePadPath}\" \"{_logFile}\"";
         _ = process.Start();
-    }
-
-    public static void CopyDirectory(string sourceDirectory, string targetDirectory)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(sourceDirectory);
-        ArgumentException.ThrowIfNullOrEmpty(targetDirectory);
-        if (!Directory.Exists(sourceDirectory)) throw new DirectoryNotFoundException();
-        if (Directory.Exists(targetDirectory)) throw new NotSupportedException("Target Directory exists");
-
-        var diSource = new DirectoryInfo(sourceDirectory);
-        var diTarget = new DirectoryInfo(targetDirectory);
-        CopyAllFiles(diSource, diTarget);
-    }
-
-    private static void CopyAllFiles(DirectoryInfo source, DirectoryInfo target)
-    {
-        _ = Directory.CreateDirectory(target.FullName);
-
-        foreach (var fi in source.GetFiles())
-        {
-            _ = fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
-        }
-
-        foreach (var diSourceSubDir in source.GetDirectories())
-        {
-            var nextTargetSubDir = target.CreateSubdirectory(diSourceSubDir.Name);
-            CopyAllFiles(diSourceSubDir, nextTargetSubDir);
-        }
     }
 
     internal static void BackupLogFile(CancellationToken ct)
@@ -295,7 +262,7 @@ internal static partial class Utils
 
         var destLogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups",
             $"BackupManager{suffix}_{timeLog}.log");
-        if (File.Exists(_logFile)) _ = FileMove(_logFile, destLogFile);
+        if (File.Exists(_logFile)) _ = File.Move(_logFile, destLogFile);
 
         var traceFiles = GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "*BackupManager_Trace.log",
             SearchOption.TopDirectoryOnly, ct);
@@ -308,7 +275,7 @@ internal static partial class Utils
 
             try
             {
-                _ = FileMove(file, destFileName);
+                _ = File.Move(file, destFileName);
             }
             catch (IOException) { }
         }
@@ -463,99 +430,6 @@ internal static partial class Utils
     }
 
     /// <summary>
-    ///     Moves a specified file to a new location, providing the option to specify a new file name. Ensures the destination
-    ///     folder exists too.
-    /// </summary>
-    /// <param name="sourceFileName">The name of the file to move. Can include a relative or absolute path.</param>
-    /// <param name="destFileName">The new path and name for the file.</param>
-    /// <returns>True if successfully renamed otherwise False</returns>
-    internal static bool FileMove(string sourceFileName, string destFileName)
-    {
-        TraceIn(sourceFileName, destFileName);
-#if FILEMOVE
-        EnsureDirectoriesForFilePath(destFileName);
-        File.Move(sourceFileName, destFileName);
-#else
-        LogWithPushover(BackupAction.General, PushoverPriority.High, $"FileMove with {sourceFileName} to {destFileName} - NOT MOVING", true, true);
-#endif
-        return TraceOut(true);
-    }
-
-    /// <summary>
-    ///     Copies an existing file to a new file asynchronously. Overwriting a file of the same name is not allowed. Ensures
-    ///     the destination folder exists too.
-    /// </summary>
-    /// <param name="sourceFileName">The file to copy.</param>
-    /// <param name="destFileName">The name of the destination file. This cannot be a directory or an existing file.</param>
-    /// <param name="ct"></param>
-    /// <returns>True if copy was successful or False</returns>
-    internal static bool FileCopy(string sourceFileName, string destFileName, CancellationToken ct)
-    {
-        TraceIn(sourceFileName, destFileName);
-        if (destFileName == null || sourceFileName == null) return false;
-
-        if (sourceFileName.Length > 256) throw new NotSupportedException($"Source file name {sourceFileName} exceeds 256 characters");
-        if (destFileName.Length > 256) throw new NotSupportedException($"Destination file name {destFileName} exceeds 256 characters");
-        if (File.Exists(destFileName)) throw new NotSupportedException("Destination file already exists");
-
-        EnsureDirectoriesForFilePath(destFileName);
-        if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
-
-        // ReSharper disable once CommentTypo
-        // we create the destination file so xcopy knows it's a file and can copy over it
-        File.WriteAllText(destFileName, "Temp file"); // hash of this is 88f85bbea58fbff062050bcb2d2aafcf
-
-        CopyProcess = new Process
-        {
-            StartInfo = new ProcessStartInfo
-            {
-                UseShellExecute = true,
-                WindowStyle = ProcessWindowStyle.Hidden,
-                FileName = "xcopy",
-                Arguments = $"/H /Y \"{sourceFileName}\" \"{destFileName}\""
-            }
-        };
-        if (!CopyProcess.Start()) return TraceOut(false);
-
-        try
-        {
-            var processId = CopyProcess.Id;
-
-            // CopyProcess may be null here already if the file was very small
-            CopyProcess.WaitForExit();
-
-            // We wait because otherwise lots of copy processes will start at once
-            // WaitForExit sometimes returns too early (especially for small files)
-            // So we then wait until the processID has gone completely
-            // This will throw ArgumentException if the process has stopped already
-
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-            while (Process.GetProcessById(processId) != null)
-            {
-                Wait(1);
-            }
-
-            // We never exit here
-            return TraceOut(false);
-        }
-
-        // ArgumentException is thrown when the process actually stops
-        // Then we wait until the file is actually not locked anymore and the hash codes match
-        // InvalidOperationException is thrown if we access the Process and its already completed
-        catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
-        {
-            var hashSource = GetShortMd5HashFromFile(sourceFileName);
-
-            while (!FileIsAccessible(destFileName) || GetShortMd5HashFromFile(destFileName) != hashSource)
-            {
-                Wait(1);
-                if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
-            }
-            return TraceOut(true);
-        }
-    }
-
-    /// <summary>
     ///     Converts a MB value to a size in bytes
     /// </summary>
     /// <param name="value"></param>
@@ -638,7 +512,7 @@ internal static partial class Utils
         // InvalidOperationException is thrown if we access the Process and its already completed
         catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
         {
-            while (!FileIsAccessible(path))
+            while (!File.IsAccessible(path))
             {
                 Wait(1);
             }
@@ -659,29 +533,6 @@ internal static partial class Utils
     private static bool AnyFlagSet(FileAttributes value, FileAttributes flagsToCheckFor)
     {
         return flagsToCheckFor != 0 && Enum.GetValues(typeof(FileAttributes)).Cast<Enum>().Where(flagsToCheckFor.HasFlag).Any(value.HasFlag);
-    }
-
-    /// <summary>
-    ///     Clears the attribute from the file if it were set.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <param name="attributeToRemove"></param>
-    internal static void ClearFileAttribute(string path, FileAttributes attributeToRemove)
-    {
-        TraceIn(path, attributeToRemove);
-        var attributes = File.GetAttributes(path);
-
-        if ((attributes & attributeToRemove) == attributeToRemove)
-        {
-            attributes = RemoveAttribute(attributes, attributeToRemove);
-            File.SetAttributes(path, attributes);
-        }
-        TraceOut();
-    }
-
-    private static FileAttributes RemoveAttribute(FileAttributes attributes, FileAttributes attributesToRemove)
-    {
-        return attributes & ~attributesToRemove;
     }
 
     /// <summary>
@@ -739,26 +590,6 @@ internal static partial class Utils
                 _ = eventInfo.GetRemoveMethod(fieldInfo.IsPrivate)?.Invoke(instance, new object[] { item });
             }
         }
-    }
-
-    /// <summary>
-    ///     Ensures all the directories on the way to the file are created.
-    /// </summary>
-    /// <param name="filePath">
-    /// </param>
-    private static void EnsureDirectoriesForFilePath(string filePath)
-    {
-        var directoryName = new FileInfo(filePath).DirectoryName;
-        if (directoryName != null) _ = Directory.CreateDirectory(directoryName);
-    }
-
-    /// <summary>
-    ///     Ensures all directories in the directoryPath are created.
-    /// </summary>
-    /// <param name="directoryPath"></param>
-    internal static void EnsureDirectoriesForDirectoryPath(string directoryPath)
-    {
-        EnsureDirectoriesForFilePath(Path.Combine(directoryPath, "temp.txt"));
     }
 
     /// <summary>
@@ -921,7 +752,7 @@ internal static partial class Utils
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
         var sw = Stopwatch.StartNew();
 
-        if (!Directory.Exists(path))
+        if (!System.IO.Directory.Exists(path))
         {
             Trace("GetFiles exit with new string[]");
             return Array.Empty<string>();
@@ -957,7 +788,7 @@ internal static partial class Utils
 
             if (searchOption == SearchOption.AllDirectories)
             {
-                foreach (var subDir in Directory.GetDirectories(dir).Where(subDir =>
+                foreach (var subDir in System.IO.Directory.GetDirectories(dir).Where(subDir =>
                              !AnyFlagSet(new DirectoryInfo(subDir).Attributes, directoryAttributesToIgnore)))
                 {
                     if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
@@ -968,7 +799,7 @@ internal static partial class Utils
             foreach (var collection in includeAsArray2.Select(filter =>
                      {
                          if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
-                         return Directory.GetFiles(dir, filter, SearchOption.TopDirectoryOnly);
+                         return System.IO.Directory.GetFiles(dir, filter, SearchOption.TopDirectoryOnly);
                      }).Select(allFiles => excludeAsArray.Any() ? allFiles.Where(p => !excludeRegex.Match(p).Success) : allFiles))
             {
                 foundFiles.AddRange(collection.Where(p => !AnyFlagSet(new FileInfo(p).Attributes, fileAttributesToIgnore)));
@@ -1026,157 +857,12 @@ internal static partial class Utils
         return byteArray;
     }
 
-    /// <summary>
-    ///     Calculates the short MD5 hash of the file.
-    /// </summary>
-    /// <param name="stream">
-    ///     The stream.
-    /// </param>
-    /// <param name="size">
-    ///     The size.
-    /// </param>
-    /// <returns>
-    ///     The <see cref="string" />.
-    /// </returns>
-    internal static string GetShortMd5HashFromFile(FileStream stream, long size)
-    {
-        if (stream == null) return null;
-        if (size <= 0) return string.Empty;
-
-        byte[] startBlock;
-        byte[] middleBlock = null;
-        byte[] endBlock = null;
-
-        if (size >= START_BLOCK_SIZE + MIDDLE_BLOCK_SIZE + END_BLOCK_SIZE)
-        {
-            var startDownloadPositionForEndBlock = size - END_BLOCK_SIZE;
-            var startDownloadPositionForMiddleBlock = size / 2;
-            startBlock = GetLocalFileByteArray(stream, 0, START_BLOCK_SIZE);
-            middleBlock = GetLocalFileByteArray(stream, startDownloadPositionForMiddleBlock, MIDDLE_BLOCK_SIZE);
-            endBlock = GetLocalFileByteArray(stream, startDownloadPositionForEndBlock, END_BLOCK_SIZE);
-        }
-        else
-            startBlock = GetLocalFileByteArray(stream, 0, size);
-        return CreateHashForByteArray(startBlock, middleBlock, endBlock);
-    }
-
-    internal static long GetFileLength(string fileName)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(fileName, nameof(fileName));
-        if (!File.Exists(fileName)) throw new FileNotFoundException(Resources.FileNotFound, fileName);
-
-        return new FileInfo(fileName).Length;
-    }
-
-    internal static DateTime GetFileLastWriteTime(string fileName)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(fileName, nameof(fileName));
-        if (!File.Exists(fileName)) throw new FileNotFoundException(Resources.FileNotFound, fileName);
-
-        FileInfo fileInfo = new(fileName);
-        DateTime returnValue;
-
-        try
-        {
-            returnValue = fileInfo.LastWriteTime;
-        }
-        catch (ArgumentOutOfRangeException)
-        {
-            // Sometimes the file doesn't have a valid LastWriteTime 
-            //If we cant read the LastWriteTime then copy the LastAccessTime over it and use that instead
-            fileInfo.LastWriteTime = fileInfo.LastAccessTime;
-            returnValue = fileInfo.LastWriteTime;
-        }
-        return returnValue;
-    }
-
-    internal static bool SetFileLastWriteTime(string fileName, DateTime writeTimeToUse)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(fileName, nameof(fileName));
-        if (!File.Exists(fileName)) throw new FileNotFoundException(Resources.FileNotFound, fileName);
-
-        FileInfo fileInfo = new(fileName);
-
-        try
-        {
-            fileInfo.LastWriteTime = writeTimeToUse;
-        }
-        catch (ArgumentOutOfRangeException)
-        {
-            return false;
-        }
-        return true;
-    }
-
-    /// <summary>
-    ///     Gets an MD5 hash of the first 16K, the 16K from the middle and last 16K of a file.
-    /// </summary>
-    /// <param name="path">
-    ///     The local file name.
-    /// </param>
-    /// <returns>
-    ///     An MD5 hash of the file or null if File doesn't exist or string.Empty if it has no size.
-    /// </returns>
-    internal static string GetShortMd5HashFromFile(string path)
-    {
-        TraceIn(path);
-        ArgumentException.ThrowIfNullOrEmpty(path);
-        if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
-
-        var size = new FileInfo(path).Length;
-        if (size == 0) return string.Empty;
-
-        byte[] startBlock;
-        byte[] middleBlock = null;
-        byte[] endBlock = null;
-
-        if (size >= START_BLOCK_SIZE + MIDDLE_BLOCK_SIZE + END_BLOCK_SIZE)
-        {
-            var startDownloadPositionForEndBlock = size - END_BLOCK_SIZE;
-            var startDownloadPositionForMiddleBlock = size / 2;
-            startBlock = GetLocalFileByteArray(path, 0, START_BLOCK_SIZE);
-            middleBlock = GetLocalFileByteArray(path, startDownloadPositionForMiddleBlock, MIDDLE_BLOCK_SIZE);
-            endBlock = GetLocalFileByteArray(path, startDownloadPositionForEndBlock, END_BLOCK_SIZE);
-        }
-        else
-            startBlock = GetLocalFileByteArray(path, 0, size);
-        return TraceOut(CreateHashForByteArray(startBlock, middleBlock, endBlock));
-    }
-
     internal static void Wait(int howManyMillisecondsToWait)
     {
         var howLongToWait = TimeSpan.FromMilliseconds(howManyMillisecondsToWait);
         var sw = Stopwatch.StartNew();
 
         while (sw.Elapsed < howLongToWait) { }
-    }
-
-    /// <summary>
-    ///     Checks the path is a video file
-    /// </summary>
-    /// <param name="path"></param>
-    /// <returns>False if it's not a video file, True if it's a video file. Exception if path is null or empty</returns>
-    internal static bool FileIsVideo(string path)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(path);
-        return Path.GetExtension(path).ToLowerInvariant().ContainsAny(_videoExtensions);
-    }
-
-    /// <summary>
-    ///     Checks the path is a subtitles file
-    /// </summary>
-    /// <param name="path"></param>
-    /// <returns>False if it's not a subtitles file, True if it's a subtitles file. Exception if path is null or empty</returns>
-    internal static bool FileIsSubtitles(string path)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(path);
-        return Path.GetExtension(path).ToLowerInvariant().ContainsAny(_subtitlesExtensions);
-    }
-
-    internal static bool FileIsSpecialFeature(string path)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(path);
-        return path.ContainsAny(_specialFeatures);
     }
 
     /// <summary>
@@ -1210,7 +896,8 @@ internal static partial class Utils
         ArgumentException.ThrowIfNullOrEmpty(path);
         if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
 
-        if (!FileIsVideo(path)) return TraceOut(false);
+        ArgumentException.ThrowIfNullOrEmpty(path);
+        if (!File.IsVideo(path)) return TraceOut(false);
 
         var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(path);
         var directoryName = Path.GetDirectoryName(path);
@@ -1234,7 +921,7 @@ internal static partial class Utils
                                       actualVideoCodec.WrapInSquareBrackets())) +
                               Path.GetExtension(path);
         Log($"Renaming {path} to {newPathInternal}");
-        _ = FileMove(path, newPathInternal);
+        _ = File.Move(path, newPathInternal);
         Trace($"Renamed {path} to {newPathInternal}");
         newPath = newPathInternal;
         return TraceOut(true);
@@ -1277,7 +964,9 @@ internal static partial class Utils
         TraceIn(path);
         ArgumentException.ThrowIfNullOrEmpty(path);
         if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
-        if (!FileIsVideo(path)) throw new NotSupportedException("file is not video");
+
+        ArgumentException.ThrowIfNullOrEmpty(path);
+        if (!File.IsVideo(path)) throw new NotSupportedException("file is not video");
 
         actualVideoCodec = string.Empty;
         var info = new VideoFileInfoReader().GetMediaInfo(path) ?? throw new IOException(string.Format(Resources.UnableToLoadFFProbe, path));
@@ -1348,7 +1037,7 @@ internal static partial class Utils
                     if (renameFile)
                     {
                         Log(BackupAction.General, $"Renaming {path} to {newFullPath}");
-                        _ = FileMove(path, newFullPath);
+                        _ = File.Move(path, newFullPath);
                         Trace($"Renamed {path} to {newFullPath}");
                         path = newFullPath;
                     }
@@ -1378,7 +1067,9 @@ internal static partial class Utils
         TraceIn(path);
         ArgumentException.ThrowIfNullOrEmpty(path);
         if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
-        if (!FileIsVideo(path)) throw new NotSupportedException("file is not video");
+
+        ArgumentException.ThrowIfNullOrEmpty(path);
+        if (!File.IsVideo(path)) throw new NotSupportedException("file is not video");
 
         var info = new VideoFileInfoReader().GetMediaInfo(path) ?? throw new IOException(string.Format(Resources.UnableToLoadFFProbe, path));
         return TraceOut(info);
@@ -1389,7 +1080,9 @@ internal static partial class Utils
         TraceIn(path);
         ArgumentException.ThrowIfNullOrEmpty(path);
         if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
-        if (!FileIsVideo(path)) throw new NotSupportedException("file is not video");
+
+        ArgumentException.ThrowIfNullOrEmpty(path);
+        if (!File.IsVideo(path)) throw new NotSupportedException("file is not video");
 
         actualAudioCodec = string.Empty;
         var info = new VideoFileInfoReader().GetMediaInfo(path) ?? throw new IOException(string.Format(Resources.UnableToLoadFFProbe, path));
@@ -1526,22 +1219,6 @@ internal static partial class Utils
         }
         Trace($"Unknown video format: '{videoFormat}'. Streams: {mediaInfo.RawStreamData}");
         return result;
-    }
-
-    internal static bool FileIsDolbyVisionProfile5(string path)
-    {
-        TraceIn(path);
-        ArgumentException.ThrowIfNullOrEmpty(path);
-        if (!FileIsVideo(path) || !VideoFileIsDolbyVision(path)) return TraceOut(false);
-
-        if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
-
-        var info = new VideoFileInfoReader().GetMediaInfo(path);
-
-        // ReSharper disable once StringLiteralTypo
-        return info == null
-            ? throw new ApplicationException("Unable to load ffprobe.exe")
-            : TraceOut(info is { DoviConfigurationRecord.DvProfile: 5 });
     }
 
     private static bool PushoverServiceAvailable(string pushoverAppToken)
@@ -1764,7 +1441,7 @@ internal static partial class Utils
     {
         lock (_lock)
         {
-            EnsureDirectoriesForFilePath(_logFile);
+            Directory.EnsureForFilePath(_logFile);
             Trace(text);
             var textArrayToWrite = text.Split('\n');
 
@@ -1826,7 +1503,7 @@ internal static partial class Utils
 
     internal static FileSystemEntryType GetFileSystemEntryType(string fullPath)
     {
-        if (Directory.Exists(fullPath)) return FileSystemEntryType.Directory;
+        if (System.IO.Directory.Exists(fullPath)) return FileSystemEntryType.Directory;
 
         return File.Exists(fullPath) ? FileSystemEntryType.File : FileSystemEntryType.Missing;
     }
@@ -2153,32 +1830,14 @@ internal static partial class Utils
     }
 
     /// <summary>
-    ///     Checks to see if the directory specified is empty
-    /// </summary>
-    /// <param name="path">The directory to check</param>
-    /// <returns>
-    ///     True if the directory exists as a normal directory and it's empty. If it's a Symbolic link and the target is
-    ///     missing
-    ///     or the target is empty it returns True, otherwise False.
-    /// </returns>
-    internal static bool IsDirectoryEmpty(string path)
-    {
-        if (!Directory.Exists(path)) return false;
-        if (!IsSymbolicLink(path)) return !Directory.EnumerateFileSystemEntries(path).Any();
-
-        var linkTarget = new FileInfo(path).LinkTarget;
-        return linkTarget != null && (!SymbolicLinkTargetExists(path) || !Directory.GetFileSystemEntries(linkTarget).Any());
-    }
-
-    /// <summary>
     ///     Checks to see if the directory is a Symbolic link and its LinkTarget exists
     /// </summary>
     /// <param name="path"></param>
     /// <returns>True if it's a symbolic Link with a target that exists otherwise False</returns>
-    private static bool SymbolicLinkTargetExists(string path)
+    internal static bool SymbolicLinkTargetExists(string path)
     {
         var linkTarget = new FileInfo(path).LinkTarget;
-        return Directory.Exists(linkTarget);
+        return System.IO.Directory.Exists(linkTarget);
     }
 
     /// <summary>
@@ -2186,41 +1845,10 @@ internal static partial class Utils
     /// </summary>
     /// <param name="path"></param>
     /// <returns>True if path is a symbolic link otherwise False</returns>
-    private static bool IsSymbolicLink(string path)
+    internal static bool IsSymbolicLink(string path)
     {
         FileInfo file = new(path);
         return file.LinkTarget != null;
-    }
-
-    /// <summary>
-    ///     Checks the directory is writable
-    /// </summary>
-    /// <param name="path"></param>
-    /// <returns>True if writable else False</returns>
-    internal static bool IsDirectoryWritable(string path)
-    {
-        TraceIn(path);
-        if (!Directory.Exists(path)) return TraceOut(false);
-
-        try
-        {
-            var lastWriteDate = Directory.GetLastWriteTimeUtc(path);
-            var tempFile = Path.GetFileNameWithoutExtension(Path.GetRandomFileName()) + IS_DIRECTORY_WRITABLE_GUID + ".tmp";
-            using var fs = File.Create(Path.Combine(path, tempFile), 1, FileOptions.DeleteOnClose);
-            return TraceOut(SetDirectoryLastWriteUtc(path, lastWriteDate));
-        }
-        catch
-        {
-            return TraceOut(false);
-        }
-    }
-
-    private static bool SetDirectoryLastWriteUtc(string dirPath, DateTime lastWriteDate)
-    {
-        using var hDir = CreateFile(dirPath, FILE_ACCESS_GENERIC_READ | FILE_ACCESS_GENERIC_WRITE, FileShare.ReadWrite, IntPtr.Zero,
-            (FileMode)OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, IntPtr.Zero);
-        var lastWriteTime = lastWriteDate.ToFileTime();
-        return SetFileTime(hDir, IntPtr.Zero, IntPtr.Zero, ref lastWriteTime);
     }
 
     /// <summary>
@@ -2476,8 +2104,8 @@ internal static partial class Utils
         {
             var firstPathFilename = sourcePath + "\\" + j + SPEED_TEST_GUID + "test.tmp";
             var secondPathFilename = destinationPath + "\\" + j + SPEED_TEST_GUID + "test.tmp";
-            if (File.Exists(firstPathFilename)) _ = FileDelete(firstPathFilename);
-            if (File.Exists(secondPathFilename)) _ = FileDelete(secondPathFilename);
+            if (File.Exists(firstPathFilename)) _ = File.Delete(firstPathFilename);
+            if (File.Exists(secondPathFilename)) _ = File.Delete(secondPathFilename);
 
             using (StreamWriter sWriter = new(firstPathFilename, true, Encoding.UTF8, streamWriteBufferSize))
             {
@@ -2487,12 +2115,12 @@ internal static partial class Utils
                 }
             }
             Trace($"{firstPathFilename} created");
-            testFileSize = GetFileLength(firstPathFilename);
+            testFileSize = File.GetLength(firstPathFilename);
 
             if (ct.IsCancellationRequested)
             {
-                if (File.Exists(firstPathFilename)) _ = FileDelete(firstPathFilename);
-                if (File.Exists(secondPathFilename)) _ = FileDelete(secondPathFilename);
+                if (File.Exists(firstPathFilename)) _ = File.Delete(firstPathFilename);
+                if (File.Exists(secondPathFilename)) _ = File.Delete(secondPathFilename);
                 ct.ThrowIfCancellationRequested();
             }
             var sw = Stopwatch.StartNew();
@@ -2500,14 +2128,14 @@ internal static partial class Utils
 
             if (ct.IsCancellationRequested)
             {
-                if (File.Exists(firstPathFilename)) _ = FileDelete(firstPathFilename);
-                if (File.Exists(secondPathFilename)) _ = FileDelete(secondPathFilename);
+                if (File.Exists(firstPathFilename)) _ = File.Delete(firstPathFilename);
+                if (File.Exists(secondPathFilename)) _ = File.Delete(secondPathFilename);
                 ct.ThrowIfCancellationRequested();
             }
             Trace($"{firstPathFilename} copied as {secondPathFilename}");
             var interval = sw.Elapsed;
-            if (File.Exists(firstPathFilename)) _ = FileDelete(firstPathFilename);
-            if (File.Exists(secondPathFilename)) _ = FileDelete(secondPathFilename);
+            if (File.Exists(firstPathFilename)) _ = File.Delete(firstPathFilename);
+            if (File.Exists(secondPathFilename)) _ = File.Delete(secondPathFilename);
             Trace($"testFileSize: {testFileSize}, interval.TotalSeconds: {interval.TotalSeconds}");
             totalPerf += testFileSize / interval.TotalSeconds;
         }
@@ -2615,84 +2243,6 @@ internal static partial class Utils
         }
     }
 
-    internal static bool DirectoryDelete(string path, bool recursive = false)
-    {
-        TraceIn(path);
-        if (!Directory.Exists(path)) return TraceOut(true);
-
-#if DIRECTORYDELETE
-        ClearFileAttribute(path, FileAttributes.ReadOnly);
-        Directory.Delete(path, recursive);
-#else
-        LogWithPushover(BackupAction.General, PushoverPriority.High, $"DirectoryDelete with {path} - NOT DELETING", true, true);
-#endif
-        return TraceOut(true);
-    }
-
-    /// <summary>
-    ///     Deletes the file specified if it exists even if it was readonly. Returns true if the file doesn't exist or if it
-    ///     was deleted successfully
-    /// </summary>
-    /// <param name="path"></param>
-    internal static bool FileDelete(string path)
-    {
-        TraceIn(path);
-        if (!File.Exists(path)) return TraceOut(true);
-
-#if FILEDELETE
-        ClearFileAttribute(path, FileAttributes.ReadOnly);
-        File.Delete(path);
-#else
-        LogWithPushover(BackupAction.General, PushoverPriority.High, $"FileDelete with {path} - NOT DELETING", true, true);
-#endif
-        return TraceOut(true);
-    }
-
-    private static void DeleteEmptyDirectories(string directory, ICollection<string> list, string rootDirectory)
-    {
-        TraceIn(directory);
-
-        try
-        {
-            foreach (var subDirectory in Directory.EnumerateDirectories(directory))
-            {
-                DeleteEmptyDirectories(subDirectory, list, rootDirectory);
-            }
-
-            if (IsDirectoryEmpty(directory))
-            {
-                try
-                {
-                    if (directory != rootDirectory)
-                    {
-                        Trace($"Deleting empty directory {directory}");
-                        list.Add(directory);
-                        _ = DirectoryDelete(directory);
-                    }
-                }
-                catch (UnauthorizedAccessException) { }
-                catch (DirectoryNotFoundException) { }
-            }
-        }
-        catch (UnauthorizedAccessException) { }
-        TraceOut();
-    }
-
-    /// <summary>
-    ///     Deletes any empty directories in the directory specified and checks recursively all its subdirectories.
-    /// </summary>
-    /// <param name="directory">The directory to check</param>
-    /// <exception cref="ArgumentException"></exception>
-    /// <returns>An array of the directory paths that were removed</returns>
-    internal static IEnumerable<string> DeleteEmptyDirectories(string directory)
-    {
-        TraceIn();
-        ArgumentException.ThrowIfNullOrEmpty(directory, nameof(directory));
-        List<string> listOfDirectoriesDeleted = new();
-        DeleteEmptyDirectories(directory, listOfDirectoriesDeleted, directory);
-        return TraceOut(listOfDirectoriesDeleted.ToArray());
-    }
-
     private static void DeleteBrokenSymbolicLinks(string directory, bool includeRoot, ICollection<string> list, string rootDirectory)
     {
         TraceIn(directory);
@@ -2707,16 +2257,16 @@ internal static partial class Utils
                     {
                         Trace($"Deleting broken symbolic link directory {directory}");
                         list.Add(directory);
-                        _ = DirectoryDelete(directory);
+                        _ = Directory.Delete(directory);
                     }
                 }
                 catch (UnauthorizedAccessException) { }
                 catch (DirectoryNotFoundException) { }
             }
 
-            if (Directory.Exists(directory) && !IsSymbolicLink(directory))
+            if (System.IO.Directory.Exists(directory) && !IsSymbolicLink(directory))
             {
-                foreach (var subDirectory in Directory.EnumerateDirectories(directory))
+                foreach (var subDirectory in System.IO.Directory.EnumerateDirectories(directory))
                 {
                     DeleteBrokenSymbolicLinks(subDirectory, includeRoot, list, rootDirectory);
                 }
@@ -2779,7 +2329,7 @@ internal static partial class Utils
             var directoryInfo = new FileInfo(path).Directory;
             fullName = directoryInfo?.Root.FullName;
         }
-        return IsDirectoryWritable(fullName) ? fullName : null;
+        return Directory.IsWritable(fullName) ? fullName : null;
     }
 
     /// <summary>
@@ -2820,25 +2370,6 @@ internal static partial class Utils
         var timeLeft = oneDay - new TimeSpan(startTime.Hour, startTime.Minute, startTime.Second) + targetTime;
         if (timeLeft.TotalHours > 24) timeLeft -= oneDay;
         return timeLeft;
-    }
-
-    /// <summary>
-    ///     Returns True if FileName is accessible (not locked) by another process
-    /// </summary>
-    /// <param name="path"></param>
-    /// <returns>True if not locked or False if locked</returns>
-    private static bool FileIsAccessible(string path)
-    {
-        try
-        {
-            FileStream fileStream = new(path, FileMode.Open, FileAccess.Read);
-            fileStream.Close();
-        }
-        catch (IOException)
-        {
-            return false;
-        }
-        return true;
     }
 
     /// <summary>
@@ -2888,7 +2419,7 @@ internal static partial class Utils
         if (!StringContainsFixedSpace(path)) return path;
 
         var newPath = ReplaceFixedSpace(path);
-        _ = FileMove(path, newPath);
+        _ = File.Move(path, newPath);
         if (!File.Exists(newPath)) throw new ApplicationException("Unable to rename file to remove fixed spaces");
 
         return newPath;
@@ -2899,7 +2430,7 @@ internal static partial class Utils
     {
         try
         {
-            _ = Directory.CreateDirectory(folderPath);
+            _ = System.IO.Directory.CreateDirectory(folderPath);
             var oManagementClass = new ManagementClass("Win32_Share");
             var inputParameters = oManagementClass.GetMethodParameters("Create");
             inputParameters["Description"] = description;

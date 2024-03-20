@@ -271,7 +271,7 @@ public sealed class BackupFile : IEquatable<BackupFile>
     /// <exception cref="ApplicationException"></exception>
     public void UpdateContentsHash()
     {
-        UpdateContentsHash(Utils.GetShortMd5HashFromFile(FullPath));
+        UpdateContentsHash(Utils.File.GetShortMd5Hash(FullPath));
     }
 
     /// <summary>
@@ -280,7 +280,7 @@ public sealed class BackupFile : IEquatable<BackupFile>
     /// </summary>
     public void UpdateLastWriteTime()
     {
-        var newLastWriteTime = Utils.GetFileLastWriteTime(FullPath);
+        var newLastWriteTime = Utils.File.GetLastWriteTime(FullPath);
         if (LastWriteTime != newLastWriteTime) LastWriteTime = newLastWriteTime;
     }
 
@@ -289,7 +289,7 @@ public sealed class BackupFile : IEquatable<BackupFile>
     /// </summary>
     public void UpdateFileLength()
     {
-        var newLength = Utils.GetFileLength(FullPath);
+        var newLength = Utils.File.GetLength(FullPath);
         if (Length != newLength) Length = newLength;
     }
 
@@ -310,7 +310,7 @@ public sealed class BackupFile : IEquatable<BackupFile>
         var pathToBackupDiskFile = Path.Combine(backupDisk.BackupPath, Utils.GetIndexFolder(Directory), RelativePath);
         if (!File.Exists(pathToBackupDiskFile)) return false;
 
-        var hashFromSourceFile = Utils.GetShortMd5HashFromFile(FullPath);
+        var hashFromSourceFile = Utils.File.GetShortMd5Hash(FullPath);
         ContentsHash = hashFromSourceFile;
 
         // Update the LastWriteTime and Length because that may be checked next
@@ -318,7 +318,7 @@ public sealed class BackupFile : IEquatable<BackupFile>
         UpdateFileLength();
 
         // now check the hashes
-        var hashFromBackupDiskFile = Utils.GetShortMd5HashFromFile(pathToBackupDiskFile);
+        var hashFromBackupDiskFile = Utils.File.GetShortMd5Hash(pathToBackupDiskFile);
 
         if (hashFromBackupDiskFile != hashFromSourceFile)
         {
