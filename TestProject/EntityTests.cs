@@ -100,7 +100,7 @@ public sealed class EntityTests
     [InlineData("Asterix and Obelix The Middle Kingdom (2023) {tmdb-643215} [Remux-1080p][DTS-HD MA 5.1][h264].en.srt", false)]
     [InlineData("Special video-featurette.mkv", true)]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
-    public void MovieTests(string fileName, bool isValidFileName)
+    public void MovieNameOnlyTests(string fileName, bool isValidFileName)
     {
         var file = new MovieBackupFile(fileName);
         Assert.Equal(isValidFileName, file.IsValid);
@@ -135,35 +135,24 @@ public sealed class EntityTests
         var file = new SubtitlesBackupFile(fileName);
         Assert.Equal(isValidSubtitleFullName, file.IsValid);
         if (file.IsValid) Assert.Equal(fileName, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());
-
-        // var video = new MovieBackupFile(newMovieName);
         Assert.True(file.RefreshMediaInfo());
         Assert.Equal(isValidSubtitleFullName, file.IsValid);
         if (file.IsValid) Assert.Equal(newFileName, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());
     }
 
-    [Fact]
-    public void MovieTests2()
+    [Theory]
+    [InlineData("File13 (2024) [Remux-1080p][DTS-HD MA 5.1][h264].mkv", "File13 (2024) [Remux-1080p][DTS-HD MA 5.1][h264].mkv")]
+    [InlineData("File14 (2024) [WEBDL-1080p][EAC3 5.1][h264].mkv", "File14 (2024) [WEBDL-1080p][EAC3 5.1][h265].mkv")]
+    [InlineData("Avengers Infinity War (2018) {tmdb-299536} [Remux-2160p][HDR10][TrueHD Atmos 7.1][h265].mkv",
+        "Avengers Infinity War (2018) {tmdb-299536} [Remux-2160p][HDR10][TrueHD Atmos 7.1][h265].mkv")]
+    public void MovieRefreshInfoTests(string sourceFileName, string expectedFileName)
     {
         var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaInfoTests)), "TestData");
-        var fileName = Path.Combine(testDataPath, "File13 (2024) [Remux-1080p][DTS-HD MA 5.1][h264].mkv");
+        var fileName = Path.Combine(testDataPath, sourceFileName);
         var movie = new MovieBackupFile(fileName);
         Assert.Equal(Path.GetFileName(fileName), movie.GetFileName());
         Assert.True(movie.RefreshMediaInfo());
-        Assert.Equal(Path.GetFileName(fileName), movie.GetFileName());
-        fileName = Path.Combine(testDataPath, "File14 (2024) [WEBDL-1080p][EAC3 5.1][h264].mkv");
-        const string expectedFileName = "File14 (2024) [WEBDL-1080p][EAC3 5.1][h265].mkv";
-        movie = new MovieBackupFile(fileName);
-        Assert.Equal(Path.GetFileName(fileName), movie.GetFileName());
-        Assert.True(movie.RefreshMediaInfo());
         Assert.Equal(expectedFileName, movie.GetFileName());
-
-        // Test [HDR10]
-        fileName = Path.Combine(testDataPath, "Avengers Infinity War (2018) {tmdb-299536} [Remux-2160p][HDR10][TrueHD Atmos 7.1][h265].mkv");
-        movie = new MovieBackupFile(fileName);
-        Assert.Equal(Path.GetFileName(fileName), movie.GetFileName());
-        Assert.True(movie.RefreshMediaInfo());
-        Assert.Equal(Path.GetFileName(fileName), movie.GetFileName());
     }
 
     [Theory]
@@ -256,9 +245,6 @@ public sealed class EntityTests
         Utils.EnsureDirectoriesForDirectoryPath(pathToTv);
         Utils.EnsureDirectoriesForDirectoryPath(pathToBackupDisk);
         Utils.CreateFile(pathToFile1);
-
-        //var andy = Utils.GetShortMd5HashFromFile(pathToFile1);
-        //Utils.Log(andy);
         Utils.CreateFile(pathToFile2);
         Utils.CreateFile(pathToFile3);
 
