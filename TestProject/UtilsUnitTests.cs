@@ -250,7 +250,7 @@ public sealed class UtilsUnitTests
         Assert.Single(files, file1);
         files = Utils.GetFiles(path1, "*.txt", SearchOption.AllDirectories, cancellationTokenSource.Token);
         Assert.Single(files, file1);
-        files = Utils.GetFiles(path1, "*.txt", SearchOption.AllDirectories, FileAttributes.Hidden, cancellationTokenSource.Token);
+        files = Utils.GetFilesInt(path1, "*.txt", SearchOption.AllDirectories, FileAttributes.Hidden, cancellationTokenSource.Token);
         Assert.Single(files, file1);
 
         // Delete the folders we created
