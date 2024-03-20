@@ -24,6 +24,7 @@ using BackupManager.Extensions;
 
 using FFMpegCore;
 
+// ReSharper disable once IdentifierTypo
 namespace BackupManager.Radarr;
 
 internal sealed class VideoFileInfoReader

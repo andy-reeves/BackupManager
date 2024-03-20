@@ -11,6 +11,7 @@ using System.Text.Json.Serialization;
 
 using FFMpegCore;
 
+// ReSharper disable once IdentifierTypo
 namespace BackupManager.Radarr;
 
 file interface IEmbeddedDocument { }
