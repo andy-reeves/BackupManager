@@ -36,7 +36,7 @@ internal sealed partial class Main
 
         Utils.LogWithPushover(BackupAction.ScanDirectory, $"{directoryToCheck}", false, true);
         UpdateStatusLabel(ct, string.Format(Resources.Scanning, directoryToCheck));
-        var files = Utils.GetFiles(directoryToCheck, mediaBackup.GetFilters(), searchOption, ct);
+        var files = Utils.File.GetFiles(directoryToCheck, mediaBackup.GetFilters(), searchOption, ct);
         var subDirectoryText = searchOption == SearchOption.TopDirectoryOnly ? "directories only" : "and subdirectories";
         Utils.Trace($"{directoryToCheck} {subDirectoryText}");
         var scanId = Guid.NewGuid().ToString();
@@ -391,7 +391,7 @@ internal sealed partial class Main
         UpdateStatusLabel(ct, string.Format(Resources.Scanning, rootDirectory));
 
         // Check for files in this root directories 
-        var files = Utils.GetFiles(rootDirectory, filters, SearchOption.TopDirectoryOnly, ct);
+        var files = Utils.File.GetFiles(rootDirectory, filters, SearchOption.TopDirectoryOnly, 0, 0, ct);
 
         var filtersToDelete = mediaBackup.Config.FilesToDelete
             .Select(static filter => new { filter, replace = filter.Replace(".", @"\.").Replace("*", ".*").Replace("?", ".") })
@@ -472,7 +472,7 @@ internal sealed partial class Main
             Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, string.Format(Resources.Scanning, directory));
             if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
             UpdateStatusLabel(ct, string.Format(Resources.Scanning, directory));
-            var files = Utils.GetFiles(directory, filters, SearchOption.AllDirectories, ct);
+            var files = Utils.File.GetFiles(directory, filters, SearchOption.AllDirectories, 0, 0, ct);
             directoryScan.EndDateTime = DateTime.Now;
 
             foreach (var file in files)

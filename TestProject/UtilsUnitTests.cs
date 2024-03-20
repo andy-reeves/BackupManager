@@ -244,18 +244,18 @@ public sealed class UtilsUnitTests
         var path1 = Path.Combine(Path.GetTempPath(), "TestGetFilesFolder");
         var file1 = Path.Combine(path1, "test1.txt");
         Utils.CreateFile(Path.Combine(path1, "test1.txt"));
-        var files = Utils.GetFiles(path1, cancellationTokenSource.Token);
+        var files = Utils.File.GetFiles(path1, cancellationTokenSource.Token);
         Assert.Single(files, file1);
-        files = Utils.GetFiles(path1, "*.txt", cancellationTokenSource.Token);
+        files = Utils.File.GetFiles(path1, "*.txt", cancellationTokenSource.Token);
         Assert.Single(files, file1);
-        files = Utils.GetFiles(path1, "*.txt", SearchOption.AllDirectories, cancellationTokenSource.Token);
+        files = Utils.File.GetFiles(path1, "*.txt", SearchOption.AllDirectories, cancellationTokenSource.Token);
         Assert.Single(files, file1);
-        files = Utils.GetFilesInt(path1, "*.txt", SearchOption.AllDirectories, FileAttributes.Hidden, cancellationTokenSource.Token);
+        files = Utils.File.GetFiles(path1, "*.txt", SearchOption.AllDirectories, FileAttributes.Hidden, cancellationTokenSource.Token);
         Assert.Single(files, file1);
 
         // Delete the folders we created
         if (Directory.Exists(path1)) _ = Utils.Directory.Delete(path1, true);
-        files = Utils.GetFiles(path1 + "bob", "*.txt", SearchOption.AllDirectories, FileAttributes.Hidden, cancellationTokenSource.Token);
+        files = Utils.File.GetFiles(path1 + "bob", "*.txt", SearchOption.AllDirectories, FileAttributes.Hidden, cancellationTokenSource.Token);
         Assert.Empty(files);
     }
 

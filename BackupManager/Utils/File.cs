@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 using BackupManager.Extensions;
@@ -386,6 +389,164 @@ internal static partial class Utils
         internal static void Copy(string sourceFileName, string destFileName)
         {
             System.IO.File.Copy(sourceFileName, destFileName);
+        }
+
+        /// <summary>
+        ///     Returns all the files in the path provided.
+        /// </summary>
+        /// <param name="path">
+        ///     The path.
+        /// </param>
+        /// <param name="ct"></param>
+        internal static string[] GetFiles(string path, CancellationToken ct)
+        {
+            return GetFiles(path, "*", SearchOption.AllDirectories, 0, 0, ct);
+        }
+
+        /// <summary>
+        ///     The get files.
+        /// </summary>
+        /// <param name="path">
+        ///     The path.
+        /// </param>
+        /// <param name="filters">
+        ///     The filters.
+        /// </param>
+        /// <param name="ct"></param>
+        /// <returns>
+        /// </returns>
+        internal static string[] GetFiles(string path, string filters, CancellationToken ct)
+        {
+            return GetFiles(path, filters, SearchOption.AllDirectories, 0, 0, ct);
+        }
+
+        /// <summary>
+        ///     The get files.
+        /// </summary>
+        /// <param name="path">
+        ///     The path.
+        /// </param>
+        /// <param name="filters">
+        ///     The filters.
+        /// </param>
+        /// <param name="searchOption">
+        ///     The search option.
+        /// </param>
+        /// <param name="directoryAttributesToIgnore">
+        ///     The directory attributes to ignore.
+        /// </param>
+        /// <param name="ct"></param>
+        /// <returns>
+        /// </returns>
+        internal static string[] GetFiles(string path, string filters, SearchOption searchOption, FileAttributes directoryAttributesToIgnore,
+            CancellationToken ct)
+        {
+            return GetFiles(path, filters, searchOption, directoryAttributesToIgnore, 0, ct);
+        }
+
+        /// <summary>
+        ///     Returns an array of full path names of files in the folder specified.
+        /// </summary>
+        /// <param name="path">
+        ///     The path.
+        /// </param>
+        /// <param name="filters">
+        ///     The filters.
+        /// </param>
+        /// <param name="searchOption">
+        ///     The search option.
+        /// </param>
+        /// <param name="ct"></param>
+        /// <returns>
+        /// </returns>
+        internal static string[] GetFiles(string path, string filters, SearchOption searchOption, CancellationToken ct)
+        {
+            return GetFiles(path, filters, searchOption, 0, 0, ct);
+        }
+
+        /// <summary>
+        ///     The get files.
+        /// </summary>
+        /// <param name="path">
+        ///     The path.
+        /// </param>
+        /// <param name="filters">
+        ///     The filters.
+        /// </param>
+        /// <param name="searchOption">
+        ///     The search option.
+        /// </param>
+        /// <param name="directoryAttributesToIgnore">
+        ///     The directory attributes to ignore.
+        /// </param>
+        /// <param name="fileAttributesToIgnore">
+        ///     The file attributes to ignore.
+        /// </param>
+        /// <param name="ct"></param>
+        /// <returns>
+        /// </returns>
+        internal static string[] GetFiles(string path, string filters, SearchOption searchOption, FileAttributes directoryAttributesToIgnore,
+            FileAttributes fileAttributesToIgnore, CancellationToken ct)
+        {
+            if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+            var sw = Stopwatch.StartNew();
+
+            if (!System.IO.Directory.Exists(path))
+            {
+                Trace("GetFiles exit with new string[]");
+                return Array.Empty<string>();
+            }
+            DirectoryInfo directoryInfo = new(path);
+
+            if (directoryInfo.Parent != null && AnyFlagSet(directoryInfo.Attributes, directoryAttributesToIgnore))
+                return TraceOut(Array.Empty<string>());
+
+            var include = from filter in filters.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                where filter.Trim().HasValue()
+                select filter.Trim();
+            var includeAsArray = include as string[] ?? include.ToArray();
+            var exclude = from filter in includeAsArray where filter.Contains('!') select filter;
+            var excludeAsArray = exclude as string[] ?? exclude.ToArray();
+            include = includeAsArray.Except(excludeAsArray);
+            var includeAsArray2 = include as string[] ?? include.ToArray();
+            if (!includeAsArray2.Any()) includeAsArray2 = new[] { "*" };
+
+            var excludeFilters = from filter in excludeAsArray
+                let replace = filter.Replace("!", string.Empty).Replace(".", @"\.").Replace("*", ".*").Replace("?", ".")
+                select $"^{replace}$";
+            Regex excludeRegex = new(string.Join("|", excludeFilters.ToArray()), RegexOptions.IgnoreCase);
+            Queue<string> pathsToSearch = new();
+            List<string> foundFiles = new();
+            pathsToSearch.Enqueue(path);
+
+            while (pathsToSearch.Count > 0)
+            {
+                if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+                var dir = pathsToSearch.Dequeue();
+                Trace($"Dequeued {dir}");
+
+                if (searchOption == SearchOption.AllDirectories)
+                {
+                    foreach (var subDir in System.IO.Directory.GetDirectories(dir).Where(subDir =>
+                                 !AnyFlagSet(new DirectoryInfo(subDir).Attributes, directoryAttributesToIgnore)))
+                    {
+                        if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+                        pathsToSearch.Enqueue(subDir);
+                    }
+                }
+
+                foreach (var collection in includeAsArray2.Select(filter =>
+                         {
+                             if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+                             return System.IO.Directory.GetFiles(dir, filter, SearchOption.TopDirectoryOnly);
+                         }).Select(allFiles => excludeAsArray.Any() ? allFiles.Where(p => !excludeRegex.Match(p).Success) : allFiles))
+                {
+                    foundFiles.AddRange(collection.Where(p => !AnyFlagSet(new FileInfo(p).Attributes, fileAttributesToIgnore)));
+                }
+            }
+            sw.Stop();
+            Trace($"GetFiles for {path} = {(sw.Elapsed.TotalSeconds < 1 ? "<1 second" : $"{sw.Elapsed.TotalSeconds:#} seconds")}");
+            return foundFiles.ToArray();
         }
     }
 }

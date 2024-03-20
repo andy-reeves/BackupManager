@@ -42,7 +42,7 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
     {
         if (FullDirectory.HasNoValue()) return null;
 
-        var files = Utils.GetFiles(FullDirectory, new CancellationToken());
+        var files = Utils.File.GetFiles(FullDirectory, new CancellationToken());
 
         var videoFiles = files.Where(static f =>
         {
@@ -96,7 +96,7 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
     {
         if (FullDirectory.HasNoValue()) return false;
 
-        var files = Utils.GetFiles(FullDirectory, new CancellationToken());
+        var files = Utils.File.GetFiles(FullDirectory, new CancellationToken());
 
         var videoFiles = files.Where(static f =>
         {
