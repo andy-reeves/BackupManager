@@ -78,6 +78,10 @@ internal sealed partial class Main
         // Start with a 30MB/s copy speed as a guess
         var lastCopySpeed = Utils.ConvertMBtoBytes(30);
 
+        // Available disk space is only checked at the start and after successfully copying a file
+        // We don't check it for each file if the space is not changing
+        _ = Utils.GetDiskInfo(backupDiskTextBox.Text, out var availableSpace, out _);
+
         foreach (var backupFile in files)
         {
             try
@@ -94,7 +98,7 @@ internal sealed partial class Main
                 if (FileExistsInternal(sizeOfCopy, disk, backupFile, sourceFileName, copiedSoFar, counter, totalFileCount, ct))
                 {
                     CopyFileInternal(sizeOfCopy, disk, sourceFileName, ref copiedSoFar, sourceFileInfo, ref outOfDiskSpaceMessageSent,
-                        ref remainingSizeOfFilesToCopy, counter, totalFileCount, backupFile, ref lastCopySpeed, ct);
+                        ref remainingSizeOfFilesToCopy, counter, totalFileCount, backupFile, ref lastCopySpeed, ref availableSpace, ct);
                 }
             }
             catch (FileNotFoundException)
@@ -111,6 +115,17 @@ internal sealed partial class Main
         }
     }
 
+    /// <summary>
+    /// </summary>
+    /// <param name="sizeOfCopy"></param>
+    /// <param name="disk"></param>
+    /// <param name="backupFile"></param>
+    /// <param name="sourceFileName"></param>
+    /// <param name="copiedSoFar"></param>
+    /// <param name="fileCounter"></param>
+    /// <param name="totalFileCount"></param>
+    /// <param name="ct"></param>
+    /// <returns>True if the file needs to be copied</returns>
     private bool FileExistsInternal(long sizeOfCopy, BackupDisk disk, BackupFile backupFile, string sourceFileName, long copiedSoFar,
         int fileCounter, int totalFileCount, CancellationToken ct)
     {
@@ -151,13 +166,12 @@ internal sealed partial class Main
 
     private void CopyFileInternal(long sizeOfCopy, BackupDisk disk, string sourceFileName, ref long copiedSoFar, FileInfo sourceFileInfo,
         ref bool outOfDiskSpaceMessageSent, ref long remainingSizeOfFilesToCopy, int fileCounter, int totalFileCount, BackupFile backupFile,
-        ref long lastCopySpeed, CancellationToken ct)
+        ref long lastCopySpeed, ref long availableSpace, CancellationToken ct)
     {
         Utils.TraceIn();
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
         var destinationFileName = backupFile.BackupDiskFullPath(disk.BackupPath);
         var destinationFileNameTemp = destinationFileName + ".copying";
-        _ = Utils.GetDiskInfo(backupDiskTextBox.Text, out var availableSpace, out _);
 
         if (availableSpace > Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave) + sourceFileInfo.Length)
         {
@@ -210,6 +224,9 @@ internal sealed partial class Main
             Utils.Trace($"Copy complete at {copySpeed}");
             remainingSizeOfFilesToCopy -= backupFile.Length;
             copiedSoFar += backupFile.Length;
+
+            // Update the available disk space after a file is copied
+            _ = Utils.GetDiskInfo(backupDiskTextBox.Text, out availableSpace, out _);
 
             // Make sure it's not readonly
             Utils.File.ClearFileAttribute(destinationFileName, FileAttributes.ReadOnly);
