@@ -1502,6 +1502,7 @@ internal static partial class Utils
         Trace($"{methodName} enter");
     }
 
+    [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.NoInlining)]
     internal static void TraceIn(params object[] parameters)
     {
