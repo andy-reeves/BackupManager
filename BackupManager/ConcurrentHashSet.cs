@@ -43,6 +43,16 @@ internal class ConcurrentHashSet<T> : IDisposable, IEnumerable<T>
         GC.SuppressFinalize(this);
     }
 
+    public IEnumerator<T> GetEnumerator()
+    {
+        return hashSet.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+
     public bool Add(T item)
     {
         @lock.EnterWriteLock();
@@ -119,18 +129,8 @@ internal class ConcurrentHashSet<T> : IDisposable, IEnumerable<T>
         if (disposing) @lock?.Dispose();
     }
 
-    public IEnumerator<T> GetEnumerator()
-    {
-        return hashSet.GetEnumerator();
-    }
-
     ~ConcurrentHashSet()
     {
         Dispose(false);
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
     }
 }

@@ -1,4 +1,10 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿// --------------------------------------------------------------------------------------------------------------------
+//  <copyright file="MediaInfoVideoDynamicRangeType.cs" company="Andy Reeves">
+// 
+//  </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
 namespace BackupManager.Entities;

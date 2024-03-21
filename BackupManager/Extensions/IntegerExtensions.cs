@@ -21,11 +21,18 @@ internal static class IntegerExtensions
     {
         var numberString = number.ToString();
 
-        return number < 1 ? numberString :
-            numberString.EndsWithIgnoreCase("11") || numberString.EndsWithIgnoreCase("12") ||
-            numberString.EndsWithIgnoreCase("13") ? numberString + "th" :
-            numberString.EndsWithIgnoreCase("1") ? numberString + "st" :
-            numberString.EndsWithIgnoreCase("2") ? numberString + "nd" :
-            numberString.EndsWithIgnoreCase("3") ? numberString + "rd" : numberString + "th";
+        return number < 1
+            ? numberString
+            :
+            numberString.EndsWithIgnoreCase("11") || numberString.EndsWithIgnoreCase("12") || numberString.EndsWithIgnoreCase("13")
+                ?
+                numberString + "th"
+                : numberString.EndsWithIgnoreCase("1")
+                    ? numberString + "st"
+                    : numberString.EndsWithIgnoreCase("2")
+                        ? numberString + "nd"
+                        : numberString.EndsWithIgnoreCase("3")
+                            ? numberString + "rd"
+                            : numberString + "th";
     }
 }

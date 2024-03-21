@@ -86,7 +86,7 @@
           <xs:annotation>
             <xs:documentation>in seconds</xs:documentation>
           </xs:annotation>
-        </xs:element>     
+        </xs:element>
         <xs:element type="xs:int" name="FilesToScanForChanges" maxOccurs="1" minOccurs="0">
           <xs:annotation>
             <xs:documentation>The number of recent file changes to scan for changed directories</xs:documentation>
@@ -170,7 +170,7 @@
               </xs:element>
             </xs:sequence>
           </xs:complexType>
-        </xs:element>      
+        </xs:element>
         <xs:element name="Monitors" maxOccurs="1" minOccurs="0">
           <xs:complexType>
             <xs:sequence>

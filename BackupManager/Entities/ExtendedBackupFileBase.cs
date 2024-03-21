@@ -17,24 +17,6 @@ internal abstract class ExtendedBackupFileBase
 
     protected abstract string FileNameRegex { get; }
 
-    // ReSharper disable once VirtualMemberNeverOverridden.Global
-    protected virtual bool Validate()
-    {
-        var fileName = GetFileName();
-        var regex = new Regex(FileNameRegex);
-        IsValid = regex.IsMatch(fileName);
-        return IsValid;
-    }
-
-    public string GetFileNameWithoutExtension()
-    {
-        return Path.GetFileNameWithoutExtension(GetFileName());
-    }
-
-    public abstract string GetFileName();
-
-    public abstract string GetFullName();
-
     [XmlIgnore] protected string Extension { get; set; }
 
     /// <summary>
@@ -58,6 +40,23 @@ internal abstract class ExtendedBackupFileBase
     /// </summary>
     public string FullDirectory { get; protected set; }
 
+    // ReSharper disable once VirtualMemberNeverOverridden.Global
+    protected virtual bool Validate()
+    {
+        var fileName = GetFileName();
+        var regex = new Regex(FileNameRegex);
+        IsValid = regex.IsMatch(fileName);
+        return IsValid;
+    }
+
+    public string GetFileNameWithoutExtension()
+    {
+        return Path.GetFileNameWithoutExtension(GetFileName());
+    }
+
+    public abstract string GetFileName();
+
+    public abstract string GetFullName();
+
     public abstract bool RefreshMediaInfo();
 }
-

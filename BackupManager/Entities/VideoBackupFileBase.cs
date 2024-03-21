@@ -31,12 +31,12 @@ internal abstract class VideoBackupFileBase : ExtendedBackupFileBase
     // ReSharper disable once IdentifierTypo
     protected bool IsRemux { get; set; }
 
+    protected SpecialFeature SpecialFeature { get; set; }
+
     public override string GetFullName()
     {
         return FullDirectory.HasValue() ? Path.Combine(FullDirectory, GetFileName()) : GetFileName();
     }
-
-    protected SpecialFeature SpecialFeature { get; set; }
 
     // ReSharper disable once FunctionComplexityOverflow
     public override bool RefreshMediaInfo()

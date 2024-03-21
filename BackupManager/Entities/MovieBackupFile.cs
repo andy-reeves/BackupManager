@@ -15,11 +15,6 @@ namespace BackupManager.Entities;
 [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
 internal sealed class MovieBackupFile : VideoBackupFileBase
 {
-    protected override string FileNameRegex =>
-        @"^(?:(.*)\((\d{4})\)(?:-other)?(?:\s{(?:tmdb-(\d{1,7}))?})?\s(?:{edition-((?:[1-7][05]TH\sANNIVERSARY)|4K|BLURAY|CHRONOLOGICAL|COLLECTORS|(?:CRITERION|KL\sSTUDIO)\sCOLLECTION|DIAMOND|DVD|IMAX|REDUX|REMASTERED|RESTORED|SPECIAL|(?:THE\sCOMPLETE\s)?EXTENDED|THE\sGODFATHER\sCODA|(?:THE\sRICHARD\sDONNER|DIRECTORS|FINAL)\sCUT|THEATRICAL|ULTIMATE|UNCUT|UNRATED)}\s)?\[(DVD|SDTV|WEB(?:Rip|DL)|Bluray|HDTV|Remux)(?:-((?:480|576|720|1080|2160)p))?\](?:\[((?:DV)?(?:(?:\s)?HDR10(?:Plus)?)?|HLG|PQ)\])?\[(DTS(?:\sHD|-(?:X|ES|HD\s(?:M|HR)A))?|(?:TrueHD|EAC3)(?:\sAtmos)?|AC3|FLAC|PCM|MP3|A[AV]C|Opus)\s([1-8]\.[01])\]\[([hx]26[45]|MPEG[24]|DivX|AVC|HEVC|XviD|V(?:C1|P9))\]|(.*)-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(?:kv|p(?:4|e?g))|ts|avi)$";
-
-    protected override string DirectoryRegex => @"^.*\\_(?:Movies|Comedy|Concerts)(?:\s\(non-tmdb\))?\\(.*)\((\d{4})\)(-other)?.*$";
-
     public MovieBackupFile(string path)
     {
         OriginalPath = path;
@@ -32,6 +27,11 @@ internal sealed class MovieBackupFile : VideoBackupFileBase
         IsValid = ParseMediaInfoFromFileName(fileName);
         if (IsValid && directoryPath.HasValue()) IsValid = ParseMediaInfoFromDirectory(directoryPath);
     }
+
+    protected override string FileNameRegex =>
+        @"^(?:(.*)\((\d{4})\)(?:-other)?(?:\s{(?:tmdb-(\d{1,7}))?})?\s(?:{edition-((?:[1-7][05]TH\sANNIVERSARY)|4K|BLURAY|CHRONOLOGICAL|COLLECTORS|(?:CRITERION|KL\sSTUDIO)\sCOLLECTION|DIAMOND|DVD|IMAX|REDUX|REMASTERED|RESTORED|SPECIAL|(?:THE\sCOMPLETE\s)?EXTENDED|THE\sGODFATHER\sCODA|(?:THE\sRICHARD\sDONNER|DIRECTORS|FINAL)\sCUT|THEATRICAL|ULTIMATE|UNCUT|UNRATED)}\s)?\[(DVD|SDTV|WEB(?:Rip|DL)|Bluray|HDTV|Remux)(?:-((?:480|576|720|1080|2160)p))?\](?:\[((?:DV)?(?:(?:\s)?HDR10(?:Plus)?)?|HLG|PQ)\])?\[(DTS(?:\sHD|-(?:X|ES|HD\s(?:M|HR)A))?|(?:TrueHD|EAC3)(?:\sAtmos)?|AC3|FLAC|PCM|MP3|A[AV]C|Opus)\s([1-8]\.[01])\]\[([hx]26[45]|MPEG[24]|DivX|AVC|HEVC|XviD|V(?:C1|P9))\]|(.*)-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(?:kv|p(?:4|e?g))|ts|avi)$";
+
+    protected override string DirectoryRegex => @"^.*\\_(?:Movies|Comedy|Concerts)(?:\s\(non-tmdb\))?\\(.*)\((\d{4})\)(-other)?.*$";
 
     public string AlternateMovieFolder { get; set; }
 

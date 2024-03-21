@@ -1,4 +1,10 @@
-﻿using System;
+﻿// --------------------------------------------------------------------------------------------------------------------
+//  <copyright file="ConcurrentSet.cs" company="Andy Reeves">
+// 
+//  </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -22,6 +28,13 @@ internal sealed class ConcurrentSet<T> : ISet<T>
     }
 
     public ConcurrentSet() { }
+
+    /// <summary>
+    ///     Gets a value that indicates if the set is empty.
+    /// </summary>
+    public bool IsEmpty => dictionary.IsEmpty;
+
+    private ICollection<T> Values => dictionary.Keys;
 
     /// <summary>
     ///     Returns an enumerator that iterates through the collection.
@@ -76,13 +89,6 @@ internal sealed class ConcurrentSet<T> : ISet<T>
     ///     true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.
     /// </returns>
     public bool IsReadOnly => false;
-
-    /// <summary>
-    ///     Gets a value that indicates if the set is empty.
-    /// </summary>
-    public bool IsEmpty => dictionary.IsEmpty;
-
-    private ICollection<T> Values => dictionary.Keys;
 
     /// <summary>
     ///     Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
@@ -245,21 +251,6 @@ internal sealed class ConcurrentSet<T> : ISet<T>
         return TryAdd(item);
     }
 
-    public bool AddOrUpdate(T item)
-    {
-        @lock.EnterWriteLock();
-
-        try
-        {
-            if (dictionary.ContainsKey(item)) _ = Remove(item);
-            return Add(item);
-        }
-        finally
-        {
-            if (@lock.IsWriteLockHeld) @lock.ExitWriteLock();
-        }
-    }
-
     public void Clear()
     {
         dictionary.Clear();
@@ -285,6 +276,21 @@ internal sealed class ConcurrentSet<T> : ISet<T>
     public void CopyTo(T[] array, int arrayIndex)
     {
         Values.CopyTo(array, arrayIndex);
+    }
+
+    public bool AddOrUpdate(T item)
+    {
+        @lock.EnterWriteLock();
+
+        try
+        {
+            if (dictionary.ContainsKey(item)) _ = Remove(item);
+            return Add(item);
+        }
+        finally
+        {
+            if (@lock.IsWriteLockHeld) @lock.ExitWriteLock();
+        }
     }
 
     public T[] ToArray()
