@@ -550,7 +550,7 @@ internal sealed partial class Main : Form
         Utils.TraceIn();
         mainCancellationTokenSource.Cancel();
         toolStripStatusLabel.Text = Resources.Cancelling;
-        Utils.LogWithPushover(BackupAction.General, Resources.Cancelling, true);
+        Utils.LogWithPushover(BackupAction.General, Resources.Cancelling);
         if (Utils.CopyProcess != null && !Utils.CopyProcess.HasExited) Utils.CopyProcess?.Kill();
         Utils.TraceOut();
     }
@@ -565,7 +565,7 @@ internal sealed partial class Main : Form
             Utils.TraceIn();
             if (Utils.CopyProcess != null && !Utils.CopyProcess.HasExited) Utils.CopyProcess?.Kill();
             UpdateMediaFilesCountDisplay();
-            Utils.LogWithPushover(BackupAction.General, PushoverPriority.Normal, "Cancelled", true);
+            Utils.LogWithPushover(BackupAction.General, PushoverPriority.Normal, "Cancelled");
             ResetAllControls();
         }
         finally
