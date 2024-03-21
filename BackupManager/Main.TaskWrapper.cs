@@ -33,12 +33,12 @@ internal sealed partial class Main
         return false;
     }
 
-    private async Task TaskWrapper(Task task, bool withAsyncTasksCleanup, CancellationToken ct)
+    private async Task TaskWrapper(Action action, bool withAsyncTasksCleanup, CancellationToken ct)
     {
         try
         {
             Utils.TraceIn($"withAsyncTasksCleanup = {withAsyncTasksCleanup}");
-            await task;
+            await Task.Run(action, ct);
             Utils.Trace("After await");
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
@@ -52,8 +52,8 @@ internal sealed partial class Main
         }
     }
 
-    private async Task TaskWrapper(Task task, CancellationToken ct)
+    private async Task TaskWrapper(Action action, CancellationToken ct)
     {
-        await TaskWrapper(task, true, ct);
+        await TaskWrapper(action, true, ct);
     }
 }

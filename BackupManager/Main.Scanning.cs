@@ -436,7 +436,7 @@ internal sealed partial class Main
         var tasks = new List<Task>(diskNames.Length);
 
         tasks.AddRange(diskNames.Select(diskName => Utils.GetDirectoriesForDisk(diskName, mediaBackup.Config.DirectoriesToBackup))
-            .Select(directoriesOnDisk => { return TaskWrapper(Task.Run(() => GetFilesAsync(directoriesOnDisk, scanId, ct), ct), ct); }));
+            .Select(directoriesOnDisk => { return TaskWrapper(() => GetFilesAsync(directoriesOnDisk, scanId, ct), ct); }));
         Task.WhenAll(tasks).Wait(ct);
         Utils.LogWithPushover(BackupAction.ScanDirectory, Resources.Completed, true);
 

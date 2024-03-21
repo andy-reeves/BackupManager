@@ -14,7 +14,6 @@ using System.Linq;
 using System.Runtime.Versioning;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using BackupManager.Entities;
@@ -125,7 +124,7 @@ internal sealed partial class Main
                 if (longRunningActionExecutingRightNow) return;
 
                 ResetTokenSource();
-                _ = TaskWrapper(Task.Run(() => ScheduledBackupAsync(mainCt), mainCt), mainCt);
+                _ = TaskWrapper(() => ScheduledBackupAsync(mainCt), mainCt);
             };
             monitoringAction = MonitorServices;
             scheduledDateTimePicker.Value = DateTime.Parse(config.ScheduledBackupStartTime);
@@ -141,7 +140,7 @@ internal sealed partial class Main
             if (config.ScheduledBackupRunOnStartup)
             {
                 ResetTokenSource();
-                _ = TaskWrapper(Task.Run(() => ScheduledBackupAsync(mainCt), mainCt), mainCt);
+                _ = TaskWrapper(() => ScheduledBackupAsync(mainCt), mainCt);
             }
             SetupDailyTrigger(config.ScheduledBackupOnOff);
             SetupFileWatchers();

@@ -54,7 +54,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(Task.Run(() => ScheduledBackupAsync(mainCt), mainCt), mainCt);
+        _ = TaskWrapper(() => ScheduledBackupAsync(mainCt), mainCt);
         Utils.TraceOut();
     }
 
@@ -78,7 +78,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(Task.Run(() => ScanAllDirectoriesAsync(mainCt), mainCt), mainCt);
+        _ = TaskWrapper(() => ScanAllDirectoriesAsync(mainCt), mainCt);
         Utils.TraceOut();
     }
 
@@ -86,7 +86,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(Task.Run(() => UpdateSymbolicLinksAsync(mainCt), mainCt), mainCt);
+        _ = TaskWrapper(() => UpdateSymbolicLinksAsync(mainCt), mainCt);
         Utils.TraceOut();
     }
 
@@ -94,7 +94,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(Task.Run(() => CheckConnectedDiskAndCopyFilesAsync(true, false, mainCt), mainCt), mainCt);
+        _ = TaskWrapper(() => CheckConnectedDiskAndCopyFilesAsync(true, false, mainCt), mainCt);
         Utils.TraceOut();
     }
 
@@ -272,7 +272,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(Task.Run(() => CheckConnectedDiskAndCopyFilesAsync(true, true, mainCt), mainCt), mainCt);
+        _ = TaskWrapper(() => CheckConnectedDiskAndCopyFilesAsync(true, true, mainCt), mainCt);
         Utils.TraceOut();
     }
 
@@ -379,7 +379,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(Task.Run(() => SpeedTestAllDirectoriesAsync(mainCt), mainCt), mainCt);
+        _ = TaskWrapper(() => SpeedTestAllDirectoriesAsync(mainCt), mainCt);
         Utils.TraceOut();
     }
 
@@ -418,7 +418,7 @@ internal sealed partial class Main : Form
     {
         if (monitoringExecutingRightNow) return;
 
-        _ = TaskWrapper(Task.Run(monitoringAction, monitoringCancellationTokenSource.Token), false, monitoringCancellationTokenSource.Token);
+        _ = TaskWrapper(monitoringAction, false, monitoringCancellationTokenSource.Token);
     }
 
     [SupportedOSPlatform("windows")]
@@ -541,7 +541,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(Task.Run(() => CheckConnectedDiskAndCopyFilesRepeaterAsync(true, mainCt), mainCt), mainCt);
+        _ = TaskWrapper(() => CheckConnectedDiskAndCopyFilesRepeaterAsync(true, mainCt), mainCt);
         Utils.TraceOut();
     }
 
@@ -583,7 +583,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(Task.Run(() => CheckConnectedDiskAndCopyFilesRepeaterAsync(false, mainCt), mainCt), mainCt);
+        _ = TaskWrapper(() => CheckConnectedDiskAndCopyFilesRepeaterAsync(false, mainCt), mainCt);
         Utils.TraceOut();
     }
 
@@ -635,7 +635,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(Task.Run(() => SetupBackupDiskAsync(mainCt), mainCt), mainCt);
+        _ = TaskWrapper(() => SetupBackupDiskAsync(mainCt), mainCt);
         Utils.TraceOut();
     }
 
@@ -809,7 +809,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(Task.Run(() => CheckConnectedDiskAndCopyFilesAsync(false, false, mainCt), mainCt), mainCt);
+        _ = TaskWrapper(() => CheckConnectedDiskAndCopyFilesAsync(false, false, mainCt), mainCt);
         Utils.TraceOut();
     }
 
@@ -817,7 +817,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(Task.Run(() => CopyFilesAsync(true, mainCt), mainCt), mainCt);
+        _ = TaskWrapper(() => CopyFilesAsync(true, mainCt), mainCt);
         Utils.TraceOut();
     }
 
@@ -965,7 +965,7 @@ internal sealed partial class Main : Form
             if (scanDirectoryComboBox.SelectedIndex <= -1 || longRunningActionExecutingRightNow) return;
 
             ResetTokenSource();
-            _ = TaskWrapper(Task.Run(() => ScanDirectoryAsync(scanDirectoryComboBox.Text, mainCt), mainCt), mainCt);
+            _ = TaskWrapper(() => ScanDirectoryAsync(scanDirectoryComboBox.Text, mainCt), mainCt);
         }
         finally
         {
@@ -1005,7 +1005,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         ResetTokenSource();
-        _ = TaskWrapper(Task.Run(() => ProcessFilesAsync(mainCt), mainCt), mainCt);
+        _ = TaskWrapper(() => ProcessFilesAsync(mainCt), mainCt);
         Utils.TraceOut();
     }
 
@@ -1152,24 +1152,7 @@ internal sealed partial class Main : Form
             if (longRunningActionExecutingRightNow) return;
 
             ResetTokenSource();
-
-            _ = TaskWrapper(Task.Run(() =>
-            {
-                if (longRunningActionExecutingRightNow) return;
-
-                DisableControlsForAsyncTasks(mainCt);
-
-                ReadyToScan(new FileSystemWatcherEventArgs(mediaBackup.Watcher.DirectoriesToScan.ToArray()), SearchOption.AllDirectories, true,
-                    mainCt);
-
-                // Empty the DirectoriesToScan because we've processed all of them now
-                // we do it here so if we get cancelled before this we leave the directories ready to scan for next time
-                // while (mediaBackup.Watcher.DirectoriesToScan.TryTake(out _)) { }
-                mediaBackup.Watcher.DirectoriesToScan.Clear();
-                ResetAllControls();
-                UpdateUI_Tick(null, null);
-                UpdateMediaFilesCountDisplay();
-            }, mainCt), mainCt);
+            _ = TaskWrapper(() => ScanDirectoriesWithChangesAsync(mainCt), mainCt);
         }
         finally
         {
@@ -1177,34 +1160,49 @@ internal sealed partial class Main : Form
         }
     }
 
+    private void ScanDirectoriesWithChangesAsync(CancellationToken ct)
+    {
+        if (longRunningActionExecutingRightNow) return;
+
+        DisableControlsForAsyncTasks(ct);
+        ReadyToScan(new FileSystemWatcherEventArgs(mediaBackup.Watcher.DirectoriesToScan.ToArray()), SearchOption.AllDirectories, true, ct);
+
+        // Empty the DirectoriesToScan because we've processed all of them now
+        // we do it here so if we get cancelled before this we leave the directories ready to scan for next time
+        mediaBackup.Watcher.DirectoriesToScan.Clear();
+        ResetAllControls();
+        UpdateUI_Tick(null, null);
+        UpdateMediaFilesCountDisplay();
+    }
+
     private void ScanLastFilesButton_Click(object sender, EventArgs e)
     {
-        var count = mediaBackup.Config.FilesToScanForChanges;
-
         try
         {
             Utils.TraceIn();
             if (longRunningActionExecutingRightNow) return;
 
             ResetTokenSource();
-
-            _ = TaskWrapper(Task.Run(() =>
-            {
-                if (longRunningActionExecutingRightNow) return;
-
-                DisableControlsForAsyncTasks(mainCt);
-                Utils.LogWithPushover(BackupAction.General, $"Scanning {count} files for changed directories");
-
-                ReadyToScan(new FileSystemWatcherEventArgs(mediaBackup.BackupFiles.OrderBy(static f => f.LastWriteTime).TakeLast(count).ToArray()),
-                    SearchOption.AllDirectories, true, mainCt);
-                ResetAllControls();
-                UpdateUI_Tick(null, null);
-                UpdateMediaFilesCountDisplay();
-            }, mainCt), mainCt);
+            _ = TaskWrapper(() => ScanLastFilesForChangesAsync(mainCt), mainCt);
         }
         finally
         {
             Utils.TraceOut();
         }
+    }
+
+    private void ScanLastFilesForChangesAsync(CancellationToken ct)
+    {
+        if (longRunningActionExecutingRightNow) return;
+
+        var count = mediaBackup.Config.FilesToScanForChanges;
+        DisableControlsForAsyncTasks(ct);
+        Utils.LogWithPushover(BackupAction.General, $"Scanning {count} files for changed directories");
+
+        ReadyToScan(new FileSystemWatcherEventArgs(mediaBackup.BackupFiles.OrderBy(static f => f.LastWriteTime).TakeLast(count).ToArray()),
+            SearchOption.AllDirectories, true, ct);
+        ResetAllControls();
+        UpdateUI_Tick(null, null);
+        UpdateMediaFilesCountDisplay();
     }
 }
