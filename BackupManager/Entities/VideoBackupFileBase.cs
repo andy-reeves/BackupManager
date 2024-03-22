@@ -38,6 +38,8 @@ internal abstract class VideoBackupFileBase : ExtendedBackupFileBase
         return FullDirectory.HasValue() ? Path.Combine(FullDirectory, GetFileName()) : GetFileName();
     }
 
+    protected bool MediaInfoVideo3D { get; set; }
+
     // ReSharper disable once FunctionComplexityOverflow
     public override bool RefreshMediaInfo()
     {
@@ -95,6 +97,7 @@ internal abstract class VideoBackupFileBase : ExtendedBackupFileBase
                 var audioChannels = Utils.MediaHelper.FormatAudioChannels(model);
                 var dynamicRangeType = Utils.MediaHelper.FormatVideoDynamicRangeType(model);
                 MediaInfoVideoCodec = Utils.GetEnumFromAttributeValue<MediaInfoVideoCodec>(videoCodec);
+                MediaInfoVideo3D = model.VideoMultiViewCount > 1;
                 if (audioCodec != null) MediaInfoAudioCodec = Utils.GetEnumFromAttributeValue<MediaInfoAudioCodec>(audioCodec);
                 if (audioChannels > 0) MediaInfoAudioChannels = Utils.GetEnumFromAttributeValue<MediaInfoAudioChannels>($"{audioChannels:0.0}");
                 MediaInfoVideoDynamicRangeType = Utils.GetEnumFromAttributeValue<MediaInfoVideoDynamicRangeType>(dynamicRangeType);

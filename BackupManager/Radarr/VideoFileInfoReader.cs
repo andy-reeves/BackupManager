@@ -85,6 +85,7 @@ internal sealed class VideoFileInfoReader
                 VideoBitDepth = GetPixelFormat(primaryVideoStream?.PixelFormat)?.Components.Min(static x => x.BitDepth) ?? 8,
                 VideoColourPrimaries = primaryVideoStream?.ColorPrimaries,
                 VideoTransferCharacteristics = primaryVideoStream?.ColorTransfer,
+                VideoMultiViewCount = primaryVideoStream?.Tags?.ContainsKey("stereo_mode") ?? false ? 2 : 1,
                 DoviConfigurationRecord =
                     primaryVideoStream?.SideDataList?.Find(static x => x.GetType().Name == nameof(DoviConfigurationRecordSideData)) as
                         DoviConfigurationRecordSideData,

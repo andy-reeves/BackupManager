@@ -99,4 +99,6 @@ internal sealed class MediaInfoModel : IEmbeddedDocument
     public string ScanType { get; set; }
 
     [JsonIgnore] public string Title { get; set; }
+
+    public int VideoMultiViewCount { get; internal set; }
 }

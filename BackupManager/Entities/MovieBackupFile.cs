@@ -33,7 +33,7 @@ internal sealed class MovieBackupFile : VideoBackupFileBase
     }
 
     protected override string FileNameRegex =>
-        @"^(?:(.*)\((\d{4})\)(?:-other)?(?:\s{(?:tmdb-(\d{1,7}))?})?\s(?:{edition-((?:[1-7][05]TH\sANNIVERSARY)|4K|BLURAY|CHRONOLOGICAL|COLLECTORS|(?:CRITERION|KL\sSTUDIO)\sCOLLECTION|DIAMOND|DVD|IMAX|REDUX|REMASTERED|RESTORED|SPECIAL|(?:THE\sCOMPLETE\s)?EXTENDED|THE\sGODFATHER\sCODA|(?:THE\sRICHARD\sDONNER|DIRECTORS|FINAL)\sCUT|THEATRICAL|ULTIMATE|UNCUT|UNRATED)}\s)?\[(DVD|SDTV|WEB(?:Rip|DL)|Bluray|HDTV|Remux)(?:-((?:480|576|720|1080|2160)p))?\](?:\[((?:DV)?(?:(?:\s)?HDR10(?:Plus)?)?|HLG|PQ)\])?\[(DTS(?:\sHD|-(?:X|ES|HD\s(?:M|HR)A))?|(?:TrueHD|EAC3)(?:\sAtmos)?|AC3|FLAC|PCM|MP3|A[AV]C|Opus)\s([1-8]\.[01])\]\[([hx]26[45]|MPEG[24]|DivX|AVC|HEVC|XviD|V(?:C1|P9))\]|(.*)-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(?:kv|p(?:4|e?g))|ts|avi)$";
+        @"^(?:(.*)\((\d{4})\)(?:-other)?(?:\s{(?:tmdb-(\d{1,7}))?})?\s(?:{edition-((?:[1-7][05]TH\sANNIVERSARY)|4K|BLURAY|CHRONOLOGICAL|COLLECTORS|(?:CRITERION|KL\sSTUDIO)\sCOLLECTION|DIAMOND|DVD|IMAX|REDUX|REMASTERED|RESTORED|SPECIAL|(?:THE\sCOMPLETE\s)?EXTENDED|THE\sGODFATHER\sCODA|(?:THE\sRICHARD\sDONNER|DIRECTORS|FINAL)\sCUT|THEATRICAL|ULTIMATE|UNCUT|UNRATED)}\s)?\[(DVD|SDTV|WEB(?:Rip|DL)|Bluray|HDTV|Remux)(?:-((?:480|576|720|1080|2160)p))?\](?:\[(3D)])?(?:\[((?:DV)?(?:(?:\s)?HDR10(?:Plus)?)?|HLG|PQ)\])?\[(DTS(?:\sHD|-(?:X|ES|HD\s(?:M|HR)A))?|(?:TrueHD|EAC3)(?:\sAtmos)?|AC3|FLAC|PCM|MP3|A[AV]C|Opus)\s([1-8]\.[01])\]\[([hx]26[45]|MPEG[24]|DivX|AVC|HEVC|XviD|V(?:C1|P9))\]|(.*)-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(?:kv|p(?:4|e?g))|ts|avi)$";
 
     protected override string DirectoryRegex => @"^.*\\_(?:Movies|Comedy|Concerts)(?:\s\(non-tmdb\))?\\(.*)\((\d{4})\)(-other)?.*$";
 
@@ -90,6 +90,7 @@ internal sealed class MovieBackupFile : VideoBackupFileBase
             if (TmdbId.HasValue()) s += $"{{tmdb-{TmdbId}}} ";
             if (Edition != Edition.Unknown) s += $"{{edition-{Edition.ToEnumMember().ToUpperInvariant()}}} ";
             s += $"{QualityFull}";
+            if (MediaInfoVideo3D) s += "[3D]";
 
             if (MediaInfoVideoDynamicRangeType != MediaInfoVideoDynamicRangeType.Unknown)
                 s += $"[{MediaInfoVideoDynamicRangeType.ToEnumMember()}]";
@@ -109,13 +110,14 @@ internal sealed class MovieBackupFile : VideoBackupFileBase
         const int editionGroup = 4;
         const int videoQualityGroup = 5;
         const int videoResolutionGroup = 6;
-        const int videoDynamicRangeTypeGroup = 7;
-        const int audioCodecGroup = 8;
-        const int audioChannelsGroup = 9;
-        const int videoCodecGroup = 10;
-        const int specialFeatureTitleGroup = 11;
-        const int specialFeatureGroup = 12;
-        const int extensionGroup = 13;
+        const int video3DGroup = 7;
+        const int videoDynamicRangeTypeGroup = 8;
+        const int audioCodecGroup = 9;
+        const int audioChannelsGroup = 10;
+        const int videoCodecGroup = 11;
+        const int specialFeatureTitleGroup = 12;
+        const int specialFeatureGroup = 13;
+        const int extensionGroup = 14;
         var match = Regex.Match(filename, FileNameRegex);
         var videoCodec = match.Groups[videoCodecGroup].Value;
         var audioCodec = match.Groups[audioCodecGroup].Value;
@@ -130,6 +132,7 @@ internal sealed class MovieBackupFile : VideoBackupFileBase
         var specialFeatureTitle = match.Groups[specialFeatureTitleGroup].Value;
         var specialFeature = match.Groups[specialFeatureGroup].Value;
         var extension = match.Groups[extensionGroup].Value.Trim();
+        var video3D = match.Groups[video3DGroup].Value;
         MediaInfoVideoCodec = Utils.GetEnumFromAttributeValue<MediaInfoVideoCodec>(videoCodec);
         MediaInfoAudioCodec = Utils.GetEnumFromAttributeValue<MediaInfoAudioCodec>(audioCodec);
         MediaInfoAudioChannels = Utils.GetEnumFromAttributeValue<MediaInfoAudioChannels>(audioChannels);
@@ -149,6 +152,7 @@ internal sealed class MovieBackupFile : VideoBackupFileBase
         SpecialFeature = Utils.GetEnumFromAttributeValue<SpecialFeature>(specialFeature);
         if (SpecialFeature != SpecialFeature.None) Title = specialFeatureTitle.Trim();
         Extension = "." + extension;
+        MediaInfoVideo3D = video3D == "3D";
         return true;
     }
 }
