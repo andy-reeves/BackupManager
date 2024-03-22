@@ -44,7 +44,7 @@ public sealed class FullTestA
 
         // Step 3 - Assert state after scan
 
-        //file8 should be renamed 
+        // file8 should be renamed 
         var file8PathOnSource = Path.Combine(targetDirectory,
             @"DirectoryB\_TV\File8 {tvdb-250487}\Season 1\File8 s01e01 [Bluray-1080p Remux][DTS-HD MA 5.1][h264].mkv");
         Assert.True(File.Exists(file8PathOnSource));

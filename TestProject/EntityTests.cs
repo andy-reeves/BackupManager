@@ -60,15 +60,16 @@ public sealed class EntityTests
         @"\\nas2\assets4\_TV\Criminal Record {tvdb-421495}\Season 1\Criminal Record s01e03 Kid in the Park [WEBDL-2160p][DV HDR10Plus][EAC3 Atmos 5.1][h265].mkv",
         true)]
     [InlineData(@"Tom and Jerry 2023-01-23 Puss Gets The Boot [SDTV][MP3 2.0][XviD].mkv", true)]
-    [InlineData(@"Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\File8 s01e01 [Bluray-1080p Remux][DTS-HD MA 5.1][AVC].mkv", false)]
+    [InlineData(@"Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\File8 s01e01 [Bluray-1080p Remux][DTS-HD MA 5.1][AVC].mkv", true)]
     [InlineData(@"Z:\_TV (non-tvdb)\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV][MP3 2.0][AVC].mkv",
         true)]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     public void TvEpisodeTests(string fileName, bool isValidFileName)
     {
         var file = new TvEpisodeBackupFile(fileName);
-        Assert.Equal(isValidFileName, file.IsValid);
-        if (file.IsValid) Assert.Equal(fileName, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());
+        Assert.Equal(isValidFileName, file.IsValidFileName);
+        if (file.IsValidFileName) Assert.Equal(Path.GetFileName(fileName), file.GetFileName());
+        if (file.IsValidDirectoryName) Assert.Equal(fileName, file.GetFullName());
     }
 
     [Theory]
@@ -103,8 +104,9 @@ public sealed class EntityTests
     public void MovieNameOnlyTests(string fileName, bool isValidFileName)
     {
         var file = new MovieBackupFile(fileName);
-        Assert.Equal(isValidFileName, file.IsValid);
-        if (file.IsValid) Assert.Equal(fileName, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());
+        Assert.Equal(isValidFileName, file.IsValidFileName);
+        if (file.IsValidFileName) Assert.Equal(Path.GetFileName(fileName), file.GetFileName());
+        if (file.IsValidDirectoryName) Assert.Equal(fileName, file.GetFullName());
     }
 
     [Theory]
@@ -117,11 +119,12 @@ public sealed class EntityTests
     public void SubtitlesTests(string fileName, bool isValidFileName, string newMovieName, string newSubtitlesName)
     {
         var file = new SubtitlesBackupFile(fileName);
-        Assert.Equal(isValidFileName, file.IsValid);
-        if (file.IsValid) Assert.Equal(fileName, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());
+        Assert.Equal(isValidFileName, file.IsValidFileName);
+        if (file.IsValidFileName) Assert.Equal(fileName, file.GetFileName());
+        if (file.IsValidDirectoryName) Assert.Equal(fileName, file.GetFullName());
         var movie = new MovieBackupFile(newMovieName);
         _ = file.RefreshMediaInfo(movie);
-        if (file.IsValid) Assert.Equal(newSubtitlesName, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());
+        if (file.IsValidFileName) Assert.Equal(newSubtitlesName, file.GetFileName());
     }
 
     [Theory]
@@ -141,16 +144,21 @@ public sealed class EntityTests
     }
 
     [Theory]
-    [InlineData("File13 (2024) [Remux-1080p][DTS-HD MA 5.1][h264].mkv", "File13 (2024) [Remux-1080p][DTS-HD MA 5.1][h264].mkv")]
-    [InlineData("File14 (2024) [WEBDL-1080p][EAC3 5.1][h264].mkv", "File14 (2024) [WEBDL-1080p][EAC3 5.1][h265].mkv")]
-    [InlineData("Avengers Infinity War (2018) {tmdb-299536} [Remux-2160p][HDR10][TrueHD Atmos 7.1][h265].mkv",
+
+    // [InlineData("File16 (2014) {tmdb-261103} [Remux-1080p][3D][DTS-HD MA 5.1][h264].mkv",
+    //    "File16 (2014) {tmdb-261103} [Remux-1080p][3D][DTS-HD MA 5.1][h264].mkv")]
+    [InlineData("File13 (2024) [Remux-1080p][DTS-HD MA 5.1][h264].mkv", false, true, "File13 (2024) [Remux-1080p][DTS-HD MA 5.1][h264].mkv")]
+    [InlineData("File14 (2024) [WEBDL-1080p][EAC3 5.1][h264].mkv", false, true, "File14 (2024) [WEBDL-1080p][EAC3 5.1][h265].mkv")]
+    [InlineData("Avengers Infinity War (2018) {tmdb-299536} [Remux-2160p][HDR10][TrueHD Atmos 7.1][h265].mkv", false, true,
         "Avengers Infinity War (2018) {tmdb-299536} [Remux-2160p][HDR10][TrueHD Atmos 7.1][h265].mkv")]
-    public void MovieRefreshInfoTests(string sourceFileName, string expectedFileName)
+    public void MovieRefreshInfoTests(string sourceFileName, bool validDirectoryName, bool validFileName, string expectedFileName)
     {
         var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
         var fileName = Path.Combine(testDataPath, sourceFileName);
         var movie = new MovieBackupFile(fileName);
-        Assert.Equal(Path.GetFileName(fileName), movie.GetFileName());
+        Assert.Equal(validDirectoryName, movie.IsValidDirectoryName);
+        Assert.Equal(validFileName, movie.IsValidFileName);
+        if (movie.IsValidFileName) Assert.Equal(Path.GetFileName(fileName), movie.GetFileName());
         Assert.True(movie.RefreshMediaInfo());
         Assert.Equal(expectedFileName, movie.GetFileName());
     }
@@ -166,9 +174,9 @@ public sealed class EntityTests
         var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
         var mediaFileName = Path.Combine(testDataPath, param1);
         var tvEpisodeBackupFile = new TvEpisodeBackupFile(mediaFileName);
-        if (tvEpisodeBackupFile.IsValid) Assert.Equal(Path.GetFileName(mediaFileName), tvEpisodeBackupFile.GetFileName());
+        if (tvEpisodeBackupFile.IsValidFileName) Assert.Equal(Path.GetFileName(mediaFileName), tvEpisodeBackupFile.GetFileName());
         Assert.Equal(refreshReturnValue, tvEpisodeBackupFile.RefreshMediaInfo());
-        Assert.Equal(refreshReturnValue, tvEpisodeBackupFile.IsValid);
+        Assert.Equal(refreshReturnValue, tvEpisodeBackupFile.IsValidFileName);
         if (refreshReturnValue) Assert.Equal(mediaFileNameOutputIfRenamed, tvEpisodeBackupFile.GetFileName());
     }
 

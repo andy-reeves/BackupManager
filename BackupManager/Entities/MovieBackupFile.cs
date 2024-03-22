@@ -20,12 +20,16 @@ internal sealed class MovieBackupFile : VideoBackupFileBase
         OriginalPath = path;
         Extension = Path.GetExtension(path);
         var fileName = Path.GetFileName(path);
-        var directoryPath = Path.GetDirectoryName(path);
-        var regex = new Regex(FileNameRegex);
-        if (!regex.IsMatch(fileName)) return;
+        FullDirectory = Path.GetDirectoryName(path);
+        IsValidFileName = new Regex(FileNameRegex).IsMatch(fileName);
 
-        IsValid = ParseMediaInfoFromFileName(fileName);
-        if (IsValid && directoryPath.HasValue()) IsValid = ParseMediaInfoFromDirectory(directoryPath);
+        // ReSharper disable once AssignNullToNotNullAttribute
+        if (FullDirectory.HasValue())
+        {
+            IsValidDirectoryName = new Regex(DirectoryRegex).IsMatch(FullDirectory);
+            if (IsValidDirectoryName) IsValidDirectoryName = ParseMediaInfoFromDirectory(FullDirectory);
+        }
+        if (IsValidFileName) IsValidFileName = ParseMediaInfoFromFileName(fileName);
     }
 
     protected override string FileNameRegex =>

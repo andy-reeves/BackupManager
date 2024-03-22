@@ -199,9 +199,9 @@ internal static partial class Utils
             var file = ExtendedBackupFileBase(path);
             if (file == null) return;
 
-            if (!file.IsValid)
+            if (!file.IsValidFileName)
             {
-                LogWithPushover(BackupAction.Error, $"{path} is not valid. Name not checked");
+                LogWithPushover(BackupAction.Error, $"{path} does not have a valid file name. Name not checked");
                 return;
             }
 

@@ -6,7 +6,6 @@
 
 using System.IO;
 using System.Text.RegularExpressions;
-using System.Xml.Serialization;
 
 namespace BackupManager.Entities;
 
@@ -17,13 +16,22 @@ internal abstract class ExtendedBackupFileBase
 
     protected abstract string FileNameRegex { get; }
 
-    [XmlIgnore] protected string Extension { get; set; }
+    protected string Extension { get; set; }
 
     /// <summary>
-    ///     Returns True if the current file is valid
+    ///     Returns True if the current file has a valid file name and a valid directory name
     /// </summary>
-    [XmlIgnore]
-    public bool IsValid { get; protected set; }
+    public bool IsValid => IsValidFileName && IsValidDirectoryName;
+
+    /// <summary>
+    ///     Returns True if the current file has a valid file name. AVC and x264, x265 are valid
+    /// </summary>
+    public bool IsValidFileName { get; set; }
+
+    /// <summary>
+    ///     Returns True if the current file has a valid directory name
+    /// </summary>
+    public bool IsValidDirectoryName { get; set; }
 
     /// <summary>
     ///     The original path and filename of the file before any Refresh may have updated properties
@@ -44,9 +52,9 @@ internal abstract class ExtendedBackupFileBase
     protected virtual bool Validate()
     {
         var fileName = GetFileName();
-        var regex = new Regex(FileNameRegex);
-        IsValid = regex.IsMatch(fileName);
-        return IsValid;
+        IsValidFileName = new Regex(FileNameRegex).IsMatch(fileName);
+        IsValidDirectoryName = new Regex(DirectoryRegex).IsMatch(FullDirectory);
+        return IsValidFileName && IsValidDirectoryName;
     }
 
     public string GetFileNameWithoutExtension()
