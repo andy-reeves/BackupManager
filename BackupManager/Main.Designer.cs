@@ -493,6 +493,7 @@
             button2.Text = "Check all files for Dolby Vision Profile5";
             toolTip.SetToolTip(button2, "Checks any file with [DV] in the path for Profile5. Can take 20 secs per file");
             button2.UseVisualStyleBackColor = true;
+            button2.Visible = false;
             button2.Click += DvProfile5CheckButton_Click;
             // 
             // createNewBackupDiskButton
@@ -529,6 +530,7 @@
             videoFilesCheckNameButton.Text = "Check all video files for correct name";
             toolTip.SetToolTip(videoFilesCheckNameButton, "Checks all files for correct video codec in the path. Can take 20secs per file");
             videoFilesCheckNameButton.UseVisualStyleBackColor = true;
+            videoFilesCheckNameButton.Visible = false;
             videoFilesCheckNameButton.Click += VideoFilesCheckNameButton_Click;
             // 
             // scanDirectoriesWithChangesButton
@@ -1340,6 +1342,7 @@
             h264FilesButton.TabIndex = 103;
             h264FilesButton.Text = "Check all files for TV/Movies h264 size";
             h264FilesButton.UseVisualStyleBackColor = true;
+            h264FilesButton.Visible = false;
             h264FilesButton.Click += H264FilesButton_Click;
             // 
             // Main
