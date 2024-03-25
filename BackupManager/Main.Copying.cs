@@ -154,7 +154,7 @@ internal sealed partial class Main
             var lastWriteTimeOfFileOnBackupDisk = Utils.File.GetLastWriteTime(destinationFileName);
 
             if (sourceLastWriteTime == lastWriteTimeOfFileOnBackupDisk)
-                Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.High, Resources.HashCodesError2);
+                Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.High, string.Format(Resources.HashCodesError, sourceFileName));
             else
             {
                 _ = Utils.File.Delete(destinationFileName);

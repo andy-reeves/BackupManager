@@ -654,15 +654,6 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error with the hash codes on the source directory and the backup disk..
-        /// </summary>
-        internal static string HashCodesError2 {
-            get {
-                return ResourceManager.GetString("HashCodesError2", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The value of argument &apos;{0}&apos;({1}) is invalid for Enum type &apos;{2}&apos;.
         /// </summary>
         internal static string InvalidEnumArgument {

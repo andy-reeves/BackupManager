@@ -26,12 +26,12 @@ internal abstract class ExtendedBackupFileBase
     /// <summary>
     ///     Returns True if the current file has a valid file name. AVC and x264, x265 are valid
     /// </summary>
-    public bool IsValidFileName { get; set; }
+    public bool IsValidFileName { get; protected set; }
 
     /// <summary>
     ///     Returns True if the current file has a valid directory name
     /// </summary>
-    public bool IsValidDirectoryName { get; set; }
+    public bool IsValidDirectoryName { get; protected set; }
 
     /// <summary>
     ///     The original path and filename of the file before any Refresh may have updated properties

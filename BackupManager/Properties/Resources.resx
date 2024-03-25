@@ -455,9 +455,6 @@ Write: {4}</value>
     <value>[{0}/{1}]
 Skipping copy of {2} as it exists already.</value>
   </data>
-  <data name="HashCodesError2" xml:space="preserve">
-    <value>There was an error with the hash codes on the source directory and the backup disk.</value>
-  </data>
   <data name="CopyFilesMainMessage" xml:space="preserve">
     <value>[{0}/{1}] {2} free.
 Copying {3} at {4}{5}</value>
