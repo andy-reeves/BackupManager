@@ -27,11 +27,20 @@ public sealed class MediaHelperTests
         var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
         var mediaFileName = Path.Combine(testDataPath, "File1 [DV].mkv");
         Assert.True(Utils.File.IsDolbyVisionProfile5(mediaFileName));
+        var file = new MovieBackupFile(mediaFileName);
+        Assert.True(file.RefreshMediaInfo());
+        Assert.True(file.MediaInfoModel.DoviConfigurationRecord.DvProfile == 5);
         mediaFileName = Path.Combine(testDataPath, "File2 [DV].mkv");
         Assert.False(Utils.File.IsDolbyVisionProfile5(mediaFileName));
+        file = new MovieBackupFile(mediaFileName);
+        Assert.True(file.RefreshMediaInfo());
+        Assert.True(file.MediaInfoModel.DoviConfigurationRecord == null);
         mediaFileName = Path.Combine(testDataPath, "File3 [DV].mkv");
         Assert.True(Utils.File.IsDolbyVisionProfile5(mediaFileName));
         mediaFileName = Path.Combine(testDataPath, "File4 [DV] profile8.mkv");
         Assert.False(Utils.File.IsDolbyVisionProfile5(mediaFileName));
+        file = new MovieBackupFile(mediaFileName);
+        Assert.True(file.RefreshMediaInfo());
+        Assert.True(file.MediaInfoModel.DoviConfigurationRecord.DvProfile == 8);
     }
 }
