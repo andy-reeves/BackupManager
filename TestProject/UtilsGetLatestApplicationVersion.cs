@@ -50,6 +50,6 @@ public sealed class UtilsGetLatestApplicationVersion
         Assert.Equal(Utils.Config.PlexToken.HasValue() ? "1.40.2.8227" : "1.40.1.8227",
             Utils.GetLatestApplicationVersionNumber(ApplicationType.PlexPass));
         Assert.Equal("1.15.0", Utils.GetLatestApplicationVersionNumber(ApplicationType.Prowlarr, "develop"));
-        Assert.Equal("5.4.4", Utils.GetLatestApplicationVersionNumber(ApplicationType.Radarr, "develop"));
+        Assert.Equal("5.4.5", Utils.GetLatestApplicationVersionNumber(ApplicationType.Radarr, "develop"));
     }
 }
