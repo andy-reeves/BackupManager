@@ -36,6 +36,8 @@ public sealed class BackupFile : IEquatable<BackupFile>
 
     private string relativePath;
 
+    private string extension;
+
     public BackupFile() { }
 
     /// <summary>
@@ -62,6 +64,7 @@ public sealed class BackupFile : IEquatable<BackupFile>
         {
             if (Utils.StringContainsFixedSpace(value)) value = Utils.ReplaceFixedSpace(value);
             relativePath = value;
+            extension = null;
         }
     }
 
@@ -127,6 +130,17 @@ public sealed class BackupFile : IEquatable<BackupFile>
             if (Directory == null || RelativePath == null) return string.Empty;
 
             return Path.Combine(Directory, RelativePath);
+        }
+    }
+
+    [XmlIgnore]
+    public string Extension
+    {
+        get
+        {
+            if (RelativePath == null) return string.Empty;
+
+            return extension ??= Path.GetExtension(RelativePath);
         }
     }
 
@@ -237,6 +251,7 @@ public sealed class BackupFile : IEquatable<BackupFile>
         RelativePath = GetRelativePath(fullPath, newDirectory);
         Directory = newDirectory;
         fileName = Path.GetFileName(fullPath);
+        extension = Path.GetExtension(fullPath);
         UpdateContentsHash();
         UpdateLastWriteTime();
         UpdateFileLength();
