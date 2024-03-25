@@ -7,6 +7,8 @@
 using System.IO;
 using System.Text.RegularExpressions;
 
+using BackupManager.Radarr;
+
 namespace BackupManager.Entities;
 
 internal abstract class ExtendedBackupFileBase
@@ -15,6 +17,8 @@ internal abstract class ExtendedBackupFileBase
     protected abstract string DirectoryRegex { get; }
 
     protected abstract string FileNameRegex { get; }
+
+    public MediaInfoModel MediaInfoModel { get; protected set; }
 
     protected string Extension { get; set; }
 

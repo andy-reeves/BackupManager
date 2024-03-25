@@ -210,6 +210,12 @@ internal static partial class Utils
                 var newFullPath = file.GetFullName();
                 if (newFullPath == path) return;
 
+                if (file.MediaInfoModel.DoviConfigurationRecord?.DvProfile == 5)
+                {
+                    LogWithPushover(BackupAction.Error, $"{path} is [DV] Profile 5");
+                    return;
+                }
+
                 if (File.Exists(newFullPath))
                     LogWithPushover(BackupAction.Error, $"Renaming {path} failed as {newFullPath} already exists");
                 else

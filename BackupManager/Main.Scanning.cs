@@ -219,54 +219,6 @@ internal sealed partial class Main
         }
         return Utils.TraceOut(true);
     }
-    /*
-    /// <summary>
-    ///     Returns True if all OK otherwise False
-    /// </summary>
-    /// <param name="scan"></param>
-    /// <param name="file"></param>
-    /// <param name="ct"></param>
-    /// <returns></returns>
-    private bool ProcessFilesVideoCodecCheck(bool scan, ref string file, CancellationToken ct)
-    {
-        Utils.TraceIn();
-        if (!File.Exists(file) || !Utils.FileIsVideo(file) || !config.DirectoriesRenameVideoFilesOnOff || !scan) return Utils.TraceOut(true);
-
-        try
-        {
-            if (Utils.RenameVideoCodec(file, out var newFile, out var oldCodec, out var newCodec))
-            {
-                Utils.Log(BackupAction.ProcessFiles, $"{file} had codec of {oldCodec} in its path and now has {newCodec}");
-                Utils.Log(BackupAction.ProcessFiles, string.Format(Resources.FileRenameRequiredForVideoCodec, Path.GetFileName(file)));
-
-                // change the file to the newFile to continue processing
-                file = newFile;
-
-                // find any files in this folder that end in one of our srt valid extensions
-                var oldCodecInBrackets = oldCodec.WrapInSquareBrackets();
-                var newCodecInBrackets = newCodec.WrapInSquareBrackets();
-                var directoryPath = Path.GetDirectoryName(file);
-                var filesInSameDirectory = Utils.GetFiles(directoryPath, ct);
-
-                foreach (var f in filesInSameDirectory.Where(static f => f.ContainsAny(Utils.SubtitlesExtensions))
-                             .Where(f => f.Contains(oldCodecInBrackets)))
-                {
-                    Utils.Log(BackupAction.ProcessFiles, $"{f} had codec of {oldCodec} in its path and will be renamed with {newCodec}");
-                    var newName = f.Replace(oldCodecInBrackets, newCodecInBrackets);
-                    if (!Utils.FileMove(f, newName)) return Utils.TraceOut(false);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            if (ex is not (IOException or NotSupportedException)) throw;
-
-            Utils.Log(BackupAction.ProcessFiles, $"Exception was {ex}");
-            Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.FileIsLocked, file));
-            return Utils.TraceOut(false);
-        }
-        return Utils.TraceOut(true);
-    }*/
 
     /// <summary>
     ///     Return True if all ok otherwise False
