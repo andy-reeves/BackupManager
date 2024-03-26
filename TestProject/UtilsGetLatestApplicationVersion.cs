@@ -27,7 +27,7 @@ public sealed class UtilsGetLatestApplicationVersion
     public void GetVersionNumber()
     {
         Assert.Equal("1.4.2", Utils.GetApplicationVersionNumber(ApplicationType.Bazarr));
-        Assert.Equal("1.40.1.8227", Utils.GetApplicationVersionNumber(ApplicationType.PlexPass));
+        Assert.Equal("1.40.2.8273", Utils.GetApplicationVersionNumber(ApplicationType.PlexPass));
         Assert.Equal("1.14.3.4333", Utils.GetApplicationVersionNumber(ApplicationType.Prowlarr));
         Assert.Equal("5.3.6.8612", Utils.GetApplicationVersionNumber(ApplicationType.Radarr));
         Assert.Equal("4.2.3", Utils.GetApplicationVersionNumber(ApplicationType.SABnzbd));
