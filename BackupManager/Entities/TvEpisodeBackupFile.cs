@@ -23,14 +23,12 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
         var fileName = Path.GetFileName(path);
         FullDirectory = Path.GetDirectoryName(path);
         IsValidFileName = new Regex(FileNameRegex).IsMatch(fileName);
+        if (IsValidFileName) IsValidFileName = ParseMediaInfoFromFileName(fileName);
+        if (!FullDirectory.HasValue()) return;
 
         // ReSharper disable once AssignNullToNotNullAttribute
-        if (FullDirectory.HasValue())
-        {
-            IsValidDirectoryName = new Regex(DirectoryRegex).IsMatch(FullDirectory);
-            if (IsValidDirectoryName) IsValidDirectoryName = ParseMediaInfoFromDirectory(FullDirectory);
-        }
-        if (IsValidFileName) IsValidFileName = ParseMediaInfoFromFileName(fileName);
+        IsValidDirectoryName = new Regex(DirectoryRegex).IsMatch(FullDirectory);
+        if (IsValidDirectoryName) IsValidDirectoryName = ParseMediaInfoFromDirectory(FullDirectory);
     }
 
     protected override string FileNameRegex =>

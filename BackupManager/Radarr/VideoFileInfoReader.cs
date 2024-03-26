@@ -112,12 +112,12 @@ internal sealed class VideoFileInfoReader
             // if it looks like PQ10 or similar HDR, do a frame analysis to figure out which type it is
             if (_pqTransferFunctions.Contains(mediaInfoModel.VideoTransferCharacteristics))
             {
-                // var frameOutput = FFProbe.GetFrameJson(filename,
-                //    ffOptions: new FFOptions { ExtraArguments = "-read_intervals \"%+#10\" -select_streams v" });
-
                 // Andy get 10 frames side data not just the first one
+                //var frameOutput = FFProbe.GetFrameJson(filename,
+                //    ffOptions: new FFOptions { ExtraArguments = $"-read_intervals \"%+#10\" -select_streams v:{primaryVideoStream?.Index ?? 0}" });
+                // The {primaryVideoStream?.Index ?? 0} above does not work for all movies 
                 var frameOutput = FFProbe.GetFrameJson(filename,
-                    ffOptions: new FFOptions { ExtraArguments = $"-read_intervals \"%+#10\" -select_streams v:{primaryVideoStream?.Index ?? 0}" });
+                    ffOptions: new FFOptions { ExtraArguments = "-read_intervals \"%+#10\" -select_streams v" });
                 mediaInfoModel.RawFrameData = frameOutput;
                 frames = FFProbe.AnalyseFrameJson(frameOutput);
             }

@@ -25,14 +25,12 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
         var fileName = Path.GetFileName(path);
         FullDirectory = Path.GetDirectoryName(path);
         IsValidFileName = new Regex(FileNameRegex).IsMatch(fileName);
+        if (IsValidFileName) IsValidFileName = ParseInfoFromFileName(fileName);
+        if (!FullDirectory.HasValue()) return;
 
         // ReSharper disable once AssignNullToNotNullAttribute
-        if (FullDirectory.HasValue())
-        {
-            IsValidDirectoryName = new Regex(DirectoryRegex).IsMatch(FullDirectory);
-            if (IsValidDirectoryName) IsValidDirectoryName = ParseInfoFromDirectory(FullDirectory);
-        }
-        if (IsValidFileName) IsValidFileName = ParseInfoFromFileName(fileName);
+        IsValidDirectoryName = new Regex(DirectoryRegex).IsMatch(FullDirectory);
+        if (IsValidDirectoryName) IsValidDirectoryName = ParseInfoFromDirectory(FullDirectory);
     }
 
     protected override string FileNameRegex => @"^(.*)\.(e[ns](?:\.hi)?)\.srt$";
