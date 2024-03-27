@@ -913,7 +913,7 @@ internal static partial class Utils
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
         {
-            Trace(Resources.Cancelling);
+            Log(Resources.Cancelling);
         }
         catch (Exception u)
         {
