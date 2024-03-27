@@ -130,14 +130,19 @@ public sealed class EntityTests
     [Theory]
     [InlineData(@"_TV\File15 {tvdb-1}\Season 1\File15 s01e03 Kid in the Park [WEBDL-2160p][DV HDR10Plus][EAC3 Atmos 5.1][h264].en.hi.srt", true,
         @"_TV\File15 {tvdb-1}\Season 1\File15 s01e03 Kid in the Park [WEBDL-2160p][DV HDR10Plus][EAC3 Atmos 5.1][h264].en.hi.srt")]
-    public void SubtitlesTests2(string subtitlesFullName, bool isValidSubtitleFullName, string newSubtitlesFullName)
+    public void SubtitlesTestsWithRefreshMediaInfo(string subtitlesFullName, bool isValidSubtitleFullName, string newSubtitlesFullName)
     {
         var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
         var fileName = Path.Combine(testDataPath, subtitlesFullName);
         var newFileName = Path.Combine(testDataPath, newSubtitlesFullName);
         var file = new SubtitlesBackupFile(fileName);
         Assert.Equal(isValidSubtitleFullName, file.IsValid);
-        if (file.IsValid) Assert.Equal(fileName, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());
+
+        if (file.IsValid)
+        {
+            Assert.Equal(fileName, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());
+            Assert.Equal("." + subtitlesFullName.SubstringAfterIgnoreCase("]."), file.SubtitlesExtension);
+        }
         Assert.True(file.RefreshMediaInfo());
         Assert.Equal(isValidSubtitleFullName, file.IsValid);
         if (file.IsValid) Assert.Equal(newFileName, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());

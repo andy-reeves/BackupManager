@@ -1955,6 +1955,20 @@ internal static partial class Utils
 
     [GeneratedRegex("(?<position>^\\d\\.\\d)", RegexOptions.Compiled)]
     private static partial Regex MediaInfoAudioPositionRegex();
+
+    /// <summary>
+    ///     Returns the full subtitles extension like .en.hi.srt
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns>Null if the path doesn't have a subtitles extension</returns>
+    internal static string GetSubtitlesExtension(string path)
+    {
+        foreach (var a in _subtitlesExtensions)
+        {
+            if (path.EndsWithIgnoreCase(a)) return a;
+        }
+        return null;
+    }
 }
 
 [SupportedOSPlatform("windows")]

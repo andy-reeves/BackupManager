@@ -23,6 +23,7 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
         OriginalPath = path;
         Extension = Path.GetExtension(path);
         var fileName = Path.GetFileName(path);
+        SubtitlesExtension = Utils.GetSubtitlesExtension(path);
         FullDirectory = Path.GetDirectoryName(path);
         IsValidFileName = new Regex(FileNameRegex).IsMatch(fileName);
         if (IsValidFileName) IsValidFileName = ParseInfoFromFileName(fileName);
@@ -39,6 +40,8 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
         @"^.*\\_(?:Movies|Comedy|Concerts|TV)(?:\s\(non-t[mv]db\))?\\(.*)((\((\d{4})\)(-other)?)|(\s{t(m|v)db-\d{1,7}?}\\(Season\s\d+|Specials))).*$";
 
     public string Subtitles { get; private set; }
+
+    public object SubtitlesExtension { get; }
 
     private bool ParseInfoFromDirectory(string directoryPath)
     {
