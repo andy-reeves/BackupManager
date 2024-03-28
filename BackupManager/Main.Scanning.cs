@@ -155,9 +155,8 @@ internal sealed partial class Main
 
     private string[] FiltersToDelete()
     {
-        return mediaBackup.Config.FilesToDelete
-            .Select(static filter => new { filter, replace = filter.Replace(".", @"\.").Replace("*", ".*").Replace("?", ".") })
-            .Select(static t => $"^{t.replace}$").ToArray();
+        return Enumerable.ToArray(mediaBackup.Config.FilesToDelete.Select(static filter =>
+            filter.StartsWithIgnoreCase("^") ? filter : $"^{filter.Replace(".", @"\.").Replace("*", ".*").Replace("?", ".")}$").ToList());
     }
 
     /// <summary>
@@ -484,8 +483,7 @@ internal sealed partial class Main
     /// <returns></returns>
     private static bool CheckForFilesToDelete(string filePath, IEnumerable<string> filters)
     {
-        var fileName = new FileInfo(filePath).Name;
-        if (!filters.Any(pattern => Regex.IsMatch(fileName, pattern))) return false;
+        if (!filters.Any(pattern => Regex.IsMatch(filePath, pattern))) return false;
 
         Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, $"File matches RegEx and so will be deleted {filePath}");
         _ = Utils.File.Delete(filePath);
