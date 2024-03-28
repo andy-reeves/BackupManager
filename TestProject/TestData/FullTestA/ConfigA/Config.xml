@@ -132,8 +132,9 @@
   <Filters />
 
   <FilesToDelete>
-    <FilesToDeleteRegEx>._.DS_Store</FilesToDeleteRegEx>
-    <FilesToDeleteRegEx>.DS_Store</FilesToDeleteRegEx>
+    <FilesToDeleteRegEx>^.*\\._.DS_Store$</FilesToDeleteRegEx>
+    <FilesToDeleteRegEx>^.*\\.DS_Store$</FilesToDeleteRegEx>
+    <FilesToDeleteRegEx>^.*\\_TV\\.*_eng.srt$</FilesToDeleteRegEx>
   </FilesToDelete>
 
   <SymbolicLinks />
