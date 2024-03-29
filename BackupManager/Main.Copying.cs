@@ -110,9 +110,8 @@ internal sealed partial class Main
                 // Sometimes during a copy we get this if we lose the connection to the source NAS drive
                 Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.Emergency, string.Format(Resources.FileIOExceptionDuringCopy, ex));
             }
-            _ = UpdateCurrentBackupDiskInfo(disk);
-            ClearEstimatedFinish();
         }
+        ClearEstimatedFinish();
     }
 
     /// <summary>
