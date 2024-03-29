@@ -194,7 +194,11 @@ internal static partial class Utils
             return VideoResolution.Unknown;
         }
 
-        internal static void CheckVideoFileAndRenameIfRequired(ref string path, bool renameFile = true)
+        /// <summary>
+        ///     Checks if the path is a video file and renames the file with extracted media info if required
+        /// </summary>
+        /// <param name="path"></param>
+        internal static void CheckVideoFileAndRenameIfRequired(ref string path)
         {
             var file = ExtendedBackupFileBase(path);
             if (file == null) return;
@@ -222,15 +226,10 @@ internal static partial class Utils
                 {
                     if (Path.GetDirectoryName(path) == Path.GetDirectoryName(newFullPath))
                     {
-                        if (renameFile)
-                        {
-                            LogWithPushover(BackupAction.General, $"Renaming {path} to {newFullPath}");
-                            _ = File.Move(path, newFullPath);
-                            Trace($"Renamed {path} to {newFullPath}");
-                            path = newFullPath;
-                        }
-                        else
-                            Log($"File needs to be renamed from {path} to {newFullPath}");
+                        LogWithPushover(BackupAction.General, $"Renaming {path} to {newFullPath}");
+                        _ = File.Move(path, newFullPath);
+                        Trace($"Renamed {path} to {newFullPath}");
+                        path = newFullPath;
                     }
                     else
                     {
@@ -263,6 +262,11 @@ internal static partial class Utils
             return TraceOut(info);
         }
 
+        /// <summary>
+        ///     Returns a MovieBackupFile, a TvEpisodeFile, or a SubtitlesBackupFile or null
+        /// </summary>
+        /// <param name="path">The full path to the file</param>
+        /// <returns>Null if the file isn't a movie, TV episode or subtitles file.</returns>
         internal static ExtendedBackupFileBase ExtendedBackupFileBase(string path)
         {
             // ReSharper disable once StringLiteralTypo
