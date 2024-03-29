@@ -89,7 +89,6 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
         var videoFiles = files.Where(static f =>
         {
             ArgumentException.ThrowIfNullOrEmpty(f);
-            ArgumentException.ThrowIfNullOrEmpty(f);
             return Utils.File.IsVideo(f) && !Utils.File.IsSpecialFeature(f);
         }).ToArray();
         if (videoFiles.Any(file => Path.GetFileName(file).StartsWithIgnoreCase(Title))) return Validate();

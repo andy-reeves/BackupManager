@@ -16,6 +16,7 @@ namespace TestProject;
 
 [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
 [SuppressMessage("ReSharper", "MemberCanBeFileLocal")]
+[SuppressMessage("ReSharper", "StringLiteralTypo")]
 public sealed class EntityTests
 {
     private static readonly MediaBackup _mediaBackup;

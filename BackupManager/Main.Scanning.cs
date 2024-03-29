@@ -476,16 +476,16 @@ internal sealed partial class Main
     }
 
     /// <summary>
-    ///     Returns True if the file was deleted
+    ///     Returns True if the file was deleted. The full path of the file is checked to the array of Regexs provided.
     /// </summary>
-    /// <param name="filePath"></param>
-    /// <param name="filters">The filters to find files to delete</param>
+    /// <param name="filePath">The full path to the file.</param>
+    /// <param name="filters">The Regex filters to find files to delete</param>
     /// <returns></returns>
     private static bool CheckForFilesToDelete(string filePath, IEnumerable<string> filters)
     {
         if (!filters.Any(pattern => Regex.IsMatch(filePath, pattern))) return false;
 
-        Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"File matches RegEx and so will be deleted {filePath}");
+        Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"File matches Regex and so will be deleted {filePath}");
         _ = Utils.File.Delete(filePath);
         return true;
     }

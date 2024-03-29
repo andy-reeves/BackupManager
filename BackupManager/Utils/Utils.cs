@@ -1963,11 +1963,7 @@ internal static partial class Utils
     /// <returns>Null if the path doesn't have a subtitles extension</returns>
     internal static string GetSubtitlesExtension(string path)
     {
-        foreach (var a in _subtitlesExtensions)
-        {
-            if (path.EndsWithIgnoreCase(a)) return a;
-        }
-        return null;
+        return _subtitlesExtensions.FirstOrDefault(path.EndsWithIgnoreCase);
     }
 }
 
