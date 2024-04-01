@@ -8,7 +8,6 @@ using System.Diagnostics.CodeAnalysis;
 
 using BackupManager;
 using BackupManager.Entities;
-using BackupManager.Extensions;
 
 namespace TestProject;
 
@@ -22,34 +21,29 @@ public sealed class UtilsGetLatestApplicationVersion
         Utils.Config = mediaBackup.Config;
     }
 
-    [Fact]
-    [SuppressMessage("ReSharper", "IdentifierTypo")]
-    public void GetVersionNumber()
+    [Theory]
+    [InlineData("1.4.2", ApplicationType.Bazarr)]
+    [InlineData("1.40.2.8312", ApplicationType.PlexPass)]
+    [InlineData("1.15.0.4361", ApplicationType.Prowlarr)]
+    [InlineData("5.3.6.8612", ApplicationType.Radarr)]
+    [InlineData("4.2.3", ApplicationType.SABnzbd)]
+    [InlineData("4.0.3.1413", ApplicationType.Sonarr)]
+    public void GetVersionNumber(string expectedInstalledVersionNumber, ApplicationType applicationType)
     {
-        Assert.Equal("1.4.2", Utils.GetApplicationVersionNumber(ApplicationType.Bazarr));
-        Assert.Equal("1.40.2.8312", Utils.GetApplicationVersionNumber(ApplicationType.PlexPass));
-        Assert.Equal("1.15.0.4361", Utils.GetApplicationVersionNumber(ApplicationType.Prowlarr));
-        Assert.Equal("5.3.6.8612", Utils.GetApplicationVersionNumber(ApplicationType.Radarr));
-        Assert.Equal("4.2.3", Utils.GetApplicationVersionNumber(ApplicationType.SABnzbd));
-        Assert.Equal("4.0.2.1183", Utils.GetApplicationVersionNumber(ApplicationType.Sonarr));
+        Assert.Equal(expectedInstalledVersionNumber, Utils.GetApplicationVersionNumber(applicationType));
     }
 
-    [Fact]
-    [SuppressMessage("ReSharper", "CommentTypo")]
-    public void GetLatestApplicationVersionNumber()
+    [Theory]
+    [InlineData("1.3.1", ApplicationType.Bazarr)]
+    [InlineData("1.15.0", ApplicationType.Prowlarr)]
+    [InlineData("5.3.6", ApplicationType.Radarr)]
+    [InlineData("4.2.3", ApplicationType.SABnzbd)]
+    [InlineData("4.0.3.1413", ApplicationType.Sonarr)]
+    [InlineData("1.16.0", ApplicationType.Prowlarr, "develop")]
+    [InlineData("5.4.5", ApplicationType.Radarr, "develop")]
+    [InlineData("1.40.1.8227", ApplicationType.PlexPass)]
+    public void GetLatestApplicationVersionNumber(string expectedVersionNumber, ApplicationType applicationType, string branchName = "master")
     {
-        Assert.Equal("1.40.1.8227", Utils.GetLatestApplicationVersionNumber(ApplicationType.Plex));
-        Assert.Equal("1.3.1", Utils.GetLatestApplicationVersionNumber(ApplicationType.Bazarr));
-        Assert.Equal("1.15.0", Utils.GetLatestApplicationVersionNumber(ApplicationType.Prowlarr));
-        Assert.Equal("5.3.6", Utils.GetLatestApplicationVersionNumber(ApplicationType.Radarr));
-        Assert.Equal("4.2.3", Utils.GetLatestApplicationVersionNumber(ApplicationType.SABnzbd));
-        Assert.Equal("4.0.2.1183", Utils.GetLatestApplicationVersionNumber(ApplicationType.Sonarr));
-
-        // These are the latest or develop branches
-
-        Assert.Equal(Utils.Config.PlexToken.HasValue() ? "1.40.2.8227" : "1.40.1.8227",
-            Utils.GetLatestApplicationVersionNumber(ApplicationType.PlexPass));
-        Assert.Equal("1.16.0", Utils.GetLatestApplicationVersionNumber(ApplicationType.Prowlarr, "develop"));
-        Assert.Equal("5.4.5", Utils.GetLatestApplicationVersionNumber(ApplicationType.Radarr, "develop"));
+        Assert.Equal(expectedVersionNumber, Utils.GetLatestApplicationVersionNumber(applicationType, branchName));
     }
 }
