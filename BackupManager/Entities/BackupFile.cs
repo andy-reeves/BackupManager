@@ -337,7 +337,7 @@ public sealed class BackupFile : IEquatable<BackupFile>
 
         if (hashFromBackupDiskFile != hashFromSourceFile)
         {
-            // Hashes are now different on source and backup 
+            // Hashes are now different on source and backup
             return false;
         }
 
