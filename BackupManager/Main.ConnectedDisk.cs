@@ -49,12 +49,15 @@ internal sealed partial class Main
 
             while (!ct.IsCancellationRequested)
             {
-                ReadyToScan(new FileSystemWatcherEventArgs(mediaBackup.Watcher.DirectoriesToScan.ToArray()), SearchOption.AllDirectories, true,
-                    ct);
+                var dirsToScan = mediaBackup.Watcher.DirectoriesToScan.ToArray();
+                ReadyToScan(new FileSystemWatcherEventArgs(dirsToScan), SearchOption.AllDirectories, true, ct);
 
                 // Empty the DirectoriesToScan because we've processed all of them now
                 // we do it here so if we get cancelled before this we leave the directories ready to scan for next time
-                mediaBackup.Watcher.DirectoriesToScan.Clear();
+                foreach (var a in dirsToScan)
+                {
+                    _ = mediaBackup.Watcher.DirectoriesToScan.Remove(a);
+                }
                 var lastBackupDiskChecked = CheckConnectedDisk(true, ct);
 
                 if (lastBackupDiskChecked == null)
