@@ -308,10 +308,6 @@ internal static partial class Utils
                     return GitHubVersionNumberParser($"https://raw.githubusercontent.com/sabnzbd/sabnzbd/{branchName}/sabnzbd/version.py",
                         "__version__", "=", 1);
                 case ApplicationType.Sonarr:
-                    // For up to v3 we did this
-                    // GitHubVersionNumberParser($"https://raw.githubusercontent.com/Sonarr/Sonarr/{branchName}/version.sh", "packageVersion=", "=", 1);
-
-                    // for v4 this
                     var doc = new HtmlWeb().Load("https://github.com/Sonarr/Sonarr/releases/latest");
                     return doc.DocumentNode.SelectNodes("//html/head/title")[0].InnerText.Split(" ")[1];
                 case ApplicationType.Radarr:
@@ -321,9 +317,8 @@ internal static partial class Utils
                     return GitHubVersionNumberParser($"https://raw.githubusercontent.com/Prowlarr/Prowlarr/{branchName}/azure-pipelines.yml",
                         "majorVersion:", ":", 1);
                 case ApplicationType.Bazarr:
-                    return GitHubVersionNumberParser(
-                        $"https://raw.githubusercontent.com/morpheus65535/bazarr/{branchName}/libs/requests_oauthlib/__init__.py", "__version__",
-                        "=", 1);
+                    doc = new HtmlWeb().Load("https://github.com/morpheus65535/bazarr/releases/latest");
+                    return doc.DocumentNode.SelectNodes("//html/head/title")[0].InnerText.Split(" ")[1].SubstringAfterIgnoreCase("v");
 
                 // ReSharper disable once RedundantEnumCaseLabelForDefaultSection
                 case ApplicationType.Unknown:
