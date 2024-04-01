@@ -83,14 +83,14 @@ internal sealed partial class Main
         }
     }
 
-    private void SetupDailyTrigger(bool addTrigger)
+    private void SetupDailyTrigger(bool addTrigger, DateTime executeTime)
     {
         Utils.TraceIn();
         updateUITimer.Enabled = true; // because we want to update the directory tracking every 1 min or so anyway
 
         if (addTrigger)
         {
-            _trigger = new DailyTrigger(scheduledDateTimePicker.Value);
+            _trigger = new DailyTrigger(executeTime);
             _trigger.OnTimeTriggered += scheduledBackupAction;
             UpdateUI_Tick(null, null);
         }

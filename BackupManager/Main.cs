@@ -62,7 +62,7 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         mediaBackup.Config.ScheduledBackupOnOff = !mediaBackup.Config.ScheduledBackupOnOff;
-        SetupDailyTrigger(mediaBackup.Config.ScheduledBackupOnOff);
+        SetupDailyTrigger(mediaBackup.Config.ScheduledBackupOnOff, scheduledDateTimePicker.Value);
         UpdateScheduledBackupButton();
         Utils.TraceOut();
     }

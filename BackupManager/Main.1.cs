@@ -121,8 +121,13 @@ internal sealed partial class Main
 
             scheduledBackupAction = () =>
             {
-                if (longRunningActionExecutingRightNow) return;
-
+                // If a long-running task is already executing then reset the trigger to try again in 1 minute
+                if (longRunningActionExecutingRightNow)
+                {
+                    SetupDailyTrigger(mediaBackup.Config.ScheduledBackupOnOff, DateTime.Now.AddMinutes(1));
+                    UpdateScheduledBackupButton();
+                    return;
+                }
                 ResetTokenSource();
                 _ = TaskWrapper(() => ScheduledBackupAsync(mainCt), mainCt);
             };
@@ -142,7 +147,7 @@ internal sealed partial class Main
                 ResetTokenSource();
                 _ = TaskWrapper(() => ScheduledBackupAsync(mainCt), mainCt);
             }
-            SetupDailyTrigger(config.ScheduledBackupOnOff);
+            SetupDailyTrigger(config.ScheduledBackupOnOff, scheduledDateTimePicker.Value);
             SetupFileWatchers();
             UpdateUI_Tick(null, null);
 
