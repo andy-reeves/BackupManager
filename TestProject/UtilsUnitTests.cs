@@ -104,9 +104,7 @@ public sealed class UtilsUnitTests
     public void StringContainsFixedSpace()
     {
         const string workingString = @"\\nas1\assets1\_TV\Pennyworth The Origin of Batman's Butler {tvdb-363008}\Season 1";
-
-        var brokenString = @"\\nas1\assets1\_TV\Pennyworth The" + Convert.ToChar(160) +
-                           @"Origin of Batman's Butler {tvdb-363008}\Season 1"; // - broken
+        var brokenString = @"\\nas1\assets1\_TV\Pennyworth The" + Convert.ToChar(160) + @"Origin of Batman's Butler {tvdb-363008}\Season 1"; // - broken
         Assert.True(Utils.StringContainsFixedSpace(brokenString));
         Assert.False(Utils.StringContainsFixedSpace(workingString));
     }

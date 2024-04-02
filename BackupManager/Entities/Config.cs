@@ -247,8 +247,7 @@ public sealed class Config
     {
         try
         {
-            if (!Utils.ValidateXmlFromResources(path, "BackupManager.ConfigSchema.xsd"))
-                throw new XmlSchemaValidationException("Config.xml failed validation");
+            if (!Utils.ValidateXmlFromResources(path, "BackupManager.ConfigSchema.xsd")) throw new XmlSchemaValidationException("Config.xml failed validation");
 
             var xRoot = new XmlRootAttribute { ElementName = "Config", Namespace = "ConfigSchema.xsd", IsNullable = true };
             Config config;
@@ -300,9 +299,8 @@ public sealed class Config
         {
             foreach (var property in properties)
             {
-                if (property.PropertyType == typeof(Collection<ProcessServiceMonitor>) || property.PropertyType == typeof(Collection<FileRule>) ||
-                    property.PropertyType == typeof(List<DateTime>) || property.PropertyType == typeof(Collection<FileRenameRule>) ||
-                    property.PropertyType == typeof(Collection<string>) || property.PropertyType == typeof(Collection<SymbolicLink>))
+                if (property.PropertyType == typeof(Collection<ProcessServiceMonitor>) || property.PropertyType == typeof(Collection<FileRule>) || property.PropertyType == typeof(List<DateTime>) ||
+                    property.PropertyType == typeof(Collection<FileRenameRule>) || property.PropertyType == typeof(Collection<string>) || property.PropertyType == typeof(Collection<SymbolicLink>))
                 {
                     Utils.Log(BackupAction.General, $"{property.Name}:");
                     var propertyValues = (ICollection)property.GetValue(obj);
@@ -318,8 +316,7 @@ public sealed class Config
                 {
                     if (property.PropertyType.IsGenericType)
                     {
-                        Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High,
-                            $"Unknown Config parameter type detected: {property.Name}");
+                        Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High, $"Unknown Config parameter type detected: {property.Name}");
                     }
                     else
                     {

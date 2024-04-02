@@ -1,4 +1,10 @@
-﻿using System.Collections.Concurrent;
+﻿// --------------------------------------------------------------------------------------------------------------------
+//  <copyright file="FileSystemWatcherTests2.cs" company="Andy Reeves">
+// 
+//  </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 
 using BackupManager;
@@ -63,8 +69,7 @@ public sealed class FileSystemWatcherTests2
             MinimumAgeBeforeScanEventRaised = 1,
             Directories = new[] { _testPath },
             IncludeSubdirectories = true,
-            NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.LastAccess | NotifyFilters.CreationTime | NotifyFilters.FileName |
-                           NotifyFilters.DirectoryName
+            NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.LastAccess | NotifyFilters.CreationTime | NotifyFilters.FileName | NotifyFilters.DirectoryName
         };
         fileSystemWatcher.ReadyToScan += FileSystemWatcher_ReadyToScan;
         fileSystemWatcher.Error += FileSystemWatcher_OnError;

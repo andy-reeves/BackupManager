@@ -22,9 +22,8 @@ namespace BackupManager;
 
 internal sealed class FileSystemWatcher
 {
-    private const int NOTIFY_FILTERS_VALID_MASK = (int)(NotifyFilters.Attributes | NotifyFilters.CreationTime | NotifyFilters.DirectoryName |
-                                                        NotifyFilters.FileName | NotifyFilters.LastAccess | NotifyFilters.LastWrite |
-                                                        NotifyFilters.Security | NotifyFilters.Size);
+    private const int NOTIFY_FILTERS_VALID_MASK = (int)(NotifyFilters.Attributes | NotifyFilters.CreationTime | NotifyFilters.DirectoryName | NotifyFilters.FileName | NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.Security |
+                                                        NotifyFilters.Size);
 
     private static readonly object _lock = new();
 
@@ -130,8 +129,7 @@ internal sealed class FileSystemWatcher
 
         set
         {
-            if (((int)value & ~NOTIFY_FILTERS_VALID_MASK) != 0)
-                throw new ArgumentException(string.Format(Resources.InvalidEnumArgument, nameof(value), (int)value, nameof(NotifyFilters)));
+            if (((int)value & ~NOTIFY_FILTERS_VALID_MASK) != 0) throw new ArgumentException(string.Format(Resources.InvalidEnumArgument, nameof(value), (int)value, nameof(NotifyFilters)));
 
             if (notifyFilter == value) return;
 
@@ -340,8 +338,7 @@ internal sealed class FileSystemWatcher
     {
         Utils.TraceIn($"e.FullPath = {e.FullPath}");
 
-        if (e.ChangeType is not WatcherChangeTypes.Created and not WatcherChangeTypes.Changed and not WatcherChangeTypes.Deleted
-            and not WatcherChangeTypes.Renamed)
+        if (e.ChangeType is not WatcherChangeTypes.Created and not WatcherChangeTypes.Changed and not WatcherChangeTypes.Deleted and not WatcherChangeTypes.Renamed)
         {
             _ = Utils.TraceOut("OnSomethingHappened exit as not created/changed/deleted/renamed");
             return;
@@ -352,8 +349,7 @@ internal sealed class FileSystemWatcher
         // check the Regex to filter more
         if (RegexFilter.HasNoValue() || Regex.IsMatch(e.FullPath, RegexFilter))
         {
-            if (e.FullPath.EndsWithIgnoreCase(Utils.IS_DIRECTORY_WRITABLE_GUID + ".tmp") ||
-                e.FullPath.EndsWithIgnoreCase(Utils.SPEED_TEST_GUID + ".tmp"))
+            if (e.FullPath.EndsWithIgnoreCase(Utils.IS_DIRECTORY_WRITABLE_GUID + ".tmp") || e.FullPath.EndsWithIgnoreCase(Utils.SPEED_TEST_GUID + ".tmp"))
             {
                 _ = Utils.TraceOut("OnSomethingHappened exit as its the DirectoryWritable Guid or SpeedTest Guid");
                 return;
@@ -384,9 +380,7 @@ internal sealed class FileSystemWatcher
             //select the directories that are old enough now
             // raise event for them only
             // remove them from our list and set another timer
-
-            var dirsToRaiseEventFor = DirectoriesToScan.Where(
-                d => d.ModifiedDateTime.AddMilliseconds(MinimumAgeBeforeScanEventRaised) < DateTime.Now).ToArray();
+            var dirsToRaiseEventFor = DirectoriesToScan.Where(d => d.ModifiedDateTime.AddMilliseconds(MinimumAgeBeforeScanEventRaised) < DateTime.Now).ToArray();
 
             if (dirsToRaiseEventFor.Any())
             {

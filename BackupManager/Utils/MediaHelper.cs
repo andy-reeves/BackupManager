@@ -233,8 +233,7 @@ internal static partial class Utils
                     }
                     else
                     {
-                        LogWithPushover(BackupAction.General, PushoverPriority.High,
-                            $"Renaming {path} to {newFullPath} and directories do not match anymore");
+                        LogWithPushover(BackupAction.General, PushoverPriority.High, $"Renaming {path} to {newFullPath} and directories do not match anymore");
                     }
                 }
             }
@@ -272,9 +271,7 @@ internal static partial class Utils
             // ReSharper disable once StringLiteralTypo
             if (path.Contains("TdarrCacheFile-")) return null;
             if (path.Contains(@"\_TV")) return path.EndsWithIgnoreCase(".srt") ? new SubtitlesBackupFile(path) : new TvEpisodeBackupFile(path);
-
-            if (path.Contains(@"\_Movies") || path.Contains(@"\_Concerts") || path.Contains(@"\_Comedy"))
-                return path.EndsWithIgnoreCase(".srt") ? new SubtitlesBackupFile(path) : new MovieBackupFile(path);
+            if (path.Contains(@"\_Movies") || path.Contains(@"\_Concerts") || path.Contains(@"\_Comedy")) return path.EndsWithIgnoreCase(".srt") ? new SubtitlesBackupFile(path) : new MovieBackupFile(path);
 
             return null;
         }

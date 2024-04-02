@@ -93,9 +93,7 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
             s += $"{Episode} ";
             if (EpisodeTitle.HasValue()) s += $"{EpisodeTitle} ";
             s += $"{QualityFull}";
-
-            if (MediaInfoVideoDynamicRangeType != MediaInfoVideoDynamicRangeType.Unknown)
-                s += $"[{MediaInfoVideoDynamicRangeType.ToEnumMember()}]";
+            if (MediaInfoVideoDynamicRangeType != MediaInfoVideoDynamicRangeType.Unknown) s += $"[{MediaInfoVideoDynamicRangeType.ToEnumMember()}]";
             var audioChannels = MediaInfoAudioChannels.ToEnumMember();
             s += $"[{MediaInfoAudioCodec.ToEnumMember()} {audioChannels}][{MediaInfoVideoCodec.ToEnumMember()}]";
         }

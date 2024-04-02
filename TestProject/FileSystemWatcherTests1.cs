@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-//  <copyright file="FileSystemWatcherTests.cs" company="Andy Reeves">
+//  <copyright file="FileSystemWatcherTests1.cs" company="Andy Reeves">
 // 
 //  </copyright>
 // --------------------------------------------------------------------------------------------------------------------
@@ -37,9 +37,7 @@ public sealed class FileSystemWatcherTests1
         Assert.False(watcher.IncludeSubdirectories, nameof(watcher.IncludeSubdirectories));
         Assert.True(watcher.ScanInterval == 60_000, nameof(watcher.ScanInterval));
         Assert.True(watcher.Directories.Length == 0, nameof(watcher.Directories.Length));
-
-        Assert.True(watcher.NotifyFilter == (NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName),
-            nameof(watcher.NotifyFilter));
+        Assert.True(watcher.NotifyFilter == (NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName), nameof(watcher.NotifyFilter));
         Assert.True(watcher.ProcessChangesInterval == 30_000, nameof(watcher.ProcessChangesInterval));
         Assert.True(watcher.DirectoriesToScan.Count == 0, nameof(FileSystemWatcher.DirectoriesToScan.Count));
         Assert.True(watcher.FileSystemChanges.Count == 0, nameof(FileSystemWatcher.FileSystemChanges.Count));
@@ -87,12 +85,7 @@ public sealed class FileSystemWatcherTests1
         if (Directory.Exists(monitoringPath3Missing)) _ = Utils.Directory.Delete(monitoringPath3Missing, true);
         Utils.Directory.EnsurePath(monitoringPath1);
         Utils.Directory.EnsurePath(monitoringPath2);
-
-        var watcher = new FileSystemWatcher
-        {
-            Directories = new[] { monitoringPath1, monitoringPath2, monitoringPath3Missing },
-            NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName
-        };
+        var watcher = new FileSystemWatcher { Directories = new[] { monitoringPath1, monitoringPath2, monitoringPath3Missing }, NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName };
         watcher.ReadyToScan += FileSystemWatcher_ReadyToScan2;
         _ = Assert.Throws<ArgumentException>(() => watcher.Start());
         Assert.False(watcher.Running);

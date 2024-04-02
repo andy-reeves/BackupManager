@@ -21,9 +21,7 @@ internal static class IntegerExtensions
     {
         var numberString = number.ToString();
         if (number < 1) return numberString;
-
-        if (numberString.EndsWithIgnoreCase("11") || numberString.EndsWithIgnoreCase("12") || numberString.EndsWithIgnoreCase("13"))
-            return numberString + "th";
+        if (numberString.EndsWithIgnoreCase("11") || numberString.EndsWithIgnoreCase("12") || numberString.EndsWithIgnoreCase("13")) return numberString + "th";
         if (numberString.EndsWithIgnoreCase("1")) return numberString + "st";
         if (numberString.EndsWithIgnoreCase("2")) return numberString + "nd";
         if (numberString.EndsWithIgnoreCase("3")) return numberString + "rd";

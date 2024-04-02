@@ -36,8 +36,7 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
 
     protected override string FileNameRegex => @"^(.*)\.(e[ns](?:\.hi)?)\.srt$";
 
-    protected override string DirectoryRegex =>
-        @"^.*\\_(?:Movies|Comedy|Concerts|TV)(?:\s\(non-t[mv]db\))?\\(.*)((\((\d{4})\)(-other)?)|(\s{t(m|v)db-\d{1,7}?}\\(Season\s\d+|Specials))).*$";
+    protected override string DirectoryRegex => @"^.*\\_(?:Movies|Comedy|Concerts|TV)(?:\s\(non-t[mv]db\))?\\(.*)((\((\d{4})\)(-other)?)|(\s{t(m|v)db-\d{1,7}?}\\(Season\s\d+|Specials))).*$";
 
     public string Subtitles { get; private set; }
 

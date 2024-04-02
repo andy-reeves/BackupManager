@@ -27,8 +27,7 @@ internal sealed partial class Main
 
             if (mediaBackup.Config.MonitoringOnOff)
             {
-                Utils.LogWithPushover(BackupAction.ScheduledBackup,
-                    string.Format(Resources.ServiceMonitoringIsRunning, Utils.FormatTimeFromSeconds(mediaBackup.Config.MonitoringInterval)));
+                Utils.LogWithPushover(BackupAction.ScheduledBackup, string.Format(Resources.ServiceMonitoringIsRunning, Utils.FormatTimeFromSeconds(mediaBackup.Config.MonitoringInterval)));
             }
             else
                 Utils.LogWithPushover(BackupAction.ScheduledBackup, PushoverPriority.High, Resources.ServiceMonitoringNotRunning);
@@ -46,8 +45,7 @@ internal sealed partial class Main
                 else
                 {
                     // Scan any pending directory changes
-                    ReadyToScan(new FileSystemWatcherEventArgs(mediaBackup.Watcher.DirectoriesToScan.ToArray()), SearchOption.AllDirectories, true,
-                        mainCt);
+                    ReadyToScan(new FileSystemWatcherEventArgs(mediaBackup.Watcher.DirectoriesToScan.ToArray()), SearchOption.AllDirectories, true, mainCt);
                 }
             }
             else
@@ -59,8 +57,7 @@ internal sealed partial class Main
 
             if (mediaBackup.Config.BackupDiskDifferenceInFileCountAllowedPercentage != 0)
             {
-                var minimumFileCountAllowed =
-                    oldFileCount - oldFileCount * mediaBackup.Config.BackupDiskDifferenceInFileCountAllowedPercentage / 100;
+                var minimumFileCountAllowed = oldFileCount - oldFileCount * mediaBackup.Config.BackupDiskDifferenceInFileCountAllowedPercentage / 100;
                 long newFileCount = mediaBackup.BackupFiles.Count;
                 if (newFileCount < minimumFileCountAllowed) throw new ApplicationException(Resources.FilesCountIsTooLow);
             }

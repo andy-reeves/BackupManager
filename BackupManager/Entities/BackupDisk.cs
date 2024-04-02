@@ -141,8 +141,7 @@ public sealed class BackupDisk : IEquatable<BackupDisk>
         DirectoryInfo sharePathDirectoryInfo = new(path);
         if (!sharePathDirectoryInfo.Exists) return null;
 
-        var directoriesInRootDirectory = sharePathDirectoryInfo.GetDirectories().Where(static file =>
-            ((file.Attributes & FileAttributes.Hidden) == 0) & ((file.Attributes & FileAttributes.System) == 0));
+        var directoriesInRootDirectory = sharePathDirectoryInfo.GetDirectories().Where(static file => ((file.Attributes & FileAttributes.Hidden) == 0) & ((file.Attributes & FileAttributes.System) == 0));
 
         // In here there should be 1 directory starting with 'backup '
         var inRootDirectory = directoriesInRootDirectory as DirectoryInfo[] ?? directoriesInRootDirectory.ToArray();

@@ -66,9 +66,7 @@ internal sealed partial class Main
                     continue;
                 }
                 if (copyFiles) CopyFiles(false, ct);
-
-                Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.High,
-                    $"Backup disk {lastBackupDiskChecked.Name} checked. Please insert the next disk now", true);
+                Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.High, $"Backup disk {lastBackupDiskChecked.Name} checked. Please insert the next disk now", true);
                 UpdateStatusLabel(ct, nextDiskMessage);
                 BackupDisk newDisk;
 
@@ -166,9 +164,7 @@ internal sealed partial class Main
             if (mediaBackup.Contains(backupFileIndexFolderRelativePath))
             {
                 // scenario 103 or 105 on disk and in xml but could be different
-
-                ConnectedDiskBackupDiskFileIsInTheHashtable(backupDiskFileFullPath, disk, ref diskInfoMessageWasTheLastSent, deleteExtraFiles,
-                    backupFileIndexFolderRelativePath);
+                ConnectedDiskBackupDiskFileIsInTheHashtable(backupDiskFileFullPath, disk, ref diskInfoMessageWasTheLastSent, deleteExtraFiles, backupFileIndexFolderRelativePath);
             }
             else
             {
@@ -197,8 +193,7 @@ internal sealed partial class Main
 
         if (!UpdateCurrentBackupDiskInfo(disk))
         {
-            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Emergency,
-                string.Format(Resources.ErrorUpdatingInfoForBackupDisk, disk.Name));
+            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Emergency, string.Format(Resources.ErrorUpdatingInfoForBackupDisk, disk.Name));
             return null;
         }
         UpdateMediaFilesCountDisplay();
@@ -234,16 +229,14 @@ internal sealed partial class Main
         // as it's an extra file on the backup disk
         if (deleteExtraFiles)
         {
-            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal,
-                $"Extra file {backupDiskFileFullPath} on backup disk {disk.Name} now deleted");
+            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal, $"Extra file {backupDiskFileFullPath} on backup disk {disk.Name} now deleted");
             _ = Utils.File.Delete(backupDiskFileFullPath);
         }
         else
             Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Extra file {backupDiskFileFullPath} on backup disk {disk.Name}");
     }
 
-    private void ConnectedDiskBackupDiskFileIsNotInTheHashtable(string backupDiskFileFullPath, BackupDisk disk,
-        ref bool diskInfoMessageWasTheLastSent, bool deleteExtraFiles)
+    private void ConnectedDiskBackupDiskFileIsNotInTheHashtable(string backupDiskFileFullPath, BackupDisk disk, ref bool diskInfoMessageWasTheLastSent, bool deleteExtraFiles)
     {
         // The file on the backup disk isn't found in the directory anymore
         // it could be that we've renamed it in the directory
@@ -268,8 +261,7 @@ internal sealed partial class Main
             // check the hash of the destination file to check it's the same as what we would've renamed too
             if (Utils.File.GetShortMd5Hash(destFileName) == hashToCheck)
             {
-                Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal,
-                    string.Format(Resources.FileExistsAlreadySoDeleting, backupDiskFileFullPath));
+                Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal, string.Format(Resources.FileExistsAlreadySoDeleting, backupDiskFileFullPath));
                 _ = Utils.File.Delete(backupDiskFileFullPath);
             }
         }
@@ -295,8 +287,7 @@ internal sealed partial class Main
     /// <param name="deleteExtraFiles"></param>
     /// <param name="hashKey"></param>
     /// <returns></returns>
-    private void ConnectedDiskBackupDiskFileIsInTheHashtable(string backupDiskFileFullPath, BackupDisk disk,
-        ref bool diskInfoMessageWasTheLastSent, bool deleteExtraFiles, string hashKey)
+    private void ConnectedDiskBackupDiskFileIsInTheHashtable(string backupDiskFileFullPath, BackupDisk disk, ref bool diskInfoMessageWasTheLastSent, bool deleteExtraFiles, string hashKey)
     {
         var backupFile = mediaBackup.GetBackupFileFromHashKey(hashKey);
         var backupFileSourceDiskFullPath = backupFile.FullPath;
@@ -332,8 +323,7 @@ internal sealed partial class Main
 
                 if (sourceLastWriteTime == lastWriteTimeOfFileOnBackupDisk)
                 {
-                    Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
-                        string.Format(Resources.HashCodesError, backupFile.FullPath));
+                    Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, string.Format(Resources.HashCodesError, backupFile.FullPath));
                     diskInfoMessageWasTheLastSent = false;
                 }
                 else
@@ -345,8 +335,7 @@ internal sealed partial class Main
                     }
                     else
                     {
-                        Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
-                            $"Would be deleting {backupDiskFileFullPath}. ");
+                        Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, $"Would be deleting {backupDiskFileFullPath}. ");
                     }
                 }
                 return;
@@ -373,8 +362,7 @@ internal sealed partial class Main
             Utils.LogWithPushover(BackupAction.CheckBackupDisk, string.Format(Resources.ProcessingPercentage, currentPercent));
         else
         {
-            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Emergency,
-                string.Format(Resources.ErrorUpdatingInfoForBackupDisk, disk.Name));
+            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Emergency, string.Format(Resources.ErrorUpdatingInfoForBackupDisk, disk.Name));
         }
     }
 
@@ -384,22 +372,17 @@ internal sealed partial class Main
 
         if (config.SpeedTestOnOff)
         {
-            var diskTestSize = disk.Free > Utils.ConvertMBtoBytes(config.SpeedTestFileSize)
-                ? Utils.ConvertMBtoBytes(config.SpeedTestFileSize)
-                : disk.Free - Utils.BYTES_IN_ONE_KILOBYTE;
+            var diskTestSize = disk.Free > Utils.ConvertMBtoBytes(config.SpeedTestFileSize) ? Utils.ConvertMBtoBytes(config.SpeedTestFileSize) : disk.Free - Utils.BYTES_IN_ONE_KILOBYTE;
             UpdateStatusLabel(ct, string.Format(Resources.SpeedTesting, directoryToCheck));
             Utils.DiskSpeedTest(directoryToCheck, diskTestSize, config.SpeedTestIterations, out readSpeed, out writeSpeed, ct);
             disk.UpdateSpeeds(readSpeed, writeSpeed);
         }
-
-        var text = string.Format(Resources.ConnectedDiskInfo, disk.Name, disk.CapacityFormatted, disk.FreeFormatted, Utils.FormatSpeed(readSpeed),
-            Utils.FormatSpeed(writeSpeed));
+        var text = string.Format(Resources.ConnectedDiskInfo, disk.Name, disk.CapacityFormatted, disk.FreeFormatted, Utils.FormatSpeed(readSpeed), Utils.FormatSpeed(writeSpeed));
         Utils.LogWithPushover(BackupAction.CheckBackupDisk, text);
 
         if (disk.Free < Utils.ConvertMBtoBytes(config.BackupDiskMinimumCriticalSpace))
         {
-            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High,
-                string.Format(Resources.PrepareNewBackupDisk, disk.FreeFormatted));
+            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, string.Format(Resources.PrepareNewBackupDisk, disk.FreeFormatted));
         }
     }
 
@@ -417,9 +400,7 @@ internal sealed partial class Main
         while (!currentConnectedBackupDiskName.EqualsIgnoreCase(backupDisk))
         {
             Utils.LogWithPushover(BackupAction.Restore, PushoverPriority.High, $"Connect new backup drive to restore from {backupDisk}");
-
-            var answer = MessageBox.Show(string.Format(Resources.CorrectDiskPrompt, backupDisk), Resources.CorrectDiskTitle,
-                MessageBoxButtons.YesNo);
+            var answer = MessageBox.Show(string.Format(Resources.CorrectDiskPrompt, backupDisk), Resources.CorrectDiskTitle, MessageBoxButtons.YesNo);
 
             // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
             switch (answer)

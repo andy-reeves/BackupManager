@@ -107,9 +107,7 @@ public sealed class MediaBackup
         do
         {
             var destinationFileName = "MediaBackup-" + DateTime.Now.ToString("yy-MM-dd-HH-mm-ss.ff") + ".xml";
-
-            destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups",
-                destinationFileName);
+            destinationPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups", destinationFileName);
         } while (File.Exists(destinationPath));
         return destinationPath;
     }
@@ -124,9 +122,7 @@ public sealed class MediaBackup
             if (path != null)
             {
                 var sw = Stopwatch.StartNew();
-
-                if (!Utils.ValidateXmlFromResources(path, "BackupManager.MediaBackupSchema.xsd"))
-                    throw new XmlSchemaValidationException("MediaBackup.xml failed validation");
+                if (!Utils.ValidateXmlFromResources(path, "BackupManager.MediaBackupSchema.xsd")) throw new XmlSchemaValidationException("MediaBackup.xml failed validation");
 
                 Utils.Trace($"Time to validate xml was {sw.Elapsed}");
                 sw.Restart();
@@ -154,8 +150,7 @@ public sealed class MediaBackup
             {
                 if (mediaBackup.indexFolderAndRelativePath.TryGetValue(backupFile.Hash, out var value))
                 {
-                    throw new ApplicationException(string.Format(Resources.DuplicateContentsHashCode, backupFile.FileName, backupFile.FullPath,
-                        value.FullPath));
+                    throw new ApplicationException(string.Format(Resources.DuplicateContentsHashCode, backupFile.FileName, backupFile.FullPath, value.FullPath));
                 }
                 mediaBackup.indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
                 if (backupFile.DiskChecked.HasNoValue() || backupFile.Disk.HasNoValue()) backupFile.ClearDiskChecked();
@@ -185,8 +180,7 @@ public sealed class MediaBackup
         relativePath = null;
         var pathWithTerminatingString = Utils.EnsurePathHasATerminatingSeparator(path);
 
-        foreach (var masterDirectory in Config.DirectoriesToBackup.Where(masterDirectory =>
-                     pathWithTerminatingString.StartsWithIgnoreCase(Utils.EnsurePathHasATerminatingSeparator(masterDirectory))))
+        foreach (var masterDirectory in Config.DirectoriesToBackup.Where(masterDirectory => pathWithTerminatingString.StartsWithIgnoreCase(Utils.EnsurePathHasATerminatingSeparator(masterDirectory))))
         {
             relativePath = BackupFile.GetRelativePath(path, masterDirectory);
             directory = masterDirectory;
@@ -210,11 +204,7 @@ public sealed class MediaBackup
         var index = howMany - 1;
 
         // We check the count to include only full scans
-        foreach (var scan in from scan in sc
-                 where !list.Contains(scan.Id)
-                 let count = sc.Count(s => s.Id == scan.Id)
-                 where count.IsInRange(minCount, maxCount)
-                 select scan)
+        foreach (var scan in from scan in sc where !list.Contains(scan.Id) let count = sc.Count(s => s.Id == scan.Id) where count.IsInRange(minCount, maxCount) select scan)
         {
             list[index] = scan.Id;
             index--;
@@ -293,8 +283,7 @@ public sealed class MediaBackup
         Utils.TraceIn(fullPath);
         if (!File.Exists(fullPath)) return null;
 
-        if (!GetFoldersForPath(fullPath, out var directory, out var relativePath))
-            throw new ArgumentException(Resources.UnableToDetermineDirectoryOrRelativePath, nameof(fullPath));
+        if (!GetFoldersForPath(fullPath, out var directory, out var relativePath)) throw new ArgumentException(Resources.UnableToDetermineDirectoryOrRelativePath, nameof(fullPath));
         if (directory.HasNoValue()) throw new ArgumentException(Resources.DirectoryEmpty);
 
         // we hash the path of the file so we can look it up quickly
@@ -468,9 +457,7 @@ public sealed class MediaBackup
     /// <returns></returns>
     public IEnumerable<BackupFile> GetBackupFilesOnBackupDisk(string diskName, bool includeDeletedFiles)
     {
-        return includeDeletedFiles
-            ? BackupFiles.Where(p => p.Disk.Equals(diskName, StringComparison.CurrentCultureIgnoreCase))
-            : BackupFiles.Where(p => p.Disk.Equals(diskName, StringComparison.CurrentCultureIgnoreCase) && !p.Deleted);
+        return includeDeletedFiles ? BackupFiles.Where(p => p.Disk.Equals(diskName, StringComparison.CurrentCultureIgnoreCase)) : BackupFiles.Where(p => p.Disk.Equals(diskName, StringComparison.CurrentCultureIgnoreCase) && !p.Deleted);
     }
 
     /// <summary>
@@ -481,9 +468,7 @@ public sealed class MediaBackup
     /// <returns></returns>
     public IEnumerable<BackupFile> GetBackupFilesInDirectory(string directory, bool includeDeletedFiles)
     {
-        return includeDeletedFiles
-            ? BackupFiles.Where(p => p.Directory == directory)
-            : BackupFiles.Where(p => p.Directory == directory && !p.Deleted);
+        return includeDeletedFiles ? BackupFiles.Where(p => p.Directory == directory) : BackupFiles.Where(p => p.Directory == directory && !p.Deleted);
     }
 
     /// <summary>
@@ -501,9 +486,7 @@ public sealed class MediaBackup
     /// <returns></returns>
     public IEnumerable<BackupFile> GetBackupFilesMarkedAsDeleted(bool orderByDiskNumber)
     {
-        return orderByDiskNumber
-            ? BackupFiles.Where(static p => p.Deleted).OrderBy(static q => q.BackupDiskNumber)
-            : BackupFiles.Where(static p => p.Deleted);
+        return orderByDiskNumber ? BackupFiles.Where(static p => p.Deleted).OrderBy(static q => q.BackupDiskNumber) : BackupFiles.Where(static p => p.Deleted);
     }
 
     /// <summary>

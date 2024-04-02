@@ -23,8 +23,7 @@ public sealed class EntityTests
 
     static EntityTests()
     {
-        _mediaBackup = BackupManager.Entities.MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(EntityTests)),
-            "..\\BackupManager\\MediaBackup.xml"));
+        _mediaBackup = BackupManager.Entities.MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(EntityTests)), "..\\BackupManager\\MediaBackup.xml"));
         Utils.Config = _mediaBackup.Config;
     }
 
@@ -45,25 +44,17 @@ public sealed class EntityTests
     }
 
     [Theory]
-    [InlineData(@"Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [Bluray-1080p Remux][MP3 2.0][XviD].mkv",
-        true)]
-    [InlineData(@"Z:\_TV (non-tvdb)\Tom and Jerry {tmdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV][MP3 2.0][XviD].mkv",
-        true)]
-    [InlineData(@"Z:\_TV (non-tvdb)\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV][MP3 2.0][XviD].mkv",
-        true)]
+    [InlineData(@"Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [Bluray-1080p Remux][MP3 2.0][XviD].mkv", true)]
+    [InlineData(@"Z:\_TV (non-tvdb)\Tom and Jerry {tmdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV][MP3 2.0][XviD].mkv", true)]
+    [InlineData(@"Z:\_TV (non-tvdb)\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV][MP3 2.0][XviD].mkv", true)]
     [InlineData(@"K:\_TV\Westworld {tvdb-296762}\Westworld s02e64 - The Delos Experiment-other.mkv", true)]
-    [InlineData(
-        @"\\nas1\assets1\_TV\Charlie's Angels {tvdb-77170}\Season 5\Charlie's Angels s05e01e03 Angel in Hiding (1) [Bluray-1080p Remux][DTS-HD MA 2.0][h264].mkv",
-        true)]
+    [InlineData(@"\\nas1\assets1\_TV\Charlie's Angels {tvdb-77170}\Season 5\Charlie's Angels s05e01e03 Angel in Hiding (1) [Bluray-1080p Remux][DTS-HD MA 2.0][h264].mkv", true)]
     [InlineData(@"\\nas2\assets3\_TV\Lost {tvdb-73739}\Season 2\Lost s02e21 [HDTV-720p][DTS 5.1][h264].mkv", true)]
     [InlineData(@"\\nas5\assets4\_TV\Automan {tvdb-72589}\Season 1\Automan s01e01 Automan [SDTV][MP2 2.0][MPEG].mpg", true)]
-    [InlineData(
-        @"\\nas2\assets4\_TV\Criminal Record {tvdb-421495}\Season 1\Criminal Record s01e03 Kid in the Park [WEBDL-2160p][DV HDR10Plus][EAC3 Atmos 5.1][h265].mkv",
-        true)]
+    [InlineData(@"\\nas2\assets4\_TV\Criminal Record {tvdb-421495}\Season 1\Criminal Record s01e03 Kid in the Park [WEBDL-2160p][DV HDR10Plus][EAC3 Atmos 5.1][h265].mkv", true)]
     [InlineData(@"Tom and Jerry 2023-01-23 Puss Gets The Boot [SDTV][MP3 2.0][XviD].mkv", true)]
     [InlineData(@"Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\File8 s01e01 [Bluray-1080p Remux][DTS-HD MA 5.1][AVC].mkv", true)]
-    [InlineData(@"Z:\_TV (non-tvdb)\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV][MP3 2.0][AVC].mkv",
-        true)]
+    [InlineData(@"Z:\_TV (non-tvdb)\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV][MP3 2.0][AVC].mkv", true)]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     public void TvEpisodeTests(string fileName, bool isValidFileName)
     {
@@ -111,10 +102,8 @@ public sealed class EntityTests
     }
 
     [Theory]
-    [InlineData("A(2023) {tmdb-1} [DVD][DTS 5.1][h264].en.srt", true, "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].mkv",
-        "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].en.srt")]
-    [InlineData("A(2023) {tmdb-1} [DVD][DTS 5.1][h264].es.hi.srt", true, "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].mkv",
-        "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].es.hi.srt")]
+    [InlineData("A(2023) {tmdb-1} [DVD][DTS 5.1][h264].en.srt", true, "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].mkv", "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].en.srt")]
+    [InlineData("A(2023) {tmdb-1} [DVD][DTS 5.1][h264].es.hi.srt", true, "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].mkv", "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].es.hi.srt")]
     [InlineData("Special video-featurette.mkv", false, "", "")]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     public void SubtitlesTests(string fileName, bool isValidFileName, string newMovieName, string newSubtitlesName)
@@ -150,14 +139,11 @@ public sealed class EntityTests
     }
 
     [Theory]
-    [InlineData("File16 (2014) {tmdb-261103} [Remux-1080p][3D][DTS-HD MA 5.1][h264].mkv", false, true,
-        "File16 (2014) {tmdb-261103} [Remux-1080p][3D][DTS-HD MA 5.1][h264].mkv")]
+    [InlineData("File16 (2014) {tmdb-261103} [Remux-1080p][3D][DTS-HD MA 5.1][h264].mkv", false, true, "File16 (2014) {tmdb-261103} [Remux-1080p][3D][DTS-HD MA 5.1][h264].mkv")]
     [InlineData("File13 (2024) [Remux-1080p][DTS-HD MA 5.1][h264].mkv", false, true, "File13 (2024) [Remux-1080p][DTS-HD MA 5.1][h264].mkv")]
     [InlineData("File14 (2024) [WEBDL-1080p][EAC3 5.1][h264].mkv", false, true, "File14 (2024) [WEBDL-1080p][EAC3 5.1][h265].mkv")]
-    [InlineData("Avengers Infinity War (2018) {tmdb-299536} [Remux-2160p][HDR10][TrueHD Atmos 7.1][h265].mkv", false, true,
-        "Avengers Infinity War (2018) {tmdb-299536} [Remux-2160p][HDR10][TrueHD Atmos 7.1][h265].mkv")]
-    [InlineData(@"\\nas3\assets3\_Movies\Joker (2019)\Joker (2019) {tmdb-475557} [Remux-2160p][HDR10][TrueHD Atmos 7.1][h265].mkv", true, true,
-        "Joker (2019) {tmdb-475557} [Remux-2160p][HDR10][TrueHD Atmos 7.1][h265].mkv")]
+    [InlineData("Avengers Infinity War (2018) {tmdb-299536} [Remux-2160p][HDR10][TrueHD Atmos 7.1][h265].mkv", false, true, "Avengers Infinity War (2018) {tmdb-299536} [Remux-2160p][HDR10][TrueHD Atmos 7.1][h265].mkv")]
+    [InlineData(@"\\nas3\assets3\_Movies\Joker (2019)\Joker (2019) {tmdb-475557} [Remux-2160p][HDR10][TrueHD Atmos 7.1][h265].mkv", true, true, "Joker (2019) {tmdb-475557} [Remux-2160p][HDR10][TrueHD Atmos 7.1][h265].mkv")]
     public void MovieRefreshInfoTests(string sourceFileName, bool validDirectoryName, bool validFileName, string expectedFileName)
     {
         string fileName;
@@ -178,11 +164,9 @@ public sealed class EntityTests
     }
 
     [Theory]
-    [InlineData("File15 s01e03 Kid in the Park [WEBDL-2160p][DV HDR10Plus][EAC3 Atmos 5.1][h264].mkv", true,
-        "File15 s01e03 Kid in the Park [WEBDL-1080p][EAC3 5.1][h265].mkv")]
+    [InlineData("File15 s01e03 Kid in the Park [WEBDL-2160p][DV HDR10Plus][EAC3 Atmos 5.1][h264].mkv", true, "File15 s01e03 Kid in the Park [WEBDL-1080p][EAC3 5.1][h265].mkv")]
     [InlineData(@"File8 s01e01 [Bluray-1080p Remux][DTS-HD MA 5.1][AVC].mkv", true, "File8 s01e01 [Bluray-1080p Remux][DTS-HD MA 5.1][h264].mkv")]
-    [InlineData(@"Percy Jackson and the Olympians s01e01 I Accidentally Vaporize My Pre-Algebra Teacher [SDTV][MP3 2.0][].avi", false,
-        "Percy Jackson and the Olympians s01e01 I Accidentally Vaporize My Pre-Algebra Teacher [SDTV][MP3 2.0][].avi")]
+    [InlineData(@"Percy Jackson and the Olympians s01e01 I Accidentally Vaporize My Pre-Algebra Teacher [SDTV][MP3 2.0][].avi", false, "Percy Jackson and the Olympians s01e01 I Accidentally Vaporize My Pre-Algebra Teacher [SDTV][MP3 2.0][].avi")]
     public void TvTests2(string param1, bool refreshReturnValue, string mediaFileNameOutputIfRenamed)
     {
         var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
@@ -201,10 +185,7 @@ public sealed class EntityTests
     public void MovieTestsAllMoviesFromBackupXml()
     {
         foreach (var backupFile in _mediaBackup.BackupFiles.Where(static f => !f.Deleted &&
-                                                                              (f.FullPath.Contains(@"_Concerts") ||
-                                                                               f.FullPath.Contains(@"_Comedy") ||
-                                                                               f.FullPath.Contains(@"_Movies")) &&
-                                                                              !f.FullPath.Contains("TdarrCacheFile") &&
+                                                                              (f.FullPath.Contains(@"_Concerts") || f.FullPath.Contains(@"_Comedy") || f.FullPath.Contains(@"_Movies")) && !f.FullPath.Contains("TdarrCacheFile") &&
                                                                               !f.FullPath.EndsWithIgnoreCase(".srt")))
         {
             var file = new MovieBackupFile(backupFile.FullPath);
@@ -237,9 +218,7 @@ public sealed class EntityTests
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>")]
     public void TestsAllTvFromBackupXml()
     {
-        foreach (var backupFile in _mediaBackup.BackupFiles.Where(static f => !f.Deleted && f.FullPath.Contains(@"_TV") &&
-                                                                              !f.FullPath.Contains("TdarrCacheFile") &&
-                                                                              !f.FullPath.EndsWithIgnoreCase(".srt")))
+        foreach (var backupFile in _mediaBackup.BackupFiles.Where(static f => !f.Deleted && f.FullPath.Contains(@"_TV") && !f.FullPath.Contains("TdarrCacheFile") && !f.FullPath.EndsWithIgnoreCase(".srt")))
         {
             var file = new TvEpisodeBackupFile(backupFile.FullPath);
             Assert.True(file.IsValid);
@@ -269,9 +248,7 @@ public sealed class EntityTests
         Utils.File.Create(pathToFile1);
         Utils.File.Create(pathToFile2);
         Utils.File.Create(pathToFile3);
-
-        var mediaBackup = BackupManager.Entities.MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)),
-            "..\\BackupManager\\MediaBackup.xml"));
+        var mediaBackup = BackupManager.Entities.MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)), "..\\BackupManager\\MediaBackup.xml"));
         mediaBackup.BackupMediaFile(new CancellationToken());
         mediaBackup.Config.DirectoriesToBackup.Add(pathToMovies);
         mediaBackup.Config.DirectoriesToBackup.Add(pathToTv);

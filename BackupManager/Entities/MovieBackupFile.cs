@@ -89,9 +89,7 @@ internal sealed class MovieBackupFile : VideoBackupFileBase
             if (Edition != Edition.Unknown) s += $"{{edition-{Edition.ToEnumMember().ToUpperInvariant()}}} ";
             s += $"{QualityFull}";
             if (MediaInfoVideo3D) s += "[3D]";
-
-            if (MediaInfoVideoDynamicRangeType != MediaInfoVideoDynamicRangeType.Unknown)
-                s += $"[{MediaInfoVideoDynamicRangeType.ToEnumMember()}]";
+            if (MediaInfoVideoDynamicRangeType != MediaInfoVideoDynamicRangeType.Unknown) s += $"[{MediaInfoVideoDynamicRangeType.ToEnumMember()}]";
             s += $"[{MediaInfoAudioCodec.ToEnumMember()} {MediaInfoAudioChannels.ToEnumMember()}][{MediaInfoVideoCodec.ToEnumMember()}]";
         }
         s += $"{Extension}";

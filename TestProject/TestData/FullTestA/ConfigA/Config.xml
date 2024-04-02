@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <Config xmlns="ConfigSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:xsd="http://www.w3.org/2001/XMLSchema">  
-  
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
   <!-- The backup disk path -->
-  <BackupDisk>test</BackupDisk> 
+  <BackupDisk>test</BackupDisk>
 
   <!-- After this many days the backup warns to check the disks again -->
   <BackupDiskDaysToReportSinceFilesChecked>180</BackupDiskDaysToReportSinceFilesChecked>
 
   <!-- A bigger percentage difference than this and the backup stops -->
-  <BackupDiskDifferenceInFileCountAllowedPercentage>1</BackupDiskDifferenceInFileCountAllowedPercentage> 
+  <BackupDiskDifferenceInFileCountAllowedPercentage>1</BackupDiskDifferenceInFileCountAllowedPercentage>
 
   <!-- MinimumCriticalBackupDiskSpace in MB -->
   <BackupDiskMinimumCriticalSpace>210</BackupDiskMinimumCriticalSpace>
@@ -17,7 +18,7 @@
   <!-- MinimumFreeSpaceToLeaveOnBackupDisk in MB -->
   <BackupDiskMinimumFreeSpaceToLeave>201</BackupDiskMinimumFreeSpaceToLeave>
 
-  <!-- number of days before the next scan will be a full scan of the Directories --> 
+  <!-- number of days before the next scan will be a full scan of the Directories -->
   <DirectoriesDaysBetweenFullScan>7</DirectoriesDaysBetweenFullScan>
 
   <!-- True and the Directories are monitored for changes and not scanned fully each day -->
@@ -46,7 +47,7 @@
 
   <!-- Whether to check video files are named corrected and rename them if not -->
   <DirectoriesRenameVideoFilesOnOff>true</DirectoriesRenameVideoFilesOnOff>
- 
+
   <!-- Whether to check video files are named corrected and rename them if not when doing full scans -->
   <DirectoriesRenameVideoFilesForFullScansOnOff>true</DirectoriesRenameVideoFilesForFullScansOnOff>
 
@@ -58,11 +59,11 @@
 
   <!-- Regex to match files we will check for duplicate hash codes -->
   <DuplicateContentHashCodesDiscoveryRegex>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$</DuplicateContentHashCodesDiscoveryRegex>
- 
+
   <!-- The capturing group is this Regex must be unique for all matching files -->
   <DuplicateFilesRegex>^.*\\_Movies(?:\s\(non-tmdb\))?\\.*\s({tmdb-\d{1,7}?}).*\.(?:m(?:kv|p(4|e?g))|ts|avi)$</DuplicateFilesRegex>
-  
-  <FileRenameRules>   
+
+  <FileRenameRules>
     <FileRenameRule>
       <FileDiscoveryRegex>^.*\\_TV(\s\(non-tvdb\))?\\.*\.srt$</FileDiscoveryRegex>
       <Search>avc,AVC,x264,X264</Search>
@@ -74,7 +75,7 @@
       <Replace>h265</Replace>
     </FileRenameRule>
   </FileRenameRules>
-  
+
   <!-- When true check for latest versions of applications-->
   <MonitoringCheckLatestVersions>false</MonitoringCheckLatestVersions>
 
@@ -83,7 +84,7 @@
 
   <!-- When true the service monitoring starts when the app starts -->
   <MonitoringOnOff>false</MonitoringOnOff>
-  
+
   <!-- Delay before Application monitoring starts -->
   <MonitoringStartDelayOnOff>true</MonitoringStartDelayOnOff>
 
@@ -117,7 +118,7 @@
 
   <!-- Number of disk speed test iterations to run -->
   <SpeedTestIterations>1</SpeedTestIterations>
- 
+
   <!-- If True we test the speed of the disks -->
   <SpeedTestOnOff>true</SpeedTestOnOff>
 
@@ -128,7 +129,7 @@
     <Directory>C:\Users\RemoteUser011071\source\repos\andy-reeves\BackupManager\TestProject\TestData\FullTestARunning\DirectoryB\_Movies</Directory>
     <Directory>C:\Users\RemoteUser011071\source\repos\andy-reeves\BackupManager\TestProject\TestData\FullTestARunning\DirectoryB\_TV</Directory>
   </DirectoriesToBackup>
-  
+
   <Filters />
 
   <FilesToDelete>
@@ -138,7 +139,7 @@
   </FilesToDelete>
 
   <SymbolicLinks />
-  
+
   <DisksToSkipOnRestore />
 
 </Config>

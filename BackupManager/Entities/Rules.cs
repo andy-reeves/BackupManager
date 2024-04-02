@@ -31,16 +31,14 @@ public sealed class Rules
     {
         try
         {
-            if (!Utils.ValidateXmlFromResources(path, "BackupManager.RulesSchema.xsd"))
-                throw new XmlSchemaValidationException("Rules.xml failed validation");
+            if (!Utils.ValidateXmlFromResources(path, "BackupManager.RulesSchema.xsd")) throw new XmlSchemaValidationException("Rules.xml failed validation");
 
             var xRoot = new XmlRootAttribute { ElementName = "Rules", Namespace = "RulesSchema.xsd", IsNullable = true };
             XmlSerializer serializer = new(typeof(Rules), xRoot);
             using FileStream stream = new(path, FileMode.Open, FileAccess.Read);
             if (serializer.Deserialize(stream) is not Rules rules) return null;
 
-            if (rules.FileRules.Select(static x => x.Number).Distinct().Count() != rules.FileRules.Count)
-                throw new ArgumentException(Resources.DuplicateRuleNumber, nameof(path));
+            if (rules.FileRules.Select(static x => x.Number).Distinct().Count() != rules.FileRules.Count) throw new ArgumentException(Resources.DuplicateRuleNumber, nameof(path));
 
             return rules;
         }

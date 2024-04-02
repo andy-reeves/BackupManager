@@ -46,7 +46,6 @@ public sealed class UtilsGetLatestApplicationVersion
     [InlineData("4.0.3.1413", ApplicationType.Sonarr)]
     public void GetLatestApplicationVersionNumber(string expectedVersionNumber, ApplicationType applicationType, string branchName = "master")
     {
-        if (applicationType != ApplicationType.PlexPass || Utils.Config.PlexToken.HasValue())
-            Assert.Equal(expectedVersionNumber, Utils.GetLatestApplicationVersionNumber(applicationType, branchName));
+        if (applicationType != ApplicationType.PlexPass || Utils.Config.PlexToken.HasValue()) Assert.Equal(expectedVersionNumber, Utils.GetLatestApplicationVersionNumber(applicationType, branchName));
     }
 }

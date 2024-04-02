@@ -70,8 +70,7 @@ internal sealed class VideoFileInfoReader
 
             if (analysis.PrimaryAudioStream?.ChannelLayout.IsNullOrWhiteSpace() ?? true)
             {
-                ffprobeOutput = FFProbe.GetStreamJson(filename,
-                    ffOptions: new FFOptions { ExtraArguments = "-probesize 150000000 -analyzeduration 150000000" });
+                ffprobeOutput = FFProbe.GetStreamJson(filename, ffOptions: new FFOptions { ExtraArguments = "-probesize 150000000 -analyzeduration 150000000" });
                 analysis = FFProbe.AnalyseStreamJson(ffprobeOutput);
             }
 
@@ -86,9 +85,7 @@ internal sealed class VideoFileInfoReader
                 VideoColourPrimaries = primaryVideoStream?.ColorPrimaries,
                 VideoTransferCharacteristics = primaryVideoStream?.ColorTransfer,
                 VideoMultiViewCount = primaryVideoStream?.Tags?.ContainsKey("stereo_mode") ?? false ? 2 : 1,
-                DoviConfigurationRecord =
-                    primaryVideoStream?.SideDataList?.Find(static x => x.GetType().Name == nameof(DoviConfigurationRecordSideData)) as
-                        DoviConfigurationRecordSideData,
+                DoviConfigurationRecord = primaryVideoStream?.SideDataList?.Find(static x => x.GetType().Name == nameof(DoviConfigurationRecordSideData)) as DoviConfigurationRecordSideData,
                 Height = primaryVideoStream?.Height ?? 0,
                 Width = primaryVideoStream?.Width ?? 0,
                 AudioFormat = analysis.PrimaryAudioStream?.CodecName,
@@ -116,8 +113,7 @@ internal sealed class VideoFileInfoReader
                 //var frameOutput = FFProbe.GetFrameJson(filename,
                 //    ffOptions: new FFOptions { ExtraArguments = $"-read_intervals \"%+#10\" -select_streams v:{primaryVideoStream?.Index ?? 0}" });
                 // The {primaryVideoStream?.Index ?? 0} above does not work for all movies 
-                var frameOutput = FFProbe.GetFrameJson(filename,
-                    ffOptions: new FFOptions { ExtraArguments = "-read_intervals \"%+#10\" -select_streams v" });
+                var frameOutput = FFProbe.GetFrameJson(filename, ffOptions: new FFOptions { ExtraArguments = "-read_intervals \"%+#10\" -select_streams v" });
                 mediaInfoModel.RawFrameData = frameOutput;
                 frames = FFProbe.AnalyseFrameJson(frameOutput);
             }
@@ -138,9 +134,7 @@ internal sealed class VideoFileInfoReader
                 }
             }
             var sideData = streamSideData.Concat(framesSideData).ToList();
-
-            mediaInfoModel.VideoHdrFormat = GetHdrFormat(mediaInfoModel.VideoBitDepth, mediaInfoModel.VideoColourPrimaries,
-                mediaInfoModel.VideoTransferCharacteristics, sideData);
+            mediaInfoModel.VideoHdrFormat = GetHdrFormat(mediaInfoModel.VideoBitDepth, mediaInfoModel.VideoColourPrimaries, mediaInfoModel.VideoTransferCharacteristics, sideData);
             return mediaInfoModel;
         }
         catch (Exception)
@@ -195,9 +189,7 @@ internal sealed class VideoFileInfoReader
         if (_hlgTransferFunctions.Contains(transferFunction)) return HdrFormat.Hlg10;
         if (!_pqTransferFunctions.Contains(transferFunction)) return HdrFormat.None;
         if (TryGetSideData<HdrDynamicMetadataSpmte2094>(sideData, out _)) return HdrFormat.Hdr10Plus;
-
-        if (TryGetSideData<MasteringDisplayMetadata>(sideData, out _) || TryGetSideData<ContentLightLevelMetadata>(sideData, out _))
-            return HdrFormat.Hdr10;
+        if (TryGetSideData<MasteringDisplayMetadata>(sideData, out _) || TryGetSideData<ContentLightLevelMetadata>(sideData, out _)) return HdrFormat.Hdr10;
 
         return HdrFormat.Pq10;
     }
