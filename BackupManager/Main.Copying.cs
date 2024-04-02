@@ -93,11 +93,10 @@ internal sealed partial class Main
                 // This is in case the Backup is aborted during the copy
                 // This file will be seen on the next scan and removed
                 var sourceFileName = backupFile.FullPath;
-                FileInfo sourceFileInfo = new(sourceFileName);
 
                 if (FileExistsInternal(sizeOfCopy, disk, backupFile, sourceFileName, copiedSoFar, counter, totalFileCount, ct))
                 {
-                    CopyFileInternal(sizeOfCopy, disk, sourceFileName, ref copiedSoFar, sourceFileInfo, ref outOfDiskSpaceMessageSent,
+                    CopyFileInternal(sizeOfCopy, disk, sourceFileName, ref copiedSoFar, ref outOfDiskSpaceMessageSent,
                         ref remainingSizeOfFilesToCopy, counter, totalFileCount, backupFile, ref lastCopySpeed, ref availableSpace, ct);
                 }
             }
@@ -163,7 +162,7 @@ internal sealed partial class Main
         return Utils.TraceOut(copyTheFile);
     }
 
-    private void CopyFileInternal(long sizeOfCopy, BackupDisk disk, string sourceFileName, ref long copiedSoFar, FileInfo sourceFileInfo,
+    private void CopyFileInternal(long sizeOfCopy, BackupDisk disk, string sourceFileName, ref long copiedSoFar,
         ref bool outOfDiskSpaceMessageSent, ref long remainingSizeOfFilesToCopy, int fileCounter, int totalFileCount, BackupFile backupFile,
         ref long lastCopySpeed, ref long availableSpace, CancellationToken ct)
     {
@@ -172,8 +171,9 @@ internal sealed partial class Main
         var destinationFileName = backupFile.BackupDiskFullPath(disk.BackupPath);
         var destinationFileNameTemp = destinationFileName + ".copying";
 
-        if (availableSpace > Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave) + sourceFileInfo.Length)
+        if (availableSpace > Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave) + backupFile.Length)
         {
+            FileInfo sourceFileInfo = new(sourceFileName);
             UpdateMediaFilesCountDisplay();
 
             UpdateStatusLabel(ct, string.Format(Resources.Copying, Path.GetFileName(sourceFileName)),

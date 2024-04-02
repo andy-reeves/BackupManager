@@ -262,8 +262,10 @@ public sealed class MediaBackup
     {
         Utils.TraceIn();
 
-        // Copy to Array to avoid modified collection errors
-        var bFiles = BackupFiles.ToArray();
+        // TODO This may need to be locked here
+
+        // Copy to List to avoid modified collection errors
+        var bFiles = BackupFiles.ToList();
         var count = bFiles.Count(a => a.ContentsHash == value && !a.Deleted);
 
         switch (count)
