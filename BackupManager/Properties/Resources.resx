@@ -494,4 +494,7 @@ Skipping {3} as not enough free space</value>
   <data name="ServiceMonitoringIsRunning" xml:space="preserve">
     <value>Service monitoring is running every {0}</value>
   </data>
+  <data name="Cancelled" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
 </root>

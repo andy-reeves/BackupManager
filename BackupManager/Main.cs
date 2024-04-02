@@ -541,7 +541,7 @@ internal sealed partial class Main : Form
             Utils.TraceIn();
             KillCopyProcess();
             UpdateMediaFilesCountDisplay();
-            Utils.LogWithPushover(BackupAction.General, PushoverPriority.Normal, "Cancelled");
+            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, Resources.Cancelled);
             ResetAllControls();
         }
         finally
