@@ -265,6 +265,7 @@
 17.73 | D | True  | "X:\_Movies\12 Angry Men (1957)\12 Angry Men (1957) {tmdb-389} {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv"
 17.74 | D | True  | "X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-scene.mkv"
 17.75 | T | True  | "X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][h265].mkv"
+17.76 | T | False | "X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][h265]-TdarrCacheFile-fwefefwe.mkv"
 
 
 # All files less than 256 characters in the path
@@ -308,7 +309,7 @@
 19.28 | T | False | "\\nas1\assets1\_TV\Ben and Holly's Little Kingdom {tvdb-136941}\Season 2\Ben and Holly's Little Kingdom s02e15 Gaston To The Rescue [DVD][AAC 5.1][].mp4"
 19.29 | T | True  | "\\nas4\assets1\_TV\8 Out of 10 Cats {tvdb-79556}\Season 11\8 Out of 10 Cats s11e02 Patsy Palmer, Jack Whitehall, Krishnan Guru-Murthy, Joe Wilkinson [HDTV-720p][MP2 2.0][h264].mkv"
 19.30 | T | True  | "\\nas4\assets1\_TV\Curfew {tvdb-79556}\Season 1\Curfew s01e01 Episode 1 [HDTV-720p][Vorbis 6.0][h264].mkv"
-19.31 | T | True  | "\\nas4\assets1\_TV\Curfew {tvdb-79556}\Season 1\Curfew s01e01 Episode 1 [HDTV-720p][Vorbis 6.0][h264]-TdarrCacheFile-fwefefwf.mkv"
+19.31 | T | False | "\\nas4\assets1\_TV\Curfew {tvdb-79556}\Season 1\Curfew s01e01 Episode 1 [HDTV-720p][Vorbis 6.0][h264]-TdarrCacheFile-fwefefwf.mkv"
 19.32 | T | True  | "\\nas5\assets4\_TV\Prehistoric Planet (2022) {tvdb-418505}\Season 2\Prehistoric Planet (2022) s02e01 Islands [WEBDL-2160p][DV HDR10Plus][EAC3 Atmos 5.1][h265].mkv"
 
 
