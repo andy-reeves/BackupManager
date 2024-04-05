@@ -26,9 +26,7 @@ internal sealed partial class Main
             UpdateStatusLabel(ct, string.Format(Resources.Scanning, string.Empty));
 
             if (mediaBackup.Config.MonitoringOnOff)
-            {
                 Utils.LogWithPushover(BackupAction.ScheduledBackup, string.Format(Resources.ServiceMonitoringIsRunning, Utils.FormatTimeFromSeconds(mediaBackup.Config.MonitoringInterval)));
-            }
             else
                 Utils.LogWithPushover(BackupAction.ScheduledBackup, PushoverPriority.High, Resources.ServiceMonitoringNotRunning);
             long oldFileCount = mediaBackup.BackupFiles.Count;

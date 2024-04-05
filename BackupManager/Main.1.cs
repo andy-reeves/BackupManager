@@ -78,11 +78,7 @@ internal sealed partial class Main
         {
             InitializeComponent();
             TraceConfiguration.Register();
-
-            if (Utils.InDebugBuild)
-            {
-                _ = Trace.Listeners.Add(new TextWriterTraceListener(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"), "myListener"));
-            }
+            if (Utils.InDebugBuild) _ = Trace.Listeners.Add(new TextWriterTraceListener(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"), "myListener"));
             var localMediaXml = Path.Combine(Application.StartupPath, "MediaBackup.xml");
             mediaBackup = MediaBackup.Load(File.Exists(localMediaXml) ? localMediaXml : ConfigurationManager.AppSettings.Get("MediaBackupXml"));
             config = mediaBackup.Config;
@@ -333,9 +329,7 @@ internal sealed partial class Main
             if (Utils.Directory.IsWritable(directory))
                 writableDirectories.Add(directory);
             else
-            {
                 Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.DirectoryIsNotWritable, directory));
-            }
         }
         mediaBackup.Watcher.Directories = writableDirectories.ToArray();
         mediaBackup.Watcher.ProcessChangesInterval = config.DirectoriesProcessChangesTimer * 1000;
@@ -545,6 +539,7 @@ internal sealed partial class Main
             if (text != string.Empty && !text.EndsWithIgnoreCase(".")) textToUse = text + " ...";
         }
         UpdateProgressBar(value);
+        textToUse = textToUse.Replace("&", "&&");
         if (toolStripStatusLabel.Text != textToUse) statusStrip.Invoke(_ => toolStripStatusLabel.Text = textToUse);
     }
 

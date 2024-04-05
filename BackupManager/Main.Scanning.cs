@@ -313,14 +313,10 @@ internal sealed partial class Main
         if (mediaBackup.Config.SpeedTestOnOff)
         {
             if (readSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumReadSpeed))
-            {
                 Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"Read speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumReadSpeed))}");
-            }
 
             if (writeSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumWriteSpeed))
-            {
                 Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"Write speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumWriteSpeed))}");
-            }
         }
         if (freeSpaceOnRootDirectoryDisk < Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumCriticalSpace)) Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"Free space on {rootDirectory} is too low");
         UpdateStatusLabel(ct, string.Format(Resources.Scanning, rootDirectory));

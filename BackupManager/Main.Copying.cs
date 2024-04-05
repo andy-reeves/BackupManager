@@ -50,11 +50,7 @@ internal sealed partial class Main
         var filesStillNotOnBackupDisk = mediaBackup.GetBackupFilesWithDiskEmpty();
         var text = string.Empty;
         var stillNotOnBackupDisk = filesStillNotOnBackupDisk as BackupFile[] ?? filesStillNotOnBackupDisk.ToArray();
-
-        if (stillNotOnBackupDisk.Any())
-        {
-            text = string.Format(Resources.CopyFilesStillToCopy, stillNotOnBackupDisk.Length, Utils.FormatSize(stillNotOnBackupDisk.Sum(static p => p.Length)));
-        }
+        if (stillNotOnBackupDisk.Any()) text = string.Format(Resources.CopyFilesStillToCopy, stillNotOnBackupDisk.Length, Utils.FormatSize(stillNotOnBackupDisk.Sum(static p => p.Length)));
         Utils.LogWithPushover(BackupAction.CopyFiles, text + string.Format(Resources.CopyFilesFreeOnBackupDisk, disk.FreeFormatted));
         if (showCompletedMessage) Utils.LogWithPushover(BackupAction.CopyFiles, Resources.Completed, true, true);
         Utils.TraceOut();
@@ -91,9 +87,7 @@ internal sealed partial class Main
                 var sourceFileName = backupFile.FullPath;
 
                 if (FileExistsInternal(sizeOfCopy, disk, backupFile, sourceFileName, copiedSoFar, counter, totalFileCount, ct))
-                {
                     CopyFileInternal(sizeOfCopy, disk, sourceFileName, ref copiedSoFar, ref outOfDiskSpaceMessageSent, ref remainingSizeOfFilesToCopy, counter, totalFileCount, backupFile, ref lastCopySpeed, ref availableSpace, ct);
-                }
             }
             catch (FileNotFoundException)
             {
@@ -182,9 +176,7 @@ internal sealed partial class Main
 
                 // could be the following day
                 if (estimatedFinishDateTime.DayOfWeek != rightNow.DayOfWeek)
-                {
                     formattedEndDateTime = Resources.EstimatedFinishByTomorrow + estimatedFinishDateTime.ToString(Resources.DateTime_HHmm) + $" in {Utils.FormatTimeFromSeconds(Convert.ToInt32(numberOfSecondsOfCopyRemaining))}";
-                }
                 UpdateEstimatedFinish(estimatedFinishDateTime);
             }
             var sourceFileSize = Utils.FormatSize(sourceFileInfo.Length);

@@ -699,9 +699,7 @@ internal sealed partial class Main : Form
                             .Where(b => !b.FullPath.SubstringAfterIgnoreCase(Utils.EnsurePathHasATerminatingSeparator(directoryToScan.Path)).Contains('\\')).ToArray();
                     }
                     else
-                    {
                         filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag).Where(b => b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase)).ToArray();
-                    }
                     RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted);
                     var fileCountAfter = mediaBackup.BackupFiles.Count(b => b.FullPath.StartsWithIgnoreCase(directoryToScan.Path));
                     var filesNotOnBackupDiskCount = mediaBackup.GetBackupFilesWithDiskEmpty().Count();

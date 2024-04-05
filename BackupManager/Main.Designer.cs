@@ -997,17 +997,17 @@
             // statusStrip
             // 
             statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripStatusLabel, toolStripProgressBar });
-            statusStrip.Location = new System.Drawing.Point(0, 526);
+            statusStrip.Location = new System.Drawing.Point(0, 524);
             statusStrip.Name = "statusStrip";
             statusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
-            statusStrip.Size = new System.Drawing.Size(1416, 22);
+            statusStrip.Size = new System.Drawing.Size(1416, 24);
             statusStrip.TabIndex = 62;
             statusStrip.Text = "statusStrip1";
             // 
             // toolStripStatusLabel
             // 
             toolStripStatusLabel.Name = "toolStripStatusLabel";
-            toolStripStatusLabel.Size = new System.Drawing.Size(1399, 17);
+            toolStripStatusLabel.Size = new System.Drawing.Size(1249, 19);
             toolStripStatusLabel.Spring = true;
             toolStripStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 

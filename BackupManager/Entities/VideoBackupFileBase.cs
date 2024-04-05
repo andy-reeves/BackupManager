@@ -69,17 +69,11 @@ internal abstract class VideoBackupFileBase : ExtendedBackupFileBase
                         if (VideoQuality is VideoQuality.SDTV or VideoQuality.DVD) Utils.LogWithPushover(BackupAction.Error, $"{OriginalPath} is {VideoQuality} and so can't be {VideoResolution}");
                         break;
                     case VideoResolution.R720p:
-                        if (VideoQuality == VideoQuality.SDTV || VideoQuality == VideoQuality.DVD || IsRemux)
-                        {
-                            Utils.LogWithPushover(BackupAction.Error, $"{OriginalPath} is {VideoQuality} and so can't be {VideoResolution} or Remux");
-                        }
+                        if (VideoQuality == VideoQuality.SDTV || VideoQuality == VideoQuality.DVD || IsRemux) Utils.LogWithPushover(BackupAction.Error, $"{OriginalPath} is {VideoQuality} and so can't be {VideoResolution} or Remux");
                         break;
                     case VideoResolution.R480p:
                     case VideoResolution.R576p:
-                        if (VideoQuality == VideoQuality.HDTV || IsRemux)
-                        {
-                            Utils.LogWithPushover(BackupAction.Error, $"{OriginalPath} is {VideoQuality} and so can't be {VideoResolution} or Remux");
-                        }
+                        if (VideoQuality == VideoQuality.HDTV || IsRemux) Utils.LogWithPushover(BackupAction.Error, $"{OriginalPath} is {VideoQuality} and so can't be {VideoResolution} or Remux");
                         break;
                     case VideoResolution.Unknown:
                         Utils.LogWithPushover(BackupAction.Error, $"{OriginalPath} can't be {VideoResolution}");

@@ -334,9 +334,7 @@ internal sealed partial class Main
                         _ = Utils.File.Delete(backupDiskFileFullPath);
                     }
                     else
-                    {
                         Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, $"Would be deleting {backupDiskFileFullPath}. ");
-                    }
                 }
                 return;
             }
@@ -361,9 +359,7 @@ internal sealed partial class Main
         if (UpdateCurrentBackupDiskInfo(disk))
             Utils.LogWithPushover(BackupAction.CheckBackupDisk, string.Format(Resources.ProcessingPercentage, currentPercent));
         else
-        {
             Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Emergency, string.Format(Resources.ErrorUpdatingInfoForBackupDisk, disk.Name));
-        }
     }
 
     private void ConnectedDiskSpeedTest(BackupDisk disk, string directoryToCheck, CancellationToken ct)
@@ -379,11 +375,7 @@ internal sealed partial class Main
         }
         var text = string.Format(Resources.ConnectedDiskInfo, disk.Name, disk.CapacityFormatted, disk.FreeFormatted, Utils.FormatSpeed(readSpeed), Utils.FormatSpeed(writeSpeed));
         Utils.LogWithPushover(BackupAction.CheckBackupDisk, text);
-
-        if (disk.Free < Utils.ConvertMBtoBytes(config.BackupDiskMinimumCriticalSpace))
-        {
-            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, string.Format(Resources.PrepareNewBackupDisk, disk.FreeFormatted));
-        }
+        if (disk.Free < Utils.ConvertMBtoBytes(config.BackupDiskMinimumCriticalSpace)) Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, string.Format(Resources.PrepareNewBackupDisk, disk.FreeFormatted));
     }
 
     internal bool EnsureConnectedBackupDisk(string backupDisk)
