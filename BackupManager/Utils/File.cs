@@ -353,6 +353,7 @@ internal static partial class Utils
         /// <param name="destFileName">The name of the destination file. This cannot be a directory or an existing file.</param>
         /// <param name="ct"></param>
         /// <returns>True if copy was successful or False</returns>
+        /// <exception cref="NotSupportedException">If paths exceed 256 characters</exception>
         internal static bool Copy(string sourceFileName, string destFileName, CancellationToken ct)
         {
             TraceIn(sourceFileName, destFileName);
