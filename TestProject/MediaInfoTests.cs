@@ -21,26 +21,22 @@ public sealed class MediaHelperTests
         Utils.Config = mediaBackup.Config;
     }
 
-    [Fact]
-    public void MediaInfo()
+    [Theory]
+    [InlineData("File1 [DV].mkv", true, 5)]
+    [InlineData("File2 [DV].mkv", false, 0)]
+    [InlineData("File3 [DV].mkv", true, 5)]
+    [InlineData("File4 [DV] profile8.mkv", false, 8)]
+    public void MediaInfo(string fileName, bool isDolbyProfile5, int dvProfile)
     {
         var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
-        var mediaFileName = Path.Combine(testDataPath, "File1 [DV].mkv");
-        Assert.True(Utils.File.IsDolbyVisionProfile5(mediaFileName));
+        var mediaFileName = Path.Combine(testDataPath, fileName);
+        Assert.Equal(isDolbyProfile5, Utils.File.IsDolbyVisionProfile5(mediaFileName));
         var file = new MovieBackupFile(mediaFileName);
         Assert.True(file.RefreshMediaInfo());
-        Assert.Equal(5, file.MediaInfoModel.DoviConfigurationRecord.DvProfile);
-        mediaFileName = Path.Combine(testDataPath, "File2 [DV].mkv");
-        Assert.False(Utils.File.IsDolbyVisionProfile5(mediaFileName));
-        file = new MovieBackupFile(mediaFileName);
-        Assert.True(file.RefreshMediaInfo());
-        Assert.Null(file.MediaInfoModel.DoviConfigurationRecord);
-        mediaFileName = Path.Combine(testDataPath, "File3 [DV].mkv");
-        Assert.True(Utils.File.IsDolbyVisionProfile5(mediaFileName));
-        mediaFileName = Path.Combine(testDataPath, "File4 [DV] profile8.mkv");
-        Assert.False(Utils.File.IsDolbyVisionProfile5(mediaFileName));
-        file = new MovieBackupFile(mediaFileName);
-        Assert.True(file.RefreshMediaInfo());
-        Assert.Equal(8, file.MediaInfoModel.DoviConfigurationRecord.DvProfile);
+
+        if (dvProfile > 0)
+            Assert.Equal(dvProfile, file.MediaInfoModel.DoviConfigurationRecord.DvProfile);
+        else
+            Assert.Null(file.MediaInfoModel.DoviConfigurationRecord);
     }
 }
