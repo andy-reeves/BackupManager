@@ -801,7 +801,7 @@ internal static partial class Utils
 
         foreach (var line in textArrayToWrite.Where(static line => line.HasValue()))
         {
-            Log(actionText.PadRight(_lengthOfLargestBackupActionEnumNames + 1) + line);
+            Log(actionText.PadRight(_lengthOfLargestBackupActionEnumNames + 1) + line.TrimEnd('\r'));
         }
     }
 
