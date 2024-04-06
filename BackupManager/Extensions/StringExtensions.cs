@@ -53,7 +53,7 @@ internal static partial class StringExtensions
     }
 
     /// <summary>
-    ///     Capitalizes the first character of the specified string.
+    ///     Capitalizes the first character of the specified string. Doesn't change the rest of the string.
     /// </summary>
     /// <param name="s">
     ///     The string to capitalize.

@@ -31,12 +31,14 @@ public sealed class Extensions
         Assert.Equal(text, a.Text);
     }
 
-    [Fact]
-    public void String()
+    [InlineData("2nd", "2nd", "2nd")]
+    [InlineData("3rd", "3Rd", "3Rd")]
+    [InlineData("10th", "10TH", "10TH")]
+    [InlineData("Test", "Test", "test")]
+    [Theory]
+    public void String(string expectedValueOrdinal, string expectedValueCapitalize, string testValue)
     {
-        Assert.Equal("10th", "10TH".ToTitleCaseIgnoreOrdinals());
-        Assert.Equal("Test", "test".Capitalize());
+        Assert.Equal(expectedValueOrdinal, testValue.ToTitleCaseIgnoreOrdinals());
+        Assert.Equal(expectedValueCapitalize, testValue.Capitalize());
     }
 }
-
-//#endif
