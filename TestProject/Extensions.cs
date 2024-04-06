@@ -15,11 +15,13 @@ namespace TestProject;
 [SuppressMessage("ReSharper", "MemberCanBeFileLocal")]
 public sealed class Extensions
 {
-    [Fact]
-    public void Integer()
+    [InlineData("32nd", 32)]
+    [InlineData("0", 0)]
+    [InlineData("20th", 20)]
+    [Theory]
+    public void Integer(string expectedValue, int testValue)
     {
-        Assert.Equal("32nd", 32.ToOrdinalString());
-        Assert.Equal("0", 0.ToOrdinalString());
+        Assert.Equal(expectedValue, testValue.ToOrdinalString());
     }
 
     [Fact]
