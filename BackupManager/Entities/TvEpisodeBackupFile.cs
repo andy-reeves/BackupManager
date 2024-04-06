@@ -32,7 +32,9 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
     }
 
     protected override string FileNameRegex =>
-        @"^(?:(.*)\s(?:s?(\d{1,4})?(e\d{2,4}-?(?:e\d{2,4})?|\d{4}-\d\d-\d\d))(\s.*)?(?:\[(DVD|SDTV|WEB(?:Rip|DL)|Bluray|HDTV)(?:-((?:480|576|720|1080|2160)p(?:\sRemux)?))?\](?:\[((?:DV)?(?:(?:\s)?HDR10(?:Plus)?)?|PQ|HLG)\])?\[(DTS(?:\sHD|-(?:X|ES|HD\s(?:M|HR)A))?|(?:TrueHD|EAC3)(?:\sAtmos)?|AC3|FLAC|PCM|MP[23]|A[AV]C|Opus|Vorbis|WMA)\s([1-8]\.[01])\]\[([hx]26[45]|MPEG(?:[24])?|XviD|V(?:C1|P9)|DivX|HEVC|AVC|RGB)\])|(.*)-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(?:kv|p(?:4|e?g))|avi)$";
+        @"^(?:(.*)\s(?:s?(\d{1,4})?(e\d{2,4}-?(?:e\d{2,4})?|\d{4}-\d\d-\d\d))(\s.*)?(?:\[(DVD|SDTV|WEB(?:Rip|DL)|Bluray|HDTV)(?:-((?:480|576|720|1080|2160)p(?:\sRemux)?)(?:\sProper)?)?\](?:\[((?:DV)?(?:(?:\s)?HDR10(?:Plus)?)?|PQ|HLG)\])?\[(DTS(?:\sHD|-(?:X|ES|HD\s(?:M|HR)A))?|(?:TrueHD|EAC3)(?:\sAtmos)?|AC3|FLAC|PCM|MP[23]|A[AV]C|Opus|Vorbis|WMA)\s([1-8]\.[01])\]\[([hx]26[45]|MPEG(?:[24])?|XviD|V(?:C1|P9)|DivX|HEVC|AVC|RGB)\])|(.*)-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(?:kv|p(?:4|e?g))|avi)$";
+
+    //  @"^(?:(.*)\s(?:s?(\d{1,4})?(e\d{2,4}-?(?:e\d{2,4})?|\d{4}-\d\d-\d\d))(\s.*)?(?:\[(DVD|SDTV|WEB(?:Rip|DL)|Bluray|HDTV)(?:-((?:480|576|720|1080|2160)p(?:\sRemux)?))?\](?:\[((?:DV)?(?:(?:\s)?HDR10(?:Plus)?)?|PQ|HLG)\])?\[(DTS(?:\sHD|-(?:X|ES|HD\s(?:M|HR)A))?|(?:TrueHD|EAC3)(?:\sAtmos)?|AC3|FLAC|PCM|MP[23]|A[AV]C|Opus|Vorbis|WMA)\s([1-8]\.[01])\]\[([hx]26[45]|MPEG(?:[24])?|XviD|V(?:C1|P9)|DivX|HEVC|AVC|RGB)\])|(.*)-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(?:kv|p(?:4|e?g))|avi)$";
 
     protected override string DirectoryRegex => @"^.*\\_TV(?:\s\(non-tvdb\))?\\(.*)\s{t[mv]db-(\d{1,7}?)}(?:\\(?:Season\s(\d+)|(Specials)))?$";
 

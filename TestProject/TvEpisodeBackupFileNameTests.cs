@@ -8,6 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 
 using BackupManager;
 using BackupManager.Entities;
+using BackupManager.Extensions;
 
 namespace TestProject;
 
@@ -17,6 +18,7 @@ namespace TestProject;
 public sealed class TvEpisodeBackupFileNameTests
 {
     [Theory]
+    [InlineData(@"Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [Bluray-1080p Remux Proper][MP3 2.0][XviD].mkv", true, "Tom and Jerry s1940e01 Puss Gets The Boot [Bluray-1080p Remux][MP3 2.0][XviD].mkv")]
     [InlineData(@"Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [Bluray-1080p Remux][MP3 2.0][XviD].mkv", true)]
     [InlineData(@"Z:\_TV (non-tvdb)\Tom and Jerry {tmdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV][MP3 2.0][XviD].mkv", true)]
     [InlineData(@"Z:\_TV (non-tvdb)\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV][MP3 2.0][XviD].mkv", true)]
@@ -29,12 +31,13 @@ public sealed class TvEpisodeBackupFileNameTests
     [InlineData(@"Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\File8 s01e01 [Bluray-1080p Remux][DTS-HD MA 5.1][AVC].mkv", true)]
     [InlineData(@"Z:\_TV (non-tvdb)\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV][MP3 2.0][AVC].mkv", true)]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
-    public void TvEpisodeTests(string fileName, bool isValidFileName)
+    public void TvEpisodeTests(string fileName, bool isValidFileName, string expectedFileName = "")
     {
         var file = new TvEpisodeBackupFile(fileName);
         Assert.Equal(isValidFileName, file.IsValidFileName);
-        if (file.IsValidFileName) Assert.Equal(Path.GetFileName(fileName), file.GetFileName());
-        if (file.IsValidDirectoryName) Assert.Equal(fileName, file.GetFullName());
+        if (expectedFileName.HasNoValue()) expectedFileName = Path.GetFileName(fileName);
+        if (file.IsValidFileName) Assert.Equal(expectedFileName, file.GetFileName());
+        if (file.IsValidDirectoryName) Assert.Equal(Path.Combine(Path.GetDirectoryName(fileName) ?? string.Empty, expectedFileName), file.GetFullName());
     }
 
     [Theory]
