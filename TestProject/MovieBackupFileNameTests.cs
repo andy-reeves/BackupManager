@@ -7,6 +7,7 @@
 using System.Diagnostics.CodeAnalysis;
 
 using BackupManager.Entities;
+using BackupManager.Extensions;
 
 namespace TestProject;
 
@@ -16,6 +17,7 @@ namespace TestProject;
 public sealed class MovieBackupFileNameTests
 {
     [Theory]
+    [InlineData(@"\\nas2\assets3\_Movies (non-tmdb)\Aliens (1986)\Aliens (1986) [Remux-2160p Proper][HDR10][AC3 5.1][h265].mkv", true, "Aliens (1986) [Remux-2160p][HDR10][AC3 5.1][h265].mkv")]
     [InlineData(@"\\nas2\assets3\_Movies (non-tmdb)\Aliens (1986)\Aliens (1986) [Remux-2160p][HDR10][AC3 5.1][h265].mkv", true)]
     [InlineData(@"\\nas1\assets4\_Movies\Aliens (1986)-other\Aliens (1986)-other {tmdb-679} [Remux-2160p][HDR10][AC3 5.1][h265].mkv", true)]
     [InlineData(@"\\nas2\assets3\_Movies\Aliens (1986)\Aliens (1986) {tmdb-679} [Bluray-2160p][HDR10][AC3 5.1][h265].mkv", true)]
@@ -44,11 +46,12 @@ public sealed class MovieBackupFileNameTests
     [InlineData("Asterix and Obelix The Middle Kingdom (2023) {tmdb-643215} [Remux-1080p][DTS-HD MA 5.1][h264].en.srt", false)]
     [InlineData("Special video-featurette.mkv", true)]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
-    public void MovieNameOnlyTests(string fileName, bool isValidFileName)
+    public void MovieNameOnlyTests(string fileName, bool isValidFileName, string expectedFileName = "")
     {
         var file = new MovieBackupFile(fileName);
         Assert.Equal(isValidFileName, file.IsValidFileName);
-        if (file.IsValidFileName) Assert.Equal(Path.GetFileName(fileName), file.GetFileName());
-        if (file.IsValidDirectoryName) Assert.Equal(fileName, file.GetFullName());
+        if (expectedFileName.HasNoValue()) expectedFileName = Path.GetFileName(fileName);
+        if (file.IsValidFileName) Assert.Equal(expectedFileName, file.GetFileName());
+        if (file.IsValidDirectoryName) Assert.Equal(Path.Combine(Path.GetDirectoryName(fileName) ?? string.Empty, expectedFileName), file.GetFullName());
     }
 }
