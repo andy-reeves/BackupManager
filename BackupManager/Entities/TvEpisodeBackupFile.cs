@@ -32,7 +32,13 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
     }
 
     protected override string FileNameRegex =>
-        @"^(?:(.*)\s(?:s?(\d{1,4})?(e\d{2,4}-?(?:e\d{2,4})?|\d{4}-\d\d-\d\d))(\s.*)?(?:\[(DVD|SDTV|WEB(?:Rip|DL)|Bluray|HDTV)(?:-((?:480|576|720|1080|2160)p(?:\sRemux)?)(?:\sProper)?)?\](?:\[((?:DV)?(?:(?:\s)?HDR10(?:Plus)?)?|PQ|HLG)\])?\[(DTS(?:\sHD|-(?:X|ES|HD\s(?:M|HR)A))?|(?:TrueHD|EAC3)(?:\sAtmos)?|AC3|FLAC|PCM|MP[23]|A[AV]C|Opus|Vorbis|WMA)\s([1-8]\.[01])\]\[([hx]26[45]|MPEG(?:[24])?|XviD|V(?:C1|P9)|DivX|HEVC|AVC|RGB)\])|(.*)-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(?:kv|p(?:4|e?g))|avi)$";
+        @"^(?:(.*)\s(?:s?(\d{1,4})?(e\d{2,4}-?(?:e\d{2,4})?|\d{4}-\d\d-\d\d))([^\[-]*)(?:\[(DVD|SDTV|WEB(?:Rip|DL)|Bluray|HDTV)(?:-((?:480|576|720|1080|2160)p(?:\sRemux)??)??(?:\sProper)??)?\])??(?:\[((?:DV)??(?:(?:\s)??HDR10(?:Plus)??)??|PQ|HLG)\])??(?:\[(DTS(?:\sHD|-(?:X|ES|HD\s(?:M|HR)A))??|(?:TrueHD|EAC3)(?:\sAtmos)??|AC3|FLAC|PCM|MP[23]|A[AV]C|Opus|Vorbis|WMA)\s([1-8]\.[01])\])??(?:\[([hx]26[45]|MPEG(?:[24])?|XviD|V(?:C1|P9)|DivX|HEVC|AVC|RGB)\])??|(.*)-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(?:kv|p(?:4|e?g))|avi)$";
+
+    //   @"^(?:(.*)\s(?:s?(\d{1,4})?(e\d{2,4}-?(?:e\d{2,4})?|\d{4}-\d\d-\d\d))([^\[-]*)(?:\[(DVD|SDTV|WEB(?:Rip|DL)|Bluray|HDTV)(?:-((?:480|576|720|1080|2160)p(?:\sRemux)??)??(?:\sProper)??)\])??(?:\[((?:DV)??(?:(?:\s)??HDR10(?:Plus)??)??|PQ|HLG)\])??(?:\[(DTS(?:\sHD|-(?:X|ES|HD\s(?:M|HR)A))??|(?:TrueHD|EAC3)(?:\sAtmos)??|AC3|FLAC|PCM|MP[23]|A[AV]C|Opus|Vorbis|WMA)\s([1-8]\.[01])\])??(?:\[([hx]26[45]|MPEG(?:[24])?|XviD|V(?:C1|P9)|DivX|HEVC|AVC|RGB)\])??|(.*)-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(?:kv|p(?:4|e?g))|avi)$";
+
+    //    @"^(?:(.*)\s(?:s?(\d{1,4})?(e\d{2,4}-?(?:e\d{2,4})?|\d{4}-\d\d-\d\d))([^\[]*)(?:\[(DVD|SDTV|WEB(?:Rip|DL)|Bluray|HDTV)(?:-(480|576|720|1080|2160)p(?:\sRemux)??)??(?:\sProper)??\])??(?:\[((?:DV)??(?:(?:\s)??HDR10(?:Plus)??)??|PQ|HLG)\])??(?:\[(DTS(?:\sHD|-(?:X|ES|HD\s(?:M|HR)A))??|(?:TrueHD|EAC3)(?:\sAtmos)??|AC3|FLAC|PCM|MP[23]|A[AV]C|Opus|Vorbis|WMA)\s([1-8]\.[01])\])??(?:\[([hx]26[45]|MPEG(?:[24])?|XviD|V(?:C1|P9)|DivX|HEVC|AVC|RGB)\])??|(.*)-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(?:kv|p(?:4|e?g))|avi)$";
+
+    //@"^(?:(.*)\s(?:s?(\d{1,4})?(e\d{2,4}-?(?:e\d{2,4})?|\d{4}-\d\d-\d\d))(\s.*)?(?:\[(DVD|SDTV|WEB(?:Rip|DL)|Bluray|HDTV)(?:-((?:480|576|720|1080|2160)p(?:\sRemux)?)(?:\sProper)?)?\](?:\[((?:DV)?(?:(?:\s)?HDR10(?:Plus)?)?|PQ|HLG)\])?\[(DTS(?:\sHD|-(?:X|ES|HD\s(?:M|HR)A))?|(?:TrueHD|EAC3)(?:\sAtmos)?|AC3|FLAC|PCM|MP[23]|A[AV]C|Opus|Vorbis|WMA)\s([1-8]\.[01])\]\[([hx]26[45]|MPEG(?:[24])?|XviD|V(?:C1|P9)|DivX|HEVC|AVC|RGB)\])|(.*)-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(?:kv|p(?:4|e?g))|avi)$";
 
     //  @"^(?:(.*)\s(?:s?(\d{1,4})?(e\d{2,4}-?(?:e\d{2,4})?|\d{4}-\d\d-\d\d))(\s.*)?(?:\[(DVD|SDTV|WEB(?:Rip|DL)|Bluray|HDTV)(?:-((?:480|576|720|1080|2160)p(?:\sRemux)?))?\](?:\[((?:DV)?(?:(?:\s)?HDR10(?:Plus)?)?|PQ|HLG)\])?\[(DTS(?:\sHD|-(?:X|ES|HD\s(?:M|HR)A))?|(?:TrueHD|EAC3)(?:\sAtmos)?|AC3|FLAC|PCM|MP[23]|A[AV]C|Opus|Vorbis|WMA)\s([1-8]\.[01])\]\[([hx]26[45]|MPEG(?:[24])?|XviD|V(?:C1|P9)|DivX|HEVC|AVC|RGB)\])|(.*)-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(?:kv|p(?:4|e?g))|avi)$";
 
@@ -48,6 +54,8 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
     {
         get
         {
+            if (VideoQuality == VideoQuality.Unknown) return string.Empty;
+
             var s = $"[{VideoQuality.ToEnumMember()}";
             if (VideoResolution != VideoResolution.Unknown) s += $"-{VideoResolution.ToEnumMember()}";
             if (IsRemux) s += " " + Utils.REMUX;
@@ -92,12 +100,17 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
         {
             s = $"{Title} ";
             if (Season.HasValue()) s += $"s{Season}";
-            s += $"{Episode} ";
-            if (EpisodeTitle.HasValue()) s += $"{EpisodeTitle} ";
-            s += $"{QualityFull}";
+            s += $"{Episode}";
+            if (EpisodeTitle.HasValue()) s += $" {EpisodeTitle}";
+            if (QualityFull != string.Empty) s += $" {QualityFull}";
             if (MediaInfoVideoDynamicRangeType != MediaInfoVideoDynamicRangeType.Unknown) s += $"[{MediaInfoVideoDynamicRangeType.ToEnumMember()}]";
-            var audioChannels = MediaInfoAudioChannels.ToEnumMember();
-            s += $"[{MediaInfoAudioCodec.ToEnumMember()} {audioChannels}][{MediaInfoVideoCodec.ToEnumMember()}]";
+
+            if (MediaInfoAudioChannels != MediaInfoAudioChannels.Unknown)
+            {
+                var audioChannels = MediaInfoAudioChannels.ToEnumMember();
+                if (!s.EndsWithIgnoreCase("]")) s += " ";
+                s += $"[{MediaInfoAudioCodec.ToEnumMember()} {audioChannels}][{MediaInfoVideoCodec.ToEnumMember()}]";
+            }
         }
         s += $"{Extension}";
         return s;

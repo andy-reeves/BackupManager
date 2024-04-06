@@ -30,6 +30,7 @@ public sealed class TvEpisodeBackupFileNameTests
     [InlineData(@"Tom and Jerry 2023-01-23 Puss Gets The Boot [SDTV][MP3 2.0][XviD].mkv", true)]
     [InlineData(@"Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\File8 s01e01 [Bluray-1080p Remux][DTS-HD MA 5.1][AVC].mkv", true)]
     [InlineData(@"Z:\_TV (non-tvdb)\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV][MP3 2.0][AVC].mkv", true)]
+    [InlineData(@"Z:\_TV\James Martin {tvdb-72860}\Season 1\James Martin s01e01.mkv", true)]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     public void TvEpisodeTests(string fileName, bool isValidFileName, string expectedFileName = "")
     {
