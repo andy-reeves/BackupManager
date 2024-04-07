@@ -17,14 +17,6 @@ namespace TestProject;
 [SuppressMessage("ReSharper", "StringLiteralTypo")]
 public sealed class SubtitlesBackupFileTests
 {
-    // private static readonly MediaBackup _mediaBackup;
-
-    static SubtitlesBackupFileTests()
-    {
-        //    _mediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(EntityTests)), "..\\BackupManager\\MediaBackup.xml"));
-        //    Utils.Config = _mediaBackup.Config;
-    }
-
     [Theory]
     [InlineData("A(2023) {tmdb-1} [DVD][DTS 5.1][h264].en.srt", true, "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].mkv", "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].en.srt")]
     [InlineData("A(2023) {tmdb-1} [DVD][DTS 5.1][h264].es.hi.srt", true, "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].mkv", "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].es.hi.srt")]
