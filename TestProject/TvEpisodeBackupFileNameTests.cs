@@ -31,6 +31,7 @@ public sealed class TvEpisodeBackupFileNameTests
     [InlineData(@"Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\File8 s01e01 [Bluray-1080p Remux][DTS-HD MA 5.1][AVC].mkv", true)]
     [InlineData(@"Z:\_TV (non-tvdb)\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV][MP3 2.0][AVC].mkv", true)]
     [InlineData(@"Z:\_TV\James Martin {tvdb-72860}\Season 1\James Martin s01e01.mkv", true)]
+    [InlineData(@"\\nas1\assets1\_TV\Santiago of the Seas {tvdb-385447}\Season 2\Santiago of the Seas s02e14-e15 Peek-A-BOO! + Night of the Witches [WEBDL-1080p][EAC3 2.0][h265].mkv", true)]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     public void TvEpisodeTests(string fileName, bool isValidFileName, string expectedFileName = "")
     {
