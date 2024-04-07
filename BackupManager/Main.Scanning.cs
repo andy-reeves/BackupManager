@@ -84,6 +84,8 @@ internal sealed partial class Main
     /// <param name="scanId"></param>
     /// <param name="scanPathForVideoCodec"></param>
     /// <param name="ct"></param>
+
+    // ReSharper disable once FunctionComplexityOverflow
     private bool ProcessFilesInternal(IEnumerable<string> filesParam, string scanId, bool scanPathForVideoCodec, CancellationToken ct)
     {
         Utils.TraceIn();
@@ -98,14 +100,26 @@ internal sealed partial class Main
         var firstDir = true;
         DirectoryScan scanInfo = null;
 
-        // ReSharper disable once ForCanBeConvertedToForeach
-        for (var index = 0; index < files.Length; index++)
+        foreach (var fileInsideForEach in files)
         {
-            var file = files[index];
+            var file = fileInsideForEach;
 
             try
             {
-                if (ProcessFileInternalFinalChecks(scanId, scanPathForVideoCodec, files, filtersToDelete, ref file, ref directoryScanning, ref firstDir, ref scanInfo, ct)) _ = mediaBackup.EnsureFile(file);
+                if (!ProcessFilesMaxPathCheck(file)) continue;
+                if (!ProcessFilesFixedSpaceCheck(ref file)) continue;
+                if (!ProcessFilesRenameFileRules(ref file)) continue;
+                if (!ProcessFilesCheckAllMediaInfo(scanPathForVideoCodec, ref file, ct)) continue;
+                if (file == null) continue;
+
+                if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+                ProcessFilesUpdatePercentComplete(file);
+                directoryScanning = DirectoryScanning(scanId, file, directoryScanning, files, ref firstDir, ref scanInfo);
+                UpdateStatusLabel(ct, Resources.Processing, fileCounterForMultiThreadProcessing);
+                if (CheckForFilesToDelete(file, filtersToDelete)) continue;
+
+                ProcessFileRules(file);
+                _ = mediaBackup.EnsureFile(file);
             }
             catch (IOException ex)
             {
@@ -120,40 +134,9 @@ internal sealed partial class Main
         return Utils.TraceOut(true);
     }
 
-    /// <summary>
-    /// </summary>
-    /// <param name="scanId"></param>
-    /// <param name="scanPathForVideoCodec"></param>
-    /// <param name="files"></param>
-    /// <param name="filtersToDelete"></param>
-    /// <param name="file"></param>
-    /// <param name="directoryScanning"></param>
-    /// <param name="firstDir"></param>
-    /// <param name="scanInfo"></param>
-    /// <param name="ct"></param>
-    /// <returns>False to skip the file</returns>
-    private bool ProcessFileInternalFinalChecks(string scanId, bool scanPathForVideoCodec, IEnumerable<string> files, IEnumerable<string> filtersToDelete, ref string file, ref string directoryScanning, ref bool firstDir, ref DirectoryScan scanInfo,
-        CancellationToken ct)
+    private string DirectoryScanning(string scanId, string file, string directoryScanning, IEnumerable<string> files, ref bool firstDir, ref DirectoryScan scanInfo)
     {
-        if (!ProcessFilesMaxPathCheck(file)) return false;
-        if (!ProcessFilesFixedSpaceCheck(ref file)) return false;
-        if (!ProcessFilesRenameFileRules(ref file)) return false;
-        if (!ProcessFilesCheckAllMediaInfo(scanPathForVideoCodec, ref file, ct)) return false;
-        if (file == null) return false;
-
-        if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
-        ProcessFilesUpdatePercentComplete(file);
         _ = mediaBackup.GetFoldersForPath(file, out var directory, out _);
-        directoryScanning = DirectoryScanning(directory, scanId, directoryScanning, files, ref firstDir, ref scanInfo);
-        UpdateStatusLabel(ct, Resources.Processing, fileCounterForMultiThreadProcessing);
-        if (CheckForFilesToDelete(file, filtersToDelete)) return false;
-
-        ProcessFileRules(file);
-        return true;
-    }
-
-    private string DirectoryScanning(string directory, string scanId, string directoryScanning, IEnumerable<string> files, ref bool firstDir, ref DirectoryScan scanInfo)
-    {
         if (directory == directoryScanning) return directoryScanning;
 
         if (!firstDir) scanInfo.EndDateTime = DateTime.Now;
