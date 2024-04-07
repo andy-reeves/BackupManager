@@ -100,21 +100,18 @@ internal sealed partial class Main
 
         foreach (var fileInsideForEach in files)
         {
+            var file = fileInsideForEach;
+
             try
             {
-                var file = fileInsideForEach;
+                if (!ProcessFilesMaxPathCheck(file)) continue;
+                if (!ProcessFilesFixedSpaceCheck(ref file)) continue;
+                if (!ProcessFilesRenameFileRules(ref file)) continue;
+                if (!ProcessFilesCheckAllMediaInfo(scanPathForVideoCodec, ref file, ct)) continue;
+                if (file == null) continue;
 
-                lock (_lock)
-                {
-                    if (!ProcessFilesMaxPathCheck(file)) continue;
-                    if (!ProcessFilesFixedSpaceCheck(ref file)) continue;
-                    if (!ProcessFilesRenameFileRules(ref file)) continue;
-                    if (!ProcessFilesCheckAllMediaInfo(scanPathForVideoCodec, ref file, ct)) continue;
-                    if (file == null) continue;
-
-                    if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
-                    if (files.Length > 50) ProcessFilesUpdatePercentComplete(file);
-                }
+                if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+                ProcessFilesUpdatePercentComplete(file);
                 directoryScanning = DirectoryScanning(scanId, file, directoryScanning, files, ref firstDir, ref scanInfo);
                 UpdateStatusLabel(ct, Resources.Processing, fileCounterForMultiThreadProcessing);
                 if (CheckForFilesToDelete(file, filtersToDelete)) continue;
@@ -124,9 +121,9 @@ internal sealed partial class Main
             }
             catch (IOException ex)
             {
-                // exception accessing the file return false and we will try again 
-                Utils.Trace($"IOException in ProcessFilesInternal {ex}");
-                return Utils.TraceOut(false);
+                // exception accessing the file return
+                // so report it and skip this file for now
+                Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High, $"IOException in ProcessFilesInternal {ex} with {file} so skipping");
             }
         }
 
@@ -181,7 +178,7 @@ internal sealed partial class Main
     {
         fileCounterForMultiThreadProcessing++;
         currentPercentComplete = fileCounterForMultiThreadProcessing * 100 / toolStripProgressBar.Maximum;
-        if (currentPercentComplete % 20 != 0 || currentPercentComplete <= reportedPercentComplete) return;
+        if (currentPercentComplete % 10 != 0 || currentPercentComplete <= reportedPercentComplete) return;
 
         reportedPercentComplete = currentPercentComplete;
         Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.ProcessingPercentage, currentPercentComplete), true, true);
