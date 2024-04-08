@@ -443,7 +443,7 @@ Write: {4}</value>
     <value>Processing {0}%</value>
   </data>
   <data name="Processing" xml:space="preserve">
-    <value>Processing</value>
+    <value>Processing {0}</value>
   </data>
   <data name="FileIOExceptionDuringCopy" xml:space="preserve">
     <value>IOException during copy. Skipping file. Details {0}</value>

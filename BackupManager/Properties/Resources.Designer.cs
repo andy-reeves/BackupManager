@@ -834,7 +834,7 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Processing.
+        ///   Looks up a localized string similar to Processing {0}.
         /// </summary>
         internal static string Processing {
             get {

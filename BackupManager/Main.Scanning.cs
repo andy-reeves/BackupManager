@@ -84,8 +84,6 @@ internal sealed partial class Main
     /// <param name="scanId"></param>
     /// <param name="scanPathForVideoCodec"></param>
     /// <param name="ct"></param>
-
-    // ReSharper disable once FunctionComplexityOverflow
     private bool ProcessFilesInternal(IEnumerable<string> filesParam, string scanId, bool scanPathForVideoCodec, CancellationToken ct)
     {
         Utils.TraceIn();
@@ -106,16 +104,10 @@ internal sealed partial class Main
 
             try
             {
-                if (!ProcessFilesMaxPathCheck(file)) continue;
-                if (!ProcessFilesFixedSpaceCheck(ref file)) continue;
-                if (!ProcessFilesRenameFileRules(ref file)) continue;
-                if (!ProcessFilesCheckAllMediaInfo(scanPathForVideoCodec, ref file, ct)) continue;
-                if (file == null) continue;
+                if (!ProcessFilesInternalFinal(scanPathForVideoCodec, ct, ref file)) continue;
 
-                if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
-                ProcessFilesUpdatePercentComplete(file);
                 directoryScanning = DirectoryScanning(scanId, file, directoryScanning, files, ref firstDir, ref scanInfo);
-                UpdateStatusLabel(ct, Resources.Processing, fileCounterForMultiThreadProcessing);
+                UpdateStatusLabel(ct, string.Format(Resources.Processing, directoryScanning), fileCounterForMultiThreadProcessing);
                 if (CheckForFilesToDelete(file, filtersToDelete)) continue;
 
                 ProcessFileRules(file);
@@ -132,6 +124,20 @@ internal sealed partial class Main
         // Update the last scan endDateTime as it wasn't set in the loop
         if (scanInfo != null) scanInfo.EndDateTime = DateTime.Now;
         return Utils.TraceOut(true);
+    }
+
+    private bool ProcessFilesInternalFinal(bool scanPathForVideoCodec, CancellationToken ct, ref string file)
+    {
+        if (!ProcessFilesMaxPathCheck(file)) return false;
+        if (!ProcessFilesFixedSpaceCheck(ref file)) return false;
+        if (!ProcessFilesRenameFileRules(ref file)) return false;
+        if (!ProcessFilesCheckAllMediaInfo(scanPathForVideoCodec, ref file, ct)) return false;
+
+        if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+        if (file == null) return false;
+
+        ProcessFilesUpdatePercentComplete(file);
+        return true;
     }
 
     private string DirectoryScanning(string scanId, string file, string directoryScanning, IEnumerable<string> files, ref bool firstDir, ref DirectoryScan scanInfo)
