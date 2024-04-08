@@ -23,6 +23,8 @@ namespace BackupManager;
 
 internal sealed partial class Main : Form
 {
+    private static bool _asyncCleanupInProgress;
+
     private void FileSystemWatcher_OnError(object sender, ErrorEventArgs e)
     {
         var ex = e.GetException();
@@ -539,10 +541,17 @@ internal sealed partial class Main : Form
         try
         {
             Utils.TraceIn();
+            if (_asyncCleanupInProgress) return;
+
+            _asyncCleanupInProgress = true;
             KillCopyProcess();
             UpdateMediaFilesCountDisplay();
             Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, Resources.Cancelled);
             ResetAllControls();
+
+            // We wait here to make sure that any other threads cancelling don't enter and send the cancelled message again
+            Utils.Wait(500);
+            _asyncCleanupInProgress = false;
         }
         finally
         {
