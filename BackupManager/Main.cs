@@ -550,7 +550,7 @@ internal sealed partial class Main : Form
             ResetAllControls();
 
             // We wait here to make sure that any other threads cancelling don't enter and send the cancelled message again
-            Utils.Wait(500);
+            Utils.Wait(1000);
             _asyncCleanupInProgress = false;
         }
         finally
