@@ -117,7 +117,8 @@ internal sealed partial class Main
             {
                 // exception accessing the file return
                 // so report it and skip this file for now
-                Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High, $"IOException in ProcessFilesInternal {ex} with {file} so skipping");
+                Utils.Log(BackupAction.ProcessFiles, $"IOException in ProcessFilesInternal {ex} with {file} so skipping");
+                Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High, $"Unable to calculate the hash code for {file}. It's most likely in use by another process.");
             }
         }
 
