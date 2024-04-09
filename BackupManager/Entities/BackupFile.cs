@@ -307,7 +307,8 @@ public sealed class BackupFile : IEquatable<BackupFile>
     }
 
     /// <summary>
-    ///     Checks the files hash at the source location and at the backup location match. Updates DiskChecked and ContentsHash
+    ///     Checks the files hash at the source location and at the backup location match. Updates Deleted to False and
+    ///     DiskChecked and ContentsHash
     ///     accordingly.
     /// </summary>
     /// <param name="backupDisk">The BackupDisk the BackupFile is on</param>
@@ -339,6 +340,7 @@ public sealed class BackupFile : IEquatable<BackupFile>
 
         // Hashes match so update it as checked and the backup checked date too
         UpdateDiskChecked(backupDisk.Name);
+        Deleted = false;
         return true;
     }
 
