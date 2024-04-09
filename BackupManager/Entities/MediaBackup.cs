@@ -379,7 +379,7 @@ public sealed class MediaBackup
     ///     Ensures the BackupFile exists and sets the Flag=TRUE. Sets Deleted=FALSE.
     /// </summary>
     /// <param name="path">Full path to the file in the directory</param>
-    /// <returns>False if the file  was locked or an error occurred</returns>
+    /// <returns>False if the file couldn't be checked</returns>
     /// <exception cref="IOException">If the file is locked</exception>
     internal bool EnsureFile(string path)
     {

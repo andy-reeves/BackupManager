@@ -110,8 +110,8 @@ internal sealed partial class Main
                 UpdateStatusLabel(ct, string.Format(Resources.Processing, Path.GetDirectoryName(file)), fileCounterForMultiThreadProcessing);
                 if (CheckForFilesToDelete(file, filtersToDelete)) continue;
 
-                ProcessFileRules(file);
-                _ = mediaBackup.EnsureFile(file);
+                // Only process the naming rules after we've ensured the file is in our xml file
+                if (mediaBackup.EnsureFile(file)) ProcessFileRules(file);
             }
             catch (IOException ex)
             {
