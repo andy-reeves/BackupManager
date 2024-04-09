@@ -107,7 +107,7 @@ internal sealed partial class Main
                 if (!ProcessFilesInternalFinal(scanPathForVideoCodec, ct, ref file)) continue;
 
                 directoryScanning = DirectoryScanning(scanId, file, directoryScanning, files, ref firstDir, ref scanInfo);
-                UpdateStatusLabel(ct, string.Format(Resources.Processing, directoryScanning), fileCounterForMultiThreadProcessing);
+                UpdateStatusLabel(ct, string.Format(Resources.Processing, Path.GetDirectoryName(file)), fileCounterForMultiThreadProcessing);
                 if (CheckForFilesToDelete(file, filtersToDelete)) continue;
 
                 ProcessFileRules(file);
