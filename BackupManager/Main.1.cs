@@ -119,7 +119,7 @@ internal sealed partial class Main
                 // If a long-running task is already executing then reset the trigger to try again in 1 minute
                 if (longRunningActionExecutingRightNow)
                 {
-                    SetupDailyTrigger(mediaBackup.Config.ScheduledBackupOnOff, DateTime.Now.AddMinutes(1));
+                    SetupDailyTrigger(mediaBackup.Config.ScheduledBackupOnOff, DateTime.Now.AddHours(4));
                     UpdateScheduledBackupButton();
                     return;
                 }
@@ -460,6 +460,11 @@ internal sealed partial class Main
         estimatedFinishTimeTextBox.TextWithInvoke(estimatedFinishDateTime.ToString(Resources.DateTime_HHmm));
     }
 
+    /// <summary>
+    ///     Disables controls that cant be enabled when long-running tasks are executing. Sets
+    ///     longRunningActionExecutingRightNow = true
+    /// </summary>
+    /// <param name="ct"></param>
     private void DisableControlsForAsyncTasks(CancellationToken ct)
     {
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
