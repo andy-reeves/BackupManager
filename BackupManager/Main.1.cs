@@ -348,7 +348,7 @@ internal sealed partial class Main
 
         foreach (var item in mediaBackup.DirectoriesToScan)
         {
-            _ = mediaBackup.Watcher.DirectoriesToScan.Add(new FileSystemEntry(item.Path, item.ModifiedDateTime));
+            _ = mediaBackup.Watcher.DirectoriesToScan.AddOrUpdate(new FileSystemEntry(item.Path, item.ModifiedDateTime));
         }
         Utils.TraceOut();
     }

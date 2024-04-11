@@ -24,7 +24,7 @@ public sealed class UtilsGetLatestApplicationVersion
 
     [Theory]
     [InlineData("1.4.2", ApplicationType.Bazarr)]
-    [InlineData("1.40.2.8312", ApplicationType.PlexPass)]
+    [InlineData("1.40.2.8351", ApplicationType.PlexPass)]
     [InlineData("1.15.0.4361", ApplicationType.Prowlarr)]
     [InlineData("5.3.6.8612", ApplicationType.Radarr)]
     [InlineData("4.2.3", ApplicationType.SABnzbd)]
@@ -37,7 +37,7 @@ public sealed class UtilsGetLatestApplicationVersion
     [Theory]
     [InlineData("1.4.2", ApplicationType.Bazarr)]
     [InlineData("1.40.1.8227", ApplicationType.Plex)]
-    [InlineData("1.40.2.8312", ApplicationType.PlexPass)]
+    [InlineData("1.40.2.8351", ApplicationType.PlexPass)]
     [InlineData("1.15.0", ApplicationType.Prowlarr)]
     [InlineData("1.16.1", ApplicationType.Prowlarr, "develop")]
     [InlineData("5.3.6", ApplicationType.Radarr)]

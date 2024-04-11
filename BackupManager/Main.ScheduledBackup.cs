@@ -5,7 +5,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
-using System.IO;
 using System.Threading;
 
 using BackupManager.Properties;
@@ -32,23 +31,9 @@ internal sealed partial class Main
             long oldFileCount = mediaBackup.BackupFiles.Count;
             _ = DateTime.TryParse(mediaBackup.DirectoriesLastFullScan, out var backupFileDate);
 
-            // Update the master files if we've not been monitoring directories directly
-            if (mediaBackup.Config.DirectoriesFileChangeWatcherOnOff)
+            if (!mediaBackup.Config.DirectoriesFileChangeWatcherOnOff || backupFileDate.AddDays(mediaBackup.Config.DirectoriesDaysBetweenFullScan) < DateTime.Now)
             {
-                if (backupFileDate.AddDays(mediaBackup.Config.DirectoriesDaysBetweenFullScan) < DateTime.Now)
-                {
-                    // Scan all because we haven't done a scan for a few days
-                    ScanAllDirectories(true, ct);
-                }
-                else
-                {
-                    // Scan any pending directory changes
-                    ReadyToScan(new FileSystemWatcherEventArgs(mediaBackup.Watcher.DirectoriesToScan.ToArray()), SearchOption.AllDirectories, true, mainCt);
-                }
-            }
-            else
-            {
-                // Scan all directories because we're not monitoring changes
+                // if file watching is off, or it's been a number of days since last full scan
                 ScanAllDirectories(true, ct);
             }
             UpdateSymbolicLinks(ct);

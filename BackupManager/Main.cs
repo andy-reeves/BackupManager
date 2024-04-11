@@ -655,7 +655,7 @@ internal sealed partial class Main : Form
                 // If another long-running task is already executing then add these directories back to the list to be scanned later
                 foreach (var dir in e.Directories)
                 {
-                    _ = mediaBackup.Watcher.DirectoriesToScan.Add(dir);
+                    _ = mediaBackup.Watcher.DirectoriesToScan.AddOrUpdate(dir);
                 }
                 return;
             }
@@ -716,7 +716,7 @@ internal sealed partial class Main : Form
                 {
                     var text = string.Format(Resources.DirectoryScanSkipped, Utils.FormatTimeFromSeconds(mediaBackup.Config.DirectoriesScanTimer));
                     Utils.LogWithPushover(BackupAction.ScanDirectory, text, true);
-                    _ = mediaBackup.Watcher.DirectoriesToScan.Add(directoryToScan);
+                    _ = mediaBackup.Watcher.DirectoriesToScan.AddOrUpdate(directoryToScan);
                 }
             }
 
