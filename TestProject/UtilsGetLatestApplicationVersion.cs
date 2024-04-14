@@ -26,9 +26,9 @@ public sealed class UtilsGetLatestApplicationVersion
     [InlineData("1.4.2", ApplicationType.Bazarr)]
     [InlineData("1.40.2.8351", ApplicationType.PlexPass)]
     [InlineData("1.15.0.4361", ApplicationType.Prowlarr)]
-    [InlineData("5.3.6.8612", ApplicationType.Radarr)]
+    [InlineData("5.4.6.8723", ApplicationType.Radarr)]
     [InlineData("4.2.3", ApplicationType.SABnzbd)]
-    [InlineData("4.0.3.1413", ApplicationType.Sonarr)]
+    [InlineData("4.0.4.1491", ApplicationType.Sonarr)]
     public void GetVersionNumber(string expectedInstalledVersionNumber, ApplicationType applicationType)
     {
         Assert.Equal(expectedInstalledVersionNumber, Utils.GetApplicationVersionNumber(applicationType));
@@ -39,11 +39,11 @@ public sealed class UtilsGetLatestApplicationVersion
     [InlineData("1.40.1.8227", ApplicationType.Plex)]
     [InlineData("1.40.2.8351", ApplicationType.PlexPass)]
     [InlineData("1.15.0", ApplicationType.Prowlarr)]
-    [InlineData("1.16.1", ApplicationType.Prowlarr, "develop")]
-    [InlineData("5.3.6", ApplicationType.Radarr)]
-    [InlineData("5.4.6", ApplicationType.Radarr, "develop")]
+    [InlineData("1.16.2", ApplicationType.Prowlarr, "develop")]
+    [InlineData("5.4.6", ApplicationType.Radarr)]
+    [InlineData("5.5.0", ApplicationType.Radarr, "develop")]
     [InlineData("4.2.3", ApplicationType.SABnzbd)]
-    [InlineData("4.0.3.1413", ApplicationType.Sonarr)]
+    [InlineData("4.0.4.1491", ApplicationType.Sonarr)]
     public void GetLatestApplicationVersionNumber(string expectedVersionNumber, ApplicationType applicationType, string branchName = "master")
     {
         if (applicationType != ApplicationType.PlexPass || Utils.Config.PlexToken.HasValue()) Assert.Equal(expectedVersionNumber, Utils.GetLatestApplicationVersionNumber(applicationType, branchName));
