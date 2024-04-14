@@ -116,13 +116,6 @@ internal sealed partial class Main
 
             scheduledBackupAction = () =>
             {
-                // If a long-running task is already executing then reset the trigger to try again in 1 minute
-                if (longRunningActionExecutingRightNow)
-                {
-                    SetupDailyTrigger(mediaBackup.Config.ScheduledBackupOnOff, DateTime.Now.AddHours(4));
-                    UpdateScheduledBackupButton();
-                    return;
-                }
                 ResetTokenSource();
                 _ = TaskWrapper(() => ScheduledBackupAsync(mainCt), mainCt);
             };
