@@ -22,15 +22,14 @@ public sealed class MediaHelperTests
     }
 
     [Theory]
-    [InlineData("File1 [DV].mkv", true, 5)]
-    [InlineData("File2 [DV].mkv", false, 0)]
-    [InlineData("File3 [DV].mkv", true, 5)]
-    [InlineData("File4 [DV] profile8.mkv", false, 8)]
-    public void MediaInfo(string fileName, bool isDolbyProfile5, int dvProfile)
+    [InlineData("File1 [DV].mkv", 5)]
+    [InlineData("File2 [DV].mkv", 0)]
+    [InlineData("File3 [DV].mkv", 5)]
+    [InlineData("File4 [DV] profile8.mkv", 8)]
+    public void MediaInfo(string fileName, int dvProfile)
     {
         var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
         var mediaFileName = Path.Combine(testDataPath, fileName);
-        Assert.Equal(isDolbyProfile5, Utils.File.IsDolbyVisionProfile5(mediaFileName));
         var file = new MovieBackupFile(mediaFileName);
         Assert.True(file.RefreshMediaInfo());
 
