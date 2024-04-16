@@ -256,7 +256,6 @@ internal static partial class Utils
         {
             TraceIn(path);
             ArgumentException.ThrowIfNullOrEmpty(path);
-            ArgumentException.ThrowIfNullOrEmpty(path);
             if (!IsVideo(path) || !MediaHelper.VideoFileIsDolbyVision(path)) return TraceOut(false);
 
             if (!Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
