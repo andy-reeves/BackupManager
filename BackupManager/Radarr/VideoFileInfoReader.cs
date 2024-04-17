@@ -113,7 +113,7 @@ internal sealed class VideoFileInfoReader
                 //var frameOutput = FFProbe.GetFrameJson(filename,
                 //    ffOptions: new FFOptions { ExtraArguments = $"-read_intervals \"%+#10\" -select_streams v:{primaryVideoStream?.Index ?? 0}" });
                 // The {primaryVideoStream?.Index ?? 0} above does not work for all movies 
-                var frameOutput = FFProbe.GetFrameJson(filename, ffOptions: new FFOptions { ExtraArguments = "-read_intervals \"%+#10\" -select_streams v" });
+                var frameOutput = FFProbe.GetFrameJson(filename, ffOptions: new FFOptions { ExtraArguments = "-read_intervals \"%+#5\" -select_streams v" });
                 mediaInfoModel.RawFrameData = frameOutput;
                 frames = FFProbe.AnalyseFrameJson(frameOutput);
             }
