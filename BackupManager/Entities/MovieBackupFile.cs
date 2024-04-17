@@ -48,11 +48,9 @@ internal sealed class MovieBackupFile : VideoBackupFileBase
     {
         get
         {
-            var s = "[";
-            s += IsRemux ? Utils.REMUX : $"{VideoQuality.ToEnumMember()}";
-            if (VideoResolution != VideoResolution.Unknown) s += $"-{VideoResolution.ToEnumMember()}";
-            s += "]";
-            return s;
+            var qualityFull = IsRemux ? Utils.REMUX : $"{VideoQuality.ToEnumMember()}";
+            if (VideoResolution != VideoResolution.Unknown) qualityFull += $"-{VideoResolution.ToEnumMember()}";
+            return qualityFull.WrapInSquareBrackets();
         }
     }
 
@@ -78,9 +76,7 @@ internal sealed class MovieBackupFile : VideoBackupFileBase
     {
         string s;
 
-        if (SpecialFeature != SpecialFeature.None)
-            s = $"{Title}-{SpecialFeature.ToEnumMember()}";
-        else
+        if (SpecialFeature == SpecialFeature.None)
         {
             s = $"{Title} ({ReleaseYear}){AlternateMovieFolder} ";
 
@@ -92,6 +88,8 @@ internal sealed class MovieBackupFile : VideoBackupFileBase
             if (MediaInfoVideoDynamicRangeType != MediaInfoVideoDynamicRangeType.Unknown) s += $"[{MediaInfoVideoDynamicRangeType.ToEnumMember()}]";
             s += $"[{MediaInfoAudioCodec.ToEnumMember()} {MediaInfoAudioChannels.ToEnumMember()}][{MediaInfoVideoCodec.ToEnumMember()}]";
         }
+        else
+            s = $"{Title}-{SpecialFeature.ToEnumMember()}";
         s += $"{Extension}";
         return s;
     }

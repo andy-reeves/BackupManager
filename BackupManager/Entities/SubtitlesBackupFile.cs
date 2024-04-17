@@ -4,7 +4,6 @@
 //  </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -84,12 +83,7 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
         if (FullDirectory.HasNoValue()) return false;
 
         var files = Utils.File.GetFiles(FullDirectory, new CancellationToken());
-
-        var videoFiles = files.Where(static f =>
-        {
-            ArgumentException.ThrowIfNullOrEmpty(f);
-            return Utils.File.IsVideo(f) && !Utils.File.IsSpecialFeature(f);
-        }).ToArray();
+        var videoFiles = files.Where(static f => Utils.File.IsVideo(f) && !Utils.File.IsSpecialFeature(f)).ToArray();
         if (videoFiles.Any(file => Path.GetFileName(file).StartsWithIgnoreCase(Title))) return Validate();
 
         // if more than 1 movie file in this folder, we can't pick one
