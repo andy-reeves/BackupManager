@@ -148,10 +148,8 @@ public sealed class MediaBackup
 
             foreach (var backupFile in mediaBackup.BackupFiles)
             {
-                if (mediaBackup.indexFolderAndRelativePath.TryGetValue(backupFile.Hash, out var value))
-                {
-                    throw new ApplicationException(string.Format(Resources.DuplicateContentsHashCode, backupFile.FileName, backupFile.FullPath, value.FullPath));
-                }
+                if (mediaBackup.indexFolderAndRelativePath.TryGetValue(backupFile.Hash, out var value)) throw new ApplicationException(string.Format(Resources.DuplicateContentsHashCode, backupFile.FileName, backupFile.FullPath, value.FullPath));
+
                 mediaBackup.indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
                 if (backupFile.DiskChecked.HasNoValue() || backupFile.Disk.HasNoValue()) backupFile.ClearDiskChecked();
             }

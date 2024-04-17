@@ -17,19 +17,19 @@ namespace TestProject;
 [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
 public sealed class FileRulesUnitTest
 {
+    public enum TestRegexType
+    {
+        Discovery = 0,
+
+        Test = 1
+    }
+
     private static readonly MediaBackup _mediaBackup;
 
     static FileRulesUnitTest()
     {
         _mediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)), "..\\BackupManager\\MediaBackup.xml"));
         Utils.Config = _mediaBackup.Config;
-    }
-
-    public enum TestRegexType
-    {
-        Discovery = 0,
-
-        Test = 1
     }
 
     [InlineData(1, 1, TestRegexType.Test, true, @"X:\_TV\Chernobyl {tvdb-360893}\Season 1\Chernobyl s01e01 12345 [Bluray-2160p Remux].mkv")]

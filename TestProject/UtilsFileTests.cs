@@ -47,4 +47,3 @@ public sealed class UtilsFileTests
         Assert.Equal(expectedResult, Utils.File.IsVideo(path));
     }
 }
-

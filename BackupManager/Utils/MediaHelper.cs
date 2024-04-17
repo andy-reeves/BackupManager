@@ -232,9 +232,7 @@ internal static partial class Utils
                         path = newFullPath;
                     }
                     else
-                    {
                         LogWithPushover(BackupAction.General, PushoverPriority.High, $"Renaming {path} to {newFullPath} and directories do not match anymore");
-                    }
                 }
             }
             else

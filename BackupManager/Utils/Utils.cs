@@ -418,22 +418,14 @@ internal static partial class Utils
             ? DateTime.ParseExact(filename.SubstringAfter('.'), "yyyy'-'MM'-'dd'_'HHmmss", CultureInfo.InvariantCulture)
             : DateTime.ParseExact(filename[..10], "yyyy'-'MM'-'dd", CultureInfo.InvariantCulture);
         var creationTimeString = creationTime.ToString("yyyy:MM:dd hh:mm:ss");
-        var arguments = string.Empty;
 
-        switch (extension.ToLowerInvariant())
+        var arguments = extension.ToLowerInvariant() switch
         {
-            case ".mp4":
-                // ReSharper disable once StringLiteralTypo
-                arguments = $" -Quicktime:CreationDate=\"{creationTimeString}\" \"{path}\"";
-                break;
-            case ".png":
-                arguments = $" -PNG:CreationTime=\"{creationTimeString}\" \"{path}\"";
-                break;
-            case ".jpg":
-            case ".jpeg":
-                arguments = $" -EXIF:DateTimeOriginal=\"{creationTimeString}\" \"{path}\"";
-                break;
-        }
+            ".mp4" => $" -Quicktime:CreationDate=\"{creationTimeString}\" \"{path}\"",
+            ".png" => $" -PNG:CreationTime=\"{creationTimeString}\" \"{path}\"",
+            ".jpg" or ".jpeg" => $" -EXIF:DateTimeOriginal=\"{creationTimeString}\" \"{path}\"",
+            _ => string.Empty
+        };
         var process = new Process { StartInfo = new ProcessStartInfo { UseShellExecute = true, WindowStyle = ProcessWindowStyle.Hidden, FileName = @"c:\tools\exiftool.exe", Arguments = arguments } };
         if (!process.Start()) return TraceOut(false);
 
@@ -909,9 +901,7 @@ internal static partial class Utils
             return;
 
         if (backupAction == BackupAction.Error || (!delayBeforeSending && !delayAfterSending))
-        {
             _ = TaskWrapper(Task.Run(() => SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, text)), new CancellationTokenSource().Token);
-        }
         else
         {
             if (delayBeforeSending) Task.Delay(1000).Wait();
