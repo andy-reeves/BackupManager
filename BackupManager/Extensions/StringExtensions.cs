@@ -34,6 +34,16 @@ internal static partial class StringExtensions
         return needles.Any(haystack.Contains);
     }
 
+    public static bool EndsWithAny(this string haystack, params string[] needles)
+    {
+        return needles.Any(haystack.EndsWith);
+    }
+
+    public static bool EqualsAnyIgnoreCase(this string haystack, params string[] needles)
+    {
+        return needles.Any(haystack.EqualsIgnoreCase);
+    }
+
     [DebuggerStepThrough]
     public static string WrapInSquareBrackets(this string text)
     {

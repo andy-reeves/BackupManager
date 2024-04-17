@@ -44,7 +44,7 @@ internal static partial class Utils
         internal static bool IsVideo(string path)
         {
             ArgumentException.ThrowIfNullOrEmpty(path);
-            return Path.GetExtension(path).ToLowerInvariant().ContainsAny(_videoExtensions);
+            return ("." + path.SubstringAfterLastIgnoreCase(".")).EqualsAnyIgnoreCase(_videoExtensions);
         }
 
         /// <summary>
@@ -201,13 +201,13 @@ internal static partial class Utils
         internal static bool IsSubtitles(string path)
         {
             ArgumentException.ThrowIfNullOrEmpty(path);
-            return Path.GetExtension(path).ToLowerInvariant().ContainsAny(_subtitlesExtensions);
+            return ("." + path.SubstringAfterIgnoreCase(".")).EqualsAnyIgnoreCase(_subtitlesExtensions);
         }
 
         internal static bool IsSpecialFeature(string path)
         {
             ArgumentException.ThrowIfNullOrEmpty(path);
-            return path.ContainsAny(_specialFeatures);
+            return ("-" + Path.GetFileNameWithoutExtension(path.SubstringAfterIgnoreCase("-"))).EqualsAnyIgnoreCase(_specialFeatures);
         }
 
         private static FileAttributes RemoveAttribute(FileAttributes attributes, FileAttributes attributesToRemove)

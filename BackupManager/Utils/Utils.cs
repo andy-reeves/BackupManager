@@ -152,12 +152,12 @@ internal static partial class Utils
     private static readonly string[] _specialFeatures =
     {
         // ReSharper disable once StringLiteralTypo
-        "-featurette.", "-other.", "-interview.", "-scene.", "-short.", "-deleted.", "-behindthescenes.", "-trailer."
+        "-featurette", "-other", "-interview", "-scene", "-short", "-deleted", "-behindthescenes", "-trailer"
     };
 
     /// <summary>
     ///     An array of file extensions for video file types like .mkv, .mp4, etc.
-    ///     Regex would be (m(kv|p(4|e?g))|ts|avi|(e(n|s)(\.hi)?\.)srt)
+    ///     Regex would be (m(kv|p(4|e?g))|ts|avi)
     /// </summary>
     private static readonly string[] _videoExtensions = { ".mkv", ".mp4", ".mpeg", ".mpg", ".ts", ".avi" };
 
