@@ -294,14 +294,21 @@ internal static partial class Utils
                 case ApplicationType.SABnzbd:
                     return GitHubVersionNumberParser($"https://raw.githubusercontent.com/sabnzbd/sabnzbd/{branchName}/sabnzbd/version.py", "__version__", "=", 1);
                 case ApplicationType.Sonarr:
-                    var doc = new HtmlWeb().Load("https://github.com/Sonarr/Sonarr/releases/latest");
-                    return doc.DocumentNode.SelectNodes("//html/head/title")[0].InnerText.Split(" ")[1];
+                    task = Task.Run(() => client.GetStringAsync($"https://services.sonarr.tv/v1/update/{branchName}?version=4.0"));
+                    task.Wait();
+                    response = task.Result;
+                    node = JsonNode.Parse(response);
+                    return node?["updatePackage"]?["version"]?.ToString();
                 case ApplicationType.Radarr:
-                    return GitHubVersionNumberParser($"https://raw.githubusercontent.com/Radarr/Radarr/{branchName}/azure-pipelines.yml", "majorVersion:", ":", 1);
+                    task = Task.Run(() => client.GetStringAsync($"https://radarr.servarr.com/update/{branchName}?version=5.0"));
+                    task.Wait();
+                    response = task.Result;
+                    node = JsonNode.Parse(response);
+                    return node?["updatePackage"]?["version"]?.ToString();
                 case ApplicationType.Prowlarr:
                     return GitHubVersionNumberParser($"https://raw.githubusercontent.com/Prowlarr/Prowlarr/{branchName}/azure-pipelines.yml", "majorVersion:", ":", 1);
                 case ApplicationType.Bazarr:
-                    doc = new HtmlWeb().Load("https://github.com/morpheus65535/bazarr/releases/latest");
+                    var doc = new HtmlWeb().Load("https://github.com/morpheus65535/bazarr/releases/latest");
                     return doc.DocumentNode.SelectNodes("//html/head/title")[0].InnerText.Split(" ")[1].SubstringAfterIgnoreCase("v");
 
                 // ReSharper disable once RedundantEnumCaseLabelForDefaultSection
