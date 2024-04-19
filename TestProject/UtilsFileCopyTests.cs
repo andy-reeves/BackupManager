@@ -27,7 +27,7 @@ public sealed class UtilsFileCopyTests
     {
         for (var i = 0; i < 5; i++)
         {
-            var path1 = Path.Combine(Path.GetTempPath(), "FileCopy");
+            var path1 = Path.Combine(Path.GetTempPath(), $"FileCopy{i}");
             if (Directory.Exists(path1)) _ = Utils.Directory.Delete(path1, true);
             var file1 = Path.Combine(path1, "test1.txt");
             var file2 = Path.Combine(path1, "test2.txt");

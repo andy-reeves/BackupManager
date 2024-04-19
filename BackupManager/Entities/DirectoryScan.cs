@@ -27,11 +27,6 @@ public sealed class DirectoryScan : IEquatable<DirectoryScan>
 
     public DirectoryScan() { }
 
-    public DirectoryScan(string path)
-    {
-        Path = path;
-    }
-
     public DirectoryScan(DirectoryScanType typeOfScan, string path, DateTime startDateTime, string id)
     {
         TypeOfScan = typeOfScan;

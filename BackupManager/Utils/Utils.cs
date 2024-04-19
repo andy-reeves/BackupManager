@@ -308,6 +308,13 @@ internal static partial class Utils
                 case ApplicationType.Prowlarr:
                     return GitHubVersionNumberParser($"https://raw.githubusercontent.com/Prowlarr/Prowlarr/{branchName}/azure-pipelines.yml", "majorVersion:", ":", 1);
                 case ApplicationType.Bazarr:
+                    // "https://api.github.com/repos/morpheus65535/Bazarr/releases?per_page=100"
+                    // task = Task.Run(() => client.GetStringAsync("https://api.github.com/repos/morpheus65535/Bazarr/releases?per_page=20"));
+                    // task.Wait();
+                    //  response = task.Result;
+                    //  node = JsonNode.Parse(response);
+                    //  var retVal = node?["prerelease"];
+                    //  return retVal.ToJsonString();
                     var doc = new HtmlWeb().Load("https://github.com/morpheus65535/bazarr/releases/latest");
                     return doc.DocumentNode.SelectNodes("//html/head/title")[0].InnerText.Split(" ")[1].SubstringAfterIgnoreCase("v");
 

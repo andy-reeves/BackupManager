@@ -31,8 +31,8 @@ public sealed class EntityTests
     public void DirectoryScan()
     {
         var dateTime = DateTime.Now;
-        var a = new DirectoryScan(DirectoryScanType.ProcessingFiles, @"c:\testPath", dateTime, "1");
-        Assert.Equal(@"c:\testPath", a.Path);
+        var a = new DirectoryScan(DirectoryScanType.ProcessingFiles, @"c:\testPath1", dateTime, "1");
+        Assert.Equal(@"c:\testPath1", a.Path);
         Assert.Equal(dateTime, a.StartDateTime);
         Assert.Equal(DateTime.MinValue, a.EndDateTime);
         Assert.Equal(TimeSpan.Zero, a.ScanDuration);
@@ -41,6 +41,16 @@ public sealed class EntityTests
         Assert.Equal(dateTime, a.StartDateTime);
         Assert.Equal(endDate, a.EndDateTime);
         Assert.Equal(new TimeSpan(1, 0, 0, 0), a.ScanDuration);
+        var b = new DirectoryScan(DirectoryScanType.ProcessingFiles, @"c:\testPath2", DateTime.Now, "1");
+        b.EndDateTime = b.StartDateTime.AddDays(2).AddHours(12);
+        var list = new[] { a, b };
+        Assert.True(BackupManager.Entities.DirectoryScan.LapsedTime(list) > new TimeSpan(2, 12, 0, 0));
+        Assert.True(BackupManager.Entities.DirectoryScan.LapsedTime(list) < new TimeSpan(2, 12, 0, 1));
+        Assert.False(a.Equals(b));
+        object obj = a;
+        Assert.False(obj.Equals(b));
+        Assert.Equal(@"c:\testPath1", a.ToString());
+        Assert.Equal(@"c:\testPath1", obj.ToString());
     }
 
     // [Fact]
@@ -269,6 +279,7 @@ public sealed class EntityTests
         var backupFile1 = new BackupFile(pathToFile1, pathToMovies);
         Assert.Equal("test1.txt", backupFile1.RelativePath);
         Assert.Equal(9, backupFile1.Length);
+        Assert.Equal(".txt", backupFile1.Extension);
         var backupFile2 = new BackupFile(pathToFile2, pathToTv);
         Assert.NotEqual(backupFile2, backupFile1);
         Assert.False(backupFile1.Equals(null));
@@ -304,6 +315,7 @@ public sealed class EntityTests
         _ = Utils.File.Copy(pathToFile1, pathToFile1OnBackupDisk, ct);
         var backupDisk = new BackupDisk("backup 1000", pathToBackupShare);
         Assert.True(backupFile1.CheckContentHashes(backupDisk));
+        Assert.False(backupFile1.Deleted);
         File.AppendAllText(pathToFile1OnBackupDisk, "test");
         Assert.False(backupFile1.CheckContentHashes(backupDisk));
         if (Directory.Exists(pathToFiles)) _ = Utils.Directory.Delete(pathToFiles, true);
@@ -314,7 +326,8 @@ public sealed class EntityTests
     [Fact]
     public void BackupDisk()
     {
-        var backupShareName = Path.Combine(@"\\", Environment.MachineName, "backup");
+        //var backupShareName = Path.Combine(@"\\", Environment.MachineName, "backup");
+        var backupShareName = @"d:\";
         const string backupDiskName = "backup 45";
         var backupDisk = new BackupDisk(backupDiskName, backupShareName);
         Assert.Equal(Path.Combine(backupShareName, backupDiskName), backupDisk.BackupPath);
