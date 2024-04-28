@@ -19,7 +19,7 @@ public sealed class UtilsGetApplicationVersion
     [Theory]
     [InlineData("1.4.2", ApplicationType.Bazarr)]
     [InlineData("1.40.2.8395", ApplicationType.PlexPass)]
-    [InlineData("1.15.0.4361", ApplicationType.Prowlarr)]
+    [InlineData("1.16.2.4435", ApplicationType.Prowlarr)]
     [InlineData("5.4.6.8723", ApplicationType.Radarr)]
     [InlineData("4.2.3", ApplicationType.SABnzbd)]
     [InlineData("4.0.4.1491", ApplicationType.Sonarr)]
@@ -47,8 +47,8 @@ public sealed class UtilsGetVersionSABnzbd
 public sealed class UtilsGetVersionProwlarr
 {
     [Theory]
-    [InlineData("1.15.0", ApplicationType.Prowlarr)]
-    [InlineData("1.16.2", ApplicationType.Prowlarr, "develop")]
+    [InlineData("1.16.2", ApplicationType.Prowlarr)]
+    [InlineData("1.17.1", ApplicationType.Prowlarr, "develop")]
     public void GetLatestVersionNumber(string expectedVersionNumber, ApplicationType applicationType, string branchName = "master")
     {
         Assert.Equal(expectedVersionNumber, Utils.GetLatestApplicationVersionNumber(applicationType, branchName));
@@ -92,7 +92,7 @@ public sealed class UtilsGetVersionSonarr
 {
     [Theory]
     [InlineData("4.0.4.1491", ApplicationType.Sonarr)]
-    [InlineData("4.0.4.1515", ApplicationType.Sonarr, "develop")]
+    [InlineData("4.0.4.1572", ApplicationType.Sonarr, "develop")]
     [InlineData("4.0.4.1491", ApplicationType.Sonarr, "nightly")]
     public void GetLatestVersionNumber(string expectedVersionNumber, ApplicationType applicationType, string branchName = "master")
     {
@@ -106,8 +106,8 @@ public sealed class UtilsGetVersionRadarr
 {
     [Theory]
     [InlineData("5.4.6.8723", ApplicationType.Radarr)]
-    [InlineData("5.4.6.8723", ApplicationType.Radarr, "develop")]
-    [InlineData("5.5.0.8729", ApplicationType.Radarr, "nightly")]
+    [InlineData("5.5.1.8747", ApplicationType.Radarr, "develop")]
+    [InlineData("5.5.1.8747", ApplicationType.Radarr, "nightly")]
     public void GetLatestVersionNumber(string expectedVersionNumber, ApplicationType applicationType, string branchName = "master")
     {
         Assert.Equal(expectedVersionNumber, Utils.GetLatestApplicationVersionNumber(applicationType, branchName));
