@@ -107,7 +107,7 @@ public sealed class UtilsGetVersionRadarr
     [Theory]
     [InlineData("5.4.6.8723", ApplicationType.Radarr)]
     [InlineData("5.5.1.8747", ApplicationType.Radarr, "develop")]
-    [InlineData("5.5.1.8747", ApplicationType.Radarr, "nightly")]
+    [InlineData("5.5.2.8759", ApplicationType.Radarr, "nightly")]
     public void GetLatestVersionNumber(string expectedVersionNumber, ApplicationType applicationType, string branchName = "master")
     {
         Assert.Equal(expectedVersionNumber, Utils.GetLatestApplicationVersionNumber(applicationType, branchName));
