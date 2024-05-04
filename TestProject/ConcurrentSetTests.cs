@@ -39,7 +39,7 @@ public sealed class ConcurrentSetTests
         Assert.True(bob.MoveNext());
         bob.Dispose();
         var bob2 = (IEnumerable)set;
-        var j = bob2.GetEnumerator();
+        using var enumerator = bob2.GetEnumerator() as IDisposable;
         var item4 = new FileSystemEntry(@"c:\testitem4", DateTime.MinValue);
         var set2 = (ICollection<FileSystemEntry>)set;
         set2.Add(item4);
