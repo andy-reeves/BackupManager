@@ -23,8 +23,6 @@ namespace BackupManager;
 
 internal sealed partial class Main : Form
 {
-    private static bool _cancelledMessageSent;
-
     private void FileSystemWatcher_OnError(object sender, ErrorEventArgs e)
     {
         var ex = e.GetException();
@@ -541,9 +539,6 @@ internal sealed partial class Main : Form
         try
         {
             Utils.TraceIn();
-            if (_cancelledMessageSent) return;
-
-            _cancelledMessageSent = true;
             KillCopyProcess();
             UpdateMediaFilesCountDisplay();
             Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, Resources.Cancelled);
