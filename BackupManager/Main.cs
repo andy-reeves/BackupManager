@@ -528,7 +528,9 @@ internal sealed partial class Main : Form
 
     private static void KillCopyProcess()
     {
+        Utils.TraceIn();
         if (Utils.CopyProcess is { HasExited: false }) Utils.CopyProcess?.Kill();
+        Utils.TraceOut();
     }
 
     /// <summary>
@@ -539,9 +541,9 @@ internal sealed partial class Main : Form
         try
         {
             Utils.TraceIn();
-            ResetAllControls();
             KillCopyProcess();
             UpdateMediaFilesCountDisplay();
+            ResetAllControls();
             Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, Resources.Cancelled);
         }
         finally
