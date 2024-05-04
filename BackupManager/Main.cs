@@ -539,10 +539,10 @@ internal sealed partial class Main : Form
         try
         {
             Utils.TraceIn();
+            ResetAllControls();
             KillCopyProcess();
             UpdateMediaFilesCountDisplay();
             Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, Resources.Cancelled);
-            ResetAllControls();
         }
         finally
         {
