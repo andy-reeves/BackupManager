@@ -484,7 +484,6 @@ internal sealed partial class Main
         }
         checkAllBackupDisksButton.Invoke(static x => x.Enabled = false);
         checkDeleteAndCopyAllBackupDisksButton.Invoke(static x => x.Enabled = false);
-        _cancelledMessageSent = false;
     }
 
     /// <summary>
