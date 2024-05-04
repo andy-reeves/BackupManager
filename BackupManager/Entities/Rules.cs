@@ -29,7 +29,6 @@ public sealed class Rules
 
     public static Rules Load(string path)
     {
-        try
         {
             if (!Utils.ValidateXmlFromResources(path, "BackupManager.RulesSchema.xsd")) throw new XmlSchemaValidationException("Rules.xml failed validation");
 
@@ -41,14 +40,6 @@ public sealed class Rules
             if (rules.FileRules.Select(static x => x.Number).Distinct().Count() != rules.FileRules.Count) throw new ArgumentException(Resources.DuplicateRuleNumber, nameof(path));
 
             return rules;
-        }
-        catch (InvalidOperationException ex)
-        {
-            throw new ApplicationException(string.Format(Resources.UnableToLoadXml, "Rules.xml", ex));
-        }
-        catch (XmlSchemaValidationException ex)
-        {
-            throw new ApplicationException(string.Format(Resources.UnableToLoadXml, "Rules.xml failed validation", ex));
         }
     }
 }

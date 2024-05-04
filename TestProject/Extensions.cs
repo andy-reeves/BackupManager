@@ -43,4 +43,23 @@ public sealed class Extensions
         Assert.Equal(expectedValueOrdinal, testValue.ToTitleCaseIgnoreOrdinals());
         Assert.Equal(expectedValueCapitalize, testValue.Capitalize());
     }
+
+    [InlineData("1727737200", 2024, 10, 1)]
+    [InlineData("55119600", 1971, 10, 1)]
+    [Theory]
+    public void DateTimeTests(string expectedResult, int year, int month, int day)
+    {
+        var dateTime1 = new DateTime(year, month, day);
+        Assert.Equal(expectedResult, dateTime1.ToUnixTime());
+        Assert.Equal(expectedResult + "000", dateTime1.ToUnixTimeMilliseconds());
+    }
+
+    [InlineData(true, 45, 44, 46)]
+    [InlineData(true, 44, 44, 45)]
+    [InlineData(false, 44, 46, 48)]
+    [Theory]
+    public void ObjectExtensions(bool expectedValue, int value, int minimum, int maximum)
+    {
+        Assert.Equal(expectedValue, value.IsInRange(minimum, maximum));
+    }
 }
