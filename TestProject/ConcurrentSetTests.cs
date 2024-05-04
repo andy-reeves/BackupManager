@@ -4,6 +4,7 @@
 //  </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
 using BackupManager;
@@ -34,5 +35,19 @@ public sealed class ConcurrentSetTests
         {
             Assert.Equal(DateTime.MinValue, entry.ModifiedDateTime);
         }
+        var bob = set.GetEnumerator();
+        Assert.True(bob.MoveNext());
+        bob.Dispose();
+        var bob2 = (IEnumerable)set;
+        var j = bob2.GetEnumerator();
+        var item4 = new FileSystemEntry(@"c:\testitem4", DateTime.MinValue);
+        var set2 = (ICollection<FileSystemEntry>)set;
+        set2.Add(item4);
+        Assert.True(set2.Contains(item4));
+        Assert.Equal(3, set2.Count);
+        _ = Assert.Throws<ArgumentException>(() => set2.Add(item4));
+        set.Clear();
+        Assert.Empty(set);
+        Assert.False(set2.Contains(item4));
     }
 }
