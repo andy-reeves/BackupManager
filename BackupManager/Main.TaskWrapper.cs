@@ -31,7 +31,7 @@ internal sealed partial class Main
             Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High, string.Format(Resources.TaskWrapperException, u));
             ASyncTasksCleanUp();
         }
-        return false;
+        return Utils.TraceOut(false);
     }
 
     private async Task TaskWrapper(Action action, bool withAsyncTasksCleanup, CancellationToken ct)
@@ -52,10 +52,16 @@ internal sealed partial class Main
             Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High, string.Format(Resources.TaskWrapperException, u));
             if (withAsyncTasksCleanup) ASyncTasksCleanUp();
         }
+        finally
+        {
+            Utils.TraceOut();
+        }
     }
 
     private async Task TaskWrapper(Action action, CancellationToken ct)
     {
+        Utils.TraceIn();
         await TaskWrapper(action, true, ct);
+        Utils.TraceOut();
     }
 }

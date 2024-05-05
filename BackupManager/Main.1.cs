@@ -282,6 +282,8 @@ internal sealed partial class Main
 
     private void UpdateMediaFilesCountDisplay()
     {
+        Utils.TraceIn();
+
         try
         {
             var backupFilesWithoutDeleted = mediaBackup.GetBackupFiles(false).ToArray();
@@ -297,6 +299,10 @@ internal sealed partial class Main
         catch (InvalidOperationException)
         {
             // if collections are modified by checking the disk then we cant update the UI here
+        }
+        finally
+        {
+            Utils.TraceOut();
         }
     }
 
@@ -491,6 +497,7 @@ internal sealed partial class Main
     /// </summary>
     private void ResetAllControls()
     {
+        Utils.TraceIn();
         longRunningActionExecutingRightNow = false;
         if (!IsHandleCreated || IsDisposed) return;
 
@@ -504,6 +511,7 @@ internal sealed partial class Main
         statusStrip.Invoke(_ => toolStripProgressBar.Visible = false);
         statusStrip.Invoke(_ => toolStripStatusLabel.Text = string.Empty);
         ClearEstimatedFinish();
+        Utils.TraceOut();
     }
 
     private void UpdateStatusLabel(CancellationToken ct, string text = "", int value = 0)
