@@ -144,6 +144,7 @@ public sealed class FileRulesUnitTest
     [InlineData(15, 12, TestRegexType.Test, false, @"Q:\_Comedy\Rhod Gilbert and the Award-Winning Mince Pie (2009)\The Audience-short..mkv")]
     [InlineData(15, 13, TestRegexType.Discovery, false, @"X:\_TV (non-tvdb)\Blood Brothers (1989)\Example 1-behindscenes.mkv")]
     [InlineData(15, 14, TestRegexType.Discovery, false, @"X:\_Music\Blood Brothers (1989)\Example 1-behindscenes.mkv")]
+    [InlineData(15, 15, TestRegexType.Test, true, @"\\nas5\assets3\_Movies\Withnail & I (1987)\Withnail on the Pier-featurette.mkv")]
     [InlineData(16, 1, TestRegexType.Test, false, @"X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]..mkv")]
     [InlineData(16, 2, TestRegexType.Test, false, @"X:\_Movies\12 Angry Men (1957)\12 Angry Men [Remux-1080p]..mkv")]
     [InlineData(16, 3, TestRegexType.Test, false, @"X:\_Movies\12 Angry Men (1957)\12 Angry Men [Remux-1080p]-other..mkv")]

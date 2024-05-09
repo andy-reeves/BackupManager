@@ -119,7 +119,7 @@
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts)(\s\(non-t[mv]db\))?\\.*-[a-zA-Z]*\.(m(kv|p(4|e?g))|ts|avi)$</FileDiscoveryRegEx>
-      <FileTestRegEx>^.*\\_(Movies|Comedy|Concerts)(?:\s\(non-t(m|v)db\))?\\[a-zA-Z0-9\(\)\s-']*\\[a-zA-Z\(\)0-9\s]*[^\\]*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer)\.(m(kv|p(4|e?g))|ts|avi)$</FileTestRegEx>
+      <FileTestRegEx>^.*\\_(Movies|Comedy|Concerts)(?:\s\(non-t(m|v)db\))?\\[a-zA-Z0-9\(\)\s-'&amp;]*\\[a-zA-Z\(\)0-9\s]*[^\\]*-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer)\.(m(kv|p(4|e?g))|ts|avi)$</FileTestRegEx>
       <Message>Movies, Comedy, and Concerts files special features must be in the root folder of the movie with a correct suffix</Message>
       <Name>Rule 15</Name>
       <Number>15</Number>
