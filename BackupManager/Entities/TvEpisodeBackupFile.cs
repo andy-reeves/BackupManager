@@ -32,17 +32,7 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
     }
 
     protected override string FileNameRegex =>
-        @"^(?:(.*)-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer)|(.*)\s(?:s?(\d{1,4})?(e\d{2,4}-?(?:e\d{2,4})?|\d{4}-\d\d-\d\d))([^\[]*?)(?:\[(DVD|SDTV|WEB(?:Rip|DL)|Bluray|HDTV)(?:-((?:480|576|720|1080|2160)p(?:\sRemux)??)??(?:\sProper)??)?\])??(?:\[((?:DV)??(?:(?:\s)??HDR10(?:Plus)??)??|PQ|HLG)\])??(?:\[(DTS(?:\sHD|-(?:X|ES|HD\s(?:M|HR)A))??|(?:TrueHD|EAC3)(?:\sAtmos)??|AC3|FLAC|PCM|MP[23]|A[AV]C|Opus|Vorbis|WMA)\s([1-8]\.[01])\])??(?:\[([hx]26[45]|MPEG(?:[24])?|XviD|V(?:C1|P9)|DivX|HEVC|AVC|RGB)\])??)\.(m(?:kv|p(?:4|e?g))|avi)$";
-
-    //  @"^(?:(.*)\s(?:s?(\d{1,4})?(e\d{2,4}-?(?:e\d{2,4})?|\d{4}-\d\d-\d\d))([^\[-]*)(?:\[(DVD|SDTV|WEB(?:Rip|DL)|Bluray|HDTV)(?:-((?:480|576|720|1080|2160)p(?:\sRemux)??)??(?:\sProper)??)?\])??(?:\[((?:DV)??(?:(?:\s)??HDR10(?:Plus)??)??|PQ|HLG)\])??(?:\[(DTS(?:\sHD|-(?:X|ES|HD\s(?:M|HR)A))??|(?:TrueHD|EAC3)(?:\sAtmos)??|AC3|FLAC|PCM|MP[23]|A[AV]C|Opus|Vorbis|WMA)\s([1-8]\.[01])\])??(?:\[([hx]26[45]|MPEG(?:[24])?|XviD|V(?:C1|P9)|DivX|HEVC|AVC|RGB)\])??|(.*)-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(?:kv|p(?:4|e?g))|avi)$";
-
-    //   @"^(?:(.*)\s(?:s?(\d{1,4})?(e\d{2,4}-?(?:e\d{2,4})?|\d{4}-\d\d-\d\d))([^\[-]*)(?:\[(DVD|SDTV|WEB(?:Rip|DL)|Bluray|HDTV)(?:-((?:480|576|720|1080|2160)p(?:\sRemux)??)??(?:\sProper)??)\])??(?:\[((?:DV)??(?:(?:\s)??HDR10(?:Plus)??)??|PQ|HLG)\])??(?:\[(DTS(?:\sHD|-(?:X|ES|HD\s(?:M|HR)A))??|(?:TrueHD|EAC3)(?:\sAtmos)??|AC3|FLAC|PCM|MP[23]|A[AV]C|Opus|Vorbis|WMA)\s([1-8]\.[01])\])??(?:\[([hx]26[45]|MPEG(?:[24])?|XviD|V(?:C1|P9)|DivX|HEVC|AVC|RGB)\])??|(.*)-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(?:kv|p(?:4|e?g))|avi)$";
-
-    //    @"^(?:(.*)\s(?:s?(\d{1,4})?(e\d{2,4}-?(?:e\d{2,4})?|\d{4}-\d\d-\d\d))([^\[]*)(?:\[(DVD|SDTV|WEB(?:Rip|DL)|Bluray|HDTV)(?:-(480|576|720|1080|2160)p(?:\sRemux)??)??(?:\sProper)??\])??(?:\[((?:DV)??(?:(?:\s)??HDR10(?:Plus)??)??|PQ|HLG)\])??(?:\[(DTS(?:\sHD|-(?:X|ES|HD\s(?:M|HR)A))??|(?:TrueHD|EAC3)(?:\sAtmos)??|AC3|FLAC|PCM|MP[23]|A[AV]C|Opus|Vorbis|WMA)\s([1-8]\.[01])\])??(?:\[([hx]26[45]|MPEG(?:[24])?|XviD|V(?:C1|P9)|DivX|HEVC|AVC|RGB)\])??|(.*)-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(?:kv|p(?:4|e?g))|avi)$";
-
-    //@"^(?:(.*)\s(?:s?(\d{1,4})?(e\d{2,4}-?(?:e\d{2,4})?|\d{4}-\d\d-\d\d))(\s.*)?(?:\[(DVD|SDTV|WEB(?:Rip|DL)|Bluray|HDTV)(?:-((?:480|576|720|1080|2160)p(?:\sRemux)?)(?:\sProper)?)?\](?:\[((?:DV)?(?:(?:\s)?HDR10(?:Plus)?)?|PQ|HLG)\])?\[(DTS(?:\sHD|-(?:X|ES|HD\s(?:M|HR)A))?|(?:TrueHD|EAC3)(?:\sAtmos)?|AC3|FLAC|PCM|MP[23]|A[AV]C|Opus|Vorbis|WMA)\s([1-8]\.[01])\]\[([hx]26[45]|MPEG(?:[24])?|XviD|V(?:C1|P9)|DivX|HEVC|AVC|RGB)\])|(.*)-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(?:kv|p(?:4|e?g))|avi)$";
-
-    //  @"^(?:(.*)\s(?:s?(\d{1,4})?(e\d{2,4}-?(?:e\d{2,4})?|\d{4}-\d\d-\d\d))(\s.*)?(?:\[(DVD|SDTV|WEB(?:Rip|DL)|Bluray|HDTV)(?:-((?:480|576|720|1080|2160)p(?:\sRemux)?))?\](?:\[((?:DV)?(?:(?:\s)?HDR10(?:Plus)?)?|PQ|HLG)\])?\[(DTS(?:\sHD|-(?:X|ES|HD\s(?:M|HR)A))?|(?:TrueHD|EAC3)(?:\sAtmos)?|AC3|FLAC|PCM|MP[23]|A[AV]C|Opus|Vorbis|WMA)\s([1-8]\.[01])\]\[([hx]26[45]|MPEG(?:[24])?|XviD|V(?:C1|P9)|DivX|HEVC|AVC|RGB)\])|(.*)-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(?:kv|p(?:4|e?g))|avi)$";
+        @"^(?:(.*)-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer)|(.*)\s(?:s?(\d{1,4})?(e\d{2,4}-?(?:e\d{2,4})?|\d{4}-\d\d-\d\d))(.*?)(?:\[(DVD|SDTV|WEB(?:Rip|DL)|Bluray|HDTV)(?:-((?:480|576|720|1080|2160)p(?:\sRemux)??)??(?:\sProper)??)?\])??(?:\[((?:DV)??(?:(?:\s)??HDR10(?:Plus)??)??|PQ|HLG)\])??(?:\[(DTS(?:\sHD|-(?:X|ES|HD\s(?:M|HR)A))??|(?:TrueHD|EAC3)(?:\sAtmos)??|AC3|FLAC|PCM|MP[23]|A[AV]C|Opus|Vorbis|WMA)\s([1-8]\.[01])\])??(?:\[([hx]26[45]|MPEG(?:[24])?|XviD|V(?:C1|P9)|DivX|HEVC|AVC|RGB)\])??)\.(m(?:kv|p(?:4|e?g))|avi)$";
 
     protected override string DirectoryRegex => @"^.*\\_TV(?:\s\(non-tvdb\))?\\(.*)\s{t[mv]db-(\d{1,7}?)}(?:\\(?:Season\s(\d+)|(Specials)))?$";
 
@@ -111,7 +101,8 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
             {
                 var audioChannels = MediaInfoAudioChannels.ToEnumMember();
                 if (!s.EndsWithIgnoreCase("]")) s += " ";
-                s += $"[{MediaInfoAudioCodec.ToEnumMember()} {audioChannels}][{MediaInfoVideoCodec.ToEnumMember()}]";
+                s += $"[{MediaInfoAudioCodec.ToEnumMember()} {audioChannels}]";
+                if (MediaInfoVideoCodec != MediaInfoVideoCodec.Unknown) s += $"[{MediaInfoVideoCodec.ToEnumMember()}]";
             }
         }
         s += $"{Extension}";
@@ -120,11 +111,11 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
 
     private bool ParseMediaInfoFromFileName(string filename)
     {
+        const int specialFeatureTitleGroup = 1;
+        const int specialFeatureGroup = 2;
         const int showTitleGroup = 3;
         const int seasonGroup = 4;
         const int episodeGroup = 5;
-
-        // ReSharper disable once IdentifierTypo
         const int episodeTitleGroup = 6;
         const int videoQualityGroup = 7;
         const int videoResolutionGroup = 8;
@@ -132,8 +123,6 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
         const int audioCodecGroup = 10;
         const int audioChannelsGroup = 11;
         const int videoCodecGroup = 12;
-        const int specialFeatureTitleGroup = 1; // 11;
-        const int specialFeatureGroup = 2; //12;
         const int extensionGroup = 13;
         var match = Regex.Match(filename, FileNameRegex);
         var videoCodec = match.Groups[videoCodecGroup].Value;

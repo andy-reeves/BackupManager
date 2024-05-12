@@ -32,6 +32,7 @@ public sealed class TvEpisodeBackupFileNameTests
     [InlineData(@"Z:\_TV (non-tvdb)\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV][MP3 2.0][AVC].mkv", true)]
     [InlineData(@"Z:\_TV\James Martin {tvdb-72860}\Season 1\James Martin s01e01.mkv", true)]
     [InlineData(@"\\nas1\assets1\_TV\Santiago of the Seas {tvdb-385447}\Season 2\Santiago of the Seas s02e14-e15 Peek-A-BOO! + Night of the Witches [WEBDL-1080p][EAC3 2.0][h265].mkv", true)]
+    [InlineData("Knight Rider s02e21-e22 Mouth of the Snake [a.k.a. All That Glitters] [Bluray-1080p][AC3 2.0][h264].mkv", true)]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     public void TvEpisodeTests(string fileName, bool isValidFileName, string expectedFileName = "")
     {
@@ -43,18 +44,18 @@ public sealed class TvEpisodeBackupFileNameTests
     }
 
     [Theory]
-    [InlineData("File15 s01e03 Kid in the Park [WEBDL-2160p][DV HDR10Plus][EAC3 Atmos 5.1][h264].mkv", true, "File15 s01e03 Kid in the Park [WEBDL-1080p][EAC3 5.1][h265].mkv")]
-    [InlineData(@"File8 s01e01 [Bluray-1080p Remux][DTS-HD MA 5.1][AVC].mkv", true, "File8 s01e01 [Bluray-1080p Remux][DTS-HD MA 5.1][h264].mkv")]
-    [InlineData(@"Percy Jackson and the Olympians s01e01 I Accidentally Vaporize My Pre-Algebra Teacher [SDTV][MP3 2.0][].avi", false, "Percy Jackson and the Olympians s01e01 I Accidentally Vaporize My Pre-Algebra Teacher [SDTV][MP3 2.0][].avi")]
-    [InlineData(@"James Martin's Saturday Morning s07e32 Raymond Blanc.mkv", true, "James Martin's Saturday Morning s07e32 Raymond Blanc [HDTV-1080p][AAC 2.0][h264].mkv")]
-    public void TvTests2(string param1, bool refreshReturnValue, string mediaFileNameOutputIfRenamed)
+    [InlineData("File15 s01e03 Kid in the Park [WEBDL-2160p][DV HDR10Plus][EAC3 Atmos 5.1][h264].mkv", true, true, "File15 s01e03 Kid in the Park [WEBDL-1080p][EAC3 5.1][h265].mkv")]
+    [InlineData(@"File8 s01e01 [Bluray-1080p Remux][DTS-HD MA 5.1][AVC].mkv", true, true, "File8 s01e01 [Bluray-1080p Remux][DTS-HD MA 5.1][h264].mkv")]
+    [InlineData(@"Percy Jackson and the Olympians s01e01 I Accidentally Vaporize My Pre-Algebra Teacher [SDTV][MP3 2.0].avi", true, false, "Percy Jackson and the Olympians s01e01 I Accidentally Vaporize My Pre-Algebra Teacher [SDTV][MP3 2.0].avi")]
+    [InlineData(@"James Martin's Saturday Morning s07e32 Raymond Blanc.mkv", true, true, "James Martin's Saturday Morning s07e32 Raymond Blanc [HDTV-1080p][AAC 2.0][h264].mkv")]
+    public void TvTests2(string param1, bool isValidFileName, bool refreshReturnValue, string mediaFileNameOutputIfRenamed)
     {
         var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
         var mediaFileName = File.Exists(param1) ? param1 : Path.Combine(testDataPath, param1);
         var tvEpisodeBackupFile = new TvEpisodeBackupFile(mediaFileName);
         if (tvEpisodeBackupFile.IsValidFileName) Assert.Equal(Path.GetFileName(mediaFileName), tvEpisodeBackupFile.GetFileName());
         Assert.Equal(refreshReturnValue, tvEpisodeBackupFile.RefreshMediaInfo());
-        Assert.Equal(refreshReturnValue, tvEpisodeBackupFile.IsValidFileName);
+        Assert.Equal(isValidFileName, tvEpisodeBackupFile.IsValidFileName);
         if (refreshReturnValue) Assert.Equal(mediaFileNameOutputIfRenamed, tvEpisodeBackupFile.GetFileName());
     }
 }
