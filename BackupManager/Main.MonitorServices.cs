@@ -83,27 +83,21 @@ internal sealed partial class Main
     [SupportedOSPlatform("windows")]
     private static void MonitorServiceToRestart(ProcessServiceMonitor monitor)
     {
-        Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal, string.Format(Resources.Restarting, monitor.ServiceToRestart));
+        Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.Restarting, monitor.ServiceToRestart));
 
-        if (Utils.RestartService(monitor.ServiceToRestart, monitor.Timeout * 1000))
-            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal, string.Format(Resources.MonitorServicesStarted, monitor.Name));
-        else
-            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.FailedToRestartService, monitor.Name));
+        Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
+            Utils.RestartService(monitor.ServiceToRestart, monitor.Timeout * 1000) ? string.Format(Resources.MonitorServicesStarted, monitor.Name) : string.Format(Resources.FailedToRestartService, monitor.Name));
     }
 
     private static void MonitorApplicationToStart(ProcessServiceMonitor monitor)
     {
-        Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal, string.Format(Resources.Starting, monitor.ApplicationToStart));
+        Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.Starting, monitor.ApplicationToStart));
         var processToStart = Environment.ExpandEnvironmentVariables(monitor.ApplicationToStart);
 
         if (File.Exists(processToStart))
         {
             var newProcess = Process.Start(processToStart, monitor.ApplicationToStartArguments);
-
-            if (newProcess == null)
-                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.FailedToStart, monitor.Name));
-            else
-                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal, string.Format(Resources.MonitorServicesStarted, monitor.Name));
+            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, newProcess == null ? string.Format(Resources.FailedToStart, monitor.Name) : string.Format(Resources.MonitorServicesStarted, monitor.Name));
         }
         else
             Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.FailedToStartAsNotFound, monitor.Name, monitor.ApplicationToStart, processToStart));
@@ -115,7 +109,7 @@ internal sealed partial class Main
 
         foreach (var toKill in processesToKill)
         {
-            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal, string.Format(Resources.StoppingAllProcessesThatMatch, toKill));
+            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.StoppingAllProcessesThatMatch, toKill));
             _ = Utils.KillProcesses(toKill);
         }
     }
