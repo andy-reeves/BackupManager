@@ -18,7 +18,7 @@ public sealed class UtilsGetApplicationVersion
 {
     [Theory]
     [InlineData("1.4.2", ApplicationType.Bazarr)]
-    [InlineData("1.40.2.8395", ApplicationType.PlexPass)]
+    [InlineData("1.40.3.8502", ApplicationType.PlexPass)]
     [InlineData("1.17.2.4511", ApplicationType.Prowlarr)]
     [InlineData("5.6.0.8846", ApplicationType.Radarr)]
     [InlineData("4.3.1", ApplicationType.SABnzbd)]
@@ -67,7 +67,7 @@ public sealed class UtilsGetVersionPlex
 
     [Theory]
     [InlineData("1.40.2.8395", ApplicationType.Plex)]
-    [InlineData("1.40.2.8395", ApplicationType.PlexPass)]
+    [InlineData("1.40.3.8502", ApplicationType.PlexPass)]
     public void GetLatestVersionNumber(string expectedVersionNumber, ApplicationType applicationType, string branchName = "master")
     {
         if (applicationType != ApplicationType.PlexPass || Utils.Config.PlexToken.HasValue()) Assert.Equal(expectedVersionNumber, Utils.GetLatestApplicationVersionNumber(applicationType, branchName));
