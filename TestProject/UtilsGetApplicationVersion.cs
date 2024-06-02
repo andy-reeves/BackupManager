@@ -21,8 +21,8 @@ public sealed class UtilsGetApplicationVersion
     [InlineData("1.40.3.8502", ApplicationType.PlexPass)]
     [InlineData("1.17.2.4511", ApplicationType.Prowlarr)]
     [InlineData("5.6.0.8846", ApplicationType.Radarr)]
-    [InlineData("4.3.1", ApplicationType.SABnzbd)]
-    [InlineData("4.0.4.1491", ApplicationType.Sonarr)]
+    [InlineData("4.3.2", ApplicationType.SABnzbd)]
+    [InlineData("4.0.5.1710", ApplicationType.Sonarr)]
     public void GetVersionNumber(string expectedInstalledVersionNumber, ApplicationType applicationType)
     {
         Assert.Equal(expectedInstalledVersionNumber, Utils.GetApplicationVersionNumber(applicationType));
@@ -35,7 +35,7 @@ public sealed class UtilsGetApplicationVersion
 public sealed class UtilsGetVersionSABnzbd
 {
     [Theory]
-    [InlineData("4.3.1", ApplicationType.SABnzbd)]
+    [InlineData("4.3.2", ApplicationType.SABnzbd)]
     public void GetLatestVersionNumber(string expectedVersionNumber, ApplicationType applicationType, string branchName = "master")
     {
         Assert.Equal(expectedVersionNumber, Utils.GetLatestApplicationVersionNumber(applicationType, branchName));
@@ -47,8 +47,8 @@ public sealed class UtilsGetVersionSABnzbd
 public sealed class UtilsGetVersionProwlarr
 {
     [Theory]
-    [InlineData("1.17.2", ApplicationType.Prowlarr)]
-    [InlineData("1.18.0", ApplicationType.Prowlarr, "develop")]
+    [InlineData("1.18.0", ApplicationType.Prowlarr)]
+    [InlineData("1.19.0", ApplicationType.Prowlarr, "develop")]
     public void GetLatestVersionNumber(string expectedVersionNumber, ApplicationType applicationType, string branchName = "master")
     {
         Assert.Equal(expectedVersionNumber, Utils.GetLatestApplicationVersionNumber(applicationType, branchName));
@@ -91,7 +91,7 @@ public sealed class UtilsGetVersionBazarr
 public sealed class UtilsGetVersionSonarr
 {
     [Theory]
-    [InlineData("4.0.4.1491", ApplicationType.Sonarr)]
+    [InlineData("4.0.5.1710", ApplicationType.Sonarr)]
 
     // [InlineData("4.0.4.1650", ApplicationType.Sonarr, "develop")]
     // [InlineData("4.0.4.1491", ApplicationType.Sonarr, "nightly")]

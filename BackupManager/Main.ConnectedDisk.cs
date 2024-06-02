@@ -162,6 +162,7 @@ internal sealed partial class Main
             UpdateStatusLabel(string.Format(Resources.Scanning, directoryToCheck), i + 1);
             UpdateMediaFilesCountDisplay();
             if (backupDiskFiles.Length > (Utils.InDebugBuild ? 2 : 100)) ConnectedDiskUpdatePercentComplete(i, ref reportedPercent, disk);
+            Utils.Trace($"{backupDiskFileFullPath} has Index folder and relative path={backupFileIndexFolderRelativePath}");
 
             if (mediaBackup.Contains(backupFileIndexFolderRelativePath))
             {
@@ -246,6 +247,7 @@ internal sealed partial class Main
         // Alternatively, find it by the contents hashcode as that's (almost guaranteed unique)
         // and then rename it 
         // if we try to rename, and it exists at the destination already then we delete the file instead
+        Utils.TraceIn();
         var hashToCheck = Utils.File.GetShortMd5Hash(backupDiskFileFullPath);
         var file = mediaBackup.GetBackupFileFromContentsHashcode(hashToCheck);
 
@@ -253,6 +255,7 @@ internal sealed partial class Main
         {
             ConnectedDiskRemoveExtraFile(deleteExtraFiles, backupDiskFileFullPath, disk);
             diskInfoMessageWasTheLastSent = false;
+            Utils.TraceOut();
             return;
         }
         var destFileName = file.BackupDiskFullPath(disk.BackupPath);
@@ -275,10 +278,12 @@ internal sealed partial class Main
         {
             // file is checked so flag it as such
             file.BeingCheckedNow = false;
+            Utils.TraceOut();
             return;
         }
         Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, string.Format(Resources.HashCodesError, file.FullPath));
         diskInfoMessageWasTheLastSent = false;
+        Utils.TraceOut();
     }
 
     /// <summary>
@@ -291,6 +296,7 @@ internal sealed partial class Main
     /// <returns></returns>
     private void ConnectedDiskBackupDiskFileIsInTheHashtable(string backupDiskFileFullPath, BackupDisk disk, ref bool diskInfoMessageWasTheLastSent, bool deleteExtraFiles, string hashKey)
     {
+        Utils.TraceIn();
         var backupFile = mediaBackup.GetBackupFileFromHashKey(hashKey);
         var backupFileSourceDiskFullPath = backupFile.FullPath;
 
@@ -312,6 +318,7 @@ internal sealed partial class Main
                 {
                     // file is checked so flag it as such
                     backupFile.BeingCheckedNow = false;
+                    Utils.TraceOut();
                     return;
                 }
                 Utils.Log("Checking LastWriteTime on files as the hash codes are different");
@@ -338,6 +345,7 @@ internal sealed partial class Main
                     else
                         Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, $"Would be deleting {backupDiskFileFullPath}. ");
                 }
+                Utils.TraceOut();
                 return;
             }
         }
@@ -349,6 +357,7 @@ internal sealed partial class Main
         }
         ConnectedDiskRemoveExtraFile(deleteExtraFiles, backupDiskFileFullPath, disk);
         diskInfoMessageWasTheLastSent = false;
+        Utils.TraceOut();
     }
 
     private void ConnectedDiskUpdatePercentComplete(int i, ref int reportedPercent, BackupDisk disk)
