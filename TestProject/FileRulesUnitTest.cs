@@ -48,6 +48,8 @@ public sealed class FileRulesUnitTest
     [InlineData(3, 6, TestRegexType.Test, false, @"\\nas2\assets3\_Music\ABBA\More ABBA Gold\01-01 Summer Night City.mp3")]
     [InlineData(3, 7, TestRegexType.Test, true, @"\\nas2\assets3\_Music\ABBA\More ABBA Gold\01-101- Summer Night City.mp3")]
     [InlineData(3, 8, TestRegexType.Test, true, @"\\nas2\assets3\_Music\ABBA\More ABBA Gold\01-101- Summer Night City.m4a")]
+    [InlineData(3, 9, TestRegexType.Test, false, @"\\nas2\assets3\_Music\ABBA\More ABBA Gold\01-101- Summer Night City.flaca")]
+    [InlineData(3, 10, TestRegexType.Test, true, @"\\nas2\assets3\_Music\ABBA\More ABBA Gold\01-101- Summer Night City.flac")]
     [InlineData(4, 1, TestRegexType.Discovery, true, @"Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv")]
     [InlineData(4, 2, TestRegexType.Test, true, @"X:\_TV\Chernobyl {tvdb-360893}\Season 1\Chernobyl s01e01 12345 [Bluray-2160p Remux].mkv")]
     [InlineData(4, 3, TestRegexType.Test, true, @"X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-featurette.mkv")]
