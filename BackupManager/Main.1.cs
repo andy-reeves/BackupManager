@@ -331,8 +331,8 @@ internal sealed partial class Main
                 Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.DirectoryIsNotWritable, directory));
         }
         mediaBackup.Watcher.Directories = writableDirectories.ToArray();
-        mediaBackup.Watcher.ProcessChangesInterval = config.DirectoriesProcessChangesTimer * 1000;
-        mediaBackup.Watcher.ScanInterval = config.DirectoriesScanTimer * 1000;
+        mediaBackup.Watcher.ProcessChangesInterval = config.DirectoriesProcessChangesTimer;
+        mediaBackup.Watcher.ScanInterval = config.DirectoriesScanTimer;
         mediaBackup.Watcher.Filter = "*.*";
         mediaBackup.Watcher.RegexFilter = config.DirectoriesFilterRegEx;
         mediaBackup.Watcher.IncludeSubdirectories = true;

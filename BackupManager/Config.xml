@@ -45,8 +45,8 @@
 
   <DirectoriesToHealthCheckOnOff>true</DirectoriesToHealthCheckOnOff>
 
-  <!-- Minimum age of the last change to a directory before we will scan it in seconds (250) -->
-  <DirectoriesMinimumAgeBeforeScanning>20</DirectoriesMinimumAgeBeforeScanning>
+  <!-- Minimum age of the last change to a directory before we will scan it in milliseconds (250) -->
+  <DirectoriesMinimumAgeBeforeScanning>20000</DirectoriesMinimumAgeBeforeScanning>
 
   <!-- Minimum critical directory space in MB -->
   <DirectoriesMinimumCriticalSpace>150000</DirectoriesMinimumCriticalSpace>
@@ -57,8 +57,8 @@
   <!-- Minimum write speed in MB/s -->
   <DirectoriesMinimumWriteSpeed>20</DirectoriesMinimumWriteSpeed>
 
-  <!-- Number of seconds between checking all the changed file notifications for folders to scan later (180) -->
-  <DirectoriesProcessChangesTimer>10</DirectoriesProcessChangesTimer>
+  <!-- Number of milliseconds between checking all the changed file notifications for folders to scan later (180) -->
+  <DirectoriesProcessChangesTimer>10000</DirectoriesProcessChangesTimer>
 
   <!-- Whether to check video files are named corrected and rename them if not when doing full scans -->
   <DirectoriesRenameVideoFilesForFullScansOnOff>true</DirectoriesRenameVideoFilesForFullScansOnOff>
@@ -69,19 +69,20 @@
   <!-- Any files matching this will be checked for correct name and renamed if not correct -->
   <DirectoriesRenameVideoFilesRegEx>^.*\[([hx]26[45]|MPEG([24])?|HEVC|XviD|V(C1|P9)|AVC|DivX|RGB)\]\.(?:m(?:kv|p(4|e?g))|avi)$</DirectoriesRenameVideoFilesRegEx>
 
-  <!-- Number of seconds between checking all the directories ready to scan to see if they are old enough now (300) -->
-  <DirectoriesScanTimer>20</DirectoriesScanTimer>
+  <!-- Number of milliseconds between checking all the directories ready to scan to see if they are old enough now (300) -->
+  <DirectoriesScanTimer>20000</DirectoriesScanTimer>
 
   <FilesToScanForChanges>5</FilesToScanForChanges>
 
   <!-- When true check for latest versions of applications -->
   <MonitoringCheckLatestVersions>true</MonitoringCheckLatestVersions>
 
-  <!-- Monitor interval in seconds -->
-  <MonitoringInterval>180</MonitoringInterval>
+  <!-- Monitor interval in milliseconds -->
+  <MonitoringInterval>180000</MonitoringInterval>
 
   <!-- When true the service monitoring starts when the app starts -->
   <MonitoringOnOff>false</MonitoringOnOff>
+  
   <MonitoringStartDelayOnOff>true</MonitoringStartDelayOnOff>
 
   <PlexToken />
@@ -129,7 +130,7 @@
   <Monitors>
     <Monitor>
       <Url />
-      <Timeout>30</Timeout>
+      <Timeout>30000</Timeout>
       <ProcessToKill>plex media server,ffmpeg</ProcessToKill>
       <ApplicationToStart>"%ProgramFiles(x86)%\Plex\Plex Media Server\Plex Media Server.exe"</ApplicationToStart>
       <Name>Plex</Name>

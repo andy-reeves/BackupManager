@@ -33,7 +33,7 @@ internal sealed partial class Main : Form
             // the most common is DirectoryNotFound for a network path
             // wait a bit and then attempt restart the watcher
             var ct = new CancellationToken();
-            Task.Delay(mediaBackup.Config.DirectoriesFileChangeWatcherRestartDelay * 1000, ct).Wait(ct);
+            Task.Delay(mediaBackup.Config.DirectoriesFileChangeWatcherRestartDelay, ct).Wait(ct);
             _ = mediaBackup.Watcher.Reset();
             _ = mediaBackup.Watcher.Start();
         }
@@ -383,7 +383,7 @@ internal sealed partial class Main : Form
         }
         else
         {
-            monitoringTimer.Interval = mediaBackup.Config.MonitoringInterval * 1000;
+            monitoringTimer.Interval = mediaBackup.Config.MonitoringInterval;
 
             if (mediaBackup.Config.MonitoringStartDelayOnOff)
                 Utils.LogWithPushover(BackupAction.ApplicationMonitoring, $"Starting in {Utils.FormatTimeFromSeconds(mediaBackup.Config.MonitoringInterval)}");

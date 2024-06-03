@@ -40,14 +40,14 @@ public class ProcessServiceMonitor
     public string Url { get; set; }
 
     /// <summary>
-    ///     The timeout in seconds
+    ///     The timeout in milliseconds
     /// </summary>
     public int Timeout { get; set; }
 
     /// <summary>
-    ///     The delay before attempting the recovery of the service in seconds. Default 30 seconds.
+    ///     The delay in milliseconds before attempting the recovery of the service in seconds. Default 30,000 milliseconds.
     /// </summary>
-    public int DelayBeforeRestarting { get; set; } = 30;
+    public int DelayBeforeRestarting { get; set; } = 30_000;
 
     /// <summary>
     ///     The name of any processes to kill if the monitor is detected down. Wildcards allowed.

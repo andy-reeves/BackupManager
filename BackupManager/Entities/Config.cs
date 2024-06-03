@@ -93,7 +93,7 @@ public sealed class Config
 
     /// <summary>
     ///     If an error occurs whilst monitoring Directories we wait for this long before attempting to Reset the Watcher in
-    ///     seconds (120)
+    ///     milliseconds (120)
     /// </summary>
     public int DirectoriesFileChangeWatcherRestartDelay { get; set; }
 
@@ -108,7 +108,7 @@ public sealed class Config
     public string DirectoriesRenameVideoFilesRegEx { get; set; }
 
     /// <summary>
-    ///     The minimum age of changes in directories before we schedule a scan in seconds
+    ///     The minimum age of changes in directories before we schedule a scan in milliseconds
     /// </summary>
     public int DirectoriesMinimumAgeBeforeScanning { get; set; }
 
@@ -128,12 +128,12 @@ public sealed class Config
     public int DirectoriesMinimumWriteSpeed { get; set; }
 
     /// <summary>
-    ///     How often we process the detected directory changes in seconds
+    ///     How often we process the detected directory changes in milliseconds
     /// </summary>
     public int DirectoriesProcessChangesTimer { get; set; }
 
     /// <summary>
-    ///     How often we scan the directories we've detected changes on in seconds
+    ///     How often we scan the directories we've detected changes on in milliseconds
     /// </summary>
     public int DirectoriesScanTimer { get; set; }
 
@@ -158,7 +158,7 @@ public sealed class Config
     public bool MonitoringCheckLatestVersions { get; set; }
 
     /// <summary>
-    ///     Interval in seconds
+    ///     Monitoring Interval in milliseconds
     /// </summary>
     public int MonitoringInterval { get; set; }
 

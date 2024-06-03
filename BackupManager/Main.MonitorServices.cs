@@ -25,7 +25,7 @@ internal sealed partial class Main
 
         monitoringExecutingRightNow = true;
 
-        foreach (var monitor in mediaBackup.Config.Monitors.Where(static monitor => monitor.Port > 0 ? !Utils.ConnectionExists(monitor.Url, monitor.Port) : !Utils.UrlExists(monitor.Url, monitor.Timeout * 1000)))
+        foreach (var monitor in mediaBackup.Config.Monitors.Where(static monitor => monitor.Port > 0 ? !Utils.ConnectionExists(monitor.Url, monitor.Port) : !Utils.UrlExists(monitor.Url, monitor.Timeout)))
         {
             monitor.UpdateFailures(DateTime.Now);
             if (monitor.FailureRetryExceeded) continue;
@@ -34,7 +34,7 @@ internal sealed partial class Main
             Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.ServiceIsDown, monitor.Name, monitor.Failures.Count, s, Utils.FormatTimeFromSeconds(monitor.FailureTimePeriod)));
             if (monitor.ApplicationType > ApplicationType.Unknown && ApplicationMonitorNewerVersionCheck(monitor)) continue;
 
-            Utils.Wait(monitor.DelayBeforeRestarting * 1000);
+            Utils.Wait(monitor.DelayBeforeRestarting);
             if (monitor.ProcessToKill.HasValue()) MonitorKillProcesses(monitor);
             if (monitor.ApplicationToStart.HasValue()) MonitorApplicationToStart(monitor);
             if (monitor.ServiceToRestart.HasValue()) MonitorServiceToRestart(monitor);
@@ -85,7 +85,7 @@ internal sealed partial class Main
         Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.Restarting, monitor.ServiceToRestart));
 
         Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
-            Utils.RestartService(monitor.ServiceToRestart, monitor.Timeout * 1000) ? string.Format(Resources.MonitorServicesStarted, monitor.Name) : string.Format(Resources.FailedToRestartService, monitor.Name));
+            Utils.RestartService(monitor.ServiceToRestart, monitor.Timeout) ? string.Format(Resources.MonitorServicesStarted, monitor.Name) : string.Format(Resources.FailedToRestartService, monitor.Name));
     }
 
     private static void MonitorApplicationToStart(ProcessServiceMonitor monitor)

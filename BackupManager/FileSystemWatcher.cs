@@ -68,9 +68,9 @@ internal sealed class FileSystemWatcher
     }
 
     /// <summary>
-    ///     Minimum time in milliseconds since this directory or any items changed in the directory) was last changed before we
-    ///     will
-    ///     raise any scan directories events. Default is 300 seconds.
+    ///     Minimum time in milliseconds since this directory (or any items changed in the directory) was last changed before
+    ///     we
+    ///     will raise any scan directories events. Default is 300 seconds.
     /// </summary>
     internal int MinimumAgeBeforeScanEventRaised { get; set; } = 300_000;
 
