@@ -34,6 +34,7 @@ internal sealed partial class Main
             Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.ServiceIsDown, monitor.Name, monitor.Failures.Count, s, Utils.FormatTimeFromSeconds(monitor.FailureTimePeriod)));
             if (monitor.ApplicationType > ApplicationType.Unknown && ApplicationMonitorNewerVersionCheck(monitor)) continue;
 
+            Utils.Wait(monitor.DelayBeforeRestarting * 1000);
             if (monitor.ProcessToKill.HasValue()) MonitorKillProcesses(monitor);
             if (monitor.ApplicationToStart.HasValue()) MonitorApplicationToStart(monitor);
             if (monitor.ServiceToRestart.HasValue()) MonitorServiceToRestart(monitor);

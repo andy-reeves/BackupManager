@@ -85,6 +85,11 @@ internal sealed partial class Main
         }
     }
 
+    /// <summary>
+    ///     Waits 5 seconds
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="ct"></param>
     private void WaitForNewDisk(string message, CancellationToken ct)
     {
         Utils.TraceIn();

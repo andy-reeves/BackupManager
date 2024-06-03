@@ -45,6 +45,11 @@ public class ProcessServiceMonitor
     public int Timeout { get; set; }
 
     /// <summary>
+    ///     The delay before attempting the recovery of the service in seconds. Default 30 seconds.
+    /// </summary>
+    public int DelayBeforeRestarting { get; set; } = 30;
+
+    /// <summary>
     ///     The name of any processes to kill if the monitor is detected down. Wildcards allowed.
     /// </summary>
     public string ProcessToKill { get; set; }
@@ -65,7 +70,7 @@ public class ProcessServiceMonitor
     public string Name { get; set; }
 
     /// <summary>
-    ///     If the port specified is greater than 0 then the connection is checked. Otherwise its assumed to be a URL.
+    ///     If the port specified is greater than 0 then the connection is checked. Otherwise, it's assumed to be a URL.
     /// </summary>
     public int Port { get; set; }
 
@@ -75,7 +80,7 @@ public class ProcessServiceMonitor
     public string ServiceToRestart { get; set; }
 
     /// <summary>
-    ///     Number of seconds to count the number of service/process failures. If this is exceeded then the a service
+    ///     Number of seconds to count the number of service/process failures. If this is exceeded then the service
     ///     stop/restart is no longer attempted
     /// </summary>
     public int FailureTimePeriod { get; set; }
@@ -86,7 +91,7 @@ public class ProcessServiceMonitor
     public int MaximumFailures { get; set; }
 
     /// <summary>
-    ///     Once we've failed too much we set this to TRUE and don't try anymore
+    ///     Once we've failed too much we set this to True and don't try anymore
     /// </summary>
     [XmlIgnore]
     public bool FailureRetryExceeded { get; set; }
@@ -97,7 +102,7 @@ public class ProcessServiceMonitor
 
         if (FailureRetryExceeded)
         {
-            _ = Utils.TraceOut("FailureRetry=TRUE");
+            _ = Utils.TraceOut("FailureRetryExceeded=TRUE");
             return;
         }
         Failures.Add(newFailure);
@@ -113,11 +118,14 @@ public class ProcessServiceMonitor
 
         if (Failures.Count > MaximumFailures)
         {
-            Utils.Trace("Setting FailureRetry=TRUE");
+            Utils.Trace("Setting FailureRetryExceeded=True");
             FailureRetryExceeded = true;
         }
         else
+        {
+            Utils.Trace("Setting FailureRetryExceeded=False");
             FailureRetryExceeded = false;
+        }
         _ = Utils.TraceOut($"Failures.Count = {Failures.Count}");
     }
 }

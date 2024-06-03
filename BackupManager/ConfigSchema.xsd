@@ -184,6 +184,7 @@
                   <xs:all>
                     <xs:element type="xs:string" name="Url" maxOccurs="1" minOccurs="0" />
                     <xs:element type="xs:int" name="Timeout" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="xs:int" name="DelayBeforeRestarting" maxOccurs="1" minOccurs="0" />
                     <xs:element type="xs:string" name="ProcessToKill" maxOccurs="1" minOccurs="0" />
                     <xs:element type="xs:string" name="ApplicationToStart" maxOccurs="1" minOccurs="0" />
                     <xs:element type="xs:string" name="ApplicationToStartArguments" maxOccurs="1" minOccurs="0" />
