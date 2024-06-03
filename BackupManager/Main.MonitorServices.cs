@@ -25,15 +25,11 @@ internal sealed partial class Main
 
         monitoringExecutingRightNow = true;
 
-        foreach (var monitor in mediaBackup.Config.Monitors.Where(static monitor => monitor.Enabled && monitor.Port > 0 ? !Utils.ConnectionExists(monitor.Url, monitor.Port) : !Utils.UrlExists(monitor.Url, monitor.Timeout * 1000)))
+        foreach (var monitor in mediaBackup.Config.Monitors.Where(static monitor => monitor.Port > 0 ? !Utils.ConnectionExists(monitor.Url, monitor.Port) : !Utils.UrlExists(monitor.Url, monitor.Timeout * 1000)))
         {
             monitor.UpdateFailures(DateTime.Now);
+            if (monitor.FailureRetryExceeded) continue;
 
-            if (monitor.FailureRetryExceeded)
-            {
-                monitor.Enabled = false;
-                continue;
-            }
             var s = monitor.Failures.Count > 1 ? "s" : string.Empty;
             Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.ServiceIsDown, monitor.Name, monitor.Failures.Count, s, Utils.FormatTimeFromSeconds(monitor.FailureTimePeriod)));
             if (monitor.ApplicationType > ApplicationType.Unknown && ApplicationMonitorNewerVersionCheck(monitor)) continue;
@@ -43,22 +39,19 @@ internal sealed partial class Main
             if (monitor.ServiceToRestart.HasValue()) MonitorServiceToRestart(monitor);
         }
         if (mediaBackup.Config.MonitoringCheckLatestVersions) MonitorCheckLatestVersions();
-        DirectoriesHealthCheck();
+        if (mediaBackup.Config.DirectoriesToHealthCheckOnOff) DirectoriesHealthCheck();
         monitoringExecutingRightNow = false;
     }
 
     private void DirectoriesHealthCheck()
     {
-        if (mediaBackup.Config.DirectoriesToHealthCheckOnOff)
+        // check the backup directories and the health check directories too
+        foreach (var directory in mediaBackup.Config.DirectoriesToBackup.Concat(mediaBackup.Config.DirectoriesToHealthCheck).Where(static directory => !Utils.Directory.IsWritable(directory)))
         {
-            // check the backup directories and the health check directories too
-            foreach (var directory in mediaBackup.Config.DirectoriesToBackup.Concat(mediaBackup.Config.DirectoriesToHealthCheck).Where(static directory => !Utils.Directory.IsWritable(directory)))
-            {
-                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.DirectoryIsNotWritable, directory));
+            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.DirectoryIsNotWritable, directory));
 
-                // Turn off any more directory monitoring
-                mediaBackup.Config.DirectoriesToHealthCheckOnOff = false;
-            }
+            // Turn off any more directory monitoring
+            mediaBackup.Config.DirectoriesToHealthCheckOnOff = false;
         }
     }
 

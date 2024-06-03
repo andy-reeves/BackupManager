@@ -17,7 +17,7 @@ namespace TestProject;
 public sealed class UtilsGetApplicationVersion
 {
     [Theory]
-    [InlineData("1.4.2", ApplicationType.Bazarr)]
+    [InlineData("1.4.3", ApplicationType.Bazarr)]
     [InlineData("1.40.3.8502", ApplicationType.PlexPass)]
     [InlineData("1.18.0.4543", ApplicationType.Prowlarr)]
     [InlineData("5.6.0.8846", ApplicationType.Radarr)]
@@ -79,7 +79,7 @@ public sealed class UtilsGetVersionPlex
 public sealed class UtilsGetVersionBazarr
 {
     [Theory]
-    [InlineData("1.4.2", ApplicationType.Bazarr)]
+    [InlineData("1.4.3", ApplicationType.Bazarr)]
     public void GetLatestVersionNumber(string expectedVersionNumber, ApplicationType applicationType, string branchName = "master")
     {
         Assert.Equal(expectedVersionNumber, Utils.GetLatestApplicationVersionNumber(applicationType, branchName));
