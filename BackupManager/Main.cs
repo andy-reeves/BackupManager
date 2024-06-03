@@ -386,7 +386,7 @@ internal sealed partial class Main : Form
             monitoringTimer.Interval = mediaBackup.Config.MonitoringInterval;
 
             if (mediaBackup.Config.MonitoringStartDelayOnOff)
-                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, $"Starting in {Utils.FormatTimeFromSeconds(mediaBackup.Config.MonitoringInterval)}");
+                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, $"Starting in {Utils.FormatTimeFromSeconds(mediaBackup.Config.MonitoringInterval / 1000)}");
             else
             {
                 Utils.LogWithPushover(BackupAction.ApplicationMonitoring, Resources.Started, true);
