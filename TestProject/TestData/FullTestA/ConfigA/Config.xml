@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+?xml version="1.0" encoding="utf-8"?>
 
 <Config xmlns="ConfigSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -25,13 +25,13 @@
   <DirectoriesFileChangeWatcherOnOff>false</DirectoriesFileChangeWatcherOnOff>
 
   <!-- If an error occurs whilst monitoring Directories we wait for this long before attempting to Reset the Watcher in seconds (120 - 2 mins) -->
-  <DirectoriesFileChangeWatcherRestartDelay>120</DirectoriesFileChangeWatcherRestartDelay>
+  <DirectoriesFileChangeWatcherRestartDelay>120000</DirectoriesFileChangeWatcherRestartDelay>
 
   <!-- Only files matching this filter are used for File System scanning -->
   <DirectoriesFilterRegEx />
 
   <!-- Minimum age of the last change to a directory before we will scan it in seconds (3600=1h) -->
-  <DirectoriesMinimumAgeBeforeScanning>3600</DirectoriesMinimumAgeBeforeScanning>
+  <DirectoriesMinimumAgeBeforeScanning>3600000</DirectoriesMinimumAgeBeforeScanning>
 
   <!-- MinimumCriticalMasterFolderSpace in MB -->
   <DirectoriesMinimumCriticalSpace>150000</DirectoriesMinimumCriticalSpace>
@@ -43,7 +43,7 @@
   <DirectoriesMinimumWriteSpeed>20000</DirectoriesMinimumWriteSpeed>
 
   <!-- Number of seconds between checking all the changed file notifications for folders to scan later (3600=1h) -->
-  <DirectoriesProcessChangesTimer>3600</DirectoriesProcessChangesTimer>
+  <DirectoriesProcessChangesTimer>3600000</DirectoriesProcessChangesTimer>
 
   <!-- Whether to check video files are named corrected and rename them if not -->
   <DirectoriesRenameVideoFilesOnOff>true</DirectoriesRenameVideoFilesOnOff>
@@ -81,8 +81,8 @@
   <!-- When true check for latest versions of applications-->
   <MonitoringCheckLatestVersions>false</MonitoringCheckLatestVersions>
 
-  <!-- Monitor interval in seconds (60=1m) -->
-  <MonitoringInterval>60</MonitoringInterval>
+  <!-- Monitor interval in milli seconds (60=1m) -->
+  <MonitoringInterval>60000</MonitoringInterval>
 
   <!-- When true the service monitoring starts when the app starts -->
   <MonitoringOnOff>false</MonitoringOnOff>
