@@ -91,6 +91,12 @@ public class ProcessServiceMonitor
     [XmlIgnore]
     public bool FailureRetryExceeded { get; set; }
 
+    /// <summary>
+    ///     When True the monitor is checked
+    /// </summary>
+    [XmlIgnore]
+    public bool Enabled { get; set; }
+
     public void UpdateFailures(DateTime newFailure)
     {
         Utils.TraceIn();

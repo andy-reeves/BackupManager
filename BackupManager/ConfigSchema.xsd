@@ -100,6 +100,11 @@
             <xs:documentation>Monitor interval in seconds</xs:documentation>
           </xs:annotation>
         </xs:element>
+        <xs:element type="xs:boolean" name="DirectoriesToHealthCheckOnOff">
+          <xs:annotation>
+            <xs:documentation>When true the directories are health checked</xs:documentation>
+          </xs:annotation>
+        </xs:element>
         <xs:element type="xs:boolean" name="MonitoringOnOff">
           <xs:annotation>
             <xs:documentation>When true the service monitoring starts when the app starts</xs:documentation>

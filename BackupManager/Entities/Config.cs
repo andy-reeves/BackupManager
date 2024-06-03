@@ -243,6 +243,11 @@ public sealed class Config
     /// </summary>
     public bool SpeedTestOnOff { get; set; }
 
+    /// <summary>
+    ///     True to check directories for health
+    /// </summary>
+    public bool DirectoriesToHealthCheckOnOff { get; set; }
+
     public static Config Load(string path)
     {
         try
