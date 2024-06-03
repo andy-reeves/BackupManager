@@ -602,6 +602,8 @@ internal static partial class Utils
 
     internal static void Wait(int howManyMillisecondsToWait)
     {
+        if (howManyMillisecondsToWait <= 0) return;
+
         var howLongToWait = TimeSpan.FromMilliseconds(howManyMillisecondsToWait);
         var sw = Stopwatch.StartNew();
 

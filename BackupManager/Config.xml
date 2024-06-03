@@ -42,9 +42,9 @@
 
   <!-- Only files matching this filter are used for File System scanning -->
   <DirectoriesFilterRegEx>(.*(?&lt;!\.tmp)|.*\\_Backup\\.*)$</DirectoriesFilterRegEx>
-  
+
   <DirectoriesToHealthCheckOnOff>true</DirectoriesToHealthCheckOnOff>
-  
+
   <!-- Minimum age of the last change to a directory before we will scan it in seconds (250) -->
   <DirectoriesMinimumAgeBeforeScanning>20</DirectoriesMinimumAgeBeforeScanning>
 

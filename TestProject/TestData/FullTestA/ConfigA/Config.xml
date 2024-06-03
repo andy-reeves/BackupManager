@@ -57,8 +57,8 @@
   <!-- Number of seconds between checking all the directories ready to scan to see if they are old enough now (3600=1h) -->
   <DirectoriesScanTimer>3600</DirectoriesScanTimer>
 
- <DirectoriesToHealthCheckOnOff>true</DirectoriesToHealthCheckOnOff>
-  
+  <DirectoriesToHealthCheckOnOff>true</DirectoriesToHealthCheckOnOff>
+
   <!-- Regex to match files we will check for duplicate hash codes -->
   <DuplicateContentHashCodesDiscoveryRegex>^.*\\_(Movies|Comedy|Concerts|TV)(\s\(non-t[mv]db\))?\\.*$</DuplicateContentHashCodesDiscoveryRegex>
 
