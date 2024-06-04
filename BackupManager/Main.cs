@@ -711,7 +711,7 @@ internal sealed partial class Main : Form
                 }
                 else
                 {
-                    var text = string.Format(Resources.DirectoryScanSkipped, Utils.FormatTimeFromSeconds(mediaBackup.Config.DirectoriesScanTimer));
+                    var text = string.Format(Resources.DirectoryScanSkipped, Utils.FormatTimeFromSeconds(mediaBackup.Config.DirectoriesScanTimer / 1000));
                     Utils.LogWithPushover(BackupAction.ScanDirectory, text, true);
                     _ = mediaBackup.Watcher.DirectoriesToScan.AddOrUpdate(directoryToScan);
                 }
