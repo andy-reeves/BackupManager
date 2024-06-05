@@ -80,7 +80,7 @@ public class ProcessServiceMonitor
     public string ServiceToRestart { get; set; }
 
     /// <summary>
-    ///     Number of seconds to count the number of service/process failures. If this is exceeded then the service
+    ///     Number of milliseconds to count the number of service/process failures. If this is exceeded then the service
     ///     stop/restart is no longer attempted
     /// </summary>
     public int FailureTimePeriod { get; set; }
@@ -110,7 +110,7 @@ public class ProcessServiceMonitor
         for (var i = Failures.Count - 1; i >= 0; i--)
         {
             var a = Failures[i];
-            if (a >= DateTime.Now.AddSeconds(-FailureTimePeriod)) continue;
+            if (a >= DateTime.Now.AddMilliseconds(-FailureTimePeriod)) continue;
 
             Utils.Trace("UpdateFailures removing old failure as expired");
             _ = Failures.Remove(a);

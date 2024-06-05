@@ -31,7 +31,7 @@ internal sealed partial class Main
             if (monitor.FailureRetryExceeded) continue;
 
             var s = monitor.Failures.Count > 1 ? "s" : string.Empty;
-            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.ServiceIsDown, monitor.Name, monitor.Failures.Count, s, Utils.FormatTimeFromSeconds(monitor.FailureTimePeriod)));
+            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.ServiceIsDown, monitor.Name, monitor.Failures.Count, s, Utils.FormatTimeFromSeconds(monitor.FailureTimePeriod / 1000)));
             if (monitor.ApplicationType > ApplicationType.Unknown && ApplicationMonitorNewerVersionCheck(monitor)) continue;
 
             Utils.Wait(monitor.DelayBeforeRestarting);
