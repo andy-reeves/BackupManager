@@ -10,12 +10,18 @@ using System.Globalization;
 namespace BackupManager.Extensions;
 
 // ReSharper disable once UnusedType.Global
-public static class Int64Extensions
+internal static class Int64Extensions
 {
     private static readonly string[] _sizeSuffixes = { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
 
+    /// <summary>
+    ///     Returns a byte value provided with the correct size suffix
+    /// </summary>
+    /// <param name="bytes"></param>
+    /// <returns></returns>
+
     // ReSharper disable once UnusedMember.Global
-    public static string SizeSuffix(this long bytes)
+    internal static string SizeSuffix(this long bytes)
     {
         switch (bytes)
         {
@@ -26,6 +32,6 @@ public static class Int64Extensions
         }
         var mag = (int)Math.Log(bytes, Utils.BYTES_IN_ONE_KILOBYTE);
         var adjustedSize = bytes / (decimal)Math.Pow(Utils.BYTES_IN_ONE_KILOBYTE, mag);
-        return string.Format(CultureInfo.InvariantCulture, "{0:n1} {1}", adjustedSize, _sizeSuffixes[mag]);
+        return string.Format(CultureInfo.InvariantCulture, mag == 0 ? "{0:n0} {1}" : "{0:n1} {1}", adjustedSize, _sizeSuffixes[mag]);
     }
 }

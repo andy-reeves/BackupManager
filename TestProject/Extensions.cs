@@ -62,4 +62,19 @@ public sealed class Extensions
     {
         Assert.Equal(expectedValue, value.IsInRange(minimum, maximum));
     }
+
+    [InlineData(0, "0 B")]
+    [InlineData(-23, "-23 B")]
+    [InlineData(1023, "1,023 B")]
+    [InlineData(3056, "3.0 KB")]
+    [InlineData(304353456, "290.3 MB")]
+    [InlineData(304753353456, "283.8 GB")]
+    [InlineData(445242304353456, "404.9 TB")]
+    [InlineData(234445242304353456, "208.2 PB")]
+    [Theory]
+    public void Int64Extensions(long value, string expectedResult)
+    {
+        var result = value.SizeSuffix();
+        Assert.Equal(expectedResult, result);
+    }
 }
