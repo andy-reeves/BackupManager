@@ -7,6 +7,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
 
+using BackupManager;
 using BackupManager.Extensions;
 
 namespace TestProject;
@@ -63,13 +64,21 @@ public sealed class Extensions
         Assert.Equal(expectedValue, value.IsInRange(minimum, maximum));
     }
 
-    [InlineData(0, "0 B")]
-    [InlineData(-23, "-23 B")]
-    [InlineData(1023, "1,023 B")]
-    [InlineData(3056, "3.0 KB")]
+    [InlineData(0, "0 bytes")]
+    [InlineData(-23, "-23 bytes")]
+    [InlineData((long)Utils.BYTES_IN_ONE_KILOBYTE - 10, "1,014 bytes")]
+    [InlineData(1023, "1,023 bytes")]
+    [InlineData((long)Utils.BYTES_IN_ONE_KILOBYTE, "1 KB")]
+    [InlineData(3056, "3 KB")]
+    [InlineData((long)Utils.BYTES_IN_ONE_MEGABYTE + 1, "1 MB")]
+    [InlineData(23424234, "22.3 MB")]
+    [InlineData(25 * (long)Utils.BYTES_IN_ONE_MEGABYTE + 1, "25 MB")]
     [InlineData(304353456, "290.3 MB")]
+    [InlineData((long)Utils.BYTES_IN_ONE_GIGABYTE + 1, "1 GB")]
+    [InlineData(25 * (long)Utils.BYTES_IN_ONE_GIGABYTE + 1, "25 GB")]
     [InlineData(304753353456, "283.8 GB")]
     [InlineData(445242304353456, "404.9 TB")]
+    [InlineData(2342423232323234, "2.1 PB")]
     [InlineData(234445242304353456, "208.2 PB")]
     [Theory]
     public void Int64Extensions(long value, string expectedResult)

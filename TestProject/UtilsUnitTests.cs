@@ -161,19 +161,6 @@ public sealed class UtilsUnitTests
     }
 
     [Fact]
-    public void FormatSize()
-    {
-        Assert.Equal("22.3 MB", Utils.FormatSize(23424234));
-        Assert.Equal("2130.4 TB", Utils.FormatSize(2342423232323234));
-        Assert.Equal("25 GB", Utils.FormatSize(25 * (long)Utils.BYTES_IN_ONE_GIGABYTE + 1));
-        Assert.Equal("1 GB", Utils.FormatSize(Utils.BYTES_IN_ONE_GIGABYTE + 1));
-        Assert.Equal("25 MB", Utils.FormatSize(25 * Utils.BYTES_IN_ONE_MEGABYTE + 1));
-        Assert.Equal("1 MB", Utils.FormatSize(Utils.BYTES_IN_ONE_MEGABYTE + 1));
-        Assert.Equal("1 KB", Utils.FormatSize(Utils.BYTES_IN_ONE_KILOBYTE + 1));
-        Assert.Equal("1,014 bytes", Utils.FormatSize(Utils.BYTES_IN_ONE_KILOBYTE - 10));
-    }
-
-    [Fact]
     public void IsRunningAsAdmin()
     {
         Assert.True(Utils.IsRunningAsAdmin());

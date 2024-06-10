@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading;
 
 using BackupManager.Entities;
+using BackupManager.Extensions;
 using BackupManager.Properties;
 
 namespace BackupManager;
@@ -27,7 +28,7 @@ internal sealed partial class Main
         var backupFiles = filesToBackup.ToArray();
         var sizeOfFiles = backupFiles.Sum(static x => x.Length);
         Utils.LogWithPushover(BackupAction.CopyFiles, Resources.Started, true, true);
-        Utils.LogWithPushover(BackupAction.CopyFiles, string.Format(Resources.CopyFilesToBackup, backupFiles.Length, Utils.FormatSize(sizeOfFiles)), false, true);
+        Utils.LogWithPushover(BackupAction.CopyFiles, string.Format(Resources.CopyFilesToBackup, backupFiles.Length, sizeOfFiles.SizeSuffix()), false, true);
         _ = Utils.GetDiskInfo(backupDiskTextBox.Text, out var availableSpace, out _);
         var remainingDiskSpace = availableSpace - Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave);
         var sizeOfCopy = remainingDiskSpace < sizeOfFiles ? remainingDiskSpace : sizeOfFiles;
@@ -50,7 +51,7 @@ internal sealed partial class Main
         var filesStillNotOnBackupDisk = mediaBackup.GetBackupFilesWithDiskEmpty();
         var text = string.Empty;
         var stillNotOnBackupDisk = filesStillNotOnBackupDisk as BackupFile[] ?? filesStillNotOnBackupDisk.ToArray();
-        if (stillNotOnBackupDisk.Any()) text = string.Format(Resources.CopyFilesStillToCopy, stillNotOnBackupDisk.Length, Utils.FormatSize(stillNotOnBackupDisk.Sum(static p => p.Length)));
+        if (stillNotOnBackupDisk.Any()) text = string.Format(Resources.CopyFilesStillToCopy, stillNotOnBackupDisk.Length, stillNotOnBackupDisk.Sum(static p => p.Length).SizeSuffix());
         Utils.LogWithPushover(BackupAction.CopyFiles, text + string.Format(Resources.CopyFilesFreeOnBackupDisk, disk.FreeFormatted));
         if (showCompletedMessage) Utils.LogWithPushover(BackupAction.CopyFiles, Resources.Completed, true, true);
         Utils.TraceOut();
@@ -179,8 +180,8 @@ internal sealed partial class Main
                     formattedEndDateTime = Resources.EstimatedFinishByTomorrow + estimatedFinishDateTime.ToString(Resources.DateTime_HHmm) + $" in {Utils.FormatTimeFromSeconds(Convert.ToInt32(numberOfSecondsOfCopyRemaining))}";
                 UpdateEstimatedFinish(estimatedFinishDateTime);
             }
-            var sourceFileSize = Utils.FormatSize(sourceFileInfo.Length);
-            Utils.LogWithPushover(BackupAction.CopyFiles, string.Format(Resources.CopyFilesMainMessage, fileCounter, totalFileCount, Utils.FormatSize(availableSpace), sourceFileName, sourceFileSize, formattedEndDateTime), false, true);
+            var sourceFileSize = sourceFileInfo.Length.SizeSuffix();
+            Utils.LogWithPushover(BackupAction.CopyFiles, string.Format(Resources.CopyFilesMainMessage, fileCounter, totalFileCount, availableSpace.SizeSuffix(), sourceFileName, sourceFileSize, formattedEndDateTime), false, true);
             _ = Utils.File.Delete(destinationFileNameTemp);
             var sw = Stopwatch.StartNew();
             _ = Utils.File.Copy(sourceFileName, destinationFileNameTemp, ct);
@@ -214,7 +215,7 @@ internal sealed partial class Main
             UpdateStatusLabel(ct, $"[{fileCounter}/{totalFileCount}] Skipping due to low disk space", Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
             if (outOfDiskSpaceMessageSent) return;
 
-            var text = string.Format(Resources.CopyFileInternalSkipping, fileCounter, totalFileCount, Utils.FormatSize(availableSpace), sourceFileName);
+            var text = string.Format(Resources.CopyFileInternalSkipping, fileCounter, totalFileCount, availableSpace.SizeSuffix(), sourceFileName);
             Utils.LogWithPushover(BackupAction.CopyFiles, text, false, true);
             outOfDiskSpaceMessageSent = true;
         }

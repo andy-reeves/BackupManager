@@ -290,11 +290,11 @@ internal sealed partial class Main
             var backupFilesWithDiskEmpty = mediaBackup.BackupFiles.Where(static p => (p.Disk.HasNoValue() || p.BeingCheckedNow) && !p.Deleted).ToArray();
             var backupFilesMarkedAsDeleted = mediaBackup.GetBackupFilesMarkedAsDeleted(false).ToArray();
             totalFilesTextBox.TextWithInvoke(backupFilesWithoutDeleted.Length.ToString("N0"));
-            totalFilesSizeTextBox.TextWithInvoke(Utils.FormatSize(backupFilesWithoutDeleted.Sum(static y => y.Length)));
+            totalFilesSizeTextBox.TextWithInvoke(backupFilesWithoutDeleted.Sum(static y => y.Length).SizeSuffix());
             notOnABackupDiskTextBox.TextWithInvoke(backupFilesWithDiskEmpty.Length.ToString("N0"));
-            notOnABackupDiskSizeTextBox.TextWithInvoke(Utils.FormatSize(backupFilesWithDiskEmpty.Sum(static y => y.Length)));
+            notOnABackupDiskSizeTextBox.TextWithInvoke(backupFilesWithDiskEmpty.Sum(static y => y.Length).SizeSuffix());
             filesMarkedAsDeletedTextBox.TextWithInvoke(backupFilesMarkedAsDeleted.Length.ToString("N0"));
-            filesMarkedAsDeletedSizeTextBox.TextWithInvoke(Utils.FormatSize(backupFilesMarkedAsDeleted.Sum(static y => y.Length)));
+            filesMarkedAsDeletedSizeTextBox.TextWithInvoke(backupFilesMarkedAsDeleted.Sum(static y => y.Length).SizeSuffix());
         }
         catch (InvalidOperationException)
         {

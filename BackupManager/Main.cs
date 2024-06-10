@@ -355,11 +355,11 @@ internal sealed partial class Main : Form
             var percentageDiff = Math.Round(difference * 100 / (double)sizeFromDiskAnalysis, 0);
             var percentString = percentageDiff is < 1 and > -1 ? "-" : $"{percentageDiff}%";
 
-            Utils.Log($"{disk.Name,-12}{lastChecked,9}{disk.CapacityFormatted,9}{Utils.FormatSize(sizeFromDiskAnalysis),9}" + $"{disk.FreeFormatted,9}{Utils.FormatSize(totalSizeOfFilesFromSumOfFiles),9}{deletedCount,5}" +
-                      $"{Utils.FormatSize(difference),12}{percentString,5}");
+            Utils.Log($"{disk.Name,-12}{lastChecked,9}{disk.CapacityFormatted,9}{sizeFromDiskAnalysis.SizeSuffix(),9}" + $"{disk.FreeFormatted,9}{totalSizeOfFilesFromSumOfFiles.SizeSuffix(),9}{deletedCount,5}" +
+                      $"{difference.SizeSuffix(),12}{percentString,5}");
         }
-        var totalSizeFormatted = Utils.FormatSize(mediaBackup.BackupDisks.Sum(static p => p.Capacity));
-        var totalFreeSpaceFormatted = Utils.FormatSize(mediaBackup.BackupDisks.Sum(static p => p.Free));
+        var totalSizeFormatted = mediaBackup.BackupDisks.Sum(static p => p.Capacity).SizeSuffix();
+        var totalFreeSpaceFormatted = mediaBackup.BackupDisks.Sum(static p => p.Free).SizeSuffix();
         Utils.Log($"\n      Total Capacity: {totalSizeFormatted,8}     Free: {totalFreeSpaceFormatted,7}");
     }
 
@@ -620,14 +620,14 @@ internal sealed partial class Main : Form
 
         foreach (var file in backupFiles)
         {
-            Utils.Log($"{file.FullPath} at {Utils.FormatSize(file.Length)} on {file.Disk}");
+            Utils.Log($"{file.FullPath} at {file.Length.SizeSuffix()} on {file.Disk}");
         }
-        Utils.Log($"{backupFiles.Length} files at {Utils.FormatSize(backupFiles.Sum(static p => p.Length))}");
+        Utils.Log($"{backupFiles.Length} files at {backupFiles.Sum(static p => p.Length).SizeSuffix()}");
         Utils.Log("Listing files marked as deleted ordered by size on backup disk");
 
         foreach (var d in backupFiles.Select(static f => f.Disk).Distinct().ToDictionary(static disk => disk, disk => backupFiles.Where(f => f.Disk == disk).Sum(static f => f.Length)).OrderByDescending(static i => i.Value))
         {
-            Utils.Log($"{d.Key,-10} has {Utils.FormatSize(d.Value),-8}");
+            Utils.Log($"{d.Key,-10} has {d.Value.SizeSuffix(),-8}");
         }
         Utils.TraceOut();
     }
@@ -791,9 +791,9 @@ internal sealed partial class Main : Form
 
         foreach (var file in notOnBackupDisk)
         {
-            Utils.Log($"{file.FullPath} at {Utils.FormatSize(file.Length)}");
+            Utils.Log($"{file.FullPath} at {file.Length.SizeSuffix()}");
         }
-        Utils.Log($"{notOnBackupDisk.Length} files at {Utils.FormatSize(notOnBackupDisk.Sum(static p => p.Length))}");
+        Utils.Log($"{notOnBackupDisk.Length} files at {notOnBackupDisk.Sum(static p => p.Length).SizeSuffix()}");
         Utils.TraceOut();
     }
 
@@ -1078,7 +1078,7 @@ internal sealed partial class Main : Form
             return Utils.File.IsVideo(file.FullPath) && file.FullPath.Contains("_TV") && !file.FullPath.Contains("[h265");
         }).ToArray();
         var totalSize = files.Sum(static file => file.Length);
-        Utils.Log($"Total size of {files.Length} TV files is {Utils.FormatSize(totalSize)}");
+        Utils.Log($"Total size of {files.Length} TV files is {totalSize.SizeSuffix()}");
 
         files = mediaBackup.BackupFiles.Where(static file =>
         {
@@ -1086,7 +1086,7 @@ internal sealed partial class Main : Form
             return Utils.File.IsVideo(file.FullPath) && file.FullPath.Contains("_Movies") && !file.FullPath.Contains("[h265]");
         }).ToArray();
         totalSize = files.Sum(static file => file.Length);
-        Utils.Log($"Total size of {files.Length} of Movie files is {Utils.FormatSize(totalSize)}");
+        Utils.Log($"Total size of {files.Length} of Movie files is {totalSize.SizeSuffix()}");
     }
 
     private void ScanDirectoriesWithChangesButton_Click(object sender, EventArgs e)

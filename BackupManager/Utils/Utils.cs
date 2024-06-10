@@ -1078,21 +1078,6 @@ internal static partial class Utils
     }
 
     /// <summary>
-    ///     Formats a string containing a size in bytes with a suitable suffix
-    /// </summary>
-    /// <param name="value">Size in bytes</param>
-    /// <returns>a string like x.yTB, xGB, xMB or xKB depending on the size</returns>
-    internal static string FormatSize(long value)
-    {
-        return value > BYTES_IN_ONE_TERABYTE ? $"{(decimal)value / BYTES_IN_ONE_TERABYTE:0.#} TB" :
-            value > 25 * (long)BYTES_IN_ONE_GIGABYTE ? $"{value / BYTES_IN_ONE_GIGABYTE:n0} GB" :
-            value > BYTES_IN_ONE_GIGABYTE ? $"{(decimal)value / BYTES_IN_ONE_GIGABYTE:0.#} GB" :
-            value > 25 * BYTES_IN_ONE_MEGABYTE ? $"{value / BYTES_IN_ONE_MEGABYTE:n0} MB" :
-            value > BYTES_IN_ONE_MEGABYTE ? $"{(decimal)value / BYTES_IN_ONE_MEGABYTE:0.#} MB" :
-            value > BYTES_IN_ONE_KILOBYTE ? $"{value / BYTES_IN_ONE_KILOBYTE:n0} KB" : $"{value:n0} bytes";
-    }
-
-    /// <summary>
     ///     Generates a random character string for the size provided.
     /// </summary>
     /// <param name="size"></param>
@@ -1351,7 +1336,6 @@ internal static partial class Utils
             }
         }
         xml.Validate(null);
-        ;
     }
 
     /// <summary>

@@ -73,13 +73,13 @@ public sealed class BackupDisk : IEquatable<BackupDisk>
     ///     The capacity of the disk formatted for display like '12.6TB'
     /// </summary>
     [XmlIgnore]
-    public string CapacityFormatted => Utils.FormatSize(Capacity);
+    public string CapacityFormatted => Capacity.SizeSuffix();
 
     /// <summary>
     ///     The free space of the disk formatted for display like '1.2GB'
     /// </summary>
     [XmlIgnore]
-    public string FreeFormatted => Utils.FormatSize(Free);
+    public string FreeFormatted => Free.SizeSuffix();
 
     /// <summary>
     ///     The last read speed of this disk as a formatted string

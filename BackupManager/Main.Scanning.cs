@@ -309,8 +309,8 @@ internal sealed partial class Main
             UpdateStatusLabel(ct, string.Format(Resources.SpeedTesting, rootDirectory));
             Utils.DiskSpeedTest(rootDirectory, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed, ct);
         }
-        var totalBytesOnRootDirectoryDiskFormatted = Utils.FormatSize(totalBytesOnRootDirectoryDisk);
-        var freeSpaceOnRootDirectoryDiskFormatted = Utils.FormatSize(freeSpaceOnRootDirectoryDisk);
+        var totalBytesOnRootDirectoryDiskFormatted = totalBytesOnRootDirectoryDisk.SizeSuffix();
+        var freeSpaceOnRootDirectoryDiskFormatted = freeSpaceOnRootDirectoryDisk.SizeSuffix();
         var readSpeedFormatted = Utils.FormatSpeed(readSpeed);
         var writeSpeedFormatted = Utils.FormatSpeed(writeSpeed);
         var text = $"{rootDirectory}\nTotal: {totalBytesOnRootDirectoryDiskFormatted}\nFree: {freeSpaceOnRootDirectoryDiskFormatted}\nRead: {readSpeedFormatted}\nWrite: {writeSpeedFormatted}";
