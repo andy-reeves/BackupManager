@@ -1335,8 +1335,8 @@ internal static partial class Utils
     /// </summary>
     /// <param name="xmlPath"></param>
     /// <param name="resourceName"></param>
-    /// <returns>True is the xml is valid</returns>
-    internal static bool ValidateXmlFromResources(string xmlPath, string resourceName)
+    /// <exception cref="XmlSchemaValidationException">Thrown if not valid</exception>
+    internal static void ValidateXmlFromResources(string xmlPath, string resourceName)
     {
         var xml = new XmlDocument();
         xml.Load(xmlPath);
@@ -1350,16 +1350,8 @@ internal static partial class Utils
                 _ = xml.Schemas.Add(null, schemaReader);
             }
         }
-
-        try
-        {
-            xml.Validate(null);
-        }
-        catch (XmlSchemaValidationException)
-        {
-            return false;
-        }
-        return true;
+        xml.Validate(null);
+        ;
     }
 
     /// <summary>

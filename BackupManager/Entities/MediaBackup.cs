@@ -112,6 +112,12 @@ public sealed class MediaBackup
         return destinationPath;
     }
 
+    /// <summary>
+    ///     Loads the main media xml and all the config
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    /// <exception cref="ApplicationException"></exception>
     public static MediaBackup Load(string path)
     {
         try
@@ -122,8 +128,7 @@ public sealed class MediaBackup
             if (path != null)
             {
                 var sw = Stopwatch.StartNew();
-                if (!Utils.ValidateXmlFromResources(path, "BackupManager.MediaBackupSchema.xsd")) throw new XmlSchemaValidationException("MediaBackup.xml failed validation");
-
+                Utils.ValidateXmlFromResources(path, "BackupManager.MediaBackupSchema.xsd");
                 Utils.Trace($"Time to validate xml was {sw.Elapsed}");
                 sw.Restart();
                 var xRoot = new XmlRootAttribute { ElementName = "MediaBackup", Namespace = "MediaBackupSchema.xsd", IsNullable = true };

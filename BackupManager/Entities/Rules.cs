@@ -30,16 +30,26 @@ public sealed class Rules
     public static Rules Load(string path)
     {
         {
-            if (!Utils.ValidateXmlFromResources(path, "BackupManager.RulesSchema.xsd")) throw new XmlSchemaValidationException("Rules.xml failed validation");
+            try
+            {
+                Utils.ValidateXmlFromResources(path, "BackupManager.RulesSchema.xsd");
+                var xRoot = new XmlRootAttribute { ElementName = "Rules", Namespace = "RulesSchema.xsd", IsNullable = true };
+                XmlSerializer serializer = new(typeof(Rules), xRoot);
+                using FileStream stream = new(path, FileMode.Open, FileAccess.Read);
+                if (serializer.Deserialize(stream) is not Rules rules) return null;
 
-            var xRoot = new XmlRootAttribute { ElementName = "Rules", Namespace = "RulesSchema.xsd", IsNullable = true };
-            XmlSerializer serializer = new(typeof(Rules), xRoot);
-            using FileStream stream = new(path, FileMode.Open, FileAccess.Read);
-            if (serializer.Deserialize(stream) is not Rules rules) return null;
+                if (rules.FileRules.Select(static x => x.Number).Distinct().Count() != rules.FileRules.Count) throw new ArgumentException(Resources.DuplicateRuleNumber, nameof(path));
 
-            if (rules.FileRules.Select(static x => x.Number).Distinct().Count() != rules.FileRules.Count) throw new ArgumentException(Resources.DuplicateRuleNumber, nameof(path));
-
-            return rules;
+                return rules;
+            }
+            catch (InvalidOperationException ex)
+            {
+                throw new ApplicationException(string.Format(Resources.UnableToLoadXml, $"{path}", ex));
+            }
+            catch (XmlSchemaValidationException ex)
+            {
+                throw new ApplicationException(string.Format(Resources.UnableToLoadXml, $"{path} failed validation", ex));
+            }
         }
     }
 }

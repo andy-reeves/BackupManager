@@ -252,8 +252,7 @@ public sealed class Config
     {
         try
         {
-            if (!Utils.ValidateXmlFromResources(path, "BackupManager.ConfigSchema.xsd")) throw new XmlSchemaValidationException("Config.xml failed validation");
-
+            Utils.ValidateXmlFromResources(path, "BackupManager.ConfigSchema.xsd");
             var xRoot = new XmlRootAttribute { ElementName = "Config", Namespace = "ConfigSchema.xsd", IsNullable = true };
             Config config;
             XmlSerializer serializer = new(typeof(Config), xRoot);
@@ -263,21 +262,21 @@ public sealed class Config
                 config = serializer.Deserialize(stream) as Config;
             }
             var directoryName = new FileInfo(path).DirectoryName;
-            if (directoryName == null) return config;
+            if (config == null || directoryName == null) return config;
 
             var rules = Rules.Load(Path.Combine(directoryName, "Rules.xml"));
             if (rules == null) return config;
 
-            if (config != null) config.FileRules = rules.FileRules;
+            config.FileRules = rules.FileRules;
             return config;
         }
         catch (InvalidOperationException ex)
         {
-            throw new ApplicationException(string.Format(Resources.UnableToLoadXml, "Config.xml", ex));
+            throw new ApplicationException(string.Format(Resources.UnableToLoadXml, $"{path}", ex));
         }
         catch (XmlSchemaValidationException ex)
         {
-            throw new ApplicationException(string.Format(Resources.UnableToLoadXml, "Config.xml failed validation", ex));
+            throw new ApplicationException(string.Format(Resources.UnableToLoadXml, $"{path} failed validation", ex));
         }
     }
 
