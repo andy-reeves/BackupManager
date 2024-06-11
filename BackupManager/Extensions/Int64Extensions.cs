@@ -33,13 +33,8 @@ internal static class Int64Extensions
         var mag = (int)Math.Log(bytes, Utils.BYTES_IN_ONE_KILOBYTE);
         var adjustedSize = bytes / (decimal)Math.Pow(Utils.BYTES_IN_ONE_KILOBYTE, mag);
 
-        return IsWholeNumber(adjustedSize)
+        return Utils.IsWholeNumber(adjustedSize, 1)
             ? string.Format(CultureInfo.InvariantCulture, "{0:n0} {1}", adjustedSize, _sizeSuffixes[mag])
             : string.Format(CultureInfo.InvariantCulture, mag == 0 ? "{0:n0} {1}" : "{0:n1} {1}", adjustedSize, _sizeSuffixes[mag]);
-    }
-
-    private static bool IsWholeNumber(decimal x)
-    {
-        return $"{x:n1}".Contains(".0");
     }
 }

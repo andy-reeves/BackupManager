@@ -1339,6 +1339,17 @@ internal static partial class Utils
     }
 
     /// <summary>
+    ///     Returns True if the value is a whole number after the number of decimal places provided
+    /// </summary>
+    /// <param name="value">The value to check</param>
+    /// <param name="decimals">Number of decimal points to check</param>
+    /// <returns></returns>
+    internal static bool IsWholeNumber(decimal value, int decimals)
+    {
+        return Math.Round(value, decimals) == Math.Round(value);
+    }
+
+    /// <summary>
     /// </summary>
     /// <param name="sourcePath"></param>
     /// <param name="destinationPath"></param>
