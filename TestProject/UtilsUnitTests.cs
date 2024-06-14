@@ -244,34 +244,16 @@ public sealed class UtilsUnitTests
         Assert.Empty(files);
     }
 
-    [Fact]
-    public void ValidateXml()
+    [InlineData("Config.xml", "ConfigSchema.xsd")]
+    [InlineData("MediaBackup.xml", "MediaBackupSchema.xsd")]
+    [InlineData("Rules.xml", "RulesSchema.xsd")]
+    [Theory]
+    public void ValidateXml(string xml, string xsd)
     {
-        /*
-            xs:int          int
-            xs:integer      BigInteger
-            xs:long         long
-            xs:boolean      bool
-            xs:double       double
-            xs:float        float
-            xs:short        short
-            xs:string       string
-            xs:date         string (but a date)
-            xs:dateTime     DateTime
-        */
         var path = Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)), "..\\BackupManager\\");
-        var xmlPath = Path.Combine(path, "Config.xml");
-        var xsdPath = Path.Combine(path, "ConfigSchema.xsd");
-        var result = Utils.ValidateXml(xmlPath, xsdPath);
-        Assert.True(result, "Config.xml is not valid");
-        xmlPath = Path.Combine(path, "MediaBackup.xml");
-        xsdPath = Path.Combine(path, "MediaBackupSchema.xsd");
-        result = Utils.ValidateXml(xmlPath, xsdPath);
-        Assert.True(result, "MediaBackup.xml is not valid");
-        xmlPath = Path.Combine(path, "Rules.xml");
-        xsdPath = Path.Combine(path, "RulesSchema.xsd");
-        result = Utils.ValidateXml(xmlPath, xsdPath);
-        Assert.True(result, "Rules.xml is not valid");
+        var xmlPath = Path.Combine(path, xml);
+        var xsdPath = Path.Combine(path, xsd);
+        Utils.ValidateXml(xmlPath, xsdPath);
     }
 
     [Fact]

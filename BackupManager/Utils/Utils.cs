@@ -408,69 +408,6 @@ internal static partial class Utils
         return Convert.ToInt64(value * BYTES_IN_ONE_MEGABYTE);
     }
 
-    internal static bool FixDateTakenForPhotos(string path)
-    {
-        TraceIn(path);
-        if (path == null) return false;
-
-        if (!File.Exists(path)) throw new NotSupportedException("File doesn't exist");
-
-        var filename = Path.GetFileNameWithoutExtension(path);
-        var extension = Path.GetExtension(path);
-        if (extension.ToLowerInvariant() != ".png" && extension.ToLowerInvariant() != ".jpg" && extension.ToLowerInvariant() != ".jpeg" && extension.ToLowerInvariant() != ".mp4") return true;
-
-        var creationTime = filename.StartsWithIgnoreCase("IMG_")
-
-            // ReSharper disable once StringLiteralTypo
-            ? DateTime.ParseExact(filename.SubstringAfter('.'), "yyyy'-'MM'-'dd'_'HHmmss", CultureInfo.InvariantCulture)
-            : DateTime.ParseExact(filename[..10], "yyyy'-'MM'-'dd", CultureInfo.InvariantCulture);
-        var creationTimeString = creationTime.ToString("yyyy:MM:dd hh:mm:ss");
-
-        var arguments = extension.ToLowerInvariant() switch
-        {
-            ".mp4" => $" -Quicktime:CreationDate=\"{creationTimeString}\" \"{path}\"",
-            ".png" => $" -PNG:CreationTime=\"{creationTimeString}\" \"{path}\"",
-            ".jpg" or ".jpeg" => $" -EXIF:DateTimeOriginal=\"{creationTimeString}\" \"{path}\"",
-            _ => string.Empty
-        };
-        var process = new Process { StartInfo = new ProcessStartInfo { UseShellExecute = true, WindowStyle = ProcessWindowStyle.Hidden, FileName = @"c:\tools\exiftool.exe", Arguments = arguments } };
-        if (!process.Start()) return TraceOut(false);
-
-        try
-        {
-            var processId = process.Id;
-
-            // CopyProcess may be null here already if the file was very small
-            process.WaitForExit();
-
-            // We wait because otherwise lots of copy processes will start at once
-            // WaitForExit sometimes returns too early (especially for small files)
-            // So we then wait until the processID has gone completely
-            // This will throw ArgumentException if the process has stopped already
-
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-            while (Process.GetProcessById(processId) != null)
-            {
-                Wait(1);
-            }
-
-            // We never exit here
-            return TraceOut(false);
-        }
-
-        // ArgumentException is thrown when the process actually stops
-        // Then we wait until the file is actually not locked anymore and the hash codes match
-        // InvalidOperationException is thrown if we access the Process and its already completed
-        catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
-        {
-            while (!File.IsAccessible(path))
-            {
-                Wait(1);
-            }
-            return TraceOut(true);
-        }
-    }
-
     /// <summary>
     ///     Returns True if any of the attributes to check for are set in the value.
     /// </summary>
@@ -558,20 +495,6 @@ internal static partial class Utils
             _ = diskNames.Add(diskName);
         }
         return diskNames.ToArray();
-    }
-
-    internal static string[] GetDeviceAndFirstDirectoryNames(IEnumerable<string> directories)
-    {
-        var diskAndFirstDirectoryNames = new HashSet<string>();
-
-        foreach (var d in directories)
-        {
-            var text = d.SubstringAfterIgnoreCase(@"\\");
-            var machineName = text.SubstringBefore('\\');
-            var firstDirectory = text.SubstringAfterIgnoreCase(@"\").SubstringBefore('\\');
-            _ = diskAndFirstDirectoryNames.Add(Path.Combine(machineName, firstDirectory));
-        }
-        return diskAndFirstDirectoryNames.ToArray();
     }
 
     /// <summary>
@@ -1297,22 +1220,13 @@ internal static partial class Utils
     /// </summary>
     /// <param name="xmlPath"></param>
     /// <param name="xsdPath"></param>
-    /// <returns>True is the xml is valid</returns>
-    internal static bool ValidateXml(string xmlPath, string xsdPath)
+    /// <exception cref="XmlSchemaValidationException">Thrown if not valid</exception>
+    internal static void ValidateXml(string xmlPath, string xsdPath)
     {
         var xml = new XmlDocument();
         xml.Load(xmlPath);
         _ = xml.Schemas.Add(null, xsdPath);
-
-        try
-        {
-            xml.Validate(null);
-        }
-        catch (XmlSchemaValidationException)
-        {
-            return false;
-        }
-        return true;
+        xml.Validate(null);
     }
 
     /// <summary>
@@ -1575,8 +1489,7 @@ internal static partial class Utils
 
     internal static string GetIndexFolder(string path)
     {
-        var a = new DirectoryInfo(path);
-        return a.Name;
+        return new DirectoryInfo(path).Name;
     }
 
     /// <summary>
