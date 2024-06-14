@@ -53,6 +53,14 @@ internal class ConcurrentHashSet<T> : IDisposable, IEnumerable<T>
         return GetEnumerator();
     }
 
+    public ConcurrentHashSet(IEnumerable<T> collection)
+    {
+        foreach (var v in collection)
+        {
+            _ = Add(v);
+        }
+    }
+
     public bool Add(T item)
     {
         @lock.EnterWriteLock();
