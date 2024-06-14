@@ -87,6 +87,9 @@ public sealed class ConcurrentSetTests
         set.Dispose();
         var myObj = set;
         var finalizer = typeof(ConcurrentHashSet<FileSystemEntry>).GetMethod("Finalize", BindingFlags.Instance | BindingFlags.NonPublic);
-        _ = finalizer.Invoke(myObj, null);
+        _ = finalizer?.Invoke(myObj, null);
+        var bob3 = item1.ToString();
+        Assert.Equal(@"c:\testitem1", bob3);
+        Assert.False(item1.Equals((object)item2));
     }
 }
