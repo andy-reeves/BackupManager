@@ -12,7 +12,6 @@ using System.Linq;
 using System.Runtime.Versioning;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using BackupManager.Entities;
@@ -32,8 +31,7 @@ internal sealed partial class Main : Form
         {
             // the most common is DirectoryNotFound for a network path
             // wait a bit and then attempt restart the watcher
-            var ct = new CancellationToken();
-            Task.Delay(mediaBackup.Config.DirectoriesFileChangeWatcherRestartDelay, ct).Wait(ct);
+            Utils.Wait(mediaBackup.Config.DirectoriesFileChangeWatcherRestartDelay);
             _ = mediaBackup.Watcher.Reset();
             _ = mediaBackup.Watcher.Start();
         }
