@@ -18,9 +18,9 @@ public sealed class UtilsGetApplicationVersion
 {
     [Theory]
     [InlineData("1.4.3", ApplicationType.Bazarr)]
-    [InlineData("1.40.3.8555", ApplicationType.PlexPass)]
-    [InlineData("1.18.0.4543", ApplicationType.Prowlarr)]
-    [InlineData("5.6.0.8846", ApplicationType.Radarr)]
+    [InlineData("1.40.4.8598", ApplicationType.PlexPass)]
+    [InlineData("1.19.0.4568", ApplicationType.Prowlarr)]
+    [InlineData("5.7.0.8882", ApplicationType.Radarr)]
     [InlineData("4.3.2", ApplicationType.SABnzbd)]
     [InlineData("4.0.5.1710", ApplicationType.Sonarr)]
     public void GetVersionNumber(string expectedInstalledVersionNumber, ApplicationType applicationType)
@@ -47,8 +47,8 @@ public sealed class UtilsGetVersionSABnzbd
 public sealed class UtilsGetVersionProwlarr
 {
     [Theory]
-    [InlineData("1.18.0", ApplicationType.Prowlarr)]
-    [InlineData("1.19.0", ApplicationType.Prowlarr, "develop")]
+    [InlineData("1.19.0", ApplicationType.Prowlarr)]
+    [InlineData("1.20.0", ApplicationType.Prowlarr, "develop")]
     public void GetLatestVersionNumber(string expectedVersionNumber, ApplicationType applicationType, string branchName = "master")
     {
         Assert.Equal(expectedVersionNumber, Utils.GetLatestApplicationVersionNumber(applicationType, branchName));
@@ -106,10 +106,7 @@ public sealed class UtilsGetVersionSonarr
 public sealed class UtilsGetVersionRadarr
 {
     [Theory]
-    [InlineData("5.6.0.8846", ApplicationType.Radarr)]
-
-    // [InlineData("5.5.2.8781", ApplicationType.Radarr, "develop")]
-    // [InlineData("5.5.3.8806", ApplicationType.Radarr, "nightly")]
+    [InlineData("5.7.0.8882", ApplicationType.Radarr)]
     public void GetLatestVersionNumber(string expectedVersionNumber, ApplicationType applicationType, string branchName = "master")
     {
         Assert.Equal(expectedVersionNumber, Utils.GetLatestApplicationVersionNumber(applicationType, branchName));

@@ -136,6 +136,16 @@ internal static partial class Utils
     private const string PUSHOVER_MESSAGES_URL = "https://api.pushover.net/1/messages.json";
 
     /// <summary>
+    ///     The URL of the Pushover limits service.
+    /// </summary>
+    private const string PUSHOVER_LIMITS_URL = "https://api.pushover.net/1/apps/limits.json";
+
+    private const string PLEX_DOWNLOADS_URL = "https://plex.tv/api/downloads/5.json";
+
+    // ReSharper disable once IdentifierTypo
+    private const string BAZARR_LATEST_RELEASES_URL = "https://github.com/morpheus65535/bazarr/releases/latest";
+
+    /// <summary>
     ///     Windows MAX_PATH of 256 characters
     /// </summary>
     internal const int MAX_PATH = 256;
@@ -286,7 +296,7 @@ internal static partial class Utils
             {
                 case ApplicationType.Plex:
                 case ApplicationType.PlexPass:
-                    var task = Task.Run(() => client.GetStringAsync("https://plex.tv/api/downloads/5.json" + parameters));
+                    var task = Task.Run(() => client.GetStringAsync(PLEX_DOWNLOADS_URL + parameters));
                     task.Wait();
                     var response = task.Result;
                     var node = JsonNode.Parse(response);
@@ -308,7 +318,7 @@ internal static partial class Utils
                 case ApplicationType.Prowlarr:
                     return GitHubVersionNumberParser($"https://raw.githubusercontent.com/Prowlarr/Prowlarr/{branchName}/azure-pipelines.yml", "majorVersion:", ":", 1);
                 case ApplicationType.Bazarr:
-                    var doc = new HtmlWeb().Load("https://github.com/morpheus65535/bazarr/releases/latest");
+                    var doc = new HtmlWeb().Load(BAZARR_LATEST_RELEASES_URL);
                     return doc.DocumentNode.SelectNodes("//html/head/title")[0].InnerText.Split(" ")[1].SubstringAfterIgnoreCase("v");
 
                 // ReSharper disable once RedundantEnumCaseLabelForDefaultSection
@@ -399,7 +409,7 @@ internal static partial class Utils
     }
 
     /// <summary>
-    ///     Converts a MB value to a size in bytes
+    ///     Converts the MB value to a size in bytes
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
@@ -540,7 +550,7 @@ internal static partial class Utils
 
         try
         {
-            var pushoverLimitsAddress = $"https://api.pushover.net/1/apps/limits.json?token={pushoverAppToken}";
+            var pushoverLimitsAddress = $"{PUSHOVER_LIMITS_URL}?token={pushoverAppToken}";
             HttpClient client = new();
             var task = Task.Run(() => client.GetAsync(pushoverLimitsAddress));
             task.Wait();

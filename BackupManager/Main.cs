@@ -166,7 +166,7 @@ internal sealed partial class Main : Form
 
         // loop through all the files looking for the directory specified in the top drop down and copy to the bottom drop down 
         // for each file order by backup disk
-        // prompt for the back up disk to be inserted 
+        // prompt for the backup disk to be inserted 
         // check we have it inserted
         // copy any files off this disk until we're all done to the new disk that we specified
         if (MessageBox.Show(Resources.RestoreFilesAreYouSure, Resources.RestoreFilesTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
