@@ -312,7 +312,7 @@ public sealed class EntityTests
         Assert.Equal("", backupFile1.DiskChecked);
         Assert.NotEqual(0, backupFile1.GetHashCode());
         var ct = new CancellationToken();
-        _ = Utils.File.Copy(pathToFile1, pathToFile1OnBackupDisk, ct);
+        Assert.True(Utils.File.Copy(pathToFile1, pathToFile1OnBackupDisk, ct));
         var backupDisk = new BackupDisk("backup 1000", pathToBackupShare);
         Assert.True(backupFile1.CheckContentHashes(backupDisk));
         Assert.False(backupFile1.Deleted);

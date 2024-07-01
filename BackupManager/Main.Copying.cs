@@ -162,24 +162,21 @@ internal sealed partial class Main
             UpdateMediaFilesCountDisplay();
             UpdateStatusLabel(ct, string.Format(Resources.Copying, Path.GetFileName(sourceFileName)), Convert.ToInt32(copiedSoFar * 100 / sizeOfCopy));
             outOfDiskSpaceMessageSent = false;
-            var formattedEndDateTime = string.Empty;
+            if (lastCopySpeed > 0) lastCopySpeed = 1;
 
-            if (lastCopySpeed > 0)
-            {
-                // remaining size is the smallest of remaining disk size-critical space to leave free OR
-                // size of remaining files to copy
-                var remainingDiskSpace = availableSpace - Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave);
-                var sizeOfCopyRemaining = remainingDiskSpace < remainingSizeOfFilesToCopy ? remainingDiskSpace : remainingSizeOfFilesToCopy;
-                var numberOfSecondsOfCopyRemaining = sizeOfCopyRemaining / (double)lastCopySpeed;
-                var rightNow = DateTime.Now;
-                var estimatedFinishDateTime = rightNow.AddSeconds(numberOfSecondsOfCopyRemaining);
-                formattedEndDateTime = Resources.EstimatedFinishBy + estimatedFinishDateTime.ToString(Resources.DateTime_HHmm) + $" in {Utils.FormatTimeFromSeconds(Convert.ToInt32(numberOfSecondsOfCopyRemaining))}";
+            // remaining size is the smallest of remaining disk size-critical space to leave free OR
+            // size of remaining files to copy
+            var remainingDiskSpace = availableSpace - Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave);
+            var sizeOfCopyRemaining = remainingDiskSpace < remainingSizeOfFilesToCopy ? remainingDiskSpace : remainingSizeOfFilesToCopy;
+            var numberOfSecondsOfCopyRemaining = sizeOfCopyRemaining / (double)lastCopySpeed;
+            var rightNow = DateTime.Now;
+            var estimatedFinishDateTime = rightNow.AddSeconds(numberOfSecondsOfCopyRemaining);
+            var formattedEndDateTime = Resources.EstimatedFinishBy + estimatedFinishDateTime.ToString(Resources.DateTime_HHmm) + $" in {Utils.FormatTimeFromSeconds(Convert.ToInt32(numberOfSecondsOfCopyRemaining))}";
 
-                // could be the following day
-                if (estimatedFinishDateTime.DayOfWeek != rightNow.DayOfWeek)
-                    formattedEndDateTime = Resources.EstimatedFinishByTomorrow + estimatedFinishDateTime.ToString(Resources.DateTime_HHmm) + $" in {Utils.FormatTimeFromSeconds(Convert.ToInt32(numberOfSecondsOfCopyRemaining))}";
-                UpdateEstimatedFinish(estimatedFinishDateTime);
-            }
+            // could be the following day
+            if (estimatedFinishDateTime.DayOfWeek != rightNow.DayOfWeek)
+                formattedEndDateTime = Resources.EstimatedFinishByTomorrow + estimatedFinishDateTime.ToString(Resources.DateTime_HHmm) + $" in {Utils.FormatTimeFromSeconds(Convert.ToInt32(numberOfSecondsOfCopyRemaining))}";
+            UpdateEstimatedFinish(estimatedFinishDateTime);
             var sourceFileSize = sourceFileInfo.Length.SizeSuffix();
             Utils.LogWithPushover(BackupAction.CopyFiles, string.Format(Resources.CopyFilesMainMessage, fileCounter, totalFileCount, availableSpace.SizeSuffix(), sourceFileName, sourceFileSize, formattedEndDateTime), false, true);
             _ = Utils.File.Delete(destinationFileNameTemp);
@@ -193,9 +190,8 @@ internal sealed partial class Main
             _ = Utils.File.Move(destinationFileNameTemp, destinationFileName);
             Utils.Trace($"timeTaken {timeTaken}");
             Utils.Trace($"sourceFileInfo.Length {sourceFileInfo.Length}");
-            lastCopySpeed = timeTaken > 0 ? Convert.ToInt64(sourceFileInfo.Length / timeTaken) : 0;
-            var copySpeed = lastCopySpeed > 0 ? Utils.FormatSpeed(lastCopySpeed) : Resources.AVeryFastSpeed;
-            Utils.Trace($"Copy complete at {copySpeed}");
+            lastCopySpeed = timeTaken > 0 ? Convert.ToInt64(sourceFileInfo.Length / timeTaken) : 1;
+            Utils.Trace($"Copy complete at {Utils.FormatSpeed(lastCopySpeed)}");
             remainingSizeOfFilesToCopy -= backupFile.Length;
             copiedSoFar += backupFile.Length;
 
