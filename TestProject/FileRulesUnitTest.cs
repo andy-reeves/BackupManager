@@ -87,7 +87,6 @@ public sealed class FileRulesUnitTest
     [InlineData(7, 5, TestRegexType.Discovery, true, @"X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-MYFAVOURITE} [Remux-1080p][DTS-HD MA 1.0][h264].mkv")]
     [InlineData(7, 6, TestRegexType.Test, false, @"X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-36TH ANNIVERSARY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv")]
     [InlineData(7, 7, TestRegexType.Test, true, @"X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-75TH ANNIVERSARY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv")]
-    [InlineData(7, 8, TestRegexType.Test, true, @"X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-ASSEMBLY CUT} [Remux-1080p][DTS-HD MA 1.0][h264].mkv")]
     [InlineData(8, 1, TestRegexType.Test, true, @"X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv")]
     [InlineData(8, 2, TestRegexType.Test, false, @"X:\_Movies\12 Angry Men (1957)\12 Angry Men.subtitles.srt")]
     [InlineData(8, 3, TestRegexType.Discovery, true, @"X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv")]

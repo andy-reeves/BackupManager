@@ -371,11 +371,6 @@ internal static partial class Utils
             CopyProcess = new Process { StartInfo = new ProcessStartInfo { UseShellExecute = true, WindowStyle = ProcessWindowStyle.Hidden, FileName = "xcopy", Arguments = $"/H /Y \"{sourceFileName}\" \"{destFileName}\"" } };
             if (!CopyProcess.Start()) return TraceOut(false);
 
-            // TODO Add lots of tracing here
-            // sometimes the copy doesn't finish, and we need to know why
-            // maybe we estimate the finish time and wait a maximum of this estimate plus a little more
-            // if it's not finished by then we kill the copy process and report and error and move to the next file
-
             try
             {
                 var processId = CopyProcess.Id;
@@ -405,7 +400,6 @@ internal static partial class Utils
             {
                 var hashSource = GetShortMd5Hash(sourceFileName);
 
-                // TODO maybe not accessible and stuck here?
                 while (!IsAccessible(destFileName) || GetShortMd5Hash(destFileName) != hashSource)
                 {
                     Wait(1);

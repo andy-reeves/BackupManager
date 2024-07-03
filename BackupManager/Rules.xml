@@ -55,7 +55,7 @@
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_(Movies|Comedy|Concerts)(\s\(non-tmdb\))?\\(.*)\\.* {edition-.*$</FileDiscoveryRegEx>
-      <FileTestRegEx>^.*\s{edition-(([1-7][05]TH\sANNIVERSARY)|4K|BLURAY|CHRONOLOGICAL|COLLECTORS|(CRITERION|KL\sSTUDIO)\sCOLLECTION|DIAMOND|DVD|IMAX|REDUX|REMASTERED|RESTORED|SPECIAL|(THE\sCOMPLETE\s)?EXTENDED|THE\sGODFATHER\sCODA|(THE\sRICHARD\sDONNER|DIRECTORS|ASSEMBLY|FINAL)\sCUT|THEATRICAL|ULTIMATE|UNCUT|UNRATED)}\s.*$</FileTestRegEx>
+      <FileTestRegEx>^.*\s{edition-(([1-7][05]TH\sANNIVERSARY)|4K|BLURAY|CHRONOLOGICAL|COLLECTORS|(CRITERION|KL\sSTUDIO)\sCOLLECTION|DIAMOND|DVD|IMAX|REDUX|REMASTERED|RESTORED|SPECIAL|(THE\sCOMPLETE\s)?EXTENDED|THE\sGODFATHER\sCODA|(THE\sRICHARD\sDONNER|DIRECTORS|FINAL)\sCUT|THEATRICAL|ULTIMATE|UNCUT|UNRATED)}\s.*$</FileTestRegEx>
       <Message>Movies, Comedy and Concerts files that have {edition-} specified must have a valid value in the file name</Message>
       <Name>Rule 7</Name>
       <Number>7</Number>
