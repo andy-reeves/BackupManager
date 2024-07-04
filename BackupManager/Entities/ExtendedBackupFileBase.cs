@@ -48,7 +48,7 @@ internal abstract class ExtendedBackupFileBase
     protected string Title { get; set; }
 
     /// <summary>
-    ///     THe full directory path to the file not including the filename.
+    ///     The full directory path to the file not including the filename.
     /// </summary>
     public string FullDirectory { get; protected set; }
 
