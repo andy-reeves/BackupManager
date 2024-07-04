@@ -49,6 +49,8 @@ internal enum Edition
 
     [EnumMember(Value = "4K")] FourK,
 
+    [EnumMember(Value = "Assembly Cut")] AssemblyCut,
+
     [EnumMember(Value = "Bluray")] Bluray,
 
     [EnumMember(Value = "Chronological")] Chronological,
