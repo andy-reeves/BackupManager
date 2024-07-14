@@ -14,7 +14,7 @@ namespace BackupManager;
 
 // ReSharper disable once UnusedType.Global
 [SuppressMessage("ReSharper", "UnusedMember.Global")]
-internal class ConcurrentHashSet<T> : IDisposable, IEnumerable<T>
+internal sealed class ConcurrentHashSet<T> : IDisposable, IEnumerable<T>
 {
     private readonly HashSet<T> hashSet = new();
 
@@ -132,7 +132,7 @@ internal class ConcurrentHashSet<T> : IDisposable, IEnumerable<T>
         }
     }
 
-    protected virtual void Dispose(bool disposing)
+    private void Dispose(bool disposing)
     {
         if (disposing) @lock?.Dispose();
     }

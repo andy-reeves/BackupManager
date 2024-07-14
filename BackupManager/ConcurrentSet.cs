@@ -44,6 +44,7 @@ internal sealed class ConcurrentSet<T> : ISet<T>
     /// </returns>
     public IEnumerator<T> GetEnumerator()
     {
+        // ReSharper disable once NotDisposedResourceIsReturned
         return dictionary.Keys.GetEnumerator();
     }
 
