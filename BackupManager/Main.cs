@@ -38,6 +38,8 @@ internal sealed partial class Main : Form
         catch (Exception exc)
         {
             Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High, $"Unable to Reset FileSystemWatcher {exc}");
+            mediaBackup.Config.DirectoriesFileChangeWatcherOnOff = false;
+            SetupFileWatchers();
         }
     }
 
