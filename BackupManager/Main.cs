@@ -831,14 +831,14 @@ internal sealed partial class Main : Form
         var scans = mediaBackup.DirectoryScans.Where(s => scanIdsList.Contains(s.Id) && s.TypeOfScan == scanType).ToArray();
         if (scans.Length == 0) return;
 
-        const int columnWidth = 7;
+        const int columnWidth = 8;
         var distinctDirectoriesScans = scans.Distinct().OrderBy(static s => s.Path).ToArray();
         var longestDirectoryLength = scans.Select(static d => d.Path.Length).Max();
-        var headerLine1 = string.Empty.PadRight(longestDirectoryLength + columnWidth + 4);
-        var headerLine2 = string.Empty.PadRight(longestDirectoryLength + columnWidth + 4);
-        var totalLine = "Total time:" + string.Empty.PadRight(longestDirectoryLength - 2);
-        var lapsedTimeLine = "Lapsed time:" + string.Empty.PadRight(longestDirectoryLength - columnWidth + 4);
-        var fileCountsLine = "File count:" + string.Empty.PadRight(longestDirectoryLength - columnWidth + 5);
+        var headerLine1 = string.Empty.PadRight(longestDirectoryLength + columnWidth + 2);
+        var headerLine2 = string.Empty.PadRight(longestDirectoryLength + columnWidth + 2);
+        var totalLine = "Total time:" + string.Empty.PadRight(longestDirectoryLength + columnWidth - 9);
+        var lapsedTimeLine = "Lapsed time:" + string.Empty.PadRight(longestDirectoryLength + columnWidth - 10);
+        var fileCountsLine = "File count:" + string.Empty.PadRight(longestDirectoryLength + columnWidth - 9);
         var totals = new TimeSpan[howMany];
         var lapsedTime = new TimeSpan[howMany];
         var fileCounts = new int[howMany];
@@ -848,8 +848,8 @@ internal sealed partial class Main : Form
         foreach (var b in scans.OrderBy(static s => s.StartDateTime).Where(b => b.Id != previousId))
         {
             // build the line of scan dates like 30.11 01.12 etc
-            headerLine1 += b.StartDateTime.ToString("dd.MM  ");
-            headerLine2 += b.StartDateTime.ToString("HH.mm  ");
+            headerLine1 += b.StartDateTime.ToString("dd.MM").PadLeft(columnWidth);
+            headerLine2 += b.StartDateTime.ToString("HH.mm").PadLeft(columnWidth);
             previousId = b.Id;
         }
         var textLines = string.Empty;
