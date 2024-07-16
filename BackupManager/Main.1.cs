@@ -386,12 +386,22 @@ internal sealed partial class Main
     private void SetupFileWatchers()
     {
         Utils.TraceIn();
-        fileWatcherButton.Text = string.Format(Resources.FileWatchersButton, config.DirectoriesFileChangeWatcherOnOff ? Resources.ON : Resources.OFF);
 
-        if (config.DirectoriesFileChangeWatcherOnOff)
-            StartFileSystemWatchers();
-        else
-            StopFileSystemWatchers();
+        try
+        {
+            fileWatcherButton.Text = string.Format(Resources.FileWatchersButton, config.DirectoriesFileChangeWatcherOnOff ? Resources.ON : Resources.OFF);
+
+            if (config.DirectoriesFileChangeWatcherOnOff)
+                StartFileSystemWatchers();
+            else
+                StopFileSystemWatchers();
+        }
+        catch (ArgumentException ex)
+        {
+            // This gets thrown if one of the monitored directories does not exist
+            Utils.LogWithPushover(BackupAction.General, $"Exception when trying to start the monitored directories {ex}");
+            fileWatcherButton.Text = string.Format(Resources.FileWatchersButton, Resources.OFF);
+        }
     }
 
     private void StopFileSystemWatchers()
