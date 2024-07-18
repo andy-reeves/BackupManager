@@ -15,8 +15,8 @@
     </FileRule>
     <FileRule>
       <FileDiscoveryRegEx>^.*\\_TV(\s\(non-tvdb\))?\\.*$</FileDiscoveryRegEx>
-      <FileTestRegEx>^((?!\sTBA\s).)*$</FileTestRegEx>
-      <Message>TV files must not contain TBA in the file name</Message>
+      <FileTestRegEx>^((?!\sTB[AD]\s).)*$</FileTestRegEx>
+      <Message>TV files must not contain TBA or TBD in the file name</Message>
       <Name>Rule 2</Name>
       <Number>2</Number>
       <Priority>High</Priority>
