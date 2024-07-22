@@ -137,6 +137,7 @@ public sealed class FileRulesUnitTest
     [InlineData(14, 14, TestRegexType.Discovery, true, @"X:\_TV (non-tvdb)\Blood Brothers (1989)\Example 1-behindthescenes.mkv")]
     [InlineData(14, 15, TestRegexType.Discovery, false, @"X:\_Music\Blood Brothers (1989)\Example 1-behindscenes.mkv")]
     [InlineData(14, 16, TestRegexType.Discovery, false, @"\\nas5\assets2\_TV\The Bridge (2013) {tvdb-264085}\Season 1\The Bridge (2013) s01e13 The Crazy Place [Bluray-1080p][DTS 5.1][h264]-TdarrCacheFile-GWLejgTOOR.mkv")]
+    [InlineData(14, 17, TestRegexType.Test, true, @"\\nas5\assets2\_TV\_TV\Friends {tvdb-79168} {edition-DVD}\Behind The Scenes Season 5-featurette.mkv")]
     [InlineData(15, 1, TestRegexType.Discovery, true, @"X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-other.mkv")]
     [InlineData(15, 2, TestRegexType.Discovery, true, @"X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-bobby.mkv")]
     [InlineData(15, 3, TestRegexType.Discovery, true, @"X:\_Movies\12 Angry Men (1957)\Other\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-other.mkv")]
