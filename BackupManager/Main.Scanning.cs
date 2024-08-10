@@ -380,6 +380,7 @@ internal sealed partial class Main
         // Save now in case the scanning files is interrupted
         mediaBackup.Save(ct);
         mediaBackup.ClearFlags();
+        Utils.LogWithPushover(BackupAction.ScanDirectory, $"Rename Video Files For Full Scans is {config.DirectoriesRenameVideoFilesForFullScansOnOff}");
 
         if (!ProcessFiles(fileBlockingCollection, scanId, config.DirectoriesRenameVideoFilesForFullScansOnOff, ct))
             Utils.LogWithPushover(BackupAction.ScanDirectory, Resources.ScanDirectoriesFailed);

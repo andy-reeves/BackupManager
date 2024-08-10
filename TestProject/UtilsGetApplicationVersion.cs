@@ -18,7 +18,7 @@ public sealed class UtilsGetApplicationVersion
 {
     [Theory]
     [InlineData("1.4.3", ApplicationType.Bazarr)]
-    [InlineData("1.40.5.8761", ApplicationType.PlexPass)]
+    [InlineData("1.40.5.8829", ApplicationType.PlexPass)]
     [InlineData("1.21.2.4649", ApplicationType.Prowlarr)]
     [InlineData("5.8.3.8933", ApplicationType.Radarr)]
     [InlineData("4.3.2", ApplicationType.SABnzbd)]
@@ -44,7 +44,7 @@ public sealed class UtilsGetVersionSABnzbd
 
 [SuppressMessage("ReSharper", "IdentifierTypo")]
 [SuppressMessage("ReSharper", "MemberCanBeFileLocal")]
-public sealed class UtilsGetVersionProwlarr
+public sealed class UtilsGetVersionProwlarr 
 {
     [Theory]
     [InlineData("1.21.2", ApplicationType.Prowlarr)]
