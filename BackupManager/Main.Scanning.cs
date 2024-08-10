@@ -185,13 +185,19 @@ internal sealed partial class Main
 
     private void ProcessFilesUpdatePercentComplete(string file)
     {
+        Utils.TraceIn(file);
         fileCounterForMultiThreadProcessing++;
         currentPercentComplete = fileCounterForMultiThreadProcessing * 100 / toolStripProgressBar.Maximum;
-        if (currentPercentComplete % 10 != 0 || currentPercentComplete <= reportedPercentComplete) return;
 
+        if (currentPercentComplete % 10 != 0 || currentPercentComplete <= reportedPercentComplete)
+        {
+            _ = Utils.TraceOut("No logging");
+            return;
+        }
         reportedPercentComplete = currentPercentComplete;
         Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.ProcessingPercentage, currentPercentComplete), true, true);
         Utils.Trace($"{fileCounterForMultiThreadProcessing} Processing {file}");
+        _ = Utils.TraceOut("logging");
     }
 
     private bool ProcessFilesCheckAllMediaInfo(bool scan, ref string file, CancellationToken ct)
