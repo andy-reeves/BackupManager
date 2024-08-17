@@ -188,6 +188,10 @@ internal sealed partial class Main
         Utils.TraceIn(file);
         fileCounterForMultiThreadProcessing++;
         currentPercentComplete = fileCounterForMultiThreadProcessing * 100 / toolStripProgressBar.Maximum;
+        Utils.Trace($"fileCounterForMultiThreadProcessing  = {fileCounterForMultiThreadProcessing}");
+        Utils.Trace($"currentPercentComplete  = {currentPercentComplete}");
+        Utils.Trace($"toolStripProgressBar.Maximum  = {toolStripProgressBar.Maximum}");
+        Utils.Trace($"reportedPercentComplete  = {reportedPercentComplete}");
 
         if (currentPercentComplete % 10 != 0 || currentPercentComplete <= reportedPercentComplete)
         {

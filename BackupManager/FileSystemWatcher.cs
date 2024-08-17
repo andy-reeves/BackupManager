@@ -336,11 +336,11 @@ internal sealed class FileSystemWatcher
     /// <param name="e"></param>
     private void OnSomethingHappened(FileSystemEventArgs e)
     {
-        Utils.TraceIn($"e.FullPath = {e.FullPath}");
+        //Utils.TraceIn($"e.FullPath = {e.FullPath}");
 
         if (e.ChangeType is not WatcherChangeTypes.Created and not WatcherChangeTypes.Changed and not WatcherChangeTypes.Deleted and not WatcherChangeTypes.Renamed)
         {
-            _ = Utils.TraceOut("OnSomethingHappened exit as not created/changed/deleted/renamed");
+            //_ = Utils.TraceOut("OnSomethingHappened exit as not created/changed/deleted/renamed");
             return;
         }
         if (Utils.GetFileSystemEntryType(e.FullPath) == FileSystemEntryType.Directory) return;
@@ -351,7 +351,7 @@ internal sealed class FileSystemWatcher
         {
             if (e.FullPath.EndsWithIgnoreCase(Utils.IS_DIRECTORY_WRITABLE_GUID + ".tmp") || e.FullPath.EndsWithIgnoreCase(Utils.SPEED_TEST_GUID + ".tmp"))
             {
-                _ = Utils.TraceOut("OnSomethingHappened exit as its the DirectoryWritable Guid or SpeedTest Guid");
+                //_ = Utils.TraceOut("OnSomethingHappened exit as its the DirectoryWritable Guid or SpeedTest Guid");
                 return;
             }
             var entry = new FileSystemEntry(e.FullPath, DateTime.Now);
@@ -360,7 +360,8 @@ internal sealed class FileSystemWatcher
             // As soon as there's something changed we start our event timers
             StartTimers();
         }
-        Utils.TraceOut();
+
+        //Utils.TraceOut();
     }
 
     private void StartTimers()
