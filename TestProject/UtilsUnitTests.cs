@@ -396,4 +396,20 @@ public sealed class UtilsUnitTests
         Assert.True(availableSpace > 0);
         Assert.True(totalBytes > 0);
     }
+
+    [InlineData(@"\\nas1\assets1", @"\\nas1\assets1")]
+    [InlineData(@"\\nas1\assets1\_TV", @"\\nas1\assets1")]
+    [InlineData(@"\\nas1\assets1\_TV\", @"\\nas1\assets1")]
+    [InlineData(@"\\nas1\", @"\\nas1")]
+    [InlineData(@"c:\assets1", @"c:\assets1")]
+    [InlineData(@"c:\assets1\_tv", @"c:\assets1")]
+    [InlineData(@"c:\assets1\_tv\", @"c:\assets1")]
+    [Theory]
+    public void GetDiskAndFirstDirectory(string directory, string expectedResult)
+    {
+        string[] directories = { directory };
+        var results = Utils.GetDiskAndFirstDirectory(directories);
+        var result = Assert.Single(results);
+        Assert.Equal(expectedResult, result);
+    }
 }

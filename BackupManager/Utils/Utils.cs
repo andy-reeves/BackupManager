@@ -508,6 +508,37 @@ internal static partial class Utils
     }
 
     /// <summary>
+    ///     Returns the disk names and first directory for the directories provided.
+    ///     If it's a UNC path its returns the path up to the second '\' so
+    ///     for \\nas1\assets1\_TV it will
+    ///     return \\nas1\assets1 and for c:\path1\_TV it will return c:\path1
+    /// </summary>
+    /// <param name="directories"></param>
+    /// <returns></returns>
+    internal static string[] GetDiskAndFirstDirectory(IEnumerable<string> directories)
+    {
+        var diskNames = new HashSet<string>();
+
+        foreach (var d in directories)
+        {
+            string diskName;
+
+            if (d.StartsWithIgnoreCase(@"\\"))
+            {
+                var pathAfterDoubleSlash = d.SubstringAfterIgnoreCase(@"\\");
+                diskName = pathAfterDoubleSlash.ContainsIgnoreCase("\\") ? Path.Combine(@"\\" + pathAfterDoubleSlash.SubstringBeforeIgnoreCase("\\"), pathAfterDoubleSlash.SubstringAfterIgnoreCase("\\").SubstringBeforeIgnoreCase("\\")) : d;
+            }
+            else
+            {
+                var pathAfterFirstSlash = d.SubstringAfterIgnoreCase("\\");
+                diskName = pathAfterFirstSlash.ContainsIgnoreCase("\\") ? Path.Combine(d.SubstringBeforeIgnoreCase("\\"), pathAfterFirstSlash.SubstringBeforeIgnoreCase("\\")) : d;
+            }
+            _ = diskNames.Add(diskName);
+        }
+        return diskNames.ToArray();
+    }
+
+    /// <summary>
     ///     Returns an array of paths to files that are on the disk provided.
     /// </summary>
     /// <param name="diskName"></param>
