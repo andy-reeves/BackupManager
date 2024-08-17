@@ -58,6 +58,7 @@ internal sealed partial class Main
         var diskNames = Utils.GetDiskNames(mediaBackup.Config.DirectoriesToBackup);
         var tasks = new List<Task<bool>>(diskNames.Length);
         fileCounterForMultiThreadProcessing = 0;
+        reportedPercentComplete = 0;
         EnableProgressBar(0, filesParam.Count);
         var suffix = filesParam.Count == 1 ? string.Empty : "s";
         Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal, $"Processing {filesParam.Count:n0} file{suffix}", false, true);
