@@ -510,29 +510,29 @@ internal static partial class Utils
     /// <summary>
     ///     Returns the disk names and first directory for the directories provided.
     ///     If it's a UNC path its returns the path up to the second '\' so
-    ///     for \\nas1\assets1\_TV it will
-    ///     return \\nas1\assets1 and for c:\path1\_TV it will return c:\path1
+    ///     for \\nas1\assets1\_TV it will return \\nas1\assets1 and for c:\path1\_TV it will return c:\path1
     /// </summary>
     /// <param name="directories"></param>
     /// <returns></returns>
     internal static string[] GetDiskAndFirstDirectory(IEnumerable<string> directories)
     {
+        // \\nas1\assets1\_TV
+        // get string after \\ to be nas1\assets1\_TV
+        // now split on \ to get nas1, assets1 and _TV
+        // return 0 plus 1
+
+        // c:\path1\_TV
+        // now split on \ to get c:, path1 and _TV
+        // return 0 plus 1
         var diskNames = new HashSet<string>();
 
         foreach (var d in directories)
         {
-            string diskName;
-
-            if (d.StartsWithIgnoreCase(@"\\"))
-            {
-                var pathAfterDoubleSlash = d.SubstringAfterIgnoreCase(@"\\");
-                diskName = pathAfterDoubleSlash.ContainsIgnoreCase("\\") ? Path.Combine(@"\\" + pathAfterDoubleSlash.SubstringBeforeIgnoreCase("\\"), pathAfterDoubleSlash.SubstringAfterIgnoreCase("\\").SubstringBeforeIgnoreCase("\\")) : d;
-            }
-            else
-            {
-                var pathAfterFirstSlash = d.SubstringAfterIgnoreCase("\\");
-                diskName = pathAfterFirstSlash.ContainsIgnoreCase("\\") ? Path.Combine(d.SubstringBeforeIgnoreCase("\\"), pathAfterFirstSlash.SubstringBeforeIgnoreCase("\\")) : d;
-            }
+            var uncPath = d.StartsWithIgnoreCase(@"\\");
+            var pathParts = (uncPath ? d.SubstringAfterIgnoreCase(@"\\") : d).Split('\\');
+            var diskName = pathParts.Length > 1 ? Path.Combine(pathParts[0], pathParts[1]) : pathParts[0];
+            if (uncPath) diskName = @"\\" + diskName;
+            if (diskName.EndsWithIgnoreCase(":")) diskName += "\\";
             _ = diskNames.Add(diskName);
         }
         return diskNames.ToArray();

@@ -55,8 +55,8 @@ internal sealed partial class Main
     {
         Utils.TraceIn();
         DisableControlsForAsyncTasks(ct);
-        var diskNames = Utils.GetDiskAndFirstDirectory(mediaBackup.Config.DirectoriesToBackup);
-        var tasks = new List<Task<bool>>(diskNames.Length);
+        var disksAndFirstDirectories = Utils.GetDiskAndFirstDirectory(mediaBackup.Config.DirectoriesToBackup);
+        var tasks = new List<Task<bool>>(diskAndFirstDirectories.Length);
         fileCounterForMultiThreadProcessing = 0;
         reportedPercentComplete = 0;
         EnableProgressBar(0, filesParam.Count);
@@ -64,7 +64,7 @@ internal sealed partial class Main
         Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal, $"Processing {filesParam.Count:n0} file{suffix}", false, true);
 
         // One process thread for each disk that has files on it to scan
-        tasks.AddRange(diskNames.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam))
+        tasks.AddRange(disksAndFirstDirectories.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam))
             .Select(files => TaskWrapper(Task.Run(() => files == null || files.Length == 0 || ProcessFilesInternal(files, scanId, scanPathForVideoCodec, ct), ct), ct)));
 
         // this is to have only 1 thread processing files
