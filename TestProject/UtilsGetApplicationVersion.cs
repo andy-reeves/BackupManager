@@ -47,7 +47,7 @@ public sealed class UtilsGetVersionSABnzbd
 public sealed class UtilsGetVersionProwlarr 
 {
     [Theory]
-    [InlineData("1.21.2", ApplicationType.Prowlarr)]
+    [InlineData("1.22.0", ApplicationType.Prowlarr)]
     [InlineData("1.22.0", ApplicationType.Prowlarr, "develop")]
     public void GetLatestVersionNumber(string expectedVersionNumber, ApplicationType applicationType, string branchName = "master")
     {
