@@ -193,16 +193,12 @@ internal sealed partial class Main
         Utils.Trace($"currentPercentComplete  = {currentPercentComplete}");
         Utils.Trace($"toolStripProgressBar.Maximum  = {toolStripProgressBar.Maximum}");
         Utils.Trace($"reportedPercentComplete  = {reportedPercentComplete}");
+        if (currentPercentComplete % 10 != 0 || currentPercentComplete <= reportedPercentComplete || toolStripProgressBar.Maximum < 25) return;
 
-        if (currentPercentComplete % 10 != 0 || currentPercentComplete <= reportedPercentComplete)
-        {
-            _ = Utils.TraceOut("No logging");
-            return;
-        }
         reportedPercentComplete = currentPercentComplete;
         Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.ProcessingPercentage, currentPercentComplete), true, true);
         Utils.Trace($"{fileCounterForMultiThreadProcessing} Processing {file}");
-        _ = Utils.TraceOut("logging");
+        Utils.TraceOut();
     }
 
     private bool ProcessFilesCheckAllMediaInfo(bool scan, ref string file, CancellationToken ct)
