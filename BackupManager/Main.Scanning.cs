@@ -56,7 +56,7 @@ internal sealed partial class Main
         Utils.TraceIn();
         DisableControlsForAsyncTasks(ct);
         var disksAndFirstDirectories = Utils.GetDiskAndFirstDirectory(mediaBackup.Config.DirectoriesToBackup);
-        var tasks = new List<Task<bool>>(diskAndFirstDirectories.Length);
+        var tasks = new List<Task<bool>>(disksAndFirstDirectories.Length);
         fileCounterForMultiThreadProcessing = 0;
         reportedPercentComplete = 0;
         EnableProgressBar(0, filesParam.Count);

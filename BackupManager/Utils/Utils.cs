@@ -526,16 +526,21 @@ internal static partial class Utils
         // return 0 plus 1
         var diskNames = new HashSet<string>();
 
-        foreach (var d in directories)
+        foreach (var diskName in directories.Select(GetDiskAndFirstDirectoryName))
         {
-            var uncPath = d.StartsWithIgnoreCase(@"\\");
-            var pathParts = (uncPath ? d.SubstringAfterIgnoreCase(@"\\") : d).Split('\\');
-            var diskName = pathParts.Length > 1 ? Path.Combine(pathParts[0], pathParts[1]) : pathParts[0];
-            if (uncPath) diskName = @"\\" + diskName;
-            if (diskName.EndsWithIgnoreCase(":")) diskName += "\\";
             _ = diskNames.Add(diskName);
         }
         return diskNames.ToArray();
+    }
+
+    private static string GetDiskAndFirstDirectoryName(string directoryPath)
+    {
+        var uncPath = directoryPath.StartsWithIgnoreCase(@"\\");
+        var pathParts = (uncPath ? directoryPath.SubstringAfterIgnoreCase(@"\\") : directoryPath).Split('\\');
+        var diskAndFirstDirectoryName = pathParts.Length > 1 ? Path.Combine(pathParts[0], pathParts[1]) : pathParts[0];
+        if (uncPath) diskAndFirstDirectoryName = @"\\" + diskAndFirstDirectoryName;
+        if (diskAndFirstDirectoryName.EndsWithIgnoreCase(":")) diskAndFirstDirectoryName += "\\";
+        return diskAndFirstDirectoryName;
     }
 
     /// <summary>
