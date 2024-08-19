@@ -336,40 +336,21 @@ internal sealed class FileSystemWatcher
     /// <param name="e"></param>
     private void OnSomethingHappened(FileSystemEventArgs e)
     {
-        //Utils.TraceIn($"e.FullPath = {e.FullPath}");
-
-        if (e.ChangeType is not WatcherChangeTypes.Created and not WatcherChangeTypes.Changed and not WatcherChangeTypes.Deleted and not WatcherChangeTypes.Renamed)
-        {
-            //_ = Utils.TraceOut("OnSomethingHappened exit as not created/changed/deleted/renamed");
-            return;
-        }
+        if (e.ChangeType is not WatcherChangeTypes.Created and not WatcherChangeTypes.Changed and not WatcherChangeTypes.Deleted and not WatcherChangeTypes.Renamed) return;
         if (Utils.GetFileSystemEntryType(e.FullPath) == FileSystemEntryType.Directory) return;
+        if (RegexFilter.HasValue() && !Regex.IsMatch(e.FullPath, RegexFilter)) return;
+        if (e.FullPath.EndsWithIgnoreCase(Utils.IS_DIRECTORY_WRITABLE_GUID + ".tmp") || e.FullPath.EndsWithIgnoreCase(Utils.SPEED_TEST_GUID + ".tmp")) return;
 
-        // TODO we should just put the changes into our collection and check them against the regex later
-        // check the Regex to filter more
-        if (RegexFilter.HasNoValue() || Regex.IsMatch(e.FullPath, RegexFilter))
-        {
-            if (e.FullPath.EndsWithIgnoreCase(Utils.IS_DIRECTORY_WRITABLE_GUID + ".tmp") || e.FullPath.EndsWithIgnoreCase(Utils.SPEED_TEST_GUID + ".tmp"))
-            {
-                //_ = Utils.TraceOut("OnSomethingHappened exit as its the DirectoryWritable Guid or SpeedTest Guid");
-                return;
-            }
-            var entry = new FileSystemEntry(e.FullPath, DateTime.Now);
-            _ = FileSystemChanges.AddOrUpdate(entry);
+        _ = FileSystemChanges.AddOrUpdate(new FileSystemEntry(e.FullPath, DateTime.Now));
 
-            // As soon as there's something changed we start our event timers
-            StartTimers();
-        }
-
-        //Utils.TraceOut();
+        // As soon as there's something changed we start our event timers
+        StartTimers();
     }
 
     private void StartTimers()
     {
-        Utils.TraceIn();
-        processChangesTimer?.Start();
-        scanDirectoriesTimer?.Start();
-        Utils.TraceOut();
+        if (processChangesTimer is { Enabled: false }) processChangesTimer.Start();
+        if (scanDirectoriesTimer is { Enabled: false }) scanDirectoriesTimer.Start();
     }
 
     private void ScanDirectoriesTimerElapsed(object sender, ElapsedEventArgs e)
