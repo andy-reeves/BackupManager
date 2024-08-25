@@ -318,6 +318,17 @@ internal sealed partial class Main
             }
             else
             {
+                // It could be we've found the file by its content hash, but it needs to be renamed on disk
+                var destFileName = backupFile.BackupDiskFullPath(disk.BackupPath);
+
+                if (backupDiskFileFullPath != destFileName)
+                {
+                    Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Renaming {backupDiskFileFullPath} to {destFileName}");
+
+                    // File.Exists will return True if the file names differ by case
+                    _ = Utils.File.Move(backupDiskFileFullPath, destFileName);
+                }
+
                 // This forces a hash check on the source and backup disk files
                 if (backupFile.CheckContentHashes(disk))
                 {

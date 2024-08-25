@@ -21,6 +21,8 @@ using BackupManager.Radarr;
 
 using Microsoft.Win32.SafeHandles;
 
+using static System.String;
+
 // ReSharper disable once CheckNamespace
 namespace BackupManager;
 
@@ -91,7 +93,7 @@ internal static partial class Utils
         internal static string GetShortMd5HashFromFile(FileStream stream, long size)
         {
             if (stream == null) return null;
-            if (size <= 0) return string.Empty;
+            if (size <= 0) return Empty;
 
             byte[] startBlock;
             byte[] middleBlock = null;
@@ -126,7 +128,7 @@ internal static partial class Utils
             if (!Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
 
             var size = new FileInfo(path).Length;
-            if (size == 0) return string.Empty;
+            if (size == 0) return Empty;
 
             byte[] startBlock;
             byte[] middleBlock = null;
@@ -440,7 +442,23 @@ internal static partial class Utils
             TraceIn(sourceFileName, destFileName);
 #if FILEMOVE
             Directory.EnsureForFilePath(destFileName);
-            System.IO.File.Move(sourceFileName, destFileName);
+
+            // TODO Could be any directory in the path. Check them all
+            // If the source and dest only differ by case we move to a temp file
+            if (string.Equals(sourceFileName, destFileName, StringComparison.CurrentCultureIgnoreCase))
+            {
+                var sourceFileInfo = new FileInfo(sourceFileName);
+                var destFileInfo = new FileInfo(destFileName);
+                if (sourceFileInfo.DirectoryName == null || destFileInfo.DirectoryName == null) return TraceOut(true);
+
+                var dir = new DirectoryInfo(sourceFileInfo.DirectoryName);
+                dir.MoveTo(sourceFileInfo.DirectoryName + "tmp");
+                dir.MoveTo(destFileInfo.DirectoryName);
+                System.IO.File.Move(sourceFileName, destFileName + ".tmp");
+                System.IO.File.Move(destFileName + ".tmp", destFileName);
+            }
+            else
+                System.IO.File.Move(sourceFileName, destFileName);
 #else
             LogWithPushover(BackupAction.General, PushoverPriority.High, $"FileMove with {sourceFileName} to {destFileName} - NOT MOVING", true, true);
 #endif
@@ -634,8 +652,8 @@ internal static partial class Utils
             include = includeAsArray.Except(excludeAsArray);
             var includeAsArray2 = include as string[] ?? include.ToArray();
             if (!includeAsArray2.Any()) includeAsArray2 = new[] { "*" };
-            var excludeFilters = from filter in excludeAsArray let replace = filter.Replace("!", string.Empty).Replace(".", @"\.").Replace("*", ".*").Replace("?", ".") select $"^{replace}$";
-            Regex excludeRegex = new(string.Join("|", excludeFilters.ToArray()), RegexOptions.IgnoreCase);
+            var excludeFilters = from filter in excludeAsArray let replace = filter.Replace("!", Empty).Replace(".", @"\.").Replace("*", ".*").Replace("?", ".") select $"^{replace}$";
+            Regex excludeRegex = new(Join("|", excludeFilters.ToArray()), RegexOptions.IgnoreCase);
             Queue<string> pathsToSearch = new();
             List<string> foundFiles = new();
             pathsToSearch.Enqueue(path);
