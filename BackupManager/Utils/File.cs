@@ -31,6 +31,9 @@ internal static partial class Utils
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     internal static partial class File
     {
+        [DllImport("kernel32", SetLastError = true)]
+        private static extern bool MoveFile(string lpExistingFileName, string lpNewFileName);
+
         [LibraryImport("kernel32.dll", EntryPoint = "CreateFileW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         internal static partial SafeFileHandle CreateFile(string fileName, uint dwDesiredAccess, FileShare dwShareMode, IntPtr securityAttrsMustBeZero, FileMode dwCreationDisposition, uint dwFlagsAndAttributes, IntPtr hTemplateFileMustBeZero);
 
@@ -42,7 +45,10 @@ internal static partial class Utils
         ///     Checks the path is a video file
         /// </summary>
         /// <param name="path"></param>
-        /// <returns>False if it's not a video file, True if it's a video file. Exception if path is null or empty</returns>
+        /// <returns>
+        ///     False if it's not a video file, True if it's a video file. Only checks the path not the actual file or
+        ///     contents. Exception if path is null or empty
+        /// </returns>
         internal static bool IsVideo(string path)
         {
             ArgumentException.ThrowIfNullOrEmpty(path);
@@ -430,6 +436,18 @@ internal static partial class Utils
             return TraceOut(true);
         }
 
+        private static void RenameDirectory(string path)
+        {
+            if (path.StartsWithIgnoreCase(@"\\"))
+            {
+                var dir = new DirectoryInfo(path);
+                dir.MoveTo(path + "tmp");
+                dir.MoveTo(path);
+            }
+            else
+                _ = MoveFile(path, path);
+        }
+
         /// <summary>
         ///     Moves a specified file to a new location, providing the option to specify a new file name. Ensures the destination
         ///     folder exists too.
@@ -443,19 +461,19 @@ internal static partial class Utils
 #if FILEMOVE
             Directory.EnsureForFilePath(destFileName);
 
-            // TODO Could be any directory in the path. Check them all
-            // If the source and dest only differ by case we move to a temp file
+            // If the source and dest only differ by case we call MoveFileEx
             if (string.Equals(sourceFileName, destFileName, StringComparison.CurrentCultureIgnoreCase))
             {
-                var sourceFileInfo = new FileInfo(sourceFileName);
                 var destFileInfo = new FileInfo(destFileName);
-                if (sourceFileInfo.DirectoryName == null || destFileInfo.DirectoryName == null) return TraceOut(true);
+                var parentDirectory = destFileInfo.DirectoryName;
+                _ = MoveFile(sourceFileName, destFileName);
+                var rootDir = Path.GetPathRoot(destFileName);
 
-                var dir = new DirectoryInfo(sourceFileInfo.DirectoryName);
-                dir.MoveTo(sourceFileInfo.DirectoryName + "tmp");
-                dir.MoveTo(destFileInfo.DirectoryName);
-                System.IO.File.Move(sourceFileName, destFileName + ".tmp");
-                System.IO.File.Move(destFileName + ".tmp", destFileName);
+                while (parentDirectory != rootDir)
+                {
+                    RenameDirectory(parentDirectory);
+                    parentDirectory = Path.GetDirectoryName(parentDirectory);
+                }
             }
             else
                 System.IO.File.Move(sourceFileName, destFileName);
