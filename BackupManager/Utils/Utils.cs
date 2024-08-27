@@ -533,7 +533,7 @@ internal static partial class Utils
         return diskNames.ToArray();
     }
 
-    private static string GetDiskAndFirstDirectoryName(string directoryPath)
+    internal static string GetDiskAndFirstDirectoryName(string directoryPath)
     {
         var uncPath = directoryPath.StartsWithIgnoreCase(@"\\");
         var pathParts = (uncPath ? directoryPath.SubstringAfterIgnoreCase(@"\\") : directoryPath).Split('\\');

@@ -436,16 +436,16 @@ internal static partial class Utils
             return TraceOut(true);
         }
 
-        private static void RenameDirectory(string path)
+        private static bool RenameDirectory(string path)
         {
-            if (path.StartsWithIgnoreCase(@"\\"))
-            {
-                var dir = new DirectoryInfo(path);
-                dir.MoveTo(path + "tmp");
-                dir.MoveTo(path);
-            }
-            else
-                _ = MoveFile(path, path);
+            if (!System.IO.Directory.Exists(path)) throw new DirectoryNotFoundException($"{path} not found");
+
+            if (!path.StartsWithIgnoreCase(@"\\")) return MoveFile(path, path);
+
+            var dir = new DirectoryInfo(path);
+            dir.MoveTo(path + "tmp");
+            dir.MoveTo(path);
+            return true;
         }
 
         /// <summary>
@@ -466,12 +466,15 @@ internal static partial class Utils
             {
                 var destFileInfo = new FileInfo(destFileName);
                 var parentDirectory = destFileInfo.DirectoryName;
-                _ = MoveFile(sourceFileName, destFileName);
+                var success = MoveFile(sourceFileName, destFileName);
+                if (!success) return TraceOut(false);
+
                 var rootDir = Path.GetPathRoot(destFileName);
 
                 while (parentDirectory != rootDir)
                 {
-                    RenameDirectory(parentDirectory);
+                    // If it's not a rooted path it could be in the temp folder and so rename would fail
+                    _ = RenameDirectory(parentDirectory);
                     parentDirectory = Path.GetDirectoryName(parentDirectory);
                 }
             }

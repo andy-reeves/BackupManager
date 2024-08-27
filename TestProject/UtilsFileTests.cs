@@ -48,28 +48,29 @@ public sealed class UtilsFileTests
         Assert.Equal(expectedResult, Utils.File.IsVideo(path));
     }
 
-    [InlineData(@"File1CamelCase.mp4", @"file1camelcase.mp4")]
-    [InlineData(@"Folder1\File1CamelCase.mp4", @"folder1\file1camelcase.mp4")]
-    [InlineData(@"Folder1\folder2\File1CamelCase.mp4", @"folder1\Folder2\file1camelcase.mp4")]
-    [InlineData(@"\\nas1\assets1\Folder1\folder2\File1CamelCase.mp4", @"\\nas1\assets1\folder1\Folder2\file1camelcase.mp4")]
+    [InlineData(@"File1CamelCase.mp4", @"file1camelcase.mp4", "")]
+    [InlineData(@"Folder1\File1CamelCase.mp4", @"folder1\file1camelcase.mp4", "")]
+    [InlineData(@"Folder1\folder2\File1CamelCase.mp4", @"folder1\Folder2\file1camelcase.mp4", "")]
+    [InlineData(@"\\nas1\assets1\Folder1\folder2\File1CamelCase.mp4", @"\\nas1\assets1\folder1\Folder2\file1camelcase.mp4", @"\\nas1\assets1\folder1")]
     [Theory]
-    public void FileMoveTests(string fileToCreate, string fileToRenameTo)
+    public void FileMoveTests(string fileToCreate, string fileToRenameTo, string originFolder)
     {
         // Check File.Move works if filename only differs by case
         // or dest exists already
         // one of the directories in the path is different case
-        var originPath = Path.Combine(Path.GetTempPath(), "sourceFileMoveTests");
         string sourceFile;
         string destinationFile;
+        string originPath;
 
-        if (fileToCreate.StartsWithIgnoreCase(@"\\"))
+        if (fileToCreate.StartsWithIgnoreCase(@"\\") || Path.IsPathRooted(fileToCreate))
         {
             sourceFile = fileToCreate;
             destinationFile = fileToRenameTo;
-            originPath = Path.GetPathRoot(fileToCreate);
+            originPath = originFolder;
         }
         else
         {
+            originPath = Path.Combine(Path.GetTempPath(), "sourceFileMoveTests");
             if (Utils.Directory.Exists(originPath)) _ = Utils.Directory.Delete(originPath, true);
             sourceFile = Path.Combine(originPath, fileToCreate);
             destinationFile = Path.Combine(originPath, fileToRenameTo);
@@ -77,28 +78,12 @@ public sealed class UtilsFileTests
         Utils.Directory.EnsureForFilePath(sourceFile);
         Utils.Directory.EnsureForFilePath(destinationFile);
         Utils.File.Create(sourceFile);
-        _ = Utils.File.Move(sourceFile, destinationFile);
-        var destFileInfo = new FileInfo(destinationFile);
-
-        if (destFileInfo.DirectoryName != null)
-        {
-            if (originPath != null)
-            {
-                var files = Directory.EnumerateFiles(originPath, "*.*", SearchOption.AllDirectories);
-                var enumerable = files as string[] ?? files.ToArray();
-                _ = Assert.Single(enumerable);
-                var newFileInfo = new FileInfo(enumerable[0]);
-                Assert.Equal(destinationFile, newFileInfo.FullName);
-            }
-        }
-
-        if (fileToCreate.StartsWithIgnoreCase(@"\\"))
-        {
-            if (Utils.File.Exists(destinationFile)) _ = Utils.File.Delete(destinationFile);
-        }
-        else
-        {
-            if (Utils.Directory.Exists(originPath)) _ = Utils.Directory.Delete(originPath, true);
-        }
+        Assert.True(Utils.File.Move(sourceFile, destinationFile));
+        var files = Directory.EnumerateFiles(originPath, "*.*", SearchOption.AllDirectories);
+        var enumerable = files as string[] ?? files.ToArray();
+        _ = Assert.Single(enumerable);
+        var newFileInfo = new FileInfo(enumerable[0]);
+        Assert.Equal(destinationFile, newFileInfo.FullName);
+        if (Utils.Directory.Exists(originPath)) _ = Utils.Directory.Delete(originPath, true);
     }
 }
