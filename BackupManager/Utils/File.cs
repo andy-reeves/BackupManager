@@ -446,18 +446,6 @@ internal static partial class Utils
             return TraceOut(true);
         }
 
-        private static bool RenameDirectory(string path)
-        {
-            if (!System.IO.Directory.Exists(path)) throw new DirectoryNotFoundException($"{path} not found");
-
-            if (!path.StartsWithIgnoreCase(@"\\")) return MoveFile(path, path);
-
-            var dir = new DirectoryInfo(path);
-            dir.MoveTo(path + "tmp");
-            dir.MoveTo(path);
-            return true;
-        }
-
         /// <summary>
         ///     Moves a specified file to a new location, providing the option to specify a new file name. Ensures the destination
         ///     folder exists too.
@@ -484,7 +472,7 @@ internal static partial class Utils
                 while (parentDirectory != rootDir)
                 {
                     // If it's not a rooted path it could be in the temp folder and so rename would fail
-                    _ = RenameDirectory(parentDirectory);
+                    _ = Directory.Rename(parentDirectory);
                     parentDirectory = Path.GetDirectoryName(parentDirectory);
                 }
             }
@@ -496,6 +484,11 @@ internal static partial class Utils
             return TraceOut(true);
         }
 
+        /// <summary>
+        ///     Returns the actual path of the file or directory provided in the case that it really exists in.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         [SupportedOSPlatform("windows")]
         internal static string GetWindowsPhysicalPath(string path)
         {

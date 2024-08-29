@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using BackupManager.Extensions;
+
 // ReSharper disable once CheckNamespace
 namespace BackupManager;
 
@@ -16,6 +18,24 @@ internal static partial class Utils
 {
     internal static class Directory
     {
+        /// <summary>
+        ///     Renames the directory at the end of the path ensures it's the correct case
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        /// <exception cref="DirectoryNotFoundException"></exception>
+        internal static bool Rename(string path)
+        {
+            if (!System.IO.Directory.Exists(path)) throw new DirectoryNotFoundException($"{path} not found");
+
+            if (!path.StartsWithIgnoreCase(@"\\")) return File.MoveFile(path, path);
+
+            var dir = new DirectoryInfo(path);
+            dir.MoveTo(path + "tmp");
+            dir.MoveTo(path);
+            return true;
+        }
+
         internal static void EnsurePath(string directoryPath)
         {
             EnsureForFilePath(Path.Combine(directoryPath, "temp.txt"));
