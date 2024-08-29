@@ -71,19 +71,16 @@ public sealed class UtilsFileTests
         else
         {
             originPath = Path.Combine(Path.GetTempPath(), "sourceFileMoveTests");
+            Utils.Directory.EnsurePath(originPath);
+            originPath = Utils.File.GetWindowsPhysicalPath(originPath);
             if (Utils.Directory.Exists(originPath)) _ = Utils.Directory.Delete(originPath, true);
             sourceFile = Path.Combine(originPath, fileToCreate);
             destinationFile = Path.Combine(originPath, fileToRenameTo);
         }
-        Utils.Directory.EnsureForFilePath(sourceFile);
-        Utils.Directory.EnsureForFilePath(destinationFile);
         Utils.File.Create(sourceFile);
+        sourceFile = Utils.File.GetWindowsPhysicalPath(sourceFile);
         Assert.True(Utils.File.Move(sourceFile, destinationFile));
-        var files = Directory.EnumerateFiles(originPath, "*.*", SearchOption.AllDirectories);
-        var enumerable = files as string[] ?? files.ToArray();
-        _ = Assert.Single(enumerable);
-        var newFileInfo = new FileInfo(enumerable[0]);
-        Assert.Equal(destinationFile, newFileInfo.FullName);
+        Assert.Equal(destinationFile, Utils.File.GetWindowsPhysicalPath(destinationFile));
         if (Utils.Directory.Exists(originPath)) _ = Utils.Directory.Delete(originPath, true);
     }
 }

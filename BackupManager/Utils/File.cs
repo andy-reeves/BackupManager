@@ -11,6 +11,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -31,8 +32,9 @@ internal static partial class Utils
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     internal static partial class File
     {
-        [DllImport("kernel32", SetLastError = true)]
-        private static extern bool MoveFile(string lpExistingFileName, string lpNewFileName);
+        [LibraryImport("kernel32.dll", EntryPoint = "MoveFileW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static partial bool MoveFile(string lpExistingFileName, string lpNewFileName);
 
         [LibraryImport("kernel32.dll", EntryPoint = "CreateFileW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         internal static partial SafeFileHandle CreateFile(string fileName, uint dwDesiredAccess, FileShare dwShareMode, IntPtr securityAttrsMustBeZero, FileMode dwCreationDisposition, uint dwFlagsAndAttributes, IntPtr hTemplateFileMustBeZero);
@@ -40,6 +42,14 @@ internal static partial class Utils
         [LibraryImport("kernel32.dll", EntryPoint = "SetFileTime", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static partial bool SetFileTime(SafeFileHandle hFile, IntPtr lpCreationTimeUnused, IntPtr lpLastAccessTimeUnused, ref long lpLastWriteTime);
+
+        [LibraryImport("kernel32.dll", EntryPoint = "GetShortPathNameW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
+        [return: MarshalAs(UnmanagedType.U4)]
+        internal static partial uint GetShortPathName([MarshalAs(UnmanagedType.LPTStr)] string longPath, char[] path, int cchBuffer);
+
+        [LibraryImport("kernel32.dll", EntryPoint = "GetLongPathNameW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
+        [return: MarshalAs(UnmanagedType.U4)]
+        internal static partial uint GetLongPathName([MarshalAs(UnmanagedType.LPTStr)] string lpszShortPath, char[] lpszLongPath, int cchBuffer);
 
         /// <summary>
         ///     Checks the path is a video file
@@ -484,6 +494,23 @@ internal static partial class Utils
             LogWithPushover(BackupAction.General, PushoverPriority.High, $"FileMove with {sourceFileName} to {destFileName} - NOT MOVING", true, true);
 #endif
             return TraceOut(true);
+        }
+
+        [SupportedOSPlatform("windows")]
+        internal static string GetWindowsPhysicalPath(string path)
+        {
+            var chars = new char[255];
+
+            // names with long extension can cause the short name to be actually larger than the long name
+            _ = GetShortPathName(path, chars, chars.Length);
+            path = new string(chars, 0, chars.Length);
+            var result = GetLongPathName(path, chars, chars.Length);
+            if (result <= 0) return null;
+            if (result < (uint)chars.Length) return new string(chars, 0, (int)result);
+
+            chars = new char[result];
+            _ = GetLongPathName(path, chars, chars.Length);
+            return new string(chars, 0, (int)result);
         }
 
         internal static void AppendAllText(string filePath, string contents)

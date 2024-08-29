@@ -1188,7 +1188,7 @@ internal static partial class Utils
     /// </summary>
     /// <param name="serviceName"></param>
     /// <param name="timeoutMilliseconds"></param>
-    /// <returns>True if the service stopped successfully or it was stopped already</returns>
+    /// <returns>True if the service stopped successfully, or it was stopped already</returns>
     [SupportedOSPlatform("windows")]
     internal static bool StopService(string serviceName, int timeoutMilliseconds)
     {
