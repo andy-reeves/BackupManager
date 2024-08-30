@@ -11,7 +11,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -489,7 +488,6 @@ internal static partial class Utils
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        [SupportedOSPlatform("windows")]
         internal static string GetWindowsPhysicalPath(string path)
         {
             var chars = new char[255];

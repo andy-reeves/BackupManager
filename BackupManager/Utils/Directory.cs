@@ -28,6 +28,7 @@ internal static partial class Utils
         {
             if (!System.IO.Directory.Exists(path)) throw new DirectoryNotFoundException($"{path} not found");
 
+            if (File.GetWindowsPhysicalPath(path).SubstringAfterLastIgnoreCase(@"\").Equals(path.SubstringAfterLastIgnoreCase(@"\"), StringComparison.CurrentCulture)) return true;
             if (!path.StartsWithIgnoreCase(@"\\")) return File.MoveFile(path, path);
 
             var dir = new DirectoryInfo(path);
