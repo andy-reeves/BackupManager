@@ -17,10 +17,10 @@ namespace TestProject;
 public sealed class UtilsGetApplicationVersion
 {
     [Theory]
-    [InlineData("1.4.3", ApplicationType.Bazarr)]
-    [InlineData("1.40.5.8921", ApplicationType.PlexPass)]
-    [InlineData("1.21.2.4649", ApplicationType.Prowlarr)]
-    [InlineData("5.9.1.9070", ApplicationType.Radarr)]
+    [InlineData("1.4.5", ApplicationType.Bazarr)]
+    [InlineData("1.41.1.9057", ApplicationType.PlexPass)]
+    [InlineData("1.24.3.4754", ApplicationType.Prowlarr)]
+    [InlineData("5.11.0.9244", ApplicationType.Radarr)]
     [InlineData("4.3.3", ApplicationType.SABnzbd)]
     [InlineData("4.0.9.2244", ApplicationType.Sonarr)]
     public void GetVersionNumber(string expectedInstalledVersionNumber, ApplicationType applicationType)
@@ -47,8 +47,8 @@ public sealed class UtilsGetVersionSABnzbd
 public sealed class UtilsGetVersionProwlarr 
 {
     [Theory]
-    [InlineData("1.22.0", ApplicationType.Prowlarr)]
-    [InlineData("1.23.1", ApplicationType.Prowlarr, "develop")]
+    [InlineData("1.24.3", ApplicationType.Prowlarr)]
+    [InlineData("1.25.2", ApplicationType.Prowlarr, "develop")]
     public void GetLatestVersionNumber(string expectedVersionNumber, ApplicationType applicationType, string branchName = "master")
     {
         Assert.Equal(expectedVersionNumber, Utils.GetLatestApplicationVersionNumber(applicationType, branchName));
@@ -66,7 +66,7 @@ public sealed class UtilsGetVersionPlex
     }
 
     [Theory]
-    [InlineData("1.40.5.8921", ApplicationType.Plex)]
+    [InlineData("1.41.0.8994", ApplicationType.Plex)]
     [InlineData("1.40.5.8854", ApplicationType.PlexPass)]
     public void GetLatestVersionNumber(string expectedVersionNumber, ApplicationType applicationType, string branchName = "master")
     {
@@ -79,7 +79,7 @@ public sealed class UtilsGetVersionPlex
 public sealed class UtilsGetVersionBazarr
 {
     [Theory]
-    [InlineData("1.4.3", ApplicationType.Bazarr)]
+    [InlineData("1.4.5", ApplicationType.Bazarr)]
     public void GetLatestVersionNumber(string expectedVersionNumber, ApplicationType applicationType, string branchName = "master")
     {
         Assert.Equal(expectedVersionNumber, Utils.GetLatestApplicationVersionNumber(applicationType, branchName));
@@ -103,7 +103,7 @@ public sealed class UtilsGetVersionSonarr
 public sealed class UtilsGetVersionRadarr
 {
     [Theory]
-    [InlineData("5.9.1.9070", ApplicationType.Radarr)]
+    [InlineData("5.11.0.9244", ApplicationType.Radarr)]
     public void GetLatestVersionNumber(string expectedVersionNumber, ApplicationType applicationType, string branchName = "master")
     {
         Assert.Equal(expectedVersionNumber, Utils.GetLatestApplicationVersionNumber(applicationType, branchName));
