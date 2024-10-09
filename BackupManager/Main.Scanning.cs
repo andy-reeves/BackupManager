@@ -89,6 +89,9 @@ internal sealed partial class Main
     {
         Utils.TraceIn();
 
+        //todo move this string[] to config
+        string[] reportNormalPriority = { "-TdarrCacheFile-" };
+
         // we need a blocking collection and then copy it back when it's all done
         // then split by disk name and have a Task for each of them like the directory scanner
         var filtersToDelete = FiltersToDelete();
@@ -114,12 +117,11 @@ internal sealed partial class Main
                 // Only process the naming rules after we've ensured the file is in our xml file
                 if (mediaBackup.EnsureFile(file)) ProcessFileRules(file);
             }
-            catch (IOException ex)
+            catch (IOException)
             {
                 // exception accessing the file return
                 // so report it and skip this file for now
-                Utils.Log(BackupAction.ProcessFiles, $"IOException in ProcessFilesInternal {ex} with {file} so skipping");
-                Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High, $"Unable to calculate the hash code for {file}. It's most likely in use by another process.");
+                Utils.LogWithPushover(BackupAction.ProcessFiles, file.ContainsAny(reportNormalPriority) ? PushoverPriority.Normal : PushoverPriority.High, $"Unable to calculate the hash code for {file}. It's most likely in use by another process.");
             }
         }
 

@@ -447,7 +447,7 @@ internal static partial class Utils
 
         /// <summary>
         ///     Moves a specified file to a new location, providing the option to specify a new file name. Ensures the destination
-        ///     folder exists too.
+        ///     folder exists too. It will ensure the directories and filename match the case provided.
         /// </summary>
         /// <param name="sourceFileName">The name of the file to move. Can include a relative or absolute path.</param>
         /// <param name="destFileName">The new path and name for the file.</param>
