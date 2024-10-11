@@ -275,7 +275,10 @@ internal sealed partial class Main
             if (path != null && Directory.Exists(path)) continue;
 
             Utils.Trace($"Creating new symbolic link at {path} with target {pathToTarget}");
-            if (path != null) _ = Directory.CreateSymbolicLink(path, pathToTarget);
+            if (path == null) continue;
+
+            _ = Directory.CreateSymbolicLink(path, pathToTarget);
+            Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, $"Creating new symbolic link at {path} with target {pathToTarget}");
         }
         Utils.TraceOut();
     }
