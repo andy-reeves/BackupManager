@@ -47,12 +47,24 @@ internal sealed partial class Main
     private void DirectoriesHealthCheck()
     {
         // check the backup directories and the health check directories too
-        foreach (var directory in mediaBackup.Config.DirectoriesToBackup.Concat(mediaBackup.Config.DirectoriesToHealthCheck).Where(static directory => !Utils.Directory.IsWritable(directory)))
+        foreach (var directory in mediaBackup.Config.DirectoriesToBackup.Concat(mediaBackup.Config.DirectoriesToHealthCheck))
         {
-            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.DirectoryIsNotWritable, directory));
+            if (!Utils.Directory.IsWritable(directory))
+            {
+                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.DirectoryIsNotWritable, directory));
 
-            // Turn off any more directory monitoring
-            mediaBackup.Config.DirectoriesToHealthCheckOnOff = false;
+                // Turn off any more directory monitoring
+                mediaBackup.Config.DirectoriesToHealthCheckOnOff = false;
+            }
+            _ = Utils.GetDiskInfo(directory, out var freeSpaceOnRootDirectoryDisk, out _);
+
+            if (freeSpaceOnRootDirectoryDisk < Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumCriticalSpace))
+            {
+                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, $"Free space on {directory} is too low");
+
+                // Turn off any more directory monitoring
+                mediaBackup.Config.DirectoriesToHealthCheckOnOff = false;
+            }
         }
     }
 
