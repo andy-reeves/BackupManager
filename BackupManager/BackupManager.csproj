@@ -50,7 +50,7 @@
     <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.57" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.67" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Servarr.FFMpegCore" Version="4.7.0-26" />
     <PackageReference Include="Servarr.FFprobe" Version="5.1.4.112" />
