@@ -295,6 +295,7 @@ public sealed class MediaBackup
         // files with same hash are allowed (Porridge TV ep and movie)
         // files can't have same hash and same filename though
         var hashKey = Path.Combine(Utils.GetIndexFolder(directory), relativePath);
+        Utils.Trace($"hashKey = {hashKey}");
 
         // if this hash is already added then return it
 
@@ -304,29 +305,7 @@ public sealed class MediaBackup
             // this has same index folder and path but it's a different file
             string hashOfContents;
 
-            if (backupFile.Directory != directory)
-            {
-                // This is similar file in different directories
-                // This also happens if a file is moved from 1 directory to another one
-                // its old location is still in the xml but the new location will be found on disk
-                Utils.Trace($"Duplicate file detected at {fullPath} and {backupFile.FullPath}");
-
-                // First we can check the hash of both
-                // its its the same hash then we can assume the file has just been moved
-                hashOfContents = Utils.File.GetShortMd5Hash(fullPath);
-
-                if (hashOfContents == backupFile.ContentsHash)
-                {
-                    Utils.Trace($"Changing Directory on {backupFile.FullPath} to {directory}");
-                    backupFile.Directory = directory;
-                }
-                else
-                {
-                    Utils.Trace("Hashes are different on the duplicate files");
-                    return Utils.TraceOut<BackupFile>();
-                }
-            }
-            else
+            if (backupFile.Directory == directory)
             {
                 Utils.Trace("directory equal");
 
@@ -357,12 +336,34 @@ public sealed class MediaBackup
 
                 if (fullPath != backupFile.FullPath)
                 {
-                    Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, $"FullPath different to setting it now. backupFile.FullPath was {backupFile.FullPath} and now set to {fullPath}");
+                    Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, $"FullPath different so setting it now. backupFile.FullPath was {backupFile.FullPath} and now set to {fullPath}");
                     backupFile.SetFullPath(fullPath, directory);
                 }
                 Utils.Trace($"FullPath = {backupFile.FullPath}");
                 Utils.Trace($"fullPath passed in  = {fullPath}");
                 backupFile.UpdateFileLength();
+            }
+            else
+            {
+                // This is similar file in different directories
+                // This also happens if a file is moved from 1 directory to another one
+                // its old location is still in the xml but the new location will be found on disk
+                Utils.Trace($"Duplicate file detected at {fullPath} and {backupFile.FullPath}");
+
+                // First we can check the hash of both
+                // its its the same hash then we can assume the file has just been moved
+                hashOfContents = Utils.File.GetShortMd5Hash(fullPath);
+
+                if (hashOfContents == backupFile.ContentsHash)
+                {
+                    Utils.Trace($"Changing Directory on {backupFile.FullPath} to {directory}");
+                    backupFile.Directory = directory;
+                }
+                else
+                {
+                    Utils.Trace("Hashes are different on the duplicate files");
+                    return Utils.TraceOut<BackupFile>();
+                }
             }
 
             // Now we check the full path has not changed the UPPER or lowercase anywhere
