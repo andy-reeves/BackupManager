@@ -327,6 +327,8 @@ public sealed class MediaBackup
             }
             else
             {
+                Utils.Trace("directory equal");
+
                 // check the timestamp against what we have
                 var lastWriteTimeFromMasterFile = Utils.File.GetLastWriteTime(fullPath);
 
@@ -348,6 +350,12 @@ public sealed class MediaBackup
                         backupFile.ClearDiskChecked();
                     }
                 }
+                Utils.Trace("about to updateFileLength");
+                Utils.Trace($"FullPath = {backupFile.FullPath}");
+                Utils.Trace($"fullPath passed in  = {fullPath}");
+                if (fullPath != backupFile.FullPath) backupFile.SetFullPath(fullPath, directory);
+                Utils.Trace($"FullPath = {backupFile.FullPath}");
+                Utils.Trace($"fullPath passed in  = {fullPath}");
                 backupFile.UpdateFileLength();
             }
 
