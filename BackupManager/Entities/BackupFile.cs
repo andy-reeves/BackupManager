@@ -302,8 +302,10 @@ public sealed class BackupFile : IEquatable<BackupFile>
     /// </summary>
     public void UpdateFileLength()
     {
+        Utils.TraceIn();
         var newLength = Utils.File.GetLength(FullPath);
         if (Length != newLength) Length = newLength;
+        Utils.TraceOut();
     }
 
     /// <summary>

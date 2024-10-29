@@ -333,6 +333,8 @@ public sealed class MediaBackup
                 // if the file on disk is different then check the hash 
                 if (backupFile.LastWriteTime != lastWriteTimeFromMasterFile)
                 {
+                    Utils.Trace(" update the timestamp as its changed/missing");
+
                     // update the timestamp as its changed/missing
                     backupFile.LastWriteTime = lastWriteTimeFromMasterFile;
                     hashOfContents = Utils.File.GetShortMd5Hash(fullPath);
@@ -357,6 +359,7 @@ public sealed class MediaBackup
 
         // If we get to here then we couldn't get the file from the path
         // We need to check the contents hash only because maybe we renamed the source file
+        Utils.Trace("couldn't get the file from the path.  We need to check the contents hash only because maybe we renamed the source file");
 
         // this happened when we changed files from [SDTV-576p] to [DVD-576p]
         var contents = Utils.File.GetShortMd5Hash(fullPath);
@@ -386,7 +389,7 @@ public sealed class MediaBackup
     /// <exception cref="IOException">If the file is locked</exception>
     internal bool EnsureFile(string path)
     {
-        Utils.TraceIn();
+        Utils.TraceIn(path);
         var backupFile = GetBackupFile(path);
         if (backupFile == null) return Utils.TraceOut(false);
 
