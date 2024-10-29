@@ -53,4 +53,26 @@ public sealed class SubtitlesBackupFileTests
         Assert.Equal(isValidSubtitleFullName, file.IsValid);
         if (file.IsValid) Assert.Equal(newFileName, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());
     }
+
+    [Theory]
+    [InlineData(@"\\nas2\assets1\_TV\James Martin's Saturday Morning {tvdb-334389}\Season 8\James Martin's Saturday Morning s08e01 Aug 31, 2024 Louise Minchin, Levi Roots, Atul Kochhar, Alysia Vasey [HDTV-1080p][AAC 2.0][h265].en.srt", true,
+        @"\\nas2\assets1\_TV\James Martin's Saturday Morning {tvdb-334389}\Season 8\James Martin's Saturday Morning s08e01 Aug 31, 2024 Louise Minchin, Levi Roots, Atul Kochhar, Alysia Vasey [HDTV-1080p][AAC 2.0][h265].en.srt")]
+    [InlineData(@"\\nas2\assets1\_TV\James Martin's Saturday Morning {tvdb-334389}\Season 8\James Martin's Saturday Morning s08e09 Oct 26, 2024 Lulu, Fred Sirieix, Cyrus Todiwala Sally Abe [HDTV-1080p][AAC 2.0][h264].en.srt", true,
+        @"\\nas2\assets1\_TV\James Martin's Saturday Morning {tvdb-334389}\Season 8\James Martin's Saturday Morning s08e09 Oct 26, 2024 Lulu, Fred Sirieix, Cyrus Todiwala Sally Abe [HDTV-1080p][AAC 2.0][h264].en.srt")]
+    public void SubtitlesTestsWithRefreshMediaInfoJamesMartin(string subtitlesFullName, bool isValidSubtitleFullName, string newSubtitlesFullName)
+    {
+        var fileName = subtitlesFullName;
+        var newFileName = newSubtitlesFullName;
+        var file = new SubtitlesBackupFile(fileName);
+        Assert.Equal(isValidSubtitleFullName, file.IsValid);
+
+        if (file.IsValid)
+        {
+            Assert.Equal(fileName, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());
+            Assert.Equal("." + subtitlesFullName.SubstringAfterIgnoreCase("]."), file.SubtitlesExtension);
+        }
+        Assert.True(file.RefreshMediaInfo());
+        Assert.Equal(isValidSubtitleFullName, file.IsValid);
+        if (file.IsValid) Assert.Equal(newFileName, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());
+    }
 }
