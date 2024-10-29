@@ -296,7 +296,8 @@ public sealed class MediaBackup
         // files can't have same hash and same filename though
         var hashKey = Path.Combine(Utils.GetIndexFolder(directory), relativePath);
 
-        // if this path is already added then return it
+        // if this hash is already added then return it
+
         if (indexFolderAndRelativePath.TryGetValue(hashKey, out var backupFile))
         {
             // consider a file a.txt that's on //nas1/assets1/_TV and on //nas1/assets4/_TV too
@@ -353,7 +354,12 @@ public sealed class MediaBackup
                 Utils.Trace("about to updateFileLength");
                 Utils.Trace($"FullPath = {backupFile.FullPath}");
                 Utils.Trace($"fullPath passed in  = {fullPath}");
-                if (fullPath != backupFile.FullPath) backupFile.SetFullPath(fullPath, directory);
+
+                if (fullPath != backupFile.FullPath)
+                {
+                    Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, $"FullPath different to setting it now. backupFile.FullPath was {backupFile.FullPath} and now set to {fullPath}");
+                    backupFile.SetFullPath(fullPath, directory);
+                }
                 Utils.Trace($"FullPath = {backupFile.FullPath}");
                 Utils.Trace($"fullPath passed in  = {fullPath}");
                 backupFile.UpdateFileLength();
