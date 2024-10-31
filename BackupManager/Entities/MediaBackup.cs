@@ -97,6 +97,7 @@ public sealed class MediaBackup
     {
         // take a copy of the xml file
         var destinationPath = GetMediaBackupDestinationPath();
+        Utils.LogWithPushover(BackupAction.General, "Creating a copy of the MediaBackup.xml file");
         _ = Utils.File.Copy(mediaBackupPath, destinationPath, ct);
     }
 
