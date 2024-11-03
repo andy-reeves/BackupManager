@@ -22,9 +22,9 @@ namespace BackupManager.Entities;
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 public sealed class FileSystemEntry : IEquatable<FileSystemEntry>
 {
-    private readonly string path;
-
     private readonly DateTime modifiedDateTime;
+
+    private readonly string path;
 
     public FileSystemEntry() { }
 

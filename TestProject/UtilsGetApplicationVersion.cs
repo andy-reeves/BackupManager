@@ -44,7 +44,7 @@ public sealed class UtilsGetVersionSABnzbd
 
 [SuppressMessage("ReSharper", "IdentifierTypo")]
 [SuppressMessage("ReSharper", "MemberCanBeFileLocal")]
-public sealed class UtilsGetVersionProwlarr 
+public sealed class UtilsGetVersionProwlarr
 {
     [Theory]
     [InlineData("1.25.4", ApplicationType.Prowlarr)]

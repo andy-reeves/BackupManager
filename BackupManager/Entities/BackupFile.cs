@@ -26,6 +26,8 @@ public sealed class BackupFile : IEquatable<BackupFile>
 {
     private string contentsHash;
 
+    private bool deleted;
+
     private string directory;
 
     private string disk;
@@ -36,21 +38,13 @@ public sealed class BackupFile : IEquatable<BackupFile>
 
     private string fileName;
 
-    private string relativePath;
-
-    private bool deleted;
-
     private DateTime lastWriteTime;
 
     private long length;
 
-    public BackupFile() { }
+    private string relativePath;
 
-    /// <summary>
-    ///     This is set to True if any data has changed, and we need to Save.
-    /// </summary>
-    [XmlIgnore]
-    public bool Changed { get; set; }
+    public BackupFile() { }
 
     /// <summary>
     /// </summary>
@@ -63,6 +57,12 @@ public sealed class BackupFile : IEquatable<BackupFile>
 
         SetFullPath(fullPath, directory);
     }
+
+    /// <summary>
+    ///     This is set to True if any data has changed, and we need to Save.
+    /// </summary>
+    [XmlIgnore]
+    public bool Changed { get; set; }
 
     /// <summary>
     ///     The relative path of the file. Doesn't include Directory.

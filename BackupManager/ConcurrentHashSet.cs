@@ -20,6 +20,14 @@ internal sealed class ConcurrentHashSet<T> : IDisposable, IEnumerable<T>
 
     private readonly ReaderWriterLockSlim @lock = new(LockRecursionPolicy.SupportsRecursion);
 
+    public ConcurrentHashSet(IEnumerable<T> collection)
+    {
+        foreach (var v in collection)
+        {
+            _ = Add(v);
+        }
+    }
+
     public int Count
     {
         get
@@ -51,14 +59,6 @@ internal sealed class ConcurrentHashSet<T> : IDisposable, IEnumerable<T>
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
-    }
-
-    public ConcurrentHashSet(IEnumerable<T> collection)
-    {
-        foreach (var v in collection)
-        {
-            _ = Add(v);
-        }
     }
 
     public bool Add(T item)

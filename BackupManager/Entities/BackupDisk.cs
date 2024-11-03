@@ -23,21 +23,21 @@ namespace BackupManager.Entities;
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 public sealed class BackupDisk : IEquatable<BackupDisk>
 {
-    public BackupDisk() { }
-
     private readonly string name;
-
-    private string diskChecked;
 
     private long capacity;
 
-    private long totalFiles;
+    private string diskChecked;
 
     private long free;
 
     private string lastReadSpeed;
 
     private string lastWriteSpeed;
+
+    private long totalFiles;
+
+    public BackupDisk() { }
 
     internal BackupDisk(string diskName, string backupShare)
     {
