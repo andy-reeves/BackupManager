@@ -32,7 +32,9 @@ internal static partial class Utils
             if (!path.StartsWithIgnoreCase(@"\\")) return File.MoveFile(path, path);
 
             var dir = new DirectoryInfo(path);
+            Trace($"Renaming ${dir.FullName} to {path + "tmp"}");
             dir.MoveTo(path + "tmp");
+            Trace($"Renaming ${dir.FullName} to {path}");
             dir.MoveTo(path);
             return true;
         }

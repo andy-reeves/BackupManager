@@ -719,7 +719,7 @@ internal sealed partial class Main : Form
 
             if (toSave)
             {
-                mediaBackup.Save(ct);
+                //   mediaBackup.Save(ct);
                 UpdateStatusLabel(ct, Resources.Saved);
                 UpdateUI_Tick(null, null);
                 UpdateMediaFilesCountDisplay();
@@ -759,9 +759,6 @@ internal sealed partial class Main : Form
 
     private void Main_FormClosing(object sender, FormClosingEventArgs e)
     {
-        if (mediaBackup.Watcher.DirectoriesToScan.Count <= 0 && mediaBackup.Watcher.FileSystemChanges.Count <= 0) return;
-
-        // If file or directory changes were detected so save xml
         ResetTokenSource();
         mediaBackup.Save(mainCt);
     }

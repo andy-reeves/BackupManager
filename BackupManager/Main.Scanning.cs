@@ -389,7 +389,7 @@ internal sealed partial class Main
         }
 
         // Save now in case the scanning files is interrupted
-        mediaBackup.Save(ct);
+        // mediaBackup.Save(ct);
         mediaBackup.ClearFlags();
         Utils.LogWithPushover(BackupAction.ScanDirectory, $"Rename Video Files For Full Scans is {config.DirectoriesRenameVideoFilesForFullScansOnOff}");
 
@@ -457,7 +457,7 @@ internal sealed partial class Main
             var files = mediaBackup.BackupFiles.Where(static file => !file.Deleted).Select(static file => file.FullPath).ToList();
             var scanId = Guid.NewGuid().ToString();
             mediaBackup.ClearFlags();
-            if (ProcessFiles(files, scanId, config.DirectoriesRenameVideoFilesForFullScansOnOff, token)) mediaBackup.Save(token);
+            _ = ProcessFiles(files, scanId, config.DirectoriesRenameVideoFilesForFullScansOnOff, token);
             ResetAllControls();
         }
         finally

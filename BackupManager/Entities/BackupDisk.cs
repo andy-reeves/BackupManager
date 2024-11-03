@@ -25,6 +25,20 @@ public sealed class BackupDisk : IEquatable<BackupDisk>
 {
     public BackupDisk() { }
 
+    private readonly string name;
+
+    private string diskChecked;
+
+    private long capacity;
+
+    private long totalFiles;
+
+    private long free;
+
+    private string lastReadSpeed;
+
+    private string lastWriteSpeed;
+
     internal BackupDisk(string diskName, string backupShare)
     {
         Name = diskName;
@@ -35,27 +49,82 @@ public sealed class BackupDisk : IEquatable<BackupDisk>
     /// <summary>
     ///     The name of the backup disk and the main directory on the disk. Typically like 'backup 23'
     /// </summary>
-    public string Name { get; set; }
+    public string Name
+    {
+        get => name;
+
+        init
+        {
+            if (name == value) return;
+
+            name = value;
+            Changed = true;
+        }
+    }
 
     /// <summary>
     ///     Date the disk was last scanned and checked
     /// </summary>
-    public string Checked { get; set; }
+    public string Checked
+    {
+        get => diskChecked;
+
+        set
+        {
+            if (diskChecked == value) return;
+
+            diskChecked = value;
+            Changed = true;
+        }
+    }
 
     /// <summary>
     ///     Capacity of the disk in bytes
     /// </summary>
-    public long Capacity { get; set; }
+    public long Capacity
+    {
+        get => capacity;
+
+        set
+        {
+            if (capacity == value) return;
+
+            capacity = value;
+            Changed = true;
+        }
+    }
 
     /// <summary>
     ///     Total number of files on the disk
     /// </summary>
-    public long TotalFiles { get; set; }
+    public long TotalFiles
+    {
+        get => totalFiles;
+
+        set
+        {
+            if (totalFiles == value) return;
+
+            totalFiles = value;
+            Changed = true;
+        }
+    }
 
     /// <summary>
     ///     Available space on the disk in bytes
     /// </summary>
-    public long Free { get; set; }
+    public long Free
+    {
+        get => free;
+
+        set
+        {
+            if (free == value) return;
+
+            free = value;
+            Changed = true;
+        }
+    }
 
     /// <summary>
     ///     The current backup share. Typically like '//media/backup'
@@ -68,6 +137,12 @@ public sealed class BackupDisk : IEquatable<BackupDisk>
     /// </summary>
     [XmlIgnore]
     public string BackupPath => Path.Combine(BackupShare, Name);
+
+    /// <summary>
+    ///     This is set to True if any data has changed, and we need to Save.
+    /// </summary>
+    [XmlIgnore]
+    public bool Changed { get; set; }
 
     /// <summary>
     ///     The capacity of the disk formatted for display like '12.6TB'
@@ -84,12 +159,34 @@ public sealed class BackupDisk : IEquatable<BackupDisk>
     /// <summary>
     ///     The last read speed of this disk as a formatted string
     /// </summary>
-    public string LastReadSpeed { get; set; }
+    public string LastReadSpeed
+    {
+        get => lastReadSpeed;
+
+        set
+        {
+            if (lastReadSpeed == value) return;
+
+            lastReadSpeed = value;
+            Changed = true;
+        }
+    }
 
     /// <summary>
     ///     The last write speed of this disk as a formatted string
     /// </summary>
-    public string LastWriteSpeed { get; set; }
+    public string LastWriteSpeed
+    {
+        get => lastWriteSpeed;
+
+        set
+        {
+            if (lastWriteSpeed == value) return;
+
+            lastWriteSpeed = value;
+            Changed = true;
+        }
+    }
 
     /// <summary>
     ///     Gets the number only of this disk. Typically used for sorting disk lists.

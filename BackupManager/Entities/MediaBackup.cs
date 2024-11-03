@@ -65,6 +65,12 @@ public sealed class MediaBackup
 
     [XmlIgnore] public Config Config { get; set; }
 
+    /// <summary>
+    ///     This is True if any data has changed, and we need to Save.
+    /// </summary>
+    [XmlIgnore]
+    public bool Changed { get; set; }
+
     [XmlArrayItem("BackupFile")] public Collection<BackupFile> BackupFiles { get; set; }
 
     [XmlArrayItem("BackupDisk")] public Collection<BackupDisk> BackupDisks { get; set; }
@@ -87,7 +93,13 @@ public sealed class MediaBackup
     {
         get => directoriesLastFullScan.HasValue() ? directoriesLastFullScan : string.Empty;
 
-        set => directoriesLastFullScan = value;
+        set
+        {
+            if (directoriesLastFullScan == value) return;
+
+            directoriesLastFullScan = value;
+            Changed = true;
+        }
     }
 
     /// <summary>
@@ -159,6 +171,7 @@ public sealed class MediaBackup
                 mediaBackup.indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
                 if (backupFile.DiskChecked.HasNoValue() || backupFile.Disk.HasNoValue()) backupFile.ClearDiskChecked();
             }
+            mediaBackup.ClearChanged();
             return mediaBackup;
         }
         catch (InvalidOperationException ex)
@@ -169,6 +182,33 @@ public sealed class MediaBackup
         {
             throw new ApplicationException(string.Format(Resources.UnableToLoadXml, "MediaBackup.xml failed validation", ex));
         }
+    }
+
+    /// <summary>
+    ///     This sets the Changed property on all files, and disks to False.
+    /// </summary>
+    private void ClearChanged()
+    {
+        foreach (var backupFile in BackupFiles)
+        {
+            backupFile.Changed = false;
+        }
+
+        foreach (var disk in BackupDisks)
+        {
+            disk.Changed = false;
+        }
+
+        foreach (var a in DirectoriesToScan)
+        {
+            a.Changed = false;
+        }
+
+        foreach (var a in DirectoryChanges)
+        {
+            a.Changed = false;
+        }
+        Changed = false;
     }
 
     /// <summary>
@@ -222,14 +262,37 @@ public sealed class MediaBackup
     /// </summary>
     public void UpdateLastFullScan()
     {
-        directoriesLastFullScan = DateTime.Now.ToString(Resources.DateTime_yyyyMMdd);
+        DirectoriesLastFullScan = DateTime.Now.ToString(Resources.DateTime_yyyyMMdd);
     }
 
     public void Save(CancellationToken ct)
     {
-        BackupMediaFile(ct);
+        Utils.LogWithPushover(BackupAction.General, "MediaBackup.xml checking to Save");
         DirectoryChanges = new Collection<FileSystemEntry>(Watcher.FileSystemChanges.ToList());
         DirectoriesToScan = new Collection<FileSystemEntry>(Watcher.DirectoriesToScan.ToList());
+
+        if (!Changed)
+            if (BackupFiles.Any(static file => file.Changed))
+                Changed = true;
+
+        if (!Changed)
+            if (BackupDisks.Any(static backupDisk => backupDisk.Changed))
+                Changed = true;
+
+        if (!Changed)
+            if (DirectoryChanges.Any(static dirChanges => dirChanges.Changed))
+                Changed = true;
+
+        if (!Changed)
+            if (DirectoriesToScan.Any(static dirScan => dirScan.Changed))
+                Changed = true;
+
+        if (!Changed)
+        {
+            Utils.LogWithPushover(BackupAction.General, "MediaBackup.xml not changed so not saving.");
+            return;
+        }
+        BackupMediaFile(ct);
 
         // remove any directory scan that didn't complete check end date
         for (var index = DirectoryScans.Count - 1; index >= 0; index--)
@@ -245,6 +308,10 @@ public sealed class MediaBackup
         if (File.Exists(mediaBackupPath)) File.SetAttributes(mediaBackupPath, FileAttributes.Normal);
         using StreamWriter streamWriter = new(mediaBackupPath);
         xmlSerializer.Serialize(streamWriter, this);
+
+        // Set Changed to False once we've just saved
+        ClearChanged();
+        Utils.LogWithPushover(BackupAction.General, "MediaBackup.xml changed so saved.");
     }
 
     /// <summary>
@@ -394,6 +461,7 @@ public sealed class MediaBackup
         Utils.Trace($"Adding backup file {backupFile.RelativePath}");
         BackupFiles.Add(backupFile);
         indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
+        Changed = true;
         return Utils.TraceOut(backupFile);
     }
 
@@ -590,7 +658,14 @@ public sealed class MediaBackup
     /// <param name="backupFile"></param>
     internal void RemoveFile(BackupFile backupFile)
     {
-        if (indexFolderAndRelativePath.ContainsKey(backupFile.Hash)) _ = indexFolderAndRelativePath.Remove(backupFile.Hash);
-        if (BackupFiles.Contains(backupFile)) _ = BackupFiles.Remove(backupFile);
+        if (indexFolderAndRelativePath.ContainsKey(backupFile.Hash))
+        {
+            _ = indexFolderAndRelativePath.Remove(backupFile.Hash);
+            Changed = true;
+        }
+        if (!BackupFiles.Contains(backupFile)) return;
+
+        _ = BackupFiles.Remove(backupFile);
+        Changed = true;
     }
 }

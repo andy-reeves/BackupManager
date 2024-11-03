@@ -38,7 +38,19 @@ public sealed class BackupFile : IEquatable<BackupFile>
 
     private string relativePath;
 
+    private bool deleted;
+
+    private DateTime lastWriteTime;
+
+    private long length;
+
     public BackupFile() { }
+
+    /// <summary>
+    ///     This is set to True if any data has changed, and we need to Save.
+    /// </summary>
+    [XmlIgnore]
+    public bool Changed { get; set; }
 
     /// <summary>
     /// </summary>
@@ -63,15 +75,29 @@ public sealed class BackupFile : IEquatable<BackupFile>
         set
         {
             if (Utils.StringContainsFixedSpace(value)) value = Utils.ReplaceFixedSpace(value);
+            if (relativePath == value) return;
+
             relativePath = value;
             extension = null;
+            Changed = true;
         }
     }
 
     /// <summary>
     ///     This gets set to true for files no longer found.
     /// </summary>
-    public bool Deleted { get; set; }
+    public bool Deleted
+    {
+        get => deleted;
+
+        set
+        {
+            if (deleted == value) return;
+
+            deleted = value;
+            Changed = true;
+        }
+    }
 
     /// <summary>
     ///     The Directory this file is located at. Like '//nas1/assets1/_Movies'
@@ -83,7 +109,10 @@ public sealed class BackupFile : IEquatable<BackupFile>
         set
         {
             if (Utils.StringContainsFixedSpace(value)) value = Utils.ReplaceFixedSpace(value);
+            if (directory == value) return;
+
             directory = value;
+            Changed = true;
         }
     }
 
@@ -100,18 +129,46 @@ public sealed class BackupFile : IEquatable<BackupFile>
             return contentsHash;
         }
 
-        set => contentsHash = value;
+        set
+        {
+            if (contentsHash == value) return;
+
+            contentsHash = value;
+            Changed = true;
+        }
     }
 
     /// <summary>
     ///     The last modified date/time of the file.
     /// </summary>
-    public DateTime LastWriteTime { get; set; }
+    public DateTime LastWriteTime
+    {
+        get => lastWriteTime;
+
+        set
+        {
+            if (lastWriteTime == value) return;
+
+            lastWriteTime = value;
+            Changed = true;
+        }
+    }
 
     /// <summary>
     ///     The size of the file in bytes.
     /// </summary>
-    public long Length { get; set; }
+    public long Length
+    {
+        get => length;
+
+        set
+        {
+            if (length == value) return;
+
+            length = value;
+            Changed = true;
+        }
+    }
 
     [XmlIgnore] public bool Flag { get; set; }
 
@@ -176,8 +233,11 @@ public sealed class BackupFile : IEquatable<BackupFile>
         set
         {
             // If you clear the DiskChecked then we automatically clear the Disk property too
+            if (diskChecked == value) return;
+
             if (value.HasNoValue()) disk = null;
             diskChecked = value;
+            Changed = true;
         }
     }
 
@@ -191,8 +251,11 @@ public sealed class BackupFile : IEquatable<BackupFile>
 
         set
         {
+            if (disk == value) return;
+
             if (value.HasNoValue()) diskChecked = null;
             disk = value;
+            Changed = true;
         }
     }
 
@@ -233,6 +296,7 @@ public sealed class BackupFile : IEquatable<BackupFile>
         if (backupDisk != Disk && Disk.HasValue()) Utils.Log($"{FullPath} was on {Disk} but now on {backupDisk}");
         disk = backupDisk;
         diskChecked = DateTime.Now.ToString(Resources.DateTime_yyyyMMdd);
+        Changed = true;
     }
 
     /// <summary>
@@ -240,8 +304,11 @@ public sealed class BackupFile : IEquatable<BackupFile>
     /// </summary>
     public void ClearDiskChecked()
     {
+        if (disk == null && diskChecked == null) return;
+
         disk = null;
         diskChecked = null;
+        Changed = true;
     }
 
     public void SetFullPath(string fullPath, string newDirectory)
@@ -275,7 +342,12 @@ public sealed class BackupFile : IEquatable<BackupFile>
     /// <exception cref="ArgumentNullException"></exception>
     private void UpdateContentsHash(string newContentsHash)
     {
-        contentsHash = newContentsHash ?? throw new ArgumentNullException(nameof(newContentsHash), Resources.HashCodeNotNull);
+        if (newContentsHash == null) throw new ArgumentNullException(nameof(newContentsHash), Resources.HashCodeNotNull);
+
+        if (contentsHash == newContentsHash) return;
+
+        contentsHash = newContentsHash;
+        Changed = true;
     }
 
     /// <summary>
@@ -293,8 +365,9 @@ public sealed class BackupFile : IEquatable<BackupFile>
     /// </summary>
     public void UpdateLastWriteTime()
     {
-        var newLastWriteTime = Utils.File.GetLastWriteTime(FullPath);
-        if (LastWriteTime != newLastWriteTime) LastWriteTime = newLastWriteTime;
+        Utils.TraceIn();
+        LastWriteTime = Utils.File.GetLastWriteTime(FullPath);
+        Utils.TraceOut();
     }
 
     /// <summary>
@@ -303,8 +376,7 @@ public sealed class BackupFile : IEquatable<BackupFile>
     public void UpdateFileLength()
     {
         Utils.TraceIn();
-        var newLength = Utils.File.GetLength(FullPath);
-        if (Length != newLength) Length = newLength;
+        Length = Utils.File.GetLength(FullPath);
         Utils.TraceOut();
     }
 

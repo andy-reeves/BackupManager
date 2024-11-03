@@ -476,7 +476,10 @@ internal static partial class Utils
                 }
             }
             else
+            {
+                Trace($"Renaming {sourceFileName} to {destFileName}");
                 System.IO.File.Move(sourceFileName, destFileName);
+            }
 #else
             LogWithPushover(BackupAction.General, PushoverPriority.High, $"FileMove with {sourceFileName} to {destFileName} - NOT MOVING", true, true);
 #endif
