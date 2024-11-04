@@ -212,6 +212,7 @@ internal static partial class Utils
             if (file.RefreshMediaInfo())
             {
                 var newFullPath = file.GetFullName();
+                if (newFullPath.Contains("undefined")) LogWithPushover(BackupAction.Error, $"{newFullPath} contains undefined");
                 if (newFullPath == path) return;
 
                 if (file.MediaInfoModel.DoviConfigurationRecord?.DvProfile == 5)
