@@ -62,7 +62,6 @@ public sealed class SubtitlesBackupFileTests
     public void SubtitlesTestsWithRefreshMediaInfoJamesMartin(string subtitlesFullName, bool isValidSubtitleFullName, string newSubtitlesFullName)
     {
         var fileName = subtitlesFullName;
-        var newFileName = newSubtitlesFullName;
         var file = new SubtitlesBackupFile(fileName);
         Assert.Equal(isValidSubtitleFullName, file.IsValid);
 
@@ -73,6 +72,6 @@ public sealed class SubtitlesBackupFileTests
         }
         Assert.True(file.RefreshMediaInfo());
         Assert.Equal(isValidSubtitleFullName, file.IsValid);
-        if (file.IsValid) Assert.Equal(newFileName, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());
+        if (file.IsValid) Assert.Equal(newSubtitlesFullName, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());
     }
 }
