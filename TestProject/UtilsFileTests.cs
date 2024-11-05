@@ -18,8 +18,10 @@ public sealed class UtilsFileTests
 {
     [InlineData(@"c:\bobby\subtitles.srt", true)]
     [InlineData(@"c:\bobby\subtitles.en.hi.srt", true)]
-    [InlineData(@"c:\bobby\subtitles.jp.srt", false)]
-    [InlineData(@"c:\bobby\subtitles.jp.hi.srt", false)]
+    [InlineData(@"c:\bobby\subtitles.en.cc.srt", true)]
+    [InlineData(@"c:\bobby\subtitles.en.sdh.srt", true)]
+    [InlineData(@"c:\bobby\subtitles.jp.srt", true)]
+    [InlineData(@"c:\bobby\subtitles.jp.hi.srt", true)]
     [InlineData(@"c:\bobby\subtitles.es.srt", true)]
     [InlineData(@"c:\bobby\subt.rgrg.rg.rg.rg.itles.es.srt", true)]
     [InlineData(@"c:\bobby\subt.rgrg.rg.rg.rg.itles.srt", true)]

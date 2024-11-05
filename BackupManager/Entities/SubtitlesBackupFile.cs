@@ -33,13 +33,15 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
         if (IsValidDirectoryName) IsValidDirectoryName = ParseInfoFromDirectory(FullDirectory);
     }
 
-    protected override string FileNameRegex => @"^(.*)\.(e[ns])(?:(?:\.)(hi))?\.srt$";
+    protected override string FileNameRegex => @"^(.*)(?:(?:\.)(e[ns]))(?:(?:\.)(hi|cc|sdh))?(?:(?:\.)(forced))?\.srt$";
 
     protected override string DirectoryRegex => @"^.*\\_(?:Movies|Comedy|Concerts|TV)(?:\s\(non-t[mv]db\))?\\(.*)((\((\d{4})\)(-other)?)|(\s{t(m|v)db-\d{1,7}?}\\(Season\s\d+|Specials))).*$";
 
     public string Language { get; private set; }
 
     public bool HearingImpaired { get; private set; }
+
+    public bool Forced { get; private set; }
 
     public object SubtitlesExtension { get; }
 
@@ -52,7 +54,8 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
     public override string GetFileName()
     {
         var hearingImpairedText = HearingImpaired ? ".hi" : string.Empty;
-        return $"{Title}.{Language}{hearingImpairedText}{Extension}";
+        var forcedText = Forced ? ".forced" : string.Empty;
+        return $"{Title}.{Language}{hearingImpairedText}{forcedText}{Extension}";
     }
 
     public bool RefreshMediaInfo(ExtendedBackupFileBase video)
@@ -67,13 +70,15 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
     {
         const int languageGroup = 2;
         const int hearingImpairedGroup = 3;
+        const int forcedGroup = 4;
         const int title = 1;
         var match = Regex.Match(filename, FileNameRegex);
         if (!match.Success) return false;
 
         Title = match.Groups[title].Value;
         Language = match.Groups[languageGroup].Value;
-        HearingImpaired = match.Groups[hearingImpairedGroup].Value == "hi";
+        HearingImpaired = match.Groups[hearingImpairedGroup].Value != string.Empty;
+        Forced = match.Groups[forcedGroup].Value == "forced";
         Extension = ".srt";
         return true;
     }

@@ -18,16 +18,24 @@ namespace TestProject;
 public sealed class SubtitlesBackupFileTests
 {
     [Theory]
-    [InlineData("A(2023) {tmdb-1} [DVD][DTS 5.1][h264].en.srt", true, "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].mkv", "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].en.srt")]
-    [InlineData("A(2023) {tmdb-1} [DVD][DTS 5.1][h264].es.hi.srt", true, "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].mkv", "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].es.hi.srt")]
-    [InlineData("Special video-featurette.mkv", false, "", "")]
+    [InlineData("A(2023) {tmdb-1} [DVD][DTS 5.1][h264].en.srt", true, "en", false, false, "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].mkv", "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].en.srt")]
+    [InlineData("A(2023) {tmdb-1} [DVD][DTS 5.1][h264].es.hi.srt", true, "es", true, false, "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].mkv", "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].es.hi.srt")]
+    [InlineData("A(2023) {tmdb-1} [DVD][DTS 5.1][h264].es.cc.srt", true, "es", true, false, "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].mkv", "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].es.hi.srt")]
+    [InlineData("A(2023) {tmdb-1} [DVD][DTS 5.1][h264].es.hi.forced.srt", true, "es", true, true, "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].mkv", "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].es.hi.forced.srt")]
+    [InlineData("Special video-featurette.mkv", false, "", false, false, "", "")]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
-    public void SubtitlesTests(string fileName, bool isValidFileName, string newMovieName, string newSubtitlesName)
+    public void SubtitlesTests(string fileName, bool isValidFileName, string languageCode, bool hearingImpaired, bool forced, string newMovieName, string newSubtitlesName)
     {
         var file = new SubtitlesBackupFile(fileName);
         Assert.Equal(isValidFileName, file.IsValidFileName);
-        if (file.IsValidFileName) Assert.Equal(fileName, file.GetFileName());
         if (file.IsValidDirectoryName) Assert.Equal(fileName, file.GetFullName());
+
+        if (isValidFileName)
+        {
+            Assert.Equal(languageCode, file.Language);
+            Assert.Equal(hearingImpaired, file.HearingImpaired);
+            Assert.Equal(forced, file.Forced);
+        }
         var movie = new MovieBackupFile(newMovieName);
         _ = file.RefreshMediaInfo(movie);
         if (file.IsValidFileName) Assert.Equal(newSubtitlesName, file.GetFileName());
