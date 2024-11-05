@@ -1149,4 +1149,20 @@ internal sealed partial class Main : Form
         UpdateUI_Tick(null, null);
         UpdateMediaFilesCountDisplay();
     }
+
+    private void checkSubtitlesButton_Click(object sender, EventArgs e)
+    {
+        var files = mediaBackup.BackupFiles.Where(static f => f.Extension == ".srt");
+        var backupFiles = files as BackupFile[] ?? files.ToArray();
+        Utils.LogWithPushover(BackupAction.General, $" {backupFiles.Length} subtitle files");
+
+        foreach (var file in backupFiles)
+        {
+            var subFile = new SubtitlesBackupFile(file.FullPath);
+            if (subFile.Language != "en" && subFile.Language != "es") Utils.LogWithPushover(BackupAction.General, $" {file.FullPath} has no language");
+            ExtendedBackupFileBase ext = subFile;
+            if (file.FileName != ext.Title + subFile.SubtitlesExtension) Utils.LogWithPushover(BackupAction.General, $" {file.FullPath} name error");
+            if (subFile.Forced) Utils.LogWithPushover(BackupAction.General, $" {file.FullPath} is Forced ");
+        }
+    }
 }

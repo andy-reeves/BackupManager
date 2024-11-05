@@ -138,6 +138,7 @@
             label16 = new System.Windows.Forms.Label();
             scanDirectoryComboBox = new System.Windows.Forms.ComboBox();
             h264FilesButton = new System.Windows.Forms.Button();
+            checkSubtitlesButton = new System.Windows.Forms.Button();
             pushoverGroupBox.SuspendLayout();
             groupBox2.SuspendLayout();
             listFilesInDirectoryGroupBox.SuspendLayout();
@@ -1345,11 +1346,24 @@
             h264FilesButton.Visible = false;
             h264FilesButton.Click += H264FilesButton_Click;
             // 
+            // checkSubtitlesButton
+            // 
+            checkSubtitlesButton.Location = new System.Drawing.Point(872, 436);
+            checkSubtitlesButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkSubtitlesButton.Name = "checkSubtitlesButton";
+            checkSubtitlesButton.Size = new System.Drawing.Size(232, 27);
+            checkSubtitlesButton.TabIndex = 106;
+            checkSubtitlesButton.Text = "Check Subtitles";
+            checkSubtitlesButton.UseVisualStyleBackColor = true;
+            checkSubtitlesButton.Visible = false;
+            checkSubtitlesButton.Click += checkSubtitlesButton_Click;
+            // 
             // Main
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1416, 548);
+            Controls.Add(checkSubtitlesButton);
             Controls.Add(scanLastDirectoriesButton);
             Controls.Add(scanDirectoriesWithChangesButton);
             Controls.Add(h264FilesButton);
@@ -1546,6 +1560,7 @@
         private System.Windows.Forms.Button h264FilesButton;
         private System.Windows.Forms.Button scanDirectoriesWithChangesButton;
         private System.Windows.Forms.Button scanLastDirectoriesButton;
+        private System.Windows.Forms.Button checkSubtitlesButton;
     }
 }
 

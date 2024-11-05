@@ -22,7 +22,6 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
         OriginalPath = path;
         Extension = Path.GetExtension(path);
         var fileName = Path.GetFileName(path);
-        SubtitlesExtension = Utils.GetSubtitlesExtension(path);
         FullDirectory = Path.GetDirectoryName(path);
         IsValidFileName = new Regex(FileNameRegex).IsMatch(fileName);
         if (IsValidFileName) IsValidFileName = ParseInfoFromFileName(fileName);
@@ -43,7 +42,7 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
 
     public bool Forced { get; private set; }
 
-    public object SubtitlesExtension { get; }
+    public object SubtitlesExtension { get; private set; }
 
     private bool ParseInfoFromDirectory(string directoryPath)
     {
@@ -80,6 +79,7 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
         HearingImpaired = match.Groups[hearingImpairedGroup].Value != string.Empty;
         Forced = match.Groups[forcedGroup].Value == "forced";
         Extension = ".srt";
+        SubtitlesExtension = filename.SubstringAfterIgnoreCase(Title);
         return true;
     }
 

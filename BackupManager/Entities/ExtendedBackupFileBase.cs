@@ -45,7 +45,7 @@ internal abstract class ExtendedBackupFileBase
     /// <summary>
     ///     The title of the file
     /// </summary>
-    protected string Title { get; set; }
+    public string Title { get; protected set; }
 
     /// <summary>
     ///     The full directory path to the file not including the filename.
