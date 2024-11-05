@@ -98,11 +98,23 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
             case > 1:
             {
                 Utils.Trace("Inside RefreshMediaInfo more than 1 video file");
+
+                // More than 1 video file so we do this:
+                // Check for a video file that matches this name (apart from the subtitles extensions) - user that if found
+                // If it is not found us the trimmed Title to check that
+                var titleWithoutExt = Title;
+
+                foreach (var video in videoFiles.Where(videoFile => Path.GetFileName(videoFile).StartsWithIgnoreCase(titleWithoutExt)).Select(static videoFileToUse => Utils.MediaHelper.ExtendedBackupFileBase(videoFileToUse)))
+                {
+                    _ = RefreshMediaInfo(video);
+                    return Validate();
+                }
                 var shortTitle = Title.SubstringBeforeIgnoreCase("[").Trim();
 
                 foreach (var video in videoFiles.Where(videoFile => Path.GetFileName(videoFile).StartsWithIgnoreCase(shortTitle)).Select(static videoFileToUse => Utils.MediaHelper.ExtendedBackupFileBase(videoFileToUse)))
                 {
                     _ = RefreshMediaInfo(video);
+                    return Validate();
                 }
                 break;
             }
