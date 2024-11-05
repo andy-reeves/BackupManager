@@ -267,7 +267,6 @@ public sealed class MediaBackup
 
     public void Save(CancellationToken ct)
     {
-        Utils.LogWithPushover(BackupAction.General, "MediaBackup.xml checking to Save");
         DirectoryChanges = new Collection<FileSystemEntry>(Watcher.FileSystemChanges.ToList());
         DirectoriesToScan = new Collection<FileSystemEntry>(Watcher.DirectoriesToScan.ToList());
 
@@ -290,12 +289,8 @@ public sealed class MediaBackup
         {
             if (DirectoriesToScan.Any(static dirScan => dirScan.Changed)) Changed = true;
         }
+        if (!Changed) return;
 
-        if (!Changed)
-        {
-            Utils.LogWithPushover(BackupAction.General, "MediaBackup.xml not changed so not saving.");
-            return;
-        }
         BackupMediaFile(ct);
 
         // remove any directory scan that didn't complete check end date
@@ -315,7 +310,6 @@ public sealed class MediaBackup
 
         // Set Changed to False once we've just saved
         ClearChanged();
-        Utils.LogWithPushover(BackupAction.General, "MediaBackup.xml changed so saved.");
     }
 
     /// <summary>
