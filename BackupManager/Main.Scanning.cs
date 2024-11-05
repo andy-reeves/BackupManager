@@ -209,7 +209,9 @@ internal sealed partial class Main
     {
         Utils.TraceIn();
         ArgumentException.ThrowIfNullOrEmpty(file);
-        if (!File.Exists(file) || !Utils.File.IsVideo(file) || !config.DirectoriesRenameVideoFilesOnOff || !scan) return Utils.TraceOut(true);
+        if (!File.Exists(file)) return Utils.TraceOut(true);
+        if (!Utils.File.IsVideo(file) && !Utils.File.IsSubtitles(file)) return Utils.TraceOut(true);
+        if (!config.DirectoriesRenameVideoFilesOnOff || !scan) return Utils.TraceOut(true);
 
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
 

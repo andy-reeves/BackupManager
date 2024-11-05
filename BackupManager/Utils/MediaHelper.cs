@@ -215,10 +215,13 @@ internal static partial class Utils
                 if (newFullPath.Contains("undefined")) LogWithPushover(BackupAction.Error, $"{newFullPath} contains undefined");
                 if (newFullPath == path) return;
 
-                if (file.MediaInfoModel.DoviConfigurationRecord?.DvProfile == 5)
+                if (file is not SubtitlesBackupFile)
                 {
-                    LogWithPushover(BackupAction.Error, $"{path} is [DV] Profile 5");
-                    return;
+                    if (file.MediaInfoModel.DoviConfigurationRecord?.DvProfile == 5)
+                    {
+                        LogWithPushover(BackupAction.Error, $"{path} is [DV] Profile 5");
+                        return;
+                    }
                 }
 
                 if (File.Exists(newFullPath))

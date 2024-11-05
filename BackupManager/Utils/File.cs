@@ -218,7 +218,7 @@ internal static partial class Utils
         internal static bool IsSubtitles(string path)
         {
             ArgumentException.ThrowIfNullOrEmpty(path);
-            return ("." + path.SubstringAfterIgnoreCase(".")).EqualsAnyIgnoreCase(_subtitlesExtensions);
+            return path.EndsWithAny(_subtitlesExtensions);
         }
 
         internal static bool IsSpecialFeature(string path)

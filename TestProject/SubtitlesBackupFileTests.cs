@@ -36,6 +36,8 @@ public sealed class SubtitlesBackupFileTests
     [Theory]
     [InlineData(@"_TV\File15 {tvdb-1}\Season 1\File15 s01e03 Kid in the Park [WEBDL-2160p][DV HDR10Plus][EAC3 Atmos 5.1][h264].en.hi.srt", true,
         @"_TV\File15 {tvdb-1}\Season 1\File15 s01e03 Kid in the Park [WEBDL-2160p][DV HDR10Plus][EAC3 Atmos 5.1][h264].en.hi.srt")]
+    [InlineData(@"_TV\TV Show {tvdb-2}\Season 1\TV Show s01e01 Episode 1 [HDTV-1080p][undefined 2.0][h265].en.srt", true, @"_TV\TV Show {tvdb-2}\Season 1\TV Show s01e01 Episode 1 [HDTV-1080p][AAC 2.0][h265].en.srt")]
+    [InlineData(@"_TV\TV Show {tvdb-2}\Season 1\TV Show s01e02 Episode 2 [HDTV-1080p][undefined 2.0][h265].en.srt", true, @"_TV\TV Show {tvdb-2}\Season 1\TV Show s01e02 Episode 2 [HDTV-1080p][AAC 2.0][h265].en.srt")]
     public void SubtitlesTestsWithRefreshMediaInfo(string subtitlesFullName, bool isValidSubtitleFullName, string newSubtitlesFullName)
     {
         var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");

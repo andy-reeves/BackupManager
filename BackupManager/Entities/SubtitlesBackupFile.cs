@@ -89,17 +89,28 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
 
         var files = Utils.File.GetFiles(FullDirectory, new CancellationToken());
         var videoFiles = files.Where(static f => Utils.File.IsVideo(f) && !Utils.File.IsSpecialFeature(f)).ToArray();
-        if (videoFiles.Any(file => Path.GetFileName(file).StartsWithIgnoreCase(Title))) return Validate();
 
-        // if more than 1 movie file in this folder, we can't pick one
-
-        if (videoFiles.Length is 0 or > 1)
+        switch (videoFiles.Length)
         {
-            Utils.Trace("Inside RefreshMediaInfo but no video file or more than 1");
-            return Validate();
+            case 0:
+                Utils.Trace("Inside RefreshMediaInfo but no video file");
+                break;
+            case > 1:
+            {
+                Utils.Trace("Inside RefreshMediaInfo more than 1 video file");
+                var shortTitle = Title.SubstringBeforeIgnoreCase("[").Trim();
+
+                foreach (var video in videoFiles.Where(videoFile => Path.GetFileName(videoFile).StartsWithIgnoreCase(shortTitle)).Select(static videoFileToUse => Utils.MediaHelper.ExtendedBackupFileBase(videoFileToUse)))
+                {
+                    _ = RefreshMediaInfo(video);
+                }
+                break;
+            }
+            default:
+                Utils.Trace("Inside RefreshMediaInfo 1 video file");
+                _ = RefreshMediaInfo(Utils.MediaHelper.ExtendedBackupFileBase(videoFiles[0]));
+                break;
         }
-        var video = Utils.MediaHelper.ExtendedBackupFileBase(videoFiles[0]);
-        _ = RefreshMediaInfo(video);
         return Validate();
     }
 }
