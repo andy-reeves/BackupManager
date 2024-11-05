@@ -18,9 +18,13 @@ public sealed class UtilsFileTests
 {
     [InlineData(@"c:\bobby\subtitles.srt", true)]
     [InlineData(@"c:\bobby\subtitles.en.hi.srt", true)]
-    [InlineData(@"c:\bobby\subtitles.jp.srt", true)]
-    [InlineData(@"c:\bobby\subtitles.jp.hi.srt", true)]
+    [InlineData(@"c:\bobby\subtitles.jp.srt", false)]
+    [InlineData(@"c:\bobby\subtitles.jp.hi.srt", false)]
     [InlineData(@"c:\bobby\subtitles.es.srt", true)]
+    [InlineData(@"c:\bobby\subt.rgrg.rg.rg.rg.itles.es.srt", true)]
+    [InlineData(@"c:\bobby\subt.rgrg.rg.rg.rg.itles.srt", true)]
+    [InlineData(@"c:\bobby\subt.rgrg.rg.rg.rg.itles.es.sr", false)]
+    [InlineData(@"c:\bobby\subt.rgrg.rg.rg.rg.itles.esp.srt", true)]
     [Theory]
     public void IsSubtitlesTests(string path, bool expectedResult)
     {

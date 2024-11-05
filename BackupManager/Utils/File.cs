@@ -214,11 +214,25 @@ internal static partial class Utils
         ///     Checks the path is a subtitles file
         /// </summary>
         /// <param name="path"></param>
-        /// <returns>False if it's not a subtitles file, True if it's a subtitles file. Exception if path is null or empty</returns>
+        /// <returns>
+        ///     False if it's not a subtitles file, True if it's a subtitles file Only ".en.srt", ".es.srt", ".en.hi.srt",
+        ///     ".es.hi.srt", ".hi.srt", ".srt" valid for now . Exception if path is null or empty
+        /// </returns>
         internal static bool IsSubtitles(string path)
         {
             ArgumentException.ThrowIfNullOrEmpty(path);
-            return path.EndsWithAny(_subtitlesExtensions);
+
+            // split the path on a dot 
+            if (!path.Contains('.')) return false;
+
+            var filenameParts = path.Split(".");
+            var partsCount = filenameParts.Length;
+            if (filenameParts[partsCount - 1] != "srt") return false;
+            if (partsCount < 3) return true;
+            if (filenameParts[partsCount - 2].Length > 2) return true;
+            if (!filenameParts[partsCount - 2].EqualsAnyIgnoreCase("en", "es", "hi")) return false;
+
+            return filenameParts[partsCount - 2] != "hi" || filenameParts[partsCount - 3].EqualsAnyIgnoreCase("en", "es");
         }
 
         internal static bool IsSpecialFeature(string path)
