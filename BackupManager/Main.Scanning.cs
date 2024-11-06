@@ -178,7 +178,7 @@ internal sealed partial class Main
         }
         if (newFilePath == file) return Utils.TraceOut(true);
 
-        Utils.Log(BackupAction.ProcessFiles, $"{file} being renamed to {newFilePath}");
+        Utils.LogWithPushover(BackupAction.ProcessFiles, $"{file} being renamed to {newFilePath}");
         if (!Utils.File.Move(file, newFilePath)) return Utils.TraceOut(false);
 
         file = newFilePath;
