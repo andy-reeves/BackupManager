@@ -117,13 +117,10 @@ internal sealed partial class Main
                 // Only process the naming rules after we've ensured the file is in our xml file
                 if (mediaBackup.EnsureFile(file)) ProcessFileRules(file);
             }
-            catch (IOException ex)
+            catch (IOException)
             {
-                Utils.Log(BackupAction.ProcessFiles, $"Exception was {ex}");
-
-                // exception accessing the file return
-                // so report it and skip this file for now
-                Utils.LogWithPushover(BackupAction.ProcessFiles, file.ContainsAny(reportNormalPriority) ? PushoverPriority.Normal : PushoverPriority.High, $"Unable to calculate the hash code for {file}. It's most likely in use by another process.");
+                // exception accessing the file so report it and skip this file for now
+                Utils.LogWithPushover(BackupAction.ProcessFiles, file.ContainsAny(reportNormalPriority) ? PushoverPriority.Normal : PushoverPriority.High, $"Unable to calculate the hash code for {file}.");
             }
         }
 
@@ -223,8 +220,6 @@ internal sealed partial class Main
         {
             if (ex is not (IOException or NotSupportedException)) throw;
 
-            Utils.Log(BackupAction.ProcessFiles, $"Exception was {ex}");
-            Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.FileIsLocked, file));
             return Utils.TraceOut(false);
         }
         return Utils.TraceOut(true);
