@@ -89,9 +89,6 @@ internal sealed partial class Main
     {
         Utils.TraceIn();
 
-        //todo move this string[] to config
-        string[] filesToSkip = { "-TdarrCacheFile-" };
-
         // we need a blocking collection and then copy it back when it's all done
         // then split by disk name and have a Task for each of them like the directory scanner
         var filtersToDelete = FiltersToDelete();
@@ -108,22 +105,19 @@ internal sealed partial class Main
 
             try
             {
-                if (!file.ContainsAny(filesToSkip))
-                {
-                    if (!ProcessFilesInternalFinal(scanPathForVideoCodec, ct, ref file)) continue;
+                if (!ProcessFilesInternalFinal(scanPathForVideoCodec, ct, ref file)) continue;
 
-                    directoryScanning = DirectoryScanning(scanId, file, directoryScanning, files, ref firstDir, ref scanInfo);
-                    UpdateStatusLabel(ct, string.Format(Resources.Processing, Path.GetDirectoryName(file)), fileCounterForMultiThreadProcessing);
-                    if (CheckForFilesToDelete(file, filtersToDelete)) continue;
+                directoryScanning = DirectoryScanning(scanId, file, directoryScanning, files, ref firstDir, ref scanInfo);
+                UpdateStatusLabel(ct, string.Format(Resources.Processing, Path.GetDirectoryName(file)), fileCounterForMultiThreadProcessing);
+                if (CheckForFilesToDelete(file, filtersToDelete)) continue;
 
-                    // Only process the naming rules after we've ensured the file is in our xml file
-                    if (mediaBackup.EnsureFile(file)) ProcessFileRules(file);
-                }
+                // Only process the naming rules after we've ensured the file is in our xml file
+                if (mediaBackup.EnsureFile(file)) ProcessFileRules(file);
             }
             catch (IOException)
             {
                 // exception accessing the file so report it and skip this file for now
-                Utils.LogWithPushover(BackupAction.ProcessFiles, file.ContainsAny(filesToSkip) ? PushoverPriority.Normal : PushoverPriority.High, $"Unable to calculate the hash code for {file}.");
+                Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High, $"Unable to calculate the hash code for {file}.");
             }
         }
 

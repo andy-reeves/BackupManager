@@ -152,7 +152,7 @@ public sealed class EntityTests
         Assert.Null(mediaBackup.GetParentPath(pathToFile1));
 
         // GetFilters
-        if (Utils.Config.PlexToken.HasNoValue()) Assert.Equal("!*.bup", mediaBackup.GetFilters());
+        if (Utils.Config.PlexToken.HasNoValue()) Assert.Equal("!*.bup,!*-TdarrCacheFile-*.*", mediaBackup.GetFilters());
 
         // GetBackupDisk
         var disk = mediaBackup.GetBackupDisk(pathToBackupShare);

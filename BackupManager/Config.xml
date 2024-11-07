@@ -150,6 +150,7 @@
   <Filters>
     <!-- RegEx's of file to ignore when executing a scan -->
     <FilterRegEx>!*.bup</FilterRegEx>
+    <FilterRegEx>!*-TdarrCacheFile-*.*</FilterRegEx>
   </Filters>
   <FilesToDelete>
     <FilesToDeleteRegEx>^.*\\._.DS_Store$</FilesToDeleteRegEx>
