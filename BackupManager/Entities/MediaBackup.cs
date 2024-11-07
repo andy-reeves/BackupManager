@@ -485,7 +485,7 @@ public sealed class MediaBackup
     ///     backup directory
     /// </summary>
     /// <param name="path"></param>
-    /// <returns>Null if the Path doesn't contain a backup Directory or if its in the root of the backup directory</returns>
+    /// <returns>Null if the Path doesn't contain a backup Directory or if it's in the root of the backup directory</returns>
     public string GetParentPath(string path)
     {
         return (from directory in Config.DirectoriesToBackup
