@@ -1356,7 +1356,7 @@
             checkSubtitlesButton.Text = "Check Subtitles";
             checkSubtitlesButton.UseVisualStyleBackColor = true;
             checkSubtitlesButton.Visible = false;
-            checkSubtitlesButton.Click += checkSubtitlesButton_Click;
+            checkSubtitlesButton.Click += CheckSubtitlesButton_Click;
             // 
             // Main
             // 

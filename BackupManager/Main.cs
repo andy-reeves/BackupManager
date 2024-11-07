@@ -1150,7 +1150,7 @@ internal sealed partial class Main : Form
         UpdateMediaFilesCountDisplay();
     }
 
-    private void checkSubtitlesButton_Click(object sender, EventArgs e)
+    private void CheckSubtitlesButton_Click(object sender, EventArgs e)
     {
         var files = mediaBackup.BackupFiles.Where(static f => f.Extension == ".srt");
         var backupFiles = files as BackupFile[] ?? files.ToArray();

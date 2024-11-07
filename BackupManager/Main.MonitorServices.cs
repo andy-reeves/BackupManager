@@ -57,14 +57,12 @@ internal sealed partial class Main
                 mediaBackup.Config.DirectoriesToHealthCheckOnOff = false;
             }
             _ = Utils.GetDiskInfo(directory, out var freeSpaceOnRootDirectoryDisk, out _);
+            if (freeSpaceOnRootDirectoryDisk >= Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumCriticalSpace)) continue;
 
-            if (freeSpaceOnRootDirectoryDisk < Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumCriticalSpace))
-            {
-                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, $"Free space on {directory} is too low");
+            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, $"Free space on {directory} is too low");
 
-                // Turn off any more directory monitoring
-                mediaBackup.Config.DirectoriesToHealthCheckOnOff = false;
-            }
+            // Turn off any more directory monitoring
+            mediaBackup.Config.DirectoriesToHealthCheckOnOff = false;
         }
     }
 

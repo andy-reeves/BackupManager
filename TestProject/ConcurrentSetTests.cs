@@ -39,10 +39,10 @@ public sealed class ConcurrentSetTests
         var bob = set.GetEnumerator();
         Assert.True(bob.MoveNext());
         bob.Dispose();
-        var bob2 = (IEnumerable)set;
+        IEnumerable bob2 = set;
         using var enumerator = bob2.GetEnumerator() as IDisposable;
         var item4 = new FileSystemEntry(@"c:\testitem4", DateTime.MinValue);
-        var set2 = (ICollection<FileSystemEntry>)set;
+        ICollection<FileSystemEntry> set2 = set;
         set2.Add(item4);
         Assert.True(set2.Contains(item4));
         Assert.Equal(3, set2.Count);
@@ -73,7 +73,7 @@ public sealed class ConcurrentSetTests
         var bob = set.GetEnumerator();
         Assert.True(bob.MoveNext());
         bob.Dispose();
-        var bob2 = (IEnumerable)set;
+        IEnumerable bob2 = set;
         using var enumerator = bob2.GetEnumerator() as IDisposable;
         var item4 = new FileSystemEntry(@"c:\testitem4", DateTime.MinValue);
         _ = set.AddOrUpdate(item4);
