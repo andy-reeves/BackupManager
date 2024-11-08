@@ -59,9 +59,7 @@ public sealed class EntityTests
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>")]
     public void MovieTestsAllMoviesFromBackupXml()
     {
-        foreach (var backupFile in _mediaBackup.BackupFiles.Where(static f => !f.Deleted &&
-                                                                              (f.FullPath.Contains(@"_Concerts") || f.FullPath.Contains(@"_Comedy") || f.FullPath.Contains(@"_Movies")) && !f.FullPath.Contains("TdarrCacheFile") &&
-                                                                              !f.FullPath.EndsWithIgnoreCase(".srt")))
+        foreach (var backupFile in _mediaBackup.BackupFiles.Where(static f => !f.Deleted && (f.FullPath.Contains(@"_Concerts") || f.FullPath.Contains(@"_Comedy") || f.FullPath.Contains(@"_Movies")) && !f.FullPath.EndsWithIgnoreCase(".srt")))
         {
             var file = new MovieBackupFile(backupFile.FullPath);
             Assert.True(file.IsValid);
