@@ -195,7 +195,7 @@ internal static partial class Utils
         }
 
         /// <summary>
-        ///     Checks if the path is a video file and renames the file with extracted media info if required
+        ///     Checks if the path is a video file or subtitles file and renames the file with extracted media info if required
         /// </summary>
         /// <param name="path"></param>
         internal static void CheckVideoFileAndRenameIfRequired(ref string path)
@@ -213,9 +213,12 @@ internal static partial class Utils
             {
                 var newFullPath = file.GetFullName();
                 if (newFullPath.Contains("undefined")) LogWithPushover(BackupAction.Error, $"{newFullPath} contains undefined");
-                if (newFullPath == path) return;
 
-                if (file is not SubtitlesBackupFile)
+                if (file is SubtitlesBackupFile backupFile)
+                {
+                    if (backupFile.FullPathToVideoFile.HasNoValue()) LogWithPushover(BackupAction.Error, $"{path} is Subtitles file with no TV episode or Movie named");
+                }
+                else
                 {
                     if (file.MediaInfoModel.DoviConfigurationRecord?.DvProfile == 5)
                     {
@@ -223,6 +226,9 @@ internal static partial class Utils
                         return;
                     }
                 }
+
+                // Path is the same so do not rename
+                if (newFullPath == path) return;
 
                 if (File.Exists(newFullPath))
                     LogWithPushover(BackupAction.Error, $"Renaming {path} failed as {newFullPath} already exists");
