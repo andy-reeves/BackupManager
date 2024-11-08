@@ -75,7 +75,7 @@ public sealed class EntityTests
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>")]
     public void TestsAllFilesFromBackupXml()
     {
-        var files = _mediaBackup.BackupFiles.Where(static f => !f.Deleted && !f.FullPath.Contains("TdarrCacheFile")).ToArray();
+        var files = _mediaBackup.BackupFiles.Where(static f => !f.Deleted).ToArray();
 
         for (var index = 0; index < files.Length; index++)
         {
@@ -93,7 +93,7 @@ public sealed class EntityTests
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>")]
     public void TestsAllTvFromBackupXml()
     {
-        foreach (var backupFile in _mediaBackup.BackupFiles.Where(static f => !f.Deleted && f.FullPath.Contains(@"_TV") && !f.FullPath.Contains("TdarrCacheFile") && !f.FullPath.EndsWithIgnoreCase(".srt")))
+        foreach (var backupFile in _mediaBackup.BackupFiles.Where(static f => !f.Deleted && f.FullPath.Contains(@"_TV") && !f.FullPath.EndsWithIgnoreCase(".srt")))
         {
             var file = new TvEpisodeBackupFile(backupFile.FullPath);
             Assert.True(file.IsValid);
