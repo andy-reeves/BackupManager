@@ -65,7 +65,7 @@ public sealed class EntityTests
         {
             var file = new MovieBackupFile(backupFile.FullPath);
             Assert.True(file.IsValid);
-            if (file.IsValid) Assert.Equal(backupFile.FullPath, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());
+            if (file.IsValid) Assert.Equal(backupFile.FullPath, file.DirectoryName.HasValue() ? file.GetFullName() : file.GetFileName());
         }
     }
 
@@ -97,7 +97,7 @@ public sealed class EntityTests
         {
             var file = new TvEpisodeBackupFile(backupFile.FullPath);
             Assert.True(file.IsValid);
-            if (file.IsValid) Assert.Equal(backupFile.FullPath, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());
+            if (file.IsValid) Assert.Equal(backupFile.FullPath, file.DirectoryName.HasValue() ? file.GetFullName() : file.GetFileName());
         }
     }
 

@@ -4,6 +4,7 @@
 //  </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -19,17 +20,18 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
 {
     public SubtitlesBackupFile(string path)
     {
+        if (!path.EndsWithIgnoreCase("srt")) throw new ArgumentException("Subtitles files must end with .srt");
+
         OriginalPath = path;
-        Extension = Path.GetExtension(path);
         var fileName = Path.GetFileName(path);
-        FullDirectory = Path.GetDirectoryName(path);
+        DirectoryName = Path.GetDirectoryName(path);
         IsValidFileName = new Regex(FileNameRegex).IsMatch(fileName);
         if (IsValidFileName) IsValidFileName = ParseInfoFromFileName(fileName);
-        if (!FullDirectory.HasValue()) return;
+        if (!DirectoryName.HasValue()) return;
 
         // ReSharper disable once AssignNullToNotNullAttribute
-        IsValidDirectoryName = new Regex(DirectoryRegex).IsMatch(FullDirectory);
-        if (IsValidDirectoryName) IsValidDirectoryName = ParseInfoFromDirectory(FullDirectory);
+        IsValidDirectoryName = new Regex(DirectoryRegex).IsMatch(DirectoryName);
+        if (IsValidDirectoryName) IsValidDirectoryName = ParseInfoFromDirectory(DirectoryName);
     }
 
     protected override string FileNameRegex => @"^(.*)(?:(?:\.)(e[ns]))(?:(?:\.)(hi|cc|sdh))?(?:(?:\.)(forced))?\.srt$";
@@ -40,13 +42,15 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
 
     public bool HearingImpaired { get; private set; }
 
+    public string FullPathToVideoFile { get; set; }
+
     public bool Forced { get; private set; }
 
     public object SubtitlesExtension { get; private set; }
 
     private bool ParseInfoFromDirectory(string directoryPath)
     {
-        FullDirectory = directoryPath;
+        DirectoryName = directoryPath;
         return Regex.Match(directoryPath, DirectoryRegex).Success;
     }
 
@@ -62,6 +66,7 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
         if (video == null) return false;
 
         Title = video.GetFileNameWithoutExtension();
+        FullPathToVideoFile = video.GetFullName();
         return true;
     }
 
@@ -77,7 +82,7 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
         Title = match.Groups[title].Value;
         Language = match.Groups[languageGroup].Value;
         HearingImpaired = match.Groups[hearingImpairedGroup].Value != string.Empty;
-        Forced = match.Groups[forcedGroup].Value == "forced";
+        Forced = match.Groups[forcedGroup].Value.ToLowerInvariant() == "forced";
         Extension = ".srt";
         SubtitlesExtension = filename.SubstringAfterIgnoreCase(Title);
         return true;
@@ -85,14 +90,14 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
 
     public override string GetFullName()
     {
-        return FullDirectory.HasValue() ? Path.Combine(FullDirectory, GetFileName()) : GetFileName();
+        return DirectoryName.HasValue() ? Path.Combine(DirectoryName, GetFileName()) : GetFileName();
     }
 
     public override bool RefreshMediaInfo()
     {
-        if (FullDirectory.HasNoValue()) return false;
+        if (DirectoryName.HasNoValue()) return false;
 
-        var files = Utils.File.GetFiles(FullDirectory, new CancellationToken());
+        var files = Utils.File.GetFiles(DirectoryName, new CancellationToken());
         var videoFiles = files.Where(static f => Utils.File.IsVideo(f) && !Utils.File.IsSpecialFeature(f)).ToArray();
 
         switch (videoFiles.Length)

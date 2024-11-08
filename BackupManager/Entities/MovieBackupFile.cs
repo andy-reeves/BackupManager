@@ -20,14 +20,14 @@ internal sealed class MovieBackupFile : VideoBackupFileBase
         OriginalPath = path;
         Extension = Path.GetExtension(path);
         var fileName = Path.GetFileName(path);
-        FullDirectory = Path.GetDirectoryName(path);
+        DirectoryName = Path.GetDirectoryName(path);
         IsValidFileName = new Regex(FileNameRegex).IsMatch(fileName);
         if (IsValidFileName) IsValidFileName = ParseMediaInfoFromFileName(fileName);
-        if (FullDirectory.HasNoValue()) return;
+        if (DirectoryName.HasNoValue()) return;
 
         // ReSharper disable once AssignNullToNotNullAttribute
-        IsValidDirectoryName = new Regex(DirectoryRegex).IsMatch(FullDirectory);
-        if (IsValidDirectoryName) IsValidDirectoryName = ParseMediaInfoFromDirectory(FullDirectory);
+        IsValidDirectoryName = new Regex(DirectoryRegex).IsMatch(DirectoryName);
+        if (IsValidDirectoryName) IsValidDirectoryName = ParseMediaInfoFromDirectory(DirectoryName);
     }
 
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
@@ -58,7 +58,7 @@ internal sealed class MovieBackupFile : VideoBackupFileBase
 
     private bool ParseMediaInfoFromDirectory(string directoryPath)
     {
-        FullDirectory = directoryPath;
+        DirectoryName = directoryPath;
         var match = Regex.Match(directoryPath, DirectoryRegex);
         if (!match.Success) return false;
 

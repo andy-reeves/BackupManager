@@ -48,19 +48,26 @@ internal abstract class ExtendedBackupFileBase
     public string Title { get; protected set; }
 
     /// <summary>
-    ///     The full directory path to the file not including the filename.
+    ///     A string representing the directory's full path not including the file name.
     /// </summary>
-    public string FullDirectory { get; protected set; }
+    public string DirectoryName { get; protected set; }
 
     // ReSharper disable once VirtualMemberNeverOverridden.Global
     protected virtual bool Validate()
     {
         var fileName = GetFileName();
         IsValidFileName = new Regex(FileNameRegex).IsMatch(fileName);
-        IsValidDirectoryName = new Regex(DirectoryRegex).IsMatch(FullDirectory);
+        IsValidDirectoryName = new Regex(DirectoryRegex).IsMatch(DirectoryName);
         return IsValidFileName && IsValidDirectoryName;
     }
 
+    /// <summary>
+    ///     Returns the file name without the extension.
+    /// </summary>
+    /// <returns>
+    ///     The string returned by System.IO.Path.GetFileName(System.ReadOnlySpan{System.Char}),
+    ///     minus the last period (.) and all characters following it.
+    /// </returns>
     public string GetFileNameWithoutExtension()
     {
         return Path.GetFileNameWithoutExtension(GetFileName());
@@ -68,6 +75,10 @@ internal abstract class ExtendedBackupFileBase
 
     public abstract string GetFileName();
 
+    /// <summary>
+    ///     The full path name to the video file e.g. Directory plus FileName with extension
+    /// </summary>
+    /// <returns></returns>
     public abstract string GetFullName();
 
     public abstract bool RefreshMediaInfo();

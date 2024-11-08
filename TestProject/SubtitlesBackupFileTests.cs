@@ -22,7 +22,6 @@ public sealed class SubtitlesBackupFileTests
     [InlineData("A(2023) {tmdb-1} [DVD][DTS 5.1][h264].es.hi.srt", true, "es", true, false, "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].mkv", "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].es.hi.srt")]
     [InlineData("A(2023) {tmdb-1} [DVD][DTS 5.1][h264].es.cc.srt", true, "es", true, false, "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].mkv", "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].es.hi.srt")]
     [InlineData("A(2023) {tmdb-1} [DVD][DTS 5.1][h264].es.hi.forced.srt", true, "es", true, true, "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].mkv", "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].es.hi.forced.srt")]
-    [InlineData("Special video-featurette.mkv", false, "", false, false, "", "")]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     public void SubtitlesTests(string fileName, bool isValidFileName, string languageCode, bool hearingImpaired, bool forced, string newMovieName, string newSubtitlesName)
     {
@@ -56,12 +55,17 @@ public sealed class SubtitlesBackupFileTests
 
         if (file.IsValid)
         {
-            Assert.Equal(fileName, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());
+            Assert.Equal(fileName, file.DirectoryName.HasValue() ? file.GetFullName() : file.GetFileName());
             Assert.Equal("." + subtitlesFullName.SubstringAfterIgnoreCase("]."), file.SubtitlesExtension);
         }
         Assert.True(file.RefreshMediaInfo());
         Assert.Equal(isValidSubtitleFullName, file.IsValid);
-        if (file.IsValid) Assert.Equal(newFileName, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());
+
+        if (file.IsValid)
+        {
+            Assert.True(file.FullPathToVideoFile.StartsWithIgnoreCase(Path.Combine(file.DirectoryName, file.Title)));
+            Assert.Equal(newFileName, file.DirectoryName.HasValue() ? file.GetFullName() : file.GetFileName());
+        }
     }
 
     [Theory]
@@ -78,11 +82,11 @@ public sealed class SubtitlesBackupFileTests
 
         if (file.IsValid)
         {
-            Assert.Equal(subtitlesFullName, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());
+            Assert.Equal(subtitlesFullName, file.DirectoryName.HasValue() ? file.GetFullName() : file.GetFileName());
             Assert.Equal("." + subtitlesFullName.SubstringAfterIgnoreCase("]."), file.SubtitlesExtension);
         }
         Assert.True(file.RefreshMediaInfo());
         Assert.Equal(isValidSubtitleFullName, file.IsValid);
-        if (file.IsValid) Assert.Equal(newSubtitlesFullName, file.FullDirectory.HasValue() ? file.GetFullName() : file.GetFileName());
+        if (file.IsValid) Assert.Equal(newSubtitlesFullName, file.DirectoryName.HasValue() ? file.GetFullName() : file.GetFileName());
     }
 }

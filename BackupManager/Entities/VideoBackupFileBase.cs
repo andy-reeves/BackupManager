@@ -38,7 +38,7 @@ internal abstract class VideoBackupFileBase : ExtendedBackupFileBase
 
     public override string GetFullName()
     {
-        return FullDirectory.HasValue() ? Path.Combine(FullDirectory, GetFileName()) : GetFileName();
+        return DirectoryName.HasValue() ? Path.Combine(DirectoryName, GetFileName()) : GetFileName();
     }
 
     // ReSharper disable once FunctionComplexityOverflow
