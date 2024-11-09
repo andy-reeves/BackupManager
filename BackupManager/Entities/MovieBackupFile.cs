@@ -37,6 +37,12 @@ internal sealed class MovieBackupFile : VideoBackupFileBase
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     protected override string DirectoryRegex => @"^.*\\_(?:Movies|Comedy|Concerts)(?:\s\(non-tmdb\))?\\(.*)\((\d{4})\)(-other)?.*$";
 
+    /// <summary>
+    ///     Used for movies that need to have multiple directories like 12 Angry Men (1957)-other. Multiple editions of the
+    ///     same movie need to
+    ///     be in different directories for Plex otherwise special features do not get listed for any of them.
+    ///     They are typically not in a directory monitored by Radarr either otherwise they show up twice.
+    /// </summary>
     public string AlternateMovieFolder { get; set; }
 
     public Edition Edition { get; set; }

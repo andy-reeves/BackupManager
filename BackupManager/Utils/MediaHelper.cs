@@ -220,7 +220,7 @@ internal static partial class Utils
                 }
                 else
                 {
-                    if (file.MediaInfoModel.DoviConfigurationRecord?.DvProfile == 5)
+                    if (file.MediaInfoModel?.DoviConfigurationRecord?.DvProfile == 5)
                     {
                         LogWithPushover(BackupAction.Error, $"{path} is [DV] Profile 5");
                         return;
