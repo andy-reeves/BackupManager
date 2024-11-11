@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 
 using BackupManager.Extensions;
@@ -58,6 +59,142 @@ internal sealed class VideoFileInfoReader
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     [SuppressMessage("ReSharper", "ConstantConditionalAccessQualifier")]
+    internal bool RemoveSubtitlesFromFile(string inputFilename, string outputFilename)
+    {
+        try
+        {
+            // remove all subtitles
+            _ = FFMpegArguments.FromFileInput(inputFilename).OutputToFile(outputFilename, false, options => { _ = options.WithCustomArgument("-c copy -sn"); }).ProcessSynchronously();
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    [SuppressMessage("ReSharper", "IdentifierTypo")]
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
+    [SuppressMessage("ReSharper", "ConstantConditionalAccessQualifier")]
+    internal bool RemoveChaptersFromFile(string inputFilename, string outputFilename)
+    {
+        try
+        {
+            // remove all subtitles
+            _ = FFMpegArguments.FromFileInput(inputFilename).OutputToFile(outputFilename, false, options => { _ = options.WithCustomArgument("-c copy -map_chapters -1"); }).ProcessSynchronously();
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    [SuppressMessage("ReSharper", "IdentifierTypo")]
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
+    [SuppressMessage("ReSharper", "ConstantConditionalAccessQualifier")]
+    public bool ExtractChapters(string inputFilename, string outputFilename)
+    {
+        try
+        {
+            // export chapters ffmpeg -i input.mkv -f ffmetadata FFMETADATAFILE.txt
+
+            // add chapters ffmpeg -i INPUT -f ffmetadata -i input.chap -map 0:v -map 0:a -map 0:s -map_metadata 1 -map_chapters 1 -c copy OUTPUT
+            _ = FFMpegArguments.FromFileInput(inputFilename).OutputToFile(outputFilename, false, options => { _ = options.WithCustomArgument("-f ffmetadata"); }).ProcessSynchronously();
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    [SuppressMessage("ReSharper", "IdentifierTypo")]
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
+    [SuppressMessage("ReSharper", "ConstantConditionalAccessQualifier")]
+    public bool AddChaptersToFile(string inputFilename, string chaptersFilename, string outputFilename)
+    {
+        try
+        {
+            // export chapters ffmpeg -i input.mkv -f ffmetadata FFMETADATAFILE.txt
+
+            // add chapters ffmpeg -i INPUT -f ffmetadata -i input.chap -map 0:v -map 0:a -map 0:s -map_metadata 1 -map_chapters 1 -c copy OUTPUT
+            _ = FFMpegArguments.FromFileInput(inputFilename).OutputToFile(outputFilename, false, options => { _ = options.WithCustomArgument($" -f ffmetadata -i {chaptersFilename} -map_metadata 1 -map_chapters 1 -c copy"); }).ProcessSynchronously();
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    [SuppressMessage("ReSharper", "IdentifierTypo")]
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
+    [SuppressMessage("ReSharper", "ConstantConditionalAccessQualifier")]
+    public bool ExtractSubtitleFiles(string filename)
+    {
+        try
+        {
+            var ffprobeOutput = FFProbe.GetStreamJson(filename, ffOptions: new FFOptions { ExtraArguments = "-probesize 50000000" });
+            var analysis = FFProbe.AnalyseStreamJson(ffprobeOutput);
+
+            if (analysis.PrimaryAudioStream?.ChannelLayout.IsNullOrWhiteSpace() ?? true)
+            {
+                ffprobeOutput = FFProbe.GetStreamJson(filename, ffOptions: new FFOptions { ExtraArguments = "-probesize 150000000 -analyzeduration 150000000" });
+                analysis = FFProbe.AnalyseStreamJson(ffprobeOutput);
+            }
+            Utils.Log($"Checking {filename} for subtitles to extract");
+
+            for (var i = 0; i < analysis.SubtitleStreams.Count; i++)
+            {
+                var subStream = analysis.SubtitleStreams[i];
+                var hearingImpaired = false;
+                var forced = false;
+                Utils.Log($"Language is {subStream.Language}");
+                if (subStream.Tags != null) ProcessSubtitleTags(subStream, ref hearingImpaired, ref forced);
+
+                var subFileName = subStream.Language switch
+                {
+                    "eng" => ".en",
+                    "esp" => ".es",
+                    _ => throw new Exception($"Unsupported language detected {subStream.Language} in {filename}")
+                };
+                if (hearingImpaired) subFileName += ".hi";
+                if (forced) subFileName += ".forced";
+                subFileName += ".srt";
+                var newFullPath = Path.GetDirectoryName(filename) + @"\" + Path.GetFileNameWithoutExtension(filename) + subFileName;
+                var index = i;
+                _ = FFMpegArguments.FromFileInput(filename).OutputToFile(newFullPath, false, options => { _ = options.WithCustomArgument($"-map 0:s:{index}"); }).ProcessSynchronously();
+            }
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    private static void ProcessSubtitleTags(SubtitleStream subStream, ref bool hearingImpaired, ref bool forced)
+    {
+        if (subStream.Tags == null) return;
+
+        foreach (var t in subStream.Tags)
+        {
+            Utils.Log($"{t.Key} = {t.Value}");
+        }
+
+        if (subStream.Tags.TryGetValue("handler_name", out var value))
+        {
+            if (value.Contains("SDH")) hearingImpaired = true;
+        }
+
+        if (subStream.Tags.TryGetValue("title", out value))
+            if (value.Contains("SDH"))
+                hearingImpaired = true;
+        if (!subStream.Tags.TryGetValue("forced", out var value2)) return;
+
+        if (value2.Contains("true")) forced = true;
+    }
 
     // ReSharper disable once FunctionComplexityOverflow
     public MediaInfoModel GetMediaInfo(string filename)
@@ -85,6 +222,8 @@ internal sealed class VideoFileInfoReader
                 VideoColourPrimaries = primaryVideoStream?.ColorPrimaries,
                 VideoTransferCharacteristics = primaryVideoStream?.ColorTransfer,
                 VideoMultiViewCount = primaryVideoStream?.Tags?.ContainsKey("stereo_mode") ?? false ? 2 : 1,
+
+                // ReSharper disable once ConstantConditionalAccessQualifier
                 DoviConfigurationRecord = primaryVideoStream?.SideDataList?.Find(static x => x.GetType().Name == nameof(DoviConfigurationRecordSideData)) as DoviConfigurationRecordSideData,
                 Height = primaryVideoStream?.Height ?? 0,
                 Width = primaryVideoStream?.Width ?? 0,
@@ -97,7 +236,11 @@ internal sealed class VideoFileInfoReader
                 AudioChannels = analysis.PrimaryAudioStream?.Channels ?? 0,
                 AudioChannelPositions = analysis.PrimaryAudioStream?.ChannelLayout,
                 VideoFps = primaryVideoStream?.FrameRate ?? 0,
+
+                // ReSharper disable once ConstantConditionalAccessQualifier
                 AudioLanguages = analysis.AudioStreams?.Select(static x => x.Language).Where(static l => l.IsNotNullOrWhiteSpace()).ToList(),
+
+                // ReSharper disable once ConstantConditionalAccessQualifier
                 Subtitles = analysis.SubtitleStreams?.Select(static x => x.Language).Where(static l => l.IsNotNullOrWhiteSpace()).ToList(),
                 ScanType = "Progressive",
                 RawStreamData = ffprobeOutput,
@@ -127,10 +270,12 @@ internal sealed class VideoFileInfoReader
                  : new List<SideData>();*/
             List<SideData> framesSideData = new();
 
+            // ReSharper disable once ConstantConditionalAccessQualifier
             if (frames?.Frames?.Count > 0)
             {
                 for (var i = 0; i < frames.Frames.Count; i++)
                 {
+                    // ReSharper disable once ConstantConditionalAccessQualifier
                     var f = frames?.Frames[i];
                     if (f.SideDataList is { Count: > 0 }) framesSideData.AddRange(f.SideDataList);
                 }

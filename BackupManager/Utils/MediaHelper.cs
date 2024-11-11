@@ -256,13 +256,78 @@ internal static partial class Utils
             return audioChannels.Value;
         }
 
+        internal static bool ExtractSubtitleFiles(string path)
+        {
+            TraceIn(path);
+            ArgumentException.ThrowIfNullOrEmpty(path);
+            if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
+            if (!File.IsVideo(path)) throw new NotSupportedException("file is not video");
+
+            var result = new VideoFileInfoReader().ExtractSubtitleFiles(path);
+            if (!result) throw new IOException($"Unable to extract subtitles for {path}");
+
+            return TraceOut(true);
+        }
+
+        internal static bool ExtractChapters(string path, string outputFilename)
+        {
+            TraceIn(path);
+            ArgumentException.ThrowIfNullOrEmpty(path);
+            if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
+            if (!File.IsVideo(path)) throw new NotSupportedException("file is not video");
+
+            var result = new VideoFileInfoReader().ExtractChapters(path, outputFilename);
+            if (!result) throw new IOException($"Unable to extract chapters for {path}");
+
+            return TraceOut(true);
+        }
+
+        internal static bool AddChaptersToFile(string path, string chaptersFilename, string outputFilename)
+        {
+            TraceIn(path);
+            ArgumentException.ThrowIfNullOrEmpty(path);
+            if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
+            if (!File.IsVideo(path)) throw new NotSupportedException("file is not video");
+
+            var result = new VideoFileInfoReader().AddChaptersToFile(path, chaptersFilename, outputFilename);
+            if (!result) throw new IOException($"Unable to add chapters {chaptersFilename} to {path}");
+
+            return TraceOut(true);
+        }
+
+        internal static bool RemoveSubtitlesFromFile(string inputFilename, string outputFilename)
+        {
+            TraceIn(inputFilename);
+            ArgumentException.ThrowIfNullOrEmpty(inputFilename);
+            if (!File.Exists(inputFilename)) throw new FileNotFoundException(Resources.FileNotFound, inputFilename);
+            if (!File.IsVideo(inputFilename)) throw new NotSupportedException("file is not video");
+            if (File.Exists(outputFilename)) throw new ArgumentException($"{outputFilename} exists", outputFilename);
+
+            var result = new VideoFileInfoReader().RemoveSubtitlesFromFile(inputFilename, outputFilename);
+            if (!result) throw new IOException($"Unable to remove subtitles for {inputFilename}");
+
+            return TraceOut(true);
+        }
+
+        internal static bool RemoveChaptersFromFile(string inputFilename, string outputFilename)
+        {
+            TraceIn(inputFilename);
+            ArgumentException.ThrowIfNullOrEmpty(inputFilename);
+            if (!File.Exists(inputFilename)) throw new FileNotFoundException(Resources.FileNotFound, inputFilename);
+            if (!File.IsVideo(inputFilename)) throw new NotSupportedException("file is not video");
+            if (File.Exists(outputFilename)) throw new ArgumentException($"{outputFilename} exists", outputFilename);
+
+            var result = new VideoFileInfoReader().RemoveChaptersFromFile(inputFilename, outputFilename);
+            if (!result) throw new IOException($"Unable to remove chapters for {inputFilename}");
+
+            return TraceOut(true);
+        }
+
         internal static MediaInfoModel GetMediaInfoModel(string path)
         {
             TraceIn(path);
             ArgumentException.ThrowIfNullOrEmpty(path);
             if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
-
-            ArgumentException.ThrowIfNullOrEmpty(path);
             if (!File.IsVideo(path)) throw new NotSupportedException("file is not video");
 
             var info = new VideoFileInfoReader().GetMediaInfo(path) ?? throw new IOException(string.Format(Resources.UnableToLoadFFProbe, path));

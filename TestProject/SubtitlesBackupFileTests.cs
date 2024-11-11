@@ -18,6 +18,81 @@ namespace TestProject;
 public sealed class SubtitlesBackupFileTests
 {
     [Theory]
+    [InlineData("File18.nochapters.master.mkv", "File18.master.chap", "File18.chaptersAdded.mkv")]
+    public void AddChaptersToFile(string inputFilename, string chaptersFilename, string outputFilename)
+    {
+        var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
+        var fileName = Path.Combine(testDataPath, inputFilename);
+        var chapName = Path.Combine(testDataPath, chaptersFilename);
+        var outName = Path.Combine(testDataPath, outputFilename);
+        if (File.Exists(outName)) _ = Utils.File.Delete(outName);
+        Assert.True(Utils.MediaHelper.AddChaptersToFile(fileName, chapName, outName));
+    }
+
+    [Theory]
+    [InlineData("File18.withChapters.master.mkv", "File18.chap", "File18.master.chap")]
+    public void ExtractChapters(string inputFilename, string outputFilename, string masterChapFile)
+    {
+        var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
+        var fileName = Path.Combine(testDataPath, inputFilename);
+        var outName = Path.Combine(testDataPath, outputFilename);
+        var chpMaster = Path.Combine(testDataPath, masterChapFile);
+        if (File.Exists(outName)) _ = Utils.File.Delete(outName);
+        Assert.True(Utils.MediaHelper.ExtractChapters(fileName, outName));
+        var outHash = Utils.File.GetShortMd5Hash(outName);
+        var outMasterHash = Utils.File.GetShortMd5Hash(chpMaster);
+        Assert.Equal(outMasterHash, outHash);
+    }
+
+    [Theory]
+    [InlineData("File17.withSubtitles.master.mkv", "File17.withSubtitles.master1.en.srt", "File17.withSubtitles.master1.en.hi.srt")]
+    [InlineData("File18.withChapters.master.mkv", "", "")]
+    public void ExtractSubtitles(string inputFilename, string masterEn, string masterEnHi)
+    {
+        var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
+        var fileName = Path.Combine(testDataPath, inputFilename);
+        var withenHi = Path.Combine(testDataPath, Path.GetFileNameWithoutExtension(inputFilename) + ".en.hi.srt");
+        var withen = Path.Combine(testDataPath, Path.GetFileNameWithoutExtension(inputFilename) + ".en.srt");
+        var masEnFull = Path.Combine(testDataPath, masterEn);
+        var masEnHiFull = Path.Combine(testDataPath, masterEnHi);
+        if (File.Exists(withenHi)) _ = Utils.File.Delete(withenHi);
+        if (File.Exists(withen)) _ = Utils.File.Delete(withen);
+        Assert.True(Utils.MediaHelper.ExtractSubtitleFiles(fileName));
+        if (masterEn == string.Empty) return;
+
+        var outHash = Utils.File.GetShortMd5Hash(withen);
+        var outMasterHash = Utils.File.GetShortMd5Hash(masEnFull);
+        Assert.Equal(outMasterHash, outHash);
+        outHash = Utils.File.GetShortMd5Hash(withenHi);
+        outMasterHash = Utils.File.GetShortMd5Hash(masEnHiFull);
+        Assert.Equal(outMasterHash, outHash);
+    }
+
+    [Theory]
+    [InlineData("File17.withSubtitles.master.mkv", "File17.nosubtitles.mkv")]
+    [InlineData("File18.withChapters.master.mkv", "File18.nosubtitles.mkv")]
+    public void RemoveSubtitlesFromFile(string inputFilename, string outputFilename)
+    {
+        var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
+        var fileName = Path.Combine(testDataPath, inputFilename);
+        var outName = Path.Combine(testDataPath, outputFilename);
+        if (File.Exists(outName)) _ = Utils.File.Delete(outName);
+        Assert.True(Utils.MediaHelper.RemoveSubtitlesFromFile(fileName, outName));
+    }
+
+    [Theory]
+    [InlineData("File17.withSubtitles.master.mkv", "File17.nochapters.mkv")]
+    [InlineData("File18.withChapters.master.mkv", "File18.nochapters.mkv")]
+    public void RemoveChaptersFromFile(string inputFilename, string outputFilename)
+    {
+        var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
+        var fileName = Path.Combine(testDataPath, inputFilename);
+        var outName = Path.Combine(testDataPath, outputFilename);
+        if (File.Exists(outName)) _ = Utils.File.Delete(outName);
+        Assert.True(Utils.MediaHelper.RemoveChaptersFromFile(fileName, outName));
+    }
+
+    [Theory]
     [InlineData("A(2023) {tmdb-1} [DVD][DTS 5.1][h264].en.srt", true, "en", false, false, "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].mkv", "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].en.srt")]
     [InlineData("A(2023) {tmdb-1} [DVD][DTS 5.1][h264].es.hi.srt", true, "es", true, false, "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].mkv", "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].es.hi.srt")]
     [InlineData("A(2023) {tmdb-1} [DVD][DTS 5.1][h264].es.cc.srt", true, "es", true, false, "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].mkv", "A (2023) {tmdb-1} [DVD][DTS 5.1][h265].es.hi.srt")]
