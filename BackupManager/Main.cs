@@ -1176,6 +1176,8 @@ internal sealed partial class Main : Form
 
         foreach (var file in backupFiles)
         {
+            if (!File.Exists(file.FullPath)) continue;
+
             var mediaFile = Utils.MediaHelper.ExtendedBackupFileBase(file.FullPath);
             if (mediaFile is not TvEpisodeBackupFile) continue;
 
@@ -1183,7 +1185,6 @@ internal sealed partial class Main : Form
             if (mediaFile.MediaInfoModel?.Subtitles.Count == 0) continue;
 
             Utils.Log($"{file.FullPath} is mp4 TV episode with subtitles");
-            if (!File.Exists(file.FullPath)) continue;
             if (!Utils.MediaHelper.ExtractSubtitleFiles(file.FullPath)) continue;
 
             var newPath = Path.Combine(file.Directory, ".new.mp4");
