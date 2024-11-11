@@ -27,6 +27,7 @@ public sealed class SubtitlesBackupFileTests
         var outName = Path.Combine(testDataPath, outputFilename);
         if (File.Exists(outName)) _ = Utils.File.Delete(outName);
         Assert.True(Utils.MediaHelper.AddChaptersToFile(fileName, chapName, outName));
+        if (File.Exists(outName)) _ = Utils.File.Delete(outName);
     }
 
     [Theory]
@@ -42,6 +43,7 @@ public sealed class SubtitlesBackupFileTests
         var outHash = Utils.File.GetShortMd5Hash(outName);
         var outMasterHash = Utils.File.GetShortMd5Hash(chpMaster);
         Assert.Equal(outMasterHash, outHash);
+        if (File.Exists(outName)) _ = Utils.File.Delete(outName);
     }
 
     [Theory]
@@ -78,6 +80,7 @@ public sealed class SubtitlesBackupFileTests
         var outName = Path.Combine(testDataPath, outputFilename);
         if (File.Exists(outName)) _ = Utils.File.Delete(outName);
         Assert.True(Utils.MediaHelper.RemoveSubtitlesFromFile(fileName, outName));
+        if (File.Exists(outName)) _ = Utils.File.Delete(outName);
     }
 
     [Theory]
@@ -90,6 +93,7 @@ public sealed class SubtitlesBackupFileTests
         var outName = Path.Combine(testDataPath, outputFilename);
         if (File.Exists(outName)) _ = Utils.File.Delete(outName);
         Assert.True(Utils.MediaHelper.RemoveChaptersFromFile(fileName, outName));
+        if (File.Exists(outName)) _ = Utils.File.Delete(outName);
     }
 
     [Theory]
