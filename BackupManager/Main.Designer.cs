@@ -139,6 +139,7 @@
             scanDirectoryComboBox = new System.Windows.Forms.ComboBox();
             h264FilesButton = new System.Windows.Forms.Button();
             checkSubtitlesButton = new System.Windows.Forms.Button();
+            ExportAndRemoveSubtitlesButton = new System.Windows.Forms.Button();
             pushoverGroupBox.SuspendLayout();
             groupBox2.SuspendLayout();
             listFilesInDirectoryGroupBox.SuspendLayout();
@@ -414,7 +415,7 @@
             // 
             // versionCheckingButton
             // 
-            versionCheckingButton.Location = new System.Drawing.Point(872, 395);
+            versionCheckingButton.Location = new System.Drawing.Point(872, 390);
             versionCheckingButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             versionCheckingButton.Name = "versionCheckingButton";
             versionCheckingButton.Size = new System.Drawing.Size(232, 27);
@@ -1348,7 +1349,7 @@
             // 
             // checkSubtitlesButton
             // 
-            checkSubtitlesButton.Location = new System.Drawing.Point(872, 436);
+            checkSubtitlesButton.Location = new System.Drawing.Point(872, 426);
             checkSubtitlesButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             checkSubtitlesButton.Name = "checkSubtitlesButton";
             checkSubtitlesButton.Size = new System.Drawing.Size(232, 27);
@@ -1358,11 +1359,23 @@
             checkSubtitlesButton.Visible = false;
             checkSubtitlesButton.Click += CheckSubtitlesButton_Click;
             // 
+            // ExportAndRemoveSubtitlesButton
+            // 
+            ExportAndRemoveSubtitlesButton.Location = new System.Drawing.Point(872, 466);
+            ExportAndRemoveSubtitlesButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ExportAndRemoveSubtitlesButton.Name = "ExportAndRemoveSubtitlesButton";
+            ExportAndRemoveSubtitlesButton.Size = new System.Drawing.Size(232, 27);
+            ExportAndRemoveSubtitlesButton.TabIndex = 107;
+            ExportAndRemoveSubtitlesButton.Text = "Export and remove subtitles";
+            ExportAndRemoveSubtitlesButton.UseVisualStyleBackColor = true;
+            ExportAndRemoveSubtitlesButton.Click += ExportAndRemoveSubtitlesButton_Click;
+            // 
             // Main
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1416, 548);
+            Controls.Add(ExportAndRemoveSubtitlesButton);
             Controls.Add(checkSubtitlesButton);
             Controls.Add(scanLastDirectoriesButton);
             Controls.Add(scanDirectoriesWithChangesButton);
@@ -1561,6 +1574,7 @@
         private System.Windows.Forms.Button scanDirectoriesWithChangesButton;
         private System.Windows.Forms.Button scanLastDirectoriesButton;
         private System.Windows.Forms.Button checkSubtitlesButton;
+        private System.Windows.Forms.Button ExportAndRemoveSubtitlesButton;
     }
 }
 

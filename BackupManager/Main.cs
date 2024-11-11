@@ -1165,4 +1165,34 @@ internal sealed partial class Main : Form
             if (subFile.Forced) Utils.LogWithPushover(BackupAction.General, $" {file.FullPath} is Forced ");
         }
     }
+
+    private void ExportAndRemoveSubtitlesButton_Click(object sender, EventArgs e)
+    {
+        // export subtitles and remove them
+
+        // find mp4 files that have subtitles 
+        var backupFiles = mediaBackup.BackupFiles.Where(static f => f.Extension == ".mp4" && !f.FullPath.Contains("[h265]")).OrderBy(static q => q.FullPath).ToArray();
+        var count = 0;
+
+        foreach (var file in backupFiles)
+        {
+            var mediaFile = Utils.MediaHelper.ExtendedBackupFileBase(file.FullPath);
+            if (mediaFile is not TvEpisodeBackupFile) continue;
+
+            _ = mediaFile.RefreshMediaInfo();
+            if (mediaFile.MediaInfoModel?.Subtitles.Count == 0) continue;
+
+            Utils.Log($"{file.FullPath} is mp4 TV episode with subtitles");
+            if (!File.Exists(file.FullPath)) continue;
+            if (!Utils.MediaHelper.ExtractSubtitleFiles(file.FullPath)) continue;
+
+            var newPath = Path.Combine(file.Directory, ".new.mp4");
+            if (!Utils.MediaHelper.RemoveSubtitlesFromFile(file.FullPath, newPath)) continue;
+
+            _ = Utils.File.Move(file.FullPath, file.FullPath + ".original");
+            _ = Utils.File.Move(newPath, file.FullPath);
+            count++;
+        }
+        Utils.Log($"{count} files that are mp4 not [h265] TV episodes with subtitles");
+    }
 }
