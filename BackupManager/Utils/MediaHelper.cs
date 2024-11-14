@@ -269,6 +269,67 @@ internal static partial class Utils
             return TraceOut(true);
         }
 
+        internal static int AudioStreamCount(string path)
+        {
+            TraceIn(path);
+            ArgumentException.ThrowIfNullOrEmpty(path);
+            if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
+            if (!File.IsVideo(path)) throw new NotSupportedException("file is not video");
+
+            return new VideoFileInfoReader().AudioStreamCount(path);
+        }
+
+        internal static int VideoStreamCount(string path)
+        {
+            TraceIn(path);
+            ArgumentException.ThrowIfNullOrEmpty(path);
+            if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
+            if (!File.IsVideo(path)) throw new NotSupportedException("file is not video");
+
+            return new VideoFileInfoReader().VideoStreamCount(path);
+        }
+
+        internal static int SubtitlesStreamCount(string path)
+        {
+            TraceIn(path);
+            ArgumentException.ThrowIfNullOrEmpty(path);
+            if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
+            if (!File.IsVideo(path)) throw new NotSupportedException("file is not video");
+
+            return new VideoFileInfoReader().SubtitlesStreamCount(path);
+        }
+
+        internal static int ChaptersStreamCount(string path)
+        {
+            TraceIn(path);
+            ArgumentException.ThrowIfNullOrEmpty(path);
+            if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
+            if (!File.IsVideo(path)) throw new NotSupportedException("file is not video");
+
+            //TODO only returns -1,0 or 1
+            return new VideoFileInfoReader().ChaptersStreamCount(path);
+        }
+
+        internal static bool HasMetadata(string path)
+        {
+            TraceIn(path);
+            ArgumentException.ThrowIfNullOrEmpty(path);
+            if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
+            if (!File.IsVideo(path)) throw new NotSupportedException("file is not video");
+
+            return new VideoFileInfoReader().HasMetadata(path);
+        }
+
+        internal static bool HasChapters(string path)
+        {
+            TraceIn(path);
+            ArgumentException.ThrowIfNullOrEmpty(path);
+            if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
+            if (!File.IsVideo(path)) throw new NotSupportedException("file is not video");
+
+            return new VideoFileInfoReader().HasChapters(path);
+        }
+
         internal static bool ExtractChapters(string path, string outputFilename)
         {
             TraceIn(path);
@@ -319,6 +380,20 @@ internal static partial class Utils
 
             var result = new VideoFileInfoReader().RemoveChaptersFromFile(inputFilename, outputFilename);
             if (!result) throw new IOException($"Unable to remove chapters for {inputFilename}");
+
+            return TraceOut(true);
+        }
+
+        internal static bool RemoveMetadataFromFile(string inputFilename, string outputFilename)
+        {
+            TraceIn(inputFilename);
+            ArgumentException.ThrowIfNullOrEmpty(inputFilename);
+            if (!File.Exists(inputFilename)) throw new FileNotFoundException(Resources.FileNotFound, inputFilename);
+            if (!File.IsVideo(inputFilename)) throw new NotSupportedException("file is not video");
+            if (File.Exists(outputFilename)) throw new ArgumentException($"{outputFilename} exists", outputFilename);
+
+            var result = new VideoFileInfoReader().RemoveMetadataFromFile(inputFilename, outputFilename);
+            if (!result) throw new IOException($"Unable to remove metadata for {inputFilename}");
 
             return TraceOut(true);
         }

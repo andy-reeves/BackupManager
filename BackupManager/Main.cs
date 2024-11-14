@@ -1169,9 +1169,10 @@ internal sealed partial class Main : Form
     private void ExportAndRemoveSubtitlesButton_Click(object sender, EventArgs e)
     {
         // export subtitles and remove them
+        const string ext = ".mkv";
 
-        // find mp4 files that have subtitles 
-        var backupFiles = mediaBackup.BackupFiles.Where(static f => f.Extension == ".mp4" && !f.FullPath.Contains("[h265]")).OrderBy(static q => q.FullPath).ToArray();
+        // find ext files that have subtitles 
+        var backupFiles = mediaBackup.BackupFiles.Where(static f => f.Extension == ext && !f.FullPath.Contains("[h265]")).OrderBy(static q => q.FullPath).ToArray();
         var count = 0;
 
         foreach (var file in backupFiles)
@@ -1180,20 +1181,87 @@ internal sealed partial class Main : Form
 
             var mediaFile = Utils.MediaHelper.ExtendedBackupFileBase(file.FullPath);
             if (mediaFile is not TvEpisodeBackupFile) continue;
+            if (Utils.File.IsSpecialFeature(file.FullPath)) continue;
 
             _ = mediaFile.RefreshMediaInfo();
             if (mediaFile.MediaInfoModel?.Subtitles.Count == 0) continue;
 
-            Utils.Log($"{file.FullPath} is mp4 TV episode with subtitles");
+            Utils.Log($"{file.FullPath} is TV episode with subtitles");
             if (!Utils.MediaHelper.ExtractSubtitleFiles(file.FullPath)) continue;
 
-            var newPath = Path.Combine(file.Directory, ".new.mp4");
+            var newPath = Path.Combine(file.Directory, ".new" + ext);
             if (!Utils.MediaHelper.RemoveSubtitlesFromFile(file.FullPath, newPath)) continue;
 
             _ = Utils.File.Move(file.FullPath, file.FullPath + ".original");
             _ = Utils.File.Move(newPath, file.FullPath);
             count++;
+            Utils.Log($"Count is {count}");
         }
-        Utils.Log($"{count} files that are mp4 not [h265] TV episodes with subtitles");
+        Utils.Log($"{count} files that are mp4not [h265] TV episodes with subtitles");
+    }
+
+    private void extractChaptersButton_Click(object sender, EventArgs e)
+    {
+        // export chapters and remove them
+        const string ext = ".mp4";
+
+        // find mp4 files that have chapters 
+        var backupFiles = mediaBackup.BackupFiles.Where(static f => f.Extension == ext && !f.FullPath.Contains("[h265]")).OrderBy(static q => q.FullPath).ToArray();
+        var count = 0;
+
+        foreach (var file in backupFiles)
+        {
+            if (!File.Exists(file.FullPath)) continue;
+
+            var mediaFile = Utils.MediaHelper.ExtendedBackupFileBase(file.FullPath);
+            if (mediaFile is not TvEpisodeBackupFile) continue;
+            if (Utils.File.IsSpecialFeature(file.FullPath)) continue;
+
+            _ = mediaFile.RefreshMediaInfo();
+            if (!Utils.MediaHelper.HasChapters(file.FullPath)) continue;
+
+            Utils.Log($"{file.FullPath} is TV episode with chapters");
+            var fileFullPath = file.FullPath + ".chap";
+            if (File.Exists(fileFullPath)) continue;
+            if (!Utils.MediaHelper.ExtractChapters(file.FullPath, fileFullPath)) continue;
+
+            var newPath = Path.Combine(file.Directory, ".new" + ext);
+            if (!Utils.MediaHelper.RemoveChaptersFromFile(file.FullPath, newPath)) continue;
+
+            _ = Utils.File.Move(file.FullPath, file.FullPath + ".original");
+            _ = Utils.File.Move(newPath, file.FullPath);
+            count++;
+            Utils.Log($"Count is {count}");
+        }
+        Utils.Log($"{count} files that are not [h265] TV episodes with chapters");
+    }
+
+    private void removeMetadataButton_Click(object sender, EventArgs e)
+    {
+        const string ext = ".mkv";
+        var backupFiles = mediaBackup.BackupFiles.Where(static f => f.Extension == ext && !f.FullPath.Contains("[h265]")).OrderBy(static q => q.FullPath).ToArray();
+        var count = 0;
+
+        foreach (var file in backupFiles)
+        {
+            if (!File.Exists(file.FullPath)) continue;
+
+            var mediaFile = Utils.MediaHelper.ExtendedBackupFileBase(file.FullPath);
+            if (mediaFile is not TvEpisodeBackupFile) continue;
+            if (Utils.File.IsSpecialFeature(file.FullPath)) continue;
+
+            _ = mediaFile.RefreshMediaInfo();
+            if (!Utils.MediaHelper.HasMetadata(file.FullPath)) continue;
+
+            Utils.Log($"{file.FullPath} is TV episode with metadata");
+            var newPath = Path.Combine(file.Directory, ".new" + ext);
+            if (!Utils.MediaHelper.RemoveMetadataFromFile(file.FullPath, newPath)) continue;
+
+            _ = Utils.File.Move(file.FullPath, file.FullPath + ".original");
+            _ = Utils.File.Move(newPath, file.FullPath);
+            count++;
+            Utils.Log($"Count is {count}");
+        }
+        Utils.Log($"{count} files that are not [h265] TV episodes with metadata removed");
     }
 }

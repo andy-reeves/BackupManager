@@ -226,7 +226,7 @@ internal static partial class Utils
         internal static bool IsSpecialFeature(string path)
         {
             ArgumentException.ThrowIfNullOrEmpty(path);
-            return ("-" + Path.GetFileNameWithoutExtension(path.SubstringAfterIgnoreCase("-"))).EqualsAnyIgnoreCase(_specialFeatures);
+            return ("-" + Path.GetFileNameWithoutExtension(path.SubstringAfterLastIgnoreCase("-"))).EqualsAnyIgnoreCase(_specialFeatures);
         }
 
         private static FileAttributes RemoveAttribute(FileAttributes attributes, FileAttributes attributesToRemove)

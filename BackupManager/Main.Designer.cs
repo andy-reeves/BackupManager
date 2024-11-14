@@ -140,6 +140,8 @@
             h264FilesButton = new System.Windows.Forms.Button();
             checkSubtitlesButton = new System.Windows.Forms.Button();
             ExportAndRemoveSubtitlesButton = new System.Windows.Forms.Button();
+            extractChaptersButton = new System.Windows.Forms.Button();
+            removeMetadataButton = new System.Windows.Forms.Button();
             pushoverGroupBox.SuspendLayout();
             groupBox2.SuspendLayout();
             listFilesInDirectoryGroupBox.SuspendLayout();
@@ -343,7 +345,7 @@
             // 
             // speedTestDisksButton
             // 
-            speedTestDisksButton.Location = new System.Drawing.Point(872, 310);
+            speedTestDisksButton.Location = new System.Drawing.Point(872, 298);
             speedTestDisksButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             speedTestDisksButton.Name = "speedTestDisksButton";
             speedTestDisksButton.Size = new System.Drawing.Size(232, 27);
@@ -379,7 +381,7 @@
             // 
             // fileWatcherButton
             // 
-            fileWatcherButton.Location = new System.Drawing.Point(872, 351);
+            fileWatcherButton.Location = new System.Drawing.Point(872, 329);
             fileWatcherButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             fileWatcherButton.Name = "fileWatcherButton";
             fileWatcherButton.Size = new System.Drawing.Size(232, 27);
@@ -415,7 +417,7 @@
             // 
             // versionCheckingButton
             // 
-            versionCheckingButton.Location = new System.Drawing.Point(872, 390);
+            versionCheckingButton.Location = new System.Drawing.Point(872, 362);
             versionCheckingButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             versionCheckingButton.Name = "versionCheckingButton";
             versionCheckingButton.Size = new System.Drawing.Size(232, 27);
@@ -1349,7 +1351,7 @@
             // 
             // checkSubtitlesButton
             // 
-            checkSubtitlesButton.Location = new System.Drawing.Point(872, 426);
+            checkSubtitlesButton.Location = new System.Drawing.Point(872, 393);
             checkSubtitlesButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             checkSubtitlesButton.Name = "checkSubtitlesButton";
             checkSubtitlesButton.Size = new System.Drawing.Size(232, 27);
@@ -1361,7 +1363,7 @@
             // 
             // ExportAndRemoveSubtitlesButton
             // 
-            ExportAndRemoveSubtitlesButton.Location = new System.Drawing.Point(872, 466);
+            ExportAndRemoveSubtitlesButton.Location = new System.Drawing.Point(872, 423);
             ExportAndRemoveSubtitlesButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             ExportAndRemoveSubtitlesButton.Name = "ExportAndRemoveSubtitlesButton";
             ExportAndRemoveSubtitlesButton.Size = new System.Drawing.Size(232, 27);
@@ -1370,11 +1372,35 @@
             ExportAndRemoveSubtitlesButton.UseVisualStyleBackColor = true;
             ExportAndRemoveSubtitlesButton.Click += ExportAndRemoveSubtitlesButton_Click;
             // 
+            // extractChaptersButton
+            // 
+            extractChaptersButton.Location = new System.Drawing.Point(872, 454);
+            extractChaptersButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            extractChaptersButton.Name = "extractChaptersButton";
+            extractChaptersButton.Size = new System.Drawing.Size(232, 27);
+            extractChaptersButton.TabIndex = 108;
+            extractChaptersButton.Text = "Export chapters";
+            extractChaptersButton.UseVisualStyleBackColor = true;
+            extractChaptersButton.Click += extractChaptersButton_Click;
+            // 
+            // removeMetadataButton
+            // 
+            removeMetadataButton.Location = new System.Drawing.Point(872, 485);
+            removeMetadataButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            removeMetadataButton.Name = "removeMetadataButton";
+            removeMetadataButton.Size = new System.Drawing.Size(232, 27);
+            removeMetadataButton.TabIndex = 109;
+            removeMetadataButton.Text = "Remove Metadata";
+            removeMetadataButton.UseVisualStyleBackColor = true;
+            removeMetadataButton.Click += removeMetadataButton_Click;
+            // 
             // Main
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1416, 548);
+            Controls.Add(removeMetadataButton);
+            Controls.Add(extractChaptersButton);
             Controls.Add(ExportAndRemoveSubtitlesButton);
             Controls.Add(checkSubtitlesButton);
             Controls.Add(scanLastDirectoriesButton);
@@ -1575,6 +1601,8 @@
         private System.Windows.Forms.Button scanLastDirectoriesButton;
         private System.Windows.Forms.Button checkSubtitlesButton;
         private System.Windows.Forms.Button ExportAndRemoveSubtitlesButton;
+        private System.Windows.Forms.Button extractChaptersButton;
+        private System.Windows.Forms.Button removeMetadataButton;
     }
 }
 

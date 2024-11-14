@@ -20,10 +20,12 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Text.Json.Nodes;
 
 using BackupManager.Extensions;
 
 using FFMpegCore;
+using FFMpegCore.Exceptions;
 
 // ReSharper disable once IdentifierTypo
 namespace BackupManager.Radarr;
@@ -63,8 +65,7 @@ internal sealed class VideoFileInfoReader
     {
         try
         {
-            // remove all subtitles
-            _ = FFMpegArguments.FromFileInput(inputFilename).OutputToFile(outputFilename, false, options => { _ = options.WithCustomArgument("-c copy -sn"); }).ProcessSynchronously();
+            _ = FFMpegArguments.FromFileInput(inputFilename).OutputToFile(outputFilename, false, options => { _ = options.WithCustomArgument("-c copy -map 0 -sn"); }).ProcessSynchronously();
         }
         catch (Exception)
         {
@@ -80,8 +81,29 @@ internal sealed class VideoFileInfoReader
     {
         try
         {
-            // remove all subtitles
-            _ = FFMpegArguments.FromFileInput(inputFilename).OutputToFile(outputFilename, false, options => { _ = options.WithCustomArgument("-c copy -map_chapters -1"); }).ProcessSynchronously();
+            var subs = string.Empty;
+            if (SubtitlesStreamCount(inputFilename) > 0) subs = "-map 0:s";
+            _ = FFMpegArguments.FromFileInput(inputFilename).OutputToFile(outputFilename, false, options => { _ = options.WithCustomArgument($"-map 0:a -map 0:v {subs} -map_metadata -1 -map_chapters -1 -c copy"); }).ProcessSynchronously();
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    [SuppressMessage("ReSharper", "IdentifierTypo")]
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
+    [SuppressMessage("ReSharper", "ConstantConditionalAccessQualifier")]
+    internal bool RemoveMetadataFromFile(string inputFilename, string outputFilename)
+    {
+        if (!HasMetadata(inputFilename)) return true;
+
+        try
+        {
+            var subs = string.Empty;
+            if (SubtitlesStreamCount(inputFilename) > 0) subs = "-map 0:s";
+            _ = FFMpegArguments.FromFileInput(inputFilename).OutputToFile(outputFilename, false, options => { _ = options.WithCustomArgument($"-map 0:a -map 0:v {subs} -map_metadata -1 -c copy"); }).ProcessSynchronously();
         }
         catch (Exception)
         {
@@ -97,9 +119,6 @@ internal sealed class VideoFileInfoReader
     {
         try
         {
-            // export chapters ffmpeg -i input.mkv -f ffmetadata FFMETADATAFILE.txt
-
-            // add chapters ffmpeg -i INPUT -f ffmetadata -i input.chap -map 0:v -map 0:a -map 0:s -map_metadata 1 -map_chapters 1 -c copy OUTPUT
             _ = FFMpegArguments.FromFileInput(inputFilename).OutputToFile(outputFilename, false, options => { _ = options.WithCustomArgument("-f ffmetadata"); }).ProcessSynchronously();
         }
         catch (Exception)
@@ -112,13 +131,143 @@ internal sealed class VideoFileInfoReader
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     [SuppressMessage("ReSharper", "ConstantConditionalAccessQualifier")]
+    public bool HasChapters(string filename)
+    {
+        try
+        {
+            var ffprobeOutput = FFProbe.GetStreamJson(filename, ffOptions: new FFOptions { ExtraArguments = "-show_chapters" });
+            return !ffprobeOutput.Contains("\"chapters\": [    ],") && ffprobeOutput.Contains("\"chapters\": [");
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+    [SuppressMessage("ReSharper", "IdentifierTypo")]
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
+    [SuppressMessage("ReSharper", "ConstantConditionalAccessQualifier")]
+    public bool HasMetadata(string filename)
+    {
+        try
+        {
+            // check for   "nb_streams": 4,  then minus the video, audio, subtitles and chapters
+            var ffprobeOutput = FFProbe.GetStreamJson(filename, ffOptions: new FFOptions { ExtraArguments = "-show_streams" });
+            var node = JsonNode.Parse(ffprobeOutput);
+
+            // var audio = node.Root["streams"].AsArray(); //["?codec_type=='data']"]; //;["?codec_type == 'audio'"]; // streams[?codec_type=='data'] ; //Phone[type='mobile'] [codec_type='audio']
+            if (node != null)
+            {
+                var streams = node["streams"]?.AsArray(); //["?codec_type=='data']"]; //;["?codec_type == 'audio'"]; // streams[?codec_type=='data'] ; //Phone[type='mobile'] [codec_type='audio']
+
+                if (streams != null)
+                {
+                    foreach (var streamNode in streams)
+                    {
+                        if (streamNode["codec_type"]?.ToString() == "data") return true;
+                    }
+                }
+            }
+            return false;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+    [SuppressMessage("ReSharper", "IdentifierTypo")]
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
+    [SuppressMessage("ReSharper", "ConstantConditionalAccessQualifier")]
+    public int ChaptersStreamCount(string filename)
+    {
+        try
+        {
+            return HasChapters(filename) ? 1 : 0;
+        }
+        catch (Exception)
+        {
+            return -1;
+        }
+    }
+
+    [SuppressMessage("ReSharper", "IdentifierTypo")]
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
+    [SuppressMessage("ReSharper", "ConstantConditionalAccessQualifier")]
+    public int SubtitlesStreamCount(string filename)
+    {
+        try
+        {
+            var ffprobeOutput = FFProbe.GetStreamJson(filename, ffOptions: new FFOptions { ExtraArguments = "-probesize 50000000" });
+            var analysis = FFProbe.AnalyseStreamJson(ffprobeOutput);
+
+            if (analysis.PrimaryAudioStream?.ChannelLayout.IsNullOrWhiteSpace() ?? true)
+            {
+                ffprobeOutput = FFProbe.GetStreamJson(filename, ffOptions: new FFOptions { ExtraArguments = "-probesize 150000000 -analyzeduration 150000000" });
+                analysis = FFProbe.AnalyseStreamJson(ffprobeOutput);
+            }
+            Utils.Log($"Checking {filename} for subtitles");
+            return analysis.SubtitleStreams.Count;
+        }
+        catch (Exception)
+        {
+            return -1;
+        }
+    }
+
+    [SuppressMessage("ReSharper", "IdentifierTypo")]
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
+    [SuppressMessage("ReSharper", "ConstantConditionalAccessQualifier")]
+    public int AudioStreamCount(string filename)
+    {
+        try
+        {
+            var ffprobeOutput = FFProbe.GetStreamJson(filename, ffOptions: new FFOptions { ExtraArguments = "-probesize 50000000" });
+            var analysis = FFProbe.AnalyseStreamJson(ffprobeOutput);
+
+            if (analysis.PrimaryAudioStream?.ChannelLayout.IsNullOrWhiteSpace() ?? true)
+            {
+                ffprobeOutput = FFProbe.GetStreamJson(filename, ffOptions: new FFOptions { ExtraArguments = "-probesize 150000000 -analyzeduration 150000000" });
+                analysis = FFProbe.AnalyseStreamJson(ffprobeOutput);
+            }
+            return analysis.AudioStreams.Count;
+        }
+        catch (Exception)
+        {
+            return -1;
+        }
+    }
+
+    [SuppressMessage("ReSharper", "IdentifierTypo")]
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
+    [SuppressMessage("ReSharper", "ConstantConditionalAccessQualifier")]
+    public int VideoStreamCount(string filename)
+    {
+        try
+        {
+            var ffprobeOutput = FFProbe.GetStreamJson(filename, ffOptions: new FFOptions { ExtraArguments = "-probesize 50000000" });
+            var analysis = FFProbe.AnalyseStreamJson(ffprobeOutput);
+
+            if (analysis.PrimaryAudioStream?.ChannelLayout.IsNullOrWhiteSpace() ?? true)
+            {
+                ffprobeOutput = FFProbe.GetStreamJson(filename, ffOptions: new FFOptions { ExtraArguments = "-probesize 150000000 -analyzeduration 150000000" });
+                analysis = FFProbe.AnalyseStreamJson(ffprobeOutput);
+            }
+            return analysis.VideoStreams.Count;
+        }
+        catch (Exception)
+        {
+            return -1;
+        }
+    }
+
+    [SuppressMessage("ReSharper", "IdentifierTypo")]
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
+    [SuppressMessage("ReSharper", "ConstantConditionalAccessQualifier")]
     public bool AddChaptersToFile(string inputFilename, string chaptersFilename, string outputFilename)
     {
         try
         {
-            // export chapters ffmpeg -i input.mkv -f ffmetadata FFMETADATAFILE.txt
-
-            // add chapters ffmpeg -i INPUT -f ffmetadata -i input.chap -map 0:v -map 0:a -map 0:s -map_metadata 1 -map_chapters 1 -c copy OUTPUT
             _ = FFMpegArguments.FromFileInput(inputFilename).OutputToFile(outputFilename, false, options => { _ = options.WithCustomArgument($" -f ffmetadata -i {chaptersFilename} -map_metadata 1 -map_chapters 1 -c copy"); }).ProcessSynchronously();
         }
         catch (Exception)
@@ -133,6 +282,8 @@ internal sealed class VideoFileInfoReader
     [SuppressMessage("ReSharper", "ConstantConditionalAccessQualifier")]
     public bool ExtractSubtitleFiles(string filename)
     {
+        var englishDone = false;
+
         try
         {
             var ffprobeOutput = FFProbe.GetStreamJson(filename, ffOptions: new FFOptions { ExtraArguments = "-probesize 50000000" });
@@ -148,52 +299,76 @@ internal sealed class VideoFileInfoReader
             for (var i = 0; i < analysis.SubtitleStreams.Count; i++)
             {
                 var subStream = analysis.SubtitleStreams[i];
+                if (subStream.CodecName.HasNoValue() || (subStream.CodecName.HasValue() && subStream.CodecName.ContainsIgnoreCase("_pgs_"))) continue;
+
+                if (subStream.Tags != null && subStream.Tags.TryGetValue("title", out var value))
+                {
+                    if (value.ContainsIgnoreCase("webvtt")) continue;
+                }
                 var hearingImpaired = false;
                 var forced = false;
                 Utils.Log($"Language is {subStream.Language}");
-                if (subStream.Tags != null) ProcessSubtitleTags(subStream, ref hearingImpaired, ref forced);
 
                 var subFileName = subStream.Language switch
                 {
-                    "eng" => ".en",
-                    "esp" => ".es",
-                    _ => throw new Exception($"Unsupported language detected {subStream.Language} in {filename}")
+                    "eng" or "und" => ".en",
+                    "esp" or "spa" => ".es",
+                    _ => "."
                 };
+                if (subFileName == ".") continue;
+
+                ProcessSubtitleTags(subStream, ref hearingImpaired, ref forced);
+                if (subStream.Language.ContainsIgnoreCase("forced")) forced = true;
                 if (hearingImpaired) subFileName += ".hi";
                 if (forced) subFileName += ".forced";
                 subFileName += ".srt";
                 var newFullPath = Path.GetDirectoryName(filename) + @"\" + Path.GetFileNameWithoutExtension(filename) + subFileName;
+                if (File.Exists(newFullPath)) newFullPath = newFullPath.Replace(".srt", $".{i}.srt");
                 var index = i;
                 _ = FFMpegArguments.FromFileInput(filename).OutputToFile(newFullPath, false, options => { _ = options.WithCustomArgument($"-map 0:s:{index}"); }).ProcessSynchronously();
+                if (subFileName.StartsWithIgnoreCase(".en")) englishDone = true;
             }
         }
-        catch (Exception)
+        catch (FFMpegException ex)
         {
-            return false;
+            Utils.Log($"{ex}");
+            return englishDone;
         }
         return true;
     }
 
     private static void ProcessSubtitleTags(SubtitleStream subStream, ref bool hearingImpaired, ref bool forced)
     {
-        if (subStream.Tags == null) return;
-
-        foreach (var t in subStream.Tags)
+        if (subStream.Tags != null)
         {
-            Utils.Log($"{t.Key} = {t.Value}");
-        }
+            foreach (var t in subStream.Tags)
+            {
+                Utils.Log($"{t.Key} = {t.Value}");
+            }
 
-        if (subStream.Tags.TryGetValue("handler_name", out var value))
+            if (subStream.Tags.TryGetValue("handler_name", out var value))
+                if (value.Contains("SDH"))
+                    hearingImpaired = true;
+
+            if (subStream.Tags.TryGetValue("title", out value))
+            {
+                if (value.Contains("SDH")) hearingImpaired = true;
+                if (value.Contains("forced")) forced = true;
+            }
+
+            if (subStream.Tags.TryGetValue("forced", out var value2))
+                if (value2.Contains("true"))
+                    forced = true;
+        }
+        if (subStream.Disposition == null) return;
+
+        if (subStream.Disposition.TryGetValue("forced", out var value3))
         {
-            if (value.Contains("SDH")) hearingImpaired = true;
+            if (value3) forced = true;
         }
+        if (!subStream.Disposition.TryGetValue("hearing_impaired", out var value4)) return;
 
-        if (subStream.Tags.TryGetValue("title", out value))
-            if (value.Contains("SDH"))
-                hearingImpaired = true;
-        if (!subStream.Tags.TryGetValue("forced", out var value2)) return;
-
-        if (value2.Contains("true")) forced = true;
+        if (value4) hearingImpaired = true;
     }
 
     // ReSharper disable once FunctionComplexityOverflow
