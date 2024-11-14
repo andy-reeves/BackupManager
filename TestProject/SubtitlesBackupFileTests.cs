@@ -64,8 +64,6 @@ public sealed class SubtitlesBackupFileTests
     [Theory]
     [InlineData("File17.withSubtitles.input.mkv", "File17.withSubtitles.expected.en.srt", "File17.withSubtitles.expected.en.hi.forced.srt")]
     [InlineData("File18.withChapters.master.mkv", "", "")]
-
-    //  [InlineData("File19.mkv", "", "")]
     public void ExtractSubtitles(string inputFilename, string expectedEnglish, string expectedEnglishHearingImpairedForced)
     {
         var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
