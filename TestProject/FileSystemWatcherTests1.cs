@@ -45,7 +45,7 @@ public sealed class FileSystemWatcherTests1
         watcher.IncludeSubdirectories = true;
         watcher.ScanInterval = 50;
         watcher.MinimumAgeBeforeScanEventRaised = 50;
-        watcher.Directories = new[] { monitoringPath1, monitoringPath2 };
+        watcher.Directories = [monitoringPath1, monitoringPath2];
         watcher.ProcessChangesInterval = 50;
         watcher.ReadyToScan += FileSystemWatcher_ReadyToScan1;
         Assert.True(watcher.DirectoriesToScan.Count == 0, nameof(FileSystemWatcher.DirectoriesToScan.Count));
@@ -85,7 +85,7 @@ public sealed class FileSystemWatcherTests1
         if (Directory.Exists(monitoringPath3Missing)) _ = Utils.Directory.Delete(monitoringPath3Missing, true);
         Utils.Directory.EnsurePath(monitoringPath1);
         Utils.Directory.EnsurePath(monitoringPath2);
-        var watcher = new FileSystemWatcher { Directories = new[] { monitoringPath1, monitoringPath2, monitoringPath3Missing }, NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName };
+        var watcher = new FileSystemWatcher { Directories = [monitoringPath1, monitoringPath2, monitoringPath3Missing], NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName };
         watcher.ReadyToScan += FileSystemWatcher_ReadyToScan2;
         _ = Assert.Throws<ArgumentException>(() => watcher.Start());
         Assert.False(watcher.Running);

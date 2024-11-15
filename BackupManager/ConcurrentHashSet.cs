@@ -16,7 +16,7 @@ namespace BackupManager;
 [SuppressMessage("ReSharper", "UnusedMember.Global")]
 internal sealed class ConcurrentHashSet<T> : IDisposable, IEnumerable<T>
 {
-    private readonly HashSet<T> hashSet = new();
+    private readonly HashSet<T> hashSet = [];
 
     private readonly ReaderWriterLockSlim @lock = new(LockRecursionPolicy.SupportsRecursion);
 

@@ -34,13 +34,13 @@ internal sealed class VideoFileInfoReader
 {
     private const int CURRENT_MEDIA_INFO_SCHEMA_REVISION = 9;
 
-    private static readonly string[] _validHdrColourPrimaries = { "bt2020" };
+    private static readonly string[] _validHdrColourPrimaries = ["bt2020"];
 
     // ReSharper disable once StringLiteralTypo
-    private static readonly string[] _hlgTransferFunctions = { "bt2020-10", "arib-std-b67" };
+    private static readonly string[] _hlgTransferFunctions = ["bt2020-10", "arib-std-b67"];
 
     // ReSharper disable once StringLiteralTypo
-    private static readonly string[] _pqTransferFunctions = { "smpte2084" };
+    private static readonly string[] _pqTransferFunctions = ["smpte2084"];
 
     private static readonly string[] _validHdrTransferFunctions = _hlgTransferFunctions.Concat(_pqTransferFunctions).ToArray();
 
@@ -54,14 +54,14 @@ internal sealed class VideoFileInfoReader
         }
         catch
         {
-            pixelFormats = new List<FFProbePixelFormat>();
+            pixelFormats = [];
         }
     }
 
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     [SuppressMessage("ReSharper", "ConstantConditionalAccessQualifier")]
-    internal bool RemoveSubtitlesFromFile(string inputFilename, string outputFilename)
+    internal static bool RemoveSubtitlesFromFile(string inputFilename, string outputFilename)
     {
         try
         {
@@ -77,7 +77,7 @@ internal sealed class VideoFileInfoReader
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     [SuppressMessage("ReSharper", "ConstantConditionalAccessQualifier")]
-    internal bool RemoveChaptersFromFile(string inputFilename, string outputFilename)
+    internal static bool RemoveChaptersFromFile(string inputFilename, string outputFilename)
     {
         try
         {
@@ -95,7 +95,7 @@ internal sealed class VideoFileInfoReader
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     [SuppressMessage("ReSharper", "ConstantConditionalAccessQualifier")]
-    internal bool RemoveMetadataFromFile(string inputFilename, string outputFilename)
+    internal static bool RemoveMetadataFromFile(string inputFilename, string outputFilename)
     {
         if (!HasMetadata(inputFilename)) return true;
 
@@ -115,7 +115,7 @@ internal sealed class VideoFileInfoReader
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     [SuppressMessage("ReSharper", "ConstantConditionalAccessQualifier")]
-    public bool ExtractChapters(string inputFilename, string outputFilename)
+    public static bool ExtractChapters(string inputFilename, string outputFilename)
     {
         try
         {
@@ -131,7 +131,7 @@ internal sealed class VideoFileInfoReader
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     [SuppressMessage("ReSharper", "ConstantConditionalAccessQualifier")]
-    public bool HasChapters(string filename)
+    public static bool HasChapters(string filename)
     {
         try
         {
@@ -147,7 +147,7 @@ internal sealed class VideoFileInfoReader
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     [SuppressMessage("ReSharper", "ConstantConditionalAccessQualifier")]
-    public bool HasMetadata(string filename)
+    public static bool HasMetadata(string filename)
     {
         try
         {
@@ -156,19 +156,10 @@ internal sealed class VideoFileInfoReader
             var node = JsonNode.Parse(ffprobeOutput);
 
             // var audio = node.Root["streams"].AsArray(); //["?codec_type=='data']"]; //;["?codec_type == 'audio'"]; // streams[?codec_type=='data'] ; //Phone[type='mobile'] [codec_type='audio']
-            if (node != null)
-            {
-                var streams = node["streams"]?.AsArray(); //["?codec_type=='data']"]; //;["?codec_type == 'audio'"]; // streams[?codec_type=='data'] ; //Phone[type='mobile'] [codec_type='audio']
+            if (node == null) return false;
 
-                if (streams != null)
-                {
-                    foreach (var streamNode in streams)
-                    {
-                        if (streamNode["codec_type"]?.ToString() == "data") return true;
-                    }
-                }
-            }
-            return false;
+            var streams = node["streams"]?.AsArray(); //["?codec_type=='data']"]; //;["?codec_type == 'audio'"]; // streams[?codec_type=='data'] ; //Phone[type='mobile'] [codec_type='audio']
+            return streams != null && streams.Any(streamNode => streamNode["codec_type"]?.ToString() == "data");
         }
         catch (Exception)
         {
@@ -179,7 +170,7 @@ internal sealed class VideoFileInfoReader
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     [SuppressMessage("ReSharper", "ConstantConditionalAccessQualifier")]
-    public int ChaptersStreamCount(string filename)
+    public static int ChaptersStreamCount(string filename)
     {
         try
         {
@@ -194,7 +185,7 @@ internal sealed class VideoFileInfoReader
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     [SuppressMessage("ReSharper", "ConstantConditionalAccessQualifier")]
-    public int SubtitlesStreamCount(string filename)
+    public static int SubtitlesStreamCount(string filename)
     {
         try
         {
@@ -218,7 +209,7 @@ internal sealed class VideoFileInfoReader
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     [SuppressMessage("ReSharper", "ConstantConditionalAccessQualifier")]
-    public int AudioStreamCount(string filename)
+    public static int AudioStreamCount(string filename)
     {
         try
         {
@@ -241,7 +232,7 @@ internal sealed class VideoFileInfoReader
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     [SuppressMessage("ReSharper", "ConstantConditionalAccessQualifier")]
-    public int VideoStreamCount(string filename)
+    public static int VideoStreamCount(string filename)
     {
         try
         {
@@ -264,7 +255,7 @@ internal sealed class VideoFileInfoReader
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     [SuppressMessage("ReSharper", "ConstantConditionalAccessQualifier")]
-    public bool AddChaptersToFile(string inputFilename, string chaptersFilename, string outputFilename)
+    public static bool AddChaptersToFile(string inputFilename, string chaptersFilename, string outputFilename)
     {
         try
         {
@@ -280,7 +271,7 @@ internal sealed class VideoFileInfoReader
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     [SuppressMessage("ReSharper", "ConstantConditionalAccessQualifier")]
-    public bool ExtractSubtitleFiles(string filename)
+    public static bool ExtractSubtitleFiles(string filename)
     {
         var englishDone = false;
 
@@ -436,7 +427,7 @@ internal sealed class VideoFileInfoReader
                 mediaInfoModel.RawFrameData = frameOutput;
                 frames = FFProbe.AnalyseFrameJson(frameOutput);
             }
-            var streamSideData = primaryVideoStream?.SideDataList ?? new List<SideData>();
+            var streamSideData = primaryVideoStream?.SideDataList ?? [];
 
             // Andy - check all the frames we retrieved for SideData
             /* var framesSideData = frames?.Frames?.Count > 0
@@ -444,7 +435,7 @@ internal sealed class VideoFileInfoReader
                  // ReSharper disable once ConstantNullCoalescingCondition
                  ? frames?.Frames[0]?.SideDataList ?? new List<SideData>()
                  : new List<SideData>();*/
-            List<SideData> framesSideData = new();
+            List<SideData> framesSideData = [];
 
             // ReSharper disable once ConstantConditionalAccessQualifier
             if (frames?.Frames?.Count > 0)

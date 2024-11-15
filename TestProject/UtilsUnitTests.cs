@@ -409,7 +409,7 @@ public sealed class UtilsUnitTests
     [Theory]
     public void GetDiskAndFirstDirectory(string directory, string expectedResult)
     {
-        string[] directories = { directory };
+        string[] directories = [directory];
         var results = Utils.GetDiskAndFirstDirectory(directories);
         var result = Assert.Single(results);
         Assert.Equal(expectedResult, result);

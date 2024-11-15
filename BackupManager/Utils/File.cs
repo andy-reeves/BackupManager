@@ -344,7 +344,7 @@ internal static partial class Utils
         /// <returns>
         ///     The byte[]
         /// </returns>
-        private static byte[] GetByteArray(Stream stream, long offset, long byteCountToReturn)
+        private static byte[] GetByteArray(FileStream stream, long offset, long byteCountToReturn)
         {
             _ = stream.Seek(offset, SeekOrigin.Begin);
             var buffer = new byte[byteCountToReturn];
@@ -684,7 +684,7 @@ internal static partial class Utils
             if (!System.IO.Directory.Exists(path))
             {
                 Trace("GetFiles exit with new string[]");
-                return Array.Empty<string>();
+                return [];
             }
             DirectoryInfo directoryInfo = new(path);
             if (directoryInfo.Parent != null && directoryInfo.Attributes.HasAny(directoryAttributesToIgnore)) return TraceOut(Array.Empty<string>());
@@ -695,11 +695,11 @@ internal static partial class Utils
             var excludeAsArray = exclude as string[] ?? exclude.ToArray();
             include = includeAsArray.Except(excludeAsArray);
             var includeAsArray2 = include as string[] ?? include.ToArray();
-            if (!includeAsArray2.Any()) includeAsArray2 = new[] { "*" };
+            if (!includeAsArray2.Any()) includeAsArray2 = ["*"];
             var excludeFilters = from filter in excludeAsArray let replace = filter.Replace("!", Empty).Replace(".", @"\.").Replace("*", ".*").Replace("?", ".") select $"^{replace}$";
             Regex excludeRegex = new(Join("|", excludeFilters.ToArray()), RegexOptions.IgnoreCase);
             Queue<string> pathsToSearch = new();
-            List<string> foundFiles = new();
+            List<string> foundFiles = [];
             pathsToSearch.Enqueue(path);
 
             while (pathsToSearch.Count > 0)
