@@ -26,7 +26,7 @@ public sealed class MediaInfoTests
     [InlineData("File2 [DV].mkv", 0)]
     [InlineData("File3 [DV].mkv", 5)]
     [InlineData("File4 [DV] profile8.mkv", 8)]
-    public void MediaInfo(string fileName, int dvProfile)
+    public void MediaInfoDvProfile(string fileName, int dvProfile)
     {
         var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
         var mediaFileName = Path.Combine(testDataPath, fileName);

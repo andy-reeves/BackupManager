@@ -15,7 +15,7 @@ namespace TestProject;
 [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
 [SuppressMessage("ReSharper", "MemberCanBeFileLocal")]
 [SuppressMessage("ReSharper", "StringLiteralTypo")]
-public sealed class TvEpisodeBackupFileNameTests
+public sealed class TvEpisodeBackupTests
 {
     [Theory]
     [InlineData(@"Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [Bluray-1080p Remux Proper][MP3 2.0][XviD].mkv", true, "Tom and Jerry s1940e01 Puss Gets The Boot [Bluray-1080p Remux][MP3 2.0][XviD].mkv")]
