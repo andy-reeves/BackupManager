@@ -372,10 +372,10 @@ public sealed class UtilsUnitTests
         var b = new[] { 1, 2, 3 };
         var result7 = Utils.TraceOut(b, "Test");
         Assert.True(result7 == b);
-        a = Array.Empty<string>();
+        a = [];
         var result8 = Utils.TraceOut(a, "Test");
         Assert.True(result8 == a);
-        a = Array.Empty<string>();
+        a = [];
         result8 = Utils.TraceOut(a);
         Assert.True(result8 == a);
         var result9 = Utils.TraceOut(32);

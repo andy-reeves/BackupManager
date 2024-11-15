@@ -687,9 +687,9 @@ internal static partial class Utils
                 return Array.Empty<string>();
             }
             DirectoryInfo directoryInfo = new(path);
-            if (directoryInfo.Parent != null && AnyFlagSet(directoryInfo.Attributes, directoryAttributesToIgnore)) return TraceOut(Array.Empty<string>());
+            if (directoryInfo.Parent != null && directoryInfo.Attributes.HasAny(directoryAttributesToIgnore)) return TraceOut(Array.Empty<string>());
 
-            var include = from filter in filters.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries) where filter.Trim().HasValue() select filter.Trim();
+            var include = from filter in filters.Split([','], StringSplitOptions.RemoveEmptyEntries) where filter.Trim().HasValue() select filter.Trim();
             var includeAsArray = include as string[] ?? include.ToArray();
             var exclude = from filter in includeAsArray where filter.Contains('!') select filter;
             var excludeAsArray = exclude as string[] ?? exclude.ToArray();
@@ -710,7 +710,7 @@ internal static partial class Utils
 
                 if (searchOption == SearchOption.AllDirectories)
                 {
-                    foreach (var subDir in System.IO.Directory.GetDirectories(dir).Where(subDir => !AnyFlagSet(new DirectoryInfo(subDir).Attributes, directoryAttributesToIgnore)))
+                    foreach (var subDir in System.IO.Directory.GetDirectories(dir).Where(subDir => !new DirectoryInfo(subDir).Attributes.HasAny(directoryAttributesToIgnore)))
                     {
                         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
                         pathsToSearch.Enqueue(subDir);
@@ -723,7 +723,7 @@ internal static partial class Utils
                              return System.IO.Directory.GetFiles(dir, filter, SearchOption.TopDirectoryOnly);
                          }).Select(allFiles => excludeAsArray.Any() ? allFiles.Where(p => !excludeRegex.Match(p).Success) : allFiles))
                 {
-                    foundFiles.AddRange(collection.Where(p => !AnyFlagSet(new FileInfo(p).Attributes, fileAttributesToIgnore)));
+                    foundFiles.AddRange(collection.Where(p => !new FileInfo(p).Attributes.HasAny(fileAttributesToIgnore)));
                 }
             }
             sw.Stop();

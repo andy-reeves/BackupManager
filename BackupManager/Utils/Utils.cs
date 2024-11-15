@@ -419,21 +419,6 @@ internal static partial class Utils
     }
 
     /// <summary>
-    ///     Returns True if any of the attributes to check for are set in the value.
-    /// </summary>
-    /// <param name="value">
-    /// </param>
-    /// <param name="flagsToCheckFor">
-    /// </param>
-    /// <returns>
-    ///     The <see cref="bool" />.
-    /// </returns>
-    private static bool AnyFlagSet(FileAttributes value, FileAttributes flagsToCheckFor)
-    {
-        return flagsToCheckFor != 0 && Enum.GetValues(typeof(FileAttributes)).Cast<Enum>().Where(flagsToCheckFor.HasFlag).Any(value.HasFlag);
-    }
-
-    /// <summary>
     ///     Creates a hash for the 3 byte arrays passed in.
     /// </summary>
     /// <param name="firstByteArray">
