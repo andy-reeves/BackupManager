@@ -13,9 +13,9 @@ namespace TestProject;
 
 [SuppressMessage("ReSharper", "MemberCanBeFileLocal")]
 [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
-public sealed class MediaHelperTests
+public sealed class MediaInfoTests
 {
-    static MediaHelperTests()
+    static MediaInfoTests()
     {
         var mediaBackup = MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "..\\BackupManager\\MediaBackup.xml"));
         Utils.Config = mediaBackup.Config;
