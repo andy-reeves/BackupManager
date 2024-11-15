@@ -24,7 +24,7 @@ public sealed class ConcurrentSetTests
         var item1 = new FileSystemEntry(@"c:\testitem1");
         var item2 = new FileSystemEntry(@"c:\testitem2");
         var item3 = new FileSystemEntry(@"c:\testitem1", DateTime.MinValue);
-        var set = new ConcurrentSet<FileSystemEntry>([item1, item2, item3]);
+        var set = new ConcurrentSet<FileSystemEntry>(new[] { item1, item2, item3 });
         Assert.Equal(2, set.Count);
         Assert.True(set.AddOrUpdate(item1));
         Assert.True(set.AddOrUpdate(item2));
@@ -59,7 +59,7 @@ public sealed class ConcurrentSetTests
         var item1 = new FileSystemEntry(@"c:\testitem1");
         var item2 = new FileSystemEntry(@"c:\testitem2");
         var item3 = new FileSystemEntry(@"c:\testitem1", DateTime.MinValue);
-        var set = new ConcurrentHashSet<FileSystemEntry>([item1, item2, item3]);
+        var set = new ConcurrentHashSet<FileSystemEntry>(new[] { item1, item2, item3 });
         Assert.Equal(2, set.Count);
         Assert.True(set.AddOrUpdate(item1));
         Assert.True(set.AddOrUpdate(item2));

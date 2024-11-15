@@ -27,9 +27,9 @@ internal sealed class FileSystemWatcher
 
     private static readonly object _lock = new();
 
-    private readonly List<System.IO.FileSystemWatcher> watcherList = [];
+    private readonly List<System.IO.FileSystemWatcher> watcherList = new();
 
-    private string[] directories = [];
+    private string[] directories = Array.Empty<string>();
 
     private string filter = "*.*";
 
@@ -111,12 +111,12 @@ internal sealed class FileSystemWatcher
     /// <summary>
     ///     This is a Collection of files/directories where changes have been detected and the last time they changed.
     /// </summary>
-    internal ConcurrentSet<FileSystemEntry> FileSystemChanges { get; } = [];
+    internal ConcurrentSet<FileSystemEntry> FileSystemChanges { get; } = new();
 
     /// <summary>
     ///     These are the directories we will raise events on when they are old enough.
     /// </summary>
-    internal ConcurrentSet<FileSystemEntry> DirectoriesToScan { get; } = [];
+    internal ConcurrentSet<FileSystemEntry> DirectoriesToScan { get; } = new();
 
     /// <summary>
     ///     If you change these after starting then we stop and start again.
@@ -460,7 +460,7 @@ internal sealed class FileSystemWatcherEventArgs : EventArgs
 {
     internal FileSystemWatcherEventArgs(string directory)
     {
-        Directories = [new FileSystemEntry(directory)];
+        Directories = new FileSystemEntry[] { new(directory) };
     }
 
     internal FileSystemWatcherEventArgs(IEnumerable<BackupFile> backupFiles)

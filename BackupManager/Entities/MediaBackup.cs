@@ -52,10 +52,10 @@ public sealed class MediaBackup
 
     public MediaBackup()
     {
-        BackupFiles = [];
-        BackupDisks = [];
-        DirectoriesToScan = [];
-        DirectoryChanges = [];
+        BackupFiles = new Collection<BackupFile>();
+        BackupDisks = new Collection<BackupDisk>();
+        DirectoriesToScan = new Collection<FileSystemEntry>();
+        DirectoryChanges = new Collection<FileSystemEntry>();
     }
 
     public MediaBackup(string mediaBackupPath)
@@ -607,7 +607,7 @@ public sealed class MediaBackup
     /// Removes any files that have a matching flag value as the one provided.
     public void RemoveFilesWithFlag(bool flag, bool clearHashes)
     {
-        Collection<BackupFile> filesToRemove = [];
+        Collection<BackupFile> filesToRemove = new();
 
         foreach (var backupFile in BackupFiles.Where(backupFile => backupFile.Flag == flag))
         {
