@@ -1,10 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-//  <copyright file="Flags.cs" company="Andy Reeves">
-// 
-//  </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-using System;
+﻿using System;
 
 // ReSharper disable once CheckNamespace
 namespace BackupManager;

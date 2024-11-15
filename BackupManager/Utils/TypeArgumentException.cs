@@ -1,10 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-//  <copyright file="TypeArgumentException.cs" company="Andy Reeves">
-// 
-//  </copyright>
-// --------------------------------------------------------------------------------------------------------------------
-
-using System;
+﻿using System;
 
 // ReSharper disable once CheckNamespace
 namespace BackupManager;

@@ -11,6 +11,7 @@ using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.Versioning;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
@@ -67,6 +68,8 @@ internal sealed partial class Main
     private bool monitoringExecutingRightNow;
 
     private int reportedPercentComplete;
+
+    [SupportedOSPlatform("windows")]
 
     // ReSharper disable once FunctionComplexityOverflow
     internal Main()

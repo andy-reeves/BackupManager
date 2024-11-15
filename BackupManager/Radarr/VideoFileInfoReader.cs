@@ -302,9 +302,9 @@ internal sealed class VideoFileInfoReader
                 if (subStream.CodecName.HasNoValue() || (subStream.CodecName.HasValue() && subStream.CodecName.ContainsIgnoreCase("_pgs_"))) continue;
 
                 if (subStream.Tags != null && subStream.Tags.TryGetValue("title", out var value))
-                    if (value.ContainsIgnoreCase("webvtt"))
-                        continue;
-
+                {
+                    if (value.ContainsIgnoreCase("webvtt")) continue;
+                }
                 var hearingImpaired = false;
                 var forced = false;
                 Utils.Log($"Language is {subStream.Language}");
@@ -347,9 +347,8 @@ internal sealed class VideoFileInfoReader
             }
 
             if (subStream.Tags.TryGetValue("handler_name", out var value))
-            {
-                if (value.Contains("SDH")) hearingImpaired = true;
-            }
+                if (value.Contains("SDH"))
+                    hearingImpaired = true;
 
             if (subStream.Tags.TryGetValue("title", out value))
             {
@@ -358,15 +357,15 @@ internal sealed class VideoFileInfoReader
             }
 
             if (subStream.Tags.TryGetValue("forced", out var value2))
-            {
-                if (value2.Contains("true")) forced = true;
-            }
+                if (value2.Contains("true"))
+                    forced = true;
         }
         if (subStream.Disposition == null) return;
 
         if (subStream.Disposition.TryGetValue("forced", out var value3))
-            if (value3)
-                forced = true;
+        {
+            if (value3) forced = true;
+        }
         if (!subStream.Disposition.TryGetValue("hearing_impaired", out var value4)) return;
 
         if (value4) hearingImpaired = true;
