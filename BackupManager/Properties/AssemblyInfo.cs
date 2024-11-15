@@ -8,13 +8,14 @@ using System.Reflection;
 using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 
 [assembly: AssemblyTitle("BackupManager")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("BackupManager")]
-[assembly: AssemblyCopyright("Copyright ©  Andy Reeves 2023")]
+[assembly: AssemblyCopyright("Copyright ©  Andy Reeves 2024")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -29,3 +30,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: NeutralResourcesLanguage("en-GB")]
 [assembly: InternalsVisibleTo("TestProject")]
+[assembly: SupportedOSPlatform("windows6.1")]

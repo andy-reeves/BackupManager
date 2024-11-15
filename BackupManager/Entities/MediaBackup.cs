@@ -271,24 +271,20 @@ public sealed class MediaBackup
         DirectoriesToScan = new Collection<FileSystemEntry>(Watcher.DirectoriesToScan.ToList());
 
         if (!Changed)
-        {
-            if (BackupFiles.Any(static file => file.Changed)) Changed = true;
-        }
+            if (BackupFiles.Any(static file => file.Changed))
+                Changed = true;
 
         if (!Changed)
-        {
-            if (BackupDisks.Any(static backupDisk => backupDisk.Changed)) Changed = true;
-        }
+            if (BackupDisks.Any(static backupDisk => backupDisk.Changed))
+                Changed = true;
 
         if (!Changed)
-        {
-            if (DirectoryChanges.Any(static dirChanges => dirChanges.Changed)) Changed = true;
-        }
+            if (DirectoryChanges.Any(static dirChanges => dirChanges.Changed))
+                Changed = true;
 
         if (!Changed)
-        {
-            if (DirectoriesToScan.Any(static dirScan => dirScan.Changed)) Changed = true;
-        }
+            if (DirectoriesToScan.Any(static dirScan => dirScan.Changed))
+                Changed = true;
         if (!Changed) return;
 
         BackupMediaFile(ct);
