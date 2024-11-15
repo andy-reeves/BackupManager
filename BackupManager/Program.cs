@@ -7,7 +7,6 @@
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -24,7 +23,6 @@ file static class Program
     /// <summary>
     ///     The main entry point for the application.
     /// </summary>
-    [SupportedOSPlatform("windows")]
     [STAThread]
     private static void Main()
     {
