@@ -296,7 +296,8 @@ internal sealed class ConcurrentSet<T> : ISet<T>
 
     public T[] ToArray()
     {
-        return dictionary.Keys.ToArray();
+        // return dictionary.Keys.ToArray();
+        return [.. dictionary.Keys];
     }
 
     private bool TryAdd(T item)
