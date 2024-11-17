@@ -7,11 +7,15 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+
+using BackupManager.Properties;
 
 // ReSharper disable MemberCanBeInternal
 // ReSharper disable once CheckNamespace
 namespace BackupManager;
 
+[SuppressMessage("ReSharper", "UnusedMember.Global")]
 internal static partial class Utils
 {
     /// <summary>
@@ -91,8 +95,7 @@ internal static partial class Utils
         /// <exception cref="ArgumentException">The name could not be parsed.</exception>
         public static T ParseName<T>(string name) where T : Enum
         {
-            T value;
-            if (!TryParseName(name, out value)) throw new ArgumentException("Unknown name", "name");
+            if (!TryParseName(name, out T value)) throw new ArgumentException(Resources.Enums_ParseName_Unknown_name, nameof(name));
 
             return value;
         }
@@ -111,7 +114,7 @@ internal static partial class Utils
         /// <param name="name">Name to parse</param>
         /// <param name="value">Enum value corresponding to given name (on return)</param>
         /// <returns>Whether the parse attempt was successful or not</returns>
-        public static bool TryParseName<T>(string name, out T value) where T : Enum
+        private static bool TryParseName<T>(string name, out T value) where T : Enum
         {
             // TODO: Speed this up for big enums
             var index = EnumInternals<T>.Names.IndexOf(name);

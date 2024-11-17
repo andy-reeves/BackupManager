@@ -14,6 +14,7 @@ using FFMpegCore;
 // ReSharper disable once IdentifierTypo
 namespace BackupManager.Radarr;
 
+[SuppressMessage("ReSharper", "RedundantTypeDeclarationBody")]
 file interface IEmbeddedDocument { }
 
 internal enum HdrFormat

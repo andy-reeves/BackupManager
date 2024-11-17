@@ -23,7 +23,7 @@ public class ProcessServiceMonitor
     /// <summary>
     ///     The list of DateTimes of the last failures to occur
     /// </summary>
-    [XmlIgnore] internal readonly List<DateTime> Failures = new();
+    [XmlIgnore] internal readonly List<DateTime> Failures = [];
 
     [XmlIgnore] internal bool LogIssues = true;
 

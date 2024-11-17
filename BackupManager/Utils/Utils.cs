@@ -160,23 +160,23 @@ internal static partial class Utils
     ///     An array of the special feature prefixes for video files like -featurette, - other, etc.
     /// </summary>
     private static readonly string[] _specialFeatures =
-    {
+    [
         // ReSharper disable once StringLiteralTypo
         "-featurette", "-other", "-interview", "-scene", "-short", "-deleted", "-behindthescenes", "-trailer"
-    };
+    ];
 
     /// <summary>
     ///     An array of file extensions for video file types like .mkv, .mp4, etc.
     ///     Regex would be (m(kv|p(4|e?g))|ts|avi)
     /// </summary>
-    private static readonly string[] _videoExtensions = { ".mkv", ".mp4", ".mpeg", ".mpg", ".ts", ".avi" };
+    private static readonly string[] _videoExtensions = [".mkv", ".mp4", ".mpeg", ".mpg", ".ts", ".avi"];
 
     /// <summary>
     ///     An array of allowed Subtitles extensions in video folders like .en.srt, .en.hi.srt, etc.
     /// </summary>
 
     // ReSharper disable once UnusedMember.Local
-    private static readonly string[] _subtitlesExtensions = { ".en.srt", ".es.srt", ".en.hi.srt", ".es.hi.srt", ".hi.srt", ".srt" };
+    private static readonly string[] _subtitlesExtensions = [".en.srt", ".es.srt", ".en.hi.srt", ".es.hi.srt", ".hi.srt", ".srt"];
 
     /// <summary>
     ///     True when we're in a DEBUG build otherwise False
@@ -272,7 +272,7 @@ internal static partial class Utils
         var task = Task.Run(() => client.GetStringAsync(versionUrl));
         task.Wait();
         var response = task.Result;
-        var lines = response.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+        var lines = response.Split(["\r\n", "\r", "\n"], StringSplitOptions.None);
         return lines.Where(line => line.Trim().StartsWithIgnoreCase(startsWith)).Select(line => line.Split(splitOn)[indexToReturn].Replace("'", "").Replace("\"", "").Trim()).FirstOrDefault();
     }
 
@@ -469,7 +469,7 @@ internal static partial class Utils
 
             foreach (var item in eventHandler.GetInvocationList())
             {
-                _ = eventInfo.GetRemoveMethod(fieldInfo.IsPrivate)?.Invoke(instance, new object[] { item });
+                _ = eventInfo.GetRemoveMethod(fieldInfo.IsPrivate)?.Invoke(instance, [item]);
             }
         }
     }
@@ -489,7 +489,7 @@ internal static partial class Utils
         {
             _ = diskNames.Add(diskName);
         }
-        return diskNames.ToArray();
+        return [.. diskNames];
     }
 
     /// <summary>
@@ -515,7 +515,7 @@ internal static partial class Utils
         {
             _ = diskNames.Add(diskName);
         }
-        return diskNames.ToArray();
+        return [.. diskNames];
     }
 
     internal static string GetDiskAndFirstDirectoryName(string directoryPath)
@@ -783,7 +783,7 @@ internal static partial class Utils
             foreach (var textToWrite in from line in textArrayToWrite where line.HasValue() select $"{DateTime.Now:dd-MM-yy HH:mm:ss} {line}")
             {
                 Console.WriteLine(textToWrite);
-                if (_logFile.HasValue()) File.AppendAllLines(_logFile, new[] { textToWrite });
+                if (_logFile.HasValue()) File.AppendAllLines(_logFile, [textToWrite]);
             }
         }
     }
@@ -910,12 +910,13 @@ internal static partial class Utils
     /// </exception>
     /// <exception cref="ArgumentException">
     /// </exception>
-    private static string ByteArrayToString(IReadOnlyList<byte> value, int startIndex, int length)
+    private static string ByteArrayToString(byte[] value, int startIndex, int length)
     {
         ArgumentNullException.ThrowIfNull(value);
-        if (startIndex < 0 || (startIndex >= value.Count && startIndex > 0)) throw new ArgumentOutOfRangeException(nameof(startIndex));
-        if (length < 0) throw new ArgumentOutOfRangeException(nameof(length));
-        if (startIndex > value.Count - length) throw new ArgumentException(null, nameof(length));
+        if (startIndex < 0 || (startIndex >= value.Length && startIndex > 0)) throw new ArgumentOutOfRangeException(nameof(startIndex));
+
+        ArgumentOutOfRangeException.ThrowIfNegative(length, nameof(length));
+        if (startIndex > value.Length - length) throw new ArgumentException(null, nameof(length));
 
         switch (length)
         {
@@ -1371,7 +1372,7 @@ internal static partial class Utils
         if (name is "MoveNext")
 
             // We're inside an async method
-            name = sf.GetMethod()?.ReflectedType?.Name.Split(new[] { '<', '>' }, StringSplitOptions.RemoveEmptyEntries)[0];
+            name = sf.GetMethod()?.ReflectedType?.Name.Split(['<', '>'], StringSplitOptions.RemoveEmptyEntries)[0];
         return $"{sf.GetMethod()?.DeclaringType?.FullName}.{name}";
     }
 
@@ -1555,7 +1556,7 @@ internal static partial class Utils
     {
         TraceIn();
         ArgumentException.ThrowIfNullOrEmpty(directory, nameof(directory));
-        List<string> listOfDirectoriesDeleted = new();
+        List<string> listOfDirectoriesDeleted = [];
         DeleteBrokenSymbolicLinks(directory, includeRoot, listOfDirectoriesDeleted, directory);
         return TraceOut(listOfDirectoriesDeleted.ToArray());
     }
@@ -1799,7 +1800,7 @@ internal static partial class Utils
     /// <param name="securityIdentifierOfUser">Object containing User's sid</param>
     /// <returns></returns>
     [SupportedOSPlatform("windows")]
-    private static ManagementObject CreateTrustee(string domain, string userName, ManagementBaseObject securityIdentifierOfUser)
+    private static ManagementObject CreateTrustee(string domain, string userName, ManagementObject securityIdentifierOfUser)
     {
         var trusteeObject = new ManagementClass("Win32_Trustee").CreateInstance();
         trusteeObject.Properties["Domain"].Value = domain;
@@ -1895,7 +1896,7 @@ internal sealed class Win32Share
     [SupportedOSPlatform("windows")]
     public MethodStatus Delete()
     {
-        var result = mWinShareObject.InvokeMethod("Delete", Array.Empty<object>());
+        var result = mWinShareObject.InvokeMethod("Delete", []);
         var r = Convert.ToUInt32(result);
         return (MethodStatus)r;
     }
@@ -1904,7 +1905,7 @@ internal sealed class Win32Share
     internal static MethodStatus Create(string path, string name, ShareType type, uint maximumAllowed, string description, string password)
     {
         var mc = new ManagementClass("Win32_Share");
-        object[] parameters = { path, name, (uint)type, maximumAllowed, description, password, null };
+        object[] parameters = [path, name, (uint)type, maximumAllowed, description, password, null];
         var result = mc.InvokeMethod("Create", parameters);
         var r = Convert.ToUInt32(result);
         return (MethodStatus)r;
@@ -1913,7 +1914,7 @@ internal sealed class Win32Share
     [SupportedOSPlatform("windows")]
     private static IEnumerable<Win32Share> GetAllShares()
     {
-        IList<Win32Share> result = new List<Win32Share>();
+        IList<Win32Share> result = [];
         var moc = new ManagementClass("Win32_Share").GetInstances();
 
         foreach (var o in moc)

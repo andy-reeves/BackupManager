@@ -90,10 +90,10 @@ internal sealed partial class Main
             Utils.LogWithPushover(BackupAction.General, Resources.BackupManagerStarted, false, true);
             config.LogParameters();
             var directoriesArray = config.DirectoriesToBackup.ToArray();
-            listDirectoriesComboBox.Items.AddRange(directoriesArray.ToArray<object>());
-            directoriesComboBox.Items.AddRange(directoriesArray.ToArray<object>());
-            restoreDirectoryComboBox.Items.AddRange(directoriesArray.ToArray<object>());
-            scanDirectoryComboBox.Items.AddRange(directoriesArray.ToArray<object>());
+            listDirectoriesComboBox.Items.AddRange([.. directoriesArray]);
+            directoriesComboBox.Items.AddRange([.. directoriesArray]);
+            restoreDirectoryComboBox.Items.AddRange([.. directoriesArray]);
+            scanDirectoryComboBox.Items.AddRange([.. directoriesArray]);
 
             foreach (var file in mediaBackup.BackupFiles.Where(static file => file.FullPath.Length > Utils.MAX_PATH))
             {
@@ -178,7 +178,7 @@ internal sealed partial class Main
         Utils.TraceIn();
         Utils.LogWithPushover(BackupAction.CheckingSymbolicLinks, Resources.Started, false, true);
         UpdateStatusLabel(ct, Resources.Started);
-        HashSet<string> hashSet = new();
+        HashSet<string> hashSet = [];
 
         // HashSet of parent paths that match the RegEx's from config
         foreach (var path in from backupFile in mediaBackup.BackupFiles
@@ -333,7 +333,7 @@ internal sealed partial class Main
             else
                 Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.DirectoryIsNotWritable, directory));
         }
-        mediaBackup.Watcher.Directories = writableDirectories.ToArray();
+        mediaBackup.Watcher.Directories = [.. writableDirectories];
         mediaBackup.Watcher.ProcessChangesInterval = config.DirectoriesProcessChangesTimer;
         mediaBackup.Watcher.ScanInterval = config.DirectoriesScanTimer;
         mediaBackup.Watcher.Filter = "*.*";
@@ -369,7 +369,7 @@ internal sealed partial class Main
         }
 
         Utils.Log(BackupAction.General,
-            !backupFiles.Any() ? string.Format(Resources.AllFilesCheckedInLastNDays, config.BackupDiskDaysToReportSinceFilesChecked) : string.Format(Resources.ListingFilesNotCheckedInDays, config.BackupDiskDaysToReportSinceFilesChecked));
+            !(backupFiles.Length > 0) ? string.Format(Resources.AllFilesCheckedInLastNDays, config.BackupDiskDaysToReportSinceFilesChecked) : string.Format(Resources.ListingFilesNotCheckedInDays, config.BackupDiskDaysToReportSinceFilesChecked));
 
         foreach (var file in backupFiles)
         {

@@ -497,4 +497,10 @@ Skipping {3} as not enough free space</value>
   <data name="Cancelled" xml:space="preserve">
     <value>Cancelled</value>
   </data>
+  <data name="FileExists" xml:space="preserve">
+    <value>{0} exists</value>
+  </data>
+  <data name="Enums_ParseName_Unknown_name" xml:space="preserve">
+    <value>Unknown name</value>
+  </data>
 </root>

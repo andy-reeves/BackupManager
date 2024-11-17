@@ -5,16 +5,18 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 // ReSharper disable once CheckNamespace
 namespace BackupManager;
 
+[SuppressMessage("ReSharper", "UnusedMember.Global")]
 internal static partial class Utils
 {
     /// <summary>
     ///     Provides a set of static methods for use with "flags" enums,
     ///     i.e. those decorated with <see cref="FlagsAttribute" />.
-    ///     Other than <see cref="IsValidCombination{T}" />, methods in this
+    ///     Other than IsValidCombination{T} , methods in this
     ///     class throw <see cref="TypeArgumentException" />.
     /// </summary>
     public static class Flags
@@ -41,7 +43,7 @@ internal static partial class Utils
         }
 
         /// <summary>
-        ///     Returns whether or not the specified enum is a "flags" enum,
+        ///     Returns whether the specified enum is a "flags" enum,
         ///     i.e. whether it has FlagsAttribute applied to it.
         /// </summary>
         /// <typeparam name="T">Enum type</typeparam>

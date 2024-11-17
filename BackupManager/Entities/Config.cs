@@ -28,11 +28,11 @@ namespace BackupManager.Entities;
 [SuppressMessage("ReSharper", "CommentTypo")]
 public sealed class Config
 {
-    [XmlArrayItem("Directory")] public Collection<string> DirectoriesToBackup { get; set; } = new();
+    [XmlArrayItem("Directory")] public Collection<string> DirectoriesToBackup { get; set; } = [];
 
-    [XmlArrayItem("Directory")] public Collection<string> DirectoriesToHealthCheck { get; set; } = new();
+    [XmlArrayItem("Directory")] public Collection<string> DirectoriesToHealthCheck { get; set; } = [];
 
-    [XmlArrayItem("FilterRegEx")] public Collection<string> Filters { get; set; } = new();
+    [XmlArrayItem("FilterRegEx")] public Collection<string> Filters { get; set; } = [];
 
     [XmlArrayItem("FilesToDeleteRegEx")] public Collection<string> FilesToDelete { get; set; }
 
@@ -177,7 +177,7 @@ public sealed class Config
     /// </summary>
     public string PlexToken { get; set; }
 
-    [XmlArrayItem("Token")] public Collection<string> PushoverAppTokens { get; set; } = new();
+    [XmlArrayItem("Token")] public Collection<string> PushoverAppTokens { get; set; } = [];
 
     [XmlIgnore] public string PushoverAppTokenToUse { get; set; }
 

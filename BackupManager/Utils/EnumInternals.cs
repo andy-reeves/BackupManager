@@ -31,11 +31,9 @@ internal static partial class Utils
 
         internal static readonly T UsedBits;
 
-        internal static readonly T AllBits;
-
         internal static readonly T UnusedBits;
 
-        internal static Func<T, T, bool> Equality;
+        internal static readonly Func<T, T, bool> Equality;
 
         internal static readonly Func<T, bool> IsEmpty;
 
@@ -53,14 +51,14 @@ internal static partial class Utils
         {
             Values = new ReadOnlyCollection<T>((T[])Enum.GetValues(typeof(T)));
             Names = new ReadOnlyCollection<string>(Enum.GetNames(typeof(T)));
-            ValueToDescriptionMap = new Dictionary<T, string>();
-            DescriptionToValueMap = new Dictionary<string, T>();
 
             foreach (var value in Values)
             {
                 var description = GetDescription(value);
-                ValueToDescriptionMap[value] = description;
-                if (description != null && !DescriptionToValueMap.ContainsKey(description)) DescriptionToValueMap[description] = value;
+                if (ValueToDescriptionMap != null) ValueToDescriptionMap[value] = description;
+                if (description == null) continue;
+
+                if (DescriptionToValueMap != null) _ = DescriptionToValueMap.TryAdd(description, value);
             }
             UnderlyingType = Enum.GetUnderlyingType(typeof(T));
             IsFlags = typeof(T).IsDefined(typeof(FlagsAttribute), false);
@@ -81,14 +79,16 @@ internal static partial class Utils
             {
                 UsedBits = Or(UsedBits, value);
             }
-            AllBits = Not(default);
-            UnusedBits = And(AllBits, Not(UsedBits));
+            var allBits = Not(default);
+            ValueToDescriptionMap = [];
+            DescriptionToValueMap = [];
+            UnusedBits = And(allBits, Not(UsedBits));
         }
 
         private static string GetDescription(T value)
         {
             var field = typeof(T).GetField(value.ToString());
-            return field.GetCustomAttributes(typeof(DescriptionAttribute), false).Cast<DescriptionAttribute>().Select(x => x.Description).FirstOrDefault();
+            return field != null ? field.GetCustomAttributes(typeof(DescriptionAttribute), false).Cast<DescriptionAttribute>().Select(static x => x.Description).FirstOrDefault() : value.ToString();
         }
     }
 }

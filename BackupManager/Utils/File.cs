@@ -44,11 +44,11 @@ internal static partial class Utils
 
         [LibraryImport("kernel32.dll", EntryPoint = "GetShortPathNameW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         [return: MarshalAs(UnmanagedType.U4)]
-        internal static partial uint GetShortPathName([MarshalAs(UnmanagedType.LPTStr)] string longPath, char[] path, int cchBuffer);
+        internal static partial uint GetShortPathName([MarshalAs(UnmanagedType.LPTStr)] string longPath, [Out] char[] path, int cchBuffer);
 
         [LibraryImport("kernel32.dll", EntryPoint = "GetLongPathNameW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         [return: MarshalAs(UnmanagedType.U4)]
-        internal static partial uint GetLongPathName([MarshalAs(UnmanagedType.LPTStr)] string lpszShortPath, char[] lpszLongPath, int cchBuffer);
+        internal static partial uint GetLongPathName([MarshalAs(UnmanagedType.LPTStr)] string lpszShortPath, [Out] char[] lpszLongPath, int cchBuffer);
 
         /// <summary>
         ///     Checks the path is a video file
@@ -344,7 +344,7 @@ internal static partial class Utils
         /// <returns>
         ///     The byte[]
         /// </returns>
-        private static byte[] GetByteArray(Stream stream, long offset, long byteCountToReturn)
+        private static byte[] GetByteArray(FileStream stream, long offset, long byteCountToReturn)
         {
             _ = stream.Seek(offset, SeekOrigin.Begin);
             var buffer = new byte[byteCountToReturn];
@@ -684,7 +684,7 @@ internal static partial class Utils
             if (!System.IO.Directory.Exists(path))
             {
                 Trace("GetFiles exit with new string[]");
-                return Array.Empty<string>();
+                return [];
             }
             DirectoryInfo directoryInfo = new(path);
             if (directoryInfo.Parent != null && directoryInfo.Attributes.HasAny(directoryAttributesToIgnore)) return TraceOut(Array.Empty<string>());
@@ -695,11 +695,11 @@ internal static partial class Utils
             var excludeAsArray = exclude as string[] ?? exclude.ToArray();
             include = includeAsArray.Except(excludeAsArray);
             var includeAsArray2 = include as string[] ?? include.ToArray();
-            if (!includeAsArray2.Any()) includeAsArray2 = new[] { "*" };
+            if (!(includeAsArray2.Length > 0)) includeAsArray2 = ["*"];
             var excludeFilters = from filter in excludeAsArray let replace = filter.Replace("!", Empty).Replace(".", @"\.").Replace("*", ".*").Replace("?", ".") select $"^{replace}$";
             Regex excludeRegex = new(Join("|", excludeFilters.ToArray()), RegexOptions.IgnoreCase);
             Queue<string> pathsToSearch = new();
-            List<string> foundFiles = new();
+            List<string> foundFiles = [];
             pathsToSearch.Enqueue(path);
 
             while (pathsToSearch.Count > 0)
@@ -721,14 +721,14 @@ internal static partial class Utils
                          {
                              if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
                              return System.IO.Directory.GetFiles(dir, filter, SearchOption.TopDirectoryOnly);
-                         }).Select(allFiles => excludeAsArray.Any() ? allFiles.Where(p => !excludeRegex.Match(p).Success) : allFiles))
+                         }).Select(allFiles => excludeAsArray.Length > 0 ? allFiles.Where(p => !excludeRegex.Match(p).Success) : allFiles))
                 {
                     foundFiles.AddRange(collection.Where(p => !new FileInfo(p).Attributes.HasAny(fileAttributesToIgnore)));
                 }
             }
             sw.Stop();
             Trace($"GetFiles for {path} = {(sw.Elapsed.TotalSeconds < 1 ? "<1 second" : $"{sw.Elapsed.TotalSeconds:#} seconds")}");
-            return foundFiles.ToArray();
+            return [.. foundFiles];
         }
     }
 }

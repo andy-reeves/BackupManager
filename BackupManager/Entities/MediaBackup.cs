@@ -52,10 +52,10 @@ public sealed class MediaBackup
 
     public MediaBackup()
     {
-        BackupFiles = new Collection<BackupFile>();
-        BackupDisks = new Collection<BackupDisk>();
-        DirectoriesToScan = new Collection<FileSystemEntry>();
-        DirectoryChanges = new Collection<FileSystemEntry>();
+        BackupFiles = [];
+        BackupDisks = [];
+        DirectoriesToScan = [];
+        DirectoryChanges = [];
     }
 
     public MediaBackup(string mediaBackupPath)
@@ -267,24 +267,28 @@ public sealed class MediaBackup
 
     public void Save(CancellationToken ct)
     {
-        DirectoryChanges = new Collection<FileSystemEntry>(Watcher.FileSystemChanges.ToList());
-        DirectoriesToScan = new Collection<FileSystemEntry>(Watcher.DirectoriesToScan.ToList());
+        DirectoryChanges = new Collection<FileSystemEntry>([.. Watcher.FileSystemChanges]);
+        DirectoriesToScan = new Collection<FileSystemEntry>([.. Watcher.DirectoriesToScan]);
 
         if (!Changed)
-            if (BackupFiles.Any(static file => file.Changed))
-                Changed = true;
+        {
+            if (BackupFiles.Any(static file => file.Changed)) Changed = true;
+        }
 
         if (!Changed)
-            if (BackupDisks.Any(static backupDisk => backupDisk.Changed))
-                Changed = true;
+        {
+            if (BackupDisks.Any(static backupDisk => backupDisk.Changed)) Changed = true;
+        }
 
         if (!Changed)
-            if (DirectoryChanges.Any(static dirChanges => dirChanges.Changed))
-                Changed = true;
+        {
+            if (DirectoryChanges.Any(static dirChanges => dirChanges.Changed)) Changed = true;
+        }
 
         if (!Changed)
-            if (DirectoriesToScan.Any(static dirScan => dirScan.Changed))
-                Changed = true;
+        {
+            if (DirectoriesToScan.Any(static dirScan => dirScan.Changed)) Changed = true;
+        }
         if (!Changed) return;
 
         BackupMediaFile(ct);
@@ -494,7 +498,7 @@ public sealed class MediaBackup
 
     public string GetFilters()
     {
-        return string.Join(",", Config.Filters.ToArray());
+        return string.Join(",", [.. Config.Filters]);
     }
 
     /// <summary>
@@ -607,7 +611,7 @@ public sealed class MediaBackup
     /// Removes any files that have a matching flag value as the one provided.
     public void RemoveFilesWithFlag(bool flag, bool clearHashes)
     {
-        Collection<BackupFile> filesToRemove = new();
+        Collection<BackupFile> filesToRemove = [];
 
         foreach (var backupFile in BackupFiles.Where(backupFile => backupFile.Flag == flag))
         {
@@ -617,7 +621,7 @@ public sealed class MediaBackup
         foreach (var backupFile in filesToRemove)
         {
             if (clearHashes) _ = indexFolderAndRelativePath.Remove(backupFile.Hash);
-            if (BackupFiles.Contains(backupFile)) _ = BackupFiles.Remove(backupFile);
+            _ = BackupFiles.Remove(backupFile);
         }
     }
 

@@ -1381,7 +1381,7 @@
             extractChaptersButton.TabIndex = 108;
             extractChaptersButton.Text = "Export chapters";
             extractChaptersButton.UseVisualStyleBackColor = true;
-            extractChaptersButton.Click += extractChaptersButton_Click;
+            extractChaptersButton.Click += ExtractChaptersButton_Click;
             // 
             // removeMetadataButton
             // 
@@ -1392,7 +1392,7 @@
             removeMetadataButton.TabIndex = 109;
             removeMetadataButton.Text = "Remove Metadata";
             removeMetadataButton.UseVisualStyleBackColor = true;
-            removeMetadataButton.Click += removeMetadataButton_Click;
+            removeMetadataButton.Click += RemoveMetadataButton_Click;
             // 
             // Main
             // 

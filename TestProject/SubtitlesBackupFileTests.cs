@@ -37,12 +37,10 @@ public sealed class SubtitlesBackupFileTests
         }
         Assert.True(file.RefreshMediaInfo());
         Assert.Equal(isValidSubtitleFullName, file.IsValid);
+        if (!file.IsValid) return;
 
-        if (file.IsValid)
-        {
-            Assert.True(file.FullPathToVideoFile.StartsWithIgnoreCase(Path.Combine(file.DirectoryName, file.Title)));
-            Assert.Equal(newFileName, file.DirectoryName.HasValue() ? file.GetFullName() : file.GetFileName());
-        }
+        Assert.True(file.FullPathToVideoFile.StartsWithIgnoreCase(Path.Combine(file.DirectoryName, file.Title)));
+        Assert.Equal(newFileName, file.DirectoryName.HasValue() ? file.GetFullName() : file.GetFileName());
     }
 
     [Theory]

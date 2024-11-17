@@ -465,6 +465,15 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unknown name.
+        /// </summary>
+        internal static string Enums_ParseName_Unknown_name {
+            get {
+                return ResourceManager.GetString("Enums_ParseName_Unknown_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error updating info for backup disk {0}.
         /// </summary>
         internal static string ErrorUpdatingInfoForBackupDisk {
@@ -533,6 +542,15 @@ namespace BackupManager.Properties {
         internal static string FailedToStopTheService {
             get {
                 return ResourceManager.GetString("FailedToStopTheService", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} exists.
+        /// </summary>
+        internal static string FileExists {
+            get {
+                return ResourceManager.GetString("FileExists", resourceCulture);
             }
         }
         

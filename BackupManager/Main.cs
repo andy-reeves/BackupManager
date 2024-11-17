@@ -144,20 +144,24 @@ internal sealed partial class Main : Form
     private void ListFilesInDirectoryButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        var directory = listDirectoriesComboBox.SelectedItem.ToString();
-        var files = mediaBackup.GetBackupFilesInDirectory(directory, false);
-        Utils.Log($"Listing files in directory {directory}");
 
-        if (mediaBackup.Config.SpeedTestOnOff)
+        if (listDirectoriesComboBox.SelectedItem != null)
         {
-            Utils.DiskSpeedTest(directory, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations, out var readSpeed, out var writeSpeed, mainCt);
-            Utils.Log($"Testing {directory}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
-        }
+            var directory = listDirectoriesComboBox.SelectedItem.ToString();
+            var files = mediaBackup.GetBackupFilesInDirectory(directory, false);
+            Utils.Log($"Listing files in directory {directory}");
 
-        foreach (var file in files)
-        {
-            Utils.Log($"{file.FullPath} : {file.Disk}");
-            if (file.Disk.HasNoValue()) Utils.Log($"{file.FullPath} : not on a backup disk");
+            if (mediaBackup.Config.SpeedTestOnOff)
+            {
+                Utils.DiskSpeedTest(directory, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations, out var readSpeed, out var writeSpeed, mainCt);
+                Utils.Log($"Testing {directory}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
+            }
+
+            foreach (var file in files)
+            {
+                Utils.Log($"{file.FullPath} : {file.Disk}");
+                if (file.Disk.HasNoValue()) Utils.Log($"{file.FullPath} : not on a backup disk");
+            }
         }
         Utils.TraceOut();
     }
@@ -271,8 +275,8 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
         Utils.Log("Listing files with multiple matching files");
-        Dictionary<string, BackupFile> allMovies = new();
-        List<BackupFile> backupFilesWithDuplicates = new();
+        Dictionary<string, BackupFile> allMovies = [];
+        List<BackupFile> backupFilesWithDuplicates = [];
 
         foreach (var file in mediaBackup.GetBackupFiles(false))
         {
@@ -482,8 +486,8 @@ internal sealed partial class Main : Form
         try
         {
             Utils.TraceIn();
-            Dictionary<string, BackupFile> allFilesUniqueContentsHash = new();
-            List<BackupFile> backupFilesWithDuplicates = new();
+            Dictionary<string, BackupFile> allFilesUniqueContentsHash = [];
+            List<BackupFile> backupFilesWithDuplicates = [];
             if (config.DuplicateContentHashCodesDiscoveryRegex.HasNoValue()) return;
 
             foreach (var backupFile in mediaBackup.BackupFiles.Where(file => !file.Deleted && Regex.Match(file.FullPath, config.DuplicateContentHashCodesDiscoveryRegex).Success))
@@ -673,7 +677,7 @@ internal sealed partial class Main : Form
         {
             Utils.TraceIn($"e.Directories = {e.Directories.Length}");
             var toSave = false;
-            if (!e.Directories.Any()) return;
+            if (e.Directories.Length == 0) return;
 
             for (var i = e.Directories.Length - 1; i >= 0; i--)
             {
@@ -732,13 +736,13 @@ internal sealed partial class Main : Form
         }
     }
 
-    private void RemoveOrDeleteFiles(IReadOnlyList<BackupFile> files)
+    private void RemoveOrDeleteFiles(BackupFile[] files)
     {
         lock (_lock)
         {
             Utils.TraceIn();
 
-            for (var j = files.Count - 1; j >= 0; j--)
+            for (var j = files.Length - 1; j >= 0; j--)
             {
                 var backupFile = files[j];
 
@@ -826,7 +830,7 @@ internal sealed partial class Main : Form
     private void DirectoryScanReport(DirectoryScanType scanType, int howMany)
     {
         Utils.TraceIn();
-        var scanIdsList = mediaBackup.GetLastScans(mediaBackup.DirectoryScans.ToArray(), scanType, howMany);
+        var scanIdsList = mediaBackup.GetLastScans([.. mediaBackup.DirectoryScans], scanType, howMany);
         var scans = mediaBackup.DirectoryScans.Where(s => scanIdsList.Contains(s.Id) && s.TypeOfScan == scanType).ToArray();
         if (scans.Length == 0) return;
 
@@ -970,7 +974,7 @@ internal sealed partial class Main : Form
         Utils.TraceIn();
         var files = mediaBackup.BackupFiles.Where(static f => f.FullPath.Contains("[DV]") && !f.Deleted).OrderBy(static f => f.FullPath).ToArray();
 
-        if (files.Any())
+        if (files.Length > 0)
         {
             foreach (var file in files)
             {
@@ -1200,7 +1204,7 @@ internal sealed partial class Main : Form
         Utils.Log($"{count} files that are mp4not [h265] TV episodes with subtitles");
     }
 
-    private void extractChaptersButton_Click(object sender, EventArgs e)
+    private void ExtractChaptersButton_Click(object sender, EventArgs e)
     {
         // export chapters and remove them
         const string ext = ".mp4";
@@ -1236,7 +1240,7 @@ internal sealed partial class Main : Form
         Utils.Log($"{count} files that are not [h265] TV episodes with chapters");
     }
 
-    private void removeMetadataButton_Click(object sender, EventArgs e)
+    private void RemoveMetadataButton_Click(object sender, EventArgs e)
     {
         const string ext = ".mkv";
         var backupFiles = mediaBackup.BackupFiles.Where(static f => f.Extension == ext && !f.FullPath.Contains("[h265]")).OrderBy(static q => q.FullPath).ToArray();

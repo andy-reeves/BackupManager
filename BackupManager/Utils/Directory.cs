@@ -60,7 +60,7 @@ internal static partial class Utils
         {
             TraceIn();
             ArgumentException.ThrowIfNullOrEmpty(directory, nameof(directory));
-            List<string> listOfDirectoriesDeleted = new();
+            List<string> listOfDirectoriesDeleted = [];
             DeleteEmpty(directory, listOfDirectoriesDeleted, directory);
             return TraceOut(listOfDirectoriesDeleted.ToArray());
         }
@@ -140,7 +140,7 @@ internal static partial class Utils
             if (!IsSymbolicLink(path)) return !System.IO.Directory.EnumerateFileSystemEntries(path).Any();
 
             var linkTarget = new FileInfo(path).LinkTarget;
-            return linkTarget != null && (!SymbolicLinkTargetExists(path) || !System.IO.Directory.GetFileSystemEntries(linkTarget).Any());
+            return linkTarget != null && (!SymbolicLinkTargetExists(path) || !(System.IO.Directory.GetFileSystemEntries(linkTarget).Length > 0));
         }
 
         internal static bool Delete(string path, bool recursive = false)
