@@ -6,7 +6,7 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
   </PropertyGroup>
@@ -30,6 +30,9 @@
     <None Remove="ConfigSchema.xsd" />
     <None Remove="MediaBackupSchema.xsd" />
     <None Remove="RulesSchema.xsd" />
+  </ItemGroup>
+  <ItemGroup>
+    <SupportedPlatform Include="windows10.0.17763.0" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="BackupManager.ico" />
