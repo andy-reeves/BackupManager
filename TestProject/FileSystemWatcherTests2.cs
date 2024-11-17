@@ -67,7 +67,7 @@ public sealed class FileSystemWatcherTests2
             ProcessChangesInterval = 1,
             ScanInterval = 1,
             MinimumAgeBeforeScanEventRaised = 1,
-            Directories = new[] { _testPath },
+            Directories = [_testPath],
             IncludeSubdirectories = true,
             NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.LastAccess | NotifyFilters.CreationTime | NotifyFilters.FileName | NotifyFilters.DirectoryName
         };
