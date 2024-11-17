@@ -21,6 +21,9 @@
     </PackageReference>
   </ItemGroup>
 
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);NU1902;NETSDK1206</NoWarn>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\BackupManager\BackupManager.csproj" />
   </ItemGroup>

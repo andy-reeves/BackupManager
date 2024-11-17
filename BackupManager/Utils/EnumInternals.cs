@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -19,6 +20,7 @@ internal static partial class Utils
     /// <summary>
     ///     Shared constants used by Flags and Enums.
     /// </summary>
+    [SuppressMessage("ReSharper", "StaticMemberInGenericType")]
     internal static class EnumInternals<T> where T : Enum
     {
         internal static readonly bool IsFlags;
