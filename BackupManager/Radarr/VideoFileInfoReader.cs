@@ -284,26 +284,8 @@ internal sealed class VideoFileInfoReader
             for (var i = 0; i < analysis.SubtitleStreams.Count; i++)
             {
                 var subStream = analysis.SubtitleStreams[i];
-                if (subStream.CodecName.HasNoValue() || (subStream.CodecName.HasValue() && subStream.CodecName.ContainsIgnoreCase("_pgs_"))) continue;
+                if (CheckForHearingImpairedAndForced(subStream, out var hearingImpaired, out var forced, out var subFileName)) continue;
 
-                if (subStream.Tags != null && subStream.Tags.TryGetValue("title", out var value))
-                {
-                    if (value.ContainsIgnoreCase("webvtt")) continue;
-                }
-                var hearingImpaired = false;
-                var forced = false;
-                Utils.Log($"Language is {subStream.Language}");
-
-                var subFileName = subStream.Language switch
-                {
-                    "eng" or "und" => ".en",
-                    "esp" or "spa" => ".es",
-                    _ => "."
-                };
-                if (subFileName == ".") continue;
-
-                ProcessSubtitleTags(subStream, ref hearingImpaired, ref forced);
-                if (subStream.Language.ContainsIgnoreCase("forced")) forced = true;
                 if (hearingImpaired) subFileName += ".hi";
                 if (forced) subFileName += ".forced";
                 subFileName += ".srt";
@@ -320,6 +302,39 @@ internal sealed class VideoFileInfoReader
             return englishDone;
         }
         return true;
+    }
+
+    /// <summary>
+    /// </summary>
+    /// <param name="subStream"></param>
+    /// <param name="hearingImpaired"></param>
+    /// <param name="forced"></param>
+    /// <param name="subFileName"></param>
+    /// <returns>True to skip to the next subtitle stream</returns>
+    private static bool CheckForHearingImpairedAndForced(SubtitleStream subStream, out bool hearingImpaired, out bool forced, out string subFileName)
+    {
+        forced = false;
+        hearingImpaired = false;
+        subFileName = string.Empty;
+        if (subStream.CodecName.HasNoValue() || (subStream.CodecName.HasValue() && subStream.CodecName.ContainsIgnoreCase("_pgs_"))) return true;
+
+        if (subStream.Tags != null && subStream.Tags.TryGetValue("title", out var value))
+            if (value.ContainsIgnoreCase("webvtt"))
+                return true;
+
+        Utils.Log($"Language is {subStream.Language}");
+
+        subFileName = subStream.Language switch
+        {
+            "eng" or "und" => ".en",
+            "esp" or "spa" => ".es",
+            _ => "."
+        };
+        if (subFileName == ".") return true;
+
+        if (subStream.Language.ContainsIgnoreCase("forced")) forced = true;
+        ProcessSubtitleTags(subStream, ref hearingImpaired, ref forced);
+        return false;
     }
 
     private static void ProcessSubtitleTags(SubtitleStream subStream, ref bool hearingImpaired, ref bool forced)
