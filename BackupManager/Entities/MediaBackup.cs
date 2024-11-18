@@ -272,21 +272,25 @@ public sealed class MediaBackup
 
         if (!Changed)
         {
+            // If not marked as Changed already then check the files
             if (BackupFiles.Any(static file => file.Changed)) Changed = true;
         }
 
         if (!Changed)
         {
+            // If not marked as Changed already then check the disks
             if (BackupDisks.Any(static backupDisk => backupDisk.Changed)) Changed = true;
         }
 
         if (!Changed)
         {
+            // If not marked as Changed already then check the DirectoryChanges
             if (DirectoryChanges.Any(static dirChanges => dirChanges.Changed)) Changed = true;
         }
 
         if (!Changed)
         {
+            // If not marked as Changed already then check the DirectoriesToScan
             if (DirectoriesToScan.Any(static dirScan => dirScan.Changed)) Changed = true;
         }
         if (!Changed) return;

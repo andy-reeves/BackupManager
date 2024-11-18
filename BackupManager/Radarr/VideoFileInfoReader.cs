@@ -319,9 +319,10 @@ internal sealed class VideoFileInfoReader
         if (subStream.CodecName.HasNoValue() || (subStream.CodecName.HasValue() && subStream.CodecName.ContainsIgnoreCase("_pgs_"))) return true;
 
         if (subStream.Tags != null && subStream.Tags.TryGetValue("title", out var value))
-            if (value.ContainsIgnoreCase("webvtt"))
-                return true;
-
+        {
+            // Check for webvtt in the title
+            if (value.ContainsIgnoreCase("webvtt")) return true;
+        }
         Utils.Log($"Language is {subStream.Language}");
 
         subFileName = subStream.Language switch
