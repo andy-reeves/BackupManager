@@ -19,12 +19,9 @@ namespace TestProject;
 [SuppressMessage("ReSharper", "StringLiteralTypo")]
 public sealed class EntityTests
 {
-    private static readonly MediaBackup _mediaBackup;
-
     static EntityTests()
     {
-        _mediaBackup = BackupManager.Entities.MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(EntityTests)), "..\\BackupManager\\MediaBackup.xml"));
-        Utils.Config = _mediaBackup.Config;
+        Utils.Config = BackupManager.Entities.MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(EntityTests)), "..\\BackupManager\\MediaBackup.xml")).Config;
     }
 
     [Fact]

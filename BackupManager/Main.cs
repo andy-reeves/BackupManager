@@ -74,7 +74,7 @@ internal sealed partial class Main : Form
         Utils.TraceOut();
     }
 
-    private void ScanAllDirectoriesButton_Click(object sender, EventArgs e)
+    internal void ScanAllDirectoriesButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
         ResetTokenSource();

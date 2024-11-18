@@ -141,6 +141,7 @@ public sealed class FullTestA
         mainForm.CopyFiles(true, ct);
         Assert.Empty(mediaBackup.GetBackupFilesWithDiskEmpty().ToArray());
         mainForm.CheckForOldBackupDisks_Click(null, null);
+        mainForm.ScanAllDirectoriesButton_Click(null, null);
 
         // and now remove the directory we created
         if (Directory.Exists(targetDirectory)) _ = Utils.Directory.Delete(targetDirectory, true);
