@@ -67,7 +67,7 @@ internal sealed partial class Main : Form
         Utils.TraceOut();
     }
 
-    private void CheckForOldBackupDisks_Click(object sender, EventArgs e)
+    internal void CheckForOldBackupDisks_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
         CheckForOldBackupDisks();

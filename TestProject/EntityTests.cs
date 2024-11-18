@@ -53,52 +53,6 @@ public sealed class EntityTests
         Assert.Equal(@"c:\testPath1", obj.ToString());
     }
 
-    // [Fact]
-    // ReSharper disable once UnusedMember.Global
-    [SuppressMessage("Usage", "xUnit1013:Public method should be marked as test", Justification = "<Pending>")]
-    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>")]
-    public void MovieTestsAllMoviesFromBackupXml()
-    {
-        foreach (var backupFile in _mediaBackup.BackupFiles.Where(static f => !f.Deleted && (f.FullPath.Contains(@"_Concerts") || f.FullPath.Contains(@"_Comedy") || f.FullPath.Contains(@"_Movies")) && !f.FullPath.EndsWithIgnoreCase(".srt")))
-        {
-            var file = new MovieBackupFile(backupFile.FullPath);
-            Assert.True(file.IsValid);
-            if (file.IsValid) Assert.Equal(backupFile.FullPath, file.DirectoryName.HasValue() ? file.GetFullName() : file.GetFileName());
-        }
-    }
-
-    //[Fact]
-    // ReSharper disable once UnusedMember.Global
-    [SuppressMessage("Usage", "xUnit1013:Public method should be marked as test", Justification = "<Pending>")]
-    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>")]
-    public void TestsAllFilesFromBackupXml()
-    {
-        var files = _mediaBackup.BackupFiles.Where(static f => !f.Deleted).ToArray();
-
-        for (var index = 0; index < files.Length; index++)
-        {
-            var fullPath = files[index].FullPath;
-            Utils.Trace($"[{index}/{files.Length}] {fullPath}");
-            if (!File.Exists(fullPath)) continue;
-
-            Utils.MediaHelper.CheckVideoFileAndRenameIfRequired(ref fullPath);
-        }
-    }
-
-    //[Fact]
-    // ReSharper disable once UnusedMember.Global
-    [SuppressMessage("Usage", "xUnit1013:Public method should be marked as test", Justification = "<Pending>")]
-    [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>")]
-    public void TestsAllTvFromBackupXml()
-    {
-        foreach (var backupFile in _mediaBackup.BackupFiles.Where(static f => !f.Deleted && f.FullPath.Contains(@"_TV") && !f.FullPath.EndsWithIgnoreCase(".srt")))
-        {
-            var file = new TvEpisodeBackupFile(backupFile.FullPath);
-            Assert.True(file.IsValid);
-            if (file.IsValid) Assert.Equal(backupFile.FullPath, file.DirectoryName.HasValue() ? file.GetFullName() : file.GetFileName());
-        }
-    }
-
     [Fact]
     public void MediaBackup()
     {

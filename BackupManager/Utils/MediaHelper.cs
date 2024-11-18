@@ -209,50 +209,49 @@ internal static partial class Utils
                 return;
             }
 
-            if (file.RefreshMediaInfo())
+            if (!file.RefreshMediaInfo())
             {
-                var newFullPath = file.GetFullName();
-                if (newFullPath.Contains("undefined")) LogWithPushover(BackupAction.Error, $"{newFullPath} contains undefined");
+                LogWithPushover(BackupAction.Error, $"Refreshing media info for {path} failed");
+                return;
+            }
+            var newFullPath = file.GetFullName();
 
-                if (file is SubtitlesBackupFile backupFile)
+            if (file is SubtitlesBackupFile backupFile)
+            {
+                if (backupFile.FullPathToVideoFile.HasNoValue()) LogWithPushover(BackupAction.Error, $"{path} is Subtitles file with no TV episode or Movie named");
+
+                if (newFullPath.ContainsIgnoreCase("-tdarrcachefile-"))
                 {
-                    if (backupFile.FullPathToVideoFile.HasNoValue()) LogWithPushover(BackupAction.Error, $"{path} is Subtitles file with no TV episode or Movie named");
-
-                    if (newFullPath.ContainsIgnoreCase("-tdarrcachefile-"))
-                    {
-                        LogWithPushover(BackupAction.ScanDirectory, $"{newFullPath} is Subtitles file with -tdarrCacheFile- in the path so not renaming");
-                        return;
-                    }
-                }
-                else
-                {
-                    if (file.MediaInfoModel?.DoviConfigurationRecord?.DvProfile == 5)
-                    {
-                        LogWithPushover(BackupAction.Error, $"{path} is [DV] Profile 5");
-                        return;
-                    }
-                }
-
-                // Path is the same so do not rename
-                if (newFullPath == path) return;
-
-                if (File.Exists(newFullPath))
-                    LogWithPushover(BackupAction.Error, $"Renaming {path} failed as {newFullPath} already exists");
-                else
-                {
-                    if (Path.GetDirectoryName(path) == Path.GetDirectoryName(newFullPath))
-                    {
-                        LogWithPushover(BackupAction.General, $"Renaming {path} to {newFullPath}");
-                        _ = File.Move(path, newFullPath);
-                        Trace($"Renamed {path} to {newFullPath}");
-                        path = newFullPath;
-                    }
-                    else
-                        LogWithPushover(BackupAction.General, PushoverPriority.High, $"Renaming {path} to {newFullPath} and directories do not match anymore");
+                    LogWithPushover(BackupAction.ScanDirectory, $"{newFullPath} is Subtitles file with -tdarrCacheFile- in the path so not renaming");
+                    return;
                 }
             }
             else
-                LogWithPushover(BackupAction.Error, $"Refreshing media info for {path} failed");
+            {
+                if (file.MediaInfoModel?.DoviConfigurationRecord?.DvProfile == 5)
+                {
+                    LogWithPushover(BackupAction.Error, $"{path} is [DV] Profile 5");
+                    return;
+                }
+            }
+
+            // Path is the same so do not rename
+            if (newFullPath == path) return;
+
+            if (File.Exists(newFullPath))
+            {
+                LogWithPushover(BackupAction.Error, $"Renaming {path} failed as {newFullPath} already exists");
+                return;
+            }
+
+            if (Path.GetDirectoryName(path) != Path.GetDirectoryName(newFullPath))
+            {
+                LogWithPushover(BackupAction.Error, PushoverPriority.High, $"Renaming {path} to {newFullPath} and directories do not match anymore so not renaming");
+                return;
+            }
+            LogWithPushover(BackupAction.General, $"Renaming {path} to {newFullPath}");
+            _ = File.Move(path, newFullPath);
+            path = newFullPath;
         }
 
         internal static decimal FormatAudioChannels(MediaInfoModel mediaInfo)
