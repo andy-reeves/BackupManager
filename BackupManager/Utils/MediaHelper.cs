@@ -217,6 +217,12 @@ internal static partial class Utils
                 if (file is SubtitlesBackupFile backupFile)
                 {
                     if (backupFile.FullPathToVideoFile.HasNoValue()) LogWithPushover(BackupAction.Error, $"{path} is Subtitles file with no TV episode or Movie named");
+
+                    if (newFullPath.ContainsIgnoreCase("-tdarrcachefile-"))
+                    {
+                        LogWithPushover(BackupAction.ScanDirectory, $"{newFullPath} is Subtitles file with -tdarrCacheFile- in the path so not renaming");
+                        return;
+                    }
                 }
                 else
                 {
