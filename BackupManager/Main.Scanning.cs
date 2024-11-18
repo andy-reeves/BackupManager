@@ -5,7 +5,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -366,8 +365,8 @@ internal sealed partial class Main
     private void ScanAllDirectories(bool updateLastFullScan, CancellationToken ct)
     {
         var scanId = Guid.NewGuid().ToString();
-        fileBlockingCollection = new BlockingCollection<string>();
-        directoryScanBlockingCollection = new BlockingCollection<DirectoryScan>();
+        fileBlockingCollection = [];
+        directoryScanBlockingCollection = [];
 
         // split the directories into group by the disk name
         var diskNames = Utils.GetDiskNames(mediaBackup.Config.DirectoriesToBackup);

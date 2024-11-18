@@ -82,7 +82,7 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
         Title = match.Groups[title].Value;
         Language = match.Groups[languageGroup].Value;
         HearingImpaired = match.Groups[hearingImpairedGroup].Value != string.Empty;
-        Forced = match.Groups[forcedGroup].Value.ToLowerInvariant() == "forced";
+        Forced = match.Groups[forcedGroup].Value.EqualsIgnoreCase("forced");
         Extension = ".srt";
         SubtitlesExtension = filename.SubstringAfterIgnoreCase(Title);
         return true;
