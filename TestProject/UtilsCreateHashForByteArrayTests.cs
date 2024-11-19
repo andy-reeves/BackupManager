@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-//  <copyright file="UtilsCreateHashForByteArrayTest.cs" company="Andy Reeves">
+//  <copyright file="UtilsCreateHashForByteArrayTests.cs" company="Andy Reeves">
 // 
 //  </copyright>
 // --------------------------------------------------------------------------------------------------------------------

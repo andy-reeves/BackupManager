@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-//  <copyright file="UtilsGetApplicationVersion.cs" company="Andy Reeves">
+//  <copyright file="UtilsGetApplicationVersionTests.cs" company="Andy Reeves">
 // 
 //  </copyright>
 // --------------------------------------------------------------------------------------------------------------------

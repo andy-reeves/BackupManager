@@ -1874,18 +1874,14 @@ internal sealed class Win32Share
 
     public MethodStatus Delete()
     {
-        var result = mWinShareObject.InvokeMethod("Delete", []);
-        var r = Convert.ToUInt32(result);
-        return (MethodStatus)r;
+        return (MethodStatus)Convert.ToUInt32(mWinShareObject.InvokeMethod("Delete", []));
     }
 
     internal static MethodStatus Create(string path, string name, ShareType type, uint maximumAllowed, string description, string password)
     {
         var mc = new ManagementClass("Win32_Share");
         object[] parameters = [path, name, (uint)type, maximumAllowed, description, password, null];
-        var result = mc.InvokeMethod("Create", parameters);
-        var r = Convert.ToUInt32(result);
-        return (MethodStatus)r;
+        return (MethodStatus)Convert.ToUInt32(mc.InvokeMethod("Create", parameters));
     }
 
     private static IEnumerable<Win32Share> GetAllShares()
@@ -1928,25 +1924,4 @@ internal sealed class Win32Share
 
         NetNameNotFound = 25
     }
-}
-
-/// <summary>
-///     Type of file system object
-/// </summary>
-internal enum FileSystemEntryType
-{
-    /// <summary>
-    ///     File and Directory do not exist
-    /// </summary>
-    Missing = 0,
-
-    /// <summary>
-    ///     A file.
-    /// </summary>
-    File,
-
-    /// <summary>
-    ///     A directory
-    /// </summary>
-    Directory
 }
