@@ -12,7 +12,7 @@ namespace TestProject;
 
 [SuppressMessage("ReSharper", "MemberCanBeFileLocal")]
 [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
-public sealed class UtilsCreateHashForByteArrayTest
+public sealed class UtilsCreateHashForByteArrayTests
 {
     [Fact]
     public void CreateHashForByteArray()

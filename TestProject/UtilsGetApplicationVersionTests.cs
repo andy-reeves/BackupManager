@@ -14,7 +14,7 @@ namespace TestProject;
 
 [SuppressMessage("ReSharper", "MemberCanBeFileLocal")]
 [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
-public sealed class UtilsGetApplicationVersion
+public sealed class UtilsGetApplicationVersionTests
 {
     [Theory]
     [InlineData("1.4.5", ApplicationType.Bazarr)]

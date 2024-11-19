@@ -14,7 +14,7 @@ namespace TestProject;
 
 [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
 [SuppressMessage("ReSharper", "MemberCanBeFileLocal")]
-public sealed class Extensions
+public sealed class ExtensionsTests
 {
     [InlineData("32nd", 32)]
     [InlineData("0", 0)]
