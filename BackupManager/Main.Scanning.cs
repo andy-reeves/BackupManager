@@ -170,7 +170,8 @@ internal sealed partial class Main
         foreach (var fileRenameRule in config.FileRenameRules.Select(static fileRenameRule => new { fileRenameRule, a = fileRenameRule.FileDiscoveryRegex }).Where(static t => !t.a.HasNoValue())
                      .Select(t => new { t, match = Regex.Match(newFilePath, t.a) }).Where(static t => t.match.Success).Select(static t => t.t.fileRenameRule))
         {
-            newFilePath = fileRenameRule.Search.Split(',').Aggregate(newFilePath, (current, b) => current.Replace(b, fileRenameRule.Replace));
+            // split on the comma, trim them, then replace the text 
+            newFilePath = fileRenameRule.Search.Split(',').Select(static t => t.Trim()).Aggregate(newFilePath, (current, s) => current.Replace(s, fileRenameRule.Replace));
         }
         if (newFilePath == file) return Utils.TraceOut(true);
 

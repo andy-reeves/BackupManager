@@ -30,13 +30,13 @@
   <FileRenameRules>
     <FileRenameRule>
       <FileDiscoveryRegex>^.*\\_TV(\s\(non-tvdb\))?\\.*\.srt$</FileDiscoveryRegex>
-      <Search>avc,AVC,x264,X264</Search>
-      <Replace>h264</Replace>
+      <Search>[avc],[AVC],[x264],[X264]</Search>
+      <Replace>[h264]</Replace>
     </FileRenameRule>
     <FileRenameRule>
       <FileDiscoveryRegex>^.*\\_TV(\s\(non-tvdb\))?\\.*\.srt$</FileDiscoveryRegex>
-      <Search>hevc,HEVC,x265,X265</Search>
-      <Replace>h265</Replace>
+      <Search>[hevc],[HEVC],[x265],[X265]</Search>
+      <Replace>[h265]</Replace>
     </FileRenameRule>
   </FileRenameRules>
 
