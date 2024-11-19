@@ -51,7 +51,7 @@ internal sealed partial class Main
         var filesStillNotOnBackupDisk = mediaBackup.GetBackupFilesWithDiskEmpty();
         var text = string.Empty;
         var stillNotOnBackupDisk = filesStillNotOnBackupDisk as BackupFile[] ?? filesStillNotOnBackupDisk.ToArray();
-        if (stillNotOnBackupDisk.Any()) text = string.Format(Resources.CopyFilesStillToCopy, stillNotOnBackupDisk.Length, stillNotOnBackupDisk.Sum(static p => p.Length).SizeSuffix());
+        if (stillNotOnBackupDisk.Length > 0) text = string.Format(Resources.CopyFilesStillToCopy, stillNotOnBackupDisk.Length, stillNotOnBackupDisk.Sum(static p => p.Length).SizeSuffix());
         Utils.LogWithPushover(BackupAction.CopyFiles, text + string.Format(Resources.CopyFilesFreeOnBackupDisk, disk.FreeFormatted));
         if (showCompletedMessage) Utils.LogWithPushover(BackupAction.CopyFiles, Resources.Completed, true, true);
         Utils.TraceOut();

@@ -8,6 +8,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 
 using BackupManager;
+using BackupManager.Entities;
 using BackupManager.Extensions;
 
 using FileSystemWatcher = BackupManager.FileSystemWatcher;
