@@ -21,7 +21,6 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
-using System.Runtime.Versioning;
 using System.Security.Cryptography;
 using System.Security.Principal;
 using System.ServiceProcess;
@@ -1175,7 +1174,6 @@ internal static partial class Utils
     /// <param name="serviceName"></param>
     /// <param name="timeoutMilliseconds"></param>
     /// <returns>True if the service stopped successfully, or it was stopped already</returns>
-    [SupportedOSPlatform("windows")]
     internal static bool StopService(string serviceName, int timeoutMilliseconds)
     {
         TraceIn();
@@ -1200,7 +1198,6 @@ internal static partial class Utils
     /// <param name="serviceName"></param>
     /// <param name="timeoutMilliseconds"></param>
     /// <returns>True if the service restarted successfully</returns>
-    [SupportedOSPlatform("windows")]
     internal static bool RestartService(string serviceName, int timeoutMilliseconds)
     {
         TraceIn();
@@ -1531,17 +1528,7 @@ internal static partial class Utils
     /// <returns>The path to the topmost writable folder or null if no folders are writable</returns>
     internal static string GetRootPath(string path)
     {
-        // consider \\nas1.local/assets1/_TV or \\nas1/assets1/_TV/Show1/Season 1/Episode1.mkv or c:\folder1\folder2
-        // first we need to process UNC paths differently to local paths
-        string fullName;
-
-        if (new FileInfo(path).Directory == null)
-            fullName = path;
-        else
-        {
-            var directoryInfo = new FileInfo(path).Directory;
-            fullName = directoryInfo?.Root.FullName;
-        }
+        var fullName = new FileInfo(path).Directory == null ? path : new FileInfo(path).Directory?.Root.FullName;
         return Directory.IsWritable(fullName) ? fullName : null;
     }
 
@@ -1637,7 +1624,6 @@ internal static partial class Utils
         return newPath;
     }
 
-    [SupportedOSPlatform("windows")]
     internal static bool ShareFolder(string folderPath, string shareName, string description)
     {
         try
@@ -1663,7 +1649,6 @@ internal static partial class Utils
         return true;
     }
 
-    [SupportedOSPlatform("windows")]
     internal static void AddPermissions(string sharedFolderName, string domain, string userName)
     {
         // Step 1 - Getting the user Account Object
@@ -1738,7 +1723,6 @@ internal static partial class Utils
     /// </summary>
     /// <param name="sharedFolderName">string containing name of shared folder</param>
     /// <returns>Object of type ManagementObject for the shared folder.</returns>
-    [SupportedOSPlatform("windows")]
     private static ManagementObject GetSharedFolderObject(string sharedFolderName)
     {
         ManagementObject sharedFolderObject = null;
@@ -1763,7 +1747,6 @@ internal static partial class Utils
     /// <param name="domain">string containing domain name of user </param>
     /// <param name="alias">string containing the user's network name </param>
     /// <returns>Object of type ManagementObject for the user folder.</returns>
-    [SupportedOSPlatform("windows")]
     private static ManagementObject GetUserAccountObject(string domain, string alias)
     {
         ManagementObject userAccountObject = null;
@@ -1784,7 +1767,6 @@ internal static partial class Utils
     /// </summary>
     /// <param name="userAccountObject">The user object whose Sid needs to be returned</param>
     /// <returns></returns>
-    [SupportedOSPlatform("windows")]
     internal static ManagementObject GetAccountSecurityIdentifier(ManagementBaseObject userAccountObject)
     {
         var securityIdentifierObject = new ManagementObject($"Win32_SID.SID='{(string)userAccountObject.Properties["SID"].Value}'");
@@ -1799,7 +1781,6 @@ internal static partial class Utils
     /// <param name="userName">the network name of the user</param>
     /// <param name="securityIdentifierOfUser">Object containing User's sid</param>
     /// <returns></returns>
-    [SupportedOSPlatform("windows")]
     private static ManagementObject CreateTrustee(string domain, string userName, ManagementObject securityIdentifierOfUser)
     {
         var trusteeObject = new ManagementClass("Win32_Trustee").CreateInstance();
@@ -1817,7 +1798,6 @@ internal static partial class Utils
     /// <param name="trustee">The user's trustee object</param>
     /// <param name="deny">boolean to say if user permissions should be assigned or denied</param>
     /// <returns></returns>
-    [SupportedOSPlatform("windows")]
     private static ManagementObject CreateAccessControlEntry(ICloneable trustee, bool deny)
     {
         var aceObject = new ManagementClass("Win32_ACE").CreateInstance();
@@ -1842,7 +1822,6 @@ internal static partial class Utils
     }
 }
 
-[SupportedOSPlatform("windows")]
 [SuppressMessage("ReSharper", "UnusedMember.Global")]
 internal sealed class Win32Share
 {
@@ -1889,11 +1868,10 @@ internal sealed class Win32Share
 
     public string Path => Convert.ToString(mWinShareObject[nameof(Path)]);
 
-    [SupportedOSPlatform("windows")] public string Status => Convert.ToString(mWinShareObject[nameof(Status)]);
+    public string Status => Convert.ToString(mWinShareObject[nameof(Status)]);
 
-    [SupportedOSPlatform("windows")] public ShareType Type => (ShareType)Convert.ToUInt32(mWinShareObject[nameof(Type)]);
+    public ShareType Type => (ShareType)Convert.ToUInt32(mWinShareObject[nameof(Type)]);
 
-    [SupportedOSPlatform("windows")]
     public MethodStatus Delete()
     {
         var result = mWinShareObject.InvokeMethod("Delete", []);
@@ -1901,7 +1879,6 @@ internal sealed class Win32Share
         return (MethodStatus)r;
     }
 
-    [SupportedOSPlatform("windows")]
     internal static MethodStatus Create(string path, string name, ShareType type, uint maximumAllowed, string description, string password)
     {
         var mc = new ManagementClass("Win32_Share");
@@ -1911,7 +1888,6 @@ internal sealed class Win32Share
         return (MethodStatus)r;
     }
 
-    [SupportedOSPlatform("windows")]
     private static IEnumerable<Win32Share> GetAllShares()
     {
         IList<Win32Share> result = [];
@@ -1924,7 +1900,6 @@ internal sealed class Win32Share
         return result;
     }
 
-    [SupportedOSPlatform("windows")]
     internal static Win32Share GetNamedShare(string name)
     {
         return GetAllShares().FirstOrDefault(s => s.Name == name);

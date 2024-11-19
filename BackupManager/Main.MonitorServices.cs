@@ -8,7 +8,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.Versioning;
 
 using BackupManager.Entities;
 using BackupManager.Extensions;
@@ -18,7 +17,6 @@ namespace BackupManager;
 
 internal sealed partial class Main
 {
-    [SupportedOSPlatform("windows")]
     private void MonitorServices()
     {
         if (monitoringExecutingRightNow) return;
@@ -89,7 +87,6 @@ internal sealed partial class Main
         }
     }
 
-    [SupportedOSPlatform("windows")]
     private static void MonitorServiceToRestart(ProcessServiceMonitor monitor)
     {
         Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.Restarting, monitor.ServiceToRestart));

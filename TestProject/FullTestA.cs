@@ -5,7 +5,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.Versioning;
 
 using BackupManager;
 using BackupManager.Entities;
@@ -22,7 +21,6 @@ public sealed class FullTestA
         _testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
     }
 
-    [SupportedOSPlatform("windows")]
     [Fact]
     public void Test()
     {

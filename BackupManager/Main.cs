@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.Versioning;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
@@ -410,7 +409,6 @@ internal sealed partial class Main : Form
         _ = TaskWrapper(monitoringAction, false, monitoringCancellationTokenSource.Token);
     }
 
-    [SupportedOSPlatform("windows")]
     private void KillProcessesButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
@@ -451,7 +449,6 @@ internal sealed partial class Main : Form
         Utils.TraceOut();
     }
 
-    [SupportedOSPlatform("windows")]
     private void StopProcessButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
@@ -992,7 +989,6 @@ internal sealed partial class Main : Form
         Utils.TraceOut();
     }
 
-    [SupportedOSPlatform("windows")]
     private void CreateNewBackupDiskButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
