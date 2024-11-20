@@ -170,7 +170,7 @@ internal sealed partial class Main
         foreach (var fileRenameRule in config.FileRenameRules.Select(static fileRenameRule => new { fileRenameRule, a = fileRenameRule.FileDiscoveryRegex }).Where(static t => !t.a.HasNoValue())
                      .Select(t => new { t, match = Regex.Match(newFilePath, t.a) }).Where(static t => t.match.Success).Select(static t => t.t.fileRenameRule))
         {
-            // split on the comma, trim them, then replace the text 
+            // split on the comma, trim them, then replace the text
             newFilePath = fileRenameRule.Search.Split(',').Select(static t => t.Trim()).Aggregate(newFilePath, (current, s) => current.Replace(s, fileRenameRule.Replace));
         }
         if (newFilePath == file) return Utils.TraceOut(true);
@@ -332,7 +332,7 @@ internal sealed partial class Main
         if (freeSpaceOnRootDirectoryDisk < Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumCriticalSpace)) Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"Free space on {rootDirectory} is too low");
         UpdateStatusLabel(ct, string.Format(Resources.Scanning, rootDirectory));
 
-        // Check for files in this root directories 
+        // Check for files in this root directories
         var files = Utils.File.GetFiles(rootDirectory, filters, SearchOption.TopDirectoryOnly, 0, 0, ct);
         var filtersToDelete = mediaBackup.Config.FilesToDelete.Select(static filter => new { filter, replace = filter.Replace(".", @"\.").Replace("*", ".*").Replace("?", ".") }).Select(static t => $"^{t.replace}$").ToArray();
 

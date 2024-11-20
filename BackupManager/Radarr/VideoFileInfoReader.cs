@@ -11,7 +11,7 @@
 // you also need:
 // MediaInfoModel.cs
 // These use ffprobe.exe (which needs libcrypto-3-x64.dll, libcurl.dll, libmediainfo.dll and libssl-3-x64.dll
-// These were last copied from Radarr on 19.03.24 
+// These were last copied from Radarr on 19.03.24
 // main changes/fixes are: check the first 10 frames to determine [HDR10] instead of [PQ]
 //
 
@@ -311,7 +311,7 @@ internal sealed class VideoFileInfoReader
     /// <param name="forced"></param>
     /// <param name="subFileName"></param>
     /// <returns>True to skip to the next subtitle stream</returns>
-    private static bool CheckForHearingImpairedAndForced(SubtitleStream subStream, out bool hearingImpaired, out bool forced, out string subFileName)
+    private static bool CheckForHearingImpairedAndForced(MediaStream subStream, out bool hearingImpaired, out bool forced, out string subFileName)
     {
         forced = false;
         hearingImpaired = false;
@@ -338,7 +338,7 @@ internal sealed class VideoFileInfoReader
         return false;
     }
 
-    private static void ProcessSubtitleTags(SubtitleStream subStream, ref bool hearingImpaired, ref bool forced)
+    private static void ProcessSubtitleTags(MediaStream subStream, ref bool hearingImpaired, ref bool forced)
     {
         if (subStream.Tags != null)
         {
@@ -457,7 +457,7 @@ internal sealed class VideoFileInfoReader
                 // Andy get more than 1 frame side data not just the first one
                 //var frameOutput = FFProbe.GetFrameJson(filename,
                 //    ffOptions: new FFOptions { ExtraArguments = $"-read_intervals \"%+#5\" -select_streams v:{primaryVideoStream?.Index ?? 0}" });
-                // The {primaryVideoStream?.Index ?? 0} above does not work for all movies 
+                // The {primaryVideoStream?.Index ?? 0} above does not work for all movies
                 var frameOutput = FFProbe.GetFrameJson(filename, ffOptions: new FFOptions { ExtraArguments = "-read_intervals \"%+#5\" -select_streams v" });
                 mediaInfoModel.RawFrameData = frameOutput;
                 frames = FFProbe.AnalyseFrameJson(frameOutput);

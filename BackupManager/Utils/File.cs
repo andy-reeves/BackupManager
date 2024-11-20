@@ -194,7 +194,7 @@ internal static partial class Utils
             }
             catch (ArgumentOutOfRangeException)
             {
-                // Sometimes the file doesn't have a valid LastWriteTime 
+                // Sometimes the file doesn't have a valid LastWriteTime
                 //If we cant read the LastWriteTime then copy the LastAccessTime over it and use that instead
                 fileInfo.LastWriteTime = fileInfo.LastAccessTime;
                 returnValue = fileInfo.LastWriteTime;

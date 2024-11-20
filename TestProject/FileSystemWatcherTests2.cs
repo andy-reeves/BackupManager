@@ -49,7 +49,7 @@ public sealed class FileSystemWatcherTests2
         // 100 in 50ms  64k buffer
         // 100 in 250ms 64k buffer
         // 10k in  5s   64k buffer
-        // 50k in 10s   64k buffer 
+        // 50k in 10s   64k buffer
 
         //and also:
         // 50k in 20s   10k buffer

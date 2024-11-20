@@ -169,9 +169,9 @@ internal sealed partial class Main : Form
     {
         Utils.TraceIn();
 
-        // loop through all the files looking for the directory specified in the top drop down and copy to the bottom drop down 
+        // loop through all the files looking for the directory specified in the top drop down and copy to the bottom drop down
         // for each file order by backup disk
-        // prompt for the backup disk to be inserted 
+        // prompt for the backup disk to be inserted
         // check we have it inserted
         // copy any files off this disk until we're all done to the new disk that we specified
         if (MessageBox.Show(Resources.RestoreFilesAreYouSure, Resources.RestoreFilesTitle, MessageBoxButtons.YesNo) == DialogResult.Yes)
@@ -693,7 +693,7 @@ internal sealed partial class Main : Form
                     UpdateSymbolicLinkForDirectory(directoryToScan.Path);
 
                     // instead of removing files that are no longer found in a directory we now flag them as deleted so we can report them later
-                    // unless they aren't on a backup disk in which case they are removed now 
+                    // unless they aren't on a backup disk in which case they are removed now
                     BackupFile[] filesToRemoveOrMarkDeleted;
 
                     if (searchOption == SearchOption.TopDirectoryOnly)
@@ -1171,7 +1171,7 @@ internal sealed partial class Main : Form
         // export subtitles and remove them
         const string ext = ".mkv";
 
-        // find ext files that have subtitles 
+        // find ext files that have subtitles
         var backupFiles = mediaBackup.BackupFiles.Where(static f => f.Extension == ext && !f.FullPath.Contains("[h265]")).OrderBy(static q => q.FullPath).ToArray();
         var count = 0;
 
@@ -1205,7 +1205,7 @@ internal sealed partial class Main : Form
         // export chapters and remove them
         const string ext = ".mp4";
 
-        // find mp4 files that have chapters 
+        // find mp4 files that have chapters
         var backupFiles = mediaBackup.BackupFiles.Where(static f => f.Extension == ext && !f.FullPath.Contains("[h265]")).OrderBy(static q => q.FullPath).ToArray();
         var count = 0;
 

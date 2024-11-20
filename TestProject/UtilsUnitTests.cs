@@ -61,7 +61,7 @@ public sealed class UtilsUnitTests
             {
                 if (Directory.Exists(path1))
                 {
-                    // Tidy up directories we created 
+                    // Tidy up directories we created
                     _ = Utils.Directory.Delete(path1, true);
                 }
             }

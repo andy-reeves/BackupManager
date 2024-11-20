@@ -33,7 +33,7 @@ namespace BackupManager.Entities;
 public sealed class MediaBackup
 {
     // We need to a hash of the index folder and relative path
-    // we do this so we can look up files quickly by 
+    // we do this so we can look up files quickly by
     // contents hashes are not unique. Duplicate files in different locations
     // The only guaranteed unique value is the indexfolder and relative path
     // We don't want to delete the file off backup and then copy it again so we try a rename
@@ -382,7 +382,7 @@ public sealed class MediaBackup
                 // check the timestamp against what we have
                 var lastWriteTimeFromMasterFile = Utils.File.GetLastWriteTime(fullPath);
 
-                // if the file on disk is different then check the hash 
+                // if the file on disk is different then check the hash
                 if (backupFile.LastWriteTime != lastWriteTimeFromMasterFile)
                 {
                     Utils.Trace(" update the timestamp as its changed/missing");

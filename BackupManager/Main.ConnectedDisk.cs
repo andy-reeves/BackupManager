@@ -250,7 +250,7 @@ internal sealed partial class Main
         // it could be that we've renamed it in the directory
         // We could just let it get deleted off the backup disk and copied again next time
         // Alternatively, find it by the contents hashcode as that's (almost guaranteed unique)
-        // and then rename it 
+        // and then rename it
         // if we try to rename, and it exists at the destination already then we delete the file instead
         Utils.TraceIn();
         var hashToCheck = Utils.File.GetShortMd5Hash(backupDiskFileFullPath);

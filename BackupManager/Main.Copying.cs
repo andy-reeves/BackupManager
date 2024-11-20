@@ -36,7 +36,7 @@ internal sealed partial class Main
         // This avoids any division by zero errors later
         if (sizeOfCopy == 0) sizeOfCopy = 1;
 
-        // We use 100 as the max because the actual number of bytes could be far too large 
+        // We use 100 as the max because the actual number of bytes could be far too large
         EnableProgressBar(0, 100);
         CopyFilesLoop(backupFiles, sizeOfCopy, disk, ct);
         UpdateMediaFilesCountDisplay();
@@ -123,7 +123,7 @@ internal sealed partial class Main
         var copyTheFile = false;
 
         // it could be that the source file hash changed after we read it (we read the hash, updated the master file and then copied it)
-        // in which case check the source hash again and then check the copied file 
+        // in which case check the source hash again and then check the copied file
         // if the hash has changed we check the ModifiedTime. If it's been modified at source and its newer then we delete from the backup
         // disk and copy the new one
         if (backupFile.CheckContentHashes(disk))
@@ -207,7 +207,7 @@ internal sealed partial class Main
 
             // it could be that the source file hash changed after we read it (we read the hash, updated the master file and
             // then copied it)
-            // in which case check the source hash again and then check the copied file 
+            // in which case check the source hash again and then check the copied file
             if (!backupFile.CheckContentHashes(disk)) Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.High, string.Format(Resources.HashCodesError, backupFile.FullPath));
         }
         else

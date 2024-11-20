@@ -58,7 +58,7 @@ internal abstract class VideoBackupFileBase : ExtendedBackupFileBase
                 VideoQuality = VideoResolution switch
                 {
                     // ReSharper disable once CommentTypo
-                    // if the resolution is actually 576 or 480 then the Quality must be SDTV and not anything else 
+                    // if the resolution is actually 576 or 480 then the Quality must be SDTV and not anything else
                     VideoResolution.R576p or VideoResolution.R480p when VideoQuality is VideoQuality.HDTV or VideoQuality.Unknown => VideoQuality.SDTV,
                     VideoResolution.R720p or VideoResolution.R1080p or VideoResolution.R2160p when VideoQuality is VideoQuality.SDTV or VideoQuality.DVD or VideoQuality.Unknown => VideoQuality.HDTV,
                     _ => VideoQuality

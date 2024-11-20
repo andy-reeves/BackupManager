@@ -1630,7 +1630,7 @@ internal static partial class Utils
             inputParameters["Description"] = description;
             inputParameters["Name"] = shareName;
             inputParameters["Path"] = folderPath;
-            inputParameters["Type"] = 0x0; //disk drive 
+            inputParameters["Type"] = 0x0; //disk drive
             inputParameters["MaximumAllowed"] = null;
             inputParameters["Access"] = null;
             inputParameters["Password"] = null;
@@ -1703,12 +1703,12 @@ internal static partial class Utils
             // Step 6 - Add Access Control Entry to the Access Control List
             accessControlList[existingAccessControlEntriesCount] = accessControlEntry;
 
-            // Step 7 - Assign access Control list to security descriptor 
+            // Step 7 - Assign access Control list to security descriptor
             // ReSharper disable once StringLiteralTypo
             securityDescriptor.Properties["DACL"].Value = accessControlList;
         }
 
-        // Step 8 - Assign access Control list to security descriptor 
+        // Step 8 - Assign access Control list to security descriptor
         var parameterForSetSecurityDescriptor = sharedFolder.GetMethodParameters("SetSecurityDescriptor");
         parameterForSetSecurityDescriptor["Descriptor"] = securityDescriptor;
         _ = sharedFolder.InvokeMethod("SetSecurityDescriptor", parameterForSetSecurityDescriptor, null);
@@ -1723,7 +1723,7 @@ internal static partial class Utils
     {
         ManagementObject sharedFolderObject = null;
 
-        //Creating a searcher object to search 
+        //Creating a searcher object to search
         var searcher = new ManagementObjectSearcher("Select * from Win32_LogicalShareSecuritySetting where Name = '" + sharedFolderName + "'");
         var resultOfSearch = searcher.Get();
         if (resultOfSearch.Count <= 0) return null;

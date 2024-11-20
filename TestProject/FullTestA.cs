@@ -42,7 +42,7 @@ public sealed class FullTestA
 
         // Step 3 - Assert state after scan
 
-        // file8 should be renamed 
+        // file8 should be renamed
         var file8PathOnSource = Path.Combine(targetDirectory, @"DirectoryB\_TV\File8 {tvdb-250487}\Season 1\File8 s01e01 [Bluray-1080p Remux][DTS-HD MA 5.1][h264].mkv");
         Assert.True(File.Exists(file8PathOnSource));
         var file8SrtPathOnSource = Path.Combine(targetDirectory, @"DirectoryB\_TV\File8 {tvdb-250487}\Season 1\File8 s01e01 [Bluray-1080p Remux][DTS-HD MA 5.1][h264].en.srt");
@@ -74,7 +74,7 @@ public sealed class FullTestA
         var file5PathOnBackupDisk = Path.Combine(Utils.Config.BackupDisk, @"backup 1001\_Movies\File5.txt");
         Assert.True(Utils.File.SetLastWriteTime(file5PathOnBackupDisk, timestampToUse));
 
-        //  because the file only differed by hashcode so wasn't deleted but extra file was 
+        //  because the file only differed by hashcode so wasn't deleted but extra file was
         _ = mainForm.CheckConnectedDisk(true, ct);
         files = Utils.File.GetFiles(Utils.Config.BackupDisk, ct);
         Assert.Equal(3, files.Length);

@@ -192,7 +192,7 @@ public sealed class EntityTests
 
         if (Utils.Config.PlexToken.HasNoValue())
         {
-            // Remove 
+            // Remove
             mediaBackup.RemoveFile(backupFile);
             _ = Assert.Single(mediaBackup.BackupFiles);
             mediaBackup.RemoveFilesWithFlag(false, false);
