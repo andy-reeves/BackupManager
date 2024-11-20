@@ -348,24 +348,50 @@ internal sealed class VideoFileInfoReader
             }
 
             if (subStream.Tags.TryGetValue("handler_name", out var value))
+            {
+                // check for SDH
                 if (value.Contains("SDH"))
+                {
+                    // found hearing impaired
                     hearingImpaired = true;
+                }
+            }
 
             if (subStream.Tags.TryGetValue("title", out value))
             {
-                if (value.Contains("SDH")) hearingImpaired = true;
-                if (value.Contains("forced")) forced = true;
+                // check for SDH
+                if (value.Contains("SDH"))
+                {
+                    // found hearing impaired
+                    hearingImpaired = true;
+                }
+
+                if (value.Contains("forced"))
+                {
+                    // check for forced
+                    forced = true;
+                }
             }
 
             if (subStream.Tags.TryGetValue("forced", out var value2))
+            {
+                // check for forced
                 if (value2.Contains("true"))
+                {
+                    // check for forced
                     forced = true;
+                }
+            }
         }
         if (subStream.Disposition == null) return;
 
         if (subStream.Disposition.TryGetValue("forced", out var value3))
         {
-            if (value3) forced = true;
+            if (value3)
+            {
+                // check for forced
+                forced = true;
+            }
         }
         if (!subStream.Disposition.TryGetValue("hearing_impaired", out var value4)) return;
 

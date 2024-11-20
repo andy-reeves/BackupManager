@@ -1223,13 +1223,9 @@ internal static partial class Utils
                     service.Continue();
                     break;
                 case ServiceControllerStatus.StartPending:
-                    break;
                 case ServiceControllerStatus.StopPending:
-                    break;
                 case ServiceControllerStatus.Running:
-                    break;
                 case ServiceControllerStatus.ContinuePending:
-                    break;
                 case ServiceControllerStatus.PausePending:
                     break;
                 default:
