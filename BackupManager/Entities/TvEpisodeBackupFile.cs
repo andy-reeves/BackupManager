@@ -153,7 +153,12 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
         VideoResolution = Utils.GetEnumFromAttributeValue<VideoResolution>(videoResolution);
         VideoQuality = Utils.GetEnumFromAttributeValue<VideoQuality>(videoQuality);
         Title = showTitle.Trim();
-        EpisodeTitle = episodeTitle.Trim();
+
+        // Trim the episode title before any metadata in the title
+        if (episodeTitle.Contains("]["))
+            EpisodeTitle = episodeTitle.SubstringBeforeLastIgnoreCase(" [").Trim();
+        else
+            EpisodeTitle = episodeTitle.Trim();
         Season = season.Trim();
         Episode = episode.Trim();
         SpecialFeature = Utils.GetEnumFromAttributeValue<SpecialFeature>(specialFeature);

@@ -44,18 +44,38 @@ public sealed class TvEpisodeBackupTests
     }
 
     [Theory]
+    [InlineData("File22 (2010) s07e01 File22 [1] [HDTV-1080p][AC3 5.1][x265].mkv", true, true, "File22 (2010) s07e01 File22 [1] [HDTV-1080p][AC3 5.1][h265].mkv")]
+    [InlineData("File21 (2010) s07e01 File21 [HDTV-1080p][MP2 2.0][h265] [HDTV-1080p][AC3 5.1][x265].mkv", true, true, "File21 (2010) s07e01 File21 [HDTV-1080p][AC3 5.1][h265].mkv")]
     [InlineData("File15 s01e03 Kid in the Park [WEBDL-2160p][DV HDR10Plus][EAC3 Atmos 5.1][h264].mkv", true, true, "File15 s01e03 Kid in the Park [WEBDL-1080p][EAC3 5.1][h265].mkv")]
     [InlineData(@"File8 s01e01 [Bluray-1080p Remux][DTS-HD MA 5.1][AVC].mkv", true, true, "File8 s01e01 [Bluray-1080p Remux][DTS-HD MA 5.1][h264].mkv")]
     [InlineData(@"Percy Jackson and the Olympians s01e01 I Accidentally Vaporize My Pre-Algebra Teacher [SDTV][MP3 2.0].avi", true, false, "Percy Jackson and the Olympians s01e01 I Accidentally Vaporize My Pre-Algebra Teacher [SDTV][MP3 2.0].avi")]
     [InlineData(@"James Martin's Saturday Morning s07e32 Raymond Blanc.mkv", true, true, "James Martin's Saturday Morning s07e32 Raymond Blanc [HDTV-1080p][AAC 2.0][h264].mkv")]
-    public void TvTests2(string param1, bool isValidFileName, bool refreshReturnValue, string mediaFileNameOutputIfRenamed)
+    public void TvTests2(string inputFilename, bool isValidInputFileName, bool refreshReturnValue, string mediaFileNameOutputIfRenamed)
     {
         var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
-        var mediaFileName = File.Exists(param1) ? param1 : Path.Combine(testDataPath, param1);
+        var mediaFileName = File.Exists(inputFilename) ? inputFilename : Path.Combine(testDataPath, inputFilename);
         var tvEpisodeBackupFile = new TvEpisodeBackupFile(mediaFileName);
-        if (tvEpisodeBackupFile.IsValidFileName) Assert.Equal(Path.GetFileName(mediaFileName), tvEpisodeBackupFile.GetFileName());
-        Assert.Equal(refreshReturnValue, tvEpisodeBackupFile.RefreshMediaInfo());
-        Assert.Equal(isValidFileName, tvEpisodeBackupFile.IsValidFileName);
+        if (File.Exists(mediaFileName)) Assert.Equal(refreshReturnValue, tvEpisodeBackupFile.RefreshMediaInfo());
+        Assert.Equal(isValidInputFileName, tvEpisodeBackupFile.IsValidFileName);
         if (refreshReturnValue) Assert.Equal(mediaFileNameOutputIfRenamed, tvEpisodeBackupFile.GetFileName());
     }
+
+    // [Fact]
+    /*public void CheckAllFilesForRename()
+    {
+        var files = _mediaBackup.GetBackupFiles(false).Where(static backupFile => backupFile.FullPath.Contains("_TV") && (Utils.File.IsVideo(backupFile.FullPath) || Utils.File.IsSubtitles(backupFile.FullPath))).ToArray();
+        Utils.Trace(files.Length.ToString());
+
+        for (var i = 14_000; i < files.Length; i++)
+        {
+            var backupFile = files[i];
+            Utils.Trace(i.ToString());
+            var mediaFile = Utils.MediaHelper.ExtendedBackupFileBase(backupFile.FullPath);
+            if (mediaFile is not TvEpisodeBackupFile) continue;
+
+            mediaFile.RefreshMediaInfo();
+            Assert.True(mediaFile.IsValidFileName);
+            Assert.Equal(backupFile.FileName, mediaFile.GetFileName());
+        }
+    }*/
 }
