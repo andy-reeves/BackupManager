@@ -155,10 +155,9 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
         Title = showTitle.Trim();
 
         // Trim the episode title before any metadata in the title
-        if (episodeTitle.Contains("]["))
-            EpisodeTitle = episodeTitle.SubstringBeforeLastIgnoreCase(" [").Trim();
-        else
-            EpisodeTitle = episodeTitle.Trim();
+        // sometimes double metadata  may appear in the filename
+        // this will remove it
+        EpisodeTitle = episodeTitle.Contains("][") ? episodeTitle.SubstringBeforeLastIgnoreCase(" [").Trim() : episodeTitle.Trim();
         Season = season.Trim();
         Episode = episode.Trim();
         SpecialFeature = Utils.GetEnumFromAttributeValue<SpecialFeature>(specialFeature);
