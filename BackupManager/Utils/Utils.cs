@@ -788,7 +788,8 @@ internal static partial class Utils
     }
 
     /// <summary>
-    ///     Logs the text to the LogFile and sends a Pushover message
+    ///     Logs the text to the LogFile and sends a Pushover message. If BackupAction is Error we set Priority to High. No
+    ///     Priority specified and we set it to Normal
     /// </summary>
     /// <param name="backupAction"></param>
     /// <param name="text"></param>

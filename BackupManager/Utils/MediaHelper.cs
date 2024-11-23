@@ -172,6 +172,7 @@ internal static partial class Utils
                 case "rv40":
                 case "cinepak":
                 case "msvideo1":
+                    //TODO Reduce Priority to Normal is no more issues
                     LogWithPushover(BackupAction.General, PushoverPriority.High, $"About to return string.Empty for {fileName}");
                     return "";
             }
@@ -311,7 +312,6 @@ internal static partial class Utils
             if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
             if (!File.IsVideo(path)) throw new NotSupportedException("file is not video");
 
-            //TODO only returns -1,0 or 1
             return VideoFileInfoReader.ChaptersStreamCount(path);
         }
 

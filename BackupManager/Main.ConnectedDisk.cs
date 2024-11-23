@@ -201,7 +201,7 @@ internal sealed partial class Main
 
         if (!UpdateCurrentBackupDiskInfo(disk))
         {
-            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Emergency, string.Format(Resources.ErrorUpdatingInfoForBackupDisk, disk.Name));
+            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, string.Format(Resources.ErrorUpdatingInfoForBackupDisk, disk.Name));
             return null;
         }
         UpdateMediaFilesCountDisplay();
@@ -237,7 +237,7 @@ internal sealed partial class Main
         // as it's an extra file on the backup disk
         if (deleteExtraFiles)
         {
-            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal, $"Extra file {backupDiskFileFullPath} on backup disk {disk.Name} now deleted");
+            Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Extra file {backupDiskFileFullPath} on backup disk {disk.Name} now deleted");
             _ = Utils.File.Delete(backupDiskFileFullPath);
         }
         else
@@ -271,7 +271,7 @@ internal sealed partial class Main
             // check the hash of the destination file to check it's the same as what we would've renamed too
             if (Utils.File.GetShortMd5Hash(destFileName) == hashToCheck)
             {
-                Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Normal, string.Format(Resources.FileExistsAlreadySoDeleting, backupDiskFileFullPath));
+                Utils.LogWithPushover(BackupAction.CheckBackupDisk, string.Format(Resources.FileExistsAlreadySoDeleting, backupDiskFileFullPath));
                 _ = Utils.File.Delete(backupDiskFileFullPath);
             }
         }
@@ -355,11 +355,11 @@ internal sealed partial class Main
                 {
                     if (deleteExtraFiles)
                     {
-                        Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, $"Deleting {backupDiskFileFullPath}.");
+                        Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Deleting {backupDiskFileFullPath}.");
                         _ = Utils.File.Delete(backupDiskFileFullPath);
                     }
                     else
-                        Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, $"Would be deleting {backupDiskFileFullPath}. ");
+                        Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Would be deleting {backupDiskFileFullPath}. ");
                 }
                 Utils.TraceOut();
                 return;

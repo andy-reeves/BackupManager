@@ -49,7 +49,7 @@ internal sealed partial class Main
         {
             if (!Utils.Directory.IsWritable(directory))
             {
-                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.DirectoryIsNotWritable, directory));
+                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Emergency, string.Format(Resources.DirectoryIsNotWritable, directory));
 
                 // Turn off any more directory monitoring
                 mediaBackup.Config.DirectoriesToHealthCheckOnOff = false;
@@ -91,19 +91,25 @@ internal sealed partial class Main
     {
         Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.Restarting, monitor.ServiceToRestart));
 
-        Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
-            Utils.RestartService(monitor.ServiceToRestart, monitor.Timeout) ? string.Format(Resources.MonitorServicesStarted, monitor.Name) : string.Format(Resources.FailedToRestartService, monitor.Name));
+        if (Utils.RestartService(monitor.ServiceToRestart, monitor.Timeout))
+            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, string.Format(Resources.MonitorServicesStarted, monitor.Name));
+        else
+            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.FailedToRestartService, monitor.Name));
     }
 
     private static void MonitorApplicationToStart(ProcessServiceMonitor monitor)
     {
-        Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.Starting, monitor.ApplicationToStart));
+        Utils.LogWithPushover(BackupAction.ApplicationMonitoring, string.Format(Resources.Starting, monitor.ApplicationToStart));
         var processToStart = Environment.ExpandEnvironmentVariables(monitor.ApplicationToStart);
 
         if (File.Exists(processToStart))
         {
             var newProcess = Process.Start(processToStart, monitor.ApplicationToStartArguments);
-            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, newProcess == null ? string.Format(Resources.FailedToStart, monitor.Name) : string.Format(Resources.MonitorServicesStarted, monitor.Name));
+
+            if (newProcess == null)
+                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.FailedToStart, monitor.Name));
+            else
+                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, string.Format(Resources.MonitorServicesStarted, monitor.Name));
         }
         else
             Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.FailedToStartAsNotFound, monitor.Name, monitor.ApplicationToStart, processToStart));

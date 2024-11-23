@@ -28,7 +28,7 @@ internal sealed partial class Main : Form
     private void FileSystemWatcher_OnError(object sender, ErrorEventArgs e)
     {
         var ex = e.GetException();
-        Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High, $"Message: {ex.Message}");
+        Utils.LogWithPushover(BackupAction.Error, $"Message: {ex.Message}");
 
         try
         {
@@ -40,7 +40,7 @@ internal sealed partial class Main : Form
         }
         catch (Exception exc)
         {
-            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High, $"Unable to Reset FileSystemWatcher {exc}");
+            Utils.LogWithPushover(BackupAction.Error, $"Unable to Reset FileSystemWatcher {exc}");
             mediaBackup.Config.DirectoriesFileChangeWatcherOnOff = false;
             SetupFileWatchers();
         }
@@ -247,7 +247,7 @@ internal sealed partial class Main : Form
                                 _ = Utils.File.Copy(sourceFileFullPath, targetFilePath, mainCt);
                             }
                             else
-                                Utils.LogWithPushover(BackupAction.Restore, PushoverPriority.High, $"[{fileCounter}/{countOfFiles}] {sourceFileFullPath} doesn't exist");
+                                Utils.LogWithPushover(BackupAction.Restore, $"[{fileCounter}/{countOfFiles}] {sourceFileFullPath} doesn't exist");
                         }
 
                         if (Utils.File.Exists(targetFilePath))
@@ -425,14 +425,14 @@ internal sealed partial class Main : Form
 
                 foreach (var toKill in processesToKill)
                 {
-                    Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal, $"Stopping all '{toKill}' processes that match");
+                    Utils.LogWithPushover(BackupAction.ApplicationMonitoring, $"Stopping all '{toKill}' processes that match");
                     _ = Utils.KillProcesses(toKill);
                 }
             }
             if (monitor.ServiceToRestart.HasNoValue()) continue;
 
-            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal, $"Stopping '{monitor.ServiceToRestart}'");
-            if (!Utils.StopService(monitor.ServiceToRestart, 5000)) Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.FailedToStopTheService, monitor.Name));
+            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, $"Stopping '{monitor.ServiceToRestart}'");
+            if (!Utils.StopService(monitor.ServiceToRestart, 5000)) Utils.LogWithPushover(BackupAction.ApplicationMonitoring, string.Format(Resources.FailedToStopTheService, monitor.Name));
         }
         Utils.TraceOut();
     }
@@ -468,14 +468,14 @@ internal sealed partial class Main : Form
 
                 foreach (var toKill in processesToKill)
                 {
-                    Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal, $"Stopping all '{toKill}' processes that match");
+                    Utils.LogWithPushover(BackupAction.ApplicationMonitoring, $"Stopping all '{toKill}' processes that match");
                     _ = Utils.KillProcesses(toKill);
                 }
             }
 
             if (monitor.ServiceToRestart.HasValue())
             {
-                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.Normal, $"Stopping '{monitor.ServiceToRestart}'");
+                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, $"Stopping '{monitor.ServiceToRestart}'");
                 if (!Utils.StopService(monitor.ServiceToRestart, 5000)) Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.FailedToStopTheService, monitor.Name));
             }
         }
@@ -1182,8 +1182,7 @@ internal sealed partial class Main : Form
         //foreach (var file in backupFiles)
 
         // Process tdarr file
-        // =====================
-        //todo take  Tdarr exported csv file and process that
+        // ====================
         var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture);
         IEnumerable<TdarrTranscodeCancelled> records;
         var testDataDirectory = Path.GetFullPath(Path.Combine(Utils.GetProjectPath(typeof(Main)), @"..\TestProject\TestData"));

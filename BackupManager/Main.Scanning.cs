@@ -60,7 +60,7 @@ internal sealed partial class Main
         reportedPercentComplete = 0;
         EnableProgressBar(0, filesParam.Count);
         var suffix = filesParam.Count == 1 ? string.Empty : "s";
-        Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.Normal, $"Processing {filesParam.Count:n0} file{suffix}", false, true);
+        Utils.LogWithPushover(BackupAction.ProcessFiles, $"Processing {filesParam.Count:n0} file{suffix}", false, true);
 
         // One process thread for each disk that has files on it to scan
         tasks.AddRange(disksAndFirstDirectories.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam))
@@ -407,7 +407,7 @@ internal sealed partial class Main
         foreach (var directory in directories)
         {
             var directoryScan = new DirectoryScan(DirectoryScanType.GetFiles, directory, DateTime.Now, scanId);
-            Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, string.Format(Resources.Scanning, directory));
+            Utils.LogWithPushover(BackupAction.ScanDirectory, string.Format(Resources.Scanning, directory));
             if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
             UpdateStatusLabel(ct, string.Format(Resources.Scanning, directory));
             var files = Utils.File.GetFiles(directory, filters, SearchOption.AllDirectories, 0, 0, ct);

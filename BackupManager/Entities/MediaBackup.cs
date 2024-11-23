@@ -325,8 +325,6 @@ public sealed class MediaBackup
     {
         Utils.TraceIn();
 
-        // TODO This may need to be locked here
-
         // Copy to List to avoid modified collection errors
         var bFiles = BackupFiles.ToList();
         var count = bFiles.Count(a => a.ContentsHash == value && !a.Deleted);
@@ -406,7 +404,7 @@ public sealed class MediaBackup
 
                 if (fullPath != backupFile.FullPath)
                 {
-                    Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, $"FullPath different so setting it now. backupFile.FullPath was {backupFile.FullPath} and now set to {fullPath}");
+                    Utils.LogWithPushover(BackupAction.General, $"FullPath different so setting it now. backupFile.FullPath was {backupFile.FullPath} and now set to {fullPath}");
                     backupFile.SetFullPath(fullPath, directory);
                 }
                 Utils.Trace($"FullPath = {backupFile.FullPath}");

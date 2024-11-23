@@ -230,7 +230,7 @@ internal sealed partial class Main
             if (percentCompleteCurrent % 25 == 0 && percentCompleteCurrent > percentCompleteReported && hashSet.Count > 100)
             {
                 percentCompleteReported = percentCompleteCurrent;
-                Utils.LogWithPushover(BackupAction.CheckingSymbolicLinks, PushoverPriority.Normal, string.Format(Resources.UpdatingPercentage, percentCompleteCurrent));
+                Utils.LogWithPushover(BackupAction.CheckingSymbolicLinks, string.Format(Resources.UpdatingPercentage, percentCompleteCurrent));
             }
             UpdateSymbolicLinkForDirectory(path);
         }
@@ -275,7 +275,7 @@ internal sealed partial class Main
             if (path == null) continue;
 
             _ = Directory.CreateSymbolicLink(path, pathToTarget);
-            Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.Normal, $"Creating new symbolic link at {path} with target {pathToTarget}");
+            Utils.LogWithPushover(BackupAction.ScanDirectory, $"Creating new symbolic link at {path} with target {pathToTarget}");
         }
         Utils.TraceOut();
     }
