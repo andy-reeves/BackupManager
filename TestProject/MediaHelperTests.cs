@@ -34,6 +34,16 @@ public sealed class MediaHelperTests
     }
 
     [Theory]
+    [InlineData("File23.mkv", 1)]
+    public void HasSubtitles(string inputFilename, int expectedResult)
+    {
+        var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
+        var fileName = Path.Combine(testDataPath, inputFilename);
+        if (expectedResult > 0) Assert.True(Utils.MediaHelper.HasSubtitles(fileName));
+        Assert.Equal(expectedResult, Utils.MediaHelper.SubtitlesStreamCount(fileName));
+    }
+
+    [Theory]
     [InlineData("File18.withChapters.master.mkv", true)]
     [InlineData("File18.noChapters.master.mkv", false)]
     public void HasChapters(string inputFilename, bool expectedResult)

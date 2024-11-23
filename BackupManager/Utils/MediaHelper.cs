@@ -335,6 +335,16 @@ internal static partial class Utils
             return VideoFileInfoReader.HasChapters(path);
         }
 
+        internal static bool HasSubtitles(string path)
+        {
+            TraceIn(path);
+            ArgumentException.ThrowIfNullOrEmpty(path);
+            if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
+            if (!File.IsVideo(path)) throw new NotSupportedException("file is not video");
+
+            return VideoFileInfoReader.SubtitlesStreamCount(path) > 0;
+        }
+
         internal static bool ExtractChapters(string path, string outputFilename)
         {
             TraceIn(path);

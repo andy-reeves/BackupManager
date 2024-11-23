@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -16,6 +17,9 @@ using System.Windows.Forms;
 using BackupManager.Entities;
 using BackupManager.Extensions;
 using BackupManager.Properties;
+
+using CsvHelper;
+using CsvHelper.Configuration;
 
 namespace BackupManager;
 
@@ -1168,36 +1172,54 @@ internal sealed partial class Main : Form
 
     private void ExportAndRemoveSubtitlesButton_Click(object sender, EventArgs e)
     {
-        // export subtitles and remove them
-        const string ext = ".mkv";
-
-        // find ext files that have subtitles
-        var backupFiles = mediaBackup.BackupFiles.Where(static f => f.Extension == ext && !f.FullPath.Contains("[h265]")).OrderBy(static q => q.FullPath).ToArray();
         var count = 0;
 
-        foreach (var file in backupFiles)
+        // export subtitles and remove them
+        //const string ext = ".mkv";
+
+        // find ext files that have subtitles
+        // var backupFiles = mediaBackup.BackupFiles.Where(static f => f.Extension == ext && !f.FullPath.Contains("[h265]")).OrderBy(static q => q.FullPath).ToArray();
+        //foreach (var file in backupFiles)
+
+        // Process tdarr file
+        // =====================
+        //todo take  Tdarr exported csv file and process that
+        var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture);
+        IEnumerable<TdarrTranscodeCancelled> records;
+
+        using (var reader = new StreamReader(@"C:\Users\RemoteUser011071\source\repos\andy-reeves\BackupManager\TestProject\TestData\Transcode_ Error_Cancelled.csv"))
+        using (var csv = new CsvReader(reader, csvConfiguration))
         {
-            if (!File.Exists(file.FullPath)) continue;
+            records = csv.GetRecords<TdarrTranscodeCancelled>().ToArray();
+        }
 
-            var mediaFile = Utils.MediaHelper.ExtendedBackupFileBase(file.FullPath);
-            if (mediaFile is not TvEpisodeBackupFile) continue;
-            if (Utils.File.IsSpecialFeature(file.FullPath)) continue;
+        foreach (var fullPath in from record in records
+                 select Path.GetFullPath(record.Id)
+                 into fullPath
+                 where File.Exists(fullPath)
+                 where !Utils.File.IsSpecialFeature(fullPath)
+                 where fullPath.Contains("_TV")
+                 where Utils.MediaHelper.HasSubtitles(fullPath)
+                 select fullPath)
+        {
+            Utils.Log($"{fullPath} is TV episode with subtitles");
+            if (!Utils.MediaHelper.ExtractSubtitleFiles(fullPath)) continue;
 
-            _ = mediaFile.RefreshMediaInfo();
-            if (mediaFile.MediaInfoModel?.Subtitles.Count == 0) continue;
+            var ext = Path.GetExtension(fullPath);
+            var directoryName = Path.GetDirectoryName(fullPath);
 
-            Utils.Log($"{file.FullPath} is TV episode with subtitles");
-            if (!Utils.MediaHelper.ExtractSubtitleFiles(file.FullPath)) continue;
+            if (directoryName != null)
+            {
+                var newPath = Path.Combine(directoryName, ".new" + ext);
+                if (!Utils.MediaHelper.RemoveSubtitlesFromFile(fullPath, newPath)) continue;
 
-            var newPath = Path.Combine(file.Directory, ".new" + ext);
-            if (!Utils.MediaHelper.RemoveSubtitlesFromFile(file.FullPath, newPath)) continue;
-
-            _ = Utils.File.Move(file.FullPath, file.FullPath + ".original");
-            _ = Utils.File.Move(newPath, file.FullPath);
+                _ = Utils.File.Move(fullPath, fullPath + ".original");
+                _ = Utils.File.Move(newPath, fullPath);
+            }
             count++;
             Utils.Log($"Count is {count}");
         }
-        Utils.Log($"{count} files that are mp4not [h265] TV episodes with subtitles");
+        Utils.Log($"{count} files that were exported from Tdarr");
     }
 
     private void ExtractChaptersButton_Click(object sender, EventArgs e)
