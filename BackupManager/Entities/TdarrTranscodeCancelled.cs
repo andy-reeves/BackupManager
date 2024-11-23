@@ -1,71 +1,73 @@
-﻿using CsvHelper.Configuration.Attributes;
+﻿using System.Diagnostics.CodeAnalysis;
+
+using CsvHelper.Configuration.Attributes;
 
 namespace BackupManager.Entities
 {
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
+    [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+    [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
     internal class TdarrTranscodeCancelled
     {
-        //  "_id","file","DB","footprintId","hasClosedCaptions","container","scannerReads","ffProbeData","file_size","video_resolution","fileMedium","video_codec_name","audio_codec_name","lastPluginDetails","createdAt","bit_rate","duration","statSync","HealthCheck","TranscodeDecisionMaker","lastHealthCheckDate","holdUntil","lastTranscodeDate","bumped","history","oldSize","newSize","newVsOldRatio","videoStreamIndex","lastUpdate"
-
         [Name("_id")] public string Id { get; set; }
 
         [Name("file")] public string File { get; set; }
 
-        //  "_id","file"
-        [Name("DB")] public string Db { get; set; } // ,"DB"
+        [Name("DB")] public string Db { get; set; }
 
-        // ,
-        [Name("footprintId")] public string footprintId { get; set; } // "footprintId",
+        // 
+        [Name("footprintId")] public string FootprintId { get; set; }
 
-        [Name("hasClosedCaptions")] public string hasClosedCaptions { get; set; } // "hasClosedCaptions",
+        [Name("hasClosedCaptions")] public string HasClosedCaptions { get; set; }
 
-        [Name("container")] public string container { get; set; } // "container
+        [Name("container")] public string Container { get; set; }
 
-        [Name("scannerReads")] public string scannerReads { get; set; } // ","scannerReads",
+        [Name("scannerReads")] public string ScannerReads { get; set; }
 
-        [Name("ffProbeData")] public string ffProbeData { get; set; } // "ffProbeData"
+        [Name("ffProbeData")] public string FfProbeData { get; set; }
 
-        [Name("file_size")] public string file_size { get; set; } // ,"file_size"
+        [Name("file_size")] public string FileSize { get; set; }
 
-        [Name("video_resolution")] public string video_resolution { get; set; } // ,"video_resolution",
+        [Name("video_resolution")] public string VideoResolution { get; set; }
 
-        [Name("fileMedium")] public string fileMedium { get; set; } // "fileMedium"
+        [Name("fileMedium")] public string FileMedium { get; set; }
 
-        [Name("video_codec_name")] public string video_codec_name { get; set; } // ,"video_codec_name",
+        [Name("video_codec_name")] public string VideoCodecName { get; set; }
 
-        [Name("audio_codec_name")] public string audio_codec_name { get; set; } // "audio_codec_name"
+        [Name("audio_codec_name")] public string AudioCodecName { get; set; }
 
-        [Name("lastPluginDetails")] public string lastPluginDetails { get; set; } // ,"lastPluginDetails"
+        [Name("lastPluginDetails")] public string LastPluginDetails { get; set; }
 
-        [Name("createdAt")] public string createdAt { get; set; } // ,"createdAt",
+        [Name("createdAt")] public string CreatedAt { get; set; }
 
-        [Name("bit_rate")] public string bit_rate { get; set; } // "bit_rate"
+        [Name("bit_rate")] public string BitRate { get; set; }
 
-        [Name("duration")] public string duration { get; set; } // ,"duration"
+        [Name("duration")] public string Duration { get; set; }
 
-        [Name("statSync")] public string statSync { get; set; } // ,"statSync"
+        [Name("statSync")] public string StatSync { get; set; }
 
-        [Name("HealthCheck")] public string HealthCheck { get; set; } // ,"HealthCheck",
+        [Name("HealthCheck")] public string HealthCheck { get; set; }
 
-        [Name("TranscodeDecisionMaker")] public string TranscodeDecisionMaker { get; set; } // "TranscodeDecisionMaker"
+        [Name("TranscodeDecisionMaker")] public string TranscodeDecisionMaker { get; set; }
 
-        [Name("lastHealthCheckDate")] public string lastHealthCheckDate { get; set; } // ,"lastHealthCheckDate"
+        [Name("lastHealthCheckDate")] public string LastHealthCheckDate { get; set; }
 
-        [Name("holdUntil")] public string holdUntil { get; set; } // ,"holdUntil",
+        [Name("holdUntil")] public string HoldUntil { get; set; }
 
-        [Name("lastTranscodeDate")] public string lastTranscodeDate { get; set; } // "lastTranscodeDate"
+        [Name("lastTranscodeDate")] public string LastTranscodeDate { get; set; }
 
-        [Name("bumped")] public string bumped { get; set; } // ,"bumped"
+        [Name("bumped")] public string Bumped { get; set; }
 
-        [Name("history")] public string history { get; set; } // ,"history"
+        [Name("history")] public string History { get; set; }
 
-        [Name("oldSize")] public string oldSize { get; set; } // ,"oldSize"
+        [Name("oldSize")] public string OldSize { get; set; }
 
-        [Name("newSize")] public string newSize { get; set; } // ,"newSize"
+        [Name("newSize")] public string NewSize { get; set; }
 
-        [Name("newVsOldRatio")] public string newVsOldRatio { get; set; } // ,"newVsOldRatio",
+        [Name("newVsOldRatio")] public string NewVsOldRatio { get; set; }
 
-        [Name("videoStreamIndex")] public string videoStreamIndex { get; set; } // "videoStreamIndex"
+        [Name("videoStreamIndex")] public string VideoStreamIndex { get; set; }
 
-        [Name("lastUpdate")] public string lastUpdate { get; set; } // ,"lastUpdate"
+        [Name("lastUpdate")] public string LastUpdate { get; set; }
     }
 }

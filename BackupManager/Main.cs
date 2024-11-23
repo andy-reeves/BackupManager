@@ -1186,8 +1186,9 @@ internal sealed partial class Main : Form
         //todo take  Tdarr exported csv file and process that
         var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture);
         IEnumerable<TdarrTranscodeCancelled> records;
+        var testDataDirectory = Path.GetFullPath(Path.Combine(Utils.GetProjectPath(typeof(Main)), @"..\TestProject\TestData"));
 
-        using (var reader = new StreamReader(@"C:\Users\RemoteUser011071\source\repos\andy-reeves\BackupManager\TestProject\TestData\Transcode_ Error_Cancelled.csv"))
+        using (var reader = new StreamReader(Path.Combine(testDataDirectory, "Transcode_ Error_Cancelled.csv")))
         using (var csv = new CsvReader(reader, csvConfiguration))
         {
             records = csv.GetRecords<TdarrTranscodeCancelled>().ToArray();
