@@ -1,4 +1,10 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿// --------------------------------------------------------------------------------------------------------------------
+//  <copyright file="TdarrTranscodeCancelled.cs" company="Andy Reeves">
+// 
+//  </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+using System.Diagnostics.CodeAnalysis;
 
 using CsvHelper.Configuration.Attributes;
 
