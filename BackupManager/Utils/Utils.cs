@@ -856,6 +856,36 @@ internal static partial class Utils
     /// <param name="delayAfterSending"></param>
     internal static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires, string text, bool delayBeforeSending = false, bool delayAfterSending = false)
     {
+        /*
+           Lowest & Low
+           =============
+           None
+
+           Normal
+           ========
+           Almost all messages
+           Refresh media or hashcode on FileChange detected scans
+
+
+           High - bypasses quiet hours by default (if BackupAction is Error we set Priority=High)
+           They appear in red but don't make any noise
+           ======================================================================================
+           Names of files
+           Rules 1-19
+           Read speed/Write speed
+           Services stopped
+           Monitoring switches off
+           Unable to calculate the hashcode on full scans
+           Refresh media info failed on full scans
+           Disk space low
+
+
+           Emergency - needs acknowledgment (iOS Critical Alert)
+           ================================
+           Services won't start
+           Shares not detected
+
+        */
         Log(backupAction, text);
         if (backupAction == BackupAction.Error && priority == PushoverPriority.Normal) priority = PushoverPriority.High;
 
