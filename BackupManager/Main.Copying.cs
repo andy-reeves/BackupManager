@@ -43,7 +43,7 @@ internal sealed partial class Main
 
         if (!UpdateCurrentBackupDiskInfo(disk))
         {
-            Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.Emergency, string.Format(Resources.ErrorUpdatingInfoForBackupDisk, disk.Name));
+            Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.High, string.Format(Resources.ErrorUpdatingInfoForBackupDisk, disk.Name));
             return;
         }
         mediaBackup.Save(ct);
@@ -97,7 +97,7 @@ internal sealed partial class Main
             catch (IOException ex)
             {
                 // Sometimes during a copy we get this if we lose the connection to the source NAS drive
-                Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.Emergency, string.Format(Resources.FileIOExceptionDuringCopy, ex));
+                Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.High, string.Format(Resources.FileIOExceptionDuringCopy, ex));
             }
         }
         ClearEstimatedFinish();

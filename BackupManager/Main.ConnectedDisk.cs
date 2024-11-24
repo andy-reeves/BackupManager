@@ -386,7 +386,7 @@ internal sealed partial class Main
         if (UpdateCurrentBackupDiskInfo(disk))
             Utils.LogWithPushover(BackupAction.CheckBackupDisk, string.Format(Resources.ProcessingPercentage, currentPercent));
         else
-            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.Emergency, string.Format(Resources.ErrorUpdatingInfoForBackupDisk, disk.Name));
+            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, string.Format(Resources.ErrorUpdatingInfoForBackupDisk, disk.Name));
     }
 
     private void ConnectedDiskSpeedTest(BackupDisk disk, string directoryToCheck, CancellationToken ct)
