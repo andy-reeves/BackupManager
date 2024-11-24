@@ -116,7 +116,6 @@ internal static partial class Utils
         /// <returns>Whether the parse attempt was successful or not</returns>
         private static bool TryParseName<T>(string name, out T value) where T : Enum
         {
-            // TODO: Speed this up for big enums
             var index = EnumInternals<T>.Names.IndexOf(name);
 
             if (index == -1)

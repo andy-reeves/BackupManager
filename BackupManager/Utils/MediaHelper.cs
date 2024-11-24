@@ -22,14 +22,14 @@ internal static partial class Utils
     internal static class MediaHelper
     {
         /// <summary>
-        ///     Returns True if the path contains [DV]
+        ///     Returns True if the path contains [DV (without the closing ']')
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
         internal static bool VideoFileIsDolbyVision(string path)
         {
             ArgumentException.ThrowIfNullOrEmpty(path);
-            return path.HasValue() && path.ContainsIgnoreCase("[DV]");
+            return path.HasValue() && path.ContainsIgnoreCase("[DV");
         }
 
         public static string FormatVideoDynamicRangeType(MediaInfoModel mediaInfo)
@@ -122,12 +122,20 @@ internal static partial class Utils
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
         internal static string FormatVideoCodec(MediaInfoModel mediaInfo, string fileName)
         {
-            if (mediaInfo.VideoFormat == null) return null;
-
+            if (mediaInfo.VideoFormat == null)
+            {
+                LogWithPushover(BackupAction.General, PushoverPriority.High, $"About to return null for {fileName}");
+                return null;
+            }
             var videoFormat = mediaInfo.VideoFormat;
             var videoCodecId = mediaInfo.VideoCodecId ?? string.Empty;
             var result = videoFormat.Trim();
-            if (videoFormat.Empty()) return result;
+
+            if (videoFormat.Empty())
+            {
+                LogWithPushover(BackupAction.General, PushoverPriority.High, $"About to return string.Empty for {fileName}");
+                return result;
+            }
             if (videoCodecId == "x264" || videoFormat == "h264") return "h264";
             if (videoCodecId == "x265") return "h265";
 
@@ -172,11 +180,10 @@ internal static partial class Utils
                 case "rv40":
                 case "cinepak":
                 case "msvideo1":
-                    //TODO Reduce Priority to Normal is no more issues
                     LogWithPushover(BackupAction.General, PushoverPriority.High, $"About to return string.Empty for {fileName}");
                     return "";
             }
-            Trace($"Unknown video format: '{videoFormat}'. Streams: {mediaInfo.RawStreamData}");
+            LogWithPushover(BackupAction.General, PushoverPriority.High, $"{fileName}. Unknown video format: '{videoFormat}'. Streams: {mediaInfo.RawStreamData}");
             return result;
         }
 
@@ -431,6 +438,9 @@ internal static partial class Utils
         /// <returns>Null if the file isn't a movie, TV episode or subtitles file.</returns>
         internal static ExtendedBackupFileBase ExtendedBackupFileBase(string path)
         {
+            ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
+            if (!File.Exists(path)) throw new ArgumentException(Resources.FileNotFound, nameof(path));
+
             if (path.Contains(@"\_TV")) return path.EndsWithIgnoreCase(".srt") ? new SubtitlesBackupFile(path) : new TvEpisodeBackupFile(path);
             if (path.Contains(@"\_Movies") || path.Contains(@"\_Concerts") || path.Contains(@"\_Comedy")) return path.EndsWithIgnoreCase(".srt") ? new SubtitlesBackupFile(path) : new MovieBackupFile(path);
 

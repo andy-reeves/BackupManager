@@ -28,7 +28,6 @@ internal static class StructExtensions
     /// <returns>True if this value has a name, False otherwise.</returns>
     public static bool IsNamedValue<T>(this T value) where T : Enum
     {
-        // TODO: Speed this up for big enums
         return Enums.GetValues<T>().Contains(value);
     }
 
