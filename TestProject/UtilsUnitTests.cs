@@ -24,6 +24,32 @@ public sealed class UtilsUnitTests
         Utils.Config = mediaBackup.Config;
     }
 
+    [InlineData(60_000, "1m")]
+    [InlineData(35_000, "1m")]
+    [InlineData(350, "1s")]
+    [InlineData(142_000, "2m")]
+    [InlineData(0, "0s")]
+    [InlineData(1_000, "1s")]
+    [Theory]
+    public void FormatTimeSpanMinutesOnlyTests(int input, string expected)
+    {
+        Assert.Equal(expected, Utils.FormatTimeSpanMinutesOnly(TimeSpan.FromMilliseconds(input)));
+    }
+
+    [InlineData(60_000_000_000_000, "54.6 TB/s")]
+    [InlineData(60_000_000_000, "55 GB/s")]
+    [InlineData(60_000_000, "57 MB/s")]
+    [InlineData(35_000, "34 KB/s")]
+    [InlineData(350, "350 bytes/s")]
+    [InlineData(142_000, "138 KB/s")]
+    [InlineData(0, "0 bytes/s")]
+    [InlineData(1_000, "1,000 bytes/s")]
+    [Theory]
+    public void FormatSpeedTests(long input, string expected)
+    {
+        Assert.Equal(expected, Utils.FormatSpeed(input));
+    }
+
     [Fact]
     public void VersionNumber()
     {
