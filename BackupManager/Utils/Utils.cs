@@ -1560,7 +1560,7 @@ internal static partial class Utils
     }
 
     /// <summary>
-    ///     Deletes any empty directories in the directory specified and checks recursively all its subdirectories.
+    ///     Deletes any broken symbolic links in the directory specified and checks recursively all its subdirectories.
     /// </summary>
     /// <param name="directory">The directory to check</param>
     /// <param name="includeRoot">True to include the root folder for deletion</param>

@@ -24,6 +24,26 @@ public sealed class UtilsUnitTests
         Utils.Config = mediaBackup.Config;
     }
 
+    [Fact]
+    public void DeleteBrokenSymbolicLinksTests()
+    {
+        var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(UtilsUnitTests)), "TestData");
+        var directoryParent = Path.Combine(testDataPath, @"BrokenLinksDirectory");
+        var directoryToCheck = Path.Combine(testDataPath, @"BrokenLinksDirectory\DirectoryToCheck");
+        var directoryToTarget = Path.Combine(testDataPath, @"BrokenLinksDirectory\Target");
+        if (Directory.Exists(directoryParent)) Utils.Directory.Delete(directoryParent);
+        Directory.CreateDirectory(directoryToCheck);
+        Directory.CreateDirectory(directoryToTarget);
+        _ = Directory.CreateSymbolicLink(Path.Combine(directoryToCheck, "TestLink"), directoryToTarget);
+        var linksDeleted = Utils.DeleteBrokenSymbolicLinks(directoryToCheck, false).ToArray();
+        Assert.Empty(linksDeleted);
+        Directory.Delete(directoryToTarget);
+        linksDeleted = Utils.DeleteBrokenSymbolicLinks(directoryToCheck, false).ToArray();
+        Assert.Single(linksDeleted);
+        if (Directory.Exists(directoryToCheck)) _ = Utils.Directory.Delete(directoryToCheck);
+        if (Directory.Exists(directoryParent)) _ = Utils.Directory.Delete(directoryParent);
+    }
+
     [InlineData(60_000, "1m")]
     [InlineData(35_000, "1m")]
     [InlineData(350, "1s")]
