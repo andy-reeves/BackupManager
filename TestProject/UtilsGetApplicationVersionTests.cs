@@ -18,7 +18,7 @@ public sealed class UtilsGetApplicationVersionTests
 {
     [Theory]
     [InlineData("1.4.5", ApplicationType.Bazarr)]
-    [InlineData("1.41.2.9200", ApplicationType.PlexPass)]
+    [InlineData("1.41.3.9232", ApplicationType.PlexPass)]
     [InlineData("1.26.1.4844", ApplicationType.Prowlarr)]
     [InlineData("5.15.1.9463", ApplicationType.Radarr)]
     [InlineData("4.3.3", ApplicationType.SABnzbd)]
