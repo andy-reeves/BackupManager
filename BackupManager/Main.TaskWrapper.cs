@@ -28,7 +28,7 @@ internal sealed partial class Main
         }
         catch (Exception u)
         {
-            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High, string.Format(Resources.TaskWrapperException, u));
+            Utils.LogWithPushover(BackupAction.Error, string.Format(Resources.TaskWrapperException, u));
             ASyncTasksCleanUp();
         }
         return Utils.TraceOut(false);
@@ -49,7 +49,7 @@ internal sealed partial class Main
         }
         catch (Exception u)
         {
-            Utils.LogWithPushover(BackupAction.Error, PushoverPriority.High, string.Format(Resources.TaskWrapperException, u));
+            Utils.LogWithPushover(BackupAction.Error, string.Format(Resources.TaskWrapperException, u));
             if (withAsyncTasksCleanup) ASyncTasksCleanUp();
         }
         finally
