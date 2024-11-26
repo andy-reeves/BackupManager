@@ -24,6 +24,17 @@ public sealed class UtilsUnitTests
         Utils.Config = mediaBackup.Config;
     }
 
+    [InlineData(1)]
+    [InlineData(14)]
+    [Theory]
+    public void TimeLeftTests(int hours)
+    {
+        var startTime = DateTime.Now;
+        var targetTime = DateTime.Now.AddHours(hours).TimeOfDay;
+        var timeLeft = Utils.TimeLeft(startTime, targetTime);
+        Assert.True(timeLeft.Hours <= hours);
+    }
+
     [Fact]
     public void DeleteBrokenSymbolicLinksTests()
     {
