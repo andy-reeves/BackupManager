@@ -339,7 +339,7 @@ internal sealed class FileSystemWatcher
         if (e.ChangeType is not WatcherChangeTypes.Created and not WatcherChangeTypes.Changed and not WatcherChangeTypes.Deleted and not WatcherChangeTypes.Renamed) return;
         if (Utils.GetFileSystemEntryType(e.FullPath) == FileSystemEntryType.Directory) return;
         if (RegexFilter.HasValue() && !Regex.IsMatch(e.FullPath, RegexFilter)) return;
-        if (e.FullPath.EndsWithIgnoreCase(Utils.IS_DIRECTORY_WRITABLE_GUID + ".tmp") || e.FullPath.EndsWithIgnoreCase(Utils.SPEED_TEST_GUID + ".tmp")) return;
+        if (e.FullPath.Contains(Utils.IS_DIRECTORY_WRITABLE_GUID) || e.FullPath.Contains(Utils.SPEED_TEST_GUID)) return;
 
         _ = FileSystemChanges.AddOrUpdate(new FileSystemEntry(e.FullPath, DateTime.Now));
 
