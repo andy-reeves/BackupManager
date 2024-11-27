@@ -211,7 +211,7 @@ internal sealed partial class Main
 
         try
         {
-            Utils.MediaHelper.CheckVideoFileAndRenameIfRequired(ref file);
+            return Utils.TraceOut(Utils.MediaHelper.CheckVideoFileAndRenameIfRequired(ref file));
         }
         catch (Exception ex)
         {
@@ -219,7 +219,6 @@ internal sealed partial class Main
 
             return Utils.TraceOut(false);
         }
-        return Utils.TraceOut(true);
     }
 
     /// <summary>

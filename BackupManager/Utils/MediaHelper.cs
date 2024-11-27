@@ -206,21 +206,25 @@ internal static partial class Utils
         ///     Checks if the path is a video file or subtitles file and renames the file with extracted media info if required
         /// </summary>
         /// <param name="path"></param>
-        internal static void CheckVideoFileAndRenameIfRequired(ref string path)
+        /// <returns>
+        ///     False if the rename was required but failed or if the refresh of the mediaInfo failed (maybe file locked)
+        ///     otherwise True
+        /// </returns>
+        internal static bool CheckVideoFileAndRenameIfRequired(ref string path)
         {
             var file = ExtendedBackupFileBase(path);
-            if (file == null) return;
+            if (file == null) return true;
 
             if (!file.IsValidFileName)
             {
                 LogWithPushover(BackupAction.Error, $"{path} does not have a valid file name. Name not checked");
-                return;
+                return true;
             }
 
             if (!file.RefreshMediaInfo())
             {
                 LogWithPushover(BackupAction.Error, $"Refreshing media info for {path} failed");
-                return;
+                return false;
             }
             var newFullPath = file.GetFullName();
 
@@ -231,7 +235,7 @@ internal static partial class Utils
                 if (newFullPath.ContainsIgnoreCase("-tdarrcachefile-"))
                 {
                     LogWithPushover(BackupAction.ScanDirectory, $"{newFullPath} is Subtitles file with -tdarrCacheFile- in the path so not renaming");
-                    return;
+                    return true;
                 }
             }
             else
@@ -239,27 +243,28 @@ internal static partial class Utils
                 if (file.MediaInfoModel?.DoviConfigurationRecord?.DvProfile == 5)
                 {
                     LogWithPushover(BackupAction.Error, $"{path} is [DV] Profile 5");
-                    return;
+                    return true;
                 }
             }
 
             // Path is the same so do not rename
-            if (newFullPath == path) return;
+            if (newFullPath == path) return true;
 
             if (File.Exists(newFullPath))
             {
                 LogWithPushover(BackupAction.Error, $"Renaming {path} failed as {newFullPath} already exists");
-                return;
+                return false;
             }
 
             if (Path.GetDirectoryName(path) != Path.GetDirectoryName(newFullPath))
             {
                 LogWithPushover(BackupAction.Error, PushoverPriority.High, $"Renaming {path} to {newFullPath} and directories do not match anymore so not renaming");
-                return;
+                return true;
             }
             LogWithPushover(BackupAction.General, $"Renaming {path} to {newFullPath}");
             _ = File.Move(path, newFullPath);
             path = newFullPath;
+            return true;
         }
 
         internal static decimal FormatAudioChannels(MediaInfoModel mediaInfo)
