@@ -28,7 +28,7 @@ internal static partial class Utils
         {
             if (!System.IO.Directory.Exists(path)) throw new DirectoryNotFoundException($"{path} not found");
 
-            if (File.GetWindowsPhysicalPath(path).SubstringAfterLastIgnoreCase(@"\").Equals(path.SubstringAfterLastIgnoreCase(@"\"), StringComparison.CurrentCulture)) return true;
+            if (!DirectoryExistsWithDifferentCase(path)) return true;
             if (!path.StartsWithIgnoreCase(@"\\")) return File.MoveFile(path, path);
 
             var dir = new DirectoryInfo(path);
@@ -37,6 +37,37 @@ internal static partial class Utils
             Trace($"Renaming ${dir.FullName} to {path}");
             dir.MoveTo(path);
             return true;
+        }
+
+        private static bool DirectoryExistsWithDifferentCase(string directoryName)
+        {
+            if (!Exists(directoryName)) throw new DirectoryNotFoundException($"{directoryName} not found");
+
+            var result = false;
+            directoryName = directoryName.TrimEnd(Path.DirectorySeparatorChar);
+            var lastPathSeparatorIndex = directoryName.LastIndexOf(Path.DirectorySeparatorChar);
+
+            if (lastPathSeparatorIndex >= 0)
+            {
+                var baseDirectory = directoryName.Substring(lastPathSeparatorIndex + 1);
+                var parentDirectory = directoryName.Substring(0, lastPathSeparatorIndex);
+                var directories = System.IO.Directory.GetDirectories(parentDirectory, baseDirectory);
+                if (directories.Length <= 0) return false;
+
+                if (string.CompareOrdinal(directories[0], directoryName) != 0) result = true;
+                return result;
+            }
+
+            //if directory is a drive
+            directoryName += Path.DirectorySeparatorChar.ToString();
+            var drives = DriveInfo.GetDrives();
+
+            foreach (var driveInfo in drives.Where(driveInfo => string.Compare(driveInfo.Name, directoryName, StringComparison.OrdinalIgnoreCase) == 0))
+            {
+                if (string.CompareOrdinal(driveInfo.Name, directoryName) != 0) result = true;
+                break;
+            }
+            return result;
         }
 
         internal static void EnsurePath(string directoryPath)

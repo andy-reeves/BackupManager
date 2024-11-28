@@ -1067,7 +1067,7 @@ internal sealed partial class Main : Form
             Utils.Log($"[{index}/{files.Length}] {fullPath}");
             if (!Utils.File.Exists(fullPath)) continue;
 
-            Utils.MediaHelper.CheckVideoFileAndRenameIfRequired(ref fullPath);
+            _ = Utils.MediaHelper.CheckVideoFileAndRenameIfRequired(ref fullPath);
         }
     }
 

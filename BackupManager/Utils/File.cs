@@ -453,12 +453,13 @@ internal static partial class Utils
         /// </summary>
         /// <param name="sourceFileName">The name of the file to move. Can include a relative or absolute path.</param>
         /// <param name="destFileName">The new path and name for the file.</param>
-        /// <returns>True if successfully renamed otherwise False</returns>
+        /// <returns>True if successfully renamed otherwise False. True if it's already correct</returns>
         internal static bool Move(string sourceFileName, string destFileName)
         {
             TraceIn(sourceFileName, destFileName);
 #if FILEMOVE
             Directory.EnsureForFilePath(destFileName);
+            if (string.Equals(sourceFileName, destFileName, StringComparison.CurrentCulture)) return TraceOut(true);
 
             // If the source and dest only differ by case we call MoveFileEx
             if (string.Equals(sourceFileName, destFileName, StringComparison.CurrentCultureIgnoreCase))
@@ -505,7 +506,7 @@ internal static partial class Utils
             if (result < (uint)chars.Length) return new string(chars, 0, (int)result);
 
             chars = new char[result];
-            _ = GetLongPathName(path, chars, chars.Length);
+            result = GetLongPathName(path, chars, chars.Length);
             return new string(chars, 0, (int)result);
         }
 
