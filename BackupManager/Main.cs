@@ -1076,7 +1076,7 @@ internal sealed partial class Main : Form
         var files = mediaBackup.BackupFiles.Where(static file =>
         {
             ArgumentException.ThrowIfNullOrEmpty(file.FullPath);
-            return Utils.File.IsVideo(file.FullPath) && file.FullPath.Contains("_TV") && !file.FullPath.Contains("[h265");
+            return Utils.File.IsVideo(file.FullPath) && file.FullPath.Contains("_TV") && !file.FullPath.ContainsAny("[h265]", "-2160", "[VP9]", "[VC1]") && !file.Deleted;
         }).ToArray();
         var totalSize = files.Sum(static file => file.Length);
         Utils.Log($"Total size of {files.Length} TV files is {totalSize.SizeSuffix()}");
@@ -1084,7 +1084,7 @@ internal sealed partial class Main : Form
         files = mediaBackup.BackupFiles.Where(static file =>
         {
             ArgumentException.ThrowIfNullOrEmpty(file.FullPath);
-            return Utils.File.IsVideo(file.FullPath) && file.FullPath.Contains("_Movies") && !file.FullPath.Contains("[h265]");
+            return Utils.File.IsVideo(file.FullPath) && file.FullPath.Contains("_Movies") && !file.FullPath.ContainsAny("[h265]", "[Remux-1080p]", "[VP9]", "[VC1]") && !file.Deleted;
         }).ToArray();
         totalSize = files.Sum(static file => file.Length);
         Utils.Log($"Total size of {files.Length} of Movie files is {totalSize.SizeSuffix()}");

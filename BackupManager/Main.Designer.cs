@@ -1346,7 +1346,6 @@
             h264FilesButton.TabIndex = 103;
             h264FilesButton.Text = "Check all files for TV/Movies h264 size";
             h264FilesButton.UseVisualStyleBackColor = true;
-            h264FilesButton.Visible = false;
             h264FilesButton.Click += H264FilesButton_Click;
             // 
             // checkSubtitlesButton
