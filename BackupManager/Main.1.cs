@@ -439,16 +439,17 @@ internal sealed partial class Main
 
             DisableControlsForAsyncTasks(ct);
             Utils.LogWithPushover(BackupAction.SpeedTest, Resources.Started, false, true);
-            EnableProgressBar(0, config.DirectoriesToBackup.Count);
+            var disksAndFirstDirectories = Utils.GetDiskAndFirstDirectory(config.DirectoriesToBackup);
+            EnableProgressBar(0, disksAndFirstDirectories.Length);
 
-            for (var i = 0; i < config.DirectoriesToBackup.Count; i++)
+            for (var i = 0; i < disksAndFirstDirectories.Length; i++)
             {
-                var directory = config.DirectoriesToBackup[i];
+                var directory = disksAndFirstDirectories[i];
                 UpdateStatusLabel(ct, string.Format(Resources.SpeedTesting, directory), i + 1);
                 if (!Utils.Directory.IsWritable(directory)) continue;
 
                 Utils.DiskSpeedTest(directory, Utils.ConvertMBtoBytes(config.SpeedTestFileSize), config.SpeedTestIterations, out var readSpeed, out var writeSpeed, ct);
-                Utils.Log($"testing {directory}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
+                Utils.LogWithPushover(BackupAction.SpeedTest, $"{directory}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
             }
             Utils.LogWithPushover(BackupAction.SpeedTest, Resources.Completed, true);
             ResetAllControls();
