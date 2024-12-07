@@ -110,17 +110,17 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
                 Utils.Trace("Inside RefreshMediaInfo more than 1 video file");
 
                 // More than 1 video file so we do this:
-                // Check for a video file that matches this name (apart from the subtitles extensions) - user that if found
+                // Check for a video file that matches this name (apart from the subtitles extensions) - use that if found
                 // If it's not found us the trimmed Title to check that
                 var titleWithoutExt = Title;
 
-                foreach (var video in videoFiles.Where(videoFile => Path.GetFileName(videoFile).StartsWithIgnoreCase(titleWithoutExt)).Select(static videoFileToUse => Utils.MediaHelper.ExtendedBackupFileBase(videoFileToUse)))
+                foreach (var video in from videoFile in videoFiles where Path.GetFileName(videoFile).StartsWithIgnoreCase(titleWithoutExt) select Utils.MediaHelper.ExtendedBackupFileBase(videoFile) into video where video.IsValidFileName select video)
                 {
                     return RefreshMediaInfo(video) && Validate();
                 }
                 var shortTitle = Title.SubstringBeforeIgnoreCase("[").Trim();
 
-                foreach (var video in videoFiles.Where(videoFile => Path.GetFileName(videoFile).StartsWithIgnoreCase(shortTitle)).Select(static videoFileToUse => Utils.MediaHelper.ExtendedBackupFileBase(videoFileToUse)))
+                foreach (var video in from videoFile in videoFiles where Path.GetFileName(videoFile).StartsWithIgnoreCase(shortTitle) select Utils.MediaHelper.ExtendedBackupFileBase(videoFile) into video where video.IsValidFileName select video)
                 {
                     return RefreshMediaInfo(video) && Validate();
                 }
