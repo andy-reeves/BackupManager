@@ -49,8 +49,8 @@ internal static partial class Utils
 
             if (lastPathSeparatorIndex >= 0)
             {
-                var baseDirectory = directoryName.Substring(lastPathSeparatorIndex + 1);
-                var parentDirectory = directoryName.Substring(0, lastPathSeparatorIndex);
+                var baseDirectory = directoryName[(lastPathSeparatorIndex + 1)..];
+                var parentDirectory = directoryName[..lastPathSeparatorIndex];
                 var directories = System.IO.Directory.GetDirectories(parentDirectory, baseDirectory);
                 if (directories.Length <= 0) return false;
 
