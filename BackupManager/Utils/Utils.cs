@@ -1527,7 +1527,7 @@ internal static partial class Utils
     }
 
     /// <summary>
-    ///     Removes any '$0', '$1', '$2' etc from the input string
+    ///     Removes any '$0', '$1', '$2' etc. from the input string
     /// </summary>
     /// <param name="input">The string to remove the $0 from</param>
     /// <returns>The string without the $ values</returns>
