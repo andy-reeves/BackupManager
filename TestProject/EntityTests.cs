@@ -282,7 +282,7 @@ public sealed class EntityTests
         Assert.Null(backupDisk.CheckedTime);
         Assert.Equal(45, backupDisk.Number);
         backupDisk.UpdateDiskChecked();
-        Assert.NotNull(backupDisk.CheckedTime);
+        Assert.True(backupDisk.CheckedTime.HasValue);
         Assert.Equal(45, backupDisk.GetHashCode());
         Assert.Equal(backupDiskName, backupDisk.ToString());
         _ = backupDisk.Update(null);

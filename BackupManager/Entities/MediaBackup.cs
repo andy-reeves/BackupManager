@@ -642,15 +642,13 @@ public sealed class MediaBackup
         foreach (var backupFile in backupFilesArray)
         {
             if (!backupFile.DiskCheckedTime.HasValue || backupFile.BeingCheckedNow) continue;
+            if (!backupFile.DiskCheckedTime.HasValue) continue;
 
-            if (backupFile.DiskCheckedTime.HasValue)
-            {
-                var backupFileDate = backupFile.DiskCheckedTime.Value;
-                if (backupFileDate >= oldestFileDate && oldestFile != null) continue;
+            var backupFileDate = backupFile.DiskCheckedTime.Value;
+            if (backupFileDate >= oldestFileDate && oldestFile != null) continue;
 
-                oldestFileDate = backupFileDate;
-                oldestFile = backupFile;
-            }
+            oldestFileDate = backupFileDate;
+            oldestFile = backupFile;
         }
         return oldestFile;
     }
