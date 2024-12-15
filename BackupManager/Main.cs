@@ -349,9 +349,9 @@ internal sealed partial class Main : Form
         {
             var lastChecked = string.Empty;
 
-            if (disk.Checked.HasValue())
+            if (disk.CheckedTime.HasValue)
             {
-                var d = DateTime.Parse(disk.Checked);
+                var d = disk.CheckedTime.Value;
                 lastChecked = d.ToString(Resources.DateTime_ddMMMyy);
             }
             var backupFilesOnBackupDiskNotIncludingDeleted = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, false).ToArray();

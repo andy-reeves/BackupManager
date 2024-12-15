@@ -244,7 +244,7 @@ public sealed class EntityTests
         Assert.True(backupFile1.Flag);
         Assert.Equal(0, backupFile1.BackupDiskNumber);
         Assert.Equal("_Movies\\test1.txt", backupFile1.Hash);
-        Assert.Equal("", backupFile1.DiskChecked);
+        Assert.False(backupFile1.DiskCheckedTime.HasValue);
         Assert.Equal("", backupFile1.Disk);
         backupFile1.Disk = "backup 45";
         Assert.Equal("backup 45", backupFile1.Disk);
@@ -252,13 +252,13 @@ public sealed class EntityTests
         backupFile1.Disk = "backup ";
         Assert.Equal("backup ", backupFile1.Disk);
         Assert.Equal(0, backupFile1.BackupDiskNumber);
-        backupFile1.DiskChecked = null;
+        backupFile1.DiskCheckedTime = null;
         backupFile1.UpdateDiskChecked("backup 45");
-        Assert.NotEqual("", backupFile1.DiskChecked);
+        Assert.True(backupFile1.DiskCheckedTime.HasValue);
         Assert.Equal("test1.txt", backupFile1.FileName);
         Assert.Equal(pathToFile1OnBackupDisk, backupFile1.BackupDiskFullPath(pathToBackupDisk));
         backupFile1.ClearDiskChecked();
-        Assert.Equal("", backupFile1.DiskChecked);
+        Assert.False(backupFile1.DiskCheckedTime.HasValue);
         Assert.NotEqual(0, backupFile1.GetHashCode());
         var ct = new CancellationToken();
         _ = Utils.File.Copy(pathToFile1, pathToFile1OnBackupDisk, ct);
@@ -279,10 +279,10 @@ public sealed class EntityTests
         const string backupDiskName = "backup 45";
         var backupDisk = new BackupDisk(backupDiskName, backupShareName);
         Assert.Equal(Path.Combine(backupShareName, backupDiskName), backupDisk.BackupPath);
-        Assert.Null(backupDisk.Checked);
+        Assert.Null(backupDisk.CheckedTime);
         Assert.Equal(45, backupDisk.Number);
         backupDisk.UpdateDiskChecked();
-        Assert.NotNull(backupDisk.Checked);
+        Assert.NotNull(backupDisk.CheckedTime);
         Assert.Equal(45, backupDisk.GetHashCode());
         Assert.Equal(backupDiskName, backupDisk.ToString());
         _ = backupDisk.Update(null);

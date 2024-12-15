@@ -295,8 +295,12 @@ internal sealed partial class Main
         if (oldestFile == null) return;
 
         oldestBackupDiskTextBox.TextWithInvoke(oldestFile.Disk);
-        var days = DateTime.Today.Subtract(DateTime.Parse(oldestFile.DiskChecked)).Days;
-        oldestBackupDiskAgeTextBox.TextWithInvoke(string.Format(Resources.UpdateOldestBackupDiskNDaysAgo, days, days == 1 ? string.Empty : "s"));
+
+        if (oldestFile.DiskCheckedTime != null)
+        {
+            var days = DateTime.Today.Subtract(oldestFile.DiskCheckedTime.Value).Days;
+            oldestBackupDiskAgeTextBox.TextWithInvoke(string.Format(Resources.UpdateOldestBackupDiskNDaysAgo, days, days == 1 ? string.Empty : "s"));
+        }
         Utils.TraceOut();
     }
 

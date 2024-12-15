@@ -32,7 +32,7 @@ public sealed class BackupFile : IEquatable<BackupFile>
 
     private string disk;
 
-    private string diskChecked;
+    private DateTime? diskCheckedTime;
 
     private string extension;
 
@@ -224,19 +224,19 @@ public sealed class BackupFile : IEquatable<BackupFile>
 
     /// <summary>
     ///     A date/time this file was last checked. If this is cleared then the Disk is automatically set to null also. Returns
-    ///     string.Empty if no value
+    ///     null if no value
     /// </summary>
-    public string DiskChecked
+    public DateTime? DiskCheckedTime
     {
-        get => diskChecked.HasValue() ? diskChecked : string.Empty;
+        get => diskCheckedTime;
 
         set
         {
             // If you clear the DiskChecked then we automatically clear the Disk property too
-            if (diskChecked == value) return;
+            if (diskCheckedTime == value) return;
 
-            if (value.HasNoValue()) disk = null;
-            diskChecked = value;
+            if (!value.HasValue) disk = null;
+            diskCheckedTime = value;
             Changed = true;
         }
     }
@@ -253,7 +253,7 @@ public sealed class BackupFile : IEquatable<BackupFile>
         {
             if (disk == value) return;
 
-            if (value.HasNoValue()) diskChecked = null;
+            if (value.HasNoValue()) diskCheckedTime = null;
             disk = value;
             Changed = true;
         }
@@ -295,7 +295,7 @@ public sealed class BackupFile : IEquatable<BackupFile>
     {
         if (backupDisk != Disk && Disk.HasValue()) Utils.Log($"{FullPath} was on {Disk} but now on {backupDisk}");
         disk = backupDisk;
-        diskChecked = DateTime.Now.ToString(Resources.DateTime_yyyyMMdd);
+        diskCheckedTime = DateTime.Now;
         Changed = true;
     }
 
@@ -304,10 +304,10 @@ public sealed class BackupFile : IEquatable<BackupFile>
     /// </summary>
     public void ClearDiskChecked()
     {
-        if (disk == null && diskChecked == null) return;
+        if (disk == null && diskCheckedTime == null) return;
 
         disk = null;
-        diskChecked = null;
+        diskCheckedTime = null;
         Changed = true;
     }
 

@@ -20,23 +20,7 @@
                     <xs:element type="xs:string" name="Hash" maxOccurs="1" minOccurs="1" />
                     <xs:element type="xs:dateTime" name="LastWriteTime" maxOccurs="1" minOccurs="1" />
                     <xs:element type="xs:long" name="Length" maxOccurs="1" minOccurs="1" />
-                    <xs:element name="DiskChecked" maxOccurs="1" minOccurs="0" nillable="true">
-                      <xs:simpleType>
-                        <xs:union>
-                          <xs:simpleType>
-                            <xs:restriction base="xs:date">
-                              <xs:minInclusive value="1900-01-01" />
-                            </xs:restriction>
-                          </xs:simpleType>
-                          <xs:simpleType>
-                            <xs:restriction base="xs:string">
-                              <xs:whiteSpace value="collapse" />
-                              <xs:length value="0" />
-                            </xs:restriction>
-                          </xs:simpleType>
-                        </xs:union>
-                      </xs:simpleType>
-                    </xs:element>
+                    <xs:element type="xs:dateTime" name="DiskCheckedTime" maxOccurs="1" minOccurs="0" nillable="true" />                
                     <xs:element type="xs:string" name="Disk" maxOccurs="1" minOccurs="0" />
                   </xs:sequence>
                 </xs:complexType>
@@ -51,7 +35,7 @@
                 <xs:complexType>
                   <xs:sequence>
                     <xs:element type="xs:string" name="Name" maxOccurs="1" minOccurs="1" />
-                    <xs:element type="xs:date" name="Checked" maxOccurs="1" minOccurs="0" />
+                    <xs:element type="xs:dateTime" name="CheckedTime" maxOccurs="1" minOccurs="0" nillable="true" />
                     <xs:element type="xs:long" name="Capacity" maxOccurs="1" minOccurs="0" />
                     <xs:element type="xs:long" name="TotalFiles" maxOccurs="1" minOccurs="0" />
                     <xs:element type="xs:long" name="Free" maxOccurs="1" minOccurs="0" />

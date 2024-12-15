@@ -12,7 +12,6 @@ using System.Linq;
 using System.Xml.Serialization;
 
 using BackupManager.Extensions;
-using BackupManager.Properties;
 
 namespace BackupManager.Entities;
 
@@ -27,7 +26,7 @@ public sealed class BackupDisk : IEquatable<BackupDisk>
 
     private long capacity;
 
-    private string diskChecked;
+    private DateTime? checkedTime;
 
     private long free;
 
@@ -63,17 +62,18 @@ public sealed class BackupDisk : IEquatable<BackupDisk>
     }
 
     /// <summary>
-    ///     Date the disk was last scanned and checked
+    ///     A date/time this disk was last checked. Returns null if no value
     /// </summary>
-    public string Checked
+    public DateTime? CheckedTime
     {
-        get => diskChecked;
+        get => checkedTime;
 
         set
         {
-            if (diskChecked == value) return;
+            // If you clear the DiskChecked then we automatically clear the Disk property too
+            if (checkedTime == value) return;
 
-            diskChecked = value;
+            checkedTime = value;
             Changed = true;
         }
     }
@@ -259,11 +259,11 @@ public sealed class BackupDisk : IEquatable<BackupDisk>
     }
 
     /// <summary>
-    ///     Updates the DiskChecked with the current date as 'yyyy-MM-dd'.
+    ///     Updates the DiskChecked with the current date and time.
     /// </summary>
     public void UpdateDiskChecked()
     {
-        Checked = DateTime.Now.ToString(Resources.DateTime_yyyyMMdd);
+        CheckedTime = DateTime.Now;
     }
 
     /// <summary>

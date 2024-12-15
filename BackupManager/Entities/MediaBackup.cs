@@ -145,7 +145,7 @@ public sealed class MediaBackup
                 Utils.Trace($"Time to validate xml was {sw.Elapsed}");
                 sw.Restart();
                 var xRoot = new XmlRootAttribute { ElementName = "MediaBackup", Namespace = "MediaBackupSchema.xsd", IsNullable = true };
-                XmlSerializer serializer = new(typeof(MediaBackup), xRoot);
+                var serializer = new XmlSerializer(typeof(MediaBackup), xRoot);
 
                 using (FileStream stream = new(path, FileMode.Open, FileAccess.Read))
                 {
@@ -169,7 +169,7 @@ public sealed class MediaBackup
                 if (mediaBackup.indexFolderAndRelativePath.TryGetValue(backupFile.Hash, out var value)) throw new ApplicationException(string.Format(Resources.DuplicateContentsHashCode, backupFile.FileName, backupFile.FullPath, value.FullPath));
 
                 mediaBackup.indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
-                if (backupFile.DiskChecked.HasNoValue() || backupFile.Disk.HasNoValue()) backupFile.ClearDiskChecked();
+                if (!backupFile.DiskCheckedTime.HasValue || backupFile.Disk.HasNoValue()) backupFile.ClearDiskChecked();
             }
             mediaBackup.ClearChanged();
             return mediaBackup;
@@ -641,13 +641,16 @@ public sealed class MediaBackup
 
         foreach (var backupFile in backupFilesArray)
         {
-            if (backupFile.DiskChecked.HasNoValue() || backupFile.BeingCheckedNow) continue;
+            if (!backupFile.DiskCheckedTime.HasValue || backupFile.BeingCheckedNow) continue;
 
-            var backupFileDate = DateTime.Parse(backupFile.DiskChecked);
-            if (backupFileDate >= oldestFileDate && oldestFile != null) continue;
+            if (backupFile.DiskCheckedTime.HasValue)
+            {
+                var backupFileDate = backupFile.DiskCheckedTime.Value;
+                if (backupFileDate >= oldestFileDate && oldestFile != null) continue;
 
-            oldestFileDate = backupFileDate;
-            oldestFile = backupFile;
+                oldestFileDate = backupFileDate;
+                oldestFile = backupFile;
+            }
         }
         return oldestFile;
     }

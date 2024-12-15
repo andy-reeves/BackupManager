@@ -356,7 +356,7 @@ internal sealed partial class Main
     {
         Utils.TraceIn();
         var numberOfDays = config.BackupDiskDaysToReportSinceFilesChecked;
-        var files = mediaBackup.BackupFiles.Where(p => p.DiskChecked.HasValue() && DateTime.Parse(p.DiskChecked).AddDays(numberOfDays) < DateTime.Today);
+        var files = mediaBackup.BackupFiles.Where(p => p.DiskCheckedTime.HasValue && p.DiskCheckedTime.Value.AddDays(numberOfDays) < DateTime.Today);
         var backupFiles = files as BackupFile[] ?? files.ToArray();
         var disks = backupFiles.GroupBy(static p => p.Disk).Select(static p => p.First());
 
@@ -370,7 +370,9 @@ internal sealed partial class Main
 
         foreach (var file in backupFiles)
         {
-            var days = DateTime.Today.Subtract(DateTime.Parse(file.DiskChecked)).Days;
+            if (file.DiskCheckedTime == null) continue;
+
+            var days = DateTime.Today.Subtract(file.DiskCheckedTime.Value).Days;
             Utils.Log(BackupAction.General, string.Format(Resources.ListingFileNotCheckedInDaysOnDisk, file.FullPath, days, file.Disk));
         }
         Utils.TraceOut();
