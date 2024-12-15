@@ -329,7 +329,17 @@ internal sealed partial class Main : Form
     private void ListBackupDiskStatusByFreeSpaceButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        ListBackupDiskStatus(mediaBackup.BackupDisks.OrderByDescending(static d => d.Free));
+        var disks = mediaBackup.BackupDisks;
+        var list = new SortedList<long, BackupDisk>();
+
+        foreach (var disk in disks)
+        {
+            var backupFilesOnBackupDiskNotIncludingDeleted = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, false).ToArray();
+            var difference = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, false).Sum(static p => p.Length) > disk.Capacity - disk.Free ? 0 : disk.Capacity - disk.Free - backupFilesOnBackupDiskNotIncludingDeleted.Sum(static p => p.Length);
+            var key = difference + disk.Free;
+            list.Add(key, disk);
+        }
+        ListBackupDiskStatus(list.Values.OrderByDescending(static _ => 0));
         Utils.TraceOut();
     }
 
@@ -343,7 +353,7 @@ internal sealed partial class Main : Form
     private void ListBackupDiskStatus(IOrderedEnumerable<BackupDisk> disks)
     {
         Utils.Log("Listing backup disk statuses");
-        Utils.Log("Name        Checked    Capacity   Used     Free    Files  Deleted   Diff      %");
+        Utils.Log("Name        Checked    Capacity   Used     Free    Files  Deleted   Diff    Diff+Free   %");
 
         foreach (var disk in disks)
         {
@@ -363,7 +373,7 @@ internal sealed partial class Main : Form
             var percentString = percentageDiff is < 1 and > -1 ? "-" : $"{percentageDiff}%";
 
             Utils.Log($"{disk.Name,-12}{lastChecked,9}{disk.CapacityFormatted,9}{sizeFromDiskAnalysis.SizeSuffix(),9}" + $"{disk.FreeFormatted,9}{totalSizeOfFilesFromSumOfFiles.SizeSuffix(),9}{deletedCount,5}" +
-                      $"{difference.SizeSuffix(),12}{percentString,5}");
+                      $"{difference.SizeSuffix(),12}{(difference + disk.Free).SizeSuffix(),10}{percentString,5}");
         }
         var totalSizeFormatted = mediaBackup.BackupDisks.Sum(static p => p.Capacity).SizeSuffix();
         var totalFreeSpaceFormatted = mediaBackup.BackupDisks.Sum(static p => p.Free).SizeSuffix();
