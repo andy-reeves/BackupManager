@@ -233,7 +233,23 @@ public sealed class MediaBackup
         return false;
     }
 
-    internal string[] GetLastScans(IEnumerable<DirectoryScan> scans, DirectoryScanType scanType, int howMany)
+    internal void DeleteScanReportsNotInList(string[] scanIdsToKeep)
+    {
+        Utils.TraceIn();
+        var scans = DirectoryScans.ToArray();
+
+        for (var i = scans.Length - 1; i >= 0; i--)
+        {
+            var scan = scans[i];
+            if (scanIdsToKeep.Contains(scan.Id)) continue;
+
+            DirectoryScans.RemoveAt(i);
+            Changed = true;
+        }
+        Utils.TraceOut();
+    }
+
+    internal string[] GetLastScans(DirectoryScanType scanType, int howMany)
     {
         Utils.TraceIn();
         var directoriesCount = Config.DirectoriesToBackup.Count;
@@ -243,7 +259,7 @@ public sealed class MediaBackup
 
         // filter by type and order the scans by startDate in Descending order
         // Move through the scans and find the top nn ids
-        var sc = scans.Where(s => s.TypeOfScan == scanType).OrderByDescending(static s => s.StartDateTime).ToArray();
+        var sc = DirectoryScans.Where(s => s.TypeOfScan == scanType).OrderByDescending(static s => s.StartDateTime).ToArray();
         var list = new string[howMany];
         var index = howMany - 1;
 
