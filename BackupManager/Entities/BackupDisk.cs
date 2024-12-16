@@ -28,6 +28,10 @@ public sealed class BackupDisk : IEquatable<BackupDisk>
 
     private DateTime? checkedTime;
 
+    private long deletedFilesCount;
+
+    private long filesSize;
+
     private long free;
 
     private string lastReadSpeed;
@@ -35,10 +39,6 @@ public sealed class BackupDisk : IEquatable<BackupDisk>
     private string lastWriteSpeed;
 
     private long totalFiles;
-
-    private long deletedFilesCount;
-
-    private long filesSize;
 
     public BackupDisk() { }
 

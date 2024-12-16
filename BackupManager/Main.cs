@@ -333,7 +333,8 @@ internal sealed partial class Main : Form
         Utils.TraceOut();
     }
 
-    private IEnumerable<BackupDisk> UpdateBackupDisksForDeletedFiles()
+    // ReSharper disable once ReturnTypeCanBeEnumerable.Local
+    private Collection<BackupDisk> UpdateBackupDisksForDeletedFiles()
     {
         var disks = mediaBackup.BackupDisks;
 
