@@ -36,6 +36,10 @@ public sealed class BackupDisk : IEquatable<BackupDisk>
 
     private long totalFiles;
 
+    private long deletedFilesCount;
+
+    private long filesSize;
+
     public BackupDisk() { }
 
     internal BackupDisk(string diskName, string backupShare)
@@ -122,6 +126,52 @@ public sealed class BackupDisk : IEquatable<BackupDisk>
             if (free == value) return;
 
             free = value;
+            Changed = true;
+        }
+    }
+
+    /// <summary>
+    ///     Available space on the disk in bytes including the space if the files marked deleted are removed
+    /// </summary>
+    [XmlIgnore]
+    public long TotalFree => DeletedFilesSize + Free;
+
+    /// <summary>
+    ///     The count of the files marked as deleted on this disk
+    /// </summary>
+    [XmlIgnore]
+    public long DeletedFilesCount
+    {
+        get => deletedFilesCount;
+
+        set
+        {
+            if (deletedFilesCount == value) return;
+
+            deletedFilesCount = value;
+            Changed = true;
+        }
+    }
+
+    /// <summary>
+    ///     The size of the files marked as deleted on this disk
+    /// </summary>
+    [XmlIgnore]
+    public long DeletedFilesSize => Capacity - Free - FilesSize;
+
+    /// <summary>
+    ///     The size of the files not marked as deleted on this disk
+    /// </summary>
+    [XmlIgnore]
+    public long FilesSize
+    {
+        get => filesSize;
+
+        set
+        {
+            if (filesSize == value) return;
+
+            filesSize = value;
             Changed = true;
         }
     }

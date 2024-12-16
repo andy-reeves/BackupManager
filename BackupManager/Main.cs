@@ -329,55 +329,48 @@ internal sealed partial class Main : Form
     private void ListBackupDiskStatusByFreeSpaceButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        var disks = mediaBackup.BackupDisks;
-        var list = new SortedList<long, BackupDisk>();
+        ListBackupDiskStatus(UpdateBackupDisksForDeletedFiles().OrderByDescending(static d => d.TotalFree));
+        Utils.TraceOut();
+    }
 
+    private IEnumerable<BackupDisk> UpdateBackupDisksForDeletedFiles()
+    {
+        var disks = mediaBackup.BackupDisks;
+
+        // Update the actual total possible free space if deleted files were removed
         foreach (var disk in disks)
         {
             var backupFilesOnBackupDiskNotIncludingDeleted = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, false).ToArray();
-            var difference = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, false).Sum(static p => p.Length) > disk.Capacity - disk.Free ? 0 : disk.Capacity - disk.Free - backupFilesOnBackupDiskNotIncludingDeleted.Sum(static p => p.Length);
-            var key = difference + disk.Free;
-            list.Add(key, disk);
+            var backupFilesOnBackupDisk = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, true).ToArray();
+            disk.DeletedFilesCount = backupFilesOnBackupDisk.Length - backupFilesOnBackupDiskNotIncludingDeleted.Length;
+            disk.FilesSize = backupFilesOnBackupDiskNotIncludingDeleted.Sum(static p => p.Length);
         }
-        ListBackupDiskStatus(list.Values.OrderByDescending(static _ => 0));
-        Utils.TraceOut();
+        return disks;
     }
 
     private void ListBackupDiskStatusByDiskNumberButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        ListBackupDiskStatus(mediaBackup.BackupDisks.OrderBy(static d => d.Number));
+        ListBackupDiskStatus(UpdateBackupDisksForDeletedFiles().OrderBy(static d => d.Number));
         Utils.TraceOut();
     }
 
     private void ListBackupDiskStatus(IOrderedEnumerable<BackupDisk> disks)
     {
         Utils.Log("Listing backup disk statuses");
-        Utils.Log("Name        Checked    Capacity   Used     Free    Files  Deleted   Diff    Diff+Free   %");
+        Utils.Log("Name        Checked    Capacity   Used     Free    Files  Deleted   Del     Free+Deleted");
 
         foreach (var disk in disks)
         {
-            var lastChecked = string.Empty;
+            var lastChecked = disk.CheckedTime.HasValue ? disk.CheckedTime.Value.ToString(Resources.DateTime_ddMMMyy) : string.Empty;
 
-            if (disk.CheckedTime.HasValue)
-            {
-                var d = disk.CheckedTime.Value;
-                lastChecked = d.ToString(Resources.DateTime_ddMMMyy);
-            }
-            var backupFilesOnBackupDiskNotIncludingDeleted = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, false).ToArray();
-            var totalSizeOfFilesFromSumOfFiles = backupFilesOnBackupDiskNotIncludingDeleted.Sum(static p => p.Length);
-            var deletedCount = mediaBackup.GetBackupFilesOnBackupDisk(disk.Name, true).Count() - backupFilesOnBackupDiskNotIncludingDeleted.Length;
-            var sizeFromDiskAnalysis = disk.Capacity - disk.Free;
-            var difference = totalSizeOfFilesFromSumOfFiles > sizeFromDiskAnalysis ? 0 : sizeFromDiskAnalysis - totalSizeOfFilesFromSumOfFiles;
-            var percentageDiff = Math.Round(difference * 100 / (double)sizeFromDiskAnalysis, 0);
-            var percentString = percentageDiff is < 1 and > -1 ? "-" : $"{percentageDiff}%";
-
-            Utils.Log($"{disk.Name,-12}{lastChecked,9}{disk.CapacityFormatted,9}{sizeFromDiskAnalysis.SizeSuffix(),9}" + $"{disk.FreeFormatted,9}{totalSizeOfFilesFromSumOfFiles.SizeSuffix(),9}{deletedCount,5}" +
-                      $"{difference.SizeSuffix(),12}{(difference + disk.Free).SizeSuffix(),10}{percentString,5}");
+            Utils.Log($"{disk.Name,-12}{lastChecked,9}{disk.CapacityFormatted,9}{(disk.Capacity - disk.Free).SizeSuffix(),9}" + $"{disk.FreeFormatted,9}{disk.FilesSize.SizeSuffix(),9}{disk.DeletedFilesCount,5}" +
+                      $"{disk.DeletedFilesSize.SizeSuffix(),12}{disk.TotalFree.SizeSuffix(),10}");
         }
         var totalSizeFormatted = mediaBackup.BackupDisks.Sum(static p => p.Capacity).SizeSuffix();
         var totalFreeSpaceFormatted = mediaBackup.BackupDisks.Sum(static p => p.Free).SizeSuffix();
-        Utils.Log($"\n      Total Capacity: {totalSizeFormatted,8}     Free: {totalFreeSpaceFormatted,7}");
+        var totalFreePlusDeletedFormatted = mediaBackup.BackupDisks.Sum(static p => p.TotalFree).SizeSuffix();
+        Utils.Log($"\n      Total Capacity: {totalSizeFormatted,8}     Free: {totalFreeSpaceFormatted,7}                   Free+Del: {totalFreePlusDeletedFormatted,7}");
     }
 
     private void SpeedTestButton_Click(object sender, EventArgs e)
