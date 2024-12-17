@@ -1198,16 +1198,9 @@ internal sealed partial class Main : Form
             records = csv.GetRecords<TdarrTranscodeCancelled>().ToArray();
         }
 
-        foreach (var fullPath in from record in records
-                 select Path.GetFullPath(record.Id)
-                 into fullPath
-                 where File.Exists(fullPath)
-                 where !Utils.File.IsSpecialFeature(fullPath)
-                 where fullPath.Contains("_TV")
-                 where Utils.MediaHelper.HasSubtitles(fullPath)
-                 select fullPath)
+        foreach (var fullPath in from record in records select Path.GetFullPath(record.Id) into fullPath where File.Exists(fullPath) where !Utils.File.IsSpecialFeature(fullPath) where Utils.MediaHelper.HasSubtitles(fullPath) select fullPath)
         {
-            Utils.Log($"{fullPath} is TV episode with subtitles");
+            Utils.Log($"{fullPath} is video with subtitles");
             if (!Utils.MediaHelper.ExtractSubtitleFiles(fullPath)) continue;
 
             var ext = Path.GetExtension(fullPath);
@@ -1223,6 +1216,7 @@ internal sealed partial class Main : Form
             }
             count++;
             Utils.Log($"Count is {count}");
+            Utils.Log($"Processed {fullPath}");
         }
         Utils.Log($"{count} files that were exported from Tdarr");
     }

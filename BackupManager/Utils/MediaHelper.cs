@@ -392,9 +392,10 @@ internal static partial class Utils
             if (File.Exists(outputFilename)) throw new ArgumentException(string.Format(Resources.FileExists, outputFilename), outputFilename);
 
             var result = VideoFileInfoReader.RemoveSubtitlesFromFile(inputFilename, outputFilename);
-            if (!result) throw new IOException($"Unable to remove subtitles for {inputFilename}");
+            if (result) return TraceOut(true);
 
-            return TraceOut(true);
+            Log($"Unable to remove subtitles for {inputFilename}");
+            return false;
         }
 
         internal static bool RemoveChaptersFromFile(string inputFilename, string outputFilename)
