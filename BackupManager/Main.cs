@@ -1178,16 +1178,6 @@ internal sealed partial class Main : Form
     private void ExportAndRemoveSubtitlesButton_Click(object sender, EventArgs e)
     {
         var count = 0;
-
-        // export subtitles and remove them
-        //const string ext = ".mkv";
-
-        // find ext files that have subtitles
-        // var backupFiles = mediaBackup.BackupFiles.Where(static f => f.Extension == ext && !f.FullPath.Contains("[h265]")).OrderBy(static q => q.FullPath).ToArray();
-        //foreach (var file in backupFiles)
-
-        // Process tdarr file
-        // ====================
         var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture);
         IEnumerable<TdarrTranscodeCancelled> records;
         var testDataDirectory = Path.GetFullPath(Path.Combine(Utils.GetProjectPath(typeof(Main)), @"..\TestProject\TestData"));
@@ -1259,30 +1249,57 @@ internal sealed partial class Main : Form
 
     private void RemoveMetadataButton_Click(object sender, EventArgs e)
     {
-        const string ext = ".mkv";
-        var backupFiles = mediaBackup.BackupFiles.Where(static f => f.Extension == ext && !f.FullPath.Contains("[h265]")).OrderBy(static q => q.FullPath).ToArray();
         var count = 0;
+        var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture);
+        IEnumerable<TdarrTranscodeCancelled> records;
+        var testDataDirectory = Path.GetFullPath(Path.Combine(Utils.GetProjectPath(typeof(Main)), @"..\TestProject\TestData"));
 
-        foreach (var file in backupFiles)
+        using (var reader = new StreamReader(Path.Combine(testDataDirectory, "Transcode_ Error_Cancelled.csv")))
+        using (var csv = new CsvReader(reader, csvConfiguration))
         {
-            if (!File.Exists(file.FullPath)) continue;
+            records = csv.GetRecords<TdarrTranscodeCancelled>().ToArray();
+        }
 
-            var mediaFile = Utils.MediaHelper.ExtendedBackupFileBase(file.FullPath);
-            if (mediaFile is not TvEpisodeBackupFile) continue;
-            if (Utils.File.IsSpecialFeature(file.FullPath)) continue;
+        foreach (var fullPath in from record in records select Path.GetFullPath(record.Id) into fullPath where File.Exists(fullPath) where !Utils.File.IsSpecialFeature(fullPath) where Utils.MediaHelper.HasChapters(fullPath) select fullPath)
+        {
+            if (!File.Exists(fullPath)) continue;
 
-            _ = mediaFile.RefreshMediaInfo();
-            if (!Utils.MediaHelper.HasMetadata(file.FullPath)) continue;
+            var ext = Path.GetExtension(fullPath);
+            var directoryName = Path.GetDirectoryName(fullPath);
+            Utils.Log($"{fullPath} is video with chapters");
 
-            Utils.Log($"{file.FullPath} is TV episode with metadata");
-            var newPath = Path.Combine(file.Directory, ".new" + ext);
-            if (!Utils.MediaHelper.RemoveMetadataFromFile(file.FullPath, newPath)) continue;
+            if (directoryName != null)
+            {
+                var newPath = Path.Combine(directoryName, ".new" + ext);
+                if (!Utils.MediaHelper.RemoveChaptersFromFile(fullPath, newPath)) continue;
 
-            _ = Utils.File.Move(file.FullPath, file.FullPath + ".original");
-            _ = Utils.File.Move(newPath, file.FullPath);
+                _ = Utils.File.Move(fullPath, fullPath + ".original2");
+                _ = Utils.File.Move(newPath, fullPath);
+            }
             count++;
             Utils.Log($"Count is {count}");
         }
-        Utils.Log($"{count} files that are not [h265] TV episodes with metadata removed");
+        Utils.Log($"{count} files that are not [h265] video with chapters removed");
+
+        foreach (var fullPath in from record in records select Path.GetFullPath(record.Id) into fullPath where File.Exists(fullPath) where !Utils.File.IsSpecialFeature(fullPath) where Utils.MediaHelper.HasMetadata(fullPath) select fullPath)
+        {
+            if (!File.Exists(fullPath)) continue;
+
+            var ext = Path.GetExtension(fullPath);
+            var directoryName = Path.GetDirectoryName(fullPath);
+            Utils.Log($"{fullPath} is video with metadata");
+
+            if (directoryName != null)
+            {
+                var newPath = Path.Combine(directoryName, ".new" + ext);
+                if (!Utils.MediaHelper.RemoveMetadataFromFile(fullPath, newPath)) continue;
+
+                _ = Utils.File.Move(fullPath, fullPath + ".original1");
+                _ = Utils.File.Move(newPath, fullPath);
+            }
+            count++;
+            Utils.Log($"Count is {count}");
+        }
+        Utils.Log($"{count} files that are not [h265] video with metadata removed");
     }
 }

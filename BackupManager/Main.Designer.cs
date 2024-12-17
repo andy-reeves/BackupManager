@@ -1389,7 +1389,7 @@
             removeMetadataButton.Name = "removeMetadataButton";
             removeMetadataButton.Size = new System.Drawing.Size(232, 27);
             removeMetadataButton.TabIndex = 109;
-            removeMetadataButton.Text = "Remove Metadata";
+            removeMetadataButton.Text = "Remove Metadata and Chapters";
             removeMetadataButton.UseVisualStyleBackColor = true;
             removeMetadataButton.Click += RemoveMetadataButton_Click;
             // 
