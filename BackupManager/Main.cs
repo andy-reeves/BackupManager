@@ -329,7 +329,7 @@ internal sealed partial class Main : Form
     private void ListBackupDiskStatusByFreeSpaceButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        ListBackupDiskStatus(UpdateBackupDisksForDeletedFiles().OrderByDescending(static d => d.TotalFree));
+        ListBackupDiskStatus(UpdateBackupDisksForDeletedFiles().OrderBy(static d => d.TotalFree));
         Utils.TraceOut();
     }
 

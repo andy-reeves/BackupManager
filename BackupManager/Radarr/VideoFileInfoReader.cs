@@ -69,6 +69,7 @@ internal sealed class VideoFileInfoReader
         }
         catch (Exception)
         {
+            if (Utils.File.Exists(outputFilename)) Utils.File.Delete(outputFilename);
             return false;
         }
         return true;
@@ -85,9 +86,24 @@ internal sealed class VideoFileInfoReader
             if (SubtitlesStreamCount(inputFilename) > 0) subs = "-map 0:s";
             _ = FFMpegArguments.FromFileInput(inputFilename).OutputToFile(outputFilename, false, options => { _ = options.WithCustomArgument($"-map 0:a -map 0:v {subs} -map_metadata -1 -map_chapters -1 -c copy"); }).ProcessSynchronously();
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            return false;
+            // some subtitles are not supported so we catch that and log it
+            // then remove the subs and chapters too
+            try
+            {
+                if (outputFilename != null)
+                {
+                    Utils.Log($"Exception {ex} when trying so remove chapters so removing subs too");
+                    if (File.Exists(outputFilename)) File.Delete(outputFilename);
+                    _ = FFMpegArguments.FromFileInput(inputFilename).OutputToFile(outputFilename, false, options => { _ = options.WithCustomArgument("-map 0:a -map 0:v -map_metadata -1 -map_chapters -1 -c copy"); }).ProcessSynchronously();
+                }
+            }
+            catch (Exception)
+            {
+                if (Utils.File.Exists(outputFilename)) Utils.File.Delete(outputFilename);
+                return false;
+            }
         }
         return true;
     }
@@ -107,6 +123,7 @@ internal sealed class VideoFileInfoReader
         }
         catch (Exception)
         {
+            if (Utils.File.Exists(outputFilename)) Utils.File.Delete(outputFilename);
             return false;
         }
         return true;
@@ -123,6 +140,7 @@ internal sealed class VideoFileInfoReader
         }
         catch (Exception)
         {
+            if (Utils.File.Exists(outputFilename)) Utils.File.Delete(outputFilename);
             return false;
         }
         return true;
@@ -257,6 +275,7 @@ internal sealed class VideoFileInfoReader
         }
         catch (Exception)
         {
+            if (Utils.File.Exists(outputFilename)) Utils.File.Delete(outputFilename);
             return false;
         }
         return true;
@@ -316,7 +335,11 @@ internal sealed class VideoFileInfoReader
         forced = false;
         hearingImpaired = false;
         subFileName = string.Empty;
-        if (subStream.CodecName.HasNoValue() || (subStream.CodecName.HasValue() && subStream.CodecName.ContainsIgnoreCase("_pgs_"))) return true;
+        if (subStream.CodecName.HasNoValue()) return true;
+
+        if (subStream.CodecName.HasValue())
+            if (subStream.CodecName.ContainsAny("_pgs_", "dvd_subtitle"))
+                return true;
 
         if (subStream.Tags != null && subStream.Tags.TryGetValue("title", out var value))
         {
