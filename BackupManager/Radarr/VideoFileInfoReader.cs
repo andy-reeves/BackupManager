@@ -336,10 +336,7 @@ internal sealed class VideoFileInfoReader
         hearingImpaired = false;
         subFileName = string.Empty;
         if (subStream.CodecName.HasNoValue()) return true;
-
-        if (subStream.CodecName.HasValue())
-            if (subStream.CodecName.ContainsAny("_pgs_", "dvd_subtitle"))
-                return true;
+        if (subStream.CodecName.HasValue() && subStream.CodecName.ContainsAny("_pgs_", "dvd_subtitle")) return true;
 
         if (subStream.Tags != null && subStream.Tags.TryGetValue("title", out var value))
         {
