@@ -48,6 +48,7 @@ public sealed class MovieBackupFileTests
     [InlineData("A (2022) {tmdb-1} [DVD][Opus 2.0][VP9].mkv", true)]
     [InlineData("Asterix and Obelix The Middle Kingdom (2023) {tmdb-643215} [Remux-1080p][DTS-HD MA 5.1][h264].en.srt", false)]
     [InlineData("Special video-featurette.mkv", true)]
+    [InlineData(@"\\nas2\assets3\_Movies (non-tmdb)\Aliens (1986)\Aliens (1986) [Remux-2160p][HDR10][AC3 5.1][].mkv", true)]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     public void MovieNameOnlyTests(string fileName, bool isValidFileName, string expectedFileName = "")
     {

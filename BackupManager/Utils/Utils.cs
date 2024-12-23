@@ -528,7 +528,7 @@ internal static partial class Utils
     }
 
     /// <summary>
-    ///     Returns an array of paths to files that are on the disk provided.
+    ///     Returns an array of paths to files that are on the disk provided ordered by the file extension.
     /// </summary>
     /// <param name="diskName"></param>
     /// <param name="backupFiles"></param>
@@ -537,7 +537,7 @@ internal static partial class Utils
     {
         ArgumentException.ThrowIfNullOrEmpty(diskName);
         var terminatedDiskName = EnsurePathHasATerminatingSeparator(diskName);
-        return backupFiles.Where(file => file.StartsWithIgnoreCase(terminatedDiskName)).ToArray();
+        return backupFiles.Where(file => file.StartsWithIgnoreCase(terminatedDiskName)).OrderBy(Path.GetExtension).ToArray();
     }
 
     /// <summary>
