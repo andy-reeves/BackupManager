@@ -234,7 +234,13 @@ internal static partial class Utils
 
                 if (newFullPath.ContainsIgnoreCase("-tdarrcachefile-"))
                 {
-                    LogWithPushover(BackupAction.ScanDirectory, $"{newFullPath} is Subtitles file with -tdarrCacheFile- in the path so not renaming");
+                    LogWithPushover(BackupAction.ScanDirectory, $"{newFullPath} is Subtitles file with '-tdarrCacheFile-' in the path so not renaming");
+                    return true;
+                }
+
+                if (newFullPath.ContainsIgnoreCase("[]"))
+                {
+                    LogWithPushover(BackupAction.ScanDirectory, $"{newFullPath} is Subtitles file with '[]' in the path so not renaming");
                     return true;
                 }
             }
