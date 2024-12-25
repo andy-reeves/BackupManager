@@ -50,14 +50,22 @@ internal static partial class Utils
         }
 
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
-        internal static string FormatAudioCodec(MediaInfoModel mediaInfo, string sceneName)
+        internal static string FormatAudioCodec(MediaInfoModel mediaInfo)
         {
-            if (mediaInfo.AudioFormat == null) return null;
-
-            var audioFormat = mediaInfo.AudioFormat;
+            if (mediaInfo?.AudioFormat == null)
+            {
+                LogWithPushover(BackupAction.General, PushoverPriority.High, $"About to return null for {mediaInfo?.Title}");
+                return null;
+            }
+            var audioFormat = mediaInfo.AudioFormat.Trim();
             var audioCodecId = mediaInfo.AudioCodecId ?? string.Empty;
             var audioProfile = mediaInfo.AudioProfile ?? string.Empty;
-            if (audioFormat.Empty()) return string.Empty;
+
+            if (audioFormat.Empty())
+            {
+                LogWithPushover(BackupAction.General, PushoverPriority.High, $"About to return string.Empty for {mediaInfo.Title}");
+                return string.Empty;
+            }
             if (audioCodecId == "thd+") return "TrueHD Atmos";
 
             switch (audioFormat)
@@ -106,7 +114,7 @@ internal static partial class Utils
                 case "wmav1" or "wmav2" or "wmapro":
                     return "WMA";
                 default:
-                    Trace($"Unknown audio format: '{audioFormat}' in '{sceneName}'. Streams: {mediaInfo.RawStreamData}");
+                    LogWithPushover(BackupAction.General, PushoverPriority.High, $"{mediaInfo.Title}. Unknown video format: '{audioFormat}'. Streams: {mediaInfo.RawStreamData}");
                     return mediaInfo.AudioFormat;
             }
         }
@@ -114,27 +122,25 @@ internal static partial class Utils
         /// <summary>
         /// </summary>
         /// <param name="mediaInfo"></param>
-        /// <param name="fileName"></param>
         /// <returns>
         ///     The following values are possibly returned: null, string.Empty, h264, h265, XviD, DivX, MPEG4, VP6, MPEG2,
-        ///     MPEG, VC1, AV1, VP7,VP8, VP9, WMV, RGB
+        ///     MPEG, VC1, AV1, VP7, VP8, VP9, WMV, RGB
         /// </returns>
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
-        internal static string FormatVideoCodec(MediaInfoModel mediaInfo, string fileName)
+        internal static string FormatVideoCodec(MediaInfoModel mediaInfo)
         {
-            if (mediaInfo.VideoFormat == null)
+            if (mediaInfo?.VideoFormat == null)
             {
-                LogWithPushover(BackupAction.General, PushoverPriority.High, $"About to return null for {fileName}");
+                LogWithPushover(BackupAction.General, PushoverPriority.High, $"About to return null for {mediaInfo?.Title}");
                 return null;
             }
-            var videoFormat = mediaInfo.VideoFormat;
+            var videoFormat = mediaInfo.VideoFormat.Trim();
             var videoCodecId = mediaInfo.VideoCodecId ?? string.Empty;
-            var result = videoFormat.Trim();
 
             if (videoFormat.Empty())
             {
-                LogWithPushover(BackupAction.General, PushoverPriority.High, $"About to return string.Empty for {fileName}");
-                return result;
+                LogWithPushover(BackupAction.General, PushoverPriority.High, $"About to return string.Empty for {mediaInfo.Title}");
+                return videoFormat;
             }
             if (videoCodecId == "x264" || videoFormat == "h264") return "h264";
             if (videoCodecId == "x265") return "h265";
@@ -180,11 +186,11 @@ internal static partial class Utils
                 case "rv40":
                 case "cinepak":
                 case "msvideo1":
-                    LogWithPushover(BackupAction.General, PushoverPriority.High, $"About to return string.Empty for {fileName}");
-                    return "";
+                    LogWithPushover(BackupAction.General, PushoverPriority.High, $"About to return string.Empty for {mediaInfo.Title}");
+                    return string.Empty;
             }
-            LogWithPushover(BackupAction.General, PushoverPriority.High, $"{fileName}. Unknown video format: '{videoFormat}'. Streams: {mediaInfo.RawStreamData}");
-            return result;
+            LogWithPushover(BackupAction.General, PushoverPriority.High, $"{mediaInfo.Title}. Unknown video format: '{videoFormat}'. Streams: {mediaInfo.RawStreamData}");
+            return videoFormat;
         }
 
         internal static VideoResolution GetResolutionFromMediaInfo(MediaInfoModel model)

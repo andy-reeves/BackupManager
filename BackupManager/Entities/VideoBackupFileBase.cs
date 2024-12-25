@@ -52,13 +52,12 @@ internal abstract class VideoBackupFileBase : ExtendedBackupFileBase
                 var model = Utils.MediaHelper.GetMediaInfoModel(OriginalPath);
                 if (model == null) return false;
 
-                var resolutionFromMediaInfo = Utils.MediaHelper.GetResolutionFromMediaInfo(model);
-                VideoResolution = resolutionFromMediaInfo;
+                VideoResolution = Utils.MediaHelper.GetResolutionFromMediaInfo(model);
 
                 VideoQuality = VideoResolution switch
                 {
                     // ReSharper disable once CommentTypo
-                    // if the resolution is actually 576 or 480 then the Quality must be SDTV and not anything else
+                    // if the resolution is actually 576 or 480 then the Quality must be SDTV and not HDTV or Unknown
                     VideoResolution.R576p or VideoResolution.R480p when VideoQuality is VideoQuality.HDTV or VideoQuality.Unknown => VideoQuality.SDTV,
                     VideoResolution.R720p or VideoResolution.R1080p or VideoResolution.R2160p when VideoQuality is VideoQuality.SDTV or VideoQuality.DVD or VideoQuality.Unknown => VideoQuality.HDTV,
                     _ => VideoQuality
@@ -83,9 +82,8 @@ internal abstract class VideoBackupFileBase : ExtendedBackupFileBase
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
-                var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(OriginalPath);
-                var videoCodec = Utils.MediaHelper.FormatVideoCodec(model, fileNameWithoutExtension);
-                var audioCodec = Utils.MediaHelper.FormatAudioCodec(model, fileNameWithoutExtension);
+                var videoCodec = Utils.MediaHelper.FormatVideoCodec(model);
+                var audioCodec = Utils.MediaHelper.FormatAudioCodec(model);
                 var audioChannels = Utils.MediaHelper.FormatAudioChannels(model);
                 var dynamicRangeType = Utils.MediaHelper.FormatVideoDynamicRangeType(model);
                 MediaInfoVideoCodec = Utils.GetEnumFromAttributeValue<MediaInfoVideoCodec>(videoCodec);
