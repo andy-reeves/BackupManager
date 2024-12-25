@@ -65,6 +65,7 @@
             videoFilesCheckNameButton = new System.Windows.Forms.Button();
             scanDirectoriesWithChangesButton = new System.Windows.Forms.Button();
             scanLastDirectoriesButton = new System.Windows.Forms.Button();
+            saveButton = new System.Windows.Forms.Button();
             scheduledBackupTimerButton = new System.Windows.Forms.Button();
             listFilesOnBackupDiskButton = new System.Windows.Forms.Button();
             listFilesInDirectoryButton = new System.Windows.Forms.Button();
@@ -560,6 +561,18 @@
             toolTip.SetToolTip(scanLastDirectoriesButton, "Scan the last nn files for directories to scan");
             scanLastDirectoriesButton.UseVisualStyleBackColor = true;
             scanLastDirectoriesButton.Click += ScanLastFilesButton_Click;
+            // 
+            // saveButton
+            // 
+            saveButton.Location = new System.Drawing.Point(312, 466);
+            saveButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            saveButton.Name = "saveButton";
+            saveButton.Size = new System.Drawing.Size(234, 27);
+            saveButton.TabIndex = 110;
+            saveButton.Text = "Save media xml";
+            toolTip.SetToolTip(saveButton, "Saves the media xml file if its changed");
+            saveButton.UseVisualStyleBackColor = true;
+            saveButton.Click += SaveButton_Click;
             // 
             // scheduledBackupTimerButton
             // 
@@ -1398,6 +1411,7 @@
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1416, 548);
+            Controls.Add(saveButton);
             Controls.Add(removeMetadataButton);
             Controls.Add(extractChaptersButton);
             Controls.Add(ExportAndRemoveSubtitlesButton);
@@ -1602,6 +1616,7 @@
         private System.Windows.Forms.Button ExportAndRemoveSubtitlesButton;
         private System.Windows.Forms.Button extractChaptersButton;
         private System.Windows.Forms.Button removeMetadataButton;
+        private System.Windows.Forms.Button saveButton;
     }
 }
 

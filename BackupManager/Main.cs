@@ -1302,4 +1302,9 @@ internal sealed partial class Main : Form
         }
         Utils.Log($"{count} files that are not [h265] video with metadata removed");
     }
+
+    private void SaveButton_Click(object sender, EventArgs e)
+    {
+        mediaBackup.Save(mainCt);
+    }
 }
