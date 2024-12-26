@@ -342,9 +342,6 @@
   <data name="BackupManagerStarted" xml:space="preserve">
     <value>BackupManager started</value>
   </data>
-  <data name="PathIsLongerThan256Characters" xml:space="preserve">
-    <value>{0} is longer than 256 characters</value>
-  </data>
   <data name="Completed" xml:space="preserve">
     <value>Completed.</value>
   </data>

@@ -260,7 +260,7 @@ internal sealed partial class Main
         Utils.TraceIn();
         if (file.Length <= Utils.MAX_PATH) return Utils.TraceOut(true);
 
-        Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.PathTooLong, file));
+        Utils.LogWithPushover(BackupAction.Error, string.Format(Resources.PathTooLong, file));
 
         {
             return Utils.TraceOut(false);

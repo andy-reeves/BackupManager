@@ -154,7 +154,7 @@ internal sealed partial class Main
         Utils.TraceIn();
         if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
         var destinationFileName = backupFile.BackupDiskFullPath(disk.BackupPath);
-        var destinationFileNameTemp = destinationFileName + ".copying";
+        var destinationFileNameTemp = destinationFileName + ".c";
 
         if (availableSpace > Utils.ConvertMBtoBytes(mediaBackup.Config.BackupDiskMinimumFreeSpaceToLeave) + backupFile.Length)
         {

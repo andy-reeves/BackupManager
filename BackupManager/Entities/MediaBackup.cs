@@ -109,7 +109,6 @@ public sealed class MediaBackup
     {
         // take a copy of the xml file
         var destinationPath = GetMediaBackupDestinationPath();
-        Utils.LogWithPushover(BackupAction.General, "Creating a copy of the MediaBackup.xml file");
         _ = Utils.File.Copy(mediaBackupPath, destinationPath, ct);
     }
 
@@ -327,6 +326,7 @@ public sealed class MediaBackup
         if (File.Exists(mediaBackupPath)) File.SetAttributes(mediaBackupPath, FileAttributes.Normal);
         using StreamWriter streamWriter = new(mediaBackupPath);
         xmlSerializer.Serialize(streamWriter, this);
+        Utils.LogWithPushover(BackupAction.General, "MediaBackup.xml saved.");
 
         // Set Changed to False once we've just saved
         ClearChanged();

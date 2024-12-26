@@ -94,7 +94,7 @@ internal sealed partial class Main
 
             foreach (var file in mediaBackup.BackupFiles.Where(static file => file.FullPath.Length > Utils.MAX_PATH))
             {
-                Utils.Log(string.Format(Resources.PathIsLongerThan256Characters, file.FullPath));
+                Utils.LogWithPushover(BackupAction.Error, string.Format(Resources.PathTooLong, file.FullPath));
             }
 
             foreach (var disk in mediaBackup.BackupDisks)
