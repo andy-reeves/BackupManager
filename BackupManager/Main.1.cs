@@ -185,7 +185,7 @@ internal sealed partial class Main
                  where config.SymbolicLinks.Select(a => Regex.Match(directoryPath, a.FileDiscoveryRegEx)).Any(static m => m.Success)
                  select directoryPath)
         {
-            if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+            ct.ThrowIfCancellationRequested();
             _ = hashSet.Add(path);
         }
         UpdateStatusLabel(ct, "Checking for broken Symbolic Links");
@@ -198,7 +198,7 @@ internal sealed partial class Main
 
         for (var i = 0; i < directoriesToCheck.Length; i++)
         {
-            if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+            ct.ThrowIfCancellationRequested();
             percentCompleteCurrent = i * 100 / toolStripProgressBar.Maximum;
 
             if (percentCompleteCurrent % 25 == 0 && percentCompleteCurrent > percentCompleteReported && directoriesToCheck.Length > 100)
@@ -222,7 +222,7 @@ internal sealed partial class Main
 
         foreach (var path in hashSet)
         {
-            if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+            ct.ThrowIfCancellationRequested();
             counter++;
             percentCompleteCurrent = Convert.ToInt32(counter * 100 / hashSet.Count);
             UpdateStatusLabel(ct, string.Format(Resources.Checking, path), percentCompleteCurrent);
@@ -479,7 +479,7 @@ internal sealed partial class Main
     /// <param name="ct"></param>
     private void DisableControlsForAsyncTasks(CancellationToken ct)
     {
-        if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+        ct.ThrowIfCancellationRequested();
         longRunningActionExecutingRightNow = true;
 
         foreach (var c in Controls.Cast<Control>().Where(static c => c is not StatusStrip))
@@ -530,7 +530,7 @@ internal sealed partial class Main
     private void UpdateStatusLabel(CancellationToken ct, string text = "", int value = 0)
     {
         Utils.TraceIn(value);
-        if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+        ct.ThrowIfCancellationRequested();
         UpdateStatusLabel(text, value);
         Utils.TraceOut();
     }

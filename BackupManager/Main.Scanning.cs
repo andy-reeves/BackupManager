@@ -132,7 +132,7 @@ internal sealed partial class Main
         if (!ProcessFilesRenameFileRules(ref file)) return false;
         if (!ProcessFilesCheckAllMediaInfo(scanPathForVideoCodec, ref file, ct)) return false;
 
-        if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+        ct.ThrowIfCancellationRequested();
         if (file == null) return false;
 
         ProcessFilesUpdatePercentComplete(file);
@@ -207,7 +207,7 @@ internal sealed partial class Main
         if (!Utils.File.IsVideo(file) && !Utils.File.IsSubtitles(file)) return Utils.TraceOut(true);
         if (!config.DirectoriesRenameVideoFilesOnOff || !scan) return Utils.TraceOut(true);
 
-        if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+        ct.ThrowIfCancellationRequested();
 
         try
         {
@@ -411,7 +411,7 @@ internal sealed partial class Main
         {
             var directoryScan = new DirectoryScan(DirectoryScanType.GetFiles, directory, DateTime.Now, scanId);
             Utils.LogWithPushover(BackupAction.ScanDirectory, string.Format(Resources.Scanning, directory));
-            if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+            ct.ThrowIfCancellationRequested();
             UpdateStatusLabel(ct, string.Format(Resources.Scanning, directory));
             var files = Utils.File.GetFiles(directory, filters, SearchOption.AllDirectories, 0, 0, ct);
             directoryScan.EndDateTime = DateTime.Now;

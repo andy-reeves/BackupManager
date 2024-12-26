@@ -60,7 +60,7 @@ internal sealed partial class Main
     // ReSharper disable once FunctionComplexityOverflow
     private void CopyFilesLoop(IEnumerable<BackupFile> backupFiles, long sizeOfCopy, BackupDisk disk, CancellationToken ct)
     {
-        if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+        ct.ThrowIfCancellationRequested();
         var outOfDiskSpaceMessageSent = false;
         long copiedSoFar = 0;
         var counter = 0;
@@ -79,7 +79,7 @@ internal sealed partial class Main
         {
             try
             {
-                if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+                ct.ThrowIfCancellationRequested();
                 counter++;
 
                 // We use a temporary name for the copy first and then rename it after
@@ -152,7 +152,7 @@ internal sealed partial class Main
         ref long lastCopySpeed, ref long availableSpace, CancellationToken ct)
     {
         Utils.TraceIn();
-        if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+        ct.ThrowIfCancellationRequested();
         var destinationFileName = backupFile.BackupDiskFullPath(disk.BackupPath);
         var destinationFileNameTemp = destinationFileName + ".c";
 
@@ -189,7 +189,7 @@ internal sealed partial class Main
             var timeTaken = sw.Elapsed.TotalSeconds;
 
             // We need to check this here in case Cancel was clicked during the copy of the file
-            if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+            ct.ThrowIfCancellationRequested();
             _ = Utils.File.Move(destinationFileNameTemp, destinationFileName);
             Utils.Trace($"timeTaken {timeTaken}");
             Utils.Trace($"sourceFileInfo.Length {sourceFileInfo.Length}");

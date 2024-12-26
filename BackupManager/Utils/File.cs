@@ -382,7 +382,7 @@ internal static partial class Utils
             if (Exists(destFileName)) throw new NotSupportedException("Destination file already exists");
 
             Directory.EnsureForFilePath(destFileName);
-            if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+            ct.ThrowIfCancellationRequested();
 
             // ReSharper disable once CommentTypo
             // we create the destination file so xcopy knows it's a file and can copy over it
@@ -422,7 +422,7 @@ internal static partial class Utils
                 while (!IsAccessible(destFileName) || GetShortMd5Hash(destFileName) != hashSource)
                 {
                     Wait(1);
-                    if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+                    ct.ThrowIfCancellationRequested();
                 }
                 return TraceOut(true);
             }
@@ -679,7 +679,7 @@ internal static partial class Utils
         /// </returns>
         internal static string[] GetFiles(string path, string filters, SearchOption searchOption, FileAttributes directoryAttributesToIgnore, FileAttributes fileAttributesToIgnore, CancellationToken ct)
         {
-            if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+            ct.ThrowIfCancellationRequested();
             var sw = Stopwatch.StartNew();
 
             if (!System.IO.Directory.Exists(path))
@@ -705,7 +705,7 @@ internal static partial class Utils
 
             while (pathsToSearch.Count > 0)
             {
-                if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+                ct.ThrowIfCancellationRequested();
                 var dir = pathsToSearch.Dequeue();
                 Trace($"Dequeued {dir}");
 
@@ -713,14 +713,14 @@ internal static partial class Utils
                 {
                     foreach (var subDir in System.IO.Directory.GetDirectories(dir).Where(subDir => !new DirectoryInfo(subDir).Attributes.HasAny(directoryAttributesToIgnore)))
                     {
-                        if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+                        ct.ThrowIfCancellationRequested();
                         pathsToSearch.Enqueue(subDir);
                     }
                 }
 
                 foreach (var collection in includeAsArray2.Select(filter =>
                          {
-                             if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+                             ct.ThrowIfCancellationRequested();
                              return System.IO.Directory.GetFiles(dir, filter, SearchOption.TopDirectoryOnly);
                          }).Select(allFiles => excludeAsArray.Length > 0 ? allFiles.Where(p => !excludeRegex.Match(p).Success) : allFiles))
                 {

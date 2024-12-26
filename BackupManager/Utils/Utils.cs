@@ -251,7 +251,7 @@ internal static partial class Utils
         var destLogFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups", $"BackupManager{suffix}_{timeLog}.log");
         if (File.Exists(_logFile)) _ = File.Move(_logFile, destLogFile);
         var traceFiles = File.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "*BackupManager_Trace.log", SearchOption.TopDirectoryOnly, ct);
-        if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+        ct.ThrowIfCancellationRequested();
 
         foreach (var file in traceFiles)
         {
@@ -1330,7 +1330,7 @@ internal static partial class Utils
     private static long DiskSpeedTest(string sourcePath, string destinationPath, long testFileSize, int testIterations, CancellationToken ct)
     {
         TraceIn();
-        if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+        ct.ThrowIfCancellationRequested();
         const long randomStringSize = 500_000;
         const int streamWriteBufferSize = 20 * BYTES_IN_ONE_MEGABYTE;
         var randomText = RandomString(randomStringSize);

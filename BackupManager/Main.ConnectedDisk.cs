@@ -72,12 +72,12 @@ internal sealed partial class Main
 
                 do
                 {
-                    if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+                    ct.ThrowIfCancellationRequested();
                     WaitForNewDisk(nextDiskMessage, ct);
                     newDisk = SetupBackupDisk(ct);
                 } while (newDisk.Name == lastBackupDiskChecked.Name);
             }
-            if (ct.IsCancellationRequested) ct.ThrowIfCancellationRequested();
+            ct.ThrowIfCancellationRequested();
         }
         finally
         {
