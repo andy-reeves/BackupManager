@@ -97,7 +97,7 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
     {
         if (DirectoryName.HasNoValue()) return false;
 
-        var files = Utils.File.GetFiles(DirectoryName, new CancellationToken());
+        var files = Utils.File.GetFiles(DirectoryName, CancellationToken.None);
         var videoFiles = files.Where(static f => Utils.File.IsVideo(f) && !Utils.File.IsSpecialFeature(f)).ToArray();
 
         switch (videoFiles.Length)

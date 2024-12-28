@@ -35,7 +35,7 @@ public sealed class UtilsFileCopyTests
             Assert.False(File.Exists(file2));
             Utils.File.Create(file1);
             Assert.Equal("b3d5cf638ed2f6a94d6b3c628f946196", Utils.File.GetShortMd5Hash(file1));
-            var ct = new CancellationToken();
+            var ct = CancellationToken.None;
             Assert.True(Utils.File.Copy(file1, file2, ct));
             Assert.True(File.Exists(file2));
             Assert.Equal("b3d5cf638ed2f6a94d6b3c628f946196", Utils.File.GetShortMd5Hash(file2));
@@ -65,7 +65,7 @@ public sealed class UtilsFileCopyTests
 
         _ = Assert.Throws<NotSupportedException>(() =>
         {
-            var ct = new CancellationToken();
+            var ct = CancellationToken.None;
             return Utils.File.Copy(file1, file2, ct);
         });
         Assert.True(File.Exists(file1));

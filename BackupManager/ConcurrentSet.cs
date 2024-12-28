@@ -302,7 +302,7 @@ internal sealed class ConcurrentSet<T> : ISet<T>
 
     private bool TryAdd(T item)
     {
-        return dictionary.TryAdd(item, default);
+        return dictionary.TryAdd(item, 0);
     }
 
     private bool TryRemove(T item)

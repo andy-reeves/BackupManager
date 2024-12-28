@@ -32,7 +32,7 @@ public sealed class FullTestA
         var mediaBackup = MediaBackup.Load(Path.Combine(targetDirectory, "ConfigA\\MediaBackup.xml"));
         Utils.Config = mediaBackup.Config;
         Utils.MediaBackup = mediaBackup;
-        var ct = new CancellationToken();
+        var ct = CancellationToken.None;
 
         // Step 2 - Scan the 2 directories and Process Files
         var mainForm = new Main();

@@ -73,7 +73,7 @@ public sealed class EntityTests
         Utils.File.Create(pathToFile2);
         Utils.File.Create(pathToFile3);
         var mediaBackup = BackupManager.Entities.MediaBackup.Load(Path.Combine(Utils.GetProjectPath(typeof(FileRulesUnitTest)), "..\\BackupManager\\MediaBackup.xml"));
-        mediaBackup.BackupMediaFile(new CancellationToken());
+        mediaBackup.BackupMediaFile(CancellationToken.None);
         mediaBackup.Config.DirectoriesToBackup.Add(pathToMovies);
         mediaBackup.Config.DirectoriesToBackup.Add(pathToTv);
         mediaBackup.Config.DirectoriesToBackup.Add(pathToMovies2);
@@ -260,7 +260,7 @@ public sealed class EntityTests
         backupFile1.ClearDiskChecked();
         Assert.False(backupFile1.DiskCheckedTime.HasValue);
         Assert.NotEqual(0, backupFile1.GetHashCode());
-        var ct = new CancellationToken();
+        var ct = CancellationToken.None;
         _ = Utils.File.Copy(pathToFile1, pathToFile1OnBackupDisk, ct);
         var backupDisk = new BackupDisk("backup 1000", pathToBackupShare);
         Assert.True(backupFile1.CheckContentHashes(backupDisk));
