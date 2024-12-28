@@ -171,13 +171,6 @@ internal static partial class Utils
     private static readonly string[] _videoExtensions = [".mkv", ".mp4", ".mpeg", ".mpg", ".ts", ".avi"];
 
     /// <summary>
-    ///     An array of allowed Subtitles extensions in video folders like .en.srt, .en.hi.srt, etc.
-    /// </summary>
-
-    // ReSharper disable once UnusedMember.Local
-    private static readonly string[] _subtitlesExtensions = [".en.srt", ".es.srt", ".en.hi.srt", ".es.hi.srt", ".hi.srt", ".srt"];
-
-    /// <summary>
     ///     True when we're in a DEBUG build otherwise False
     /// </summary>
     internal static readonly bool InDebugBuild;
