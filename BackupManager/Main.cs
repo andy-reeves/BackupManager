@@ -1180,9 +1180,17 @@ internal sealed partial class Main : Form
         var count = 0;
         var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture);
         IEnumerable<TdarrTranscodeCancelled> records;
-        var testDataDirectory = Path.GetFullPath(Path.Combine(Utils.GetProjectPath(typeof(Main)), @"..\TestProject\TestData"));
+        const string transcodeErrorCancelledCsv = "Transcode_ Error_Cancelled.csv";
+        var localPath = Path.Combine(Application.StartupPath, transcodeErrorCancelledCsv);
+        var pathToUse = File.Exists(localPath) ? localPath : Path.Combine(Path.GetFullPath(Path.Combine(Utils.GetProjectPath(typeof(Main)), @"..\TestProject\TestData")), transcodeErrorCancelledCsv);
 
-        using (var reader = new StreamReader(Path.Combine(testDataDirectory, "Transcode_ Error_Cancelled.csv")))
+        if (!File.Exists(pathToUse))
+        {
+            Utils.Log($"{pathToUse} not found");
+            return;
+        }
+
+        using (var reader = new StreamReader(pathToUse))
         using (var csv = new CsvReader(reader, csvConfiguration))
         {
             records = csv.GetRecords<TdarrTranscodeCancelled>().ToArray();
