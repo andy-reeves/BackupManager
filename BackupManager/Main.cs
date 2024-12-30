@@ -1178,7 +1178,7 @@ internal sealed partial class Main : Form
     private void ExportAndRemoveSubtitlesButton_Click(object sender, EventArgs e)
     {
         var count = 0;
-        var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture);
+        var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture) { HeaderValidated = null, MissingFieldFound = null };
         IEnumerable<TdarrTranscodeCancelled> records;
         const string transcodeErrorCancelledCsv = "Transcode_ Error_Cancelled.csv";
         var localPath = Path.Combine(Application.StartupPath, transcodeErrorCancelledCsv);
@@ -1196,7 +1196,7 @@ internal sealed partial class Main : Form
             records = csv.GetRecords<TdarrTranscodeCancelled>().ToArray();
         }
 
-        foreach (var fullPath in from record in records select Path.GetFullPath(record.Id) into fullPath where File.Exists(fullPath) where !Utils.File.IsSpecialFeature(fullPath) where Utils.MediaHelper.HasSubtitles(fullPath) select fullPath)
+        foreach (var fullPath in from record in records select Path.GetFullPath(record.Id) into fullPath where File.Exists(fullPath) where Utils.MediaHelper.HasSubtitles(fullPath) select fullPath)
         {
             Utils.Log($"{fullPath} is video with subtitles");
             if (!Utils.MediaHelper.ExtractSubtitleFiles(fullPath)) continue;
@@ -1258,17 +1258,25 @@ internal sealed partial class Main : Form
     private void RemoveMetadataButton_Click(object sender, EventArgs e)
     {
         var count = 0;
-        var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture);
+        var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture) { HeaderValidated = null, MissingFieldFound = null };
         IEnumerable<TdarrTranscodeCancelled> records;
-        var testDataDirectory = Path.GetFullPath(Path.Combine(Utils.GetProjectPath(typeof(Main)), @"..\TestProject\TestData"));
+        const string transcodeErrorCancelledCsv = "Transcode_ Error_Cancelled.csv";
+        var localPath = Path.Combine(Application.StartupPath, transcodeErrorCancelledCsv);
+        var pathToUse = File.Exists(localPath) ? localPath : Path.Combine(Path.GetFullPath(Path.Combine(Utils.GetProjectPath(typeof(Main)), @"..\TestProject\TestData")), transcodeErrorCancelledCsv);
 
-        using (var reader = new StreamReader(Path.Combine(testDataDirectory, "Transcode_ Error_Cancelled.csv")))
+        if (!File.Exists(pathToUse))
+        {
+            Utils.Log($"{pathToUse} not found");
+            return;
+        }
+
+        using (var reader = new StreamReader(pathToUse))
         using (var csv = new CsvReader(reader, csvConfiguration))
         {
             records = csv.GetRecords<TdarrTranscodeCancelled>().ToArray();
         }
 
-        foreach (var fullPath in from record in records select Path.GetFullPath(record.Id) into fullPath where File.Exists(fullPath) where !Utils.File.IsSpecialFeature(fullPath) where Utils.MediaHelper.HasChapters(fullPath) select fullPath)
+        foreach (var fullPath in from record in records select Path.GetFullPath(record.Id) into fullPath where File.Exists(fullPath) where Utils.MediaHelper.HasChapters(fullPath) select fullPath)
         {
             if (!File.Exists(fullPath)) continue;
 
