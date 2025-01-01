@@ -1081,18 +1081,32 @@ internal sealed partial class Main : Form
         var files = mediaBackup.BackupFiles.Where(static file =>
         {
             ArgumentException.ThrowIfNullOrEmpty(file.FullPath);
-            return Utils.File.IsVideo(file.FullPath) && !Utils.File.IsSpecialFeature(file.FullPath) && file.FullPath.Contains("_TV") && !file.FullPath.ContainsAny("[h265]", "[VP9]", "[VC1]") && !file.Deleted;
-        }).ToArray();
+
+            return Utils.File.IsVideo(file.FullPath) && !Utils.File.IsSpecialFeature(file.FullPath) && file.FullPath.Contains("_TV") &&
+                   !file.FullPath.ContainsAny("[h265]", "[VP9]", "[VC1]") && !file.Deleted;
+        }).OrderBy(static f => f.Length).ToArray();
+
+        foreach (var f in files)
+        {
+            Utils.Log($"{f.FullPath} is {f.Length.SizeSuffix()}");
+        }
         var totalSize = files.Sum(static file => file.Length);
         Utils.Log($"Total size of {files.Length} TV files is {totalSize.SizeSuffix()}");
 
         files = mediaBackup.BackupFiles.Where(static file =>
         {
             ArgumentException.ThrowIfNullOrEmpty(file.FullPath);
-            return Utils.File.IsVideo(file.FullPath) && !Utils.File.IsSpecialFeature(file.FullPath) && file.FullPath.Contains("_Movies") && !file.FullPath.ContainsAny("[Remux-1080p]", "[h265]", "[VP9]", "[VC1]") && !file.Deleted;
-        }).ToArray();
+
+            return Utils.File.IsVideo(file.FullPath) && !Utils.File.IsSpecialFeature(file.FullPath) && file.FullPath.ContainsAny("_Movies", "_Concerts", "_Comedy") &&
+                   !file.FullPath.ContainsAny("[Remux-1080p]", "[h265]", "[VP9]", "[VC1]") && !file.Deleted;
+        }).OrderBy(static f => f.Length).ToArray();
+
+        foreach (var f in files)
+        {
+            Utils.Log($"{f.FullPath} is {f.Length.SizeSuffix()}");
+        }
         totalSize = files.Sum(static file => file.Length);
-        Utils.Log($"Total size of {files.Length} of Movie files is {totalSize.SizeSuffix()}");
+        Utils.Log($"Total size of {files.Length} of Movie, Concert and Comedy files is {totalSize.SizeSuffix()}");
     }
 
     private void ScanDirectoriesWithChangesButton_Click(object sender, EventArgs e)
