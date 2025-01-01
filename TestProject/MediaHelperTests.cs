@@ -17,7 +17,8 @@ public sealed class MediaHelperTests
 {
     [Theory]
     [InlineData("File18.nochapters.master.mkv", "File18.master.chap", "File18.chaptersAdded.mkv", 1, 1, 0, 1, false)]
-    public void AddChaptersToFile(string inputFilename, string chaptersFilename, string outputFilename, int videoStreamCount, int audioStreamCount, int subtitlesStreamCount, int chaptersStreamCount, bool hasMetadata)
+    public void AddChaptersToFile(string inputFilename, string chaptersFilename, string outputFilename, int videoStreamCount, int audioStreamCount,
+        int subtitlesStreamCount, int chaptersStreamCount, bool hasMetadata)
     {
         var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
         var fileName = Path.Combine(testDataPath, inputFilename);
@@ -99,7 +100,8 @@ public sealed class MediaHelperTests
     [InlineData("File17.withSubtitles.input.mkv", "File17.nosubtitles.mkv", 1, 1, 0, 0, false)]
     [InlineData("File18.withChapters.master.mkv", "File18.nosubtitles.mkv", 1, 1, 0, 1, false)]
     [InlineData("File19.mkv", "File19.nosubs.mkv", 1, 12, 0, 0, false)]
-    public void RemoveSubtitlesFromFile(string inputFilename, string outputFilename, int videoStreamCount, int audioStreamCount, int subtitlesStreamCount, int chaptersStreamCount, bool hasMetadata)
+    public void RemoveSubtitlesFromFile(string inputFilename, string outputFilename, int videoStreamCount, int audioStreamCount, int subtitlesStreamCount,
+        int chaptersStreamCount, bool hasMetadata)
     {
         var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
         var fileName = Path.Combine(testDataPath, inputFilename);
@@ -117,7 +119,8 @@ public sealed class MediaHelperTests
     [Theory]
     [InlineData("File19.mkv", false, "", 0, 0, 0, 0)]
     [InlineData("File20.mkv", false, "", 0, 0, 0, 0)]
-    public void RemoveMetadataFromFile(string inputFilename, bool hasMetadataInput, string outputFilename, int videoStreamCount, int audioStreamCount, int subtitlesStreamCount, int chaptersStreamCount)
+    public void RemoveMetadataFromFile(string inputFilename, bool hasMetadataInput, string outputFilename, int videoStreamCount, int audioStreamCount,
+        int subtitlesStreamCount, int chaptersStreamCount)
     {
         var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
         var fileName = Path.Combine(testDataPath, inputFilename);
@@ -142,7 +145,8 @@ public sealed class MediaHelperTests
     [InlineData("File17.withSubtitles.input.mkv", "File17.nochapters.mkv", 1, 1, 2, 0, false)]
     [InlineData("File18.withChapters.master.mkv", "File18.nochapters.mkv", 1, 1, 0, 0, false)]
     [InlineData("File20.mkv", "File20.nochapters.mkv", 1, 12, 6, 0, false)]
-    public void RemoveChaptersFromFile(string inputFilename, string outputFilename, int videoStreamCount, int audioStreamCount, int subtitlesStreamCount, int chaptersStreamCount, bool hasMetadataOutput)
+    public void RemoveChaptersFromFile(string inputFilename, string outputFilename, int videoStreamCount, int audioStreamCount, int subtitlesStreamCount,
+        int chaptersStreamCount, bool hasMetadataOutput)
     {
         var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
         var fileName = Path.Combine(testDataPath, inputFilename);

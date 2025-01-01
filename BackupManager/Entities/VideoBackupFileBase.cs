@@ -59,7 +59,8 @@ internal abstract class VideoBackupFileBase : ExtendedBackupFileBase
                     // ReSharper disable once CommentTypo
                     // if the resolution is actually 576 or 480 then the Quality must be SDTV and not HDTV or Unknown
                     VideoResolution.R576p or VideoResolution.R480p when VideoQuality is VideoQuality.HDTV or VideoQuality.Unknown => VideoQuality.SDTV,
-                    VideoResolution.R720p or VideoResolution.R1080p or VideoResolution.R2160p when VideoQuality is VideoQuality.SDTV or VideoQuality.DVD or VideoQuality.Unknown => VideoQuality.HDTV,
+                    VideoResolution.R720p or VideoResolution.R1080p or VideoResolution.R2160p when VideoQuality is VideoQuality.SDTV or VideoQuality.DVD
+                        or VideoQuality.Unknown => VideoQuality.HDTV,
                     _ => VideoQuality
                 };
 
@@ -67,14 +68,17 @@ internal abstract class VideoBackupFileBase : ExtendedBackupFileBase
                 {
                     case VideoResolution.R1080p:
                     case VideoResolution.R2160p:
-                        if (VideoQuality is VideoQuality.SDTV or VideoQuality.DVD) Utils.LogWithPushover(BackupAction.Error, $"{OriginalPath} is {VideoQuality} and so can't be {VideoResolution}");
+                        if (VideoQuality is VideoQuality.SDTV or VideoQuality.DVD)
+                            Utils.LogWithPushover(BackupAction.Error, $"{OriginalPath} is {VideoQuality} and so can't be {VideoResolution}");
                         break;
                     case VideoResolution.R720p:
-                        if (VideoQuality == VideoQuality.SDTV || VideoQuality == VideoQuality.DVD || IsRemux) Utils.LogWithPushover(BackupAction.Error, $"{OriginalPath} is {VideoQuality} and so can't be {VideoResolution} or Remux");
+                        if (VideoQuality == VideoQuality.SDTV || VideoQuality == VideoQuality.DVD || IsRemux)
+                            Utils.LogWithPushover(BackupAction.Error, $"{OriginalPath} is {VideoQuality} and so can't be {VideoResolution} or Remux");
                         break;
                     case VideoResolution.R480p:
                     case VideoResolution.R576p:
-                        if (VideoQuality == VideoQuality.HDTV) Utils.LogWithPushover(BackupAction.Error, $"{OriginalPath} is {VideoResolution} and so can't be {VideoQuality}");
+                        if (VideoQuality == VideoQuality.HDTV)
+                            Utils.LogWithPushover(BackupAction.Error, $"{OriginalPath} is {VideoResolution} and so can't be {VideoQuality}");
                         break;
                     case VideoResolution.Unknown:
                         Utils.LogWithPushover(BackupAction.Error, $"{OriginalPath} can't be {VideoResolution}");

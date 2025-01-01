@@ -333,7 +333,9 @@ public sealed class BackupFile : IEquatable<BackupFile>
     /// <exception cref="ArgumentException"></exception>
     internal static string GetRelativePath(string fullPath, string directory)
     {
-        return !fullPath.StartsWithIgnoreCase(directory) ? throw new ArgumentException(Resources.FullPathNotCorrect, nameof(fullPath)) : fullPath.SubstringAfterIgnoreCase(directory).TrimStart(['\\']);
+        return !fullPath.StartsWithIgnoreCase(directory)
+            ? throw new ArgumentException(Resources.FullPathNotCorrect, nameof(fullPath))
+            : fullPath.SubstringAfterIgnoreCase(directory).TrimStart(['\\']);
     }
 
     /// <summary>

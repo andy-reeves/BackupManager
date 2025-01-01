@@ -23,13 +23,16 @@ internal sealed partial class Main
 
         monitoringExecutingRightNow = true;
 
-        foreach (var monitor in mediaBackup.Config.Monitors.Where(static monitor => monitor.Port > 0 ? !Utils.ConnectionExists(monitor.Url, monitor.Port) : !Utils.UrlExists(monitor.Url, monitor.Timeout)))
+        foreach (var monitor in mediaBackup.Config.Monitors.Where(static monitor =>
+                     monitor.Port > 0 ? !Utils.ConnectionExists(monitor.Url, monitor.Port) : !Utils.UrlExists(monitor.Url, monitor.Timeout)))
         {
             monitor.UpdateFailures(DateTime.Now);
             if (monitor.FailureRetryExceeded) continue;
 
             var s = monitor.Failures.Count > 1 ? "s" : string.Empty;
-            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.ServiceIsDown, monitor.Name, monitor.Failures.Count, s, Utils.FormatTimeFromSeconds(monitor.FailureTimePeriod / 1000)));
+
+            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
+                string.Format(Resources.ServiceIsDown, monitor.Name, monitor.Failures.Count, s, Utils.FormatTimeFromSeconds(monitor.FailureTimePeriod / 1000)));
             if (monitor.ApplicationType > ApplicationType.Unknown && ApplicationMonitorNewerVersionCheck(monitor)) continue;
 
             Utils.Wait(monitor.DelayBeforeRestarting);
@@ -75,14 +78,19 @@ internal sealed partial class Main
 
                 var installedVersion = Utils.GetApplicationVersionNumber(monitor.ApplicationType);
                 var availableVersion = Utils.GetLatestApplicationVersionNumber(monitor.ApplicationType);
-                if (!monitor.LogIssues || installedVersion.HasNoValue() || availableVersion.HasNoValue() || !Utils.VersionIsNewer(installedVersion, availableVersion)) continue;
+
+                if (!monitor.LogIssues || installedVersion.HasNoValue() || availableVersion.HasNoValue() || !Utils.VersionIsNewer(installedVersion, availableVersion))
+                    continue;
 
                 monitor.LogIssues = false;
-                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.NewerVersionOfApplicationAvailable, monitor.ApplicationType, installedVersion, availableVersion));
+
+                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
+                    string.Format(Resources.NewerVersionOfApplicationAvailable, monitor.ApplicationType, installedVersion, availableVersion));
             }
             catch (NotSupportedException)
             {
-                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.MonitorCheckLatestVersionsCouldNotBeChecked, monitor.ApplicationType));
+                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
+                    string.Format(Resources.MonitorCheckLatestVersionsCouldNotBeChecked, monitor.ApplicationType));
             }
         }
     }
@@ -112,7 +120,10 @@ internal sealed partial class Main
                 Utils.LogWithPushover(BackupAction.ApplicationMonitoring, string.Format(Resources.MonitorServicesStarted, monitor.Name));
         }
         else
-            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.FailedToStartAsNotFound, monitor.Name, monitor.ApplicationToStart, processToStart));
+        {
+            Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
+                string.Format(Resources.FailedToStartAsNotFound, monitor.Name, monitor.ApplicationToStart, processToStart));
+        }
     }
 
     private static void MonitorKillProcesses(ProcessServiceMonitor monitor)
@@ -136,7 +147,8 @@ internal sealed partial class Main
         Utils.Trace($"Available is {availableVersion}");
         if (!Utils.VersionIsNewer(installedVersion, availableVersion)) return false;
 
-        Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.NewerVersionOfServiceAvailable, monitor.ApplicationType, installedVersion, availableVersion));
+        Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High,
+            string.Format(Resources.NewerVersionOfServiceAvailable, monitor.ApplicationType, installedVersion, availableVersion));
         return true;
     }
 }

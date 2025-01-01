@@ -63,8 +63,8 @@ internal sealed partial class Main
         Utils.LogWithPushover(BackupAction.ProcessFiles, $"Processing {filesParam.Count:n0} file{suffix}", false, true);
 
         // One process thread for each disk that has files on it to scan
-        tasks.AddRange(disksAndFirstDirectories.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam))
-            .Select(files => TaskWrapper(Task.Run(() => files == null || files.Length == 0 || ProcessFilesInternal(files, scanId, scanPathForVideoCodec, ct), ct), ct)));
+        tasks.AddRange(disksAndFirstDirectories.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam)).Select(files =>
+            TaskWrapper(Task.Run(() => files == null || files.Length == 0 || ProcessFilesInternal(files, scanId, scanPathForVideoCodec, ct), ct), ct)));
 
         // this is to have only 1 thread processing files
         // tasks.Add(TaskWrapper(Task.Run(() => ProcessFilesInternal(filesParam.ToArray(), scanId, scanPathForVideoCodec, ct), ct), ct));
@@ -145,7 +145,11 @@ internal sealed partial class Main
         if (directory == directoryScanning) return directoryScanning;
 
         if (!firstDir) scanInfo.EndDateTime = DateTime.Now;
-        scanInfo = new DirectoryScan(DirectoryScanType.ProcessingFiles, directory, DateTime.Now, scanId) { TotalFiles = files.Count(f => f.StartsWithIgnoreCase(directory)) };
+
+        scanInfo = new DirectoryScan(DirectoryScanType.ProcessingFiles, directory, DateTime.Now, scanId)
+        {
+            TotalFiles = files.Count(f => f.StartsWithIgnoreCase(directory))
+        };
         mediaBackup.DirectoryScans.Add(scanInfo);
         directoryScanning = directory;
         firstDir = false;
@@ -154,7 +158,8 @@ internal sealed partial class Main
 
     private string[] FiltersToDelete()
     {
-        return Enumerable.ToArray(mediaBackup.Config.FilesToDelete.Select(static filter => filter.StartsWithIgnoreCase("^") ? filter : $"^{filter.Replace(".", @"\.").Replace("*", ".*").Replace("?", ".")}$").ToList());
+        return Enumerable.ToArray(mediaBackup.Config.FilesToDelete
+            .Select(static filter => filter.StartsWithIgnoreCase("^") ? filter : $"^{filter.Replace(".", @"\.").Replace("*", ".*").Replace("?", ".")}$").ToList());
     }
 
     /// <summary>
@@ -167,8 +172,9 @@ internal sealed partial class Main
         Utils.TraceIn();
         var newFilePath = file;
 
-        foreach (var fileRenameRule in config.FileRenameRules.Select(static fileRenameRule => new { fileRenameRule, a = fileRenameRule.FileDiscoveryRegex }).Where(static t => !t.a.HasNoValue())
-                     .Select(t => new { t, match = Regex.Match(newFilePath, t.a) }).Where(static t => t.match.Success).Select(static t => t.t.fileRenameRule))
+        foreach (var fileRenameRule in config.FileRenameRules.Select(static fileRenameRule => new { fileRenameRule, a = fileRenameRule.FileDiscoveryRegex })
+                     .Where(static t => !t.a.HasNoValue()).Select(t => new { t, match = Regex.Match(newFilePath, t.a) }).Where(static t => t.match.Success)
+                     .Select(static t => t.t.fileRenameRule))
         {
             // split on the comma, trim them, then replace the text
             newFilePath = fileRenameRule.Search.Split(',').Select(static t => t.Trim()).Aggregate(newFilePath, (current, s) => current.Replace(s, fileRenameRule.Replace));
@@ -315,29 +321,44 @@ internal sealed partial class Main
         if (mediaBackup.Config.SpeedTestOnOff)
         {
             UpdateStatusLabel(ct, string.Format(Resources.SpeedTesting, rootDirectory));
-            Utils.DiskSpeedTest(rootDirectory, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations, out readSpeed, out writeSpeed, ct);
+
+            Utils.DiskSpeedTest(rootDirectory, Utils.ConvertMBtoBytes(mediaBackup.Config.SpeedTestFileSize), mediaBackup.Config.SpeedTestIterations, out readSpeed,
+                out writeSpeed, ct);
         }
         var totalBytesOnRootDirectoryDiskFormatted = totalBytesOnRootDirectoryDisk.SizeSuffix();
         var freeSpaceOnRootDirectoryDiskFormatted = freeSpaceOnRootDirectoryDisk.SizeSuffix();
         var readSpeedFormatted = Utils.FormatSpeed(readSpeed);
         var writeSpeedFormatted = Utils.FormatSpeed(writeSpeed);
-        var text = $"{rootDirectory}\nTotal: {totalBytesOnRootDirectoryDiskFormatted}\nFree: {freeSpaceOnRootDirectoryDiskFormatted}\nRead: {readSpeedFormatted}\nWrite: {writeSpeedFormatted}";
+
+        var text =
+            $"{rootDirectory}\nTotal: {totalBytesOnRootDirectoryDiskFormatted}\nFree: {freeSpaceOnRootDirectoryDiskFormatted}\nRead: {readSpeedFormatted}\nWrite: {writeSpeedFormatted}";
         Utils.LogWithPushover(BackupAction.ScanDirectory, text);
 
         if (mediaBackup.Config.SpeedTestOnOff)
         {
             if (readSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumReadSpeed))
-                Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"Read speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumReadSpeed))}");
+            {
+                Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High,
+                    $"Read speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumReadSpeed))}");
+            }
 
             if (writeSpeed < Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumWriteSpeed))
-                Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"Write speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumWriteSpeed))}");
+            {
+                Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High,
+                    $"Write speed is below MinimumCritical of {Utils.FormatSpeed(Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumWriteSpeed))}");
+            }
         }
-        if (freeSpaceOnRootDirectoryDisk < Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumCriticalSpace)) Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"Free space on {rootDirectory} is too low");
+
+        if (freeSpaceOnRootDirectoryDisk < Utils.ConvertMBtoBytes(mediaBackup.Config.DirectoriesMinimumCriticalSpace))
+            Utils.LogWithPushover(BackupAction.ScanDirectory, PushoverPriority.High, $"Free space on {rootDirectory} is too low");
         UpdateStatusLabel(ct, string.Format(Resources.Scanning, rootDirectory));
 
         // Check for files in this root directories
         var files = Utils.File.GetFiles(rootDirectory, filters, SearchOption.TopDirectoryOnly, 0, 0, ct);
-        var filtersToDelete = mediaBackup.Config.FilesToDelete.Select(static filter => new { filter, replace = filter.Replace(".", @"\.").Replace("*", ".*").Replace("?", ".") }).Select(static t => $"^{t.replace}$").ToArray();
+
+        var filtersToDelete = mediaBackup.Config.FilesToDelete
+            .Select(static filter => new { filter, replace = filter.Replace(".", @"\.").Replace("*", ".*").Replace("?", ".") }).Select(static t => $"^{t.replace}$")
+            .ToArray();
 
         foreach (var file in files)
         {
@@ -376,7 +397,11 @@ internal sealed partial class Main
         var diskNames = Utils.GetDiskNames(mediaBackup.Config.DirectoriesToBackup);
         RootDirectoryChecks(mediaBackup.Config.DirectoriesToBackup, ct);
         var tasks = new List<Task>(diskNames.Length);
-        tasks.AddRange(diskNames.Select(diskName => Utils.GetDirectoriesForDisk(diskName, mediaBackup.Config.DirectoriesToBackup)).Select(directoriesOnDisk => { return TaskWrapper(() => GetFilesAsync(directoriesOnDisk, scanId, ct), ct); }));
+
+        tasks.AddRange(diskNames.Select(diskName => Utils.GetDirectoriesForDisk(diskName, mediaBackup.Config.DirectoriesToBackup)).Select(directoriesOnDisk =>
+        {
+            return TaskWrapper(() => GetFilesAsync(directoriesOnDisk, scanId, ct), ct);
+        }));
         Task.WhenAll(tasks).Wait(ct);
         Utils.LogWithPushover(BackupAction.ScanDirectory, Resources.Completed, true);
 

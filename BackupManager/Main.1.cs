@@ -75,7 +75,12 @@ internal sealed partial class Main
         {
             InitializeComponent();
             TraceConfiguration.Register();
-            if (Utils.InDebugBuild) _ = Trace.Listeners.Add(new TextWriterTraceListener(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"), "myListener"));
+
+            if (Utils.InDebugBuild)
+            {
+                _ = Trace.Listeners.Add(
+                    new TextWriterTraceListener(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"), "myListener"));
+            }
             var localMediaXml = Path.Combine(Application.StartupPath, "MediaBackup.xml");
             mediaBackup = MediaBackup.Load(File.Exists(localMediaXml) ? localMediaXml : ConfigurationManager.AppSettings.Get("MediaBackupXml"));
             config = mediaBackup.Config;
@@ -189,7 +194,9 @@ internal sealed partial class Main
             _ = hashSet.Add(path);
         }
         UpdateStatusLabel(ct, "Checking for broken Symbolic Links");
-        var directoriesToCheck = config.SymbolicLinks.Select(static a => Path.Combine(a.RootDirectory, Utils.RemoveRegexGroupsFromString(a.RelativePath))).Where(Directory.Exists).SelectMany(Directory.EnumerateDirectories).ToArray();
+
+        var directoriesToCheck = config.SymbolicLinks.Select(static a => Path.Combine(a.RootDirectory, Utils.RemoveRegexGroupsFromString(a.RelativePath)))
+            .Where(Directory.Exists).SelectMany(Directory.EnumerateDirectories).ToArray();
 
         // check the symbolic links root folders for any broken links
         EnableProgressBar(0, directoriesToCheck.Length);
@@ -366,7 +373,9 @@ internal sealed partial class Main
         }
 
         Utils.Log(BackupAction.General,
-            !(backupFiles.Length > 0) ? string.Format(Resources.AllFilesCheckedInLastNDays, config.BackupDiskDaysToReportSinceFilesChecked) : string.Format(Resources.ListingFilesNotCheckedInDays, config.BackupDiskDaysToReportSinceFilesChecked));
+            !(backupFiles.Length > 0)
+                ? string.Format(Resources.AllFilesCheckedInLastNDays, config.BackupDiskDaysToReportSinceFilesChecked)
+                : string.Format(Resources.ListingFilesNotCheckedInDays, config.BackupDiskDaysToReportSinceFilesChecked));
 
         foreach (var file in backupFiles)
         {
@@ -414,7 +423,10 @@ internal sealed partial class Main
     private void UpdateMonitoringButton()
     {
         Utils.TraceIn();
-        monitoringButton.TextWithInvoke(config.MonitoringOnOff ? string.Format(Resources.MonitoringButton, Resources.ON) : string.Format(Resources.MonitoringButton, Resources.OFF));
+
+        monitoringButton.TextWithInvoke(config.MonitoringOnOff
+            ? string.Format(Resources.MonitoringButton, Resources.ON)
+            : string.Format(Resources.MonitoringButton, Resources.OFF));
         Utils.TraceOut();
     }
 
@@ -490,9 +502,11 @@ internal sealed partial class Main
         // ReSharper disable BadListLineBreaks
         var controlsToEnable = new Control[]
         {
-            cancelButton, testPushoverEmergencyButton, testPushoverHighButton, testPushoverNormalButton, testPushoverLowButton, listFilesInDirectoryButton, listFilesNotCheckedInXXButton, listFilesNotOnBackupDiskButton,
-            listFilesOnBackupDiskButton, listFilesWithDuplicateContentHashcodesButton, listMoviesWithMultipleFilesButton, processesGroupBox, pushoverGroupBox, listFilesGroupBox, listBackupDiskStatusByDiskNumberButton,
-            listFilesInDirectoryGroupBox, monitoringButton, listBackupDiskStatusByFreeSpaceButton, listFilesOnBackupDiskGroupBox, openLogFileButton, allBackupDisksGroupBox
+            cancelButton, testPushoverEmergencyButton, testPushoverHighButton, testPushoverNormalButton, testPushoverLowButton, listFilesInDirectoryButton,
+            listFilesNotCheckedInXXButton, listFilesNotOnBackupDiskButton, listFilesOnBackupDiskButton, listFilesWithDuplicateContentHashcodesButton,
+            listMoviesWithMultipleFilesButton, processesGroupBox, pushoverGroupBox, listFilesGroupBox, listBackupDiskStatusByDiskNumberButton,
+            listFilesInDirectoryGroupBox, monitoringButton, listBackupDiskStatusByFreeSpaceButton, listFilesOnBackupDiskGroupBox, openLogFileButton,
+            allBackupDisksGroupBox
         };
 
         // ReSharper restore BadListLineBreaks

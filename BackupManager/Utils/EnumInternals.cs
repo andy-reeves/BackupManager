@@ -90,7 +90,10 @@ internal static partial class Utils
         private static string GetDescription(T value)
         {
             var field = typeof(T).GetField(value.ToString());
-            return field != null ? field.GetCustomAttributes(typeof(DescriptionAttribute), false).Cast<DescriptionAttribute>().Select(static x => x.Description).FirstOrDefault() : value.ToString();
+
+            return field != null
+                ? field.GetCustomAttributes(typeof(DescriptionAttribute), false).Cast<DescriptionAttribute>().Select(static x => x.Description).FirstOrDefault()
+                : value.ToString();
         }
     }
 }

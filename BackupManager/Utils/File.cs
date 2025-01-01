@@ -36,7 +36,8 @@ internal static partial class Utils
         internal static partial bool MoveFile(string lpExistingFileName, string lpNewFileName);
 
         [LibraryImport("kernel32.dll", EntryPoint = "CreateFileW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
-        internal static partial SafeFileHandle CreateFile(string fileName, uint dwDesiredAccess, FileShare dwShareMode, IntPtr securityAttrsMustBeZero, FileMode dwCreationDisposition, uint dwFlagsAndAttributes, IntPtr hTemplateFileMustBeZero);
+        internal static partial SafeFileHandle CreateFile(string fileName, uint dwDesiredAccess, FileShare dwShareMode, IntPtr securityAttrsMustBeZero,
+            FileMode dwCreationDisposition, uint dwFlagsAndAttributes, IntPtr hTemplateFileMustBeZero);
 
         [LibraryImport("kernel32.dll", EntryPoint = "SetFileTime", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -387,7 +388,17 @@ internal static partial class Utils
             // ReSharper disable once CommentTypo
             // we create the destination file so xcopy knows it's a file and can copy over it
             WriteAllText(destFileName, "Temp file"); // hash of this is 88f85bbea58fbff062050bcb2d2aafcf
-            CopyProcess = new Process { StartInfo = new ProcessStartInfo { UseShellExecute = true, WindowStyle = ProcessWindowStyle.Hidden, FileName = "xcopy", Arguments = $"/H /Y \"{sourceFileName}\" \"{destFileName}\"" } };
+
+            CopyProcess = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    UseShellExecute = true,
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    FileName = "xcopy",
+                    Arguments = $"/H /Y \"{sourceFileName}\" \"{destFileName}\""
+                }
+            };
             if (!CopyProcess.Start()) return TraceOut(false);
 
             try
@@ -677,7 +688,8 @@ internal static partial class Utils
         /// <param name="ct"></param>
         /// <returns>
         /// </returns>
-        internal static string[] GetFiles(string path, string filters, SearchOption searchOption, FileAttributes directoryAttributesToIgnore, FileAttributes fileAttributesToIgnore, CancellationToken ct)
+        internal static string[] GetFiles(string path, string filters, SearchOption searchOption, FileAttributes directoryAttributesToIgnore,
+            FileAttributes fileAttributesToIgnore, CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested();
             var sw = Stopwatch.StartNew();
@@ -697,7 +709,10 @@ internal static partial class Utils
             include = includeAsArray.Except(excludeAsArray);
             var includeAsArray2 = include as string[] ?? include.ToArray();
             if (!(includeAsArray2.Length > 0)) includeAsArray2 = ["*"];
-            var excludeFilters = from filter in excludeAsArray let replace = filter.Replace("!", Empty).Replace(".", @"\.").Replace("*", ".*").Replace("?", ".") select $"^{replace}$";
+
+            var excludeFilters = from filter in excludeAsArray
+                let replace = filter.Replace("!", Empty).Replace(".", @"\.").Replace("*", ".*").Replace("?", ".")
+                select $"^{replace}$";
             Regex excludeRegex = new(Join("|", excludeFilters.ToArray()), RegexOptions.IgnoreCase);
             Queue<string> pathsToSearch = new();
             List<string> foundFiles = [];
@@ -711,7 +726,8 @@ internal static partial class Utils
 
                 if (searchOption == SearchOption.AllDirectories)
                 {
-                    foreach (var subDir in System.IO.Directory.GetDirectories(dir).Where(subDir => !new DirectoryInfo(subDir).Attributes.HasAny(directoryAttributesToIgnore)))
+                    foreach (var subDir in System.IO.Directory.GetDirectories(dir)
+                                 .Where(subDir => !new DirectoryInfo(subDir).Attributes.HasAny(directoryAttributesToIgnore)))
                     {
                         ct.ThrowIfCancellationRequested();
                         pathsToSearch.Enqueue(subDir);

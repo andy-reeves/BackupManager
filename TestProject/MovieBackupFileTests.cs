@@ -18,7 +18,8 @@ namespace TestProject;
 public sealed class MovieBackupFileTests
 {
     [Theory]
-    [InlineData(@"\\nas2\assets3\_Movies (non-tmdb)\Aliens (1986)\Aliens (1986) [Remux-2160p Proper][HDR10][AC3 5.1][h265].mkv", true, "Aliens (1986) [Remux-2160p][HDR10][AC3 5.1][h265].mkv")]
+    [InlineData(@"\\nas2\assets3\_Movies (non-tmdb)\Aliens (1986)\Aliens (1986) [Remux-2160p Proper][HDR10][AC3 5.1][h265].mkv", true,
+        "Aliens (1986) [Remux-2160p][HDR10][AC3 5.1][h265].mkv")]
     [InlineData(@"\\nas2\assets3\_Movies (non-tmdb)\Aliens (1986)\Aliens (1986) [Remux-2160p][HDR10][AC3 5.1][h265].mkv", true)]
     [InlineData(@"\\nas1\assets4\_Movies\Aliens (1986)-other\Aliens (1986)-other {tmdb-679} [Remux-2160p][HDR10][AC3 5.1][h265].mkv", true)]
     [InlineData(@"\\nas2\assets3\_Movies\Aliens (1986)\Aliens (1986) {tmdb-679} [Bluray-2160p][HDR10][AC3 5.1][h265].mkv", true)]
@@ -60,10 +61,12 @@ public sealed class MovieBackupFileTests
     }
 
     [Theory]
-    [InlineData("File16 (2014) {tmdb-261103} [Remux-1080p][3D][DTS-HD MA 5.1][h264].mkv", false, true, "File16 (2014) {tmdb-261103} [Remux-1080p][3D][DTS-HD MA 5.1][h264].mkv")]
+    [InlineData("File16 (2014) {tmdb-261103} [Remux-1080p][3D][DTS-HD MA 5.1][h264].mkv", false, true,
+        "File16 (2014) {tmdb-261103} [Remux-1080p][3D][DTS-HD MA 5.1][h264].mkv")]
     [InlineData("File13 (2024) [Remux-1080p][DTS-HD MA 5.1][h264].mkv", false, true, "File13 (2024) [Remux-1080p][DTS-HD MA 5.1][h264].mkv")]
     [InlineData("File14 (2024) [WEBDL-1080p][EAC3 5.1][h264].mkv", false, true, "File14 (2024) [WEBDL-1080p][EAC3 5.1][h265].mkv")]
-    [InlineData("Avengers Infinity War (2018) {tmdb-299536} [Remux-2160p][HDR10][TrueHD Atmos 7.1][h265].mkv", false, true, "Avengers Infinity War (2018) {tmdb-299536} [Remux-2160p][HDR10][TrueHD Atmos 7.1][h265].mkv")]
+    [InlineData("Avengers Infinity War (2018) {tmdb-299536} [Remux-2160p][HDR10][TrueHD Atmos 7.1][h265].mkv", false, true,
+        "Avengers Infinity War (2018) {tmdb-299536} [Remux-2160p][HDR10][TrueHD Atmos 7.1][h265].mkv")]
     public void MovieRefreshInfoTests(string sourceFileName, bool validDirectoryName, bool validFileName, string expectedFileName)
     {
         string fileName;

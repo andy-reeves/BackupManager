@@ -66,7 +66,9 @@ internal sealed partial class Main
                     continue;
                 }
                 if (copyFiles) CopyFiles(false, ct);
-                Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.High, $"Backup disk {lastBackupDiskChecked.Name} checked. Please insert the next disk now", true);
+
+                Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.High, $"Backup disk {lastBackupDiskChecked.Name} checked. Please insert the next disk now",
+                    true);
                 UpdateStatusLabel(ct, nextDiskMessage);
                 BackupDisk newDisk;
 
@@ -172,7 +174,8 @@ internal sealed partial class Main
             if (mediaBackup.Contains(backupFileIndexFolderRelativePath))
             {
                 // scenario 103 or 105 on disk and in xml but could be different
-                ConnectedDiskBackupDiskFileIsInTheHashtable(backupDiskFileFullPath, disk, ref diskInfoMessageWasTheLastSent, deleteExtraFiles, backupFileIndexFolderRelativePath);
+                ConnectedDiskBackupDiskFileIsInTheHashtable(backupDiskFileFullPath, disk, ref diskInfoMessageWasTheLastSent, deleteExtraFiles,
+                    backupFileIndexFolderRelativePath);
             }
             else
             {
@@ -244,7 +247,8 @@ internal sealed partial class Main
             Utils.LogWithPushover(BackupAction.CheckBackupDisk, $"Extra file {backupDiskFileFullPath} on backup disk {disk.Name}");
     }
 
-    private void ConnectedDiskBackupDiskFileIsNotInTheHashtable(string backupDiskFileFullPath, BackupDisk disk, ref bool diskInfoMessageWasTheLastSent, bool deleteExtraFiles)
+    private void ConnectedDiskBackupDiskFileIsNotInTheHashtable(string backupDiskFileFullPath, BackupDisk disk, ref bool diskInfoMessageWasTheLastSent,
+        bool deleteExtraFiles)
     {
         // The file on the backup disk isn't found in the directory anymore
         // it could be that we've renamed it in the directory
@@ -299,7 +303,8 @@ internal sealed partial class Main
     /// <param name="deleteExtraFiles"></param>
     /// <param name="hashKey"></param>
     /// <returns></returns>
-    private void ConnectedDiskBackupDiskFileIsInTheHashtable(string backupDiskFileFullPath, BackupDisk disk, ref bool diskInfoMessageWasTheLastSent, bool deleteExtraFiles, string hashKey)
+    private void ConnectedDiskBackupDiskFileIsInTheHashtable(string backupDiskFileFullPath, BackupDisk disk, ref bool diskInfoMessageWasTheLastSent, bool deleteExtraFiles,
+        string hashKey)
     {
         Utils.TraceIn();
         var backupFile = mediaBackup.GetBackupFileFromHashKey(hashKey);
@@ -395,14 +400,20 @@ internal sealed partial class Main
 
         if (config.SpeedTestOnOff)
         {
-            var diskTestSize = disk.Free > Utils.ConvertMBtoBytes(config.SpeedTestFileSize) ? Utils.ConvertMBtoBytes(config.SpeedTestFileSize) : disk.Free - Utils.BYTES_IN_ONE_KILOBYTE;
+            var diskTestSize = disk.Free > Utils.ConvertMBtoBytes(config.SpeedTestFileSize)
+                ? Utils.ConvertMBtoBytes(config.SpeedTestFileSize)
+                : disk.Free - Utils.BYTES_IN_ONE_KILOBYTE;
             UpdateStatusLabel(ct, string.Format(Resources.SpeedTesting, directoryToCheck));
             Utils.DiskSpeedTest(directoryToCheck, diskTestSize, config.SpeedTestIterations, out readSpeed, out writeSpeed, ct);
             disk.UpdateSpeeds(readSpeed, writeSpeed);
         }
-        var text = string.Format(Resources.ConnectedDiskInfo, disk.Name, disk.CapacityFormatted, disk.FreeFormatted, Utils.FormatSpeed(readSpeed), Utils.FormatSpeed(writeSpeed));
+
+        var text = string.Format(Resources.ConnectedDiskInfo, disk.Name, disk.CapacityFormatted, disk.FreeFormatted, Utils.FormatSpeed(readSpeed),
+            Utils.FormatSpeed(writeSpeed));
         Utils.LogWithPushover(BackupAction.CheckBackupDisk, text);
-        if (disk.Free < Utils.ConvertMBtoBytes(config.BackupDiskMinimumCriticalSpace)) Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, string.Format(Resources.PrepareNewBackupDisk, disk.FreeFormatted));
+
+        if (disk.Free < Utils.ConvertMBtoBytes(config.BackupDiskMinimumCriticalSpace))
+            Utils.LogWithPushover(BackupAction.CheckBackupDisk, PushoverPriority.High, string.Format(Resources.PrepareNewBackupDisk, disk.FreeFormatted));
     }
 
     internal bool EnsureConnectedBackupDisk(string backupDisk)

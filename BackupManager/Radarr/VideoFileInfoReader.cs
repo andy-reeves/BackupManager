@@ -65,7 +65,8 @@ internal sealed class VideoFileInfoReader
     {
         try
         {
-            _ = FFMpegArguments.FromFileInput(inputFilename).OutputToFile(outputFilename, false, options => { _ = options.WithCustomArgument("-c copy -map 0 -sn"); }).ProcessSynchronously();
+            _ = FFMpegArguments.FromFileInput(inputFilename).OutputToFile(outputFilename, false, options => { _ = options.WithCustomArgument("-c copy -map 0 -sn"); })
+                .ProcessSynchronously();
         }
         catch (Exception)
         {
@@ -84,7 +85,9 @@ internal sealed class VideoFileInfoReader
         {
             var subs = string.Empty;
             if (SubtitlesStreamCount(inputFilename) > 0) subs = "-map 0:s";
-            _ = FFMpegArguments.FromFileInput(inputFilename).OutputToFile(outputFilename, false, options => { _ = options.WithCustomArgument($"-map 0:a -map 0:v {subs} -map_metadata -1 -map_chapters -1 -c copy"); }).ProcessSynchronously();
+
+            _ = FFMpegArguments.FromFileInput(inputFilename).OutputToFile(outputFilename, false,
+                options => { _ = options.WithCustomArgument($"-map 0:a -map 0:v {subs} -map_metadata -1 -map_chapters -1 -c copy"); }).ProcessSynchronously();
         }
         catch (Exception ex)
         {
@@ -96,7 +99,9 @@ internal sealed class VideoFileInfoReader
                 {
                     Utils.Log($"Exception {ex} when trying so remove chapters so removing subs too");
                     if (File.Exists(outputFilename)) File.Delete(outputFilename);
-                    _ = FFMpegArguments.FromFileInput(inputFilename).OutputToFile(outputFilename, false, options => { _ = options.WithCustomArgument("-map 0:a -map 0:v -map_metadata -1 -map_chapters -1 -c copy"); }).ProcessSynchronously();
+
+                    _ = FFMpegArguments.FromFileInput(inputFilename).OutputToFile(outputFilename, false,
+                        options => { _ = options.WithCustomArgument("-map 0:a -map 0:v -map_metadata -1 -map_chapters -1 -c copy"); }).ProcessSynchronously();
                 }
             }
             catch (Exception)
@@ -119,7 +124,10 @@ internal sealed class VideoFileInfoReader
         {
             var subs = string.Empty;
             if (SubtitlesStreamCount(inputFilename) > 0) subs = "-map 0:s";
-            _ = FFMpegArguments.FromFileInput(inputFilename).OutputToFile(outputFilename, false, options => { _ = options.WithCustomArgument($"-map 0:a -map 0:v {subs} -map_metadata -1 -c copy"); }).ProcessSynchronously();
+
+            _ = FFMpegArguments.FromFileInput(inputFilename)
+                .OutputToFile(outputFilename, false, options => { _ = options.WithCustomArgument($"-map 0:a -map 0:v {subs} -map_metadata -1 -c copy"); })
+                .ProcessSynchronously();
         }
         catch (Exception)
         {
@@ -136,7 +144,8 @@ internal sealed class VideoFileInfoReader
     {
         try
         {
-            _ = FFMpegArguments.FromFileInput(inputFilename).OutputToFile(outputFilename, false, options => { _ = options.WithCustomArgument("-f ffmetadata"); }).ProcessSynchronously();
+            _ = FFMpegArguments.FromFileInput(inputFilename).OutputToFile(outputFilename, false, options => { _ = options.WithCustomArgument("-f ffmetadata"); })
+                .ProcessSynchronously();
         }
         catch (Exception)
         {
@@ -271,7 +280,8 @@ internal sealed class VideoFileInfoReader
     {
         try
         {
-            _ = FFMpegArguments.FromFileInput(inputFilename).OutputToFile(outputFilename, false, options => { _ = options.WithCustomArgument($" -f ffmetadata -i {chaptersFilename} -map_metadata 1 -map_chapters 1 -c copy"); }).ProcessSynchronously();
+            _ = FFMpegArguments.FromFileInput(inputFilename).OutputToFile(outputFilename, false,
+                options => { _ = options.WithCustomArgument($" -f ffmetadata -i {chaptersFilename} -map_metadata 1 -map_chapters 1 -c copy"); }).ProcessSynchronously();
         }
         catch (Exception)
         {
@@ -311,7 +321,9 @@ internal sealed class VideoFileInfoReader
                 var newFullPath = Path.GetDirectoryName(filename) + @"\" + Path.GetFileNameWithoutExtension(filename) + subFileName;
                 if (File.Exists(newFullPath)) newFullPath = newFullPath.Replace(".srt", $".{i}.srt");
                 var index = i;
-                _ = FFMpegArguments.FromFileInput(filename).OutputToFile(newFullPath, false, options => { _ = options.WithCustomArgument($"-map 0:s:{index}"); }).ProcessSynchronously();
+
+                _ = FFMpegArguments.FromFileInput(filename).OutputToFile(newFullPath, false, options => { _ = options.WithCustomArgument($"-map 0:s:{index}"); })
+                    .ProcessSynchronously();
                 if (subFileName.StartsWithIgnoreCase(".en")) englishDone = true;
             }
         }
@@ -446,7 +458,8 @@ internal sealed class VideoFileInfoReader
                 VideoMultiViewCount = primaryVideoStream?.Tags?.ContainsKey("stereo_mode") ?? false ? 2 : 1,
 
                 // ReSharper disable once ConstantConditionalAccessQualifier
-                DoviConfigurationRecord = primaryVideoStream?.SideDataList?.Find(static x => x.GetType().Name == nameof(DoviConfigurationRecordSideData)) as DoviConfigurationRecordSideData,
+                DoviConfigurationRecord =
+                    primaryVideoStream?.SideDataList?.Find(static x => x.GetType().Name == nameof(DoviConfigurationRecordSideData)) as DoviConfigurationRecordSideData,
                 Height = primaryVideoStream?.Height ?? 0,
                 Width = primaryVideoStream?.Width ?? 0,
                 AudioFormat = analysis.PrimaryAudioStream?.CodecName,
@@ -503,7 +516,9 @@ internal sealed class VideoFileInfoReader
                 }
             }
             var sideData = streamSideData.Concat(framesSideData).ToList();
-            mediaInfoModel.VideoHdrFormat = GetHdrFormat(mediaInfoModel.VideoBitDepth, mediaInfoModel.VideoColourPrimaries, mediaInfoModel.VideoTransferCharacteristics, sideData);
+
+            mediaInfoModel.VideoHdrFormat = GetHdrFormat(mediaInfoModel.VideoBitDepth, mediaInfoModel.VideoColourPrimaries, mediaInfoModel.VideoTransferCharacteristics,
+                sideData);
             return mediaInfoModel;
         }
         catch (Exception)

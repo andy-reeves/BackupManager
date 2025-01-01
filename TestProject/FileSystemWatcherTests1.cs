@@ -85,7 +85,11 @@ public sealed class FileSystemWatcherTests1
         if (Directory.Exists(monitoringPath3Missing)) _ = Utils.Directory.Delete(monitoringPath3Missing, true);
         Utils.Directory.EnsurePath(monitoringPath1);
         Utils.Directory.EnsurePath(monitoringPath2);
-        var watcher = new FileSystemWatcher { Directories = [monitoringPath1, monitoringPath2, monitoringPath3Missing], NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName };
+
+        var watcher = new FileSystemWatcher
+        {
+            Directories = [monitoringPath1, monitoringPath2, monitoringPath3Missing], NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName
+        };
         watcher.ReadyToScan += FileSystemWatcher_ReadyToScan2;
         _ = Assert.Throws<ArgumentException>(() => watcher.Start());
         Assert.False(watcher.Running);

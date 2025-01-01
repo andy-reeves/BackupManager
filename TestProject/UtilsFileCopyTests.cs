@@ -54,7 +54,8 @@ public sealed class UtilsFileCopyTests
         Assert.True(testPath.Length > Utils.MAX_PATH);
 
         var path1 = Path.Combine(Path.GetTempPath(),
-            @"FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\" + @"FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy" + @"FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy");
+            @"FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\" +
+            @"FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy" + @"FileCopy\FileCopy\FileCopy\FileCopy\FileCopy\FileCopy");
         Assert.True(path1.Length > 256);
         if (Directory.Exists(path1)) _ = Utils.Directory.Delete(path1, true);
         var file1 = Path.Combine(path1, "test1.txt");

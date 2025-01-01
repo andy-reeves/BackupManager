@@ -51,7 +51,9 @@ internal sealed partial class Main
         var filesStillNotOnBackupDisk = mediaBackup.GetBackupFilesWithDiskEmpty();
         var text = string.Empty;
         var stillNotOnBackupDisk = filesStillNotOnBackupDisk as BackupFile[] ?? filesStillNotOnBackupDisk.ToArray();
-        if (stillNotOnBackupDisk.Length > 0) text = string.Format(Resources.CopyFilesStillToCopy, stillNotOnBackupDisk.Length, stillNotOnBackupDisk.Sum(static p => p.Length).SizeSuffix());
+
+        if (stillNotOnBackupDisk.Length > 0)
+            text = string.Format(Resources.CopyFilesStillToCopy, stillNotOnBackupDisk.Length, stillNotOnBackupDisk.Sum(static p => p.Length).SizeSuffix());
         Utils.LogWithPushover(BackupAction.CopyFiles, text + string.Format(Resources.CopyFilesFreeOnBackupDisk, disk.FreeFormatted));
         if (showCompletedMessage) Utils.LogWithPushover(BackupAction.CopyFiles, Resources.Completed, true, true);
         Utils.TraceOut();
@@ -88,7 +90,10 @@ internal sealed partial class Main
                 var sourceFileName = backupFile.FullPath;
 
                 if (FileExistsInternal(sizeOfCopy, disk, backupFile, sourceFileName, copiedSoFar, counter, totalFileCount, ct))
-                    CopyFileInternal(sizeOfCopy, disk, sourceFileName, ref copiedSoFar, ref outOfDiskSpaceMessageSent, ref remainingSizeOfFilesToCopy, counter, totalFileCount, backupFile, ref lastCopySpeed, ref availableSpace, ct);
+                {
+                    CopyFileInternal(sizeOfCopy, disk, sourceFileName, ref copiedSoFar, ref outOfDiskSpaceMessageSent, ref remainingSizeOfFilesToCopy, counter,
+                        totalFileCount, backupFile, ref lastCopySpeed, ref availableSpace, ct);
+                }
             }
             catch (FileNotFoundException)
             {
@@ -114,7 +119,8 @@ internal sealed partial class Main
     /// <param name="totalFileCount"></param>
     /// <param name="ct"></param>
     /// <returns>True if the file needs to be copied</returns>
-    private bool FileExistsInternal(long sizeOfCopy, BackupDisk disk, BackupFile backupFile, string sourceFileName, long copiedSoFar, int fileCounter, int totalFileCount, CancellationToken ct)
+    private bool FileExistsInternal(long sizeOfCopy, BackupDisk disk, BackupFile backupFile, string sourceFileName, long copiedSoFar, int fileCounter, int totalFileCount,
+        CancellationToken ct)
     {
         Utils.TraceIn();
         var destinationFileName = backupFile.BackupDiskFullPath(disk.BackupPath);
@@ -148,8 +154,9 @@ internal sealed partial class Main
         return Utils.TraceOut(copyTheFile);
     }
 
-    private void CopyFileInternal(long sizeOfCopy, BackupDisk disk, string sourceFileName, ref long copiedSoFar, ref bool outOfDiskSpaceMessageSent, ref long remainingSizeOfFilesToCopy, int fileCounter, int totalFileCount, BackupFile backupFile,
-        ref long lastCopySpeed, ref long availableSpace, CancellationToken ct)
+    private void CopyFileInternal(long sizeOfCopy, BackupDisk disk, string sourceFileName, ref long copiedSoFar, ref bool outOfDiskSpaceMessageSent,
+        ref long remainingSizeOfFilesToCopy, int fileCounter, int totalFileCount, BackupFile backupFile, ref long lastCopySpeed, ref long availableSpace,
+        CancellationToken ct)
     {
         Utils.TraceIn();
         ct.ThrowIfCancellationRequested();
@@ -173,15 +180,23 @@ internal sealed partial class Main
                 var numberOfSecondsOfCopyRemaining = sizeOfCopyRemaining / (double)lastCopySpeed;
                 var rightNow = DateTime.Now;
                 var estimatedFinishDateTime = rightNow.AddSeconds(numberOfSecondsOfCopyRemaining);
-                formattedEndDateTime = Resources.EstimatedFinishBy + estimatedFinishDateTime.ToString(Resources.DateTime_HHmm) + $" in {Utils.FormatTimeFromSeconds(Convert.ToInt32(numberOfSecondsOfCopyRemaining))}";
+
+                formattedEndDateTime = Resources.EstimatedFinishBy + estimatedFinishDateTime.ToString(Resources.DateTime_HHmm) +
+                                       $" in {Utils.FormatTimeFromSeconds(Convert.ToInt32(numberOfSecondsOfCopyRemaining))}";
 
                 // could be the following day
                 if (estimatedFinishDateTime.DayOfWeek != rightNow.DayOfWeek)
-                    formattedEndDateTime = Resources.EstimatedFinishByTomorrow + estimatedFinishDateTime.ToString(Resources.DateTime_HHmm) + $" in {Utils.FormatTimeFromSeconds(Convert.ToInt32(numberOfSecondsOfCopyRemaining))}";
+                {
+                    formattedEndDateTime = Resources.EstimatedFinishByTomorrow + estimatedFinishDateTime.ToString(Resources.DateTime_HHmm) +
+                                           $" in {Utils.FormatTimeFromSeconds(Convert.ToInt32(numberOfSecondsOfCopyRemaining))}";
+                }
                 UpdateEstimatedFinish(estimatedFinishDateTime);
             }
             var sourceFileSize = sourceFileInfo.Length.SizeSuffix();
-            Utils.LogWithPushover(BackupAction.CopyFiles, string.Format(Resources.CopyFilesMainMessage, fileCounter, totalFileCount, availableSpace.SizeSuffix(), sourceFileName, sourceFileSize, formattedEndDateTime), false, true);
+
+            Utils.LogWithPushover(BackupAction.CopyFiles,
+                string.Format(Resources.CopyFilesMainMessage, fileCounter, totalFileCount, availableSpace.SizeSuffix(), sourceFileName, sourceFileSize,
+                    formattedEndDateTime), false, true);
             _ = Utils.File.Delete(destinationFileNameTemp);
             var sw = Stopwatch.StartNew();
             _ = Utils.File.Copy(sourceFileName, destinationFileNameTemp, ct);
@@ -208,7 +223,8 @@ internal sealed partial class Main
             // it could be that the source file hash changed after we read it (we read the hash, updated the master file and
             // then copied it)
             // in which case check the source hash again and then check the copied file
-            if (!backupFile.CheckContentHashes(disk)) Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.High, string.Format(Resources.HashCodesError, backupFile.FullPath));
+            if (!backupFile.CheckContentHashes(disk))
+                Utils.LogWithPushover(BackupAction.CopyFiles, PushoverPriority.High, string.Format(Resources.HashCodesError, backupFile.FullPath));
         }
         else
         {

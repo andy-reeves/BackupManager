@@ -165,7 +165,8 @@ public sealed class MediaBackup
 
             foreach (var backupFile in mediaBackup.BackupFiles)
             {
-                if (mediaBackup.indexFolderAndRelativePath.TryGetValue(backupFile.Hash, out var value)) throw new ApplicationException(string.Format(Resources.DuplicateContentsHashCode, backupFile.FileName, backupFile.FullPath, value.FullPath));
+                if (mediaBackup.indexFolderAndRelativePath.TryGetValue(backupFile.Hash, out var value))
+                    throw new ApplicationException(string.Format(Resources.DuplicateContentsHashCode, backupFile.FileName, backupFile.FullPath, value.FullPath));
 
                 mediaBackup.indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
                 if (!backupFile.DiskCheckedTime.HasValue || backupFile.Disk.HasNoValue()) backupFile.ClearDiskChecked();
@@ -223,7 +224,8 @@ public sealed class MediaBackup
         relativePath = null;
         var pathWithTerminatingString = Utils.EnsurePathHasATerminatingSeparator(path);
 
-        foreach (var masterDirectory in Config.DirectoriesToBackup.Where(masterDirectory => pathWithTerminatingString.StartsWithIgnoreCase(Utils.EnsurePathHasATerminatingSeparator(masterDirectory))))
+        foreach (var masterDirectory in Config.DirectoriesToBackup.Where(masterDirectory =>
+                     pathWithTerminatingString.StartsWithIgnoreCase(Utils.EnsurePathHasATerminatingSeparator(masterDirectory))))
         {
             relativePath = BackupFile.GetRelativePath(path, masterDirectory);
             directory = masterDirectory;
@@ -370,7 +372,8 @@ public sealed class MediaBackup
         Utils.TraceIn(fullPath);
         if (!File.Exists(fullPath)) return null;
 
-        if (!GetFoldersForPath(fullPath, out var directory, out var relativePath)) throw new ArgumentException(Resources.UnableToDetermineDirectoryOrRelativePath, nameof(fullPath));
+        if (!GetFoldersForPath(fullPath, out var directory, out var relativePath))
+            throw new ArgumentException(Resources.UnableToDetermineDirectoryOrRelativePath, nameof(fullPath));
         if (directory.HasNoValue()) throw new ArgumentException(Resources.DirectoryEmpty);
 
         // we hash the path of the file so we can look it up quickly
@@ -420,7 +423,8 @@ public sealed class MediaBackup
 
                 if (fullPath != backupFile.FullPath)
                 {
-                    Utils.LogWithPushover(BackupAction.General, $"FullPath different so setting it now. backupFile.FullPath was {backupFile.FullPath} and now set to {fullPath}");
+                    Utils.LogWithPushover(BackupAction.General,
+                        $"FullPath different so setting it now. backupFile.FullPath was {backupFile.FullPath} and now set to {fullPath}");
                     backupFile.SetFullPath(fullPath, directory);
                 }
                 Utils.Trace($"FullPath = {backupFile.FullPath}");
@@ -563,7 +567,9 @@ public sealed class MediaBackup
     /// <returns></returns>
     public IEnumerable<BackupFile> GetBackupFilesOnBackupDisk(string diskName, bool includeDeletedFiles)
     {
-        return includeDeletedFiles ? BackupFiles.Where(p => p.Disk.Equals(diskName, StringComparison.CurrentCultureIgnoreCase)) : BackupFiles.Where(p => p.Disk.Equals(diskName, StringComparison.CurrentCultureIgnoreCase) && !p.Deleted);
+        return includeDeletedFiles
+            ? BackupFiles.Where(p => p.Disk.Equals(diskName, StringComparison.CurrentCultureIgnoreCase))
+            : BackupFiles.Where(p => p.Disk.Equals(diskName, StringComparison.CurrentCultureIgnoreCase) && !p.Deleted);
     }
 
     /// <summary>

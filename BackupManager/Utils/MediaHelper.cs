@@ -114,7 +114,8 @@ internal static partial class Utils
                 case "wmav1" or "wmav2" or "wmapro":
                     return "WMA";
                 default:
-                    LogWithPushover(BackupAction.General, PushoverPriority.High, $"{mediaInfo.Title}. Unknown video format: '{audioFormat}'. Streams: {mediaInfo.RawStreamData}");
+                    LogWithPushover(BackupAction.General, PushoverPriority.High,
+                        $"{mediaInfo.Title}. Unknown video format: '{audioFormat}'. Streams: {mediaInfo.RawStreamData}");
                     return mediaInfo.AudioFormat;
             }
         }
@@ -460,7 +461,9 @@ internal static partial class Utils
             if (!File.Exists(path)) throw new ArgumentException(Resources.FileNotFound, nameof(path));
 
             if (path.Contains(@"\_TV")) return path.EndsWithIgnoreCase(".srt") ? new SubtitlesBackupFile(path) : new TvEpisodeBackupFile(path);
-            if (path.Contains(@"\_Movies") || path.Contains(@"\_Concerts") || path.Contains(@"\_Comedy")) return path.EndsWithIgnoreCase(".srt") ? new SubtitlesBackupFile(path) : new MovieBackupFile(path);
+
+            if (path.Contains(@"\_Movies") || path.Contains(@"\_Concerts") || path.Contains(@"\_Comedy"))
+                return path.EndsWithIgnoreCase(".srt") ? new SubtitlesBackupFile(path) : new MovieBackupFile(path);
 
             return null;
         }

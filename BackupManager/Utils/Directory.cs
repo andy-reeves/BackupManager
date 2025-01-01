@@ -128,7 +128,8 @@ internal static partial class Utils
 
         private static bool SetLastWriteUtc(string dirPath, DateTime lastWriteDate)
         {
-            using var hDir = File.CreateFile(dirPath, FILE_ACCESS_GENERIC_READ | FILE_ACCESS_GENERIC_WRITE, FileShare.ReadWrite, IntPtr.Zero, (FileMode)OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, IntPtr.Zero);
+            using var hDir = File.CreateFile(dirPath, FILE_ACCESS_GENERIC_READ | FILE_ACCESS_GENERIC_WRITE, FileShare.ReadWrite, IntPtr.Zero, (FileMode)OPEN_EXISTING,
+                FILE_FLAG_BACKUP_SEMANTICS, IntPtr.Zero);
             var lastWriteTime = lastWriteDate.ToFileTime();
             return File.SetFileTime(hDir, IntPtr.Zero, IntPtr.Zero, ref lastWriteTime);
         }

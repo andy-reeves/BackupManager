@@ -44,7 +44,8 @@ public sealed class FileRulesUnitTest
     [InlineData(2, 6, TestRegexType.Test, true, @"X:\_TV\Chernobyl {tvdb-360893}\Season 1\Chernobyl s01e01 TBDa [Bluray-2160p Remux].mkv")]
     [InlineData(2, 7, TestRegexType.Test, true, @"X:\_TV\Chernobyl {tvdb-360893}\Season 1\Chernobyl s01e01 TBAa [Bluray-2160p Remux].mkv")]
     [InlineData(3, 1, TestRegexType.Discovery, true, @"\\nas2\assets3\_Music\ABBA\More ABBA Gold\01-01- Summer Night City.mp3")]
-    [InlineData(3, 2, TestRegexType.Discovery, false, @"\\nas5\assets4\_TV\3rd Rock from the Sun {tvdb-72389}\Specials\3rd Rock from the Sun s00e02 Behind the Scenes [DVD].ts")]
+    [InlineData(3, 2, TestRegexType.Discovery, false,
+        @"\\nas5\assets4\_TV\3rd Rock from the Sun {tvdb-72389}\Specials\3rd Rock from the Sun s00e02 Behind the Scenes [DVD].ts")]
     [InlineData(3, 3, TestRegexType.Test, true, @"\\nas2\assets3\_Music\ABBA\More ABBA Gold\01-01- Summer Night City.mp3")]
     [InlineData(3, 4, TestRegexType.Test, false, @"\\nas2\assets3\_Music\ABBA\More ABBA Gold\Folder.jpg")]
     [InlineData(3, 5, TestRegexType.Test, true, @"\\nas2\assets3\_Music\ABBA\More ABBA Gold\folder.jpg")]
@@ -60,13 +61,15 @@ public sealed class FileRulesUnitTest
     [InlineData(4, 5, TestRegexType.Test, false, @"X:\_TV\Chernobyl {tvdb-360893}\Chernobyl s01e01 12345 [Bluray-2160p Remux].mkv")]
     [InlineData(4, 6, TestRegexType.Test, true, @"Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv")]
     [InlineData(4, 7, TestRegexType.Discovery, false, @"X:\_Movies\Chernobyl {tvdb-360893}\Season 1\Chernobyl s01e01 TBA [Bluray-2160p Remux].mkv")]
-    [InlineData(4, 8, TestRegexType.Test, true, @"Z:\_TV\Tom and Jerry {tvdb-72860} {edition-DVD}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [DVD-576p Remux].mkv")]
+    [InlineData(4, 8, TestRegexType.Test, true,
+        @"Z:\_TV\Tom and Jerry {tvdb-72860} {edition-DVD}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [DVD-576p Remux].mkv")]
     [InlineData(5, 1, TestRegexType.Test, true, @"X:\_Movies\12 Angry Men (1957)\12 Angry Men (1957) {tmdb-389} {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv")]
     [InlineData(5, 2, TestRegexType.Test, true, @"X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-scene.mkv")]
     [InlineData(5, 3, TestRegexType.Test, false, @"X:\_Movies\12 Angry Men (1957)\12 Angry Men (1957) {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv")]
     [InlineData(5, 4, TestRegexType.Discovery, false, @"X:\_TV\Chernobyl {tvdb-360893}\Chernobyl s01e01 12345 [Bluray-2160p Remux].mkv")]
     [InlineData(5, 5, TestRegexType.Discovery, false, @"Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv")]
-    [InlineData(5, 6, TestRegexType.Discovery, true, @"X:\_Movies\12 Angry Men (1957)\12 Angry Men (1957) {tmdb-389} {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv")]
+    [InlineData(5, 6, TestRegexType.Discovery, true,
+        @"X:\_Movies\12 Angry Men (1957)\12 Angry Men (1957) {tmdb-389} {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv")]
     [InlineData(5, 7, TestRegexType.Discovery, false, @"X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-scene.mkv")]
     [InlineData(6, 1, TestRegexType.Test, true, @"X:\_Movies (non-tmdb)\Blood Brothers (1989)\Blood Brothers (1989).mkv")]
     [InlineData(6, 2, TestRegexType.Test, true, @"X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-featurette.mkv")]
@@ -77,12 +80,14 @@ public sealed class FileRulesUnitTest
     [InlineData(6, 7, TestRegexType.Test, true, @"X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-deleted.mkv")]
     [InlineData(6, 8, TestRegexType.Test, true, @"X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-behindthescenes.mkv")]
     [InlineData(6, 9, TestRegexType.Test, true, @"X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-trailer.mkv")]
-    [InlineData(6, 10, TestRegexType.Test, true, @"X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][h265].mkv")]
+    [InlineData(6, 10, TestRegexType.Test, true,
+        @"X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][h265].mkv")]
     [InlineData(6, 11, TestRegexType.Test, false, @"X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv")]
     [InlineData(6, 12, TestRegexType.Test, false, @"X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-behindscenes.mkv")]
     [InlineData(6, 13, TestRegexType.Test, false, @"X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-trailertest.mkv")]
     [InlineData(6, 14, TestRegexType.Discovery, false, @"Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv")]
-    [InlineData(6, 15, TestRegexType.Discovery, true, @"X:\_Movies\12 Angry Men (1957)\12 Angry Men (1957) {tmdb-389} {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv")]
+    [InlineData(6, 15, TestRegexType.Discovery, true,
+        @"X:\_Movies\12 Angry Men (1957)\12 Angry Men (1957) {tmdb-389} {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv")]
     [InlineData(6, 16, TestRegexType.Discovery, true, @"X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-scene.mkv")]
     [InlineData(7, 1, TestRegexType.Discovery, true, @"X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv")]
     [InlineData(7, 2, TestRegexType.Discovery, false, @"X:\_Movies\12 Angry Men (1957)\12 Angry Men [Remux-1080p][DTS-HD MA 1.0][h264].mkv")]
@@ -126,27 +131,34 @@ public sealed class FileRulesUnitTest
     [InlineData(14, 3, TestRegexType.Discovery, false, @"X:\_TV\Chernobyl {tdb-360893}\Season 1\Chernobyl s01e01 12345 [Bluray-2160p Remux]-bobby.mkv")]
     [InlineData(14, 4, TestRegexType.Discovery, false, @"X:\_TV\Chernobyl {tdb-360893}\Chernobyl s01e01 12345 [Bluray-2160p Remux]-bobby.mkv")]
     [InlineData(14, 5, TestRegexType.Discovery, false, @"K:\_TV\American Horror Story {tvdb-250487}\Season 1\American Horror Story s01e01 Pilot [HDTV-720p].mkv")]
-    [InlineData(14, 6, TestRegexType.Discovery, false, @"Z:\_TV\MasterChef Australia {tvdb-92091}\Season 7\MasterChef Australia s07e34 Off-site Challenge Tokyo Tina vs. Saigon Sally [SDTV].mp4")]
-    [InlineData(14, 7, TestRegexType.Discovery, true, @"Z:\_TV\MasterChef Australia {tvdb-92091}\Season 7\MasterChef Australia s07e34 Off-site Challenge Tokyo Tina vs. Saigon Sally [SDTV]-other.mp4")]
+    [InlineData(14, 6, TestRegexType.Discovery, false,
+        @"Z:\_TV\MasterChef Australia {tvdb-92091}\Season 7\MasterChef Australia s07e34 Off-site Challenge Tokyo Tina vs. Saigon Sally [SDTV].mp4")]
+    [InlineData(14, 7, TestRegexType.Discovery, true,
+        @"Z:\_TV\MasterChef Australia {tvdb-92091}\Season 7\MasterChef Australia s07e34 Off-site Challenge Tokyo Tina vs. Saigon Sally [SDTV]-other.mp4")]
     [InlineData(14, 8, TestRegexType.Discovery, false, @"K:\_TV\Westworld {tvdb-296762}\Season 2\Westworld s02e50 - An Evocative Location.mkv")]
     [InlineData(14, 9, TestRegexType.Test, true, @"X:\_TV\Game of Thrones {tvdb-121361}\Reunion Special-featurette.mkv")]
     [InlineData(14, 10, TestRegexType.Test, false, @"X:\_TV\Game of Thrones {tvdb-121361}\Season 1\Reunion Special-featurette.mkv")]
-    [InlineData(14, 11, TestRegexType.Test, false, @"Z:\_TV\MasterChef Australia {tvdb-92091}\Season 7\MasterChef Australia s07e34 Off-site Challenge Tokyo Tina vs. Saigon Sally [SDTV].mp4")]
-    [InlineData(14, 12, TestRegexType.Test, false, @"Z:\_TV\MasterChef Australia {tvdb-92091}\Season 7\MasterChef Australia s07e34 Off-site Challenge Tokyo Tina vs. Saigon Sally [SDTV]-other.mp4")]
+    [InlineData(14, 11, TestRegexType.Test, false,
+        @"Z:\_TV\MasterChef Australia {tvdb-92091}\Season 7\MasterChef Australia s07e34 Off-site Challenge Tokyo Tina vs. Saigon Sally [SDTV].mp4")]
+    [InlineData(14, 12, TestRegexType.Test, false,
+        @"Z:\_TV\MasterChef Australia {tvdb-92091}\Season 7\MasterChef Australia s07e34 Off-site Challenge Tokyo Tina vs. Saigon Sally [SDTV]-other.mp4")]
     [InlineData(14, 13, TestRegexType.Discovery, false, @"X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv")]
     [InlineData(14, 14, TestRegexType.Discovery, true, @"X:\_TV (non-tvdb)\Blood Brothers (1989)\Example 1-behindthescenes.mkv")]
     [InlineData(14, 15, TestRegexType.Discovery, false, @"X:\_Music\Blood Brothers (1989)\Example 1-behindscenes.mkv")]
-    [InlineData(14, 16, TestRegexType.Discovery, false, @"\\nas5\assets2\_TV\The Bridge (2013) {tvdb-264085}\Season 1\The Bridge (2013) s01e13 The Crazy Place [Bluray-1080p][DTS 5.1][h264]-TdarrCacheFile-GWLejgTOOR.mkv")]
+    [InlineData(14, 16, TestRegexType.Discovery, false,
+        @"\\nas5\assets2\_TV\The Bridge (2013) {tvdb-264085}\Season 1\The Bridge (2013) s01e13 The Crazy Place [Bluray-1080p][DTS 5.1][h264]-TdarrCacheFile-GWLejgTOOR.mkv")]
     [InlineData(14, 17, TestRegexType.Test, true, @"\\nas5\assets2\_TV\_TV\Friends {tvdb-79168} {edition-DVD}\Behind The Scenes Season 5-featurette.mkv")]
     [InlineData(15, 1, TestRegexType.Discovery, true, @"X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-other.mkv")]
     [InlineData(15, 2, TestRegexType.Discovery, true, @"X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-bobby.mkv")]
     [InlineData(15, 3, TestRegexType.Discovery, true, @"X:\_Movies\12 Angry Men (1957)\Other\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-other.mkv")]
     [InlineData(15, 4, TestRegexType.Discovery, true, @"X:\_Movies\12 Angry Men (1957)\Other\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-bobby.mkv")]
     [InlineData(15, 5, TestRegexType.Test, true, @"X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-featurette.mkv")]
-    [InlineData(15, 6, TestRegexType.Test, true, @"X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][h265]-other.mkv")]
+    [InlineData(15, 6, TestRegexType.Test, true,
+        @"X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][h265]-other.mkv")]
     [InlineData(15, 7, TestRegexType.Test, false, @"X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-feature.mkv")]
     [InlineData(15, 8, TestRegexType.Test, false, @"X:\_Movies\12 Angry Men (1957)\Special Features\12 Angry Men Making Of-featurette.mkv")]
-    [InlineData(15, 9, TestRegexType.Test, false, @"X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\Other\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][h265]-featurette.mkv")]
+    [InlineData(15, 9, TestRegexType.Test, false,
+        @"X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\Other\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][h265]-featurette.mkv")]
     [InlineData(15, 10, TestRegexType.Test, true, @"X:\_Movies\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264]-other.mkv")]
     [InlineData(15, 11, TestRegexType.Test, true, @"Q:\_Comedy\Rhod Gilbert and the Award-Winning Mince Pie (2009)\The Audience-short.mkv")]
     [InlineData(15, 12, TestRegexType.Test, false, @"Q:\_Comedy\Rhod Gilbert and the Award-Winning Mince Pie (2009)\The Audience-short..mkv")]
@@ -166,33 +178,51 @@ public sealed class FileRulesUnitTest
     [InlineData(16, 11, TestRegexType.Discovery, true, @"X:\_Concerts\12 Angry Men (1957)\12 Angry Men {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv")]
     [InlineData(16, 12, TestRegexType.Discovery, true, @"X:\_TV (non-tvdb)\Blood Brothers (1989)\Example 1-behindscenes.mkv")]
     [InlineData(16, 13, TestRegexType.Discovery, false, @"X:\_Music\Blood Brothers (1989)\Example 1-behindscenes.mkv")]
-    [InlineData(17, 1, TestRegexType.Test, true, @"X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][TrueHD Atmos 7.1][h265].mkv")]
+    [InlineData(17, 1, TestRegexType.Test, true,
+        @"X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][TrueHD Atmos 7.1][h265].mkv")]
     [InlineData(17, 2, TestRegexType.Test, true, @"X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-behindthescenes.mkv")]
     [InlineData(17, 3, TestRegexType.Test, false, @"X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-trailertest.mkv")]
     [InlineData(17, 4, TestRegexType.Discovery, false, @"Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv")]
-    [InlineData(17, 5, TestRegexType.Discovery, true, @"X:\_Movies\12 Angry Men (1957)\12 Angry Men (1957) {tmdb-389} {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv")]
+    [InlineData(17, 5, TestRegexType.Discovery, true,
+        @"X:\_Movies\12 Angry Men (1957)\12 Angry Men (1957) {tmdb-389} {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv")]
     [InlineData(17, 6, TestRegexType.Discovery, true, @"X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-scene.mkv")]
-    [InlineData(17, 7, TestRegexType.Test, true, @"X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][h265].mkv")]
-    [InlineData(17, 8, TestRegexType.Test, false, @"X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][bob].mkv")]
-    [InlineData(17, 9, TestRegexType.Test, true, @"X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-30TH ANNIVERSARY} [Remux-2160p][DV HDR10][FLAC 1.0][VC1].mkv")]
-    [InlineData(17, 10, TestRegexType.Test, true, @"X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][EAC3 Atmos 7.1][VC1].mkv")]
-    [InlineData(17, 11, TestRegexType.Test, false, @"\\nas3\assets4\_Movies (non-tmdb)\Blood Brothers (1989)\Blood Brothers (1989) [Remux-1080p][FLAC 1.0][x264].en.hi.srt")]
+    [InlineData(17, 7, TestRegexType.Test, true,
+        @"X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][h265].mkv")]
+    [InlineData(17, 8, TestRegexType.Test, false,
+        @"X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][bob].mkv")]
+    [InlineData(17, 9, TestRegexType.Test, true,
+        @"X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-30TH ANNIVERSARY} [Remux-2160p][DV HDR10][FLAC 1.0][VC1].mkv")]
+    [InlineData(17, 10, TestRegexType.Test, true,
+        @"X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][EAC3 Atmos 7.1][VC1].mkv")]
+    [InlineData(17, 11, TestRegexType.Test, false,
+        @"\\nas3\assets4\_Movies (non-tmdb)\Blood Brothers (1989)\Blood Brothers (1989) [Remux-1080p][FLAC 1.0][x264].en.hi.srt")]
     [InlineData(17, 12, TestRegexType.Test, true, @"\\nas1\assets4\_Movies\Aliens (1986)\Aliens (1986) {tmdb-679} [Remux-2160p][HDR10][AC3 5.1][h265].mkv")]
-    [InlineData(17, 13, TestRegexType.Test, true, @"\\nas1\assets4\_Movies\Guy Ritchies The Covenant (2023)\Guy Ritchies The Covenant (2023) {tmdb-882569} [WEBDL-2160p][HDR10Plus][EAC3 Atmos 5.1][h265].es.srt")]
-    [InlineData(17, 14, TestRegexType.Test, true, @"\\nas1\assets4\_Movies\Guy Ritchies The Covenant (2023)\Guy Ritchies The Covenant (2023) {tmdb-882569} [WEBDL-2160p][HDR10Plus][EAC3 Atmos 5.1][h265].mkv")]
-    [InlineData(17, 15, TestRegexType.Test, false, @"\\nas1\assets4\_Movies\Extraction 2 (2023)\Extraction 2 (2023) {tmdb-697843} [WEBDL-1080p][DV HDR10Plus][EAC3 Atmos 5.1][HEVC].mkv")]
-    [InlineData(17, 16, TestRegexType.Test, true, @"\\nas1\assets4\_Movies\Extraction 2 (2023)\Extraction 2 (2023) {tmdb-697843} [WEBDL-1080p][DV][EAC3 Atmos 4.0][h265].mkv")]
+    [InlineData(17, 13, TestRegexType.Test, true,
+        @"\\nas1\assets4\_Movies\Guy Ritchies The Covenant (2023)\Guy Ritchies The Covenant (2023) {tmdb-882569} [WEBDL-2160p][HDR10Plus][EAC3 Atmos 5.1][h265].es.srt")]
+    [InlineData(17, 14, TestRegexType.Test, true,
+        @"\\nas1\assets4\_Movies\Guy Ritchies The Covenant (2023)\Guy Ritchies The Covenant (2023) {tmdb-882569} [WEBDL-2160p][HDR10Plus][EAC3 Atmos 5.1][h265].mkv")]
+    [InlineData(17, 15, TestRegexType.Test, false,
+        @"\\nas1\assets4\_Movies\Extraction 2 (2023)\Extraction 2 (2023) {tmdb-697843} [WEBDL-1080p][DV HDR10Plus][EAC3 Atmos 5.1][HEVC].mkv")]
+    [InlineData(17, 16, TestRegexType.Test, true,
+        @"\\nas1\assets4\_Movies\Extraction 2 (2023)\Extraction 2 (2023) {tmdb-697843} [WEBDL-1080p][DV][EAC3 Atmos 4.0][h265].mkv")]
     [InlineData(17, 17, TestRegexType.Test, true, @"\\nas5\assets3\_Movies\Tootsie (1982)\Tootsie (1982) {tmdb-9576} [Remux-1080p][DTS-X 8.0][h264].mkv")]
     [InlineData(17, 18, TestRegexType.Test, false, @"\\nas1\assets4\_Movies\The 4th Man (1983)\The 4th Man (1983) {tmdb-29140} [DVD][AC3 2.0][].en.srt")]
-    [InlineData(17, 19, TestRegexType.Test, false, @"\\nas1\assets4\_Movies\Angelique The Road To Versailles (1965)\Angelique The Road To Versailles (1965) {tmdb-44453} [Bluray-1080p]][x264].en.srt")]
+    [InlineData(17, 19, TestRegexType.Test, false,
+        @"\\nas1\assets4\_Movies\Angelique The Road To Versailles (1965)\Angelique The Road To Versailles (1965) {tmdb-44453} [Bluray-1080p]][x264].en.srt")]
     [InlineData(17, 20, TestRegexType.Test, false, @"\\nas2\assets2\_Movies\A Murder of Crows (1999)\A Murder of Crows (1999) {tmdb-17263} [HDTV-1080p][MP3 2.0][].avi")]
-    [InlineData(17, 21, TestRegexType.Test, false, @"\\nas3\assets2\_Movies\Creature from the Black Lagoon (1954)\Creature from the Black Lagoon (1954) {tmdb-10973} [Remux-1080p][3D][DTS-HD MA 2.0][AVC].mkv")]
-    [InlineData(17, 22, TestRegexType.Test, true, @"\\nas4\assets1\_Movies\LEGO Marvel Avengers Time Twisted (2022)\LEGO Marvel Avengers Time Twisted (2022) {tmdb-940543} [WEBDL-1080p][Opus 2.0][VP9].mkv")]
-    [InlineData(17, 23, TestRegexType.Test, false, @"\\nas3\assets4\_Movies\Apocalypse Now (1979)\Apocalypse Now (1979) {tmdb-28} {edition-FINAL CUT} [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][h265].1.es.srt")]
-    [InlineData(17, 24, TestRegexType.Test, false, @"\\nas3\assets4\_Movies (non-tmdb)\12 Angry Men (1957)\12 Angry Men (1957) {tmdb-389} {edition-CRITERION COLLECTION} [Remux-1080p].es.srt")]
+    [InlineData(17, 21, TestRegexType.Test, false,
+        @"\\nas3\assets2\_Movies\Creature from the Black Lagoon (1954)\Creature from the Black Lagoon (1954) {tmdb-10973} [Remux-1080p][3D][DTS-HD MA 2.0][AVC].mkv")]
+    [InlineData(17, 22, TestRegexType.Test, true,
+        @"\\nas4\assets1\_Movies\LEGO Marvel Avengers Time Twisted (2022)\LEGO Marvel Avengers Time Twisted (2022) {tmdb-940543} [WEBDL-1080p][Opus 2.0][VP9].mkv")]
+    [InlineData(17, 23, TestRegexType.Test, false,
+        @"\\nas3\assets4\_Movies\Apocalypse Now (1979)\Apocalypse Now (1979) {tmdb-28} {edition-FINAL CUT} [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][h265].1.es.srt")]
+    [InlineData(17, 24, TestRegexType.Test, false,
+        @"\\nas3\assets4\_Movies (non-tmdb)\12 Angry Men (1957)\12 Angry Men (1957) {tmdb-389} {edition-CRITERION COLLECTION} [Remux-1080p].es.srt")]
     [InlineData(17, 25, TestRegexType.Test, false, @"\\nas3\assets4\_Movies (non-tmdb)\Blood Brothers (1989)\Blood Brothers (1989).mp4")]
-    [InlineData(17, 26, TestRegexType.Test, false, @"\\nas4\assets1\_Movies\What Becomes of the Broken Hearted (1999)\What Becomes of the Broken Hearted (1999) {tmdb-13893} [DVD][AC3 2.0][].es.srt")]
-    [InlineData(17, 27, TestRegexType.Test, false, @"\\nas4\assets1\_Movies\Full Tilt Boogie (1998)\Full Tilt Boogie (1998) {tmdb-36606} [Bluray-1080p][DTS 2.0][x264].hi.srt")]
+    [InlineData(17, 26, TestRegexType.Test, false,
+        @"\\nas4\assets1\_Movies\What Becomes of the Broken Hearted (1999)\What Becomes of the Broken Hearted (1999) {tmdb-13893} [DVD][AC3 2.0][].es.srt")]
+    [InlineData(17, 27, TestRegexType.Test, false,
+        @"\\nas4\assets1\_Movies\Full Tilt Boogie (1998)\Full Tilt Boogie (1998) {tmdb-36606} [Bluray-1080p][DTS 2.0][x264].hi.srt")]
     [InlineData(17, 28, TestRegexType.Test, true, @"\\nas4\assets1\_Movies\A (2022)\A (2022) {tmdb-1} [DVD-576p][DTS 1.0][h264].mkv")]
     [InlineData(17, 29, TestRegexType.Test, true, @"\\nas4\assets1\_Movies\A (2022)\A (2022) {tmdb-1} [DVD-576p][DTS-X 2.0][h265].mkv")]
     [InlineData(17, 30, TestRegexType.Test, true, @"\\nas4\assets1\_Movies\A (2022)\A (2022) {tmdb-1} [DVD-576p][DTS-ES 3.0][VP9].mkv")]
@@ -229,65 +259,94 @@ public sealed class FileRulesUnitTest
     [InlineData(17, 62, TestRegexType.Test, false, @"\\nas4\assets1\_Movies\A (2022)\A (2022) {tmdb-1} [DVD-576p][Opus9 2.0][VP9].mkv")]
     [InlineData(17, 63, TestRegexType.Test, false, @"\\nas4\assets1\_Movies\A (2023)\A (2022) {tmdb-1} [DVD-576p][EAC3 6.0][VP9].mkv")]
     [InlineData(17, 64, TestRegexType.Test, true, @"\\nas4\assets1\_Movies\Blood Brothers (1989)\Blood Brothers (1989) [SDTV-576p][AAC 2.0][h264].mp4")]
-    [InlineData(17, 65, TestRegexType.Test, true, @"\\nas2\assets2\_Movies\A Murder of Crows (1999)\A Murder of Crows (1999) {tmdb-17263} [HDTV-1080p][MP3 2.0][MPEG4].avi")]
-    [InlineData(17, 66, TestRegexType.Test, true, @"\\nas2\assets2\_Movies\12 Angry Men (1957)-other\12 Angry Men (1957)-other {tmdb-389} {edition-CRITERION COLLECTION} [Remux-1080p][PCM 1.0][h264].mkv")]
+    [InlineData(17, 65, TestRegexType.Test, true,
+        @"\\nas2\assets2\_Movies\A Murder of Crows (1999)\A Murder of Crows (1999) {tmdb-17263} [HDTV-1080p][MP3 2.0][MPEG4].avi")]
+    [InlineData(17, 66, TestRegexType.Test, true,
+        @"\\nas2\assets2\_Movies\12 Angry Men (1957)-other\12 Angry Men (1957)-other {tmdb-389} {edition-CRITERION COLLECTION} [Remux-1080p][PCM 1.0][h264].mkv")]
     [InlineData(17, 67, TestRegexType.Test, true, @"\\nas5\assets3\_Movies\Seven Samurai (1954)\Seven Samurai (1954) {tmdb-346} [Remux-2160p][HLG][FLAC 1.0][h265].mkv")]
     [InlineData(17, 68, TestRegexType.Test, true, @"\\nas1\assets4\_Movies\Aliens (1986)\Aliens (1986) {tmdb-679} [Remux-2160p][DV][AC3 5.1][h265].mkv")]
-    [InlineData(17, 69, TestRegexType.Test, true, @"X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][TrueHD Atmos 7.1][h265].mkv")]
+    [InlineData(17, 69, TestRegexType.Test, true,
+        @"X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][TrueHD Atmos 7.1][h265].mkv")]
     [InlineData(17, 70, TestRegexType.Test, true, @"X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-behindthescenes.mkv")]
     [InlineData(17, 71, TestRegexType.Test, false, @"X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-trailertest.mkv")]
     [InlineData(17, 72, TestRegexType.Discovery, false, @"Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv")]
-    [InlineData(17, 73, TestRegexType.Discovery, true, @"X:\_Movies\12 Angry Men (1957)\12 Angry Men (1957) {tmdb-389} {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv")]
+    [InlineData(17, 73, TestRegexType.Discovery, true,
+        @"X:\_Movies\12 Angry Men (1957)\12 Angry Men (1957) {tmdb-389} {edition-BLURAY} [Remux-1080p][DTS-HD MA 1.0][h264].mkv")]
     [InlineData(17, 74, TestRegexType.Discovery, true, @"X:\_Movies (non-tmdb)\Blood Brothers (1989)\Example 1-scene.mkv")]
-    [InlineData(17, 75, TestRegexType.Test, true, @"X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][h265].mkv")]
-    [InlineData(17, 76, TestRegexType.Test, false, @"X:\_Movies (non-tmdb)\The (2003)\The (2003) {tmdb-120}  [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][h265]-TdarrCacheFile-fwefefwe.mkv")]
+    [InlineData(17, 75, TestRegexType.Test, true,
+        @"X:\_Movies (non-tmdb)\The Lord of the Rings (2003)\The Lord of the Rings (2003) {tmdb-120} {edition-THE COMPLETE EXTENDED} [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][h265].mkv")]
+    [InlineData(17, 76, TestRegexType.Test, false,
+        @"X:\_Movies (non-tmdb)\The (2003)\The (2003) {tmdb-120}  [Remux-2160p][DV HDR10][TrueHD Atmos 7.1][h265]-TdarrCacheFile-fwefefwe.mkv")]
     [InlineData(18, 1, TestRegexType.Discovery, true, @"Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv")]
-    [InlineData(18, 2, TestRegexType.Discovery, true, @"Z:\_TV (non-tvdb)\The Queen's Christmas Broadcast\Season 1\The Queen's Christmas Broadcast s01e2015 2015 [HDTV-720p].mp4")]
+    [InlineData(18, 2, TestRegexType.Discovery, true,
+        @"Z:\_TV (non-tvdb)\The Queen's Christmas Broadcast\Season 1\The Queen's Christmas Broadcast s01e2015 2015 [HDTV-720p].mp4")]
     [InlineData(18, 3, TestRegexType.Discovery, true, @"X:\_Movies\Cheers {tvdb-77623}\Season 11\Cheers s11e26-e28 One for the Road [SDTV][MP3 2.0][XviD].avi")]
     [InlineData(18, 4, TestRegexType.Test, false,
         @"\\nas4\assets4\_TV\Paw Patrol {tvdb-272472}\Season 7\Paw Patrol s07e01-e04 This is a long long long long long long long long long long long  long long long long path but is it long enough yet I think so but only if we make it this far [HDTV-1080p][AAC 2.0][x264].mkv")]
     [InlineData(18, 5, TestRegexType.Test, true, @"\\nas4\assets1\_TV\Curfew {tvdb-79556}\Season 1\Curfew s01e01 Episode 1 [HDTV-720p][DV][Vorbis 6.0][x264].mkv")]
     [InlineData(19, 1, TestRegexType.Discovery, true, @"Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv")]
-    [InlineData(19, 2, TestRegexType.Discovery, true, @"Z:\_TV (non-tvdb)\The Queen's Christmas Broadcast\Season 1\The Queen's Christmas Broadcast s01e2015 2015 [HDTV-720p].mp4")]
+    [InlineData(19, 2, TestRegexType.Discovery, true,
+        @"Z:\_TV (non-tvdb)\The Queen's Christmas Broadcast\Season 1\The Queen's Christmas Broadcast s01e2015 2015 [HDTV-720p].mp4")]
     [InlineData(19, 3, TestRegexType.Test, true, @"X:\_TV\Cheers {tvdb-77623}\Season 11\Cheers s11e26-e28 One for the Road [SDTV-576p][MP3 2.0][XviD].avi")]
     [InlineData(19, 4, TestRegexType.Test, true, @"X:\_TV\Cheers {tvdb-77623}\Season 11\Cheers s11e26e27 One for the Road [SDTV-576p][MP3 2.0][XviD].avi")]
     [InlineData(19, 5, TestRegexType.Test, false, @"X:\_TV\Cheers {tvdb-77623}\Season 11\Cheers s11.e26-e28 One for the Road [SDTV-576p][MP3 2.0][XviD].avi")]
     [InlineData(19, 6, TestRegexType.Test, false, @"X:\_TV\Cheers {tvdb-77623}\Season 11\Cheers s11e26f27 One for the Road [SDTV-576p][MP3 2.0][XviD].avi")]
-    [InlineData(19, 7, TestRegexType.Test, true, @"X:\_TV\The Late Late Show with James Corden {tvdb-292421}\Season 1\The Late Late Show with James Corden 2015-03-23 [HDTV-720p][MP3 2.0][XviD].mkv")]
+    [InlineData(19, 7, TestRegexType.Test, true,
+        @"X:\_TV\The Late Late Show with James Corden {tvdb-292421}\Season 1\The Late Late Show with James Corden 2015-03-23 [HDTV-720p][MP3 2.0][XviD].mkv")]
     [InlineData(19, 8, TestRegexType.Test, true, @"X:\_TV (non-tmdb)\Blood Brothers\Example 1-behindthescenes.mkv")]
-    [InlineData(19, 9, TestRegexType.Test, false, @"X:\_TV\The Late Late Show with James Corden {tvdb-292421}\Season 1\The Late Late Show with James Corden 20150323 [HDTV-720p][MP3 2.0][XviD].mkv")]
-    [InlineData(19, 10, TestRegexType.Test, true, @"Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV-576p][MP3 2.0][XviD].mkv")]
+    [InlineData(19, 9, TestRegexType.Test, false,
+        @"X:\_TV\The Late Late Show with James Corden {tvdb-292421}\Season 1\The Late Late Show with James Corden 20150323 [HDTV-720p][MP3 2.0][XviD].mkv")]
+    [InlineData(19, 10, TestRegexType.Test, true,
+        @"Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV-576p][MP3 2.0][XviD].mkv")]
     [InlineData(19, 11, TestRegexType.Test, true, @"X:\_TV\Long Way Round {tvdb-77623}\Season 11\Long Way Round s01e08 [DVD-576p][MP3 2.0][XviD].mkv")]
     [InlineData(19, 12, TestRegexType.Test, true, @"X:\_TV\Long Way Round {tvdb-77623}\Season 11\Long Way Round s01e108e109 [DVD-576p][MP3 2.0][XviD].mkv")]
     [InlineData(19, 13, TestRegexType.Test, true, @"X:\_TV\Long Way Round {tvdb-77623}\Season 11\Long Way Round s01e08-e12 [DVD-576p][MP3 2.0][XviD].mkv")]
-    [InlineData(19, 14, TestRegexType.Test, true, @"Z:\_TV\The Queen's Christmas Broadcast {tvdb-359422}\Season 1\The Queen's Christmas Broadcast s01e2015 2015 [HDTV-720p][MP3 2.0][XviD].mp4")]
-    [InlineData(19, 15, TestRegexType.Test, true, @"Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV-576p][MP3 2.0][XviD].mkv")]
+    [InlineData(19, 14, TestRegexType.Test, true,
+        @"Z:\_TV\The Queen's Christmas Broadcast {tvdb-359422}\Season 1\The Queen's Christmas Broadcast s01e2015 2015 [HDTV-720p][MP3 2.0][XviD].mp4")]
+    [InlineData(19, 15, TestRegexType.Test, true,
+        @"Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV-576p][MP3 2.0][XviD].mkv")]
     [InlineData(19, 16, TestRegexType.Test, false, @"Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e2015 Puss Gets The Boot [SDTV-576p][DV][XviD].mkv")]
     [InlineData(19, 17, TestRegexType.Discovery, false, @"X:\_Movies\Chernobyl {tvdb-360893}\Season 1\Chernobyl s01e01 TBA [Bluray-2160p Remux][MP3 2.0][XviD].mkv")]
-    [InlineData(19, 18, TestRegexType.Test, true, @"\\nas1\assets1\_TV\Charlie's Angels {tvdb-77170}\Season 5\Charlie's Angels s05e12 Chorus Line Angels [Bluray-1080p Remux][MP3 2.0][XviD].mkv")]
-    [InlineData(19, 19, TestRegexType.Test, true, @"\\nas5\assets4\_TV\3rd Rock from the Sun {tvdb-72389}\Specials\3rd Rock from the Sun s00e02 Behind the Scenes [DVD-576p][MP3 2.0][XviD].avi")]
+    [InlineData(19, 18, TestRegexType.Test, true,
+        @"\\nas1\assets1\_TV\Charlie's Angels {tvdb-77170}\Season 5\Charlie's Angels s05e12 Chorus Line Angels [Bluray-1080p Remux][MP3 2.0][XviD].mkv")]
+    [InlineData(19, 19, TestRegexType.Test, true,
+        @"\\nas5\assets4\_TV\3rd Rock from the Sun {tvdb-72389}\Specials\3rd Rock from the Sun s00e02 Behind the Scenes [DVD-576p][MP3 2.0][XviD].avi")]
     [InlineData(19, 20, TestRegexType.Test, false, @"\\nas2\assets4\_TV\Episodes {tvdb-123581}\Season 3\Episodes s03e08 Episode 308 [Raw-HD][MP3 2.0][XviD].ts")]
-    [InlineData(19, 21, TestRegexType.Test, false, @"\\nas2\assets1\_TV\The Grand Tour {tvdb-314087}\Season 5\The Grand Tour (2016) s05e01 A Scandi Flick [WEBDL-720p][MP3 2.0][XviD].mkv")]
-    [InlineData(19, 22, TestRegexType.Test, false, @"\\nas5\assets4\_TV\3rd Rock from the Sun {tvdb-72389}\Specials\3rd Rock from the Sun s00e02 Behind the Scenes [DVD-576p][MP3 2.0][XviD].ts")]
-    [InlineData(19, 23, TestRegexType.Test, false, @"K:\_TV\American Horror Story {tvdb-250487}\Season 1\American Horror Story s01e02 Home Invasion [HDTV-720p][DTS 5.1][x264].mkv")]
-    [InlineData(19, 24, TestRegexType.Test, true, @"K:\_TV\American Horror Story {tvdb-250487}\Season 1\American Horror Story s01e02 Home Invasion [HDTV-720p][DTS 5.1][h264].mkv")]
-    [InlineData(19, 25, TestRegexType.Test, true, @"K:\_TV\American Horror Story {tvdb-250487}\Season 1\American Horror Story s01e02 Home Invasion [HDTV-720p][DTS 5.1][h264].mkv")]
-    [InlineData(19, 26, TestRegexType.Test, true, @"K:\_TV\American Horror Story {tvdb-250487}\Season 1\American Horror Story s01e02 Home Invasion [HDTV-720p][DV HDR10][DTS HD 5.1][h264].mkv")]
-    [InlineData(19, 27, TestRegexType.Test, true, @"K:\_TV\American Horror Story {tvdb-250487}\Season 1\American Horror Story s01e02 Home Invasion [HDTV-720p][DV][DTS HD 5.1][h264].mkv")]
-    [InlineData(19, 28, TestRegexType.Test, false, @"\\nas1\assets1\_TV\Ben and Holly's Little Kingdom {tvdb-136941}\Season 2\Ben and Holly's Little Kingdom s02e15 Gaston To The Rescue [DVD][AAC 5.1][].mp4")]
-    [InlineData(19, 29, TestRegexType.Test, true, @"\\nas4\assets1\_TV\8 Out of 10 Cats {tvdb-79556}\Season 11\8 Out of 10 Cats s11e02 Patsy Palmer, Jack Whitehall, Krishnan Guru-Murthy, Joe Wilkinson [HDTV-720p][MP2 2.0][h264].mkv")]
+    [InlineData(19, 21, TestRegexType.Test, false,
+        @"\\nas2\assets1\_TV\The Grand Tour {tvdb-314087}\Season 5\The Grand Tour (2016) s05e01 A Scandi Flick [WEBDL-720p][MP3 2.0][XviD].mkv")]
+    [InlineData(19, 22, TestRegexType.Test, false,
+        @"\\nas5\assets4\_TV\3rd Rock from the Sun {tvdb-72389}\Specials\3rd Rock from the Sun s00e02 Behind the Scenes [DVD-576p][MP3 2.0][XviD].ts")]
+    [InlineData(19, 23, TestRegexType.Test, false,
+        @"K:\_TV\American Horror Story {tvdb-250487}\Season 1\American Horror Story s01e02 Home Invasion [HDTV-720p][DTS 5.1][x264].mkv")]
+    [InlineData(19, 24, TestRegexType.Test, true,
+        @"K:\_TV\American Horror Story {tvdb-250487}\Season 1\American Horror Story s01e02 Home Invasion [HDTV-720p][DTS 5.1][h264].mkv")]
+    [InlineData(19, 25, TestRegexType.Test, true,
+        @"K:\_TV\American Horror Story {tvdb-250487}\Season 1\American Horror Story s01e02 Home Invasion [HDTV-720p][DTS 5.1][h264].mkv")]
+    [InlineData(19, 26, TestRegexType.Test, true,
+        @"K:\_TV\American Horror Story {tvdb-250487}\Season 1\American Horror Story s01e02 Home Invasion [HDTV-720p][DV HDR10][DTS HD 5.1][h264].mkv")]
+    [InlineData(19, 27, TestRegexType.Test, true,
+        @"K:\_TV\American Horror Story {tvdb-250487}\Season 1\American Horror Story s01e02 Home Invasion [HDTV-720p][DV][DTS HD 5.1][h264].mkv")]
+    [InlineData(19, 28, TestRegexType.Test, false,
+        @"\\nas1\assets1\_TV\Ben and Holly's Little Kingdom {tvdb-136941}\Season 2\Ben and Holly's Little Kingdom s02e15 Gaston To The Rescue [DVD][AAC 5.1][].mp4")]
+    [InlineData(19, 29, TestRegexType.Test, true,
+        @"\\nas4\assets1\_TV\8 Out of 10 Cats {tvdb-79556}\Season 11\8 Out of 10 Cats s11e02 Patsy Palmer, Jack Whitehall, Krishnan Guru-Murthy, Joe Wilkinson [HDTV-720p][MP2 2.0][h264].mkv")]
     [InlineData(19, 30, TestRegexType.Test, true, @"\\nas4\assets1\_TV\Curfew {tvdb-79556}\Season 1\Curfew s01e01 Episode 1 [HDTV-720p][Vorbis 6.0][h264].mkv")]
-    [InlineData(19, 31, TestRegexType.Test, false, @"\\nas4\assets1\_TV\Curfew {tvdb-79556}\Season 1\Curfew s01e01 Episode 1 [HDTV-720p][Vorbis 6.0][h264]-TdarrCacheFile-fwefefwf.mkv")]
-    [InlineData(19, 32, TestRegexType.Test, true, @"\\nas5\assets4\_TV\Prehistoric Planet (2022) {tvdb-418505}\Season 2\Prehistoric Planet (2022) s02e01 Islands [WEBDL-2160p][DV HDR10Plus][EAC3 Atmos 5.1][h265].mkv")]
-    [InlineData(19, 33, TestRegexType.Test, true, @"\\nas5\assets4\_TV\Prehistoric Planet (2022) {tvdb-418505} {edition-DVD}\Season 2\Prehistoric Planet (2022) s02e01 Islands [WEBDL-2160p][DV HDR10Plus][EAC3 Atmos 5.1][h265].mkv")]
+    [InlineData(19, 31, TestRegexType.Test, false,
+        @"\\nas4\assets1\_TV\Curfew {tvdb-79556}\Season 1\Curfew s01e01 Episode 1 [HDTV-720p][Vorbis 6.0][h264]-TdarrCacheFile-fwefefwf.mkv")]
+    [InlineData(19, 32, TestRegexType.Test, true,
+        @"\\nas5\assets4\_TV\Prehistoric Planet (2022) {tvdb-418505}\Season 2\Prehistoric Planet (2022) s02e01 Islands [WEBDL-2160p][DV HDR10Plus][EAC3 Atmos 5.1][h265].mkv")]
+    [InlineData(19, 33, TestRegexType.Test, true,
+        @"\\nas5\assets4\_TV\Prehistoric Planet (2022) {tvdb-418505} {edition-DVD}\Season 2\Prehistoric Planet (2022) s02e01 Islands [WEBDL-2160p][DV HDR10Plus][EAC3 Atmos 5.1][h265].mkv")]
     [InlineData(20, 1, TestRegexType.Discovery, true, @"Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].mkv")]
-    [InlineData(20, 2, TestRegexType.Discovery, true, @"Z:\_TV (non-tvdb)\The Queen's Christmas Broadcast\Season 1\The Queen's Christmas Broadcast s01e2015 2015 [HDTV-720p].mp4")]
+    [InlineData(20, 2, TestRegexType.Discovery, true,
+        @"Z:\_TV (non-tvdb)\The Queen's Christmas Broadcast\Season 1\The Queen's Christmas Broadcast s01e2015 2015 [HDTV-720p].mp4")]
     [InlineData(20, 3, TestRegexType.Discovery, true, @"X:\_Movies\Cheers {tvdb-77623}\Season 11\Cheers s11e26-e28 One for the Road [SDTV][MP3 2.0][XviD].avi")]
     [InlineData(20, 4, TestRegexType.Test, true, @"\\nas4\assets1\_TV\Curfew {tvdb-79556}\Season 1\Curfew s01e01 Episode 1 [HDTV-720p][Vorbis 6.0][x264].mkv")]
     [InlineData(20, 5, TestRegexType.Test, false, @"\\nas4\assets1\_TV\Curfew {tvdb-79556}\Season 1\Curfew s01e01 Episode 1 [HDTV-720p][DV][Vorbis 6.0][x264].mkv")]
     [InlineData(20, 6, TestRegexType.Test, true, @"\\nas4\assets2\_Movies\Accused (2023)\Accused (2023) {tmdb-912974} [WEBDL-1080p][EAC3 5.1][x264].es.srt")]
     [InlineData(21, 1, TestRegexType.Discovery, true, @"Z:\_TV\Tom and Jerry {tvdb-72860}\Season 1940\Tom and Jerry s1940e01 Puss Gets The Boot [SDTV].en.srt")]
-    [InlineData(21, 2, TestRegexType.Discovery, true, @"Z:\_TV (non-tvdb)\The Queen's Christmas Broadcast\Season 1\The Queen's Christmas Broadcast s01e2015 2015 [HDTV-720p].es.srt")]
+    [InlineData(21, 2, TestRegexType.Discovery, true,
+        @"Z:\_TV (non-tvdb)\The Queen's Christmas Broadcast\Season 1\The Queen's Christmas Broadcast s01e2015 2015 [HDTV-720p].es.srt")]
     [InlineData(21, 3, TestRegexType.Discovery, true, @"X:\_Movies\Cheers {tvdb-77623}\Season 11\Cheers s11e26-e28 One for the Road [SDTV][MP3 2.0][XviD].en.srt")]
     [InlineData(21, 4, TestRegexType.Test, true, @"X:\_Movies\Cheers {tvdb-77623}\Season 11\Cheers s11e26-e28 One for the Road [SDTV][MP3 2.0][XviD].en.srt")]
     [InlineData(21, 5, TestRegexType.Test, false, @"X:\_Movies\Cheers {tvdb-77623}\Season 11\Cheers s11e26-e28 One for the Road [SDTV][MP3 2.0][XviD]._eng.srt")]

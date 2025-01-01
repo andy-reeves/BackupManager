@@ -36,7 +36,8 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
 
     protected override string FileNameRegex => @"^(.*)(?:(?:\.)(e[ns]))(?:(?:\.)(hi|cc|sdh))?(?:(?:\.)(forced))?\.srt$";
 
-    protected override string DirectoryRegex => @"^.*\\_(?:Movies|Comedy|Concerts|TV)(?:\s\(non-t[mv]db\))?\\(.*)((\((\d{4})\)(-other)?)|(\s{t(m|v)db-\d{1,7}?}\\(Season\s\d+|Specials))).*$";
+    protected override string DirectoryRegex =>
+        @"^.*\\_(?:Movies|Comedy|Concerts|TV)(?:\s\(non-t[mv]db\))?\\(.*)((\((\d{4})\)(-other)?)|(\s{t(m|v)db-\d{1,7}?}\\(Season\s\d+|Specials))).*$";
 
     public string Language { get; private set; }
 
@@ -114,13 +115,23 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
                 // If it's not found us the trimmed Title to check that
                 var titleWithoutExt = Title;
 
-                foreach (var video in from videoFile in videoFiles where Path.GetFileName(videoFile).StartsWithIgnoreCase(titleWithoutExt) select Utils.MediaHelper.ExtendedBackupFileBase(videoFile) into video where video.IsValidFileName select video)
+                foreach (var video in from videoFile in videoFiles
+                         where Path.GetFileName(videoFile).StartsWithIgnoreCase(titleWithoutExt)
+                         select Utils.MediaHelper.ExtendedBackupFileBase(videoFile)
+                         into video
+                         where video.IsValidFileName
+                         select video)
                 {
                     return RefreshMediaInfo(video) && Validate();
                 }
                 var shortTitle = Title.SubstringBeforeIgnoreCase("[").Trim();
 
-                foreach (var video in from videoFile in videoFiles where Path.GetFileName(videoFile).StartsWithIgnoreCase(shortTitle) select Utils.MediaHelper.ExtendedBackupFileBase(videoFile) into video where video.IsValidFileName select video)
+                foreach (var video in from videoFile in videoFiles
+                         where Path.GetFileName(videoFile).StartsWithIgnoreCase(shortTitle)
+                         select Utils.MediaHelper.ExtendedBackupFileBase(videoFile)
+                         into video
+                         where video.IsValidFileName
+                         select video)
                 {
                     return RefreshMediaInfo(video) && Validate();
                 }

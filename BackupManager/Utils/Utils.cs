@@ -71,12 +71,15 @@ internal static partial class Utils
     internal const string MOVIE_FOLDER_FORMAT = "{Movie Title} " + //
                                                 "({Release Year})";
 
-    internal const string STANDARD_EPISODE_FORMAT = "{Series Title} " + "s{season:00}e{episode:00} " + "{Episode Title} " + "[{Quality Full}]" + "[{MediaInfo VideoDynamicRangeType]}" + "[{Mediainfo AudioCodec} {Mediainfo AudioChannels}]" +
+    internal const string STANDARD_EPISODE_FORMAT = "{Series Title} " + "s{season:00}e{episode:00} " + "{Episode Title} " + "[{Quality Full}]" +
+                                                    "[{MediaInfo VideoDynamicRangeType]}" + "[{Mediainfo AudioCodec} {Mediainfo AudioChannels}]" +
                                                     "[{Mediainfo VideoCodec}]";
 
-    internal const string DAILY_EPISODE_FORMAT = "{Series Title} {Air-Date} {[Quality Full]}{[MediaInfo VideoDynamicRangeType]}{[Mediainfo AudioCodec}{ Mediainfo AudioChannels}][{Mediainfo VideoCodec}]";
+    internal const string DAILY_EPISODE_FORMAT =
+        "{Series Title} {Air-Date} {[Quality Full]}{[MediaInfo VideoDynamicRangeType]}{[Mediainfo AudioCodec}{ Mediainfo AudioChannels}][{Mediainfo VideoCodec}]";
 
-    internal const string ANIME_EPISODE_FORMAT = "{Series Title} s{season:00}e{episode:00} {[Quality Full]}{[MediaInfo VideoDynamicRangeType]}{[Mediainfo AudioCodec}{ Mediainfo AudioChannels}][{Mediainfo VideoCodec}]";
+    internal const string ANIME_EPISODE_FORMAT =
+        "{Series Title} s{season:00}e{episode:00} {[Quality Full]}{[MediaInfo VideoDynamicRangeType]}{[Mediainfo AudioCodec}{ Mediainfo AudioChannels}][{Mediainfo VideoCodec}]";
 
     internal const string SERIES_FOLDER_FORMAT = "{Series Title} {tvdb-{tvdbId}}";
 
@@ -248,7 +251,8 @@ internal static partial class Utils
 
         foreach (var file in traceFiles)
         {
-            var destFileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups", $"{new FileInfo(file).Name}_{timeLog}.log");
+            var destFileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Backups",
+                $"{new FileInfo(file).Name}_{timeLog}.log");
 
             try
             {
@@ -265,7 +269,9 @@ internal static partial class Utils
         task.Wait();
         var response = task.Result;
         var lines = response.Split(["\r\n", "\r", "\n"], StringSplitOptions.None);
-        return lines.Where(line => line.Trim().StartsWithIgnoreCase(startsWith)).Select(line => line.Split(splitOn)[indexToReturn].Replace("'", "").Replace("\"", "").Trim()).FirstOrDefault();
+
+        return lines.Where(line => line.Trim().StartsWithIgnoreCase(startsWith))
+            .Select(line => line.Split(splitOn)[indexToReturn].Replace("'", "").Replace("\"", "").Trim()).FirstOrDefault();
     }
 
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
@@ -477,7 +483,8 @@ internal static partial class Utils
     {
         var diskNames = new HashSet<string>();
 
-        foreach (var diskName in directories.Select(static d => d.StartsWithIgnoreCase(@"\\") ? @"\\" + d.SubstringAfterIgnoreCase(@"\\").SubstringBefore('\\') + @"\" : d.SubstringBefore('\\') + @"\"))
+        foreach (var diskName in directories.Select(static d =>
+                     d.StartsWithIgnoreCase(@"\\") ? @"\\" + d.SubstringAfterIgnoreCase(@"\\").SubstringBefore('\\') + @"\" : d.SubstringBefore('\\') + @"\"))
         {
             _ = diskNames.Add(diskName);
         }
@@ -597,8 +604,10 @@ internal static partial class Utils
                 if (Config.PushoverAppTokenToUse.HasNoValue()) return;
             }
 
-            if (!Config.PushoverOnOff || ((priority is not (PushoverPriority.Low or PushoverPriority.Lowest) || !Config.PushoverSendLowOnOff) && (priority != PushoverPriority.Normal || !Config.PushoverSendNormalOnOff) &&
-                                          (priority != PushoverPriority.High || !Config.PushoverSendHighOnOff) && (priority != PushoverPriority.Emergency || !Config.PushoverSendEmergencyOnOff)))
+            if (!Config.PushoverOnOff || ((priority is not (PushoverPriority.Low or PushoverPriority.Lowest) || !Config.PushoverSendLowOnOff) &&
+                                          (priority != PushoverPriority.Normal || !Config.PushoverSendNormalOnOff) &&
+                                          (priority != PushoverPriority.High || !Config.PushoverSendHighOnOff) &&
+                                          (priority != PushoverPriority.Emergency || !Config.PushoverSendEmergencyOnOff)))
                 return;
 
             var timestamp = DateTime.Now.ToUnixTimeMilliseconds();
@@ -637,7 +646,9 @@ internal static partial class Utils
                 if (!_sentAlertForLowPushoverMessages && !_alreadySendingPushoverMessage)
                 {
                     _alreadySendingPushoverMessage = true;
-                    SendPushoverMessage("Message Limit Warning", PushoverPriority.High, PushoverRetry.None, PushoverExpires.Immediately, $"{PushoverMessagesRemaining} remaining");
+
+                    SendPushoverMessage("Message Limit Warning", PushoverPriority.High, PushoverRetry.None, PushoverExpires.Immediately,
+                        $"{PushoverMessagesRemaining} remaining");
                     _alreadySendingPushoverMessage = false;
                     _sentAlertForLowPushoverMessages = true;
                 }
@@ -754,9 +765,11 @@ internal static partial class Utils
 
     internal static void LogHeader()
     {
-        const string headerText = @" ____             _                  __  __" + "\n" + @"| __ )  __ _  ___| | ___   _ _ __   |  \/  | __ _ _ __   __ _  __ _  ___ _ __" + "\n" +
-                                  @"|  _ \ / _` |/ __| |/ / | | | '_ \  | |\/| |/ _` | '_ \ / _` |/ _` |/ _ \ '__|" + "\n" + @"| |_) | (_| | (__|   <| |_| | |_) | | |  | | (_| | | | | (_| | (_| |  __/ |" + "\n" +
-                                  @"|____/ \__,_|\___|_|\_\\__,_| .__/  |_|  |_|\__,_|_| |_|\__,_|\__, |\___|_|" + "\n" + @"                            |_|                               |___/";
+        const string headerText = @" ____             _                  __  __" + "\n" + @"| __ )  __ _  ___| | ___   _ _ __   |  \/  | __ _ _ __   __ _  __ _  ___ _ __" +
+                                  "\n" + @"|  _ \ / _` |/ __| |/ / | | | '_ \  | |\/| |/ _` | '_ \ / _` |/ _` |/ _ \ '__|" + "\n" +
+                                  @"| |_) | (_| | (__|   <| |_| | |_) | | |  | | (_| | | | | (_| | (_| |  __/ |" + "\n" +
+                                  @"|____/ \__,_|\___|_|\_\\__,_| .__/  |_|  |_|\__,_|_| |_|\__,_|\__, |\___|_|" + "\n" +
+                                  @"                            |_|                               |___/";
         Log(headerText);
     }
 
@@ -847,7 +860,8 @@ internal static partial class Utils
     /// <param name="text"></param>
     /// <param name="delayBeforeSending"></param>
     /// <param name="delayAfterSending"></param>
-    internal static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires, string text, bool delayBeforeSending = false, bool delayAfterSending = false)
+    internal static void LogWithPushover(BackupAction backupAction, PushoverPriority priority, PushoverRetry retry, PushoverExpires expires, string text,
+        bool delayBeforeSending = false, bool delayAfterSending = false)
     {
         /*
            Lowest & Low
@@ -882,12 +896,17 @@ internal static partial class Utils
         Log(backupAction, text);
         if (backupAction == BackupAction.Error && priority == PushoverPriority.Normal) priority = PushoverPriority.High;
 
-        if (!Config.PushoverOnOff || ((priority is not (PushoverPriority.Low or PushoverPriority.Lowest) || !Config.PushoverSendLowOnOff) && (priority != PushoverPriority.Normal || !Config.PushoverSendNormalOnOff) &&
-                                      (priority != PushoverPriority.High || !Config.PushoverSendHighOnOff) && (priority != PushoverPriority.Emergency || !Config.PushoverSendEmergencyOnOff)))
+        if (!Config.PushoverOnOff || ((priority is not (PushoverPriority.Low or PushoverPriority.Lowest) || !Config.PushoverSendLowOnOff) &&
+                                      (priority != PushoverPriority.Normal || !Config.PushoverSendNormalOnOff) &&
+                                      (priority != PushoverPriority.High || !Config.PushoverSendHighOnOff) &&
+                                      (priority != PushoverPriority.Emergency || !Config.PushoverSendEmergencyOnOff)))
             return;
 
         if (backupAction == BackupAction.Error || (!delayBeforeSending && !delayAfterSending))
-            _ = TaskWrapper(Task.Run(() => SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, text)), new CancellationTokenSource().Token);
+        {
+            _ = TaskWrapper(Task.Run(() => SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, text)),
+                new CancellationTokenSource().Token);
+        }
         else
         {
             if (delayBeforeSending) Task.Delay(1000).Wait();
@@ -1600,7 +1619,8 @@ internal static partial class Utils
     /// <returns>False if either are Null or string.Empty or not valid version numbers</returns>
     internal static bool VersionIsNewer(string installedVersion, string availableVersion)
     {
-        return installedVersion.HasValue() && availableVersion.HasValue() && Version.TryParse(installedVersion, out var installed) && Version.TryParse(availableVersion, out var available) && installed.CompareTo(available) < 0;
+        return installedVersion.HasValue() && availableVersion.HasValue() && Version.TryParse(installedVersion, out var installed) &&
+               Version.TryParse(availableVersion, out var available) && installed.CompareTo(available) < 0;
     }
 
     internal static bool StringContainsFixedSpace(string stringToTest)
@@ -1690,7 +1710,8 @@ internal static partial class Utils
 
         if (returnCode != 0)
         {
-            Trace(string.Format(CultureInfo.InvariantCulture, "Error extracting security descriptor of the shared path {0}. Error Code{1}.", sharedFolderName, returnCode.ToString()));
+            Trace(string.Format(CultureInfo.InvariantCulture, "Error extracting security descriptor of the shared path {0}. Error Code{1}.", sharedFolderName,
+                returnCode.ToString()));
             return;
         }
         var securityDescriptor = securityDescriptorObject.Properties["Descriptor"].Value as ManagementBaseObject;
@@ -1821,7 +1842,9 @@ internal static partial class Utils
     private static ManagementObject CreateAccessControlEntry(ICloneable trustee, bool deny)
     {
         var aceObject = new ManagementClass("Win32_ACE").CreateInstance();
-        aceObject.Properties["AccessMask"].Value = 0x1U | 0x2U | 0x4U | 0x8U | 0x10U | 0x20U | 0x40U | 0x80U | 0x100U | 0x10000U | 0x20000U | 0x40000U | 0x80000U | 0x100000U; // all permissions
+
+        aceObject.Properties["AccessMask"].Value =
+            0x1U | 0x2U | 0x4U | 0x8U | 0x10U | 0x20U | 0x40U | 0x80U | 0x100U | 0x10000U | 0x20000U | 0x40000U | 0x80000U | 0x100000U; // all permissions
         aceObject.Properties["AceFlags"].Value = 0x0U; // no flags
         aceObject.Properties["AceType"].Value = deny ? 1U : 0U; // 0 = allow, 1 = deny
         aceObject.Properties["Trustee"].Value = trustee;
