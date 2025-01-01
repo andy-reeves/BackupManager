@@ -80,7 +80,7 @@ public sealed class UtilsGetVersionPlex
 public sealed class UtilsGetVersionBazarr
 {
     [Theory]
-    [InlineData("1.5.0", ApplicationType.Bazarr)]
+    [InlineData("1.5.1", ApplicationType.Bazarr)]
     public void GetLatestVersionNumber(string expectedVersionNumber, ApplicationType applicationType, string branchName = "master")
     {
         Assert.Equal(expectedVersionNumber, Utils.GetLatestApplicationVersionNumber(applicationType, branchName));
