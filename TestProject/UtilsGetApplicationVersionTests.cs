@@ -17,7 +17,7 @@ namespace TestProject;
 public sealed class UtilsGetApplicationVersionTests
 {
     [Theory]
-    [InlineData("1.5.0", ApplicationType.Bazarr)]
+    [InlineData("1.5.1", ApplicationType.Bazarr)]
     [InlineData("1.41.3.9314", ApplicationType.PlexPass)]
     [InlineData("1.28.2.4885", ApplicationType.Prowlarr)]
     [InlineData("5.16.3.9541", ApplicationType.Radarr)]
