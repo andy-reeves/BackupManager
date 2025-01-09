@@ -465,18 +465,26 @@ public sealed class MediaBackup
         Utils.Trace("couldn't get the file from the path.  We need to check the contents hash only because maybe we renamed the source file");
 
         // this happened when we changed files from [SDTV-576p] to [DVD-576p]
-        var contents = Utils.File.GetShortMd5Hash(fullPath);
-        var f = GetBackupFileFromContentsHashcode(contents);
+        // What about files that have exactly the same contents but in a diferent location?
+        // This happens for extras to movies where we've copied them into the other version of the movie folder and for
+        // Friends on DVD and Bluray
+        /* const bool allowDuplicateContentsHash = false;
 
-        if (f != null)
+        if (allowDuplicateContentsHash)
         {
-            if (GetFoldersForPath(fullPath, out var dir, out _))
+            var contents = Utils.File.GetShortMd5Hash(fullPath);
+            var f = GetBackupFileFromContentsHashcode(contents);
+
+            if (f != null)
             {
-                // we have a matching file from contents only
-                f.SetFullPath(fullPath, dir);
-                return Utils.TraceOut(f);
+                if (GetFoldersForPath(fullPath, out var dir, out _))
+                {
+                    // we have a matching file from contents only
+                    f.SetFullPath(fullPath, dir);
+                    return Utils.TraceOut(f);
+                }
             }
-        }
+        }*/
         backupFile = new BackupFile(fullPath, directory);
         Utils.Trace($"Adding backup file {backupFile.RelativePath}");
         BackupFiles.Add(backupFile);
