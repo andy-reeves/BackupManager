@@ -854,7 +854,7 @@ internal sealed partial class Main : Form
         var scans = mediaBackup.DirectoryScans.Where(s => scanIdsList.Contains(s.Id) && s.TypeOfScan == scanType).ToArray();
         if (scans.Length == 0) return;
 
-        mediaBackup.DeleteScanReportsNotInList(scanIdsList);
+        if (howMany >= 10) mediaBackup.DeleteScanReportsNotInList(scanIdsList);
         const int columnWidth = 8;
         var distinctDirectoriesScans = scans.Distinct().OrderBy(static s => s.Path).ToArray();
         var longestDirectoryLength = scans.Select(static d => d.Path.Length).Max();

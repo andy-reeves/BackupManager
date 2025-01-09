@@ -148,7 +148,7 @@ internal sealed partial class Main
 
         scanInfo = new DirectoryScan(DirectoryScanType.ProcessingFiles, directory, DateTime.Now, scanId)
         {
-            TotalFiles = files.Count(f => f.StartsWithIgnoreCase(directory))
+            TotalFiles = files.Count(f => f.StartsWithIgnoreCase(Utils.EnsurePathHasATerminatingSeparator(directory)))
         };
         mediaBackup.DirectoryScans.Add(scanInfo);
         directoryScanning = directory;
