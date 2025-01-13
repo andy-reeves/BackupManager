@@ -411,26 +411,6 @@ internal sealed partial class Main
         }
         mediaBackup.ClearFlags();
         Utils.LogWithPushover(BackupAction.ScanDirectory, $"Rename Video Files For Full Scans is {config.DirectoriesRenameVideoFilesForFullScansOnOff}");
-        /*
-        Utils.LogWithPushover(BackupAction.ScanDirectory, $"Backup files count (not deleted) is {mediaBackup.GetBackupFiles(false).Count()}");
-        Utils.LogWithPushover(BackupAction.ScanDirectory, $"fileBlockingCollection count is {fileBlockingCollection.Count}");
-         var backupFilesWithoutDeleted = mediaBackup.GetBackupFiles(false).ToArray();
-        var backupFilesFileNameHashSet = new HashSet<string>();
-
-        // Compare the files from the fileBlockingCollection and the mediaBackup xml (not deleted)
-
-        foreach (var backupFile in backupFilesWithoutDeleted)
-        {
-            if (!fileBlockingCollection.Contains(backupFile.FullPath)) Utils.Log($"{backupFile.FullPath} is not in the blockingCollection");
-            backupFilesFileNameHashSet.Add(backupFile.FullPath);
-        }
-        var fileNames = fileBlockingCollection.ToArray();
-
-        foreach (var fileName in fileNames.Where(fileName => !backupFilesFileNameHashSet.Contains(fileName)))
-        {
-            Utils.Log($"{fileName} is not in the media xml");
-        }
-        */
 
         if (!ProcessFiles(fileBlockingCollection, scanId, config.DirectoriesRenameVideoFilesForFullScansOnOff, ct))
             Utils.LogWithPushover(BackupAction.ScanDirectory, Resources.ScanDirectoriesFailed);
