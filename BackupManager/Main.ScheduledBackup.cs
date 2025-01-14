@@ -36,7 +36,7 @@ internal sealed partial class Main
 
             if (!mediaBackup.Config.DirectoriesFileChangeWatcherOnOff || backupFileDate.AddDays(mediaBackup.Config.DirectoriesDaysBetweenFullScan) < DateTime.Now)
             {
-                Utils.LogWithPushover(BackupAction.ScanDirectory, "Doing a full scan");
+                Utils.LogWithPushover(BackupAction.ScanDirectory, Resources.ScheduledBackupAsyncDoingAFullScan);
 
                 // if file watching is off, or it's been a number of days since last full scan
                 ScanAllDirectories(true, ct);

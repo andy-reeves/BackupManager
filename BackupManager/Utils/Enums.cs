@@ -95,7 +95,7 @@ internal static partial class Utils
         /// <exception cref="ArgumentException">The name could not be parsed.</exception>
         public static T ParseName<T>(string name) where T : Enum
         {
-            if (!TryParseName(name, out T value)) throw new ArgumentException(Resources.Enums_ParseName_Unknown_name, nameof(name));
+            if (!TryParseName(name, out T value)) throw new ArgumentException(Resources.EnumsParseNameUnknownName, nameof(name));
 
             return value;
         }

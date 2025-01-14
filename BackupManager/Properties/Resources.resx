@@ -497,7 +497,10 @@ Skipping {3} as not enough free space</value>
   <data name="FileExists" xml:space="preserve">
     <value>{0} exists</value>
   </data>
-  <data name="Enums_ParseName_Unknown_name" xml:space="preserve">
+  <data name="EnumsParseNameUnknownName" xml:space="preserve">
     <value>Unknown name</value>
+  </data>
+  <data name="ScheduledBackupAsyncDoingAFullScan" xml:space="preserve">
+    <value>Doing a full scan</value>
   </data>
 </root>

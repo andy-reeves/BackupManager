@@ -467,9 +467,9 @@ namespace BackupManager.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Unknown name.
         /// </summary>
-        internal static string Enums_ParseName_Unknown_name {
+        internal static string EnumsParseNameUnknownName {
             get {
-                return ResourceManager.GetString("Enums_ParseName_Unknown_name", resourceCulture);
+                return ResourceManager.GetString("EnumsParseNameUnknownName", resourceCulture);
             }
         }
         
@@ -983,6 +983,15 @@ namespace BackupManager.Properties {
         internal static string Scanning {
             get {
                 return ResourceManager.GetString("Scanning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Doing a full scan.
+        /// </summary>
+        internal static string ScheduledBackupAsyncDoingAFullScan {
+            get {
+                return ResourceManager.GetString("ScheduledBackupAsyncDoingAFullScan", resourceCulture);
             }
         }
         
