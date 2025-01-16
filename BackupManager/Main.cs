@@ -1119,7 +1119,7 @@ internal sealed partial class Main : Form
             ArgumentException.ThrowIfNullOrEmpty(file.FullPath);
 
             return Utils.File.IsVideo(file.FullPath) && !Utils.File.IsSpecialFeature(file.FullPath) && file.FullPath.ContainsAny("_Movies", "_Concerts", "_Comedy") &&
-                   !file.FullPath.ContainsAny("[Remux-1080p]", "[h265]", "[VP9]", "[VC1]") && !file.Deleted;
+                   !file.FullPath.ContainsAny("[h265]", "[VP9]", "[VC1]") && !file.Deleted;
         }).OrderBy(static f => f.Length).ToArray();
 
         foreach (var f in files)
