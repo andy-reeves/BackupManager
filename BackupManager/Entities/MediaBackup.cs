@@ -513,12 +513,11 @@ public sealed class MediaBackup
 
             if (percentOfOriginal < Config.DirectoriesMinimumReEncodeSizePercentage || percentOfOriginal > Config.DirectoriesMaximumReEncodeSizePercentage)
             {
-                Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High,
-                    $"The size of {backupFile.FullPath} has changed to {percentOfOriginal:0}% of the previous size.");
-                Utils.Log($"Path matched is {file.FullPath} with new path {backupFile.FullPath}");
+                Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High, $"{percentOfOriginal:0}% - {backupFile.FullPath} of the previous size.");
             }
             else
-                Utils.Log($"The size of {backupFile.FullPath} has changed to {percentOfOriginal:0}% of the previous size.");
+                Utils.Log($"{percentOfOriginal:0}% - {backupFile.FullPath} of the previous size.");
+            Utils.Log($"Path matched is {file.FullPath} with new path {backupFile.FullPath}");
             break;
         }
         return Utils.TraceOut(backupFile);
