@@ -491,6 +491,9 @@ public sealed class MediaBackup
         indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
         Changed = true;
 
+        // Is thefile a video file we check for old files and size changes
+        if (!Utils.File.IsVideo(fullPath)) return Utils.TraceOut(backupFile);
+
         // Before we return the file we check to see if a file existed in the xml before that had the same relative path
         // and same name (not including the extension. We check if it existed and the name was different only by [h264] to [h265] too
         // 
@@ -499,20 +502,23 @@ public sealed class MediaBackup
 
         foreach (var file in BackupFiles)
         {
-            var fileNameWithoutExtension =
-                Path.Combine(Path.GetDirectoryName(relativePath) ?? string.Empty, Path.GetFileNameWithoutExtension(file.FullPath) ?? string.Empty);
-            if (!fileNameWithoutExtension.ContainsAny(fileName1, fileName2)) continue;
+            var fileNameWithoutExtension = Path.Combine(Path.GetDirectoryName(relativePath) ?? string.Empty,
+                Path.GetFileNameWithoutExtension(file.FullPath) ?? string.Empty);
+            if (!fileNameWithoutExtension.EqualsAnyIgnoreCase(fileName1, fileName2)) continue;
 
-            // Found a file with the same relative path but not extension
             var newLength = backupFile.Length;
 
             // Length was non-zero before so check how much it has changed - re-encodes are typically 50%-120% of original
             var percentOfOriginal = newLength * 100 / file.Length;
-            if (percentOfOriginal >= Config.DirectoriesMinimumReEncodeSizePercentage && percentOfOriginal <= Config.DirectoriesMaximumReEncodeSizePercentage) continue;
 
-            Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High,
-                $"The size of {backupFile.FullPath} has changed to {percentOfOriginal:0}% of the previous size.");
-            Utils.Log($"Path matched is {file.FullPath} with new path {backupFile.FullPath}");
+            if (percentOfOriginal < Config.DirectoriesMinimumReEncodeSizePercentage || percentOfOriginal > Config.DirectoriesMaximumReEncodeSizePercentage)
+            {
+                Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High,
+                    $"The size of {backupFile.FullPath} has changed to {percentOfOriginal:0}% of the previous size.");
+                Utils.Log($"Path matched is {file.FullPath} with new path {backupFile.FullPath}");
+            }
+            else
+                Utils.Log($"The size of {backupFile.FullPath} has changed to {percentOfOriginal:0}% of the previous size.");
             break;
         }
         return Utils.TraceOut(backupFile);
