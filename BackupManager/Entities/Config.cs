@@ -52,6 +52,16 @@ public sealed class Config
     public int BackupDiskDaysToReportSinceFilesChecked { get; set; }
 
     /// <summary>
+    ///     Minimum size of video re-encodes percentage
+    /// </summary>
+    public int DirectoriesMinimumReEncodeSizePercentage { get; set; }
+
+    /// <summary>
+    ///     Maximum size of video re-encodes percentage
+    /// </summary>
+    public int DirectoriesMaximumReEncodeSizePercentage { get; set; }
+
+    /// <summary>
     ///     If the new file count is more than this percentage different we throw an error
     /// </summary>
     public int BackupDiskDifferenceInFileCountAllowedPercentage { get; set; }

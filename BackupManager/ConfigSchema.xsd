@@ -21,6 +21,19 @@
             <xs:documentation>After this many days the backup warns to check the disks again</xs:documentation>
           </xs:annotation>
         </xs:element>
+
+        <xs:element type="xs:int" name="DirectoriesMinimumReEncodeSizePercentage" maxOccurs="1" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Files reencoded smaller than this will log an error</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+
+        <xs:element type="xs:int" name="DirectoriesMaximumReEncodeSizePercentage" maxOccurs="1" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Files reencoded larger than this will log an error</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+
         <xs:element type="xs:int" name="BackupDiskDifferenceInFileCountAllowedPercentage" maxOccurs="1" minOccurs="0">
           <xs:annotation>
             <xs:documentation>A bigger percentage difference than this and the backup stops</xs:documentation>

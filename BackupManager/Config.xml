@@ -57,6 +57,10 @@
   <!-- Minimum write speed in MB/s -->
   <DirectoriesMinimumWriteSpeed>20</DirectoriesMinimumWriteSpeed>
 
+  <DirectoriesMinimumReEncodeSizePercentage>60</DirectoriesMinimumReEncodeSizePercentage>
+
+  <DirectoriesMaximumReEncodeSizePercentage>90</DirectoriesMaximumReEncodeSizePercentage>
+
   <!-- Number of milliseconds between checking all the changed file notifications for folders to scan later (180) -->
   <DirectoriesProcessChangesTimer>10000</DirectoriesProcessChangesTimer>
 

@@ -383,6 +383,33 @@ public sealed class BackupFile : IEquatable<BackupFile>
     }
 
     /// <summary>
+    ///     Updates the file length of the file from the source disk. Zero byte files are allowed.
+    /// </summary>
+    public void UpdateFileLength(int min, int max)
+    {
+        Utils.TraceIn();
+        var newLength = Utils.File.GetLength(FullPath);
+
+        if (Length == 0)
+            Length = newLength;
+        else
+        {
+            if (newLength != Length)
+            {
+                // Length was non-zero before so check how much it has changed - re-encodes are typically 50%-120% of original
+                var percentOfOriginal = newLength * 100 / Length;
+
+                if (percentOfOriginal < min || percentOfOriginal > max)
+                {
+                    Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High,
+                        $"The size of {FullPath} has changed to {percentOfOriginal:0}% of the previous size.");
+                }
+            }
+        }
+        Utils.TraceOut();
+    }
+
+    /// <summary>
     ///     Checks the files hash at the source location and at the backup location match. Updates Deleted to False and
     ///     DiskChecked and ContentsHash
     ///     accordingly.
