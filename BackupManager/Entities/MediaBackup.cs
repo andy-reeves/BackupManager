@@ -499,12 +499,13 @@ public sealed class MediaBackup
         // 
         var fileName1 = Path.Combine(Path.GetDirectoryName(relativePath) ?? string.Empty, Path.GetFileNameWithoutExtension(relativePath));
         var fileName2 = fileName1.Replace("[h265]", "[h264]");
+        var fileName3 = fileName1.Replace("[h265]", "[MPEG2]");
 
         foreach (var file in BackupFiles)
         {
             var fileNameWithoutExtension = Path.Combine(Path.GetDirectoryName(relativePath) ?? string.Empty,
                 Path.GetFileNameWithoutExtension(file.FullPath) ?? string.Empty);
-            if (!fileNameWithoutExtension.EqualsAnyIgnoreCase(fileName1, fileName2)) continue;
+            if (!fileNameWithoutExtension.EqualsAnyIgnoreCase(fileName1, fileName2, fileName3)) continue;
 
             var newLength = backupFile.Length;
 
