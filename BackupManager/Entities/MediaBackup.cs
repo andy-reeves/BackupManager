@@ -509,15 +509,20 @@ public sealed class MediaBackup
             var newLength = backupFile.Length;
 
             // Length was non-zero before so check how much it has changed - re-encodes are typically 50%-120% of original
-            var percentOfOriginal = newLength * 100 / file.Length;
-
-            if (percentOfOriginal < Config.DirectoriesMinimumReEncodeSizePercentage || percentOfOriginal > Config.DirectoriesMaximumReEncodeSizePercentage)
+            // if the paths are exactly the same then don't Log anything
+            if (!file.FullPath.EqualsIgnoreCase(backupFile.FullPath))
             {
-                Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High, $"{percentOfOriginal:0}% - {backupFile.FullPath} of the previous size.");
+                var percentOfOriginal = newLength * 100 / file.Length;
+
+                if (percentOfOriginal < Config.DirectoriesMinimumReEncodeSizePercentage || percentOfOriginal > Config.DirectoriesMaximumReEncodeSizePercentage)
+                    Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High, $"{percentOfOriginal:0}% - {backupFile.FullPath} of the previous size.");
+                else
+                {
+                    // Inside the current config params for Pushover lgging so only in text log
+                    Utils.Log($"{percentOfOriginal:0}% - {backupFile.FullPath} of the previous size.");
+                }
+                Utils.Log($"Path matched is {file.FullPath} with new path {backupFile.FullPath}");
             }
-            else
-                Utils.Log($"{percentOfOriginal:0}% - {backupFile.FullPath} of the previous size.");
-            Utils.Log($"Path matched is {file.FullPath} with new path {backupFile.FullPath}");
             break;
         }
         return Utils.TraceOut(backupFile);
