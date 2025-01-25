@@ -396,14 +396,18 @@ public sealed class BackupFile : IEquatable<BackupFile>
         {
             if (newLength != Length)
             {
-                // Length was non-zero before so check how much it has changed - re-encodes are typically 50%-120% of original
-                var percentOfOriginal = newLength * 100 / Length;
-
-                if (percentOfOriginal < min || percentOfOriginal > max)
+                if (Utils.File.IsVideo(FullPath))
                 {
-                    Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High,
-                        $"The size of {FullPath} has changed to {percentOfOriginal:0}% of the previous size.");
+                    // Length was non-zero before so check how much it has changed - re-encodes are typically 50%-120% of original
+                    var percentOfOriginal = newLength * 100 / Length;
+
+                    if (percentOfOriginal < min || percentOfOriginal > max)
+                    {
+                        Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High,
+                            $"The size of {FullPath} has changed to {percentOfOriginal:0}% of the previous size.");
+                    }
                 }
+                Length = newLength;
             }
         }
         Utils.TraceOut();
