@@ -28,9 +28,7 @@ public sealed class TmdbMovie : IEquatable<TmdbMovie>
 
     public TmdbMovie() { }
 
-    public TmdbMovie(int tmdbId) : this(tmdbId, -1) { }
-
-    public TmdbMovie(int tmdbId, int runtimeInMinutes)
+    public TmdbMovie(int tmdbId, int runtimeInMinutes = -1)
     {
         id = tmdbId;
         runtime = runtimeInMinutes;

@@ -32,7 +32,7 @@ internal abstract class VideoBackupFileBase : ExtendedBackupFileBase
     // ReSharper disable once IdentifierTypo
     protected bool IsRemux { get; set; }
 
-    protected SpecialFeature SpecialFeature { get; set; }
+    public SpecialFeature SpecialFeature { get; protected set; }
 
     protected bool MediaInfoVideo3D { get; set; }
 
@@ -40,6 +40,12 @@ internal abstract class VideoBackupFileBase : ExtendedBackupFileBase
     {
         return DirectoryName.HasValue() ? Path.Combine(DirectoryName, GetFileName()) : GetFileName();
     }
+
+    /// <summary>
+    ///     Returns false if the MediaInfo could not be loaded for the video
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
 
     // ReSharper disable once FunctionComplexityOverflow
     [SuppressMessage("ReSharper", "StringLiteralTypo")]

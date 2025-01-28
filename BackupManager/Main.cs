@@ -1083,7 +1083,6 @@ internal sealed partial class Main : Form
         var files = mediaBackup.BackupFiles.Where(static bf =>
         {
             ArgumentException.ThrowIfNullOrEmpty(bf.FullPath);
-            ArgumentException.ThrowIfNullOrEmpty(bf.FullPath);
             return !bf.Deleted && (Utils.File.IsVideo(bf.FullPath) || Utils.File.IsSubtitles(bf.FullPath));
         }).ToArray();
 
@@ -1380,6 +1379,47 @@ internal sealed partial class Main : Form
 
     private void SaveButton_Click(object sender, EventArgs e)
     {
+        mediaBackup.Save(mainCt);
+    }
+
+    private void RefreshMovieRuntimesFromTmdbApi_Click(object sender, EventArgs e)
+    {
+        // refresh all TmdbId runtimes from the Api
+
+        var files = mediaBackup.BackupFiles.Where(static bf =>
+        {
+            ArgumentException.ThrowIfNullOrEmpty(bf.FullPath);
+            return !bf.Deleted && Utils.File.IsVideo(bf.FullPath) && !Utils.File.IsSpecialFeature(bf.FullPath); // && bf.FullPath.Contains("_Movies");
+        }).ToArray();
+
+        for (var index = 0; index < files.Length; index++)
+        {
+            var backupFile = files[index];
+            var fullPath = backupFile.FullPath;
+            Utils.Log($"[{index}/{files.Length}] {fullPath}");
+            if (!Utils.File.Exists(fullPath)) continue;
+
+            _ = mediaBackup.GetMovieRuntime(fullPath, false);
+        }
+        mediaBackup.Save(mainCt);
+    }
+
+    private void CheckAllMovieFilesRuntimeButton_Click(object sender, EventArgs e)
+    {
+        var files = mediaBackup.BackupFiles.Where(static bf =>
+        {
+            ArgumentException.ThrowIfNullOrEmpty(bf.FullPath);
+            return !bf.Deleted && Utils.File.IsVideo(bf.FullPath) && !Utils.File.IsSpecialFeature(bf.FullPath); // && bf.FullPath.Contains("_Movies");
+        }).ToArray();
+
+        for (var index = 0; index < files.Length; index++)
+        {
+            var fullPath = files[index].FullPath;
+            Utils.Log($"[{index}/{files.Length}] {fullPath}");
+            if (!Utils.File.Exists(fullPath)) continue;
+
+            Utils.MediaHelper.CheckRuntimeForMovie(fullPath, mediaBackup.GetMovieRuntime(fullPath));
+        }
         mediaBackup.Save(mainCt);
     }
 }

@@ -66,6 +66,8 @@
             scanDirectoriesWithChangesButton = new System.Windows.Forms.Button();
             scanLastDirectoriesButton = new System.Windows.Forms.Button();
             saveButton = new System.Windows.Forms.Button();
+            button1 = new System.Windows.Forms.Button();
+            button3 = new System.Windows.Forms.Button();
             scheduledBackupTimerButton = new System.Windows.Forms.Button();
             listFilesOnBackupDiskButton = new System.Windows.Forms.Button();
             listFilesInDirectoryButton = new System.Windows.Forms.Button();
@@ -490,7 +492,7 @@
             // 
             // button2
             // 
-            button2.Location = new System.Drawing.Point(1156, 330);
+            button2.Location = new System.Drawing.Point(1156, 318);
             button2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             button2.Name = "button2";
             button2.Size = new System.Drawing.Size(232, 27);
@@ -527,7 +529,7 @@
             // 
             // videoFilesCheckNameButton
             // 
-            videoFilesCheckNameButton.Location = new System.Drawing.Point(1156, 363);
+            videoFilesCheckNameButton.Location = new System.Drawing.Point(1156, 343);
             videoFilesCheckNameButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             videoFilesCheckNameButton.Name = "videoFilesCheckNameButton";
             videoFilesCheckNameButton.Size = new System.Drawing.Size(232, 27);
@@ -573,6 +575,28 @@
             toolTip.SetToolTip(saveButton, "Saves the media xml file if its changed");
             saveButton.UseVisualStyleBackColor = true;
             saveButton.Click += SaveButton_Click;
+            // 
+            // button1
+            // 
+            button1.Location = new System.Drawing.Point(1156, 413);
+            button1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            button1.Name = "button1";
+            button1.Size = new System.Drawing.Size(232, 27);
+            button1.TabIndex = 111;
+            button1.Text = "Refreshes Movie runtimes from TmdbAPI";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += RefreshMovieRuntimesFromTmdbApi_Click;
+            // 
+            // button3
+            // 
+            button3.Location = new System.Drawing.Point(1156, 382);
+            button3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            button3.Name = "button3";
+            button3.Size = new System.Drawing.Size(232, 27);
+            button3.TabIndex = 112;
+            button3.Text = "Check all movie files runtimes";
+            button3.UseVisualStyleBackColor = true;
+            button3.Click += CheckAllMovieFilesRuntimeButton_Click;
             // 
             // scheduledBackupTimerButton
             // 
@@ -712,7 +736,7 @@
             label2.Location = new System.Drawing.Point(2, 36);
             label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label2.Name = "label2";
-            label2.Size = new System.Drawing.Size(33, 15);
+            label2.Size = new System.Drawing.Size(34, 15);
             label2.TabIndex = 47;
             label2.Text = "Time";
             label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -1199,7 +1223,7 @@
             label10.Location = new System.Drawing.Point(68, 396);
             label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label10.Name = "label10";
-            label10.Size = new System.Drawing.Size(56, 15);
+            label10.Size = new System.Drawing.Size(57, 15);
             label10.TabIndex = 77;
             label10.Text = "Total files";
             // 
@@ -1352,13 +1376,14 @@
             // 
             // h264FilesButton
             // 
-            h264FilesButton.Location = new System.Drawing.Point(1156, 395);
+            h264FilesButton.Location = new System.Drawing.Point(1156, 367);
             h264FilesButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             h264FilesButton.Name = "h264FilesButton";
             h264FilesButton.Size = new System.Drawing.Size(232, 27);
             h264FilesButton.TabIndex = 103;
             h264FilesButton.Text = "Check all files for TV/Movies h264 size";
             h264FilesButton.UseVisualStyleBackColor = true;
+            h264FilesButton.Visible = false;
             h264FilesButton.Click += H264FilesButton_Click;
             // 
             // checkSubtitlesButton
@@ -1411,6 +1436,8 @@
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1416, 548);
+            Controls.Add(button3);
+            Controls.Add(button1);
             Controls.Add(saveButton);
             Controls.Add(removeMetadataButton);
             Controls.Add(extractChaptersButton);
@@ -1617,6 +1644,8 @@
         private System.Windows.Forms.Button extractChaptersButton;
         private System.Windows.Forms.Button removeMetadataButton;
         private System.Windows.Forms.Button saveButton;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button3;
     }
 }
 

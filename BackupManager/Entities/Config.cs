@@ -71,6 +71,8 @@ public sealed class Config
     /// </summary>
     public string BackupDisk { get; set; }
 
+    public string TmdbBearerToken { get; set; }
+
     /// <summary>
     ///     Minimum space before we throw a critical Disk space message in MB for backup disks
     /// </summary>

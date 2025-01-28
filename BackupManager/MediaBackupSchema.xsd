@@ -65,6 +65,22 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
+
+        <xs:element name="TmdbMovies">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="TmdbMovie" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:int" name="Id" maxOccurs="1" minOccurs="1" />
+                    <xs:element type="xs:int" name="Runtime" maxOccurs="1" minOccurs="1" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        
         <xs:element name="DirectoriesToScan">
           <xs:complexType>
             <xs:sequence>

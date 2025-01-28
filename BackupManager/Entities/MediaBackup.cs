@@ -56,6 +56,7 @@ public sealed class MediaBackup
         BackupDisks = [];
         DirectoriesToScan = [];
         DirectoryChanges = [];
+        TmdbMovies = [];
     }
 
     public MediaBackup(string mediaBackupPath)
@@ -76,6 +77,8 @@ public sealed class MediaBackup
     [XmlArrayItem("BackupDisk")] public Collection<BackupDisk> BackupDisks { get; set; }
 
     [XmlArrayItem("Directory")] public Collection<FileSystemEntry> DirectoriesToScan { get; set; }
+
+    [XmlArrayItem("TmdbMovie")] public Collection<TmdbMovie> TmdbMovies { get; set; }
 
     /// <summary>
     ///     The Directories that have been changed
@@ -208,7 +211,35 @@ public sealed class MediaBackup
         {
             a.Changed = false;
         }
+
+        foreach (var a in TmdbMovies)
+        {
+            a.Changed = false;
+        }
         Changed = false;
+    }
+
+    /// <summary>
+    ///     Returns the runtime in minutes for the movie specified by path. Uses the cache first or calls the TmdbAPI if it's
+    ///     not in the cache.
+    /// </summary>
+    /// <param name="path">Path to the movie file</param>
+    /// <param name="useCache">True to load from the cache</param>
+    /// <returns>-1 if the movie can't be found or the runtime in minutes</returns>
+    public int GetMovieRuntime(string path, bool useCache = true)
+    {
+        if (!Utils.File.IsVideo(path)) return -1;
+
+        var tmdbId = Utils.MediaHelper.GetTmdbId(path);
+        if (tmdbId == -1) return -1;
+
+        var m = TmdbMovies.FirstOrDefault(x => x.Id == tmdbId) ?? new TmdbMovie(tmdbId);
+        if (m.Runtime > 0 && useCache) return m.Runtime;
+
+        var r = Utils.MediaHelper.GetRuntimeFromTmdbApi(path);
+        m.Runtime = r;
+        TmdbMovies.Add(m);
+        return m.Runtime;
     }
 
     /// <summary>
@@ -310,6 +341,12 @@ public sealed class MediaBackup
             // If not marked as Changed already then check the DirectoriesToScan
             if (DirectoriesToScan.Any(static dirScan => dirScan.Changed)) Changed = true;
         }
+
+        if (!Changed)
+        {
+            // If not marked as Changed already then check the TmdbMovies
+            if (TmdbMovies.Any(static m => m.Changed)) Changed = true;
+        }
         if (!Changed) return;
 
         BackupMediaFile(ct);
@@ -367,6 +404,7 @@ public sealed class MediaBackup
     /// <returns>Null if it wasn't found or couldn't be created maybe locked by another process</returns>
     [SuppressMessage("ReSharper", "CommentTypo")]
     [SuppressMessage("ReSharper", "GrammarMistakeInComment")]
+    [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
     public BackupFile GetBackupFile(string fullPath)
     {
         Utils.TraceIn(fullPath);
@@ -496,24 +534,21 @@ public sealed class MediaBackup
 
         // Before we return the file we check to see if a file existed in the xml before that had the same relative path
         // and same name (not including the extension. We check if it existed and the name was different only by [h264] to [h265] too
-        // 
-        var fileName1 = Path.Combine(Path.GetDirectoryName(relativePath) ?? string.Empty, Path.GetFileNameWithoutExtension(relativePath));
+        var fileName1 = Path.Combine(Path.GetDirectoryName(relativePath), Path.GetFileNameWithoutExtension(relativePath));
         var fileName2 = fileName1.Replace("[h265]", "[h264]");
         var fileName3 = fileName1.Replace("[h265]", "[MPEG2]");
+        var fileNamesToCheckFor = new[] { fileName1, fileName2, fileName3 };
 
-        foreach (var file in BackupFiles)
+        foreach (var file in from file in BackupFiles
+                 let fileNameWithoutExtension = Path.Combine(Path.GetDirectoryName(relativePath), Path.GetFileNameWithoutExtension(file.FullPath))
+                 where fileNameWithoutExtension.EqualsAnyIgnoreCase(fileNamesToCheckFor)
+                 select file)
         {
-            var fileNameWithoutExtension = Path.Combine(Path.GetDirectoryName(relativePath) ?? string.Empty,
-                Path.GetFileNameWithoutExtension(file.FullPath) ?? string.Empty);
-            if (!fileNameWithoutExtension.EqualsAnyIgnoreCase(fileName1, fileName2, fileName3)) continue;
-
-            var newLength = backupFile.Length;
-
             // Length was non-zero before so check how much it has changed - re-encodes are typically 50%-120% of original
             // if the paths are exactly the same then don't Log anything
             if (!file.FullPath.EqualsIgnoreCase(backupFile.FullPath))
             {
-                var percentOfOriginal = newLength * 100 / file.Length;
+                var percentOfOriginal = backupFile.Length * 100 / file.Length;
 
                 if (percentOfOriginal < Config.DirectoriesMinimumReEncodeSizePercentage || percentOfOriginal > Config.DirectoriesMaximumReEncodeSizePercentage)
                     Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High, $"{percentOfOriginal:0}% - {backupFile.FullPath} of the previous size.");

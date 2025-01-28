@@ -8,6 +8,9 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
+using System.Net.Http;
+using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 
 using BackupManager.Entities;
 using BackupManager.Extensions;
@@ -280,6 +283,51 @@ internal static partial class Utils
             return true;
         }
 
+        /// <summary>
+        ///     Returns the TmdbId for the movie from the path provided
+        /// </summary>
+        /// <param name="path">The path to the movie file</param>
+        /// <returns>-1 if the file is not found or has no TmdbId or is a Special Feature otherwise returns the TmdbId</returns>
+        internal static int GetTmdbId(string path)
+        {
+            var file = ExtendedBackupFileBase(path);
+            if (file is not MovieBackupFile movieFile) return -1;
+            if (movieFile.SpecialFeature != SpecialFeature.None) return -1;
+            if (movieFile.TmdbId.HasNoValue()) return -1;
+
+            return Convert.ToInt32(movieFile.TmdbId);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns>-1 if not found</returns>
+        internal static int GetRuntimeFromTmdbApi(string path)
+        {
+            try
+            {
+                var tmdbId = GetTmdbId(path);
+                if (tmdbId == -1) return -1;
+
+                LogWithPushover(BackupAction.ProcessFiles, $"Getting runtime from TMDB API for {path}");
+                var httpsApiThemoviedbOrgMovieLanguageEnUs = $"https://api.themoviedb.org/3/movie/{tmdbId}?language=en-US";
+                HttpClient client = new();
+                client.DefaultRequestHeaders.Add("x-plex-token", Config.PlexToken);
+                client.DefaultRequestHeaders.Add("accept", "application/json");
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {Config.TmdbBearerToken}");
+                var task = Task.Run(() => client.GetStringAsync(httpsApiThemoviedbOrgMovieLanguageEnUs));
+                task.Wait();
+                var response = task.Result;
+                var node = JsonNode.Parse(response);
+                var runtime = node?["runtime"]?.ToString();
+                return Convert.ToInt32(runtime);
+            }
+            catch (AggregateException)
+            {
+                return -1;
+            }
+        }
+
         internal static decimal FormatAudioChannels(MediaInfoModel mediaInfo)
         {
             var audioChannels = FormatAudioChannelsFromAudioChannelPositions(mediaInfo);
@@ -474,6 +522,45 @@ internal static partial class Utils
 
             var match = _positionRegex.Match(mediaInfo.AudioChannelPositions);
             return match.Success ? decimal.Parse(match.Groups["position"].Value, NumberStyles.Number, CultureInfo.InvariantCulture) : 0;
+        }
+
+        [SuppressMessage("ReSharper", "StringLiteralTypo")]
+        internal static void CheckRuntimeForMovie(string path, int runtimeFromCache)
+        {
+            if (!File.IsVideo(path)) return;
+
+            var file = ExtendedBackupFileBase(path);
+            if (file is not MovieBackupFile movieFile) return;
+            if (movieFile.SpecialFeature != SpecialFeature.None) return;
+
+            if (!movieFile.RefreshMediaInfo())
+            {
+                LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High, $"Unable to refresh the MediaInfo for {path}");
+                return;
+            }
+
+            if (runtimeFromCache <= 0)
+            {
+                LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High, $"Unable to get the runtime for {path} from cache or Tmdb API");
+                return;
+            }
+            var fileRuntime = movieFile.MediaInfoModel.RunTime.TotalMinutes;
+            var percentage = fileRuntime * 100 / runtimeFromCache;
+
+            //TODO move 90 and 110 to config
+            switch (percentage)
+            {
+                case < 90:
+                    LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High,
+                        $"{percentage:N0}% - File = {fileRuntime:N0} mins, Cache = {runtimeFromCache:N0} mins. Runtime is incorrect for {path}");
+                    break;
+                case > 110:
+                    Log(BackupAction.ProcessFiles, $"{percentage:N0}% - File = {fileRuntime:N0} mins, Cache = {runtimeFromCache:N0} mins. Runtime is incorrect for {path}");
+                    break;
+                default:
+                    Log(BackupAction.ProcessFiles, $"{percentage:N0}% - File = {fileRuntime:N0} mins, Cache = {runtimeFromCache:N0} mins for {path}");
+                    break;
+            }
         }
     }
 }
