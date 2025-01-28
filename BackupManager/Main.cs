@@ -1418,7 +1418,8 @@ internal sealed partial class Main : Form
             Utils.Log($"[{index}/{files.Length}] {fullPath}");
             if (!Utils.File.Exists(fullPath)) continue;
 
-            Utils.MediaHelper.CheckRuntimeForMovie(fullPath, mediaBackup.GetMovieRuntime(fullPath));
+            var runtimeFromCache = mediaBackup.GetMovieRuntime(fullPath);
+            if (runtimeFromCache > -1) Utils.MediaHelper.CheckRuntimeForMovie(fullPath, runtimeFromCache);
         }
         mediaBackup.Save(mainCt);
     }

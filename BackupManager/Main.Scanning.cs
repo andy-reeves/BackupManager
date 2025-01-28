@@ -135,7 +135,8 @@ internal sealed partial class Main
         ct.ThrowIfCancellationRequested();
         if (file == null) return false;
 
-        Utils.MediaHelper.CheckRuntimeForMovie(file, mediaBackup.GetMovieRuntime(file));
+        var runtimeFromCache = mediaBackup.GetMovieRuntime(file);
+        if (runtimeFromCache > -1) Utils.MediaHelper.CheckRuntimeForMovie(file, runtimeFromCache);
         ProcessFilesUpdatePercentComplete(file);
         return true;
     }
