@@ -78,7 +78,9 @@ public sealed class MediaBackup
 
     [XmlArrayItem("Directory")] public Collection<FileSystemEntry> DirectoriesToScan { get; set; }
 
-    [XmlArrayItem("TmdbMovie")] public Collection<TmdbMovie> TmdbMovies { get; set; }
+    [XmlArrayItem("TmdbMovie")] public Collection<TmdbItem> TmdbMovies { get; set; }
+
+    [XmlArrayItem("TmdbTvEpisode")] public Collection<TmdbItem> TmdbTvEpisodes { get; set; }
 
     /// <summary>
     ///     The Directories that have been changed
@@ -216,6 +218,11 @@ public sealed class MediaBackup
         {
             a.Changed = false;
         }
+
+        foreach (var a in TmdbTvEpisodes)
+        {
+            a.Changed = false;
+        }
         Changed = false;
     }
 
@@ -233,10 +240,10 @@ public sealed class MediaBackup
         var tmdbId = Utils.MediaHelper.GetTmdbId(path);
         if (tmdbId == -1) return -1;
 
-        var m = TmdbMovies.FirstOrDefault(x => x.Id == tmdbId) ?? new TmdbMovie(tmdbId);
+        var m = TmdbMovies.FirstOrDefault(x => x.Id == tmdbId.ToString()) ?? new TmdbItem(tmdbId.ToString());
         if (m.Runtime > 0 && useCache) return m.Runtime;
 
-        var r = Utils.MediaHelper.GetRuntimeFromTmdbApi(path);
+        var r = Utils.MediaHelper.GetMovieRuntimeFromTmdbApi(tmdbId);
         m.Runtime = r;
         TmdbMovies.Add(m);
         return m.Runtime;
@@ -346,6 +353,12 @@ public sealed class MediaBackup
         {
             // If not marked as Changed already then check the TmdbMovies
             if (TmdbMovies.Any(static m => m.Changed)) Changed = true;
+        }
+
+        if (!Changed)
+        {
+            // If not marked as Changed already then check the TmdbTvEpisodes
+            if (TmdbTvEpisodes.Any(static m => m.Changed)) Changed = true;
         }
         if (!Changed) return;
 
@@ -551,13 +564,13 @@ public sealed class MediaBackup
                 var percentOfOriginal = backupFile.Length * 100 / file.Length;
 
                 if (percentOfOriginal < Config.DirectoriesMinimumReEncodeSizePercentage || percentOfOriginal > Config.DirectoriesMaximumReEncodeSizePercentage)
-                    Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High, $"{percentOfOriginal:0}% - {backupFile.FullPath} of the previous size.");
+                    Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High, $"{percentOfOriginal:0}% - {backupFile.FullPath} of the previous size");
                 else
                 {
                     // Inside the current config params for Pushover lgging so only in text log
-                    Utils.Log($"{percentOfOriginal:0}% - {backupFile.FullPath} of the previous size.");
+                    Utils.Log(BackupAction.ProcessFiles, $"{percentOfOriginal:0}% - {backupFile.FullPath} of the previous size");
                 }
-                Utils.Log($"Path matched is {file.FullPath} with new path {backupFile.FullPath}");
+                Utils.Log(BackupAction.ProcessFiles, $"Matched {file.FullPath} with new path {backupFile.FullPath}");
             }
             break;
         }
@@ -769,5 +782,35 @@ public sealed class MediaBackup
 
         _ = BackupFiles.Remove(backupFile);
         Changed = true;
+    }
+
+    public int GetTvEpisodeRuntime(string path, bool useCache = true)
+    {
+        if (!Utils.File.IsVideo(path)) return -1;
+
+        var id = Utils.MediaHelper.GetTvdbInfo(path, out var seasonNumber, out var episodeNumber);
+
+        // season 0 is the specials
+        if (id == -1 || seasonNumber == 0) return -1;
+
+        var compoundId = $"{id}:{seasonNumber}:{episodeNumber}";
+        var m = TmdbTvEpisodes.FirstOrDefault(x => x.Id == compoundId) ?? new TmdbItem(compoundId);
+        if (m.Runtime > 0 && useCache) return m.Runtime;
+
+        var r = Utils.MediaHelper.GetRuntimeForTvEpisodeFromTmdbApi(id, seasonNumber, episodeNumber);
+        m.Runtime = r;
+        TmdbTvEpisodes.Add(m);
+        return m.Runtime;
+    }
+
+    internal int GetVideoRuntime(string path)
+    {
+        if (!Utils.File.IsVideo(path)) return -1;
+
+        var file = Utils.MediaHelper.ExtendedBackupFileBase(path);
+        if (file is not VideoBackupFileBase videoFile) return -1;
+        if (videoFile.SpecialFeature != SpecialFeature.None) return -1;
+
+        return videoFile is MovieBackupFile ? GetMovieRuntime(path) : GetTvEpisodeRuntime(path);
     }
 }

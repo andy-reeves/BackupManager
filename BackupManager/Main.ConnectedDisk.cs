@@ -342,7 +342,6 @@ internal sealed partial class Main
                     Utils.TraceOut();
                     return;
                 }
-                Utils.Log("Checking LastWriteTime on files as the hash codes are different");
 
                 // check the LastWriteTime and if its different delete the file from the backup disk so that it will be copied again
                 // We Update the LastWriteTime from disk in case it's not been scanned since it changed

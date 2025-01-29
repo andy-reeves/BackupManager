@@ -219,7 +219,7 @@ internal sealed partial class Main
 
             foreach (var link in linksDeleted)
             {
-                Utils.Log($"Symbolic link {link} deleted");
+                Utils.Log(BackupAction.CheckingSymbolicLinks, $"Symbolic link {link} deleted");
             }
         }
         Utils.LogWithPushover(BackupAction.CheckingSymbolicLinks, Resources.Completed);

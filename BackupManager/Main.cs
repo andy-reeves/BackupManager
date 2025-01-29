@@ -1409,7 +1409,7 @@ internal sealed partial class Main : Form
         var files = mediaBackup.BackupFiles.Where(static bf =>
         {
             ArgumentException.ThrowIfNullOrEmpty(bf.FullPath);
-            return !bf.Deleted && Utils.File.IsVideo(bf.FullPath) && !Utils.File.IsSpecialFeature(bf.FullPath); // && bf.FullPath.Contains("_Movies");
+            return !bf.Deleted && Utils.File.IsVideo(bf.FullPath) && !Utils.File.IsSpecialFeature(bf.FullPath) && bf.FullPath.Contains("_Movies");
         }).ToArray();
 
         for (var index = 0; index < files.Length; index++)
@@ -1419,7 +1419,28 @@ internal sealed partial class Main : Form
             if (!Utils.File.Exists(fullPath)) continue;
 
             var runtimeFromCache = mediaBackup.GetMovieRuntime(fullPath);
-            if (runtimeFromCache > -1) Utils.MediaHelper.CheckRuntimeForMovie(fullPath, runtimeFromCache);
+            if (runtimeFromCache > -1) Utils.MediaHelper.CheckRuntimeForMovieOrTvEpisode(fullPath, runtimeFromCache);
+        }
+        mediaBackup.Save(mainCt);
+    }
+
+    private void button4_Click(object sender, EventArgs e)
+    {
+        var files = mediaBackup.BackupFiles.Where(static bf =>
+        {
+            ArgumentException.ThrowIfNullOrEmpty(bf.FullPath);
+            return !bf.Deleted && Utils.File.IsVideo(bf.FullPath) && !Utils.File.IsSpecialFeature(bf.FullPath) && bf.FullPath.Contains("_TV");
+        }).ToArray();
+
+        for (var index = 0; index < files.Length; index++)
+        {
+            var fullPath = files[index].FullPath;
+            Utils.Log($"[{index}/{files.Length}] {fullPath}");
+            if (!Utils.File.Exists(fullPath)) continue;
+
+            var runtimeFromCache = mediaBackup.GetTvEpisodeRuntime(fullPath);
+            if (runtimeFromCache > -1) Utils.MediaHelper.CheckRuntimeForMovieOrTvEpisode(fullPath, runtimeFromCache);
+            if (index % 500 == 0) mediaBackup.Save(mainCt);
         }
         mediaBackup.Save(mainCt);
     }

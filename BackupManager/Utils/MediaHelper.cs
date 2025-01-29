@@ -299,20 +299,39 @@ internal static partial class Utils
         }
 
         /// <summary>
+        ///     Returns the TvdbId for the TV series from the path provided
         /// </summary>
-        /// <param name="path"></param>
-        /// <returns>-1 if not found</returns>
-        internal static int GetRuntimeFromTmdbApi(string path)
+        /// <param name="path">The path to the TV episode file</param>
+        /// <param name="seasonNumber"></param>
+        /// <param name="episodeNumber"></param>
+        /// <returns>
+        ///     -1 if the file is not found or has no TvdbId or is a Special Feature otherwise returns the TvdbId. If  the
+        ///     episode is a range of episodes like e01-e03 then we return -1
+        /// </returns>
+        internal static int GetTvdbInfo(string path, out int seasonNumber, out int episodeNumber)
+        {
+            seasonNumber = -1;
+            episodeNumber = -1;
+            var file = ExtendedBackupFileBase(path);
+            if (file is not TvEpisodeBackupFile tvEpisodeBackupFile) return -1;
+            if (tvEpisodeBackupFile.SpecialFeature != SpecialFeature.None) return -1;
+            if (tvEpisodeBackupFile.TvdbId.HasNoValue()) return -1;
+
+            seasonNumber = Convert.ToInt32(tvEpisodeBackupFile.Season);
+            var result = int.TryParse(tvEpisodeBackupFile.Episode.Substring(1), out var parsedResult);
+            if (result) episodeNumber = parsedResult;
+            return Convert.ToInt32(tvEpisodeBackupFile.TvdbId);
+        }
+
+        internal static int GetMovieRuntimeFromTmdbApi(int tmdbId)
         {
             try
             {
-                var tmdbId = GetTmdbId(path);
                 if (tmdbId == -1) return -1;
 
-                LogWithPushover(BackupAction.ProcessFiles, $"Getting runtime from TMDB API for {path}");
+                LogWithPushover(BackupAction.ProcessFiles, $"Getting runtime from TMDB API for {tmdbId}");
                 var httpsApiThemoviedbOrgMovieLanguageEnUs = $"https://api.themoviedb.org/3/movie/{tmdbId}?language=en-US";
                 HttpClient client = new();
-                client.DefaultRequestHeaders.Add("x-plex-token", Config.PlexToken);
                 client.DefaultRequestHeaders.Add("accept", "application/json");
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {Config.TmdbBearerToken}");
                 var task = Task.Run(() => client.GetStringAsync(httpsApiThemoviedbOrgMovieLanguageEnUs));
@@ -525,15 +544,15 @@ internal static partial class Utils
         }
 
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
-        internal static void CheckRuntimeForMovie(string path, int runtimeFromCache)
+        internal static void CheckRuntimeForMovieOrTvEpisode(string path, int runtimeFromCache)
         {
             if (!File.IsVideo(path)) return;
 
             var file = ExtendedBackupFileBase(path);
-            if (file is not MovieBackupFile movieFile) return;
-            if (movieFile.SpecialFeature != SpecialFeature.None) return;
+            if (file is not VideoBackupFileBase videoFile) return;
+            if (videoFile.SpecialFeature != SpecialFeature.None) return;
 
-            if (!movieFile.RefreshMediaInfo())
+            if (!videoFile.RefreshMediaInfo())
             {
                 LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High, $"Unable to refresh the MediaInfo for {path}");
                 return;
@@ -541,16 +560,16 @@ internal static partial class Utils
 
             if (runtimeFromCache <= 0)
             {
-                LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High, $"Unable to get the runtime for {path} from cache or Tmdb API");
+                Log(BackupAction.ProcessFiles, $"Unable to get the runtime for {path} from cache or Tmdb Api");
                 return;
             }
-            var fileRuntime = movieFile.MediaInfoModel.RunTime.TotalMinutes;
+            var fileRuntime = videoFile.MediaInfoModel.RunTime.TotalMinutes;
             var percentage = fileRuntime * 100 / runtimeFromCache;
 
             //TODO move 90 and 110 to config
             switch (percentage)
             {
-                case < 90:
+                case < 50:
                     LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High,
                         $"{percentage:N0}% - File = {fileRuntime:N0} mins, Cache = {runtimeFromCache:N0} mins. Runtime is incorrect for {path}");
                     break;
@@ -560,6 +579,46 @@ internal static partial class Utils
                 default:
                     Log(BackupAction.ProcessFiles, $"{percentage:N0}% - File = {fileRuntime:N0} mins, Cache = {runtimeFromCache:N0} mins for {path}");
                     break;
+            }
+        }
+
+        internal static int GetRuntimeForTvEpisodeFromTmdbApi(int tvdbId, int seasonNumber, int episodeNumber)
+        {
+            try
+            {
+                if (tvdbId == -1) return -1;
+
+                Log(BackupAction.ProcessFiles, $"Getting runtime from TMDB API for {tvdbId}, season {seasonNumber}, episode {episodeNumber}");
+                var findApi = $"https://api.themoviedb.org/3/find/{tvdbId}?external_source=tvdb_id";
+                HttpClient client = new();
+                client.DefaultRequestHeaders.Add("accept", "application/json");
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {Config.TmdbBearerToken}");
+                var client1 = client;
+                var task = Task.Run(() => client1.GetStringAsync(findApi));
+                task.Wait();
+                var response = task.Result;
+                var node = JsonNode.Parse(response);
+                var id = node?["tv_results"]?[0]?["id"]?.ToString();
+                var url = $"https://api.themoviedb.org/3/tv/{id}/season/{seasonNumber}/episode/{episodeNumber}?language=en-US";
+
+                //TODO reuse client
+                client = new HttpClient();
+                client.DefaultRequestHeaders.Add("accept", "application/json");
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {Config.TmdbBearerToken}");
+                task = Task.Run(() => client.GetStringAsync(url));
+                task.Wait();
+                response = task.Result;
+                node = JsonNode.Parse(response);
+                var runtime = node?["runtime"]?.ToString();
+                return Convert.ToInt32(runtime);
+            }
+            catch (AggregateException)
+            {
+                return -1;
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return -1;
             }
         }
     }

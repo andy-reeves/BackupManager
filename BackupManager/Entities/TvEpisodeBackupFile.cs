@@ -58,6 +58,9 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
         }
     }
 
+    /// <summary>
+    ///     The episode number like 'e04'. To preserve any leading '0' we keep as a string. It could be e01, e01e03, or e14-e15
+    /// </summary>
     public string Episode { get; set; }
 
     public string Season { get; set; }

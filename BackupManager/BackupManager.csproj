@@ -29,6 +29,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="ConfigSchema.xsd" />
+    <None Remove="MediaBackup - Copy.xml" />
     <None Remove="MediaBackupSchema.xsd" />
     <None Remove="RulesSchema.xsd" />
   </ItemGroup>
