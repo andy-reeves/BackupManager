@@ -1443,6 +1443,7 @@
             button4.TabIndex = 113;
             button4.Text = "Refreshes TV runtimes from TmdbAPI";
             button4.UseVisualStyleBackColor = true;
+            button4.Visible = false;
             button4.Click += button4_Click;
             // 
             // Main
