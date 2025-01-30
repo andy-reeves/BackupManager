@@ -586,6 +586,7 @@
             button1.TabIndex = 111;
             button1.Text = "Refreshes Movie runtimes from TmdbAPI";
             button1.UseVisualStyleBackColor = true;
+            button1.Visible = false;
             button1.Click += RefreshMovieRuntimesFromTmdbApi_Click;
             // 
             // button3
@@ -597,6 +598,7 @@
             button3.TabIndex = 112;
             button3.Text = "Check all movie files runtimes";
             button3.UseVisualStyleBackColor = true;
+            button3.Visible = false;
             button3.Click += CheckAllMovieFilesRuntimeButton_Click;
             // 
             // scheduledBackupTimerButton

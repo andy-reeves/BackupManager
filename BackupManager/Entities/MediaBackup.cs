@@ -176,6 +176,7 @@ public sealed class MediaBackup
                 mediaBackup.indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
                 if (!backupFile.DiskCheckedTime.HasValue || backupFile.Disk.HasNoValue()) backupFile.ClearDiskChecked();
             }
+            CheckMovieAndTvForDuplicates(mediaBackup);
             mediaBackup.ClearChanged();
             return mediaBackup;
         }
@@ -186,6 +187,46 @@ public sealed class MediaBackup
         catch (XmlSchemaValidationException ex)
         {
             throw new ApplicationException(string.Format(Resources.UnableToLoadXml, "MediaBackup.xml failed validation", ex));
+        }
+    }
+
+    private static void CheckMovieAndTvForDuplicates(MediaBackup mediaBackup)
+    {
+        // check the tv runtime cache results
+        var dictionary = new Dictionary<string, TmdbItem>();
+
+        for (var index = mediaBackup.TmdbTvEpisodes.Count - 1; index >= 0; index--)
+        {
+            var episode = mediaBackup.TmdbTvEpisodes[index];
+            var key = episode.Id.Split(':');
+
+            // key[1]==0 is the Specials folder which we don't check
+            if (key[2] == "-1" || key[1] == "-1" || key[0] == "-1" || key[1] == "0")
+                mediaBackup.TmdbTvEpisodes.Remove(episode);
+            else
+            {
+                var result = dictionary.TryAdd(episode.Id, episode);
+
+                if (!result)
+                {
+                    // remove the episode
+                    mediaBackup.TmdbTvEpisodes.Remove(episode);
+                }
+            }
+        }
+        var dictionary2 = new Dictionary<string, TmdbItem>();
+
+        // check the movie runtime cache results
+        for (var index = mediaBackup.TmdbMovies.Count - 1; index >= 0; index--)
+        {
+            var m = mediaBackup.TmdbMovies[index];
+            var result = dictionary2.TryAdd(m.Id, m);
+
+            if (!result)
+            {
+                // remove the movie
+                mediaBackup.TmdbMovies.Remove(m);
+            }
         }
     }
 
@@ -797,7 +838,7 @@ public sealed class MediaBackup
         var m = TmdbTvEpisodes.FirstOrDefault(x => x.Id == compoundId) ?? new TmdbItem(compoundId);
         if (m.Runtime > 0 && useCache) return m.Runtime;
 
-        var r = Utils.MediaHelper.GetRuntimeForTvEpisodeFromTmdbApi(id, seasonNumber, episodeNumber);
+        var r = Utils.MediaHelper.GetTvEpisodeRuntimeFromTmdbApi(id, seasonNumber, episodeNumber);
         m.Runtime = r;
         TmdbTvEpisodes.Add(m);
         return m.Runtime;

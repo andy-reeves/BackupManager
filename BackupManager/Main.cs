@@ -1389,7 +1389,7 @@ internal sealed partial class Main : Form
         var files = mediaBackup.BackupFiles.Where(static bf =>
         {
             ArgumentException.ThrowIfNullOrEmpty(bf.FullPath);
-            return !bf.Deleted && Utils.File.IsVideo(bf.FullPath) && !Utils.File.IsSpecialFeature(bf.FullPath); // && bf.FullPath.Contains("_Movies");
+            return !bf.Deleted && Utils.File.IsVideo(bf.FullPath) && !Utils.File.IsSpecialFeature(bf.FullPath) && bf.FullPath.Contains("_Movies");
         }).ToArray();
 
         for (var index = 0; index < files.Length; index++)

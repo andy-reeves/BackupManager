@@ -318,8 +318,13 @@ internal static partial class Utils
             if (tvEpisodeBackupFile.TvdbId.HasNoValue()) return -1;
 
             seasonNumber = Convert.ToInt32(tvEpisodeBackupFile.Season);
-            var result = int.TryParse(tvEpisodeBackupFile.Episode.Substring(1), out var parsedResult);
-            if (result) episodeNumber = parsedResult;
+            var result = int.TryParse(tvEpisodeBackupFile.Episode[1..], out var parsedResult);
+
+            if (result)
+                episodeNumber = parsedResult;
+            else
+                return -1;
+
             return Convert.ToInt32(tvEpisodeBackupFile.TvdbId);
         }
 
@@ -582,19 +587,18 @@ internal static partial class Utils
             }
         }
 
-        internal static int GetRuntimeForTvEpisodeFromTmdbApi(int tvdbId, int seasonNumber, int episodeNumber)
+        internal static int GetTvEpisodeRuntimeFromTmdbApi(int tvdbId, int seasonNumber, int episodeNumber)
         {
             try
             {
                 if (tvdbId == -1) return -1;
 
-                Log(BackupAction.ProcessFiles, $"Getting runtime from TMDB API for {tvdbId}, season {seasonNumber}, episode {episodeNumber}");
+                LogWithPushover(BackupAction.ProcessFiles, $"Getting runtime from TMDB API for {tvdbId}, season {seasonNumber}, episode {episodeNumber}");
                 var findApi = $"https://api.themoviedb.org/3/find/{tvdbId}?external_source=tvdb_id";
                 HttpClient client = new();
                 client.DefaultRequestHeaders.Add("accept", "application/json");
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {Config.TmdbBearerToken}");
-                var client1 = client;
-                var task = Task.Run(() => client1.GetStringAsync(findApi));
+                var task = Task.Run(() => client.GetStringAsync(findApi));
                 task.Wait();
                 var response = task.Result;
                 var node = JsonNode.Parse(response);
@@ -602,9 +606,9 @@ internal static partial class Utils
                 var url = $"https://api.themoviedb.org/3/tv/{id}/season/{seasonNumber}/episode/{episodeNumber}?language=en-US";
 
                 //TODO reuse client
-                client = new HttpClient();
-                client.DefaultRequestHeaders.Add("accept", "application/json");
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {Config.TmdbBearerToken}");
+                //client = new HttpClient();
+                //client.DefaultRequestHeaders.Add("accept", "application/json");
+                // client.DefaultRequestHeaders.Add("Authorization", $"Bearer {Config.TmdbBearerToken}");
                 task = Task.Run(() => client.GetStringAsync(url));
                 task.Wait();
                 response = task.Result;
