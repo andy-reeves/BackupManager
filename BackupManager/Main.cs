@@ -909,7 +909,14 @@ internal sealed partial class Main : Form
             fileCounts[index] = mediaBackup.DirectoryScans.Where(s => s.Id == scanIdsList[index] && s.TypeOfScan == scanType)
                 .Sum(static directoryScan => directoryScan.TotalFiles);
         }
-        fileCountsLine = fileCounts.Where(static aTotal => aTotal > -1).Aggregate(fileCountsLine, static (current, aTotal) => current + $"{aTotal,columnWidth:n0}");
+
+        foreach (var aTotal in fileCounts)
+        {
+            if (aTotal == 0)
+                fileCountsLine += $"{' ',columnWidth:n0}";
+            else
+                fileCountsLine += $"{aTotal,columnWidth:n0}";
+        }
 
         lapsedTimeLine = lapsedTime.Where(static aTotal => aTotal > TimeSpan.FromSeconds(0))
             .Aggregate(lapsedTimeLine, static (current, aTotal) => current + $"{Utils.FormatTimeSpanMinutesOnly(aTotal),columnWidth}");
@@ -1420,9 +1427,8 @@ internal sealed partial class Main : Form
 
             var runtimeFromCache = mediaBackup.GetMovieRuntime(fullPath);
 
-            if (runtimeFromCache > -1)
-                Utils.MediaHelper.CheckRuntimeForMovieOrTvEpisode(fullPath, runtimeFromCache, config.VideoMinimumPercentageDifferenceForRuntime,
-                    config.VideoMaximumPercentageDifferenceForRuntime, true);
+            Utils.MediaHelper.CheckRuntimeForMovieOrTvEpisode(fullPath, runtimeFromCache, config.VideoMinimumPercentageDifferenceForRuntime,
+                config.VideoMaximumPercentageDifferenceForRuntime, true);
         }
         mediaBackup.Save(mainCt);
     }
@@ -1443,9 +1449,8 @@ internal sealed partial class Main : Form
 
             var runtimeFromCache = mediaBackup.GetTvEpisodeRuntime(fullPath);
 
-            if (runtimeFromCache > -1)
-                Utils.MediaHelper.CheckRuntimeForMovieOrTvEpisode(fullPath, runtimeFromCache, config.VideoMinimumPercentageDifferenceForRuntime,
-                    config.VideoMaximumPercentageDifferenceForRuntime, true);
+            Utils.MediaHelper.CheckRuntimeForMovieOrTvEpisode(fullPath, runtimeFromCache, config.VideoMinimumPercentageDifferenceForRuntime,
+                config.VideoMaximumPercentageDifferenceForRuntime, true);
             if (index % 500 == 0) mediaBackup.Save(mainCt);
         }
         mediaBackup.Save(mainCt);

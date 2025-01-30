@@ -68,12 +68,6 @@ public sealed class MediaBackup
 
     [XmlIgnore] public Config Config { get; set; }
 
-    /// <summary>
-    ///     This is True if any data has changed, and we need to Save.
-    /// </summary>
-    [XmlIgnore]
-    public bool Changed { get; set; }
-
     [XmlArrayItem("BackupFile")] public Collection<BackupFile> BackupFiles { get; set; }
 
     [XmlArrayItem("BackupDisk")] public Collection<BackupDisk> BackupDisks { get; set; }
@@ -100,13 +94,7 @@ public sealed class MediaBackup
     {
         get => directoriesLastFullScan.HasValue() ? directoriesLastFullScan : string.Empty;
 
-        set
-        {
-            if (directoriesLastFullScan == value) return;
-
-            directoriesLastFullScan = value;
-            Changed = true;
-        }
+        set => directoriesLastFullScan = value;
     }
 
     /// <summary>
@@ -294,7 +282,6 @@ public sealed class MediaBackup
             if (scanIdsToKeep.Contains(scan.Id)) continue;
 
             DirectoryScans.RemoveAt(i);
-            Changed = true;
         }
         Utils.TraceOut();
     }
@@ -320,7 +307,9 @@ public sealed class MediaBackup
             index--;
             if (index < 0) break;
         }
-        return Utils.TraceOut(list);
+
+        // Trim the list of empty entries
+        return Utils.TraceOut(list.Where(static a => a.HasValue()).ToArray());
     }
 
     /// <summary>
@@ -510,7 +499,6 @@ public sealed class MediaBackup
         Utils.Trace($"Adding backup file {backupFile.RelativePath}");
         BackupFiles.Add(backupFile);
         indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
-        Changed = true;
 
         // Is thefile a video file we check for old files and size changes
         if (!Utils.File.IsVideo(fullPath)) return Utils.TraceOut(backupFile);
@@ -743,15 +731,10 @@ public sealed class MediaBackup
     /// <param name="backupFile"></param>
     internal void RemoveFile(BackupFile backupFile)
     {
-        if (indexFolderAndRelativePath.ContainsKey(backupFile.Hash))
-        {
-            _ = indexFolderAndRelativePath.Remove(backupFile.Hash);
-            Changed = true;
-        }
+        if (indexFolderAndRelativePath.ContainsKey(backupFile.Hash)) _ = indexFolderAndRelativePath.Remove(backupFile.Hash);
         if (!BackupFiles.Contains(backupFile)) return;
 
         _ = BackupFiles.Remove(backupFile);
-        Changed = true;
     }
 
     public int GetTvEpisodeRuntime(string path, bool useCache = true)
