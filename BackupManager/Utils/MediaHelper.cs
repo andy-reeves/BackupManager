@@ -578,7 +578,7 @@ internal static partial class Utils
                     Log(BackupAction.ProcessFiles, $"{percentage:N0}% - File = {fileRuntime:N0} mins, Cache = {runtimeFromCache:N0} mins. Runtime is incorrect for {path}");
             }
             else
-                Log(BackupAction.ProcessFiles, $"{percentage:N0}% - File = {fileRuntime:N0} mins, Cache = {runtimeFromCache:N0} mins for {path}");
+                Trace($"{percentage:N0}% - File = {fileRuntime:N0} mins, Cache = {runtimeFromCache:N0} mins for {path}");
         }
 
         internal static int GetTvEpisodeRuntimeFromTmdbApi(int tvdbId, int seasonNumber, int episodeNumber)
