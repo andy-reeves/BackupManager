@@ -177,7 +177,7 @@
       <PathToTarget>$1</PathToTarget>
     </SymbolicLink>
   </SymbolicLinks>
-  
+
   <VideoMinimumPercentageDifferenceForRuntime>65</VideoMinimumPercentageDifferenceForRuntime>
 
   <VideoMaximumPercentageDifferenceForRuntime>92</VideoMaximumPercentageDifferenceForRuntime>

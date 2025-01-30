@@ -86,6 +86,8 @@ internal sealed partial class Main
     /// <param name="scanPathForVideoCodec"></param>
     /// <param name="autoScan"></param>
     /// <param name="ct"></param>
+
+    // ReSharper disable once FunctionComplexityOverflow
     private bool ProcessFilesInternal(IEnumerable<string> filesParam, string scanId, bool scanPathForVideoCodec, bool autoScan, CancellationToken ct)
     {
         Utils.TraceIn();
