@@ -334,7 +334,7 @@ internal static partial class Utils
             {
                 if (tmdbId == -1) return -1;
 
-                LogWithPushover(BackupAction.ProcessFiles, $"Getting runtime from TMDB API for {tmdbId}");
+                Log(BackupAction.ProcessFiles, $"Getting runtime from TMDB API for {tmdbId}");
                 var httpsApiThemoviedbOrgMovieLanguageEnUs = $"https://api.themoviedb.org/3/movie/{tmdbId}?language=en-US";
                 HttpClient client = new();
                 client.DefaultRequestHeaders.Add("accept", "application/json");
@@ -549,7 +549,7 @@ internal static partial class Utils
         }
 
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
-        internal static void CheckRuntimeForMovieOrTvEpisode(string path, int runtimeFromCache)
+        internal static void CheckRuntimeForMovieOrTvEpisode(string path, int runtimeFromCache, bool logToPushover = false)
         {
             if (!File.IsVideo(path)) return;
 
@@ -571,12 +571,20 @@ internal static partial class Utils
             var fileRuntime = videoFile.MediaInfoModel.RunTime.TotalMinutes;
             var percentage = fileRuntime * 100 / runtimeFromCache;
 
-            //TODO move 90 and 110 to config
+            //TODO move % to config
             switch (percentage)
             {
-                case < 50:
-                    LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High,
-                        $"{percentage:N0}% - File = {fileRuntime:N0} mins, Cache = {runtimeFromCache:N0} mins. Runtime is incorrect for {path}");
+                case < 40:
+                    if (logToPushover)
+                    {
+                        LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High,
+                            $"{percentage:N0}% - File = {fileRuntime:N0} mins, Cache = {runtimeFromCache:N0} mins. Runtime is incorrect for {path}");
+                    }
+                    else
+                    {
+                        Log(BackupAction.ProcessFiles,
+                            $"{percentage:N0}% - File = {fileRuntime:N0} mins, Cache = {runtimeFromCache:N0} mins. Runtime is incorrect for {path}");
+                    }
                     break;
                 case > 110:
                     Log(BackupAction.ProcessFiles, $"{percentage:N0}% - File = {fileRuntime:N0} mins, Cache = {runtimeFromCache:N0} mins. Runtime is incorrect for {path}");
@@ -593,7 +601,7 @@ internal static partial class Utils
             {
                 if (tvdbId == -1) return -1;
 
-                LogWithPushover(BackupAction.ProcessFiles, $"Getting runtime from TMDB API for {tvdbId}, season {seasonNumber}, episode {episodeNumber}");
+                Log(BackupAction.ProcessFiles, $"Getting runtime from TMDB API for {tvdbId}, season {seasonNumber}, episode {episodeNumber}");
                 var findApi = $"https://api.themoviedb.org/3/find/{tvdbId}?external_source=tvdb_id";
                 HttpClient client = new();
                 client.DefaultRequestHeaders.Add("accept", "application/json");
@@ -604,11 +612,6 @@ internal static partial class Utils
                 var node = JsonNode.Parse(response);
                 var id = node?["tv_results"]?[0]?["id"]?.ToString();
                 var url = $"https://api.themoviedb.org/3/tv/{id}/season/{seasonNumber}/episode/{episodeNumber}?language=en-US";
-
-                //TODO reuse client
-                //client = new HttpClient();
-                //client.DefaultRequestHeaders.Add("accept", "application/json");
-                // client.DefaultRequestHeaders.Add("Authorization", $"Bearer {Config.TmdbBearerToken}");
                 task = Task.Run(() => client.GetStringAsync(url));
                 task.Wait();
                 response = task.Result;

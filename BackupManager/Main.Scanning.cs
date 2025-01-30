@@ -39,7 +39,7 @@ internal sealed partial class Main
         var subDirectoryText = searchOption == SearchOption.TopDirectoryOnly ? "directories only" : "and subdirectories";
         Utils.Trace($"{directoryToCheck} {subDirectoryText}");
         var scanId = Guid.NewGuid().ToString();
-        return ProcessFiles(files, scanId, scanPathForVideoCodec, ct);
+        return ProcessFiles(files, scanId, scanPathForVideoCodec, true, ct);
     }
 
     /// <summary>
@@ -48,9 +48,10 @@ internal sealed partial class Main
     /// <param name="filesParam"></param>
     /// <param name="scanId"></param>
     /// <param name="scanPathForVideoCodec"></param>
+    /// <param name="autoScan"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    private bool ProcessFiles(IReadOnlyCollection<string> filesParam, string scanId, bool scanPathForVideoCodec, CancellationToken ct)
+    private bool ProcessFiles(IReadOnlyCollection<string> filesParam, string scanId, bool scanPathForVideoCodec, bool autoScan, CancellationToken ct)
     {
         Utils.TraceIn();
         DisableControlsForAsyncTasks(ct);
@@ -64,7 +65,7 @@ internal sealed partial class Main
 
         // One process thread for each disk that has files on it to scan
         tasks.AddRange(disksAndFirstDirectories.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam)).Select(files =>
-            TaskWrapper(Task.Run(() => files == null || files.Length == 0 || ProcessFilesInternal(files, scanId, scanPathForVideoCodec, ct), ct), ct)));
+            TaskWrapper(Task.Run(() => files == null || files.Length == 0 || ProcessFilesInternal(files, scanId, scanPathForVideoCodec, autoScan, ct), ct), ct)));
 
         // this is to have only 1 thread processing files
         // tasks.Add(TaskWrapper(Task.Run(() => ProcessFilesInternal(filesParam.ToArray(), scanId, scanPathForVideoCodec, ct), ct), ct));
@@ -83,8 +84,9 @@ internal sealed partial class Main
     /// <param name="filesParam"></param>
     /// <param name="scanId"></param>
     /// <param name="scanPathForVideoCodec"></param>
+    /// <param name="autoScan"></param>
     /// <param name="ct"></param>
-    private bool ProcessFilesInternal(IEnumerable<string> filesParam, string scanId, bool scanPathForVideoCodec, CancellationToken ct)
+    private bool ProcessFilesInternal(IEnumerable<string> filesParam, string scanId, bool scanPathForVideoCodec, bool autoScan, CancellationToken ct)
     {
         Utils.TraceIn();
 
@@ -104,7 +106,7 @@ internal sealed partial class Main
 
             try
             {
-                if (!ProcessFilesInternalFinal(scanPathForVideoCodec, ct, ref file)) continue;
+                if (!ProcessFilesInternalFinal(scanPathForVideoCodec, ct, ref file, autoScan)) continue;
 
                 directoryScanning = DirectoryScanning(scanId, file, directoryScanning, files, ref firstDir, ref scanInfo);
                 UpdateStatusLabel(ct, string.Format(Resources.Processing, Path.GetDirectoryName(file)), fileCounterForMultiThreadProcessing);
@@ -125,7 +127,7 @@ internal sealed partial class Main
         return Utils.TraceOut(true);
     }
 
-    private bool ProcessFilesInternalFinal(bool scanPathForVideoCodec, CancellationToken ct, ref string file)
+    private bool ProcessFilesInternalFinal(bool scanPathForVideoCodec, CancellationToken ct, ref string file, bool autoScan)
     {
         if (!ProcessFilesMaxPathCheck(file)) return false;
         if (!ProcessFilesFixedSpaceCheck(ref file)) return false;
@@ -136,7 +138,7 @@ internal sealed partial class Main
         if (file == null) return false;
 
         var runtimeFromCache = mediaBackup.GetVideoRuntime(file);
-        if (runtimeFromCache > -1) Utils.MediaHelper.CheckRuntimeForMovieOrTvEpisode(file, runtimeFromCache);
+        if (runtimeFromCache > -1) Utils.MediaHelper.CheckRuntimeForMovieOrTvEpisode(file, runtimeFromCache, autoScan);
         ProcessFilesUpdatePercentComplete(file);
         return true;
     }
@@ -414,7 +416,7 @@ internal sealed partial class Main
         mediaBackup.ClearFlags();
         Utils.LogWithPushover(BackupAction.ScanDirectory, $"Rename Video Files For Full Scans is {config.DirectoriesRenameVideoFilesForFullScansOnOff}");
 
-        if (!ProcessFiles(fileBlockingCollection, scanId, config.DirectoriesRenameVideoFilesForFullScansOnOff, ct))
+        if (!ProcessFiles(fileBlockingCollection, scanId, config.DirectoriesRenameVideoFilesForFullScansOnOff, false, ct))
             Utils.LogWithPushover(BackupAction.ScanDirectory, Resources.ScanDirectoriesFailed);
         else
         {
@@ -478,7 +480,7 @@ internal sealed partial class Main
             var files = mediaBackup.BackupFiles.Where(static file => !file.Deleted).Select(static file => file.FullPath).ToList();
             var scanId = Guid.NewGuid().ToString();
             mediaBackup.ClearFlags();
-            _ = ProcessFiles(files, scanId, config.DirectoriesRenameVideoFilesForFullScansOnOff, token);
+            _ = ProcessFiles(files, scanId, config.DirectoriesRenameVideoFilesForFullScansOnOff, false, token);
             ResetAllControls();
         }
         finally

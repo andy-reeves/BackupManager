@@ -6,7 +6,6 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Xml.Serialization;
 
 namespace BackupManager.Entities;
 
@@ -22,10 +21,6 @@ namespace BackupManager.Entities;
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 public sealed class FileSystemEntry : IEquatable<FileSystemEntry>
 {
-    private readonly DateTime modifiedDateTime;
-
-    private readonly string path;
-
     public FileSystemEntry() { }
 
     public FileSystemEntry(string path) : this(path, DateTime.Now) { }
@@ -39,42 +34,14 @@ public sealed class FileSystemEntry : IEquatable<FileSystemEntry>
     /// <summary>
     ///     The path to the FileSystemEntry that changed
     /// </summary>
-    public string Path
-    {
-        get => path;
-
-        init
-        {
-            if (path == value) return;
-
-            path = value;
-            Changed = true;
-        }
-    }
-
-    /// <summary>
-    ///     This is set to True if any data has changed, and we need to Save.
-    /// </summary>
-    [XmlIgnore]
-    public bool Changed { get; set; }
+    public string Path { get; init; }
 
     private string InternalPath => Path;
 
     /// <summary>
     ///     The DateTime the FileSystemEntry was last changed
     /// </summary>
-    public DateTime ModifiedDateTime
-    {
-        get => modifiedDateTime;
-
-        init
-        {
-            if (modifiedDateTime == value) return;
-
-            modifiedDateTime = value;
-            Changed = true;
-        }
-    }
+    public DateTime ModifiedDateTime { get; init; }
 
     public bool Equals(FileSystemEntry other)
     {

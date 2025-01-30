@@ -43,6 +43,8 @@ public sealed class MediaBackup
 
     internal readonly FileSystemWatcher Watcher = new();
 
+    private readonly object lockObject = new();
+
     /// <summary>
     ///     The DateTime of the last full directories scan
     /// </summary>
@@ -177,7 +179,6 @@ public sealed class MediaBackup
                 if (!backupFile.DiskCheckedTime.HasValue || backupFile.Disk.HasNoValue()) backupFile.ClearDiskChecked();
             }
             CheckMovieAndTvForDuplicates(mediaBackup);
-            mediaBackup.ClearChanged();
             return mediaBackup;
         }
         catch (InvalidOperationException ex)
@@ -231,43 +232,6 @@ public sealed class MediaBackup
     }
 
     /// <summary>
-    ///     This sets the Changed property on all files, and disks to False.
-    /// </summary>
-    private void ClearChanged()
-    {
-        foreach (var backupFile in BackupFiles)
-        {
-            backupFile.Changed = false;
-        }
-
-        foreach (var disk in BackupDisks)
-        {
-            disk.Changed = false;
-        }
-
-        foreach (var a in DirectoriesToScan)
-        {
-            a.Changed = false;
-        }
-
-        foreach (var a in DirectoryChanges)
-        {
-            a.Changed = false;
-        }
-
-        foreach (var a in TmdbMovies)
-        {
-            a.Changed = false;
-        }
-
-        foreach (var a in TmdbTvEpisodes)
-        {
-            a.Changed = false;
-        }
-        Changed = false;
-    }
-
-    /// <summary>
     ///     Returns the runtime in minutes for the movie specified by path. Uses the cache first or calls the TmdbAPI if it's
     ///     not in the cache.
     /// </summary>
@@ -281,13 +245,18 @@ public sealed class MediaBackup
         var tmdbId = Utils.MediaHelper.GetTmdbId(path);
         if (tmdbId == -1) return -1;
 
-        var m = TmdbMovies.FirstOrDefault(x => x.Id == tmdbId.ToString()) ?? new TmdbItem(tmdbId.ToString());
-        if (m.Runtime > 0 && useCache) return m.Runtime;
+        lock (lockObject)
+        {
+            var m = TmdbMovies.FirstOrDefault(x => x.Id == tmdbId.ToString()) ?? new TmdbItem(tmdbId.ToString());
+            if (m.Runtime > 0 && useCache) return m.Runtime;
 
-        var r = Utils.MediaHelper.GetMovieRuntimeFromTmdbApi(tmdbId);
-        m.Runtime = r;
-        TmdbMovies.Add(m);
-        return m.Runtime;
+            var r = Utils.MediaHelper.GetMovieRuntimeFromTmdbApi(tmdbId);
+            if (r == 1) return -1;
+
+            m.Runtime = r;
+            TmdbMovies.Add(m);
+            return m.Runtime;
+        }
     }
 
     /// <summary>
@@ -365,44 +334,6 @@ public sealed class MediaBackup
     {
         DirectoryChanges = new Collection<FileSystemEntry>([.. Watcher.FileSystemChanges]);
         DirectoriesToScan = new Collection<FileSystemEntry>([.. Watcher.DirectoriesToScan]);
-
-        if (!Changed)
-        {
-            // If not marked as Changed already then check the files
-            if (BackupFiles.Any(static file => file.Changed)) Changed = true;
-        }
-
-        if (!Changed)
-        {
-            // If not marked as Changed already then check the disks
-            if (BackupDisks.Any(static backupDisk => backupDisk.Changed)) Changed = true;
-        }
-
-        if (!Changed)
-        {
-            // If not marked as Changed already then check the DirectoryChanges
-            if (DirectoryChanges.Any(static dirChanges => dirChanges.Changed)) Changed = true;
-        }
-
-        if (!Changed)
-        {
-            // If not marked as Changed already then check the DirectoriesToScan
-            if (DirectoriesToScan.Any(static dirScan => dirScan.Changed)) Changed = true;
-        }
-
-        if (!Changed)
-        {
-            // If not marked as Changed already then check the TmdbMovies
-            if (TmdbMovies.Any(static m => m.Changed)) Changed = true;
-        }
-
-        if (!Changed)
-        {
-            // If not marked as Changed already then check the TmdbTvEpisodes
-            if (TmdbTvEpisodes.Any(static m => m.Changed)) Changed = true;
-        }
-        if (!Changed) return;
-
         BackupMediaFile(ct);
 
         // remove any directory scan that didn't complete check end date
@@ -420,9 +351,6 @@ public sealed class MediaBackup
         using StreamWriter streamWriter = new(mediaBackupPath);
         xmlSerializer.Serialize(streamWriter, this);
         Utils.LogWithPushover(BackupAction.General, "MediaBackup.xml saved.");
-
-        // Set Changed to False once we've just saved
-        ClearChanged();
     }
 
     /// <summary>
@@ -835,23 +763,42 @@ public sealed class MediaBackup
         if (id == -1 || seasonNumber == 0) return -1;
 
         var compoundId = $"{id}:{seasonNumber}:{episodeNumber}";
-        var m = TmdbTvEpisodes.FirstOrDefault(x => x.Id == compoundId) ?? new TmdbItem(compoundId);
-        if (m.Runtime > 0 && useCache) return m.Runtime;
 
-        var r = Utils.MediaHelper.GetTvEpisodeRuntimeFromTmdbApi(id, seasonNumber, episodeNumber);
-        m.Runtime = r;
-        TmdbTvEpisodes.Add(m);
-        return m.Runtime;
+        lock (lockObject)
+        {
+            var m = TmdbTvEpisodes.FirstOrDefault(x => x.Id == compoundId) ?? new TmdbItem(compoundId);
+            if (m.Runtime > 0 && useCache) return m.Runtime;
+
+            var r = Utils.MediaHelper.GetTvEpisodeRuntimeFromTmdbApi(id, seasonNumber, episodeNumber);
+            if (r == -1) return -1;
+
+            m.Runtime = r;
+            TmdbTvEpisodes.Add(m);
+            return m.Runtime;
+        }
     }
 
+    /// <summary>
+    ///     Returns the video file runtime
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns>-1 if file not found, or it's not a video file</returns>
     internal int GetVideoRuntime(string path)
     {
-        if (!Utils.File.IsVideo(path)) return -1;
+        try
+        {
+            if (!Utils.File.Exists(path)) return -1;
+            if (!Utils.File.IsVideo(path)) return -1;
 
-        var file = Utils.MediaHelper.ExtendedBackupFileBase(path);
-        if (file is not VideoBackupFileBase videoFile) return -1;
-        if (videoFile.SpecialFeature != SpecialFeature.None) return -1;
+            var file = Utils.MediaHelper.ExtendedBackupFileBase(path);
+            if (file is not VideoBackupFileBase videoFile) return -1;
+            if (videoFile.SpecialFeature != SpecialFeature.None) return -1;
 
-        return videoFile is MovieBackupFile ? GetMovieRuntime(path) : GetTvEpisodeRuntime(path);
+            return videoFile is MovieBackupFile ? GetMovieRuntime(path) : GetTvEpisodeRuntime(path);
+        }
+        catch (FileNotFoundException)
+        {
+            return -1;
+        }
     }
 }

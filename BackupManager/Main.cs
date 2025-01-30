@@ -1419,12 +1419,12 @@ internal sealed partial class Main : Form
             if (!Utils.File.Exists(fullPath)) continue;
 
             var runtimeFromCache = mediaBackup.GetMovieRuntime(fullPath);
-            if (runtimeFromCache > -1) Utils.MediaHelper.CheckRuntimeForMovieOrTvEpisode(fullPath, runtimeFromCache);
+            if (runtimeFromCache > -1) Utils.MediaHelper.CheckRuntimeForMovieOrTvEpisode(fullPath, runtimeFromCache, true);
         }
         mediaBackup.Save(mainCt);
     }
 
-    private void button4_Click(object sender, EventArgs e)
+    private void RefreshTvEpisodesButton_Click(object sender, EventArgs e)
     {
         var files = mediaBackup.BackupFiles.Where(static bf =>
         {
@@ -1439,7 +1439,7 @@ internal sealed partial class Main : Form
             if (!Utils.File.Exists(fullPath)) continue;
 
             var runtimeFromCache = mediaBackup.GetTvEpisodeRuntime(fullPath);
-            if (runtimeFromCache > -1) Utils.MediaHelper.CheckRuntimeForMovieOrTvEpisode(fullPath, runtimeFromCache);
+            if (runtimeFromCache > -1) Utils.MediaHelper.CheckRuntimeForMovieOrTvEpisode(fullPath, runtimeFromCache, true);
             if (index % 500 == 0) mediaBackup.Save(mainCt);
         }
         mediaBackup.Save(mainCt);

@@ -145,7 +145,7 @@
             ExportAndRemoveSubtitlesButton = new System.Windows.Forms.Button();
             extractChaptersButton = new System.Windows.Forms.Button();
             removeMetadataButton = new System.Windows.Forms.Button();
-            button4 = new System.Windows.Forms.Button();
+            refreshTvEpisodesButton = new System.Windows.Forms.Button();
             pushoverGroupBox.SuspendLayout();
             groupBox2.SuspendLayout();
             listFilesInDirectoryGroupBox.SuspendLayout();
@@ -1434,24 +1434,24 @@
             removeMetadataButton.UseVisualStyleBackColor = true;
             removeMetadataButton.Click += RemoveMetadataButton_Click;
             // 
-            // button4
+            // refreshTvEpisodesButton
             // 
-            button4.Location = new System.Drawing.Point(589, 496);
-            button4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            button4.Name = "button4";
-            button4.Size = new System.Drawing.Size(232, 27);
-            button4.TabIndex = 113;
-            button4.Text = "Refreshes TV runtimes from TmdbAPI";
-            button4.UseVisualStyleBackColor = true;
-            button4.Visible = false;
-            button4.Click += button4_Click;
+            refreshTvEpisodesButton.Location = new System.Drawing.Point(589, 496);
+            refreshTvEpisodesButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            refreshTvEpisodesButton.Name = "refreshTvEpisodesButton";
+            refreshTvEpisodesButton.Size = new System.Drawing.Size(232, 27);
+            refreshTvEpisodesButton.TabIndex = 113;
+            refreshTvEpisodesButton.Text = "Refreshes TV runtimes from TmdbAPI";
+            refreshTvEpisodesButton.UseVisualStyleBackColor = true;
+            refreshTvEpisodesButton.Visible = false;
+            refreshTvEpisodesButton.Click += RefreshTvEpisodesButton_Click;
             // 
             // Main
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1416, 548);
-            Controls.Add(button4);
+            Controls.Add(refreshTvEpisodesButton);
             Controls.Add(button3);
             Controls.Add(button1);
             Controls.Add(saveButton);
@@ -1662,7 +1662,7 @@
         private System.Windows.Forms.Button saveButton;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button refreshTvEpisodesButton;
     }
 }
 
