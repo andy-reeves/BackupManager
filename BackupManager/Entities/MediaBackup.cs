@@ -250,6 +250,7 @@ public sealed class MediaBackup
             var m = TmdbMovies.FirstOrDefault(x => x.Id == tmdbId.ToString()) ?? new TmdbItem(tmdbId.ToString());
             if (m.Runtime > 0 && useCache) return m.Runtime;
 
+            Utils.Log(BackupAction.ProcessFiles, $"Getting runtime from TMDB API for {tmdbId} - {path}");
             var r = Utils.MediaHelper.GetMovieRuntimeFromTmdbApi(tmdbId);
             if (r == 1) return -1;
 
@@ -769,6 +770,7 @@ public sealed class MediaBackup
             var m = TmdbTvEpisodes.FirstOrDefault(x => x.Id == compoundId) ?? new TmdbItem(compoundId);
             if (m.Runtime > 0 && useCache) return m.Runtime;
 
+            Utils.Log(BackupAction.ProcessFiles, $"Getting runtime from TMDB API for {id}, season {seasonNumber}, episode {episodeNumber} - {path}");
             var r = Utils.MediaHelper.GetTvEpisodeRuntimeFromTmdbApi(id, seasonNumber, episodeNumber);
             if (r == -1) return -1;
 

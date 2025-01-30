@@ -332,9 +332,6 @@ internal static partial class Utils
         {
             try
             {
-                if (tmdbId == -1) return -1;
-
-                Log(BackupAction.ProcessFiles, $"Getting runtime from TMDB API for {tmdbId}");
                 var httpsApiThemoviedbOrgMovieLanguageEnUs = $"https://api.themoviedb.org/3/movie/{tmdbId}?language=en-US";
                 HttpClient client = new();
                 client.DefaultRequestHeaders.Add("accept", "application/json");
@@ -599,9 +596,6 @@ internal static partial class Utils
         {
             try
             {
-                if (tvdbId == -1) return -1;
-
-                Log(BackupAction.ProcessFiles, $"Getting runtime from TMDB API for {tvdbId}, season {seasonNumber}, episode {episodeNumber}");
                 var findApi = $"https://api.themoviedb.org/3/find/{tvdbId}?external_source=tvdb_id";
                 HttpClient client = new();
                 client.DefaultRequestHeaders.Add("accept", "application/json");
