@@ -335,7 +335,7 @@ internal static partial class Utils
                 var httpsApiThemoviedbOrgMovieLanguageEnUs = $"https://api.themoviedb.org/3/movie/{tmdbId}?language=en-US";
                 HttpClient client = new();
                 client.DefaultRequestHeaders.Add("accept", "application/json");
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {Config.TmdbBearerToken}");
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {Config.TmdbApiReadAccessToken}");
                 var task = Task.Run(() => client.GetStringAsync(httpsApiThemoviedbOrgMovieLanguageEnUs));
                 task.Wait();
                 var response = task.Result;
@@ -588,7 +588,7 @@ internal static partial class Utils
                 var findApi = $"https://api.themoviedb.org/3/find/{tvdbId}?external_source=tvdb_id";
                 HttpClient client = new();
                 client.DefaultRequestHeaders.Add("accept", "application/json");
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {Config.TmdbBearerToken}");
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {Config.TmdbApiReadAccessToken}");
                 var task = Task.Run(() => client.GetStringAsync(findApi));
                 task.Wait();
                 var response = task.Result;
