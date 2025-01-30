@@ -138,7 +138,13 @@ internal sealed partial class Main
         if (file == null) return false;
 
         var runtimeFromCache = mediaBackup.GetVideoRuntime(file);
-        if (runtimeFromCache > -1) Utils.MediaHelper.CheckRuntimeForMovieOrTvEpisode(file, runtimeFromCache, autoScan);
+
+        if (runtimeFromCache > -1)
+        {
+            // Check the runtime of the video file
+            Utils.MediaHelper.CheckRuntimeForMovieOrTvEpisode(file, runtimeFromCache, config.VideoMinimumPercentageDifferenceForRuntime,
+                config.VideoMaximumPercentageDifferenceForRuntime, autoScan);
+        }
         ProcessFilesUpdatePercentComplete(file);
         return true;
     }

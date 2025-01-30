@@ -1419,7 +1419,10 @@ internal sealed partial class Main : Form
             if (!Utils.File.Exists(fullPath)) continue;
 
             var runtimeFromCache = mediaBackup.GetMovieRuntime(fullPath);
-            if (runtimeFromCache > -1) Utils.MediaHelper.CheckRuntimeForMovieOrTvEpisode(fullPath, runtimeFromCache, true);
+
+            if (runtimeFromCache > -1)
+                Utils.MediaHelper.CheckRuntimeForMovieOrTvEpisode(fullPath, runtimeFromCache, config.VideoMinimumPercentageDifferenceForRuntime,
+                    config.VideoMaximumPercentageDifferenceForRuntime, true);
         }
         mediaBackup.Save(mainCt);
     }
@@ -1439,7 +1442,10 @@ internal sealed partial class Main : Form
             if (!Utils.File.Exists(fullPath)) continue;
 
             var runtimeFromCache = mediaBackup.GetTvEpisodeRuntime(fullPath);
-            if (runtimeFromCache > -1) Utils.MediaHelper.CheckRuntimeForMovieOrTvEpisode(fullPath, runtimeFromCache, true);
+
+            if (runtimeFromCache > -1)
+                Utils.MediaHelper.CheckRuntimeForMovieOrTvEpisode(fullPath, runtimeFromCache, config.VideoMinimumPercentageDifferenceForRuntime,
+                    config.VideoMaximumPercentageDifferenceForRuntime, true);
             if (index % 500 == 0) mediaBackup.Save(mainCt);
         }
         mediaBackup.Save(mainCt);

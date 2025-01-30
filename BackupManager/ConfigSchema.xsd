@@ -316,6 +316,11 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
+
+        <xs:element type="xs:int" name="VideoMinimumPercentageDifferenceForRuntime" maxOccurs="1" minOccurs="0" />
+
+        <xs:element type="xs:int" name="VideoMaximumPercentageDifferenceForRuntime" maxOccurs="1" minOccurs="0" />
+      
       </xs:all>
     </xs:complexType>
   </xs:element>

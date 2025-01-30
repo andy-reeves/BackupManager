@@ -546,7 +546,7 @@ internal static partial class Utils
         }
 
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
-        internal static void CheckRuntimeForMovieOrTvEpisode(string path, int runtimeFromCache, bool logToPushover = false)
+        internal static void CheckRuntimeForMovieOrTvEpisode(string path, int runtimeFromCache, int minimum, int maximum, bool logToPushover = false)
         {
             if (!File.IsVideo(path)) return;
 
@@ -566,30 +566,20 @@ internal static partial class Utils
                 return;
             }
             var fileRuntime = videoFile.MediaInfoModel.RunTime.TotalMinutes;
-            var percentage = fileRuntime * 100 / runtimeFromCache;
+            var percentage = Convert.ToInt32(fileRuntime * 100 / runtimeFromCache);
 
-            //TODO move % to config
-            switch (percentage)
+            if (percentage < minimum || percentage > maximum)
             {
-                case < 40:
-                    if (logToPushover)
-                    {
-                        LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High,
-                            $"{percentage:N0}% - File = {fileRuntime:N0} mins, Cache = {runtimeFromCache:N0} mins. Runtime is incorrect for {path}");
-                    }
-                    else
-                    {
-                        Log(BackupAction.ProcessFiles,
-                            $"{percentage:N0}% - File = {fileRuntime:N0} mins, Cache = {runtimeFromCache:N0} mins. Runtime is incorrect for {path}");
-                    }
-                    break;
-                case > 110:
+                if (logToPushover)
+                {
+                    LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High,
+                        $"{percentage:N0}% - File = {fileRuntime:N0} mins, Cache = {runtimeFromCache:N0} mins. Runtime is incorrect for {path}");
+                }
+                else
                     Log(BackupAction.ProcessFiles, $"{percentage:N0}% - File = {fileRuntime:N0} mins, Cache = {runtimeFromCache:N0} mins. Runtime is incorrect for {path}");
-                    break;
-                default:
-                    Log(BackupAction.ProcessFiles, $"{percentage:N0}% - File = {fileRuntime:N0} mins, Cache = {runtimeFromCache:N0} mins for {path}");
-                    break;
             }
+            else
+                Log(BackupAction.ProcessFiles, $"{percentage:N0}% - File = {fileRuntime:N0} mins, Cache = {runtimeFromCache:N0} mins for {path}");
         }
 
         internal static int GetTvEpisodeRuntimeFromTmdbApi(int tvdbId, int seasonNumber, int episodeNumber)

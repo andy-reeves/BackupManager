@@ -260,6 +260,16 @@ public sealed class Config
     /// </summary>
     public bool DirectoriesToHealthCheckOnOff { get; set; }
 
+    /// <summary>
+    ///     The minimum Percentage Difference For a video's runtime compared to Tmdb information
+    /// </summary>
+    public int VideoMinimumPercentageDifferenceForRuntime { get; set; }
+
+    /// <summary>
+    ///     The maximum Percentage Difference For a video's runtime compared to Tmdb information
+    /// </summary>
+    public int VideoMaximumPercentageDifferenceForRuntime { get; set; }
+
     public static Config Load(string path)
     {
         try
