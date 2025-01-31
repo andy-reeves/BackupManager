@@ -146,6 +146,8 @@
             extractChaptersButton = new System.Windows.Forms.Button();
             removeMetadataButton = new System.Windows.Forms.Button();
             refreshTvEpisodesButton = new System.Windows.Forms.Button();
+            clearCacheForTvShowButton = new System.Windows.Forms.Button();
+            tvShowTextBox = new System.Windows.Forms.TextBox();
             pushoverGroupBox.SuspendLayout();
             groupBox2.SuspendLayout();
             listFilesInDirectoryGroupBox.SuspendLayout();
@@ -1446,11 +1448,33 @@
             refreshTvEpisodesButton.Visible = false;
             refreshTvEpisodesButton.Click += RefreshTvEpisodesButton_Click;
             // 
+            // clearCacheForTvShowButton
+            // 
+            clearCacheForTvShowButton.Location = new System.Drawing.Point(1240, 334);
+            clearCacheForTvShowButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            clearCacheForTvShowButton.Name = "clearCacheForTvShowButton";
+            clearCacheForTvShowButton.Size = new System.Drawing.Size(147, 27);
+            clearCacheForTvShowButton.TabIndex = 114;
+            clearCacheForTvShowButton.Text = "Clear cache for TV show";
+            clearCacheForTvShowButton.UseVisualStyleBackColor = true;
+            clearCacheForTvShowButton.Click += ClearCacheForTvShowButton_Click;
+            // 
+            // tvShowTextBox
+            // 
+            tvShowTextBox.Location = new System.Drawing.Point(1156, 337);
+            tvShowTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tvShowTextBox.Name = "tvShowTextBox";
+            tvShowTextBox.Size = new System.Drawing.Size(77, 23);
+            tvShowTextBox.TabIndex = 115;
+            tvShowTextBox.Text = "72389";
+            // 
             // Main
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1416, 548);
+            Controls.Add(tvShowTextBox);
+            Controls.Add(clearCacheForTvShowButton);
             Controls.Add(refreshTvEpisodesButton);
             Controls.Add(button3);
             Controls.Add(button1);
@@ -1663,6 +1687,8 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button refreshTvEpisodesButton;
+        private System.Windows.Forms.Button clearCacheForTvShowButton;
+        private System.Windows.Forms.TextBox tvShowTextBox;
     }
 }
 

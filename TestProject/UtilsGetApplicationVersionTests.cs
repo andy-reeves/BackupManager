@@ -67,7 +67,7 @@ public sealed class UtilsGetVersionPlex
 
     [Theory]
     [InlineData("1.41.3.9314", ApplicationType.Plex)]
-    [InlineData("1.41.2.9134", ApplicationType.PlexPass)]
+    [InlineData("1.41.4.9399", ApplicationType.PlexPass)]
     public void GetLatestVersionNumber(string expectedVersionNumber, ApplicationType applicationType, string branchName = "master")
     {
         if (applicationType != ApplicationType.PlexPass || Utils.Config.PlexToken.HasValue())

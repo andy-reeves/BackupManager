@@ -74,9 +74,13 @@ public sealed class MediaBackup
 
     [XmlArrayItem("Directory")] public Collection<FileSystemEntry> DirectoriesToScan { get; set; }
 
-    [XmlArrayItem("TmdbMovie")] public Collection<TmdbItem> TmdbMovies { get; set; }
+    [XmlIgnore]
+    [XmlArrayItem("TmdbMovie")]
+    public Collection<TmdbItem> TmdbMovies { get; set; }
 
-    [XmlArrayItem("TmdbTvEpisode")] public Collection<TmdbItem> TmdbTvEpisodes { get; set; }
+    [XmlIgnore]
+    [XmlArrayItem("TmdbTvEpisode")]
+    public Collection<TmdbItem> TmdbTvEpisodes { get; set; }
 
     /// <summary>
     ///     The Directories that have been changed
@@ -154,6 +158,18 @@ public sealed class MediaBackup
 
                 var config = Config.Load(Path.Combine(directoryName, "Config.xml"));
                 if (config != null) mediaBackup.Config = config;
+                var s2 = new XmlSerializer(typeof(Collection<TmdbItem>));
+
+                using (FileStream stream2 = new(path + ".tv.xml", FileMode.Open, FileAccess.Read))
+                {
+                    mediaBackup.TmdbTvEpisodes = s2.Deserialize(stream2) as Collection<TmdbItem>;
+                }
+                var s3 = new XmlSerializer(typeof(Collection<TmdbItem>));
+
+                using (FileStream stream3 = new(path + ".movies.xml", FileMode.Open, FileAccess.Read))
+                {
+                    mediaBackup.TmdbMovies = s3.Deserialize(stream3) as Collection<TmdbItem>;
+                }
             }
             else
                 mediaBackup = Utils.MediaBackup;
@@ -340,6 +356,14 @@ public sealed class MediaBackup
         if (File.Exists(mediaBackupPath)) File.SetAttributes(mediaBackupPath, FileAttributes.Normal);
         using StreamWriter streamWriter = new(mediaBackupPath);
         xmlSerializer.Serialize(streamWriter, this);
+
+        // save the movies and tv episodes caches
+        using StreamWriter streamWriter2 = new(mediaBackupPath + ".tv.xml");
+        XmlSerializer xmlSerializer2 = new(typeof(Collection<TmdbItem>));
+        xmlSerializer2.Serialize(streamWriter2, TmdbTvEpisodes);
+        using StreamWriter streamWriter3 = new(mediaBackupPath + ".movies.xml");
+        XmlSerializer xmlSerializer3 = new(typeof(Collection<TmdbItem>));
+        xmlSerializer3.Serialize(streamWriter3, TmdbMovies);
         Utils.LogWithPushover(BackupAction.General, "MediaBackup.xml saved.");
     }
 
@@ -784,6 +808,27 @@ public sealed class MediaBackup
         catch (FileNotFoundException)
         {
             return -1;
+        }
+    }
+
+    public void RemoveTvShowFromCache(string tvdbId)
+    {
+        var key = $"{tvdbId}:";
+
+        for (var i = TmdbTvEpisodes.Count - 1; i >= 0; i--)
+        {
+            var m = TmdbTvEpisodes[i];
+            if (m.Id.StartsWithIgnoreCase(key)) TmdbTvEpisodes.Remove(m);
+        }
+    }
+
+    internal void SetTvShowRuntime(string tvdbId, int runtime)
+    {
+        var key = $"{tvdbId}:";
+
+        foreach (var tvEp in TmdbTvEpisodes.Where(tvEp => tvEp.Id.StartsWithIgnoreCase(key)))
+        {
+            tvEp.Runtime = runtime;
         }
     }
 }

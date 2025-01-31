@@ -1455,4 +1455,20 @@ internal sealed partial class Main : Form
         }
         mediaBackup.Save(mainCt);
     }
+
+    private void ClearCacheForTvShowButton_Click(object sender, EventArgs e)
+    {
+        if (tvShowTextBox.Text.HasValue())
+        {
+            /* mediaBackup.SetTvShowRuntime("71489", 42); // Law and order criminal intent
+
+             mediaBackup.SetTvShowRuntime("72389", 22); // 3rd rock
+             mediaBackup.Save(mainCt);
+            */
+            // = "72389";
+            // // 3rd Rock
+            mediaBackup.RemoveTvShowFromCache(tvShowTextBox.Text);
+            mediaBackup.Save(mainCt);
+        }
+    }
 }
