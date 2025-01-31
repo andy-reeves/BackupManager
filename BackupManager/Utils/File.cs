@@ -66,6 +66,37 @@ internal static partial class Utils
         }
 
         /// <summary>
+        ///     Checks the path is a video TV file
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns>
+        ///     False if it's not a video TV file, True if it's a video TV file. Only checks the path not the actual file or
+        ///     contents. Exception if path is null or empty
+        /// </returns>
+        internal static bool IsTv(string path)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(path);
+            return IsVideo(path) && path.ContainsAny(@"\_TV\", @"\_TV (non-tvdb)\");
+        }
+
+        /// <summary>
+        ///     Checks the path is a video Movie/Concert or Comedy file
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns>
+        ///     False if it's not a video Movie/Comedy or Concert file, True if it's a video Movie/Comedy/Concert file. Only checks
+        ///     the path not the actual file or
+        ///     contents. Exception if path is null or empty
+        /// </returns>
+        internal static bool IsMovieComedyOrConcert(string path)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(path);
+
+            return IsVideo(path) && path.ContainsAny(@"\_Movies\", @"\_Movies (non-tmdb)\", @"\_Comedy\", @"\_Comedy (non-tmdb)\", @"\_Concerts\",
+                @"\_Concerts (non-tmdb)\");
+        }
+
+        /// <summary>
         ///     Hash is now different depending on the filename as we write that into the file
         ///     for test1.txt the hash is b3d5cf638ed2f6a94d6b3c628f946196
         /// </summary>

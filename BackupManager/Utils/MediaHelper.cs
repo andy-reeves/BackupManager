@@ -520,19 +520,15 @@ internal static partial class Utils
         }
 
         /// <summary>
-        ///     Returns a MovieBackupFile, a TvEpisodeFile, or a SubtitlesBackupFile or null
+        ///     Returns a MovieBackupFile, a TvEpisodeFile, or a SubtitlesBackupFile or null. Does not check the File exists.
         /// </summary>
         /// <param name="path">The full path to the file</param>
         /// <returns>Null if the file isn't a movie, TV episode or subtitles file.</returns>
         internal static ExtendedBackupFileBase ExtendedBackupFileBase(string path)
         {
             ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
-            if (!File.Exists(path)) throw new ArgumentException(Resources.FileNotFound, nameof(path));
-
-            if (path.Contains(@"\_TV")) return path.EndsWithIgnoreCase(".srt") ? new SubtitlesBackupFile(path) : new TvEpisodeBackupFile(path);
-
-            if (path.Contains(@"\_Movies") || path.Contains(@"\_Concerts") || path.Contains(@"\_Comedy"))
-                return path.EndsWithIgnoreCase(".srt") ? new SubtitlesBackupFile(path) : new MovieBackupFile(path);
+            if (File.IsTv(path)) return path.EndsWithIgnoreCase(".srt") ? new SubtitlesBackupFile(path) : new TvEpisodeBackupFile(path);
+            if (File.IsMovieComedyOrConcert(path)) return path.EndsWithIgnoreCase(".srt") ? new SubtitlesBackupFile(path) : new MovieBackupFile(path);
 
             return null;
         }

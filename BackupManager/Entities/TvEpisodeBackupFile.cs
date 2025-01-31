@@ -36,7 +36,7 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
         @"^(?:(.*)-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer)|(.*)\s(?:s?(\d{1,4})?(e\d{2,4}-?(?:e\d{2,4})?|\d{4}-\d\d-\d\d))(.*?)(?:\[(DVD|SDTV|WEB(?:Rip|DL)|Bluray|HDTV)(?:-((?:480|576|720|1080|2160)p(?:\sRemux)??)??(?:\sProper)??)?\])??(?:\[((?:DV)??(?:(?:\s)??HDR10(?:Plus)??)??|PQ|HLG)\])??(?:\[(DTS(?:\sHD|-(?:X|ES|HD\s(?:M|HR)A))??|(?:TrueHD|EAC3)(?:\sAtmos)??|AC3|FLAC|PCM|MP[23]|A[AV]C|Opus|Vorbis|WMA)\s([1-8]\.[01])\])??(?:\[([hx]26[45]|MPEG(?:[24])?|XviD|V(?:C1|P9)|DivX|HEVC|AVC|RGB)\])??)\.(m(?:kv|p(?:4|e?g))|avi)$";
 
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
-    protected override string DirectoryRegex => @"^.*\\_TV(?:\s\(non-tvdb\))?\\(.*)\s{t[mv]db-(\d{1,7}?)}(?:\\(?:Season\s(\d+)|(Specials)))?$";
+    protected override string DirectoryRegex => @"^.*\\_TV(?:\s\(non-tvdb\))?\\(.*)\s{t[mv]db-(\d{1,7}?)}(?:\s{edition-(.+)})?(?:\\(?:Season\s(\d+)|(Specials)))?$";
 
     public string EpisodeTitle { get; private set; }
 
@@ -65,6 +65,8 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
 
     public string Season { get; set; }
 
+    public string Edition { get; set; }
+
     private bool ParseMediaInfoFromDirectory(string directoryPath)
     {
         DirectoryName = directoryPath;
@@ -73,10 +75,12 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
 
         const int titleGroup = 1;
         const int idGroup = 2;
-        const int seasonGroup = 3;
-        const int specialsGroup = 4;
+        const int editionGroup = 3;
+        const int seasonGroup = 4;
+        const int specialsGroup = 5;
         var id = match.Groups[idGroup].Value;
         TvdbId = id.HasValue() ? id : string.Empty;
+        Edition = match.Groups[editionGroup].Value.Trim();
         var title = match.Groups[titleGroup].Value.Trim();
         var season = match.Groups[seasonGroup].Value.Trim();
         var specials = match.Groups[specialsGroup].Value.Trim();

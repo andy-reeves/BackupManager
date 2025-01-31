@@ -91,6 +91,7 @@ internal sealed partial class Main
             Utils.LogHeader();
             Utils.LogWithPushover(BackupAction.General, Resources.BackupManagerStarted, false, true);
             config.LogParameters();
+            mediaBackup.CheckMovieAndTvForDuplicates();
             var directoriesArray = config.DirectoriesToBackup.ToArray();
             listDirectoriesComboBox.Items.AddRange([.. directoriesArray]);
             directoriesComboBox.Items.AddRange([.. directoriesArray]);

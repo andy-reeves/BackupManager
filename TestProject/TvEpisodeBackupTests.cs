@@ -38,6 +38,7 @@ public sealed class TvEpisodeBackupTests
         @"\\nas1\assets1\_TV\Santiago of the Seas {tvdb-385447}\Season 2\Santiago of the Seas s02e14-e15 Peek-A-BOO! + Night of the Witches [WEBDL-1080p][EAC3 2.0][h265].mkv",
         true)]
     [InlineData("Knight Rider s02e21-e22 Mouth of the Snake [a.k.a. All That Glitters] [Bluray-1080p][AC3 2.0][h264].mkv", true)]
+    [InlineData(@"J:\_TV\Friends {tvdb-79168} {edition-DVD}\Season 1\Friends s01e01 The One Where Monica Gets a Roommate [DVD-576p Remux][AC3 5.0][h265].mkv", true)]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     public void TvEpisodeTests(string fileName, bool isValidFileName, string expectedFileName = "")
     {

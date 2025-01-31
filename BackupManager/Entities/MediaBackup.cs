@@ -182,7 +182,6 @@ public sealed class MediaBackup
                 mediaBackup.indexFolderAndRelativePath.Add(backupFile.Hash, backupFile);
                 if (!backupFile.DiskCheckedTime.HasValue || backupFile.Disk.HasNoValue()) backupFile.ClearDiskChecked();
             }
-            CheckMovieAndTvForDuplicates(mediaBackup);
             return mediaBackup;
         }
         catch (InvalidOperationException ex)
@@ -195,19 +194,19 @@ public sealed class MediaBackup
         }
     }
 
-    private static void CheckMovieAndTvForDuplicates(MediaBackup mediaBackup)
+    internal void CheckMovieAndTvForDuplicates()
     {
         // check the tv runtime cache results
         var dictionary = new Dictionary<string, TmdbItem>();
 
-        for (var index = mediaBackup.TmdbTvEpisodes.Count - 1; index >= 0; index--)
+        for (var index = TmdbTvEpisodes.Count - 1; index >= 0; index--)
         {
-            var episode = mediaBackup.TmdbTvEpisodes[index];
+            var episode = TmdbTvEpisodes[index];
             var key = episode.Id.Split(':');
 
             // key[1]==0 is the Specials folder which we don't check
             if (key[2] == "-1" || key[1] == "-1" || key[0] == "-1" || key[1] == "0")
-                mediaBackup.TmdbTvEpisodes.Remove(episode);
+                TmdbTvEpisodes.Remove(episode);
             else
             {
                 var result = dictionary.TryAdd(episode.Id, episode);
@@ -215,23 +214,36 @@ public sealed class MediaBackup
                 if (!result)
                 {
                     // remove the episode
-                    mediaBackup.TmdbTvEpisodes.Remove(episode);
+                    TmdbTvEpisodes.Remove(episode);
                 }
             }
         }
         var dictionary2 = new Dictionary<string, TmdbItem>();
 
         // check the movie runtime cache results
-        for (var index = mediaBackup.TmdbMovies.Count - 1; index >= 0; index--)
+        for (var index = TmdbMovies.Count - 1; index >= 0; index--)
         {
-            var m = mediaBackup.TmdbMovies[index];
+            var m = TmdbMovies[index];
             var result = dictionary2.TryAdd(m.Id, m);
 
             if (!result)
             {
                 // remove the movie
-                mediaBackup.TmdbMovies.Remove(m);
+                TmdbMovies.Remove(m);
             }
+        }
+        var hashSetForTvEpisodes = new HashSet<string>();
+
+        // for all tv episodes check season,edition and episode are unique
+        var files = BackupFiles.Where(static f => !f.Deleted && Utils.File.IsTv(f.FullPath));
+
+        foreach (var file in files)
+        {
+            if (Utils.MediaHelper.ExtendedBackupFileBase(file.FullPath) is not (VideoBackupFileBase { SpecialFeature: SpecialFeature.None } and TvEpisodeBackupFile tvEp))
+                continue;
+            if (hashSetForTvEpisodes.Add($"{tvEp.TvdbId}:{tvEp.Edition}:{tvEp.Season}:{tvEp.Episode}")) continue;
+
+            throw new ApplicationException($"Duplicate TV episode detected {file.FullPath}");
         }
     }
 
