@@ -315,7 +315,7 @@ internal static partial class Utils
             var file = ExtendedBackupFileBase(path);
             if (file is not TvEpisodeBackupFile tvEpisodeBackupFile) return -1;
             if (tvEpisodeBackupFile.SpecialFeature != SpecialFeature.None) return -1;
-            if (tvEpisodeBackupFile.TvdbId.HasNoValue()) return -1;
+            if (tvEpisodeBackupFile.TvdbId.HasNoValue() || !tvEpisodeBackupFile.IsValidFileName) return -1;
 
             seasonNumber = Convert.ToInt32(tvEpisodeBackupFile.Season);
             var result = int.TryParse(tvEpisodeBackupFile.Episode[1..], out var parsedResult);
