@@ -45,6 +45,8 @@ public sealed class MediaBackup
 
     internal readonly FileSystemWatcher Watcher = new();
 
+    internal string LastDuplicateDirectory;
+
     /// <summary>
     ///     The DateTime of the last full directories scan
     /// </summary>
@@ -232,7 +234,11 @@ public sealed class MediaBackup
                 TmdbMovies.Remove(m);
             }
         }
-        var hashSetForTvEpisodes = new HashSet<string>();
+    }
+
+    public void CheckForDuplicateTvEpisodesGlobally()
+    {
+        HashSet<string> hashSetForTvEpisodes = [];
 
         // for all tv episodes check season,edition and episode are unique
         var files = BackupFiles.Where(static f => !f.Deleted && Utils.File.IsTv(f.FullPath));
@@ -245,6 +251,28 @@ public sealed class MediaBackup
 
             throw new ApplicationException($"Duplicate TV episode detected {file.FullPath}");
         }
+    }
+
+    public bool CheckTvEpisodeForDuplicate(string path, CancellationToken ct)
+    {
+        // get all the files in the directory alongside the file specified
+        // check they all hae unique season:ep combinations
+        var directory = new FileInfo(path).Directory?.FullName;
+        if (directory == LastDuplicateDirectory) return true;
+
+        var files = Utils.File.GetFiles(directory, "*", SearchOption.AllDirectories, 0, 0, ct);
+        HashSet<string> hashSetForTvEpisodes = [];
+
+        foreach (var file in files)
+        {
+            if (Utils.MediaHelper.ExtendedBackupFileBase(file) is not (VideoBackupFileBase { SpecialFeature: SpecialFeature.None } and TvEpisodeBackupFile tvEp)) continue;
+            if (hashSetForTvEpisodes.Add($"{tvEp.TvdbId}:{tvEp.Edition}:{tvEp.Season}:{tvEp.Episode}")) continue;
+
+            Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High, $"Duplicate TV episode detected {file}");
+            LastDuplicateDirectory = directory;
+            return false;
+        }
+        return true;
     }
 
     /// <summary>

@@ -62,6 +62,7 @@ internal sealed partial class Main
         EnableProgressBar(0, filesParam.Count);
         var suffix = filesParam.Count == 1 ? string.Empty : "s";
         Utils.LogWithPushover(BackupAction.ProcessFiles, $"Processing {filesParam.Count:n0} file{suffix}", false, true);
+        mediaBackup.LastDuplicateDirectory = string.Empty;
 
         // One process thread for each disk that has files on it to scan
         tasks.AddRange(disksAndFirstDirectories.Select(diskName => Utils.GetFilesForDisk(diskName, filesParam)).Select(files =>
@@ -147,6 +148,8 @@ internal sealed partial class Main
             Utils.MediaHelper.CheckRuntimeForMovieOrTvEpisode(file, runtimeFromCache, config.VideoMinimumPercentageDifferenceForRuntime,
                 config.VideoMaximumPercentageDifferenceForRuntime, autoScan);
         }
+        if (!mediaBackup.CheckTvEpisodeForDuplicate(file, ct)) return false;
+
         ProcessFilesUpdatePercentComplete(file);
         return true;
     }
