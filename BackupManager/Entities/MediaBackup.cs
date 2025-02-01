@@ -249,7 +249,7 @@ public sealed class MediaBackup
                 continue;
             if (hashSetForTvEpisodes.Add($"{tvEp.TvdbId}:{tvEp.Edition}:{tvEp.Season}:{tvEp.Episode}")) continue;
 
-            throw new ApplicationException($"Duplicate TV episode detected {file.FullPath}");
+            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, $"Duplicate TV episode detected {file.FullPath}");
         }
     }
 
