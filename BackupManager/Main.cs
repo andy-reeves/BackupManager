@@ -1109,7 +1109,7 @@ internal sealed partial class Main : Form
         {
             ArgumentException.ThrowIfNullOrEmpty(file.FullPath);
 
-            return Utils.File.IsVideo(file.FullPath) && !Utils.File.IsSpecialFeature(file.FullPath) && file.FullPath.Contains("_TV") &&
+            return Utils.File.IsVideo(file.FullPath) && !Utils.File.IsSpecialFeature(file.FullPath) && Utils.File.IsTv(file.FullPath) &&
                    !file.FullPath.ContainsAny("[h265]", "[VP9]", "[VC1]") && !file.Deleted;
         }).OrderBy(static f => f.Length).ToArray();
 
@@ -1124,7 +1124,7 @@ internal sealed partial class Main : Form
         {
             ArgumentException.ThrowIfNullOrEmpty(file.FullPath);
 
-            return Utils.File.IsVideo(file.FullPath) && !Utils.File.IsSpecialFeature(file.FullPath) && file.FullPath.ContainsAny("_Movies", "_Concerts", "_Comedy") &&
+            return Utils.File.IsVideo(file.FullPath) && !Utils.File.IsSpecialFeature(file.FullPath) && Utils.File.IsMovieComedyOrConcert(file.FullPath) &&
                    !file.FullPath.ContainsAny("[h265]", "[VP9]", "[VC1]") && !file.Deleted;
         }).OrderBy(static f => f.Length).ToArray();
 
@@ -1396,7 +1396,7 @@ internal sealed partial class Main : Form
         var files = mediaBackup.BackupFiles.Where(static bf =>
         {
             ArgumentException.ThrowIfNullOrEmpty(bf.FullPath);
-            return !bf.Deleted && Utils.File.IsVideo(bf.FullPath) && !Utils.File.IsSpecialFeature(bf.FullPath) && bf.FullPath.Contains("_Movies");
+            return !bf.Deleted && Utils.File.IsVideo(bf.FullPath) && !Utils.File.IsSpecialFeature(bf.FullPath) && Utils.File.IsMovieComedyOrConcert(bf.FullPath);
         }).ToArray();
 
         for (var index = 0; index < files.Length; index++)
@@ -1416,7 +1416,7 @@ internal sealed partial class Main : Form
         var files = mediaBackup.BackupFiles.Where(static bf =>
         {
             ArgumentException.ThrowIfNullOrEmpty(bf.FullPath);
-            return !bf.Deleted && Utils.File.IsVideo(bf.FullPath) && !Utils.File.IsSpecialFeature(bf.FullPath) && bf.FullPath.Contains("_Movies");
+            return !bf.Deleted && Utils.File.IsVideo(bf.FullPath) && !Utils.File.IsSpecialFeature(bf.FullPath) && Utils.File.IsMovieComedyOrConcert(bf.FullPath);
         }).ToArray();
 
         for (var index = 0; index < files.Length; index++)

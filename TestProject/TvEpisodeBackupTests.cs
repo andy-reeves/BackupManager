@@ -69,23 +69,4 @@ public sealed class TvEpisodeBackupTests
         Assert.Equal(isValidInputFileName, tvEpisodeBackupFile.IsValidFileName);
         if (refreshReturnValue) Assert.Equal(mediaFileNameOutputIfRenamed, tvEpisodeBackupFile.GetFileName());
     }
-
-    // [Fact]
-    /*public void CheckAllFilesForRename()
-    {
-        var files = _mediaBackup.GetBackupFiles(false).Where(static backupFile => backupFile.FullPath.Contains("_TV") && (Utils.File.IsVideo(backupFile.FullPath) || Utils.File.IsSubtitles(backupFile.FullPath))).ToArray();
-        Utils.Trace(files.Length.ToString());
-
-        for (var i = 14_000; i < files.Length; i++)
-        {
-            var backupFile = files[i];
-            Utils.Trace(i.ToString());
-            var mediaFile = Utils.MediaHelper.ExtendedBackupFileBase(backupFile.FullPath);
-            if (mediaFile is not TvEpisodeBackupFile) continue;
-
-            mediaFile.RefreshMediaInfo();
-            Assert.True(mediaFile.IsValidFileName);
-            Assert.Equal(backupFile.FileName, mediaFile.GetFileName());
-        }
-    }*/
 }

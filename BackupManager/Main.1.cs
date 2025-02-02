@@ -73,6 +73,7 @@ internal sealed partial class Main
     {
         try
         {
+            var sw = Stopwatch.StartNew();
             InitializeComponent();
             TraceConfiguration.Register();
 
@@ -146,6 +147,7 @@ internal sealed partial class Main
             // we switch it off and force the button to be clicked to turn it on again
             config.MonitoringCheckLatestVersions = !config.MonitoringCheckLatestVersions;
             VersionCheckingButton_Click(null, null);
+            Utils.Log($"Startup time = {sw.Elapsed}");
             Utils.TraceOut();
         }
         catch (Exception ex)
@@ -328,18 +330,7 @@ internal sealed partial class Main
     {
         Utils.TraceIn();
         mediaBackup.Watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName;
-
-        // check directories are writable and only monitor those that are
-        var writableDirectories = new List<string>();
-
-        foreach (var directory in config.DirectoriesToBackup)
-        {
-            if (Utils.Directory.IsWritable(directory))
-                writableDirectories.Add(directory);
-            else
-                Utils.LogWithPushover(BackupAction.ApplicationMonitoring, PushoverPriority.High, string.Format(Resources.DirectoryIsNotWritable, directory));
-        }
-        mediaBackup.Watcher.Directories = [.. writableDirectories];
+        mediaBackup.Watcher.Directories = [.. config.DirectoriesToBackup];
         mediaBackup.Watcher.ProcessChangesInterval = config.DirectoriesProcessChangesTimer;
         mediaBackup.Watcher.ScanInterval = config.DirectoriesScanTimer;
         mediaBackup.Watcher.Filter = "*.*";
