@@ -45,12 +45,12 @@ public sealed class MediaBackup
 
     internal readonly FileSystemWatcher Watcher = new();
 
-    internal string LastDuplicateDirectory;
-
     /// <summary>
     ///     The DateTime of the last full directories scan
     /// </summary>
     private string directoriesLastFullScan;
+
+    internal string LastDuplicateDirectory;
 
     private string mediaBackupPath;
 
@@ -161,17 +161,11 @@ public sealed class MediaBackup
                 var config = Config.Load(Path.Combine(directoryName, "Config.xml"));
                 if (config != null) mediaBackup.Config = config;
                 var s2 = new XmlSerializer(typeof(Collection<TmdbItem>));
-
-                using (FileStream stream2 = new(path + ".tv.xml", FileMode.Open, FileAccess.Read))
-                {
-                    mediaBackup.TmdbTvEpisodes = s2.Deserialize(stream2) as Collection<TmdbItem>;
-                }
+                using FileStream stream2 = new(path + ".tv.xml", FileMode.Open, FileAccess.Read);
+                mediaBackup.TmdbTvEpisodes = s2.Deserialize(stream2) as Collection<TmdbItem>;
                 var s3 = new XmlSerializer(typeof(Collection<TmdbItem>));
-
-                using (FileStream stream3 = new(path + ".movies.xml", FileMode.Open, FileAccess.Read))
-                {
-                    mediaBackup.TmdbMovies = s3.Deserialize(stream3) as Collection<TmdbItem>;
-                }
+                using FileStream stream3 = new(path + ".movies.xml", FileMode.Open, FileAccess.Read);
+                mediaBackup.TmdbMovies = s3.Deserialize(stream3) as Collection<TmdbItem>;
             }
             else
                 mediaBackup = Utils.MediaBackup;
@@ -208,7 +202,7 @@ public sealed class MediaBackup
 
             // key[1]==0 is the Specials folder which we don't check
             if (key[2] == "-1" || key[1] == "-1" || key[0] == "-1" || key[1] == "0")
-                TmdbTvEpisodes.Remove(episode);
+                _ = TmdbTvEpisodes.Remove(episode);
             else
             {
                 var result = dictionary.TryAdd(episode.Id, episode);
@@ -216,7 +210,7 @@ public sealed class MediaBackup
                 if (!result)
                 {
                     // remove the episode
-                    TmdbTvEpisodes.Remove(episode);
+                    _ = TmdbTvEpisodes.Remove(episode);
                 }
             }
         }
@@ -231,7 +225,7 @@ public sealed class MediaBackup
             if (!result)
             {
                 // remove the movie
-                TmdbMovies.Remove(m);
+                _ = TmdbMovies.Remove(m);
             }
         }
     }
@@ -858,7 +852,7 @@ public sealed class MediaBackup
         for (var i = TmdbTvEpisodes.Count - 1; i >= 0; i--)
         {
             var m = TmdbTvEpisodes[i];
-            if (m.Id.StartsWithIgnoreCase(key)) TmdbTvEpisodes.Remove(m);
+            if (m.Id.StartsWithIgnoreCase(key)) _ = TmdbTvEpisodes.Remove(m);
         }
     }
 

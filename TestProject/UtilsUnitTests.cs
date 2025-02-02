@@ -42,15 +42,15 @@ public sealed class UtilsUnitTests
         var directoryParent = Path.Combine(testDataPath, @"BrokenLinksDirectory");
         var directoryToCheck = Path.Combine(testDataPath, @"BrokenLinksDirectory\DirectoryToCheck");
         var directoryToTarget = Path.Combine(testDataPath, @"BrokenLinksDirectory\Target");
-        if (Directory.Exists(directoryParent)) Utils.Directory.Delete(directoryParent);
-        Directory.CreateDirectory(directoryToCheck);
-        Directory.CreateDirectory(directoryToTarget);
+        if (Directory.Exists(directoryParent)) _ = Utils.Directory.Delete(directoryParent);
+        _ = Directory.CreateDirectory(directoryToCheck);
+        _ = Directory.CreateDirectory(directoryToTarget);
         _ = Directory.CreateSymbolicLink(Path.Combine(directoryToCheck, "TestLink"), directoryToTarget);
         var linksDeleted = Utils.DeleteBrokenSymbolicLinks(directoryToCheck, false).ToArray();
         Assert.Empty(linksDeleted);
         Directory.Delete(directoryToTarget);
         linksDeleted = Utils.DeleteBrokenSymbolicLinks(directoryToCheck, false).ToArray();
-        Assert.Single(linksDeleted);
+        _ = Assert.Single(linksDeleted);
         if (Directory.Exists(directoryToCheck)) _ = Utils.Directory.Delete(directoryToCheck);
         if (Directory.Exists(directoryParent)) _ = Utils.Directory.Delete(directoryParent);
     }

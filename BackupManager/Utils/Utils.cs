@@ -537,7 +537,7 @@ internal static partial class Utils
     {
         ArgumentException.ThrowIfNullOrEmpty(diskName);
         var terminatedDiskName = EnsurePathHasATerminatingSeparator(diskName);
-        return backupFiles.Where(file => file.StartsWithIgnoreCase(terminatedDiskName)).OrderBy(Path.GetExtension).ToArray();
+        return [.. backupFiles.Where(file => file.StartsWithIgnoreCase(terminatedDiskName)).OrderBy(Path.GetExtension)];
     }
 
     /// <summary>

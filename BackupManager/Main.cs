@@ -1120,13 +1120,16 @@ internal sealed partial class Main : Form
         var totalSize = files.Sum(static file => file.Length);
         Utils.Log($"Total size of {files.Length} TV files is {totalSize.SizeSuffix()}");
 
-        files = mediaBackup.BackupFiles.Where(static file =>
-        {
-            ArgumentException.ThrowIfNullOrEmpty(file.FullPath);
+        files =
+        [
+            .. mediaBackup.BackupFiles.Where(static file =>
+            {
+                ArgumentException.ThrowIfNullOrEmpty(file.FullPath);
 
-            return Utils.File.IsVideo(file.FullPath) && !Utils.File.IsSpecialFeature(file.FullPath) && Utils.File.IsMovieComedyOrConcert(file.FullPath) &&
-                   !file.FullPath.ContainsAny("[h265]", "[VP9]", "[VC1]") && !file.Deleted;
-        }).OrderBy(static f => f.Length).ToArray();
+                return Utils.File.IsVideo(file.FullPath) && !Utils.File.IsSpecialFeature(file.FullPath) && Utils.File.IsMovieComedyOrConcert(file.FullPath) &&
+                       !file.FullPath.ContainsAny("[h265]", "[VP9]", "[VC1]") && !file.Deleted;
+            }).OrderBy(static f => f.Length)
+        ];
 
         foreach (var f in files)
         {
@@ -1458,17 +1461,10 @@ internal sealed partial class Main : Form
 
     private void ClearCacheForTvShowButton_Click(object sender, EventArgs e)
     {
-        if (tvShowTextBox.Text.HasValue())
-        {
-            /* mediaBackup.SetTvShowRuntime("71489", 42); // Law and order criminal intent
+        if (tvShowTextBox.Text.HasNoValue()) return;
 
-             mediaBackup.SetTvShowRuntime("72389", 22); // 3rd rock
-             mediaBackup.Save(mainCt);
-            */
-            // = "72389";
-            // // 3rd Rock
-            mediaBackup.RemoveTvShowFromCache(tvShowTextBox.Text);
-            mediaBackup.Save(mainCt);
-        }
+        // "71489" - Law and order criminal intent and "72389" - 3rd rock
+        mediaBackup.RemoveTvShowFromCache(tvShowTextBox.Text);
+        mediaBackup.Save(mainCt);
     }
 }

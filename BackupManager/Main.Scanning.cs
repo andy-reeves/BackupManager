@@ -109,7 +109,7 @@ internal sealed partial class Main
 
             try
             {
-                if (!ProcessFilesInternalFinal(scanPathForVideoCodec, ct, ref file, autoScan)) continue;
+                if (!ProcessFilesInternalFinal(scanPathForVideoCodec, ref file, autoScan, ct)) continue;
 
                 directoryScanning = DirectoryScanning(scanId, file, directoryScanning, files, ref firstDir, ref scanInfo);
                 UpdateStatusLabel(ct, string.Format(Resources.Processing, Path.GetDirectoryName(file)), fileCounterForMultiThreadProcessing);
@@ -130,7 +130,7 @@ internal sealed partial class Main
         return Utils.TraceOut(true);
     }
 
-    private bool ProcessFilesInternalFinal(bool scanPathForVideoCodec, CancellationToken ct, ref string file, bool autoScan)
+    private bool ProcessFilesInternalFinal(bool scanPathForVideoCodec, ref string file, bool autoScan, CancellationToken ct)
     {
         if (!ProcessFilesMaxPathCheck(file)) return false;
         if (!ProcessFilesFixedSpaceCheck(ref file)) return false;
