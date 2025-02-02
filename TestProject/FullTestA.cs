@@ -49,7 +49,7 @@ public sealed class FullTestA
         var file8SrtPathOnSource = Path.Combine(targetDirectory,
             @"DirectoryB\_TV\File8 {tvdb-250487}\Season 1\File8 s01e01 [Bluray-1080p Remux][DTS-HD MA 5.1][h264].en.srt");
         Assert.True(File.Exists(file8SrtPathOnSource));
-        Assert.Equal(7, mediaBackup.BackupFiles.Count);
+        Assert.Equal(8, mediaBackup.BackupFiles.Count);
         Assert.Equal(10, mediaBackup.DirectoryScans.Count);
         Assert.NotNull(mediaBackup.DirectoriesLastFullScan);
 
@@ -91,14 +91,14 @@ public sealed class FullTestA
         Assert.Equal(2, files.Length);
 
         // Step 5 - Assert status after checking disk with delete option
-        Assert.Equal(5, mediaBackup.GetBackupFilesWithDiskEmpty().Count());
+        Assert.Equal(6, mediaBackup.GetBackupFilesWithDiskEmpty().Count());
 
         // Step 6 - Copy files
         mainForm.CopyFiles(true, ct);
 
         // Step 7 - Assert
         // only 1 srt file because we didn't change it on the scan where we renamed the file
-        Assert.Empty(mediaBackup.GetBackupFilesWithDiskEmpty());
+        _ = Assert.Single(mediaBackup.GetBackupFilesWithDiskEmpty());
         var path4 = Utils.Config.BackupDisk;
         files = Utils.File.GetFiles(path4, "*", SearchOption.AllDirectories, 0, 0, ct);
         Assert.Equal(7, files.Length);
@@ -110,7 +110,7 @@ public sealed class FullTestA
         // now delete one of the files from the source directory and scan again
         _ = Utils.File.Delete(file5PathOnSource);
         _ = mainForm.CheckConnectedDisk(true, ct);
-        Assert.Single(mediaBackup.GetBackupFilesWithDiskEmpty());
+        Assert.Equal(2, mediaBackup.GetBackupFilesWithDiskEmpty().Count());
         files = Utils.File.GetFiles(Utils.Config.BackupDisk, ct);
         Assert.Equal(6, files.Length);
         var file4PathOnBackupDisk = Path.Combine(Utils.Config.BackupDisk, @"backup 1001\_Movies\File4.txt");
@@ -118,13 +118,13 @@ public sealed class FullTestA
         var destFileName = file4PathOnBackupDisk + "toRename";
         Assert.True(Utils.File.Copy(file4PathOnBackupDisk, destFileName, ct));
         _ = mainForm.CheckConnectedDisk(true, ct);
-        Assert.Single(mediaBackup.GetBackupFilesWithDiskEmpty());
+        Assert.Equal(2, mediaBackup.GetBackupFilesWithDiskEmpty().Count());
         files = Utils.File.GetFiles(Utils.Config.BackupDisk, ct);
         Assert.Equal(6, files.Length);
         var destFileName1 = file4PathOnBackupDisk + "toRename";
         Assert.True(Utils.File.Move(file4PathOnBackupDisk, destFileName1));
         _ = mainForm.CheckConnectedDisk(true, ct);
-        Assert.Single(mediaBackup.GetBackupFilesWithDiskEmpty());
+        Assert.Equal(2, mediaBackup.GetBackupFilesWithDiskEmpty().Count());
         files = Utils.File.GetFiles(Utils.Config.BackupDisk, ct);
         Assert.Equal(6, files.Length);
 
@@ -132,7 +132,7 @@ public sealed class FullTestA
         Assert.True(Utils.File.Delete(file4PathOnSourceDisk));
         _ = Directory.CreateDirectory(Path.Combine(targetDirectory, backupDisk, @"backup 1001\_Movies\EmptyDirectory"));
         _ = mainForm.CheckConnectedDisk(true, ct);
-        Assert.Single(mediaBackup.GetBackupFilesWithDiskEmpty());
+        Assert.Equal(2, mediaBackup.GetBackupFilesWithDiskEmpty().Count());
         files = Utils.File.GetFiles(Utils.Config.BackupDisk, ct);
         Assert.Equal(5, files.Length);
         _ = mainForm.EnsureConnectedBackupDisk("backup 1001");

@@ -527,10 +527,10 @@ internal static partial class Utils
         internal static ExtendedBackupFileBase ExtendedBackupFileBase(string path)
         {
             ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
-            if (File.IsTv(path)) return path.EndsWithIgnoreCase(".srt") ? new SubtitlesBackupFile(path) : new TvEpisodeBackupFile(path);
-            if (File.IsMovieComedyOrConcert(path)) return path.EndsWithIgnoreCase(".srt") ? new SubtitlesBackupFile(path) : new MovieBackupFile(path);
+            if (File.IsSubtitles(path)) return new SubtitlesBackupFile(path);
+            if (File.IsMovieComedyOrConcert(path)) return new MovieBackupFile(path);
 
-            return null;
+            return File.IsTv(path) ? new TvEpisodeBackupFile(path) : null;
         }
 
         private static decimal? FormatAudioChannelsFromAudioChannelPositions(MediaInfoModel mediaInfo)
