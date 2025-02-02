@@ -1399,7 +1399,7 @@ internal sealed partial class Main : Form
         var files = mediaBackup.BackupFiles.Where(static bf =>
         {
             ArgumentException.ThrowIfNullOrEmpty(bf.FullPath);
-            return !bf.Deleted && Utils.File.IsVideo(bf.FullPath) && !Utils.File.IsSpecialFeature(bf.FullPath) && Utils.File.IsMovieComedyOrConcert(bf.FullPath);
+            return !bf.Deleted && Utils.File.IsMovieComedyOrConcert(bf.FullPath) && !Utils.File.IsSpecialFeature(bf.FullPath);
         }).ToArray();
 
         for (var index = 0; index < files.Length; index++)
@@ -1419,7 +1419,7 @@ internal sealed partial class Main : Form
         var files = mediaBackup.BackupFiles.Where(static bf =>
         {
             ArgumentException.ThrowIfNullOrEmpty(bf.FullPath);
-            return !bf.Deleted && Utils.File.IsVideo(bf.FullPath) && !Utils.File.IsSpecialFeature(bf.FullPath) && Utils.File.IsMovieComedyOrConcert(bf.FullPath);
+            return !bf.Deleted && Utils.File.IsMovieComedyOrConcert(bf.FullPath) && !Utils.File.IsSpecialFeature(bf.FullPath);
         }).ToArray();
 
         for (var index = 0; index < files.Length; index++)
@@ -1441,7 +1441,7 @@ internal sealed partial class Main : Form
         var files = mediaBackup.BackupFiles.Where(static bf =>
         {
             ArgumentException.ThrowIfNullOrEmpty(bf.FullPath);
-            return !bf.Deleted && Utils.File.IsVideo(bf.FullPath) && !Utils.File.IsSpecialFeature(bf.FullPath) && bf.FullPath.Contains("_TV");
+            return !bf.Deleted && Utils.File.IsTv(bf.FullPath) && !Utils.File.IsSpecialFeature(bf.FullPath);
         }).ToArray();
 
         for (var index = 0; index < files.Length; index++)
