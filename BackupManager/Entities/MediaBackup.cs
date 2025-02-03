@@ -845,7 +845,7 @@ public sealed class MediaBackup
         }
     }
 
-    public void RemoveTvShowFromCache(string tvdbId)
+    public void RemoveTvShowFromCache(int tvdbId)
     {
         var key = $"{tvdbId}:";
 
@@ -856,7 +856,7 @@ public sealed class MediaBackup
         }
     }
 
-    internal void SetTvShowRuntime(string tvdbId, int runtime)
+    internal void SetTvShowRuntime(int tvdbId, int runtime)
     {
         var key = $"{tvdbId}:";
 

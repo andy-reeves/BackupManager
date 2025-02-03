@@ -147,9 +147,10 @@
             removeMetadataButton = new System.Windows.Forms.Button();
             refreshTvEpisodesButton = new System.Windows.Forms.Button();
             clearCacheForTvShowButton = new System.Windows.Forms.Button();
-            tvShowTextBox = new System.Windows.Forms.TextBox();
             setTvShowRuntimeButton = new System.Windows.Forms.Button();
             tvShowRuntimeTextBox = new System.Windows.Forms.TextBox();
+            tvShowComboBox = new System.Windows.Forms.ComboBox();
+            label18 = new System.Windows.Forms.Label();
             pushoverGroupBox.SuspendLayout();
             groupBox2.SuspendLayout();
             listFilesInDirectoryGroupBox.SuspendLayout();
@@ -497,7 +498,7 @@
             // 
             // button2
             // 
-            button2.Location = new System.Drawing.Point(1156, 318);
+            button2.Location = new System.Drawing.Point(1143, 559);
             button2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             button2.Name = "button2";
             button2.Size = new System.Drawing.Size(232, 27);
@@ -534,7 +535,7 @@
             // 
             // videoFilesCheckNameButton
             // 
-            videoFilesCheckNameButton.Location = new System.Drawing.Point(1156, 343);
+            videoFilesCheckNameButton.Location = new System.Drawing.Point(874, 559);
             videoFilesCheckNameButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             videoFilesCheckNameButton.Name = "videoFilesCheckNameButton";
             videoFilesCheckNameButton.Size = new System.Drawing.Size(232, 27);
@@ -583,7 +584,7 @@
             // 
             // button1
             // 
-            button1.Location = new System.Drawing.Point(1156, 413);
+            button1.Location = new System.Drawing.Point(55, 559);
             button1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             button1.Name = "button1";
             button1.Size = new System.Drawing.Size(232, 27);
@@ -595,7 +596,7 @@
             // 
             // button3
             // 
-            button3.Location = new System.Drawing.Point(1156, 382);
+            button3.Location = new System.Drawing.Point(314, 559);
             button3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             button3.Name = "button3";
             button3.Size = new System.Drawing.Size(232, 27);
@@ -1045,7 +1046,7 @@
             // statusStrip
             // 
             statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripStatusLabel, toolStripProgressBar });
-            statusStrip.Location = new System.Drawing.Point(0, 526);
+            statusStrip.Location = new System.Drawing.Point(0, 539);
             statusStrip.Name = "statusStrip";
             statusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
             statusStrip.Size = new System.Drawing.Size(1416, 22);
@@ -1383,7 +1384,7 @@
             // 
             // h264FilesButton
             // 
-            h264FilesButton.Location = new System.Drawing.Point(1156, 367);
+            h264FilesButton.Location = new System.Drawing.Point(589, 559);
             h264FilesButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             h264FilesButton.Name = "h264FilesButton";
             h264FilesButton.Size = new System.Drawing.Size(232, 27);
@@ -1452,7 +1453,7 @@
             // 
             // clearCacheForTvShowButton
             // 
-            clearCacheForTvShowButton.Location = new System.Drawing.Point(1240, 334);
+            clearCacheForTvShowButton.Location = new System.Drawing.Point(1193, 359);
             clearCacheForTvShowButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             clearCacheForTvShowButton.Name = "clearCacheForTvShowButton";
             clearCacheForTvShowButton.Size = new System.Drawing.Size(147, 27);
@@ -1461,21 +1462,12 @@
             clearCacheForTvShowButton.UseVisualStyleBackColor = true;
             clearCacheForTvShowButton.Click += ClearCacheForTvShowButton_Click;
             // 
-            // tvShowTextBox
-            // 
-            tvShowTextBox.Location = new System.Drawing.Point(1156, 337);
-            tvShowTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            tvShowTextBox.Name = "tvShowTextBox";
-            tvShowTextBox.Size = new System.Drawing.Size(77, 23);
-            tvShowTextBox.TabIndex = 115;
-            tvShowTextBox.Text = "72389";
-            // 
             // setTvShowRuntimeButton
             // 
-            setTvShowRuntimeButton.Location = new System.Drawing.Point(1239, 367);
+            setTvShowRuntimeButton.Location = new System.Drawing.Point(1210, 393);
             setTvShowRuntimeButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             setTvShowRuntimeButton.Name = "setTvShowRuntimeButton";
-            setTvShowRuntimeButton.Size = new System.Drawing.Size(147, 27);
+            setTvShowRuntimeButton.Size = new System.Drawing.Size(186, 27);
             setTvShowRuntimeButton.TabIndex = 116;
             setTvShowRuntimeButton.Text = "Set TV show runtime";
             setTvShowRuntimeButton.UseVisualStyleBackColor = true;
@@ -1483,21 +1475,41 @@
             // 
             // tvShowRuntimeTextBox
             // 
-            tvShowRuntimeTextBox.Location = new System.Drawing.Point(1199, 367);
+            tvShowRuntimeTextBox.Location = new System.Drawing.Point(1145, 394);
             tvShowRuntimeTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             tvShowRuntimeTextBox.Name = "tvShowRuntimeTextBox";
             tvShowRuntimeTextBox.Size = new System.Drawing.Size(32, 23);
             tvShowRuntimeTextBox.TabIndex = 117;
             tvShowRuntimeTextBox.Text = "48";
             // 
+            // tvShowComboBox
+            // 
+            tvShowComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            tvShowComboBox.FormattingEnabled = true;
+            tvShowComboBox.Location = new System.Drawing.Point(1143, 332);
+            tvShowComboBox.Name = "tvShowComboBox";
+            tvShowComboBox.Size = new System.Drawing.Size(253, 23);
+            tvShowComboBox.TabIndex = 118;
+            // 
+            // label18
+            // 
+            label18.AutoSize = true;
+            label18.Location = new System.Drawing.Point(1179, 397);
+            label18.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label18.Name = "label18";
+            label18.Size = new System.Drawing.Size(33, 15);
+            label18.TabIndex = 119;
+            label18.Text = "mins";
+            // 
             // Main
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(1416, 548);
+            ClientSize = new System.Drawing.Size(1416, 561);
+            Controls.Add(label18);
+            Controls.Add(tvShowComboBox);
             Controls.Add(tvShowRuntimeTextBox);
             Controls.Add(setTvShowRuntimeButton);
-            Controls.Add(tvShowTextBox);
             Controls.Add(clearCacheForTvShowButton);
             Controls.Add(refreshTvEpisodesButton);
             Controls.Add(button3);
@@ -1565,8 +1577,8 @@
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             MaximizeBox = false;
-            MaximumSize = new System.Drawing.Size(1432, 587);
-            MinimumSize = new System.Drawing.Size(1432, 507);
+            MaximumSize = new System.Drawing.Size(1432, 600);
+            MinimumSize = new System.Drawing.Size(1432, 600);
             Name = "Main";
             SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -1712,9 +1724,10 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button refreshTvEpisodesButton;
         private System.Windows.Forms.Button clearCacheForTvShowButton;
-        private System.Windows.Forms.TextBox tvShowTextBox;
         private System.Windows.Forms.Button setTvShowRuntimeButton;
         private System.Windows.Forms.TextBox tvShowRuntimeTextBox;
+        private System.Windows.Forms.ComboBox tvShowComboBox;
+        private System.Windows.Forms.Label label18;
     }
 }
 

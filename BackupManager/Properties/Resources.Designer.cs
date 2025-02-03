@@ -178,6 +178,25 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to clear the cache for TV show
+        ///    {0}?.
+        /// </summary>
+        internal static string ClearCacheForTvShowQuestion {
+            get {
+                return ResourceManager.GetString("ClearCacheForTvShowQuestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clear TV show cache.
+        /// </summary>
+        internal static string ClearCacheForTvShowTitle {
+            get {
+                return ResourceManager.GetString("ClearCacheForTvShowTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Completed..
         /// </summary>
         internal static string Completed {
@@ -1032,7 +1051,8 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Are you sure you want to set the runtime to {0} for TV show {1}?.
+        ///   Looks up a localized string similar to Are you sure you want to set the runtime to {0} mins for TV show
+        ///    {1}?.
         /// </summary>
         internal static string SetRuntimeForAsset {
             get {

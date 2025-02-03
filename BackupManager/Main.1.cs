@@ -99,6 +99,16 @@ internal sealed partial class Main
             directoriesComboBox.Items.AddRange([.. directoriesArray]);
             restoreDirectoryComboBox.Items.AddRange([.. directoriesArray]);
             scanDirectoryComboBox.Items.AddRange([.. directoriesArray]);
+            var tvShowNames = new Dictionary<string, TvEpisodeBackupFile>();
+
+            foreach (var fileFullPath in mediaBackup.BackupFiles.Select(static file => file.FullPath).Where(static fileFullPath => Utils.File.IsTv(fileFullPath) &&
+                         !Utils.File.IsSpecialFeature(fileFullPath)))
+            {
+                if (Utils.MediaHelper.ExtendedBackupFileBase(fileFullPath) is not TvEpisodeBackupFile tvEp) continue;
+
+                tvShowNames.TryAdd($"{Convert.ToInt32(tvEp.TvdbId),0:D6} - {tvEp.Title}", tvEp);
+            }
+            tvShowComboBox.Items.AddRange([.. tvShowNames.OrderBy(static i => i.Value.Title).ToDictionary(static i => i.Key, static i => i.Value).Keys]);
 
             foreach (var file in mediaBackup.BackupFiles.Where(static file => file.FullPath.Length > Utils.MAX_PATH))
             {
