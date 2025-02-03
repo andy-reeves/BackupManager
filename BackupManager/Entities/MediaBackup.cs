@@ -200,19 +200,25 @@ public sealed class MediaBackup
             var episode = TmdbTvEpisodes[index];
             var key = episode.Id.Split(':');
 
-            // key[1]==0 is the Specials folder which we don't check
+            // key[0] is the TVdbId
+            // key[1] is the season number
+            // key[2] is the episode number
+            // we don't use the edition in the cached results
+            // key[1]==0 is the Specials folder which we don't check runtimes for
             if (key[2] == "-1" || key[1] == "-1" || key[0] == "-1" || key[1] == "0")
-                _ = TmdbTvEpisodes.Remove(episode);
+            {
+                Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
+                    $"TV episode with -1 for id, season or episode or season 0 detected in the runtime cache {episode.Id}");
+            }
             else
             {
-                var result = dictionary.TryAdd(episode.Id, episode);
+                if (dictionary.TryAdd(episode.Id, episode)) continue;
 
-                if (!result)
-                {
-                    // remove the episode
-                    _ = TmdbTvEpisodes.Remove(episode);
-                }
+                Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, $"Duplicate TV episode detected in the runtime cache {episode.Id}");
             }
+
+            // remove the episode
+            _ = TmdbTvEpisodes.Remove(episode);
         }
         var dictionary2 = new Dictionary<string, TmdbItem>();
 
@@ -221,12 +227,12 @@ public sealed class MediaBackup
         {
             var m = TmdbMovies[index];
             var result = dictionary2.TryAdd(m.Id, m);
+            if (result) continue;
 
-            if (!result)
-            {
-                // remove the movie
-                _ = TmdbMovies.Remove(m);
-            }
+            Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, $"Duplicate Movie detected in the runtime cache {m.Id}");
+
+            // remove the movie
+            _ = TmdbMovies.Remove(m);
         }
     }
 
