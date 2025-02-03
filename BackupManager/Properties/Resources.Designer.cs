@@ -1032,6 +1032,24 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to set the runtime to {0} for TV show {1}?.
+        /// </summary>
+        internal static string SetRuntimeForAsset {
+            get {
+                return ResourceManager.GetString("SetRuntimeForAsset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Setting TV show runtime.
+        /// </summary>
+        internal static string SetRuntimeTitle {
+            get {
+                return ResourceManager.GetString("SetRuntimeTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Skipping {0}.
         /// </summary>
         internal static string Skipping {

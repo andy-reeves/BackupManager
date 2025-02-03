@@ -1467,4 +1467,17 @@ internal sealed partial class Main : Form
         mediaBackup.RemoveTvShowFromCache(tvShowTextBox.Text);
         mediaBackup.Save(mainCt);
     }
+
+    private void setTvShowRuntimeButton_Click(object sender, EventArgs e)
+    {
+        // "71489" - Law and order criminal intent and "72389" - 3rd rock
+        if (tvShowTextBox.Text.HasNoValue() || tvShowRuntimeTextBox.Text.HasNoValue()) return;
+
+        if (MessageBox.Show(string.Format(Resources.SetRuntimeForAsset, tvShowRuntimeTextBox.Text, tvShowTextBox.Text), Resources.SetRuntimeTitle,
+                MessageBoxButtons.YesNo) != DialogResult.Yes)
+            return;
+
+        mediaBackup.SetTvShowRuntime(tvShowTextBox.Text, Convert.ToInt32(tvShowRuntimeTextBox.Text));
+        mediaBackup.Save(mainCt);
+    }
 }

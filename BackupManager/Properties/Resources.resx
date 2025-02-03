@@ -503,4 +503,10 @@ Skipping {3} as not enough free space</value>
   <data name="ScheduledBackupAsyncDoingAFullScan" xml:space="preserve">
     <value>Doing a full scan</value>
   </data>
+  <data name="SetRuntimeForAsset" xml:space="preserve">
+    <value>Are you sure you want to set the runtime to {0} for TV show {1}?</value>
+  </data>
+  <data name="SetRuntimeTitle" xml:space="preserve">
+    <value>Setting TV show runtime</value>
+  </data>
 </root>

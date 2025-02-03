@@ -148,6 +148,8 @@
             refreshTvEpisodesButton = new System.Windows.Forms.Button();
             clearCacheForTvShowButton = new System.Windows.Forms.Button();
             tvShowTextBox = new System.Windows.Forms.TextBox();
+            setTvShowRuntimeButton = new System.Windows.Forms.Button();
+            tvShowRuntimeTextBox = new System.Windows.Forms.TextBox();
             pushoverGroupBox.SuspendLayout();
             groupBox2.SuspendLayout();
             listFilesInDirectoryGroupBox.SuspendLayout();
@@ -1468,11 +1470,33 @@
             tvShowTextBox.TabIndex = 115;
             tvShowTextBox.Text = "72389";
             // 
+            // setTvShowRuntimeButton
+            // 
+            setTvShowRuntimeButton.Location = new System.Drawing.Point(1239, 367);
+            setTvShowRuntimeButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            setTvShowRuntimeButton.Name = "setTvShowRuntimeButton";
+            setTvShowRuntimeButton.Size = new System.Drawing.Size(147, 27);
+            setTvShowRuntimeButton.TabIndex = 116;
+            setTvShowRuntimeButton.Text = "Set TV show runtime";
+            setTvShowRuntimeButton.UseVisualStyleBackColor = true;
+            setTvShowRuntimeButton.Click += setTvShowRuntimeButton_Click;
+            // 
+            // tvShowRuntimeTextBox
+            // 
+            tvShowRuntimeTextBox.Location = new System.Drawing.Point(1199, 367);
+            tvShowRuntimeTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tvShowRuntimeTextBox.Name = "tvShowRuntimeTextBox";
+            tvShowRuntimeTextBox.Size = new System.Drawing.Size(32, 23);
+            tvShowRuntimeTextBox.TabIndex = 117;
+            tvShowRuntimeTextBox.Text = "48";
+            // 
             // Main
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1416, 548);
+            Controls.Add(tvShowRuntimeTextBox);
+            Controls.Add(setTvShowRuntimeButton);
             Controls.Add(tvShowTextBox);
             Controls.Add(clearCacheForTvShowButton);
             Controls.Add(refreshTvEpisodesButton);
@@ -1689,6 +1713,8 @@
         private System.Windows.Forms.Button refreshTvEpisodesButton;
         private System.Windows.Forms.Button clearCacheForTvShowButton;
         private System.Windows.Forms.TextBox tvShowTextBox;
+        private System.Windows.Forms.Button setTvShowRuntimeButton;
+        private System.Windows.Forms.TextBox tvShowRuntimeTextBox;
     }
 }
 
