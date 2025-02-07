@@ -201,11 +201,12 @@ public sealed class MediaBackup
             var key = episode.Id.Split(':');
 
             // key[0] is the TVdbId
-            // key[1] is the season number
-            // key[2] is the episode number
+            // key[1] is the edition
+            // key[2] is the season number
+            // key[3] is the episode number
             // we don't use the edition in the cached results
             // key[1]==0 is the Specials folder which we don't check runtimes for
-            if (key[2] == "-1" || key[1] == "-1" || key[0] == "-1" || key[1] == "0")
+            if (key[3] == "-1" || key[2] == "-1" || key[0] == "-1" || key[2] == "0")
             {
                 Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
                     $"TV episode with -1 for id, season or episode or season 0 detected in the runtime cache {episode.Id}");
@@ -286,15 +287,17 @@ public sealed class MediaBackup
     {
         if (!Utils.File.IsVideo(path)) return -1;
 
-        var tmdbId = Utils.MediaHelper.GetTmdbId(path);
+        var tmdbId = Utils.MediaHelper.GetTmdbId(path, out var edition);
         if (tmdbId == -1) return -1;
+
+        var compoundId = $"{tmdbId}:{edition}";
 
         lock (lockObject)
         {
-            var m = TmdbMovies.FirstOrDefault(x => x.Id == tmdbId.ToString()) ?? new TmdbItem(tmdbId.ToString());
+            var m = TmdbMovies.FirstOrDefault(x => x.Id == compoundId) ?? new TmdbItem(compoundId);
             if (m.Runtime > 0 && useCache) return m.Runtime;
 
-            Utils.Log(BackupAction.ProcessFiles, $"Getting runtime from TMDB API for {tmdbId} - {path}");
+            Utils.Log(BackupAction.ProcessFiles, $"Getting runtime from TMDB API for {tmdbId} {edition} - {path}");
             var r = Utils.MediaHelper.GetMovieRuntimeFromTmdbApi(tmdbId);
             if (r == 1) return -1;
 
@@ -805,19 +808,19 @@ public sealed class MediaBackup
     {
         if (!Utils.File.IsVideo(path)) return -1;
 
-        var id = Utils.MediaHelper.GetTvdbInfo(path, out var seasonNumber, out var episodeNumber);
+        var id = Utils.MediaHelper.GetTvdbInfo(path, out string edition, out var seasonNumber, out var episodeNumber);
 
         // season 0 is the specials
         if (id == -1 || seasonNumber == 0) return -1;
 
-        var compoundId = $"{id}:{seasonNumber}:{episodeNumber}";
+        var compoundId = $"{id}:{edition}:{seasonNumber}:{episodeNumber}";
 
         lock (lockObject)
         {
             var m = TmdbTvEpisodes.FirstOrDefault(x => x.Id == compoundId) ?? new TmdbItem(compoundId);
             if (m.Runtime > 0 && useCache) return m.Runtime;
 
-            Utils.Log(BackupAction.ProcessFiles, $"Getting runtime from TMDB API for {id}, season {seasonNumber}, episode {episodeNumber} - {path}");
+            Utils.Log(BackupAction.ProcessFiles, $"Getting runtime from TMDB API for {id}, edition {edition}, season {seasonNumber}, episode {episodeNumber} - {path}");
             var r = Utils.MediaHelper.GetTvEpisodeRuntimeFromTmdbApi(id, seasonNumber, episodeNumber);
             if (r == -1) return -1;
 

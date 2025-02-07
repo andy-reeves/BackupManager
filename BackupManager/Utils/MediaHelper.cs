@@ -287,14 +287,17 @@ internal static partial class Utils
         ///     Returns the TmdbId for the movie from the path provided
         /// </summary>
         /// <param name="path">The path to the movie file</param>
+        /// <param name="edition"></param>
         /// <returns>-1 if the file is not found or has no TmdbId or is a Special Feature otherwise returns the TmdbId</returns>
-        internal static int GetTmdbId(string path)
+        internal static int GetTmdbId(string path, out string edition)
         {
             var file = ExtendedBackupFileBase(path);
+            edition = string.Empty;
             if (file is not MovieBackupFile movieFile) return -1;
             if (movieFile.SpecialFeature != SpecialFeature.None) return -1;
             if (movieFile.TmdbId.HasNoValue()) return -1;
 
+            if (movieFile.Edition != Edition.Unknown) edition = movieFile.Edition.ToString();
             return Convert.ToInt32(movieFile.TmdbId);
         }
 
@@ -302,14 +305,16 @@ internal static partial class Utils
         ///     Returns the TvdbId for the TV series from the path provided
         /// </summary>
         /// <param name="path">The path to the TV episode file</param>
+        /// <param name="edition"></param>
         /// <param name="seasonNumber"></param>
         /// <param name="episodeNumber"></param>
         /// <returns>
         ///     -1 if the file is not found or has no TvdbId or is a Special Feature otherwise returns the TvdbId. If  the
         ///     episode is a range of episodes like e01-e03 then we return -1
         /// </returns>
-        internal static int GetTvdbInfo(string path, out int seasonNumber, out int episodeNumber)
+        internal static int GetTvdbInfo(string path, out string edition, out int seasonNumber, out int episodeNumber)
         {
+            edition = string.Empty;
             seasonNumber = -1;
             episodeNumber = -1;
             var file = ExtendedBackupFileBase(path);
@@ -317,6 +322,7 @@ internal static partial class Utils
             if (tvEpisodeBackupFile.SpecialFeature != SpecialFeature.None) return -1;
             if (tvEpisodeBackupFile.TvdbId.HasNoValue() || !tvEpisodeBackupFile.IsValidFileName) return -1;
 
+            edition = tvEpisodeBackupFile.Edition;
             seasonNumber = Convert.ToInt32(tvEpisodeBackupFile.Season);
             var result = int.TryParse(tvEpisodeBackupFile.Episode[1..], out var parsedResult);
 

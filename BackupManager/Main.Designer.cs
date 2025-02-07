@@ -450,7 +450,7 @@
             // 
             // openLogFileButton
             // 
-            openLogFileButton.Location = new System.Drawing.Point(589, 466);
+            openLogFileButton.Location = new System.Drawing.Point(587, 455);
             openLogFileButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             openLogFileButton.Name = "openLogFileButton";
             openLogFileButton.Size = new System.Drawing.Size(234, 27);
@@ -498,7 +498,7 @@
             // 
             // button2
             // 
-            button2.Location = new System.Drawing.Point(1143, 559);
+            button2.Location = new System.Drawing.Point(872, 549);
             button2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             button2.Name = "button2";
             button2.Size = new System.Drawing.Size(232, 27);
@@ -506,7 +506,6 @@
             button2.Text = "Check all files for Dolby Vision Profile5";
             toolTip.SetToolTip(button2, "Checks any file with [DV] in the path for Profile5. Can take 20 secs per file");
             button2.UseVisualStyleBackColor = true;
-            button2.Visible = false;
             button2.Click += DvProfile5CheckButton_Click;
             // 
             // createNewBackupDiskButton
@@ -535,7 +534,7 @@
             // 
             // videoFilesCheckNameButton
             // 
-            videoFilesCheckNameButton.Location = new System.Drawing.Point(874, 559);
+            videoFilesCheckNameButton.Location = new System.Drawing.Point(872, 519);
             videoFilesCheckNameButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             videoFilesCheckNameButton.Name = "videoFilesCheckNameButton";
             videoFilesCheckNameButton.Size = new System.Drawing.Size(232, 27);
@@ -543,7 +542,6 @@
             videoFilesCheckNameButton.Text = "Check all video files for correct name";
             toolTip.SetToolTip(videoFilesCheckNameButton, "Checks all files for correct video codec in the path. Can take 20secs per file");
             videoFilesCheckNameButton.UseVisualStyleBackColor = true;
-            videoFilesCheckNameButton.Visible = false;
             videoFilesCheckNameButton.Click += VideoFilesCheckNameButton_Click;
             // 
             // scanDirectoriesWithChangesButton
@@ -572,7 +570,7 @@
             // 
             // saveButton
             // 
-            saveButton.Location = new System.Drawing.Point(312, 466);
+            saveButton.Location = new System.Drawing.Point(312, 455);
             saveButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             saveButton.Name = "saveButton";
             saveButton.Size = new System.Drawing.Size(234, 27);
@@ -584,26 +582,24 @@
             // 
             // button1
             // 
-            button1.Location = new System.Drawing.Point(55, 559);
+            button1.Location = new System.Drawing.Point(314, 519);
             button1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             button1.Name = "button1";
             button1.Size = new System.Drawing.Size(232, 27);
             button1.TabIndex = 111;
             button1.Text = "Refreshes Movie runtimes from TmdbAPI";
             button1.UseVisualStyleBackColor = true;
-            button1.Visible = false;
             button1.Click += RefreshMovieRuntimesFromTmdbApi_Click;
             // 
             // button3
             // 
-            button3.Location = new System.Drawing.Point(314, 559);
+            button3.Location = new System.Drawing.Point(314, 488);
             button3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             button3.Name = "button3";
             button3.Size = new System.Drawing.Size(232, 27);
             button3.TabIndex = 112;
             button3.Text = "Check all movie files runtimes";
             button3.UseVisualStyleBackColor = true;
-            button3.Visible = false;
             button3.Click += CheckAllMovieFilesRuntimeButton_Click;
             // 
             // scheduledBackupTimerButton
@@ -1046,7 +1042,7 @@
             // statusStrip
             // 
             statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripStatusLabel, toolStripProgressBar });
-            statusStrip.Location = new System.Drawing.Point(0, 539);
+            statusStrip.Location = new System.Drawing.Point(0, 579);
             statusStrip.Name = "statusStrip";
             statusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
             statusStrip.Size = new System.Drawing.Size(1416, 22);
@@ -1384,14 +1380,13 @@
             // 
             // h264FilesButton
             // 
-            h264FilesButton.Location = new System.Drawing.Point(589, 559);
+            h264FilesButton.Location = new System.Drawing.Point(589, 488);
             h264FilesButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             h264FilesButton.Name = "h264FilesButton";
             h264FilesButton.Size = new System.Drawing.Size(232, 27);
             h264FilesButton.TabIndex = 103;
             h264FilesButton.Text = "Check all files for TV/Movies h264 size";
             h264FilesButton.UseVisualStyleBackColor = true;
-            h264FilesButton.Visible = false;
             h264FilesButton.Click += H264FilesButton_Click;
             // 
             // checkSubtitlesButton
@@ -1419,7 +1414,7 @@
             // 
             // extractChaptersButton
             // 
-            extractChaptersButton.Location = new System.Drawing.Point(872, 454);
+            extractChaptersButton.Location = new System.Drawing.Point(872, 455);
             extractChaptersButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             extractChaptersButton.Name = "extractChaptersButton";
             extractChaptersButton.Size = new System.Drawing.Size(232, 27);
@@ -1430,7 +1425,7 @@
             // 
             // removeMetadataButton
             // 
-            removeMetadataButton.Location = new System.Drawing.Point(872, 485);
+            removeMetadataButton.Location = new System.Drawing.Point(872, 488);
             removeMetadataButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             removeMetadataButton.Name = "removeMetadataButton";
             removeMetadataButton.Size = new System.Drawing.Size(232, 27);
@@ -1441,14 +1436,13 @@
             // 
             // refreshTvEpisodesButton
             // 
-            refreshTvEpisodesButton.Location = new System.Drawing.Point(589, 496);
+            refreshTvEpisodesButton.Location = new System.Drawing.Point(314, 549);
             refreshTvEpisodesButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             refreshTvEpisodesButton.Name = "refreshTvEpisodesButton";
             refreshTvEpisodesButton.Size = new System.Drawing.Size(232, 27);
             refreshTvEpisodesButton.TabIndex = 113;
             refreshTvEpisodesButton.Text = "Refreshes TV runtimes from TmdbAPI";
             refreshTvEpisodesButton.UseVisualStyleBackColor = true;
-            refreshTvEpisodesButton.Visible = false;
             refreshTvEpisodesButton.Click += RefreshTvEpisodesButton_Click;
             // 
             // clearCacheForTvShowButton
@@ -1505,7 +1499,7 @@
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(1416, 561);
+            ClientSize = new System.Drawing.Size(1416, 601);
             Controls.Add(label18);
             Controls.Add(tvShowComboBox);
             Controls.Add(tvShowRuntimeTextBox);
@@ -1577,8 +1571,8 @@
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             MaximizeBox = false;
-            MaximumSize = new System.Drawing.Size(1432, 600);
-            MinimumSize = new System.Drawing.Size(1432, 600);
+            MaximumSize = new System.Drawing.Size(1432, 640);
+            MinimumSize = new System.Drawing.Size(1432, 640);
             Name = "Main";
             SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
