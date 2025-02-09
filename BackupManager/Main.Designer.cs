@@ -450,10 +450,10 @@
             // 
             // openLogFileButton
             // 
-            openLogFileButton.Location = new System.Drawing.Point(589, 549);
+            openLogFileButton.Location = new System.Drawing.Point(1143, 519);
             openLogFileButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             openLogFileButton.Name = "openLogFileButton";
-            openLogFileButton.Size = new System.Drawing.Size(234, 27);
+            openLogFileButton.Size = new System.Drawing.Size(253, 27);
             openLogFileButton.TabIndex = 98;
             openLogFileButton.Text = "Open log file";
             toolTip.SetToolTip(openLogFileButton, "Opens the log file");
@@ -570,10 +570,10 @@
             // 
             // saveButton
             // 
-            saveButton.Location = new System.Drawing.Point(312, 455);
+            saveButton.Location = new System.Drawing.Point(1143, 488);
             saveButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             saveButton.Name = "saveButton";
-            saveButton.Size = new System.Drawing.Size(234, 27);
+            saveButton.Size = new System.Drawing.Size(253, 27);
             saveButton.TabIndex = 110;
             saveButton.Text = "Save media xml";
             toolTip.SetToolTip(saveButton, "Saves the media xml file if its changed");
@@ -1065,7 +1065,7 @@
             // cancelButton
             // 
             cancelButton.Enabled = false;
-            cancelButton.Location = new System.Drawing.Point(1145, 549);
+            cancelButton.Location = new System.Drawing.Point(1143, 549);
             cancelButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             cancelButton.Name = "cancelButton";
             cancelButton.Size = new System.Drawing.Size(253, 27);
