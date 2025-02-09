@@ -450,7 +450,7 @@
             // 
             // openLogFileButton
             // 
-            openLogFileButton.Location = new System.Drawing.Point(587, 455);
+            openLogFileButton.Location = new System.Drawing.Point(589, 549);
             openLogFileButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             openLogFileButton.Name = "openLogFileButton";
             openLogFileButton.Size = new System.Drawing.Size(234, 27);
@@ -1065,7 +1065,7 @@
             // cancelButton
             // 
             cancelButton.Enabled = false;
-            cancelButton.Location = new System.Drawing.Point(1143, 488);
+            cancelButton.Location = new System.Drawing.Point(1145, 549);
             cancelButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             cancelButton.Name = "cancelButton";
             cancelButton.Size = new System.Drawing.Size(253, 27);
