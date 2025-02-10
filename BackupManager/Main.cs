@@ -1003,29 +1003,6 @@ internal sealed partial class Main : Form
         Utils.TraceOut();
     }
 
-    private void DvProfile5CheckButton_Click(object sender, EventArgs e)
-    {
-        Utils.TraceIn();
-        var files = mediaBackup.BackupFiles.Where(static f => f.FullPath.Contains("[DV]") && !f.Deleted).OrderBy(static f => f.FullPath).ToArray();
-
-        if (files.Length > 0)
-        {
-            foreach (var file in files)
-            {
-                if (Utils.File.Exists(file.FullPath))
-                    Utils.Log(Utils.File.IsDolbyVisionProfile5(file.FullPath) ? $"{file.FullPath} is DV Profile 5" : $"{file.FullPath} is DV but not Profile 5");
-                else
-                {
-                    Utils.Log($"{file.FullPath} not found");
-                    Utils.Log($"{Utils.StringContainsFixedSpace(file.FullPath)} for FixedSpace");
-                }
-            }
-        }
-        else
-            Utils.Log("No DV files found");
-        Utils.TraceOut();
-    }
-
     private void CreateNewBackupDiskButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
@@ -1205,22 +1182,6 @@ internal sealed partial class Main : Form
         UpdateMediaFilesCountDisplay();
     }
 
-    private void CheckSubtitlesButton_Click(object sender, EventArgs e)
-    {
-        var files = mediaBackup.BackupFiles.Where(static f => f.Extension == ".srt");
-        var backupFiles = files as BackupFile[] ?? files.ToArray();
-        Utils.LogWithPushover(BackupAction.General, $" {backupFiles.Length} subtitle files");
-
-        foreach (var file in backupFiles)
-        {
-            var subFile = new SubtitlesBackupFile(file.FullPath);
-            if (subFile.Language != "en" && subFile.Language != "es") Utils.LogWithPushover(BackupAction.General, $" {file.FullPath} has no language");
-            ExtendedBackupFileBase ext = subFile;
-            if (file.FileName != ext.Title + subFile.SubtitlesExtension) Utils.LogWithPushover(BackupAction.General, $" {file.FullPath} name error");
-            if (subFile.Forced) Utils.LogWithPushover(BackupAction.General, $" {file.FullPath} is Forced ");
-        }
-    }
-
     private void ExportAndRemoveSubtitlesButton_Click(object sender, EventArgs e)
     {
         var count = 0;
@@ -1271,42 +1232,6 @@ internal sealed partial class Main : Form
             Utils.Log($"Processed {fullPath}");
         }
         Utils.Log($"{count} files that were exported from Tdarr");
-    }
-
-    private void ExtractChaptersButton_Click(object sender, EventArgs e)
-    {
-        // export chapters and remove them
-        const string ext = ".mp4";
-
-        // find mp4 files that have chapters
-        var backupFiles = mediaBackup.BackupFiles.Where(static f => f.Extension == ext && !f.FullPath.Contains("[h265]")).OrderBy(static q => q.FullPath).ToArray();
-        var count = 0;
-
-        foreach (var file in backupFiles)
-        {
-            if (!File.Exists(file.FullPath)) continue;
-
-            var mediaFile = Utils.MediaHelper.ExtendedBackupFileBase(file.FullPath);
-            if (mediaFile is not TvEpisodeBackupFile) continue;
-            if (Utils.File.IsSpecialFeature(file.FullPath)) continue;
-
-            _ = mediaFile.RefreshMediaInfo();
-            if (!Utils.MediaHelper.HasChapters(file.FullPath)) continue;
-
-            Utils.Log($"{file.FullPath} is TV episode with chapters");
-            var fileFullPath = file.FullPath + ".chap";
-            if (File.Exists(fileFullPath)) continue;
-            if (!Utils.MediaHelper.ExtractChapters(file.FullPath, fileFullPath)) continue;
-
-            var newPath = Path.Combine(file.Directory, ".new" + ext);
-            if (!Utils.MediaHelper.RemoveChaptersFromFile(file.FullPath, newPath)) continue;
-
-            _ = Utils.File.Move(file.FullPath, file.FullPath + ".original");
-            _ = Utils.File.Move(newPath, file.FullPath);
-            count++;
-            Utils.Log($"Count is {count}");
-        }
-        Utils.Log($"{count} files that are not [h265] TV episodes with chapters");
     }
 
     private void RemoveMetadataButton_Click(object sender, EventArgs e)
@@ -1473,7 +1398,7 @@ internal sealed partial class Main : Form
         mediaBackup.Save(mainCt);
     }
 
-    private void setTvShowRuntimeButton_Click(object sender, EventArgs e)
+    private void SetTvShowRuntimeButton_Click(object sender, EventArgs e)
     {
         var text = (string)tvShowComboBox.SelectedItem;
 

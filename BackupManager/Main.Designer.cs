@@ -59,7 +59,6 @@
             processFilesButton = new System.Windows.Forms.Button();
             directoryScanReportLastRunOnlyButton = new System.Windows.Forms.Button();
             scanDirectoryButton = new System.Windows.Forms.Button();
-            button2 = new System.Windows.Forms.Button();
             createNewBackupDiskButton = new System.Windows.Forms.Button();
             listBackupDiskStatusByFreeSpaceButton = new System.Windows.Forms.Button();
             videoFilesCheckNameButton = new System.Windows.Forms.Button();
@@ -141,9 +140,7 @@
             label16 = new System.Windows.Forms.Label();
             scanDirectoryComboBox = new System.Windows.Forms.ComboBox();
             h264FilesButton = new System.Windows.Forms.Button();
-            checkSubtitlesButton = new System.Windows.Forms.Button();
             ExportAndRemoveSubtitlesButton = new System.Windows.Forms.Button();
-            extractChaptersButton = new System.Windows.Forms.Button();
             removeMetadataButton = new System.Windows.Forms.Button();
             refreshTvEpisodesButton = new System.Windows.Forms.Button();
             clearCacheForTvShowButton = new System.Windows.Forms.Button();
@@ -151,6 +148,7 @@
             tvShowRuntimeTextBox = new System.Windows.Forms.TextBox();
             tvShowComboBox = new System.Windows.Forms.ComboBox();
             label18 = new System.Windows.Forms.Label();
+            groupBox3 = new System.Windows.Forms.GroupBox();
             pushoverGroupBox.SuspendLayout();
             groupBox2.SuspendLayout();
             listFilesInDirectoryGroupBox.SuspendLayout();
@@ -162,6 +160,7 @@
             groupBox1.SuspendLayout();
             listFilesGroupBox.SuspendLayout();
             groupBox4.SuspendLayout();
+            groupBox3.SuspendLayout();
             SuspendLayout();
             // 
             // scanAllDirectoriesButton
@@ -450,10 +449,10 @@
             // 
             // openLogFileButton
             // 
-            openLogFileButton.Location = new System.Drawing.Point(1143, 519);
+            openLogFileButton.Location = new System.Drawing.Point(589, 548);
             openLogFileButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             openLogFileButton.Name = "openLogFileButton";
-            openLogFileButton.Size = new System.Drawing.Size(253, 27);
+            openLogFileButton.Size = new System.Drawing.Size(232, 27);
             openLogFileButton.TabIndex = 98;
             openLogFileButton.Text = "Open log file";
             toolTip.SetToolTip(openLogFileButton, "Opens the log file");
@@ -462,10 +461,10 @@
             // 
             // processFilesButton
             // 
-            processFilesButton.Location = new System.Drawing.Point(28, 359);
+            processFilesButton.Location = new System.Drawing.Point(8, 160);
             processFilesButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             processFilesButton.Name = "processFilesButton";
-            processFilesButton.Size = new System.Drawing.Size(259, 27);
+            processFilesButton.Size = new System.Drawing.Size(234, 27);
             processFilesButton.TabIndex = 46;
             processFilesButton.Text = "Process files";
             toolTip.SetToolTip(processFilesButton, "Processes the current file list and marks files as deleted as required. (Doesn't scan the directories)");
@@ -486,7 +485,7 @@
             // 
             // scanDirectoryButton
             // 
-            scanDirectoryButton.Location = new System.Drawing.Point(200, 325);
+            scanDirectoryButton.Location = new System.Drawing.Point(200, 426);
             scanDirectoryButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             scanDirectoryButton.Name = "scanDirectoryButton";
             scanDirectoryButton.Size = new System.Drawing.Size(87, 27);
@@ -495,18 +494,6 @@
             toolTip.SetToolTip(scanDirectoryButton, "Scan the selected directory and processes files");
             scanDirectoryButton.UseVisualStyleBackColor = true;
             scanDirectoryButton.Click += ScanDirectoryButton_Click;
-            // 
-            // button2
-            // 
-            button2.Location = new System.Drawing.Point(872, 549);
-            button2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            button2.Name = "button2";
-            button2.Size = new System.Drawing.Size(232, 27);
-            button2.TabIndex = 100;
-            button2.Text = "Check all files for Dolby Vision Profile5";
-            toolTip.SetToolTip(button2, "Checks any file with [DV] in the path for Profile5. Can take 20 secs per file");
-            button2.UseVisualStyleBackColor = true;
-            button2.Click += DvProfile5CheckButton_Click;
             // 
             // createNewBackupDiskButton
             // 
@@ -534,10 +521,10 @@
             // 
             // videoFilesCheckNameButton
             // 
-            videoFilesCheckNameButton.Location = new System.Drawing.Point(872, 519);
+            videoFilesCheckNameButton.Location = new System.Drawing.Point(8, 226);
             videoFilesCheckNameButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             videoFilesCheckNameButton.Name = "videoFilesCheckNameButton";
-            videoFilesCheckNameButton.Size = new System.Drawing.Size(232, 27);
+            videoFilesCheckNameButton.Size = new System.Drawing.Size(234, 27);
             videoFilesCheckNameButton.TabIndex = 102;
             videoFilesCheckNameButton.Text = "Check all video files for correct name";
             toolTip.SetToolTip(videoFilesCheckNameButton, "Checks all files for correct video codec in the path. Can take 20secs per file");
@@ -570,10 +557,10 @@
             // 
             // saveButton
             // 
-            saveButton.Location = new System.Drawing.Point(1143, 488);
+            saveButton.Location = new System.Drawing.Point(314, 548);
             saveButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             saveButton.Name = "saveButton";
-            saveButton.Size = new System.Drawing.Size(253, 27);
+            saveButton.Size = new System.Drawing.Size(232, 27);
             saveButton.TabIndex = 110;
             saveButton.Text = "Save media xml";
             toolTip.SetToolTip(saveButton, "Saves the media xml file if its changed");
@@ -582,7 +569,7 @@
             // 
             // button1
             // 
-            button1.Location = new System.Drawing.Point(314, 519);
+            button1.Location = new System.Drawing.Point(314, 459);
             button1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             button1.Name = "button1";
             button1.Size = new System.Drawing.Size(232, 27);
@@ -593,10 +580,10 @@
             // 
             // button3
             // 
-            button3.Location = new System.Drawing.Point(314, 488);
+            button3.Location = new System.Drawing.Point(8, 193);
             button3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             button3.Name = "button3";
-            button3.Size = new System.Drawing.Size(232, 27);
+            button3.Size = new System.Drawing.Size(234, 27);
             button3.TabIndex = 112;
             button3.Text = "Check all movie files runtimes";
             button3.UseVisualStyleBackColor = true;
@@ -1127,11 +1114,14 @@
             groupBox4.Controls.Add(scanAllDirectoriesButton);
             groupBox4.Controls.Add(speedTestButton);
             groupBox4.Controls.Add(recalculateAllHashesButton);
+            groupBox4.Controls.Add(processFilesButton);
+            groupBox4.Controls.Add(button3);
+            groupBox4.Controls.Add(videoFilesCheckNameButton);
             groupBox4.Location = new System.Drawing.Point(34, 150);
             groupBox4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             groupBox4.Name = "groupBox4";
             groupBox4.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            groupBox4.Size = new System.Drawing.Size(253, 168);
+            groupBox4.Size = new System.Drawing.Size(253, 268);
             groupBox4.TabIndex = 70;
             groupBox4.TabStop = false;
             groupBox4.Text = "All directories";
@@ -1195,7 +1185,7 @@
             // 
             // notOnABackupDiskTextBox
             // 
-            notOnABackupDiskTextBox.Location = new System.Drawing.Point(130, 426);
+            notOnABackupDiskTextBox.Location = new System.Drawing.Point(130, 489);
             notOnABackupDiskTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             notOnABackupDiskTextBox.Name = "notOnABackupDiskTextBox";
             notOnABackupDiskTextBox.ReadOnly = true;
@@ -1205,7 +1195,7 @@
             // label9
             // 
             label9.AutoSize = true;
-            label9.Location = new System.Drawing.Point(1, 428);
+            label9.Location = new System.Drawing.Point(1, 491);
             label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label9.Name = "label9";
             label9.Size = new System.Drawing.Size(119, 15);
@@ -1214,7 +1204,7 @@
             // 
             // totalFilesTextBox
             // 
-            totalFilesTextBox.Location = new System.Drawing.Point(130, 394);
+            totalFilesTextBox.Location = new System.Drawing.Point(130, 457);
             totalFilesTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             totalFilesTextBox.Name = "totalFilesTextBox";
             totalFilesTextBox.ReadOnly = true;
@@ -1224,7 +1214,7 @@
             // label10
             // 
             label10.AutoSize = true;
-            label10.Location = new System.Drawing.Point(68, 396);
+            label10.Location = new System.Drawing.Point(68, 459);
             label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label10.Name = "label10";
             label10.Size = new System.Drawing.Size(57, 15);
@@ -1233,7 +1223,7 @@
             // 
             // notOnABackupDiskSizeTextBox
             // 
-            notOnABackupDiskSizeTextBox.Location = new System.Drawing.Point(200, 426);
+            notOnABackupDiskSizeTextBox.Location = new System.Drawing.Point(200, 489);
             notOnABackupDiskSizeTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             notOnABackupDiskSizeTextBox.Name = "notOnABackupDiskSizeTextBox";
             notOnABackupDiskSizeTextBox.ReadOnly = true;
@@ -1242,7 +1232,7 @@
             // 
             // totalFilesSizeTextBox
             // 
-            totalFilesSizeTextBox.Location = new System.Drawing.Point(200, 394);
+            totalFilesSizeTextBox.Location = new System.Drawing.Point(200, 457);
             totalFilesSizeTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             totalFilesSizeTextBox.Name = "totalFilesSizeTextBox";
             totalFilesSizeTextBox.ReadOnly = true;
@@ -1251,7 +1241,7 @@
             // 
             // estimatedFinishTimeTextBox
             // 
-            estimatedFinishTimeTextBox.Location = new System.Drawing.Point(1290, 446);
+            estimatedFinishTimeTextBox.Location = new System.Drawing.Point(1290, 522);
             estimatedFinishTimeTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             estimatedFinishTimeTextBox.Name = "estimatedFinishTimeTextBox";
             estimatedFinishTimeTextBox.ReadOnly = true;
@@ -1261,7 +1251,7 @@
             // label11
             // 
             label11.AutoSize = true;
-            label11.Location = new System.Drawing.Point(1169, 448);
+            label11.Location = new System.Drawing.Point(1169, 524);
             label11.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label11.Name = "label11";
             label11.Size = new System.Drawing.Size(118, 15);
@@ -1270,7 +1260,7 @@
             // 
             // filesMarkedAsDeletedSizeTextBox
             // 
-            filesMarkedAsDeletedSizeTextBox.Location = new System.Drawing.Point(200, 458);
+            filesMarkedAsDeletedSizeTextBox.Location = new System.Drawing.Point(200, 521);
             filesMarkedAsDeletedSizeTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             filesMarkedAsDeletedSizeTextBox.Name = "filesMarkedAsDeletedSizeTextBox";
             filesMarkedAsDeletedSizeTextBox.ReadOnly = true;
@@ -1279,7 +1269,7 @@
             // 
             // filesMarkedAsDeletedTextBox
             // 
-            filesMarkedAsDeletedTextBox.Location = new System.Drawing.Point(130, 458);
+            filesMarkedAsDeletedTextBox.Location = new System.Drawing.Point(130, 521);
             filesMarkedAsDeletedTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             filesMarkedAsDeletedTextBox.Name = "filesMarkedAsDeletedTextBox";
             filesMarkedAsDeletedTextBox.ReadOnly = true;
@@ -1289,7 +1279,7 @@
             // label12
             // 
             label12.AutoSize = true;
-            label12.Location = new System.Drawing.Point(15, 460);
+            label12.Location = new System.Drawing.Point(15, 523);
             label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label12.Name = "label12";
             label12.Size = new System.Drawing.Size(103, 15);
@@ -1341,7 +1331,7 @@
             // 
             // oldestBackupDiskAgeTextBox
             // 
-            oldestBackupDiskAgeTextBox.Location = new System.Drawing.Point(200, 489);
+            oldestBackupDiskAgeTextBox.Location = new System.Drawing.Point(200, 552);
             oldestBackupDiskAgeTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             oldestBackupDiskAgeTextBox.Name = "oldestBackupDiskAgeTextBox";
             oldestBackupDiskAgeTextBox.ReadOnly = true;
@@ -1350,7 +1340,7 @@
             // 
             // oldestBackupDiskTextBox
             // 
-            oldestBackupDiskTextBox.Location = new System.Drawing.Point(130, 489);
+            oldestBackupDiskTextBox.Location = new System.Drawing.Point(130, 552);
             oldestBackupDiskTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             oldestBackupDiskTextBox.Name = "oldestBackupDiskTextBox";
             oldestBackupDiskTextBox.ReadOnly = true;
@@ -1360,7 +1350,7 @@
             // label16
             // 
             label16.AutoSize = true;
-            label16.Location = new System.Drawing.Point(15, 491);
+            label16.Location = new System.Drawing.Point(15, 554);
             label16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label16.Name = "label16";
             label16.Size = new System.Drawing.Size(107, 15);
@@ -1372,7 +1362,7 @@
             scanDirectoryComboBox.BackColor = System.Drawing.SystemColors.Window;
             scanDirectoryComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             scanDirectoryComboBox.FormattingEnabled = true;
-            scanDirectoryComboBox.Location = new System.Drawing.Point(28, 327);
+            scanDirectoryComboBox.Location = new System.Drawing.Point(28, 428);
             scanDirectoryComboBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             scanDirectoryComboBox.Name = "scanDirectoryComboBox";
             scanDirectoryComboBox.Size = new System.Drawing.Size(163, 23);
@@ -1380,7 +1370,7 @@
             // 
             // h264FilesButton
             // 
-            h264FilesButton.Location = new System.Drawing.Point(589, 488);
+            h264FilesButton.Location = new System.Drawing.Point(872, 488);
             h264FilesButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             h264FilesButton.Name = "h264FilesButton";
             h264FilesButton.Size = new System.Drawing.Size(232, 27);
@@ -1388,18 +1378,6 @@
             h264FilesButton.Text = "Check all files for TV/Movies h264 size";
             h264FilesButton.UseVisualStyleBackColor = true;
             h264FilesButton.Click += H264FilesButton_Click;
-            // 
-            // checkSubtitlesButton
-            // 
-            checkSubtitlesButton.Location = new System.Drawing.Point(872, 393);
-            checkSubtitlesButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            checkSubtitlesButton.Name = "checkSubtitlesButton";
-            checkSubtitlesButton.Size = new System.Drawing.Size(232, 27);
-            checkSubtitlesButton.TabIndex = 106;
-            checkSubtitlesButton.Text = "Check Subtitles";
-            checkSubtitlesButton.UseVisualStyleBackColor = true;
-            checkSubtitlesButton.Visible = false;
-            checkSubtitlesButton.Click += CheckSubtitlesButton_Click;
             // 
             // ExportAndRemoveSubtitlesButton
             // 
@@ -1412,20 +1390,9 @@
             ExportAndRemoveSubtitlesButton.UseVisualStyleBackColor = true;
             ExportAndRemoveSubtitlesButton.Click += ExportAndRemoveSubtitlesButton_Click;
             // 
-            // extractChaptersButton
-            // 
-            extractChaptersButton.Location = new System.Drawing.Point(872, 455);
-            extractChaptersButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            extractChaptersButton.Name = "extractChaptersButton";
-            extractChaptersButton.Size = new System.Drawing.Size(232, 27);
-            extractChaptersButton.TabIndex = 108;
-            extractChaptersButton.Text = "Export chapters";
-            extractChaptersButton.UseVisualStyleBackColor = true;
-            extractChaptersButton.Click += ExtractChaptersButton_Click;
-            // 
             // removeMetadataButton
             // 
-            removeMetadataButton.Location = new System.Drawing.Point(872, 488);
+            removeMetadataButton.Location = new System.Drawing.Point(872, 456);
             removeMetadataButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             removeMetadataButton.Name = "removeMetadataButton";
             removeMetadataButton.Size = new System.Drawing.Size(232, 27);
@@ -1436,7 +1403,7 @@
             // 
             // refreshTvEpisodesButton
             // 
-            refreshTvEpisodesButton.Location = new System.Drawing.Point(314, 549);
+            refreshTvEpisodesButton.Location = new System.Drawing.Point(314, 489);
             refreshTvEpisodesButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             refreshTvEpisodesButton.Name = "refreshTvEpisodesButton";
             refreshTvEpisodesButton.Size = new System.Drawing.Size(232, 27);
@@ -1447,7 +1414,7 @@
             // 
             // clearCacheForTvShowButton
             // 
-            clearCacheForTvShowButton.Location = new System.Drawing.Point(1193, 359);
+            clearCacheForTvShowButton.Location = new System.Drawing.Point(50, 51);
             clearCacheForTvShowButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             clearCacheForTvShowButton.Name = "clearCacheForTvShowButton";
             clearCacheForTvShowButton.Size = new System.Drawing.Size(147, 27);
@@ -1458,18 +1425,18 @@
             // 
             // setTvShowRuntimeButton
             // 
-            setTvShowRuntimeButton.Location = new System.Drawing.Point(1210, 393);
+            setTvShowRuntimeButton.Location = new System.Drawing.Point(99, 83);
             setTvShowRuntimeButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             setTvShowRuntimeButton.Name = "setTvShowRuntimeButton";
-            setTvShowRuntimeButton.Size = new System.Drawing.Size(186, 27);
+            setTvShowRuntimeButton.Size = new System.Drawing.Size(127, 27);
             setTvShowRuntimeButton.TabIndex = 116;
-            setTvShowRuntimeButton.Text = "Set TV show runtime";
+            setTvShowRuntimeButton.Text = "Set runtime";
             setTvShowRuntimeButton.UseVisualStyleBackColor = true;
-            setTvShowRuntimeButton.Click += setTvShowRuntimeButton_Click;
+            setTvShowRuntimeButton.Click += SetTvShowRuntimeButton_Click;
             // 
             // tvShowRuntimeTextBox
             // 
-            tvShowRuntimeTextBox.Location = new System.Drawing.Point(1145, 394);
+            tvShowRuntimeTextBox.Location = new System.Drawing.Point(33, 84);
             tvShowRuntimeTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             tvShowRuntimeTextBox.Name = "tvShowRuntimeTextBox";
             tvShowRuntimeTextBox.Size = new System.Drawing.Size(32, 23);
@@ -1480,47 +1447,51 @@
             // 
             tvShowComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             tvShowComboBox.FormattingEnabled = true;
-            tvShowComboBox.Location = new System.Drawing.Point(1143, 332);
+            tvShowComboBox.Location = new System.Drawing.Point(10, 22);
             tvShowComboBox.Name = "tvShowComboBox";
-            tvShowComboBox.Size = new System.Drawing.Size(253, 23);
+            tvShowComboBox.Size = new System.Drawing.Size(235, 23);
             tvShowComboBox.TabIndex = 118;
             // 
             // label18
             // 
             label18.AutoSize = true;
-            label18.Location = new System.Drawing.Point(1179, 397);
+            label18.Location = new System.Drawing.Point(67, 87);
             label18.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label18.Name = "label18";
             label18.Size = new System.Drawing.Size(33, 15);
             label18.TabIndex = 119;
             label18.Text = "mins";
             // 
+            // groupBox3
+            // 
+            groupBox3.Controls.Add(tvShowComboBox);
+            groupBox3.Controls.Add(label18);
+            groupBox3.Controls.Add(clearCacheForTvShowButton);
+            groupBox3.Controls.Add(tvShowRuntimeTextBox);
+            groupBox3.Controls.Add(setTvShowRuntimeButton);
+            groupBox3.Location = new System.Drawing.Point(1143, 329);
+            groupBox3.Name = "groupBox3";
+            groupBox3.Size = new System.Drawing.Size(253, 120);
+            groupBox3.TabIndex = 120;
+            groupBox3.TabStop = false;
+            groupBox3.Text = "TV show cache";
+            // 
             // Main
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1416, 601);
-            Controls.Add(label18);
-            Controls.Add(tvShowComboBox);
-            Controls.Add(tvShowRuntimeTextBox);
-            Controls.Add(setTvShowRuntimeButton);
-            Controls.Add(clearCacheForTvShowButton);
+            Controls.Add(groupBox3);
             Controls.Add(refreshTvEpisodesButton);
-            Controls.Add(button3);
             Controls.Add(button1);
             Controls.Add(saveButton);
             Controls.Add(removeMetadataButton);
-            Controls.Add(extractChaptersButton);
             Controls.Add(ExportAndRemoveSubtitlesButton);
-            Controls.Add(checkSubtitlesButton);
             Controls.Add(scanLastDirectoriesButton);
             Controls.Add(scanDirectoriesWithChangesButton);
             Controls.Add(h264FilesButton);
-            Controls.Add(videoFilesCheckNameButton);
             Controls.Add(createNewBackupDiskButton);
-            Controls.Add(button2);
             Controls.Add(directoryScanReportLastRunOnlyButton);
-            Controls.Add(processFilesButton);
             Controls.Add(scanDirectoryButton);
             Controls.Add(scanDirectoryComboBox);
             Controls.Add(openLogFileButton);
@@ -1594,6 +1565,8 @@
             groupBox1.ResumeLayout(false);
             listFilesGroupBox.ResumeLayout(false);
             groupBox4.ResumeLayout(false);
+            groupBox3.ResumeLayout(false);
+            groupBox3.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -1699,8 +1672,6 @@
         private System.Windows.Forms.Button scanDirectoryButton;
         private System.Windows.Forms.Button processFilesButton;
         private System.Windows.Forms.Button directoryScanReportLastRunOnlyButton;
-     
-        private System.Windows.Forms.Button button2;
         private System.Windows.Forms.TextBox pushoverMessagesRemainingTextBox;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Button createNewBackupDiskButton;
@@ -1709,9 +1680,7 @@
         private System.Windows.Forms.Button h264FilesButton;
         private System.Windows.Forms.Button scanDirectoriesWithChangesButton;
         private System.Windows.Forms.Button scanLastDirectoriesButton;
-        private System.Windows.Forms.Button checkSubtitlesButton;
         private System.Windows.Forms.Button ExportAndRemoveSubtitlesButton;
-        private System.Windows.Forms.Button extractChaptersButton;
         private System.Windows.Forms.Button removeMetadataButton;
         private System.Windows.Forms.Button saveButton;
         private System.Windows.Forms.Button button1;
@@ -1722,6 +1691,7 @@
         private System.Windows.Forms.TextBox tvShowRuntimeTextBox;
         private System.Windows.Forms.ComboBox tvShowComboBox;
         private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.GroupBox groupBox3;
     }
 }
 
