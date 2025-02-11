@@ -120,15 +120,10 @@ internal sealed partial class Main
                          Utils.File.IsMovieComedyOrConcert(fileFullPath) && !Utils.File.IsSpecialFeature(fileFullPath)))
             {
                 if (Utils.MediaHelper.ExtendedBackupFileBase(fileFullPath) is not MovieBackupFile movie) continue;
+                if (!movie.TmdbId.HasValue()) continue;
 
-                if (movie.TmdbId.HasValue())
-                {
-                    var int32 = Convert.ToInt32(movie.TmdbId);
-                    var edition = movie.Edition == Edition.Unknown ? string.Empty : movie.Edition.ToEnumMember();
-                    movieNames.TryAdd($"{int32,0:D6} - {movie.Title} ({movie.ReleaseYear}) {edition}", movie);
-                }
-                else
-                    Utils.Log($"no value {movie.TmdbId}");
+                var edition = movie.Edition == Edition.Unknown ? string.Empty : movie.Edition.ToEnumMember();
+                movieNames.TryAdd($"{Convert.ToInt32(movie.TmdbId),0:D7} - {movie.Title} ({movie.ReleaseYear}) {edition}", movie);
             }
             movieComboBox.Items.AddRange([.. movieNames.OrderBy(static i => i.Value.Title).ToDictionary(static i => i.Key, static i => i.Value).Keys]);
 

@@ -431,7 +431,7 @@
             // 
             // versionCheckingButton
             // 
-            versionCheckingButton.Location = new System.Drawing.Point(872, 362);
+            versionCheckingButton.Location = new System.Drawing.Point(872, 360);
             versionCheckingButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             versionCheckingButton.Name = "versionCheckingButton";
             versionCheckingButton.Size = new System.Drawing.Size(232, 27);
@@ -1376,7 +1376,7 @@
             // 
             // h264FilesButton
             // 
-            h264FilesButton.Location = new System.Drawing.Point(872, 488);
+            h264FilesButton.Location = new System.Drawing.Point(872, 391);
             h264FilesButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             h264FilesButton.Name = "h264FilesButton";
             h264FilesButton.Size = new System.Drawing.Size(232, 27);
@@ -1387,7 +1387,7 @@
             // 
             // ExportAndRemoveSubtitlesButton
             // 
-            ExportAndRemoveSubtitlesButton.Location = new System.Drawing.Point(872, 423);
+            ExportAndRemoveSubtitlesButton.Location = new System.Drawing.Point(1154, 439);
             ExportAndRemoveSubtitlesButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             ExportAndRemoveSubtitlesButton.Name = "ExportAndRemoveSubtitlesButton";
             ExportAndRemoveSubtitlesButton.Size = new System.Drawing.Size(232, 27);
@@ -1398,7 +1398,7 @@
             // 
             // removeMetadataButton
             // 
-            removeMetadataButton.Location = new System.Drawing.Point(872, 456);
+            removeMetadataButton.Location = new System.Drawing.Point(1154, 472);
             removeMetadataButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             removeMetadataButton.Name = "removeMetadataButton";
             removeMetadataButton.Size = new System.Drawing.Size(232, 27);
@@ -1488,9 +1488,9 @@
             groupBox6.Controls.Add(label19);
             groupBox6.Controls.Add(movieRuntimeTextBox);
             groupBox6.Controls.Add(setMovieRuntimeButton);
-            groupBox6.Location = new System.Drawing.Point(1143, 439);
+            groupBox6.Location = new System.Drawing.Point(582, 458);
             groupBox6.Name = "groupBox6";
-            groupBox6.Size = new System.Drawing.Size(253, 82);
+            groupBox6.Size = new System.Drawing.Size(536, 82);
             groupBox6.TabIndex = 121;
             groupBox6.TabStop = false;
             groupBox6.Text = "Movie cache";
@@ -1501,13 +1501,13 @@
             movieComboBox.FormattingEnabled = true;
             movieComboBox.Location = new System.Drawing.Point(10, 19);
             movieComboBox.Name = "movieComboBox";
-            movieComboBox.Size = new System.Drawing.Size(235, 23);
+            movieComboBox.Size = new System.Drawing.Size(512, 23);
             movieComboBox.TabIndex = 118;
             // 
             // label19
             // 
             label19.AutoSize = true;
-            label19.Location = new System.Drawing.Point(67, 50);
+            label19.Location = new System.Drawing.Point(202, 50);
             label19.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label19.Name = "label19";
             label19.Size = new System.Drawing.Size(33, 15);
@@ -1516,7 +1516,7 @@
             // 
             // movieRuntimeTextBox
             // 
-            movieRuntimeTextBox.Location = new System.Drawing.Point(33, 47);
+            movieRuntimeTextBox.Location = new System.Drawing.Point(168, 47);
             movieRuntimeTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             movieRuntimeTextBox.Name = "movieRuntimeTextBox";
             movieRuntimeTextBox.Size = new System.Drawing.Size(32, 23);
@@ -1525,7 +1525,7 @@
             // 
             // setMovieRuntimeButton
             // 
-            setMovieRuntimeButton.Location = new System.Drawing.Point(99, 46);
+            setMovieRuntimeButton.Location = new System.Drawing.Point(234, 46);
             setMovieRuntimeButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             setMovieRuntimeButton.Name = "setMovieRuntimeButton";
             setMovieRuntimeButton.Size = new System.Drawing.Size(127, 27);
