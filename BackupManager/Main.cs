@@ -1412,6 +1412,7 @@ internal sealed partial class Main : Form
             return;
 
         mediaBackup.SetTvShowRuntime(showId, Convert.ToInt32(tvShowRuntimeTextBox.Text));
+        ResetTokenSource();
         mediaBackup.Save(mainCt);
     }
 
@@ -1426,6 +1427,7 @@ internal sealed partial class Main : Form
 
         var m = movieNames[text];
         mediaBackup.SetMovieRuntime(m.TmdbId, m.Edition, Convert.ToInt32(movieRuntimeTextBox.Text));
+        ResetTokenSource();
         mediaBackup.Save(mainCt);
     }
 }
