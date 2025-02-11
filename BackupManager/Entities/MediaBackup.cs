@@ -303,7 +303,7 @@ public sealed class MediaBackup
             if (r == -1) return -1;
 
             m.Runtime = r;
-            TmdbMovies.Add(m);
+            if (!TmdbMovies.Contains(m)) TmdbMovies.Add(m);
             return m.Runtime;
         }
     }
@@ -827,7 +827,7 @@ public sealed class MediaBackup
             if (r == -1) return -1;
 
             m.Runtime = r;
-            TmdbTvEpisodes.Add(m);
+            if (!TmdbTvEpisodes.Contains(m)) TmdbTvEpisodes.Add(m);
             return m.Runtime;
         }
     }
