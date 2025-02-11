@@ -1414,4 +1414,18 @@ internal sealed partial class Main : Form
         mediaBackup.SetTvShowRuntime(showId, Convert.ToInt32(tvShowRuntimeTextBox.Text));
         mediaBackup.Save(mainCt);
     }
+
+    private void setMovieRuntimeButton_Click(object sender, EventArgs e)
+    {
+        var text = (string)movieComboBox.SelectedItem;
+        if (text == null || text.HasNoValue() || movieRuntimeTextBox.Text.HasNoValue()) return;
+
+        if (MessageBox.Show(string.Format(Resources.SetRuntimeForAsset, movieRuntimeTextBox.Text, text), Resources.SetRuntimeTitle, MessageBoxButtons.YesNo) !=
+            DialogResult.Yes)
+            return;
+
+        var m = movieNames[text];
+        mediaBackup.SetMovieRuntime(m.TmdbId, m.Edition, Convert.ToInt32(movieRuntimeTextBox.Text));
+        mediaBackup.Save(mainCt);
+    }
 }

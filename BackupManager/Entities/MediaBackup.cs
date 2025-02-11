@@ -876,4 +876,15 @@ public sealed class MediaBackup
             tvEp.Runtime = runtime;
         }
     }
+
+    internal void SetMovieRuntime(string id, Edition edition, int runtime)
+    {
+        var edit = edition == Edition.Unknown ? string.Empty : edition.ToString();
+        var key = $"{id}:{edit}";
+
+        foreach (var movieItem in TmdbMovies.Where(item => item.Id.StartsWithIgnoreCase(key)))
+        {
+            movieItem.Runtime = runtime;
+        }
+    }
 }

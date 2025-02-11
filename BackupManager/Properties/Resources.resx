@@ -504,17 +504,17 @@ Skipping {3} as not enough free space</value>
     <value>Doing a full scan</value>
   </data>
   <data name="SetRuntimeForAsset" xml:space="preserve">
-    <value>Are you sure you want to set the runtime to {0} mins for TV show
+    <value>Are you sure you want to set the runtime to {0} mins for
     {1}?</value>
   </data>
   <data name="SetRuntimeTitle" xml:space="preserve">
     <value>Setting TV show runtime</value>
   </data>
   <data name="ClearCacheForTvShowQuestion" xml:space="preserve">
-    <value>Are you sure you want to clear the cache for TV show
+    <value>Are you sure you want to clear the cache for
     {0}?</value>
   </data>
   <data name="ClearCacheForTvShowTitle" xml:space="preserve">
-    <value>Clear TV show cache</value>
+    <value>Clear cache</value>
   </data>
 </root>

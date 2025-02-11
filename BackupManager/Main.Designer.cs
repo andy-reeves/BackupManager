@@ -149,6 +149,11 @@
             tvShowComboBox = new System.Windows.Forms.ComboBox();
             label18 = new System.Windows.Forms.Label();
             groupBox3 = new System.Windows.Forms.GroupBox();
+            groupBox6 = new System.Windows.Forms.GroupBox();
+            movieComboBox = new System.Windows.Forms.ComboBox();
+            label19 = new System.Windows.Forms.Label();
+            movieRuntimeTextBox = new System.Windows.Forms.TextBox();
+            setMovieRuntimeButton = new System.Windows.Forms.Button();
             pushoverGroupBox.SuspendLayout();
             groupBox2.SuspendLayout();
             listFilesInDirectoryGroupBox.SuspendLayout();
@@ -161,6 +166,7 @@
             listFilesGroupBox.SuspendLayout();
             groupBox4.SuspendLayout();
             groupBox3.SuspendLayout();
+            groupBox6.SuspendLayout();
             SuspendLayout();
             // 
             // scanAllDirectoriesButton
@@ -939,7 +945,7 @@
             groupBox5.Controls.Add(scheduledBackupTimerButton);
             groupBox5.Controls.Add(label2);
             groupBox5.Controls.Add(label5);
-            groupBox5.Location = new System.Drawing.Point(1143, 215);
+            groupBox5.Location = new System.Drawing.Point(1143, 207);
             groupBox5.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             groupBox5.Name = "groupBox5";
             groupBox5.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -1469,18 +1475,71 @@
             groupBox3.Controls.Add(clearCacheForTvShowButton);
             groupBox3.Controls.Add(tvShowRuntimeTextBox);
             groupBox3.Controls.Add(setTvShowRuntimeButton);
-            groupBox3.Location = new System.Drawing.Point(1143, 329);
+            groupBox3.Location = new System.Drawing.Point(1143, 313);
             groupBox3.Name = "groupBox3";
             groupBox3.Size = new System.Drawing.Size(253, 120);
             groupBox3.TabIndex = 120;
             groupBox3.TabStop = false;
             groupBox3.Text = "TV show cache";
             // 
+            // groupBox6
+            // 
+            groupBox6.Controls.Add(movieComboBox);
+            groupBox6.Controls.Add(label19);
+            groupBox6.Controls.Add(movieRuntimeTextBox);
+            groupBox6.Controls.Add(setMovieRuntimeButton);
+            groupBox6.Location = new System.Drawing.Point(1143, 439);
+            groupBox6.Name = "groupBox6";
+            groupBox6.Size = new System.Drawing.Size(253, 82);
+            groupBox6.TabIndex = 121;
+            groupBox6.TabStop = false;
+            groupBox6.Text = "Movie cache";
+            // 
+            // movieComboBox
+            // 
+            movieComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            movieComboBox.FormattingEnabled = true;
+            movieComboBox.Location = new System.Drawing.Point(10, 19);
+            movieComboBox.Name = "movieComboBox";
+            movieComboBox.Size = new System.Drawing.Size(235, 23);
+            movieComboBox.TabIndex = 118;
+            // 
+            // label19
+            // 
+            label19.AutoSize = true;
+            label19.Location = new System.Drawing.Point(67, 50);
+            label19.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label19.Name = "label19";
+            label19.Size = new System.Drawing.Size(33, 15);
+            label19.TabIndex = 119;
+            label19.Text = "mins";
+            // 
+            // movieRuntimeTextBox
+            // 
+            movieRuntimeTextBox.Location = new System.Drawing.Point(33, 47);
+            movieRuntimeTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            movieRuntimeTextBox.Name = "movieRuntimeTextBox";
+            movieRuntimeTextBox.Size = new System.Drawing.Size(32, 23);
+            movieRuntimeTextBox.TabIndex = 117;
+            movieRuntimeTextBox.Text = "120";
+            // 
+            // setMovieRuntimeButton
+            // 
+            setMovieRuntimeButton.Location = new System.Drawing.Point(99, 46);
+            setMovieRuntimeButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            setMovieRuntimeButton.Name = "setMovieRuntimeButton";
+            setMovieRuntimeButton.Size = new System.Drawing.Size(127, 27);
+            setMovieRuntimeButton.TabIndex = 116;
+            setMovieRuntimeButton.Text = "Set runtime";
+            setMovieRuntimeButton.UseVisualStyleBackColor = true;
+            setMovieRuntimeButton.Click += setMovieRuntimeButton_Click;
+            // 
             // Main
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1416, 601);
+            Controls.Add(groupBox6);
             Controls.Add(groupBox3);
             Controls.Add(refreshTvEpisodesButton);
             Controls.Add(button1);
@@ -1567,6 +1626,8 @@
             groupBox4.ResumeLayout(false);
             groupBox3.ResumeLayout(false);
             groupBox3.PerformLayout();
+            groupBox6.ResumeLayout(false);
+            groupBox6.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -1692,6 +1753,11 @@
         private System.Windows.Forms.ComboBox tvShowComboBox;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.GroupBox groupBox6;
+        private System.Windows.Forms.ComboBox movieComboBox;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.TextBox movieRuntimeTextBox;
+        private System.Windows.Forms.Button setMovieRuntimeButton;
     }
 }
 

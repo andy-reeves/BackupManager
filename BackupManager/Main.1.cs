@@ -61,6 +61,8 @@ internal sealed partial class Main
 
     private CancellationToken mainCt;
 
+    private readonly Dictionary<string, MovieBackupFile> movieNames;
+
     /// <summary>
     ///     When monitoring is executing prevent is executing again
     /// </summary>
@@ -101,6 +103,7 @@ internal sealed partial class Main
             scanDirectoryComboBox.Items.AddRange([.. directoriesArray]);
             var tvShowNames = new Dictionary<string, TvEpisodeBackupFile>();
 
+            // add tv shows to combo
             foreach (var fileFullPath in mediaBackup.BackupFiles.Select(static file => file.FullPath).Where(static fileFullPath => Utils.File.IsTv(fileFullPath) &&
                          !Utils.File.IsSpecialFeature(fileFullPath)))
             {
@@ -109,6 +112,25 @@ internal sealed partial class Main
                 tvShowNames.TryAdd($"{Convert.ToInt32(tvEp.TvdbId),0:D6} - {tvEp.Title}", tvEp);
             }
             tvShowComboBox.Items.AddRange([.. tvShowNames.OrderBy(static i => i.Value.Title).ToDictionary(static i => i.Key, static i => i.Value).Keys]);
+
+            // add movies to combo box
+            movieNames = new Dictionary<string, MovieBackupFile>();
+
+            foreach (var fileFullPath in mediaBackup.BackupFiles.Select(static file => file.FullPath).Where(static fileFullPath =>
+                         Utils.File.IsMovieComedyOrConcert(fileFullPath) && !Utils.File.IsSpecialFeature(fileFullPath)))
+            {
+                if (Utils.MediaHelper.ExtendedBackupFileBase(fileFullPath) is not MovieBackupFile movie) continue;
+
+                if (movie.TmdbId.HasValue())
+                {
+                    var int32 = Convert.ToInt32(movie.TmdbId);
+                    var edition = movie.Edition == Edition.Unknown ? string.Empty : movie.Edition.ToEnumMember();
+                    movieNames.TryAdd($"{int32,0:D6} - {movie.Title} ({movie.ReleaseYear}) {edition}", movie);
+                }
+                else
+                    Utils.Log($"no value {movie.TmdbId}");
+            }
+            movieComboBox.Items.AddRange([.. movieNames.OrderBy(static i => i.Value.Title).ToDictionary(static i => i.Key, static i => i.Value).Keys]);
 
             foreach (var file in mediaBackup.BackupFiles.Where(static file => file.FullPath.Length > Utils.MAX_PATH))
             {
