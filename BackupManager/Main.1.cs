@@ -116,12 +116,15 @@ internal sealed partial class Main
             // add movies to combo box
             movieNames = new Dictionary<string, MovieBackupFile>();
 
-            foreach (var fileFullPath in mediaBackup.BackupFiles.Select(static file => file.FullPath).Where(static fileFullPath =>
-                         Utils.File.IsMovieComedyOrConcert(fileFullPath) && !Utils.File.IsSpecialFeature(fileFullPath)))
+            foreach (var fileFullPath in from file in mediaBackup.BackupFiles
+                     let fileFullPath = file.FullPath
+                     where !file.Deleted && Utils.File.IsMovieComedyOrConcert(fileFullPath) && !Utils.File.IsSpecialFeature(fileFullPath)
+                     select fileFullPath)
             {
                 if (Utils.MediaHelper.ExtendedBackupFileBase(fileFullPath) is not MovieBackupFile movie) continue;
                 if (!movie.TmdbId.HasValue()) continue;
 
+                if (movie.TmdbId == "13654") Utils.Log("got scamp");
                 var edition = movie.Edition == Edition.Unknown ? string.Empty : movie.Edition.ToEnumMember();
                 movieNames.TryAdd($"{Convert.ToInt32(movie.TmdbId),0:D7} - {movie.Title} ({movie.ReleaseYear}) {edition}", movie);
             }
