@@ -124,7 +124,6 @@ internal sealed partial class Main
                 if (Utils.MediaHelper.ExtendedBackupFileBase(fileFullPath) is not MovieBackupFile movie) continue;
                 if (!movie.TmdbId.HasValue()) continue;
 
-                if (movie.TmdbId == "13654") Utils.Log("got scamp");
                 var edition = movie.Edition == Edition.Unknown ? string.Empty : movie.Edition.ToEnumMember();
                 movieNames.TryAdd($"{Convert.ToInt32(movie.TmdbId),0:D7} - {movie.Title} ({movie.ReleaseYear}) {edition}", movie);
             }
