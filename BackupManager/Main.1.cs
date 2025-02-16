@@ -32,6 +32,8 @@ internal sealed partial class Main
     /// </summary>
     private readonly Config config;
 
+    private readonly Dictionary<string, HashSet<string>> episodesForASeason = new(); // key=showName:season, value=hashset of episodes
+
     private readonly MediaBackup mediaBackup;
 
     private readonly Action monitoringAction;
@@ -42,6 +44,10 @@ internal sealed partial class Main
     private readonly CancellationTokenSource monitoringCancellationTokenSource = new();
 
     private readonly Action scheduledBackupAction;
+
+    private readonly Dictionary<string, HashSet<string>> tvShowEditions = new(); // key=showName, value=hashset of editions
+
+    private readonly Dictionary<string, HashSet<string>> tvShowSeasons = new(); // key=showName, value=hashset of seasons
 
     private int currentPercentComplete;
 
@@ -61,18 +67,12 @@ internal sealed partial class Main
 
     private CancellationToken mainCt;
 
-    private Dictionary<string, MovieBackupFile> movieNames;
-
-    private readonly Dictionary<string, HashSet<string>> tvShowSeasons = new(); // key=showName, value=hashset of seasons
-
-    private readonly Dictionary<string, HashSet<string>> tvShowEditions = new(); // key=showName, value=hashset of editions
-
-    private readonly Dictionary<string, HashSet<string>> episodesForASeason = new(); // key=showName:season, value=hashset of episodes
-
     /// <summary>
     ///     When monitoring is executing prevent is executing again
     /// </summary>
     private bool monitoringExecutingRightNow;
+
+    private Dictionary<string, MovieBackupFile> movieNames;
 
     private int reportedPercentComplete;
 
