@@ -265,7 +265,7 @@ public sealed class MediaBackup
         var files = Utils.File.GetFiles(directory, "*", SearchOption.AllDirectories, 0, 0, ct);
         HashSet<string> hashSetForTvEpisodes = [];
 
-        foreach (var file in files)
+        foreach (var file in files.Where(static file => !file.Contains("-TdarrCacheFile-")))
         {
             if (Utils.MediaHelper.ExtendedBackupFileBase(file) is not (VideoBackupFileBase { SpecialFeature: SpecialFeature.None } and TvEpisodeBackupFile tvEp)) continue;
             if (hashSetForTvEpisodes.Add($"{tvEp.TvdbId}:{tvEp.Edition}:{tvEp.Season}:{tvEp.Episode}")) continue;
