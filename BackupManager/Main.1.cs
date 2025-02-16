@@ -61,7 +61,13 @@ internal sealed partial class Main
 
     private CancellationToken mainCt;
 
-    private readonly Dictionary<string, MovieBackupFile> movieNames;
+    private Dictionary<string, MovieBackupFile> movieNames;
+
+    private readonly Dictionary<string, HashSet<string>> tvShowSeasons = new(); // key=showName, value=hashset of seasons
+
+    private readonly Dictionary<string, HashSet<string>> tvShowEditions = new(); // key=showName, value=hashset of editions
+
+    private readonly Dictionary<string, HashSet<string>> episodesForASeason = new(); // key=showName:season, value=hashset of episodes
 
     /// <summary>
     ///     When monitoring is executing prevent is executing again
@@ -101,38 +107,8 @@ internal sealed partial class Main
             directoriesComboBox.Items.AddRange([.. directoriesArray]);
             restoreDirectoryComboBox.Items.AddRange([.. directoriesArray]);
             scanDirectoryComboBox.Items.AddRange([.. directoriesArray]);
-            var tvShowNames = new Dictionary<string, TvEpisodeBackupFile>();
-
-            // add tv shows to combo
-            foreach (var fileFullPath in mediaBackup.BackupFiles.Select(static file => file.FullPath).Where(static fileFullPath => Utils.File.IsTv(fileFullPath) &&
-                         !Utils.File.IsSpecialFeature(fileFullPath)))
-            {
-                if (Utils.MediaHelper.ExtendedBackupFileBase(fileFullPath) is not TvEpisodeBackupFile tvEp) continue;
-
-                tvShowNames.TryAdd($"{Convert.ToInt32(tvEp.TvdbId),0:D6} - {tvEp.Title}", tvEp);
-            }
-            tvShowComboBox.Items.AddRange([.. tvShowNames.OrderBy(static i => i.Value.Title).ToDictionary(static i => i.Key, static i => i.Value).Keys]);
-
-            // add movies to combo box
-            movieNames = new Dictionary<string, MovieBackupFile>();
-
-            foreach (var fileFullPath in from file in mediaBackup.BackupFiles
-                     let fileFullPath = file.FullPath
-                     where !file.Deleted && Utils.File.IsMovieComedyOrConcert(fileFullPath) && !Utils.File.IsSpecialFeature(fileFullPath)
-                     select fileFullPath)
-            {
-                if (Utils.MediaHelper.ExtendedBackupFileBase(fileFullPath) is not MovieBackupFile movie) continue;
-                if (!movie.TmdbId.HasValue()) continue;
-
-                var edition = movie.Edition == Edition.Unknown ? string.Empty : movie.Edition.ToEnumMember();
-                movieNames.TryAdd($"{Convert.ToInt32(movie.TmdbId),0:D7} - {movie.Title} ({movie.ReleaseYear}) {edition}", movie);
-            }
-            movieComboBox.Items.AddRange([.. movieNames.OrderBy(static i => i.Value.Title).ToDictionary(static i => i.Key, static i => i.Value).Keys]);
-
-            foreach (var file in mediaBackup.BackupFiles.Where(static file => file.FullPath.Length > Utils.MAX_PATH))
-            {
-                Utils.LogWithPushover(BackupAction.Error, string.Format(Resources.PathTooLong, file.FullPath));
-            }
+            AddTvShowsToCaches();
+            AddMoviesToCaches();
 
             foreach (var disk in mediaBackup.BackupDisks)
             {
@@ -184,6 +160,54 @@ internal sealed partial class Main
             _ = MessageBox.Show(string.Format(Resources.ExceptionOccured, ex));
             Environment.Exit(0);
         }
+    }
+
+    private void AddMoviesToCaches()
+    {
+        movieNames = new Dictionary<string, MovieBackupFile>();
+
+        foreach (var fileFullPath in from file in mediaBackup.BackupFiles
+                 let fileFullPath = file.FullPath
+                 where !file.Deleted && Utils.File.IsMovieComedyOrConcert(fileFullPath) && !Utils.File.IsSpecialFeature(fileFullPath)
+                 select fileFullPath)
+        {
+            if (Utils.MediaHelper.ExtendedBackupFileBase(fileFullPath) is not MovieBackupFile movie) continue;
+            if (!movie.TmdbId.HasValue()) continue;
+
+            var edition = movie.Edition == Edition.Unknown ? string.Empty : movie.Edition.ToEnumMember();
+            movieNames.TryAdd($"{Convert.ToInt32(movie.TmdbId),0:D7} - {movie.Title} ({movie.ReleaseYear}) {edition}", movie);
+        }
+        movieComboBox.Items.AddRange([.. movieNames.OrderBy(static i => i.Value.Title).ToDictionary(static i => i.Key, static i => i.Value).Keys]);
+
+        foreach (var file in mediaBackup.BackupFiles.Where(static file => file.FullPath.Length > Utils.MAX_PATH))
+        {
+            Utils.LogWithPushover(BackupAction.Error, string.Format(Resources.PathTooLong, file.FullPath));
+        }
+    }
+
+    private void AddTvShowsToCaches()
+    {
+        var tvShowNames = new Dictionary<string, TvEpisodeBackupFile>();
+
+        foreach (var fileFullPath in from file in mediaBackup.BackupFiles
+                 let fileFullPath = file.FullPath
+                 where !file.Deleted && Utils.File.IsTv(fileFullPath) && !Utils.File.IsSpecialFeature(fileFullPath)
+                 select fileFullPath)
+        {
+            if (Utils.MediaHelper.ExtendedBackupFileBase(fileFullPath) is not TvEpisodeBackupFile tvEp) continue;
+
+            tvShowNames.TryAdd($"{Convert.ToInt32(tvEp.TvdbId),0:D6} - {tvEp.Title}", tvEp);
+            if (!tvShowSeasons.ContainsKey(tvEp.Title)) tvShowSeasons.Add(tvEp.Title, []);
+            tvShowSeasons[tvEp.Title].Add(tvEp.Season);
+            var key = $"{tvEp.Title}:{tvEp.Season}";
+            if (!episodesForASeason.ContainsKey(key)) episodesForASeason.Add(key, []);
+            episodesForASeason[key].Add(tvEp.Episode);
+            if (tvEp.Edition.HasNoValue()) continue;
+
+            if (!tvShowEditions.ContainsKey(tvEp.Title)) tvShowEditions.Add(tvEp.Title, []);
+            tvShowEditions[tvEp.Title].Add(tvEp.Edition);
+        }
+        tvShowComboBox.Items.AddRange([.. tvShowNames.OrderBy(static i => i.Value.Title).ToDictionary(static i => i.Key, static i => i.Value).Keys]);
     }
 
     internal void UpdateBackupDiskTextBoxFromConfig()

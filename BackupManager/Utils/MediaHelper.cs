@@ -552,11 +552,6 @@ internal static partial class Utils
         {
             if (!File.IsVideo(path)) return;
 
-            if (runtimeFromCache <= 0)
-            {
-                Log(BackupAction.ProcessFiles, $"Unable to get the runtime for {path} from cache or Tmdb Api");
-                return;
-            }
             var file = ExtendedBackupFileBase(path);
             if (file is not VideoBackupFileBase videoFile) return;
             if (videoFile.SpecialFeature != SpecialFeature.None) return;
@@ -567,6 +562,12 @@ internal static partial class Utils
                 return;
             }
             var fileRuntime = videoFile.MediaInfoModel.RunTime.TotalMinutes;
+
+            if (runtimeFromCache <= 0)
+            {
+                Log(BackupAction.ProcessFiles, $"{fileRuntime:N0} mins from file but unable to get the runtime for {path} from cache or Tmdb Api");
+                return;
+            }
             var percentage = Convert.ToInt32(fileRuntime * 100 / runtimeFromCache);
 
             if (percentage < minimum || percentage > maximum)

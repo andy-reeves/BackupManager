@@ -149,6 +149,13 @@
             tvShowComboBox = new System.Windows.Forms.ComboBox();
             label18 = new System.Windows.Forms.Label();
             groupBox3 = new System.Windows.Forms.GroupBox();
+            editionComboBox = new System.Windows.Forms.ComboBox();
+            label22 = new System.Windows.Forms.Label();
+            episodeComboBox = new System.Windows.Forms.ComboBox();
+            label21 = new System.Windows.Forms.Label();
+            seasonComboBox = new System.Windows.Forms.ComboBox();
+            label20 = new System.Windows.Forms.Label();
+            setRuntimeForEpisodeButton = new System.Windows.Forms.Button();
             groupBox6 = new System.Windows.Forms.GroupBox();
             movieComboBox = new System.Windows.Forms.ComboBox();
             label19 = new System.Windows.Forms.Label();
@@ -793,14 +800,14 @@
             pushoverGroupBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             pushoverGroupBox.Name = "pushoverGroupBox";
             pushoverGroupBox.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            pushoverGroupBox.Size = new System.Drawing.Size(324, 185);
+            pushoverGroupBox.Size = new System.Drawing.Size(324, 152);
             pushoverGroupBox.TabIndex = 54;
             pushoverGroupBox.TabStop = false;
             pushoverGroupBox.Text = "Pushover";
             // 
             // pushoverMessagesRemainingTextBox
             // 
-            pushoverMessagesRemainingTextBox.Location = new System.Drawing.Point(135, 150);
+            pushoverMessagesRemainingTextBox.Location = new System.Drawing.Point(253, 119);
             pushoverMessagesRemainingTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             pushoverMessagesRemainingTextBox.Name = "pushoverMessagesRemainingTextBox";
             pushoverMessagesRemainingTextBox.ReadOnly = true;
@@ -821,7 +828,7 @@
             // label17
             // 
             label17.AutoSize = true;
-            label17.Location = new System.Drawing.Point(9, 152);
+            label17.Location = new System.Drawing.Point(127, 121);
             label17.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label17.Name = "label17";
             label17.Size = new System.Drawing.Size(115, 15);
@@ -945,7 +952,7 @@
             groupBox5.Controls.Add(scheduledBackupTimerButton);
             groupBox5.Controls.Add(label2);
             groupBox5.Controls.Add(label5);
-            groupBox5.Location = new System.Drawing.Point(1082, 207);
+            groupBox5.Location = new System.Drawing.Point(1082, 175);
             groupBox5.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             groupBox5.Name = "groupBox5";
             groupBox5.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -1420,29 +1427,29 @@
             // 
             // clearCacheForTvShowButton
             // 
-            clearCacheForTvShowButton.Location = new System.Drawing.Point(87, 51);
+            clearCacheForTvShowButton.Location = new System.Drawing.Point(10, 50);
             clearCacheForTvShowButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             clearCacheForTvShowButton.Name = "clearCacheForTvShowButton";
-            clearCacheForTvShowButton.Size = new System.Drawing.Size(147, 27);
+            clearCacheForTvShowButton.Size = new System.Drawing.Size(127, 27);
             clearCacheForTvShowButton.TabIndex = 114;
-            clearCacheForTvShowButton.Text = "Clear cache for TV show";
+            clearCacheForTvShowButton.Text = "Clear cache for show";
             clearCacheForTvShowButton.UseVisualStyleBackColor = true;
             clearCacheForTvShowButton.Click += ClearCacheForTvShowButton_Click;
             // 
             // setTvShowRuntimeButton
             // 
-            setTvShowRuntimeButton.Location = new System.Drawing.Point(136, 83);
+            setTvShowRuntimeButton.Location = new System.Drawing.Point(214, 50);
             setTvShowRuntimeButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             setTvShowRuntimeButton.Name = "setTvShowRuntimeButton";
-            setTvShowRuntimeButton.Size = new System.Drawing.Size(127, 27);
+            setTvShowRuntimeButton.Size = new System.Drawing.Size(103, 27);
             setTvShowRuntimeButton.TabIndex = 116;
-            setTvShowRuntimeButton.Text = "Set runtime";
+            setTvShowRuntimeButton.Text = "Set for show";
             setTvShowRuntimeButton.UseVisualStyleBackColor = true;
             setTvShowRuntimeButton.Click += SetTvShowRuntimeButton_Click;
             // 
             // tvShowRuntimeTextBox
             // 
-            tvShowRuntimeTextBox.Location = new System.Drawing.Point(70, 84);
+            tvShowRuntimeTextBox.Location = new System.Drawing.Point(144, 53);
             tvShowRuntimeTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             tvShowRuntimeTextBox.Name = "tvShowRuntimeTextBox";
             tvShowRuntimeTextBox.Size = new System.Drawing.Size(32, 23);
@@ -1457,11 +1464,12 @@
             tvShowComboBox.Name = "tvShowComboBox";
             tvShowComboBox.Size = new System.Drawing.Size(307, 23);
             tvShowComboBox.TabIndex = 118;
+            tvShowComboBox.SelectedIndexChanged += tvShowComboBox_SelectedIndexChanged;
             // 
             // label18
             // 
             label18.AutoSize = true;
-            label18.Location = new System.Drawing.Point(104, 87);
+            label18.Location = new System.Drawing.Point(176, 56);
             label18.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label18.Name = "label18";
             label18.Size = new System.Drawing.Size(33, 15);
@@ -1470,17 +1478,93 @@
             // 
             // groupBox3
             // 
+            groupBox3.Controls.Add(editionComboBox);
+            groupBox3.Controls.Add(label22);
+            groupBox3.Controls.Add(episodeComboBox);
+            groupBox3.Controls.Add(label21);
+            groupBox3.Controls.Add(seasonComboBox);
+            groupBox3.Controls.Add(label20);
+            groupBox3.Controls.Add(setRuntimeForEpisodeButton);
             groupBox3.Controls.Add(tvShowComboBox);
             groupBox3.Controls.Add(label18);
             groupBox3.Controls.Add(clearCacheForTvShowButton);
             groupBox3.Controls.Add(tvShowRuntimeTextBox);
             groupBox3.Controls.Add(setTvShowRuntimeButton);
-            groupBox3.Location = new System.Drawing.Point(1082, 313);
+            groupBox3.Location = new System.Drawing.Point(1082, 287);
             groupBox3.Name = "groupBox3";
-            groupBox3.Size = new System.Drawing.Size(324, 120);
+            groupBox3.Size = new System.Drawing.Size(324, 162);
             groupBox3.TabIndex = 120;
             groupBox3.TabStop = false;
             groupBox3.Text = "TV show cache";
+            // 
+            // editionComboBox
+            // 
+            editionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            editionComboBox.FormattingEnabled = true;
+            editionComboBox.Location = new System.Drawing.Point(160, 86);
+            editionComboBox.Name = "editionComboBox";
+            editionComboBox.Size = new System.Drawing.Size(80, 23);
+            editionComboBox.TabIndex = 125;
+            // 
+            // label22
+            // 
+            label22.AutoSize = true;
+            label22.Location = new System.Drawing.Point(113, 89);
+            label22.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label22.Name = "label22";
+            label22.Size = new System.Drawing.Size(44, 15);
+            label22.TabIndex = 124;
+            label22.Text = "Edition";
+            // 
+            // episodeComboBox
+            // 
+            episodeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            episodeComboBox.FormattingEnabled = true;
+            episodeComboBox.Location = new System.Drawing.Point(57, 118);
+            episodeComboBox.Name = "episodeComboBox";
+            episodeComboBox.Size = new System.Drawing.Size(45, 23);
+            episodeComboBox.TabIndex = 123;
+            // 
+            // label21
+            // 
+            label21.AutoSize = true;
+            label21.Location = new System.Drawing.Point(6, 121);
+            label21.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label21.Name = "label21";
+            label21.Size = new System.Drawing.Size(48, 15);
+            label21.TabIndex = 122;
+            label21.Text = "Episode";
+            // 
+            // seasonComboBox
+            // 
+            seasonComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            seasonComboBox.FormattingEnabled = true;
+            seasonComboBox.Location = new System.Drawing.Point(57, 86);
+            seasonComboBox.Name = "seasonComboBox";
+            seasonComboBox.Size = new System.Drawing.Size(45, 23);
+            seasonComboBox.TabIndex = 121;
+            seasonComboBox.SelectedIndexChanged += seasonComboBox_SelectedIndexChanged;
+            // 
+            // label20
+            // 
+            label20.AutoSize = true;
+            label20.Location = new System.Drawing.Point(10, 89);
+            label20.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label20.Name = "label20";
+            label20.Size = new System.Drawing.Size(44, 15);
+            label20.TabIndex = 90;
+            label20.Text = "Season";
+            // 
+            // setRuntimeForEpisodeButton
+            // 
+            setRuntimeForEpisodeButton.Location = new System.Drawing.Point(214, 115);
+            setRuntimeForEpisodeButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            setRuntimeForEpisodeButton.Name = "setRuntimeForEpisodeButton";
+            setRuntimeForEpisodeButton.Size = new System.Drawing.Size(103, 27);
+            setRuntimeForEpisodeButton.TabIndex = 120;
+            setRuntimeForEpisodeButton.Text = "Set for episode";
+            setRuntimeForEpisodeButton.UseVisualStyleBackColor = true;
+            setRuntimeForEpisodeButton.Click += setRuntimeForEpisodeButton_Click;
             // 
             // groupBox6
             // 
@@ -1488,7 +1572,7 @@
             groupBox6.Controls.Add(label19);
             groupBox6.Controls.Add(movieRuntimeTextBox);
             groupBox6.Controls.Add(setMovieRuntimeButton);
-            groupBox6.Location = new System.Drawing.Point(1082, 437);
+            groupBox6.Location = new System.Drawing.Point(1082, 455);
             groupBox6.Name = "groupBox6";
             groupBox6.Size = new System.Drawing.Size(324, 82);
             groupBox6.TabIndex = 121;
@@ -1758,6 +1842,13 @@
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.TextBox movieRuntimeTextBox;
         private System.Windows.Forms.Button setMovieRuntimeButton;
+        private System.Windows.Forms.ComboBox seasonComboBox;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.Button setRuntimeForEpisodeButton;
+        private System.Windows.Forms.ComboBox episodeComboBox;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.ComboBox editionComboBox;
+        private System.Windows.Forms.Label label22;
     }
 }
 

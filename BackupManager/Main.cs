@@ -1430,4 +1430,64 @@ internal sealed partial class Main : Form
         ResetTokenSource();
         mediaBackup.Save(mainCt);
     }
+
+    private void tvShowComboBox_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        // populate the season combo and edition , reset the episode combo
+        if (tvShowComboBox.SelectedItem == null) return;
+
+        var showName = tvShowComboBox.SelectedItem.ToString().SubstringAfter('-').Trim();
+        seasonComboBox.Items.Clear();
+        editionComboBox.Items.Clear();
+
+        foreach (var show in tvShowSeasons.Where(show => show.Key.Equals(showName)))
+        {
+            seasonComboBox.Items.AddRange(show.Value.Distinct().Order().ToArray<object>());
+        }
+
+        foreach (var show in tvShowEditions.Where(show => show.Key.Equals(showName)))
+        {
+            editionComboBox.Items.AddRange(show.Value.Distinct().Order().ToArray<object>());
+        }
+        episodeComboBox.Items.Clear();
+    }
+
+    private void seasonComboBox_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        // populate the episode combo
+        if (tvShowComboBox.SelectedItem == null || seasonComboBox.SelectedItem == null) return;
+
+        var showName = tvShowComboBox.SelectedItem.ToString().SubstringAfter('-').Trim();
+        episodeComboBox.Items.Clear();
+
+        foreach (var eps in episodesForASeason.Where(eps => eps.Key.Equals($"{showName}:{seasonComboBox.SelectedItem}")))
+        {
+            episodeComboBox.Items.AddRange(eps.Value.Distinct().Order().ToArray<object>());
+        }
+    }
+
+    private void setRuntimeForEpisodeButton_Click(object sender, EventArgs e)
+    {
+        var text = (string)tvShowComboBox.SelectedItem;
+
+        // "71489" - Law and order criminal intent and "72389" - 3rd rock
+        if (text.HasNoValue() || tvShowRuntimeTextBox.Text.HasNoValue()) return;
+        if (((string)seasonComboBox.SelectedItem).HasNoValue()) return;
+        if (((string)episodeComboBox.SelectedItem).HasNoValue()) return;
+
+        var showId = Convert.ToInt32(text.SubstringBefore('-').Trim());
+        var seasonId = (string)seasonComboBox.SelectedItem;
+        var episodeId = (string)episodeComboBox.SelectedItem;
+        var edition = editionComboBox.SelectedIndex > -1 ? (string)editionComboBox.SelectedItem : string.Empty;
+        var editionText = edition == string.Empty ? string.Empty : $" edition: {edition}";
+        text = $"{text} season:{seasonId}{editionText} episode:{episodeId}";
+
+        if (MessageBox.Show(string.Format(Resources.SetRuntimeForAsset, tvShowRuntimeTextBox.Text, text), Resources.SetRuntimeTitle, MessageBoxButtons.YesNo) !=
+            DialogResult.Yes)
+            return;
+
+        mediaBackup.SetTvShowRuntime(showId, seasonId, edition, episodeId, Convert.ToInt32(tvShowRuntimeTextBox.Text));
+        ResetTokenSource();
+        mediaBackup.Save(mainCt);
+    }
 }

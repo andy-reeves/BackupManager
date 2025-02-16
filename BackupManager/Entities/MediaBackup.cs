@@ -809,7 +809,7 @@ public sealed class MediaBackup
     {
         if (!Utils.File.IsVideo(path)) return -1;
 
-        var id = Utils.MediaHelper.GetTvdbInfo(path, out string edition, out var seasonNumber, out var episodeNumber);
+        var id = Utils.MediaHelper.GetTvdbInfo(path, out var edition, out var seasonNumber, out var episodeNumber);
 
         // season 0 is the specials
         if (id == -1 || seasonNumber == 0) return -1;
@@ -862,18 +862,35 @@ public sealed class MediaBackup
 
         for (var i = TmdbTvEpisodes.Count - 1; i >= 0; i--)
         {
-            var m = TmdbTvEpisodes[i];
-            if (m.Id.StartsWithIgnoreCase(key)) _ = TmdbTvEpisodes.Remove(m);
+            var tmdbItem = TmdbTvEpisodes[i];
+            if (!tmdbItem.Id.StartsWithIgnoreCase(key)) continue;
+
+            Utils.Log($"Removed {tmdbItem.Id} from the cache");
+            _ = TmdbTvEpisodes.Remove(tmdbItem);
         }
     }
 
     internal void SetTvShowRuntime(int tvdbId, int runtime)
     {
-        var key = $"{tvdbId}:";
+        var startsWith = $"{tvdbId}:";
 
-        foreach (var tvEp in TmdbTvEpisodes.Where(tvEp => tvEp.Id.StartsWithIgnoreCase(key)))
+        foreach (var tvEp in TmdbTvEpisodes.Where(tvEp => tvEp.Id.StartsWithIgnoreCase(startsWith)))
         {
             tvEp.Runtime = runtime;
+            Utils.Log($"Set runtime for {tvEp.Id} to {tvEp.Runtime}");
+        }
+    }
+
+    internal void SetTvShowRuntime(int tvdbId, string seasonId, string edition, string episodeId, int runtime)
+    {
+        var trimmedSeason = Convert.ToInt32(seasonId);
+        var trimmedEpisodeId = Convert.ToInt32(episodeId[1..]); //trim off the 'e' and leading zeros
+        var key = $"{tvdbId}:{edition}:{trimmedSeason}:{trimmedEpisodeId}";
+
+        foreach (var tvEp in TmdbTvEpisodes.Where(tvEp => tvEp.Id.Equals(key)))
+        {
+            tvEp.Runtime = runtime;
+            Utils.Log($"Set runtime for {tvEp.Id} to {tvEp.Runtime}");
         }
     }
 
@@ -882,9 +899,10 @@ public sealed class MediaBackup
         var edit = edition == Edition.Unknown ? string.Empty : edition.ToString();
         var key = $"{id}:{edit}";
 
-        foreach (var movieItem in TmdbMovies.Where(item => item.Id.StartsWithIgnoreCase(key)))
+        foreach (var movieItem in TmdbMovies.Where(item => item.Id.Equals(key)))
         {
             movieItem.Runtime = runtime;
+            Utils.Log($"Set runtime for {movieItem.Id} to {movieItem.Runtime}");
         }
     }
 }
