@@ -17,7 +17,6 @@ using System.Threading;
 
 using BackupManager.Extensions;
 using BackupManager.Properties;
-using BackupManager.Radarr;
 
 using Microsoft.Win32.SafeHandles;
 
@@ -301,20 +300,6 @@ internal static partial class Utils
                 SetAttributes(path, attributes);
             }
             TraceOut();
-        }
-
-        internal static bool IsDolbyVisionProfile5(string path)
-        {
-            TraceIn(path);
-            ArgumentException.ThrowIfNullOrEmpty(path);
-            if (!IsVideo(path) || !MediaHelper.VideoFileIsDolbyVision(path)) return TraceOut(false);
-
-            if (!Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
-
-            var info = new VideoFileInfoReader().GetMediaInfo(path);
-
-            // ReSharper disable once StringLiteralTypo
-            return info == null ? throw new ApplicationException("Unable to load ffprobe.exe") : TraceOut(info is { DoviConfigurationRecord.DvProfile: 5 });
         }
 
         /// <summary>
