@@ -1490,4 +1490,27 @@ internal sealed partial class Main : Form
         ResetTokenSource();
         mediaBackup.Save(mainCt);
     }
+
+    private void setTVShowForSeasonButton_Click(object sender, EventArgs e)
+    {
+        var text = (string)tvShowComboBox.SelectedItem;
+
+        // "71489" - Law and order criminal intent and "72389" - 3rd rock
+        if (text.HasNoValue() || tvShowRuntimeTextBox.Text.HasNoValue()) return;
+        if (((string)seasonComboBox.SelectedItem).HasNoValue()) return;
+
+        var showId = Convert.ToInt32(text.SubstringBefore('-').Trim());
+        var seasonId = (string)seasonComboBox.SelectedItem;
+        var edition = editionComboBox.SelectedIndex > -1 ? (string)editionComboBox.SelectedItem : string.Empty;
+        var editionText = edition == string.Empty ? string.Empty : $" edition: {edition}";
+        text = $"{text} season:{seasonId}{editionText}";
+
+        if (MessageBox.Show(string.Format(Resources.SetRuntimeForAsset, tvShowRuntimeTextBox.Text, text), Resources.SetRuntimeTitle, MessageBoxButtons.YesNo) !=
+            DialogResult.Yes)
+            return;
+
+        mediaBackup.SetTvShowRuntime(showId, seasonId, edition, Convert.ToInt32(tvShowRuntimeTextBox.Text));
+        ResetTokenSource();
+        mediaBackup.Save(mainCt);
+    }
 }

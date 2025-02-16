@@ -906,4 +906,16 @@ public sealed class MediaBackup
             Utils.Log($"Set runtime for {movieItem.Id} to {movieItem.Runtime}");
         }
     }
+
+    internal void SetTvShowRuntime(int tvdbId, string seasonId, string edition, int runtime)
+    {
+        var trimmedSeason = Convert.ToInt32(seasonId);
+        var key = $"{tvdbId}:{edition}:{trimmedSeason}:";
+
+        foreach (var tvEp in TmdbTvEpisodes.Where(tvEp => tvEp.Id.StartsWithIgnoreCase(key)))
+        {
+            tvEp.Runtime = runtime;
+            Utils.Log($"Set runtime for {tvEp.Id} to {tvEp.Runtime}");
+        }
+    }
 }
