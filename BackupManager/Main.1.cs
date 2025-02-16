@@ -30,20 +30,20 @@ internal sealed partial class Main
     /// <summary>
     ///     The main application config.xml
     /// </summary>
-    private readonly Config config;
+    private Config config;
 
     private readonly Dictionary<string, HashSet<string>> episodesForASeason = new(); // key=showName:season, value=hashset of episodes
 
-    private readonly MediaBackup mediaBackup;
+    private MediaBackup mediaBackup;
 
-    private readonly Action monitoringAction;
+    private Action monitoringAction;
 
     /// <summary>
     ///     For the monitoring applications
     /// </summary>
     private readonly CancellationTokenSource monitoringCancellationTokenSource = new();
 
-    private readonly Action scheduledBackupAction;
+    private Action scheduledBackupAction;
 
     private readonly Dictionary<string, HashSet<string>> tvShowEditions = new(); // key=showName, value=hashset of editions
 
@@ -81,19 +81,10 @@ internal sealed partial class Main
     {
         try
         {
-            var sw = Stopwatch.StartNew();
             InitializeComponent();
             TraceConfiguration.Register();
-
-            if (Utils.InDebugBuild)
-            {
-                _ = Trace.Listeners.Add(
-                    new TextWriterTraceListener(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"), "myListener"));
-            }
-            var localMediaXml = Path.Combine(Application.StartupPath, "MediaBackup.xml");
-            mediaBackup = MediaBackup.Load(File.Exists(localMediaXml) ? localMediaXml : ConfigurationManager.AppSettings.Get("MediaBackupXml"));
-            config = mediaBackup.Config;
-            Utils.Config = config;
+            SetupDebugListeners();
+            LoadXmlAndSetupConfig();
             UpdateBackupDiskTextBoxFromConfig();
             if (Utils.IsRunningAsAdmin()) Text += Resources.AdminTitle;
             UpdateMediaFilesCountDisplay();
@@ -102,57 +93,23 @@ internal sealed partial class Main
             config.LogParameters();
             mediaBackup.CheckMovieAndTvForDuplicates();
             mediaBackup.CheckForDuplicateTvEpisodesGlobally();
-            var directoriesArray = config.DirectoriesToBackup.ToArray();
-            listDirectoriesComboBox.Items.AddRange([.. directoriesArray]);
-            directoriesComboBox.Items.AddRange([.. directoriesArray]);
-            restoreDirectoryComboBox.Items.AddRange([.. directoriesArray]);
-            scanDirectoryComboBox.Items.AddRange([.. directoriesArray]);
+            PopulateComboBoxesWithDirectories();
             AddTvShowsToCaches();
             AddMoviesToCaches();
-
-            foreach (var disk in mediaBackup.BackupDisks)
-            {
-                _ = listFilesComboBox.Items.Add(disk.Name);
-            }
-            pushoverLowCheckBox.Checked = config.PushoverSendLowOnOff;
-            pushoverNormalCheckBox.Checked = config.PushoverSendNormalOnOff;
-            pushoverHighCheckBox.Checked = config.PushoverSendHighOnOff;
-            pushoverEmergencyCheckBox.Checked = config.PushoverSendEmergencyOnOff;
-
-            foreach (var monitor in config.Monitors)
-            {
-                _ = processesComboBox.Items.Add(monitor.Name);
-            }
-
-            scheduledBackupAction = () =>
-            {
-                ResetTokenSource();
-                _ = TaskWrapper(() => ScheduledBackupAsync(mainCt), mainCt);
-            };
-            monitoringAction = MonitorServices;
-            scheduledDateTimePicker.Value = DateTime.Parse(config.ScheduledBackupStartTime);
+            PopulateComboBoxesWithBackupDisks();
+            SetupPushoverCheckBoxes();
+            PopulateComboBoxesWithServices();
+            SetupMonitoring();
             UpdateSendingPushoverButton();
             UpdateScheduledBackupButton();
             UpdateSpeedTestDisksButton();
-
-            // we switch it off and force the button to be clicked to turn it on again
-            config.MonitoringOnOff = !config.MonitoringOnOff;
-            MonitoringButton_Click(null, null);
+            SetupMonitoringButton();
             _ = UpdateCurrentBackupDiskInfo(mediaBackup.GetBackupDisk(backupDiskTextBox.Text));
-
-            if (config.ScheduledBackupRunOnStartup)
-            {
-                ResetTokenSource();
-                _ = TaskWrapper(() => ScheduledBackupAsync(mainCt), mainCt);
-            }
+            RunScheduledBackupOnStartupIfRequired();
             SetupDailyTrigger(config.ScheduledBackupOnOff, scheduledDateTimePicker.Value);
             SetupFileWatchers();
             UpdateUI_Tick(null, null);
-
-            // we switch it off and force the button to be clicked to turn it on again
-            config.MonitoringCheckLatestVersions = !config.MonitoringCheckLatestVersions;
             VersionCheckingButton_Click(null, null);
-            Utils.Log($"Startup time = {sw.Elapsed}");
             Utils.TraceOut();
         }
         catch (Exception ex)
@@ -160,6 +117,86 @@ internal sealed partial class Main
             _ = MessageBox.Show(string.Format(Resources.ExceptionOccured, ex));
             Environment.Exit(0);
         }
+    }
+
+    private void LoadXmlAndSetupConfig()
+    {
+        var localMediaXml = Path.Combine(Application.StartupPath, "MediaBackup.xml");
+        mediaBackup = MediaBackup.Load(File.Exists(localMediaXml) ? localMediaXml : ConfigurationManager.AppSettings.Get("MediaBackupXml"));
+        config = mediaBackup.Config;
+        Utils.Config = config;
+    }
+
+    private static void SetupDebugListeners()
+    {
+        if (Utils.InDebugBuild)
+        {
+            _ = Trace.Listeners.Add(new TextWriterTraceListener(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"),
+                "myListener"));
+        }
+    }
+
+    private void RunScheduledBackupOnStartupIfRequired()
+    {
+        if (config.ScheduledBackupRunOnStartup)
+        {
+            ResetTokenSource();
+            _ = TaskWrapper(() => ScheduledBackupAsync(mainCt), mainCt);
+        }
+    }
+
+    private void SetupMonitoringButton()
+    {
+        // we switch it off and force the button to be clicked to turn it on again
+        config.MonitoringOnOff = !config.MonitoringOnOff;
+        MonitoringButton_Click(null, null);
+    }
+
+    private void SetupPushoverCheckBoxes()
+    {
+        pushoverLowCheckBox.Checked = config.PushoverSendLowOnOff;
+        pushoverNormalCheckBox.Checked = config.PushoverSendNormalOnOff;
+        pushoverHighCheckBox.Checked = config.PushoverSendHighOnOff;
+        pushoverEmergencyCheckBox.Checked = config.PushoverSendEmergencyOnOff;
+    }
+
+    private void SetupMonitoring()
+    {
+        scheduledBackupAction = () =>
+        {
+            ResetTokenSource();
+            _ = TaskWrapper(() => ScheduledBackupAsync(mainCt), mainCt);
+        };
+        monitoringAction = MonitorServices;
+        scheduledDateTimePicker.Value = DateTime.Parse(config.ScheduledBackupStartTime);
+
+        // we switch it off and force the button to be clicked to turn it on again
+        config.MonitoringCheckLatestVersions = !config.MonitoringCheckLatestVersions;
+    }
+
+    private void PopulateComboBoxesWithServices()
+    {
+        foreach (var monitor in config.Monitors)
+        {
+            _ = processesComboBox.Items.Add(monitor.Name);
+        }
+    }
+
+    private void PopulateComboBoxesWithBackupDisks()
+    {
+        foreach (var disk in mediaBackup.BackupDisks)
+        {
+            _ = listFilesComboBox.Items.Add(disk.Name);
+        }
+    }
+
+    private void PopulateComboBoxesWithDirectories()
+    {
+        var directoriesArray = config.DirectoriesToBackup.ToArray();
+        listDirectoriesComboBox.Items.AddRange([.. directoriesArray]);
+        directoriesComboBox.Items.AddRange([.. directoriesArray]);
+        restoreDirectoryComboBox.Items.AddRange([.. directoriesArray]);
+        scanDirectoryComboBox.Items.AddRange([.. directoriesArray]);
     }
 
     private void AddMoviesToCaches()
