@@ -193,7 +193,7 @@ public sealed class MediaBackup
     internal void CheckMovieAndTvForDuplicates()
     {
         // check the tv runtime cache results
-        var dictionary = new Dictionary<string, TmdbItem>();
+        HashSet<string> hashSetOfTvEpisodeKeys = [];
 
         for (var index = TmdbTvEpisodes.Count - 1; index >= 0; index--)
         {
@@ -205,7 +205,7 @@ public sealed class MediaBackup
             // key[2] is the season number
             // key[3] is the episode number
             // we don't use the edition in the cached results
-            // key[1]==0 is the Specials folder which we don't check runtimes for
+            // key[2]==0 is the Specials folder which we don't check runtimes for
             if (key[3] == "-1" || key[2] == "-1" || key[0] == "-1" || key[2] == "0")
             {
                 Utils.LogWithPushover(BackupAction.General, PushoverPriority.High,
@@ -213,26 +213,27 @@ public sealed class MediaBackup
             }
             else
             {
-                if (dictionary.TryAdd(episode.Id, episode)) continue;
+                if (hashSetOfTvEpisodeKeys.Add(episode.Id)) continue;
 
                 Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, $"Duplicate TV episode detected in the runtime cache {episode.Id}");
             }
 
-            // remove the episode
+            // remove the episode if the key was already in the cache
+            Utils.Log($"Removed {episode.Id} from the cache");
             _ = TmdbTvEpisodes.Remove(episode);
         }
-        var dictionary2 = new Dictionary<string, TmdbItem>();
+        HashSet<string> hashSetOfMovieKeys = [];
 
         // check the movie runtime cache results
         for (var index = TmdbMovies.Count - 1; index >= 0; index--)
         {
             var m = TmdbMovies[index];
-            var result = dictionary2.TryAdd(m.Id, m);
-            if (result) continue;
+            if (hashSetOfMovieKeys.Add(m.Id)) continue;
 
             Utils.LogWithPushover(BackupAction.General, PushoverPriority.High, $"Duplicate Movie detected in the runtime cache {m.Id}");
 
-            // remove the movie
+            // remove the movie if the key was added already
+            Utils.Log($"Removed {m.Id} from the cache");
             _ = TmdbMovies.Remove(m);
         }
     }
