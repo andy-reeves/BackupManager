@@ -129,20 +129,18 @@ internal sealed partial class Main
 
     private static void SetupDebugListeners()
     {
-        if (Utils.InDebugBuild)
-        {
-            _ = Trace.Listeners.Add(new TextWriterTraceListener(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"),
-                "myListener"));
-        }
+        if (!Utils.InDebugBuild) return;
+
+        _ = Trace.Listeners.Add(new TextWriterTraceListener(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BackupManager_Trace.log"),
+            "myListener"));
     }
 
     private void RunScheduledBackupOnStartupIfRequired()
     {
-        if (config.ScheduledBackupRunOnStartup)
-        {
-            ResetTokenSource();
-            _ = TaskWrapper(() => ScheduledBackupAsync(mainCt), mainCt);
-        }
+        if (!config.ScheduledBackupRunOnStartup) return;
+
+        ResetTokenSource();
+        _ = TaskWrapper(() => ScheduledBackupAsync(mainCt), mainCt);
     }
 
     private void SetupMonitoringButton()
@@ -224,6 +222,7 @@ internal sealed partial class Main
 
     private void AddTvShowsToCaches()
     {
+        // use a dictionary so we can order by the .Values.Title later
         var tvShowNames = new Dictionary<string, TvEpisodeBackupFile>();
 
         foreach (var fileFullPath in from file in mediaBackup.BackupFiles
