@@ -96,6 +96,7 @@ internal sealed partial class Main
             PopulateComboBoxesWithDirectories();
             AddTvShowsToCaches();
             AddMoviesToCaches();
+            CheckDirectoriesForMaxPath();
             PopulateComboBoxesWithBackupDisks();
             SetupPushoverCheckBoxes();
             PopulateComboBoxesWithServices();
@@ -116,6 +117,14 @@ internal sealed partial class Main
         {
             _ = MessageBox.Show(string.Format(Resources.ExceptionOccured, ex));
             Environment.Exit(0);
+        }
+    }
+
+    private void CheckDirectoriesForMaxPath()
+    {
+        foreach (var file in mediaBackup.BackupFiles.Where(static file => file.FullPath.Length > Utils.MAX_PATH))
+        {
+            Utils.LogWithPushover(BackupAction.Error, string.Format(Resources.PathTooLong, file.FullPath));
         }
     }
 
@@ -213,11 +222,6 @@ internal sealed partial class Main
             movieNames.TryAdd($"{Convert.ToInt32(movie.TmdbId),0:D7} - {movie.Title} ({movie.ReleaseYear}) {edition}", movie);
         }
         movieComboBox.Items.AddRange([.. movieNames.OrderBy(static i => i.Value.Title).ToDictionary(static i => i.Key, static i => i.Value).Keys]);
-
-        foreach (var file in mediaBackup.BackupFiles.Where(static file => file.FullPath.Length > Utils.MAX_PATH))
-        {
-            Utils.LogWithPushover(BackupAction.Error, string.Format(Resources.PathTooLong, file.FullPath));
-        }
     }
 
     private void AddTvShowsToCaches()

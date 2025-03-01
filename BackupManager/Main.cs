@@ -1085,9 +1085,7 @@ internal sealed partial class Main : Form
         var files = mediaBackup.BackupFiles.Where(static file =>
         {
             ArgumentException.ThrowIfNullOrEmpty(file.FullPath);
-
-            return Utils.File.IsVideo(file.FullPath) && !Utils.File.IsSpecialFeature(file.FullPath) && Utils.File.IsTv(file.FullPath) &&
-                   !file.FullPath.ContainsAny("[h265]", "[VP9]", "[VC1]") && !file.Deleted;
+            return !Utils.File.IsSpecialFeature(file.FullPath) && Utils.File.IsTv(file.FullPath) && !file.FullPath.ContainsAny("[h265]", "[VP9]", "[VC1]") && !file.Deleted;
         }).OrderBy(static f => f.Length).ToArray();
 
         foreach (var f in files)
@@ -1103,7 +1101,7 @@ internal sealed partial class Main : Form
             {
                 ArgumentException.ThrowIfNullOrEmpty(file.FullPath);
 
-                return Utils.File.IsVideo(file.FullPath) && !Utils.File.IsSpecialFeature(file.FullPath) && Utils.File.IsMovieComedyOrConcert(file.FullPath) &&
+                return !Utils.File.IsSpecialFeature(file.FullPath) && Utils.File.IsMovieComedyOrConcert(file.FullPath) &&
                        !file.FullPath.ContainsAny("[h265]", "[VP9]", "[VC1]") && !file.Deleted;
             }).OrderBy(static f => f.Length)
         ];
