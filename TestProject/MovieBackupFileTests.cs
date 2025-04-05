@@ -18,6 +18,7 @@ namespace TestProject;
 public sealed class MovieBackupFileTests
 {
     [Theory]
+    [InlineData(@"Novocaine (2025) {tmdb-1195506} [WEBDL-1080p][AAC 2.0][AV1].mkv", true)]
     [InlineData(@"\\nas2\assets3\_Movies (non-tmdb)\Aliens (1986)\Aliens (1986) [Remux-2160p Proper][HDR10][AC3 5.1][h265].mkv", true,
         "Aliens (1986) [Remux-2160p][HDR10][AC3 5.1][h265].mkv")]
     [InlineData(@"\\nas2\assets3\_Movies (non-tmdb)\Aliens (1986)\Aliens (1986) [Remux-2160p][HDR10][AC3 5.1][h265].mkv", true)]

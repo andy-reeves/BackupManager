@@ -39,5 +39,7 @@ internal enum MediaInfoVideoCodec
 
     [EnumMember(Value = "x265")] x265,
 
-    [EnumMember(Value = "XviD")] XviD
+    [EnumMember(Value = "XviD")] XviD,
+
+    [EnumMember(Value = "AV1")] AV1
 }
