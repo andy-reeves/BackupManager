@@ -233,7 +233,7 @@ internal static partial class Utils
 
             if (!file.RefreshMediaInfo())
             {
-                LogWithPushover(BackupAction.Error, $"Refreshing media info for {path} failed");
+                LogWithPushover(BackupAction.General, $"Refreshing media info for {path} failed");
                 return false;
             }
             var newFullPath = file.GetFullName();
