@@ -50,7 +50,7 @@ public sealed class MovieBackupFileTests
     [InlineData("A (2022) {tmdb-1} [DVD][Opus 2.0][VP9].mkv", true)]
     [InlineData("Asterix and Obelix The Middle Kingdom (2023) {tmdb-643215} [Remux-1080p][DTS-HD MA 5.1][h264].en.srt", false)]
     [InlineData("Special video-featurette.mkv", true)]
-    [InlineData(@"\\nas2\assets3\_Movies (non-tmdb)\Aliens (1986)\Aliens (1986) [Remux-2160p][HDR10][AC3 5.1][].mkv", true)]
+    [InlineData(@"\\nas2\assets3\_Movies (non-tmdb)\Aliens (1986)\Aliens (1986) [Remux-2160p][HDR10][AC3 5.1].mkv", true)]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     public void MovieNameOnlyTests(string fileName, bool isValidFileName, string expectedFileName = "")
     {
@@ -62,28 +62,23 @@ public sealed class MovieBackupFileTests
     }
 
     [Theory]
-    [InlineData("File16 (2014) {tmdb-261103} [Remux-1080p][3D][DTS-HD MA 5.1][h264].mkv", false, true,
+    [InlineData("File16 (2014) {tmdb-261103} [Remux-1080p][3D][DTS-HD MA 5.1][h264].mkv", true, true, true,
         "File16 (2014) {tmdb-261103} [Remux-1080p][3D][DTS-HD MA 5.1][h264].mkv")]
-    [InlineData("File13 (2024) [Remux-1080p][DTS-HD MA 5.1][h264].mkv", false, true, "File13 (2024) [Remux-1080p][DTS-HD MA 5.1][h264].mkv")]
-    [InlineData("File14 (2024) [WEBDL-1080p][EAC3 5.1][h264].mkv", false, true, "File14 (2024) [WEBDL-1080p][EAC3 5.1][h265].mkv")]
-    [InlineData("Avengers Infinity War (2018) {tmdb-299536} [Remux-2160p][HDR10][TrueHD Atmos 7.1][h265].mkv", false, true,
+    [InlineData("File13 (2024) [Remux-1080p][DTS-HD MA 5.1][h264].mkv", true, true, true, "File13 (2024) [Remux-1080p][DTS-HD MA 5.1][h264].mkv")]
+    [InlineData("File14 (2024) [WEBDL-1080p][EAC3 5.1][h264].mkv", true, true, false, "File14 (2024) [WEBDL-1080p][EAC3 5.1][h265].mkv")]
+    [InlineData("Avengers Infinity War (2018) {tmdb-299536} [Remux-2160p][HDR10][TrueHD Atmos 7.1][h265].mkv", true, true, true,
         "Avengers Infinity War (2018) {tmdb-299536} [Remux-2160p][HDR10][TrueHD Atmos 7.1][h265].mkv")]
-    public void MovieRefreshInfoTests(string sourceFileName, bool validDirectoryName, bool validFileName, string expectedFileName)
+    [InlineData("Avengers Infinity War (2018) {tmdb-299536}.mkv", true, true, false,
+        "Avengers Infinity War (2018) {tmdb-299536} [HDTV-2160p][HDR10][TrueHD Atmos 7.1][h265].mkv")]
+    [InlineData("Avengers Infinity War (2018).mkv", true, true, false, "Avengers Infinity War (2018) [HDTV-2160p][HDR10][TrueHD Atmos 7.1][h265].mkv")]
+    public void MovieRefreshInfoTests(string sourceFileName, bool validFileName, bool refreshReturnValue, bool outputNameSameAsInput, string mediaFileNameOutputIfRenamed)
     {
-        string fileName;
-
-        if (File.Exists(sourceFileName))
-            fileName = sourceFileName;
-        else
-        {
-            var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
-            fileName = Path.Combine(testDataPath, sourceFileName);
-        }
-        var movie = new MovieBackupFile(fileName);
-        Assert.Equal(validDirectoryName, movie.IsValidDirectoryName);
-        Assert.Equal(validFileName, movie.IsValidFileName);
-        if (movie.IsValidFileName) Assert.Equal(Path.GetFileName(fileName), movie.GetFileName());
-        Assert.True(movie.RefreshMediaInfo());
-        Assert.Equal(expectedFileName, movie.GetFileName());
+        var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
+        var mediaFileName = File.Exists(sourceFileName) ? sourceFileName : Path.Combine(testDataPath, sourceFileName);
+        var backupFile = new MovieBackupFile(mediaFileName);
+        if (File.Exists(mediaFileName)) Assert.Equal(refreshReturnValue, backupFile.RefreshMediaInfo());
+        Assert.Equal(validFileName, backupFile.IsValidFileName);
+        if (backupFile.IsValidFileName && outputNameSameAsInput) Assert.Equal(Path.GetFileName(mediaFileName), backupFile.GetFileName());
+        if (refreshReturnValue) Assert.Equal(mediaFileNameOutputIfRenamed, backupFile.GetFileName());
     }
 }

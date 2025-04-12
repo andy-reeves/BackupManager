@@ -32,7 +32,7 @@ internal sealed class MovieBackupFile : VideoBackupFileBase
 
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     protected override string FileNameRegex =>
-        @"^(?:(.*)\((\d{4})\)(?:-other)?(?:\s{(?:tmdb-(\d{1,7}))?})?\s(?:{edition-((?:[1-7][05]TH\sANNIVERSARY)|4K|BLURAY|CHRONOLOGICAL|COLLECTORS|(?:CRITERION|KL\sSTUDIO)\sCOLLECTION|DIAMOND|DVD|IMAX|REDUX|REMASTERED|RESTORED|SPECIAL|(?:THE\sCOMPLETE\s)?EXTENDED|THE\sGODFATHER\sCODA|(?:THE\sRICHARD\sDONNER|DIRECTORS|ASSEMBLY|FINAL)\sCUT|THEATRICAL|ULTIMATE|UNCUT|UNRATED)}\s)?\[(DVD|SDTV|WEB(?:Rip|DL)|Bluray|HDTV|Remux)(?:-((?:480|576|720|1080|2160)p)(?:\sProper)?)?\](?:\[(3D)])?(?:\[((?:DV)?(?:(?:\s)?HDR10(?:Plus)?)?|HLG|PQ)\])?\[(DTS(?:\sHD|-(?:X|ES|HD\s(?:M|HR)A))?|(?:TrueHD|EAC3)(?:\sAtmos)?|AC3|FLAC|PCM|MP3|A[AV]C|Opus)\s([1-8]\.[01])\]\[(?:([hx]26[45]|MPEG[24]|DivX|AVC|HEVC|XviD|AV1|V(?:C1|P9))?)\]|(.*)-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer))\.(m(?:kv|p(?:4|e?g))|ts|avi)$";
+        @"^(?:(.*)-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer)|(.*)\((\d{4})\)(?:-other)?(?:\s{(?:tmdb-(\d{1,7}))?})?(?:\s)??(?:{edition-((?:[1-7][05]TH\sANNIVERSARY)|4K|BLURAY|CHRONOLOGICAL|COLLECTORS|(?:CRITERION|KL\sSTUDIO)\sCOLLECTION|DIAMOND|DVD|IMAX|REDUX|REMASTERED|RESTORED|SPECIAL|(?:THE\sCOMPLETE\s)?EXTENDED|THE\sGODFATHER\sCODA|(?:THE\sRICHARD\sDONNER|DIRECTORS|ASSEMBLY|FINAL)\sCUT|THEATRICAL|ULTIMATE|UNCUT|UNRATED)}\s)?(?:\[(DVD|SDTV|WEB(?:Rip|DL)|Bluray|HDTV|Remux)(?:-((?:480|576|720|1080|2160)p)(?:\sProper)?)?\])?(?:\[(3D)\])?(?:\[((?:DV)?(?:(?:\s)?HDR10(?:Plus)?)?|HLG|PQ)\])?(?:\[(DTS(?:\sHD|-(?:X|ES|HD\s(?:M|HR)A))?|(?:TrueHD|EAC3)(?:\sAtmos)?|AC3|FLAC|PCM|MP3|A[AV]C|Opus)\s([1-8]\.[01])\])??(?:\[(?:([hx]26[45]|MPEG[24]|DivX|AVC|HEVC|XviD|AV1|V(?:C1|P9))?)\])??)\.(m(?:kv|p(?:4|e?g))|ts|avi)$";
 
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     protected override string DirectoryRegex => @"^.*\\_(?:Movies|Comedy|Concerts)(?:\s\(non-tmdb\))?\\(.*)\((\d{4})\)(-other)?.*$";
@@ -91,10 +91,25 @@ internal sealed class MovieBackupFile : VideoBackupFileBase
             // ReSharper disable once StringLiteralTypo
             if (TmdbId.HasValue()) s += $"{{tmdb-{TmdbId}}} ";
             if (Edition != Edition.Unknown) s += $"{{edition-{Edition.ToEnumMember().ToUpperInvariant()}}} ";
-            s += $"{QualityFull}";
+
+            if (QualityFull != string.Empty)
+            {
+                if (!s.EndsWith(' ')) s += " ";
+                s += $"{QualityFull}";
+            }
+
+            //  s += $"{QualityFull}";
             if (MediaInfoVideo3D) s += "[3D]";
             if (MediaInfoVideoDynamicRangeType != MediaInfoVideoDynamicRangeType.Unknown) s += $"[{MediaInfoVideoDynamicRangeType.ToEnumMember()}]";
-            s += $"[{MediaInfoAudioCodec.ToEnumMember()} {MediaInfoAudioChannels.ToEnumMember()}][{MediaInfoVideoCodec.ToEnumMember()}]";
+
+            //s += $"[{MediaInfoAudioCodec.ToEnumMember()} {MediaInfoAudioChannels.ToEnumMember()}][{MediaInfoVideoCodec.ToEnumMember()}]";
+            if (MediaInfoAudioChannels != MediaInfoAudioChannels.Unknown)
+            {
+                var audioChannels = MediaInfoAudioChannels.ToEnumMember();
+                if (!s.EndsWithIgnoreCase("]")) s += " ";
+                s += $"[{MediaInfoAudioCodec.ToEnumMember()} {audioChannels}]";
+                if (MediaInfoVideoCodec != MediaInfoVideoCodec.Unknown) s += $"[{MediaInfoVideoCodec.ToEnumMember()}]";
+            }
         }
         else
             s = $"{Title}-{SpecialFeature.ToEnumMember()}";
@@ -102,23 +117,51 @@ internal sealed class MovieBackupFile : VideoBackupFileBase
         return s;
     }
 
+    // TV one
+    /* public override string GetFileName()
+     {
+         string s;
+
+         if (SpecialFeature != SpecialFeature.None)
+             s = $"{Title}-{SpecialFeature.ToEnumMember()}";
+         else
+         {
+             s = $"{Title} ";
+             if (Season.HasValue()) s += $"s{Season}";
+             s += $"{Episode}";
+             if (EpisodeTitle.HasValue()) s += $" {EpisodeTitle}";
+             if (QualityFull != string.Empty) s += $" {QualityFull}";
+             if (MediaInfoVideoDynamicRangeType != MediaInfoVideoDynamicRangeType.Unknown) s += $"[{MediaInfoVideoDynamicRangeType.ToEnumMember()}]";
+
+             if (MediaInfoAudioChannels != MediaInfoAudioChannels.Unknown)
+             {
+                 var audioChannels = MediaInfoAudioChannels.ToEnumMember();
+                 if (!s.EndsWithIgnoreCase("]")) s += " ";
+                 s += $"[{MediaInfoAudioCodec.ToEnumMember()} {audioChannels}]";
+                 if (MediaInfoVideoCodec != MediaInfoVideoCodec.Unknown) s += $"[{MediaInfoVideoCodec.ToEnumMember()}]";
+             }
+         }
+         s += $"{Extension}";
+         return s;
+     }*/
+
     private bool ParseMediaInfoFromFileName(string filename)
     {
-        const int titleGroup = 1;
-        const int releaseYearGroup = 2;
+        const int specialFeatureTitleGroup = 1;
+        const int specialFeatureGroup = 2;
+        const int titleGroup = 3;
+        const int releaseYearGroup = 4;
 
         // ReSharper disable once IdentifierTypo
-        const int tmdbIdGroup = 3;
-        const int editionGroup = 4;
-        const int videoQualityGroup = 5;
-        const int videoResolutionGroup = 6;
-        const int video3DGroup = 7;
-        const int videoDynamicRangeTypeGroup = 8;
-        const int audioCodecGroup = 9;
-        const int audioChannelsGroup = 10;
-        const int videoCodecGroup = 11;
-        const int specialFeatureTitleGroup = 12;
-        const int specialFeatureGroup = 13;
+        const int tmdbIdGroup = 5;
+        const int editionGroup = 6;
+        const int videoQualityGroup = 7;
+        const int videoResolutionGroup = 8;
+        const int video3DGroup = 9;
+        const int videoDynamicRangeTypeGroup = 10;
+        const int audioCodecGroup = 11;
+        const int audioChannelsGroup = 12;
+        const int videoCodecGroup = 13;
         const int extensionGroup = 14;
         var match = Regex.Match(filename, FileNameRegex);
         var videoCodec = match.Groups[videoCodecGroup].Value;

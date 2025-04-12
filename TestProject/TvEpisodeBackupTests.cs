@@ -60,7 +60,7 @@ public sealed class TvEpisodeBackupTests
         "Percy Jackson and the Olympians s01e01 I Accidentally Vaporize My Pre-Algebra Teacher [SDTV][MP3 2.0].avi")]
     [InlineData(@"James Martin's Saturday Morning s07e32 Raymond Blanc.mkv", true, true,
         "James Martin's Saturday Morning s07e32 Raymond Blanc [HDTV-1080p][AAC 2.0][h264].mkv")]
-    public void TvTests2(string inputFilename, bool isValidInputFileName, bool refreshReturnValue, string mediaFileNameOutputIfRenamed)
+    public void RefreshMediaInfoTests(string inputFilename, bool isValidInputFileName, bool refreshReturnValue, string mediaFileNameOutputIfRenamed)
     {
         var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
         var mediaFileName = File.Exists(inputFilename) ? inputFilename : Path.Combine(testDataPath, inputFilename);
