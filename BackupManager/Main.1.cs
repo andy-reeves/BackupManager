@@ -27,27 +27,21 @@ internal sealed partial class Main
 
     private static readonly object _lock = new();
 
-    /// <summary>
-    ///     The main application config.xml
-    /// </summary>
-    private Config config;
-
     private readonly Dictionary<string, HashSet<string>> episodesForASeason = new(); // key=showName:season, value=hashset of episodes
-
-    private MediaBackup mediaBackup;
-
-    private Action monitoringAction;
 
     /// <summary>
     ///     For the monitoring applications
     /// </summary>
     private readonly CancellationTokenSource monitoringCancellationTokenSource = new();
 
-    private Action scheduledBackupAction;
-
     private readonly Dictionary<string, HashSet<string>> tvShowEditions = new(); // key=showName, value=hashset of editions
 
     private readonly Dictionary<string, HashSet<string>> tvShowSeasons = new(); // key=showName, value=hashset of seasons
+
+    /// <summary>
+    ///     The main application config.xml
+    /// </summary>
+    private Config config;
 
     private int currentPercentComplete;
 
@@ -67,6 +61,10 @@ internal sealed partial class Main
 
     private CancellationToken mainCt;
 
+    private MediaBackup mediaBackup;
+
+    private Action monitoringAction;
+
     /// <summary>
     ///     When monitoring is executing prevent is executing again
     /// </summary>
@@ -75,6 +73,8 @@ internal sealed partial class Main
     private Dictionary<string, MovieBackupFile> movieNames;
 
     private int reportedPercentComplete;
+
+    private Action scheduledBackupAction;
 
     // ReSharper disable once FunctionComplexityOverflow
     internal Main()

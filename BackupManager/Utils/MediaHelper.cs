@@ -29,6 +29,8 @@ internal static partial class Utils
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
+
+        // ReSharper disable once UnusedMember.Global
         internal static bool VideoFileIsDolbyVision(string path)
         {
             ArgumentException.ThrowIfNullOrEmpty(path);
