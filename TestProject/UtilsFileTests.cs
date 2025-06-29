@@ -57,7 +57,7 @@ public sealed class UtilsFileTests
     [InlineData(@"File1CamelCase.mp4", @"file1camelcase.mp4", "", false)]
     [InlineData(@"Folder1\File1CamelCase.mp4", @"folder1\file1camelcase.mp4", "", false)]
     [InlineData(@"Folder1\folder2\File1CamelCase.mp4", @"folder1\Folder2\file1camelcase.mp4", "", false)]
-    [InlineData(@"\\nas1\assets1\Folder1\folder2\File1CamelCase.mp4", @"\\nas1\assets1\folder1\Folder2\file1camelcase.mp4", @"\\nas1\assets1\folder1", false)]
+    [InlineData(@"\\nas6\assets2\Folder1\folder2\File1CamelCase.mp4", @"\\nas6\assets2\folder1\Folder2\file1camelcase.mp4", @"\\nas6\assets2\folder1", false)]
     [InlineData(@"CaseSensitivePathRename\Roux Down The River {tvdb-445790}\TestFileToRename.txt",
         @"CaseSensitivePathRename\Roux Down the River {tvdb-445790}\TestFileToRename.txt", @"CaseSensitivePathRename", true)]
     [Theory]
