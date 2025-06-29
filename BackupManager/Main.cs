@@ -201,7 +201,7 @@ internal sealed partial class Main : Form
             var lastBackupDisk = string.Empty;
             var fileCounter = 0;
             var countOfFiles = 0;
-            var backupFiles = files as BackupFile[] ?? files.ToArray();
+            var backupFiles = files as BackupFile[] ?? [.. files];
 
             foreach (var file in backupFiles)
             {
@@ -716,13 +716,19 @@ internal sealed partial class Main : Form
 
                     if (searchOption == SearchOption.TopDirectoryOnly)
                     {
-                        filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag).Where(b => b.FullPath.StartsWithIgnoreCase(directoryToScan.Path))
-                            .Where(b => !b.FullPath.SubstringAfterIgnoreCase(Utils.EnsurePathHasATerminatingSeparator(directoryToScan.Path)).Contains('\\')).ToArray();
+                        filesToRemoveOrMarkDeleted =
+                        [
+                            .. mediaBackup.BackupFiles.Where(static b => !b.Flag).Where(b => b.FullPath.StartsWithIgnoreCase(directoryToScan.Path)).Where(b =>
+                                !b.FullPath.SubstringAfterIgnoreCase(Utils.EnsurePathHasATerminatingSeparator(directoryToScan.Path)).Contains('\\'))
+                        ];
                     }
                     else
                     {
-                        filesToRemoveOrMarkDeleted = mediaBackup.BackupFiles.Where(static b => !b.Flag)
-                            .Where(b => b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase)).ToArray();
+                        filesToRemoveOrMarkDeleted =
+                        [
+                            .. mediaBackup.BackupFiles.Where(static b => !b.Flag)
+                                .Where(b => b.FullPath.StartsWith(directoryToScan.Path, StringComparison.InvariantCultureIgnoreCase))
+                        ];
                     }
                     RemoveOrDeleteFiles(filesToRemoveOrMarkDeleted);
                     var fileCountAfter = mediaBackup.BackupFiles.Count(b => b.FullPath.StartsWithIgnoreCase(directoryToScan.Path));
@@ -1201,7 +1207,7 @@ internal sealed partial class Main : Form
         using (var reader = new StreamReader(pathToUse))
         using (var csv = new CsvReader(reader, csvConfiguration))
         {
-            records = csv.GetRecords<TdarrTranscodeCancelled>().ToArray();
+            records = [.. csv.GetRecords<TdarrTranscodeCancelled>()];
         }
 
         foreach (var fullPath in from record in records
@@ -1253,10 +1259,13 @@ internal sealed partial class Main : Form
         using (var reader = new StreamReader(pathToUse))
         using (var csv = new CsvReader(reader, csvConfiguration))
         {
-            records = csv.GetRecords<TdarrTranscodeCancelled>().ToArray();
+            records = [.. csv.GetRecords<TdarrTranscodeCancelled>()];
         }
+        var list = records.ToList();
+        IEnumerable<TdarrTranscodeCancelled> records2 = [.. list];
+        IEnumerable<TdarrTranscodeCancelled> records3 = [.. list];
 
-        foreach (var fullPath in from record in records
+        foreach (var fullPath in from record in records2
                  select Path.GetFullPath(record.Id)
                  into fullPath
                  where File.Exists(fullPath)
@@ -1282,7 +1291,7 @@ internal sealed partial class Main : Form
         }
         Utils.Log($"{count} files that are not [h265] video with chapters removed");
 
-        foreach (var fullPath in from record in records
+        foreach (var fullPath in from record in records3
                  select Path.GetFullPath(record.Id)
                  into fullPath
                  where File.Exists(fullPath)
@@ -1414,7 +1423,7 @@ internal sealed partial class Main : Form
         mediaBackup.Save(mainCt);
     }
 
-    private void setMovieRuntimeButton_Click(object sender, EventArgs e)
+    private void SetMovieRuntimeButton_Click(object sender, EventArgs e)
     {
         var text = (string)movieComboBox.SelectedItem;
         if (text == null || text.HasNoValue() || movieRuntimeTextBox.Text.HasNoValue()) return;
@@ -1429,7 +1438,7 @@ internal sealed partial class Main : Form
         mediaBackup.Save(mainCt);
     }
 
-    private void tvShowComboBox_SelectedIndexChanged(object sender, EventArgs e)
+    private void TvShowComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
         // populate the season combo and edition , reset the episode combo
         if (tvShowComboBox.SelectedItem == null) return;
@@ -1440,17 +1449,17 @@ internal sealed partial class Main : Form
 
         foreach (var show in tvShowSeasons.Where(show => show.Key.Equals(showName)))
         {
-            seasonComboBox.Items.AddRange(show.Value.Distinct().Order().ToArray<object>());
+            seasonComboBox.Items.AddRange([.. show.Value.Distinct().Order()]);
         }
 
         foreach (var show in tvShowEditions.Where(show => show.Key.Equals(showName)))
         {
-            editionComboBox.Items.AddRange(show.Value.Distinct().Order().ToArray<object>());
+            editionComboBox.Items.AddRange([.. show.Value.Distinct().Order()]);
         }
         episodeComboBox.Items.Clear();
     }
 
-    private void seasonComboBox_SelectedIndexChanged(object sender, EventArgs e)
+    private void SeasonComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
         // populate the episode combo
         if (tvShowComboBox.SelectedItem == null || seasonComboBox.SelectedItem == null) return;
@@ -1460,11 +1469,11 @@ internal sealed partial class Main : Form
 
         foreach (var eps in episodesForASeason.Where(eps => eps.Key.Equals($"{showName}:{seasonComboBox.SelectedItem}")))
         {
-            episodeComboBox.Items.AddRange(eps.Value.Distinct().Order().ToArray<object>());
+            episodeComboBox.Items.AddRange([.. eps.Value.Distinct().Order()]);
         }
     }
 
-    private void setRuntimeForEpisodeButton_Click(object sender, EventArgs e)
+    private void SetRuntimeForEpisodeButton_Click(object sender, EventArgs e)
     {
         var text = (string)tvShowComboBox.SelectedItem;
 
@@ -1489,7 +1498,7 @@ internal sealed partial class Main : Form
         mediaBackup.Save(mainCt);
     }
 
-    private void setTVShowForSeasonButton_Click(object sender, EventArgs e)
+    private void SetTVShowForSeasonButton_Click(object sender, EventArgs e)
     {
         var text = (string)tvShowComboBox.SelectedItem;
 

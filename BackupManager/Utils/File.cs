@@ -719,17 +719,17 @@ internal static partial class Utils
             if (directoryInfo.Parent != null && directoryInfo.Attributes.HasAny(directoryAttributesToIgnore)) return TraceOut(Array.Empty<string>());
 
             var include = from filter in filters.Split([','], StringSplitOptions.RemoveEmptyEntries) where filter.Trim().HasValue() select filter.Trim();
-            var includeAsArray = include as string[] ?? include.ToArray();
+            var includeAsArray = include as string[] ?? [.. include];
             var exclude = from filter in includeAsArray where filter.Contains('!') select filter;
-            var excludeAsArray = exclude as string[] ?? exclude.ToArray();
+            var excludeAsArray = exclude as string[] ?? [.. exclude];
             include = includeAsArray.Except(excludeAsArray);
-            var includeAsArray2 = include as string[] ?? include.ToArray();
+            var includeAsArray2 = include as string[] ?? [.. include];
             if (!(includeAsArray2.Length > 0)) includeAsArray2 = ["*"];
 
             var excludeFilters = from filter in excludeAsArray
                 let replace = filter.Replace("!", Empty).Replace(".", @"\.").Replace("*", ".*").Replace("?", ".")
                 select $"^{replace}$";
-            Regex excludeRegex = new(Join("|", excludeFilters.ToArray()), RegexOptions.IgnoreCase);
+            Regex excludeRegex = new(Join("|", [.. excludeFilters]), RegexOptions.IgnoreCase);
             Queue<string> pathsToSearch = new();
             List<string> foundFiles = [];
             pathsToSearch.Enqueue(path);

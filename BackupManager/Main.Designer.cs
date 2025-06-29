@@ -1465,7 +1465,7 @@
             tvShowComboBox.Name = "tvShowComboBox";
             tvShowComboBox.Size = new System.Drawing.Size(320, 23);
             tvShowComboBox.TabIndex = 118;
-            tvShowComboBox.SelectedIndexChanged += tvShowComboBox_SelectedIndexChanged;
+            tvShowComboBox.SelectedIndexChanged += TvShowComboBox_SelectedIndexChanged;
             // 
             // label18
             // 
@@ -1545,7 +1545,7 @@
             seasonComboBox.Name = "seasonComboBox";
             seasonComboBox.Size = new System.Drawing.Size(45, 23);
             seasonComboBox.TabIndex = 121;
-            seasonComboBox.SelectedIndexChanged += seasonComboBox_SelectedIndexChanged;
+            seasonComboBox.SelectedIndexChanged += SeasonComboBox_SelectedIndexChanged;
             // 
             // label20
             // 
@@ -1566,7 +1566,7 @@
             setRuntimeForEpisodeButton.TabIndex = 120;
             setRuntimeForEpisodeButton.Text = "Set for episode";
             setRuntimeForEpisodeButton.UseVisualStyleBackColor = true;
-            setRuntimeForEpisodeButton.Click += setRuntimeForEpisodeButton_Click;
+            setRuntimeForEpisodeButton.Click += SetRuntimeForEpisodeButton_Click;
             // 
             // groupBox6
             // 
@@ -1618,7 +1618,7 @@
             setMovieRuntimeButton.TabIndex = 116;
             setMovieRuntimeButton.Text = "Set runtime";
             setMovieRuntimeButton.UseVisualStyleBackColor = true;
-            setMovieRuntimeButton.Click += setMovieRuntimeButton_Click;
+            setMovieRuntimeButton.Click += SetMovieRuntimeButton_Click;
             // 
             // setTVShowForSeasonButton
             // 
@@ -1629,7 +1629,7 @@
             setTVShowForSeasonButton.TabIndex = 126;
             setTVShowForSeasonButton.Text = "Set for season";
             setTVShowForSeasonButton.UseVisualStyleBackColor = true;
-            setTVShowForSeasonButton.Click += setTVShowForSeasonButton_Click;
+            setTVShowForSeasonButton.Click += SetTVShowForSeasonButton_Click;
             // 
             // Main
             // 
