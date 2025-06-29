@@ -316,7 +316,7 @@ internal sealed partial class Main : Form
     private void TestPushoverNormalButton_Click(object sender, EventArgs e)
     {
         Utils.TraceIn();
-        Utils.LogWithPushover(BackupAction.General, PushoverPriority.Normal, "Normal priority test\nLine 2\nLine 3");
+        Utils.LogWithPushover(BackupAction.General, PushoverPriority.Normal, "Normal priority test\nLine 2\nLine 3\n<b>Line 4</b> has some bold text");
         Utils.TraceOut();
     }
 

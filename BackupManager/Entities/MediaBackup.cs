@@ -589,14 +589,11 @@ public sealed class MediaBackup
             if (!file.FullPath.EqualsIgnoreCase(backupFile.FullPath))
             {
                 var percentOfOriginal = backupFile.Length * 100 / file.Length;
+                var pushoverPriority = PushoverPriority.Normal;
 
                 if (percentOfOriginal < Config.DirectoriesMinimumReEncodeSizePercentage || percentOfOriginal > Config.DirectoriesMaximumReEncodeSizePercentage)
-                    Utils.LogWithPushover(BackupAction.ProcessFiles, PushoverPriority.High, $"{percentOfOriginal:0}% - {backupFile.FullPath} of the previous size");
-                else
-                {
-                    // Inside the current config params for Pushover lgging so only in text log
-                    Utils.Log(BackupAction.ProcessFiles, $"{percentOfOriginal:0}% - {backupFile.FullPath} of the previous size");
-                }
+                    pushoverPriority = PushoverPriority.High;
+                Utils.LogWithPushover(BackupAction.ProcessFiles, pushoverPriority, $"<b>{percentOfOriginal:0}%</b> - {backupFile.FullPath} of the previous size");
                 Utils.Log(BackupAction.ProcessFiles, $"Matched {file.FullPath} with new path {backupFile.FullPath}");
             }
             break;

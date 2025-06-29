@@ -620,6 +620,7 @@ internal static partial class Utils
                 { "user", Config.PushoverUserKey },
                 { "priority", Convert.ChangeType(priority, priority.GetTypeCode()).ToString() },
                 { "message", message },
+                { "html", "1" },
                 { "title", title },
                 { "timestamp", timestamp }
             };
