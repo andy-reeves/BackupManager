@@ -236,6 +236,11 @@ internal sealed partial class Main
         {
             if (Utils.MediaHelper.ExtendedBackupFileBase(fileFullPath) is not TvEpisodeBackupFile tvEp) continue;
 
+            if (tvEp.Season.HasNoValue() || tvEp.Title.HasNoValue())
+            {
+                Utils.Log($"tv is {tvEp.Season}, {tvEp.TvdbId}, {tvEp.Title}, {tvEp.Edition}");
+                throw new ApplicationException($"File has missing information {fileFullPath}");
+            }
             tvShowNames.TryAdd($"{Convert.ToInt32(tvEp.TvdbId),0:D6} - {tvEp.Title}", tvEp);
             if (!tvShowSeasons.ContainsKey(tvEp.Title)) tvShowSeasons.Add(tvEp.Title, []);
             tvShowSeasons[tvEp.Title].Add(tvEp.Season);
