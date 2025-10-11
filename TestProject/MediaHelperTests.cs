@@ -16,6 +16,15 @@ namespace TestProject;
 public sealed class MediaHelperTests
 {
     [Theory]
+    [InlineData(@"_TV\Jimmy Kimmel Live! {tvdb-71998}\Season 23\Jimmy Kimmel Live! 2025-09-16 [WEBDL-720p][EAC3 5.1][h264].mkv")]
+    public void GetVideoRuntime(string inputFilename)
+    {
+        var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
+        var fileName = Path.Combine(testDataPath, inputFilename);
+        var id = Utils.MediaHelper.GetTvdbInfo(fileName, out var edition, out var seasonNumber, out var episodeNumber);
+    }
+
+    [Theory]
     [InlineData("File18.nochapters.master.mkv", "File18.master.chap", "File18.chaptersAdded.mkv", 1, 1, 0, 1, false)]
     public void AddChaptersToFile(string inputFilename, string chaptersFilename, string outputFilename, int videoStreamCount, int audioStreamCount,
         int subtitlesStreamCount, int chaptersStreamCount, bool hasMetadata)

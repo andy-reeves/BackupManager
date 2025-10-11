@@ -325,6 +325,10 @@ internal static partial class Utils
             if (tvEpisodeBackupFile.TvdbId.HasNoValue() || !tvEpisodeBackupFile.IsValidFileName) return -1;
 
             edition = tvEpisodeBackupFile.Edition;
+
+            // For daily tv episodes
+            if (tvEpisodeBackupFile.Season == string.Empty) return -1;
+
             seasonNumber = Convert.ToInt32(tvEpisodeBackupFile.Season);
             var result = int.TryParse(tvEpisodeBackupFile.Episode[1..], out var parsedResult);
 
