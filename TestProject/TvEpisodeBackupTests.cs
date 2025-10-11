@@ -60,6 +60,8 @@ public sealed class TvEpisodeBackupTests
         "Percy Jackson and the Olympians s01e01 I Accidentally Vaporize My Pre-Algebra Teacher [SDTV][MP3 2.0].avi")]
     [InlineData(@"James Martin's Saturday Morning s07e32 Raymond Blanc.mkv", true, true,
         "James Martin's Saturday Morning s07e32 Raymond Blanc [HDTV-1080p][AAC 2.0][h264].mkv")]
+    [InlineData(@"_TV\Jimmy Kimmel Live! {tvdb-71998}\Season 23\Jimmy Kimmel Live! 2025-09-16 [WEBDL-720p][EAC3 5.1][h264].mkv", true, true,
+        "Jimmy Kimmel Live! 2025-09-16 [WEBDL-1080p][EAC3 5.1][h265].mkv")]
     public void RefreshMediaInfoTests(string inputFilename, bool isValidInputFileName, bool refreshReturnValue, string mediaFileNameOutputIfRenamed)
     {
         var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
