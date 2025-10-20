@@ -58,6 +58,8 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
         }
     }
 
+    public SeasonType SeasonType { get; set; }
+
     /// <summary>
     ///     The episode number like 'e04'. To preserve any leading '0' we keep as a string. It could be e01, e01e03, or e14-e15
     /// </summary>
@@ -91,7 +93,19 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
 
         // For Daily TV shows the Season will not be in the file name - only the directory name
         // So if episode title is a date don't check the Season==season
-        return DateTime.TryParse(Episode, out _) ? int.TryParse(season, out _) : Convert.ToInt32(season) == Convert.ToInt32(Season);
+        if (DateTime.TryParse(Episode, out _))
+        {
+            SeasonType = SeasonType.Daily;
+
+            if (int.TryParse(season, out _))
+            {
+                Season = season;
+                return true;
+            }
+        }
+        else if (Convert.ToInt32(season) == Convert.ToInt32(Season)) return true;
+
+        return false;
     }
 
     public override string GetFileName()
@@ -103,7 +117,7 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
         else
         {
             s = $"{Title} ";
-            if (Season.HasValue()) s += $"s{Season}";
+            if (Season.HasValue() && SeasonType == SeasonType.Standard) s += $"s{Season}";
             s += $"{Episode}";
             if (EpisodeTitle.HasValue()) s += $" {EpisodeTitle}";
             if (QualityFull != string.Empty) s += $" {QualityFull}";
@@ -175,4 +189,11 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
         Extension = "." + extension;
         return true;
     }
+}
+
+internal enum SeasonType
+{
+    Standard = 0,
+
+    Daily = 1
 }
