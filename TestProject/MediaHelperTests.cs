@@ -16,12 +16,16 @@ namespace TestProject;
 public sealed class MediaHelperTests
 {
     [Theory]
-    [InlineData(@"_TV\Jimmy Kimmel Live! {tvdb-71998}\Season 23\Jimmy Kimmel Live! 2025-09-16 [WEBDL-720p][EAC3 5.1][h264].mkv")]
-    public void GetVideoRuntime(string inputFilename)
+    [InlineData(@"_TV\Jimmy Kimmel Live! {tvdb-71998}\Season 23\Jimmy Kimmel Live! 2025-09-16 [WEBDL-720p][EAC3 5.1][h264].mkv", 23, -1, -1, "")]
+    public void GetVideoRuntime(string inputFilename, int seasonNumber, int id, int episodeNumber, string edition)
     {
         var testDataPath = Path.Combine(Utils.GetProjectPath(typeof(MediaHelperTests)), "TestData");
         var fileName = Path.Combine(testDataPath, inputFilename);
-        var id = Utils.MediaHelper.GetTvdbInfo(fileName, out var edition, out var seasonNumber, out var episodeNumber);
+        var actualId = Utils.MediaHelper.GetTvdbInfo(fileName, out var actualEdition, out var actualSeasonNumber, out var actualEpisodeNumber);
+        Assert.Equal(seasonNumber, actualSeasonNumber);
+        Assert.Equal(id, actualId);
+        Assert.Equal(episodeNumber, actualEpisodeNumber);
+        Assert.Equal(edition, actualEdition);
     }
 
     [Theory]
