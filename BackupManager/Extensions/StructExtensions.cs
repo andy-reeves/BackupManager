@@ -48,9 +48,7 @@ internal static class StructExtensions
     /// </exception>
     public static string GetDescription<T>(this T item) where T : Enum
     {
-        if (EnumInternals<T>.ValueToDescriptionMap.TryGetValue(item, out var description)) return description;
-
-        throw new ArgumentOutOfRangeException(nameof(item));
+        return EnumInternals<T>.ValueToDescriptionMap.TryGetValue(item, out var description) ? description : throw new ArgumentOutOfRangeException(nameof(item));
     }
 
     /// <summary>
@@ -80,7 +78,7 @@ internal static class StructExtensions
     }
 
     /// <summary>
-    ///     Determines whether all of the flags in <paramref name="desiredFlags" />
+    ///     Determines whether all flags in <paramref name="desiredFlags" /> are set.
     /// </summary>
     /// <param name="value">Value to test</param>
     /// <param name="desiredFlags">Flags we wish to find</param>

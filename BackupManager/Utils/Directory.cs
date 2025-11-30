@@ -90,7 +90,7 @@ internal static partial class Utils
         internal static IEnumerable<string> DeleteEmpty(string directory)
         {
             TraceIn();
-            ArgumentException.ThrowIfNullOrEmpty(directory, nameof(directory));
+            ArgumentException.ThrowIfNullOrEmpty(directory);
             List<string> listOfDirectoriesDeleted = [];
             DeleteEmpty(directory, listOfDirectoriesDeleted, directory);
             return TraceOut(listOfDirectoriesDeleted.ToArray());

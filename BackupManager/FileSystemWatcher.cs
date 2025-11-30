@@ -190,7 +190,7 @@ internal sealed class FileSystemWatcher
     }
 
     /// <summary>
-    ///     If we're already running then this Stops and Starts again. It won't start if its not already started.
+    ///     If we're already running then this Stops and Starts again. It won't start if it's not already started.
     /// </summary>
     private void Restart()
     {

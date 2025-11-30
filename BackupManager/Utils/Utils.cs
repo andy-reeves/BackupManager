@@ -958,7 +958,7 @@ internal static partial class Utils
         ArgumentNullException.ThrowIfNull(value);
         if (startIndex < 0 || (startIndex >= value.Length && startIndex > 0)) throw new ArgumentOutOfRangeException(nameof(startIndex));
 
-        ArgumentOutOfRangeException.ThrowIfNegative(length, nameof(length));
+        ArgumentOutOfRangeException.ThrowIfNegative(length);
         if (startIndex > value.Length - length) throw new ArgumentException(null, nameof(length));
 
         switch (length)
@@ -1040,7 +1040,7 @@ internal static partial class Utils
     /// <exception cref="ArgumentNullException"></exception>
     internal static bool GetDiskInfo(string path, out long freeSpace, out long totalBytes)
     {
-        ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
+        ArgumentException.ThrowIfNullOrEmpty(path);
         if (!path.EndsWithIgnoreCase("\\")) path += '\\';
         return GetDiskFreeSpaceEx(path, out freeSpace, out totalBytes, out _);
     }
@@ -1582,7 +1582,7 @@ internal static partial class Utils
     internal static IEnumerable<string> DeleteBrokenSymbolicLinks(string directory, bool includeRoot)
     {
         TraceIn();
-        ArgumentException.ThrowIfNullOrEmpty(directory, nameof(directory));
+        ArgumentException.ThrowIfNullOrEmpty(directory);
         List<string> listOfDirectoriesDeleted = [];
         DeleteBrokenSymbolicLinks(directory, includeRoot, listOfDirectoriesDeleted, directory);
         return TraceOut(listOfDirectoriesDeleted.ToArray());
@@ -1653,16 +1653,14 @@ internal static partial class Utils
     /// <exception cref="FileNotFoundException"></exception>
     internal static string RenameFileToRemoveFixedSpaces(string path)
     {
-        ArgumentException.ThrowIfNullOrEmpty(path, nameof(path));
+        ArgumentException.ThrowIfNullOrEmpty(path);
         if (!File.Exists(path)) throw new FileNotFoundException(Resources.FileNotFound, path);
 
         if (!StringContainsFixedSpace(path)) return path;
 
         var newPath = ReplaceFixedSpace(path);
         _ = File.Move(path, newPath);
-        if (!File.Exists(newPath)) throw new ApplicationException("Unable to rename file to remove fixed spaces");
-
-        return newPath;
+        return !File.Exists(newPath) ? throw new ApplicationException("Unable to rename file to remove fixed spaces") : newPath;
     }
 
     internal static bool ShareFolder(string folderPath, string shareName, string description)

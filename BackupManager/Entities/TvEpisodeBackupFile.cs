@@ -93,19 +93,13 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
 
         // For Daily TV shows the Season will not be in the file name - only the directory name
         // So if episode title is a date don't check the Season==season
-        if (DateTime.TryParse(Episode, out _))
-        {
-            SeasonType = SeasonType.Daily;
+        if (!DateTime.TryParse(Episode, out _)) return Convert.ToInt32(season) == Convert.ToInt32(Season);
 
-            if (int.TryParse(season, out _))
-            {
-                Season = season;
-                return true;
-            }
-        }
-        else if (Convert.ToInt32(season) == Convert.ToInt32(Season)) return true;
+        SeasonType = SeasonType.Daily;
+        if (!int.TryParse(season, out _)) return false;
 
-        return false;
+        Season = season;
+        return true;
     }
 
     public override string GetFileName()

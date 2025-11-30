@@ -195,7 +195,7 @@ internal static partial class Utils
 
         internal static bool SetLastWriteTime(string fileName, DateTime writeTimeToUse)
         {
-            ArgumentException.ThrowIfNullOrEmpty(fileName, nameof(fileName));
+            ArgumentException.ThrowIfNullOrEmpty(fileName);
             if (!Exists(fileName)) throw new FileNotFoundException(Resources.FileNotFound, fileName);
 
             FileInfo fileInfo = new(fileName);
@@ -213,7 +213,7 @@ internal static partial class Utils
 
         internal static DateTime GetLastWriteTime(string fileName)
         {
-            ArgumentException.ThrowIfNullOrEmpty(fileName, nameof(fileName));
+            ArgumentException.ThrowIfNullOrEmpty(fileName);
             if (!Exists(fileName)) throw new FileNotFoundException(Resources.FileNotFound, fileName);
 
             FileInfo fileInfo = new(fileName);
@@ -235,10 +235,8 @@ internal static partial class Utils
 
         internal static long GetLength(string fileName)
         {
-            ArgumentException.ThrowIfNullOrEmpty(fileName, nameof(fileName));
-            if (!Exists(fileName)) throw new FileNotFoundException(Resources.FileNotFound, fileName);
-
-            return new FileInfo(fileName).Length;
+            ArgumentException.ThrowIfNullOrEmpty(fileName);
+            return !Exists(fileName) ? throw new FileNotFoundException(Resources.FileNotFound, fileName) : new FileInfo(fileName).Length;
         }
 
         /// <summary>

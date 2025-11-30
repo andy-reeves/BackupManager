@@ -19,7 +19,7 @@ namespace BackupManager.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -258,7 +258,7 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0:n0} files still to backup at {1}.
+        ///   Looks up a localized string similar to {0:n0} files still to back up at {1}.
         ///.
         /// </summary>
         internal static string CopyFilesStillToCopy {
@@ -268,7 +268,7 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0:n0} files to backup at {1}.
+        ///   Looks up a localized string similar to {0:n0} files to back up at {1}.
         /// </summary>
         internal static string CopyFilesToBackup {
             get {
@@ -547,7 +547,7 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to start the new process &apos;{0}&apos; as its not found at {1} (expanded to {2}).
+        ///   Looks up a localized string similar to Failed to start the new process &apos;{0}&apos; as it&apos;s not found at {1} (expanded to {2}).
         /// </summary>
         internal static string FailedToStartAsNotFound {
             get {
@@ -646,7 +646,7 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ERROR: The count of files to backup is too low. Check connections to nas drives.
+        ///   Looks up a localized string similar to ERROR: The count of files to back up is too low. Check connections to nas drives.
         /// </summary>
         internal static string FilesCountIsTooLow {
             get {

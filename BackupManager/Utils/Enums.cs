@@ -95,9 +95,7 @@ internal static partial class Utils
         /// <exception cref="ArgumentException">The name could not be parsed.</exception>
         public static T ParseName<T>(string name) where T : Enum
         {
-            if (!TryParseName(name, out T value)) throw new ArgumentException(Resources.EnumsParseNameUnknownName, nameof(name));
-
-            return value;
+            return !TryParseName(name, out T value) ? throw new ArgumentException(Resources.EnumsParseNameUnknownName, nameof(name)) : value;
         }
 
         /// <summary>
@@ -131,7 +129,7 @@ internal static partial class Utils
         ///     Returns the underlying type for the enum
         /// </summary>
         /// <typeparam name="T">Enum type</typeparam>
-        /// <returns>The underlying type (Byte, Int32 etc) for the enum</returns>
+        /// <returns>The underlying type (Byte, Int32 etc.) for the enum</returns>
         public static Type GetUnderlyingType<T>() where T : Enum
         {
             return EnumInternals<T>.UnderlyingType;

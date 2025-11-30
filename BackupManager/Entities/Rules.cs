@@ -38,10 +38,9 @@ public sealed class Rules
                 using FileStream stream = new(path, FileMode.Open, FileAccess.Read);
                 if (serializer.Deserialize(stream) is not Rules rules) return null;
 
-                if (rules.FileRules.Select(static x => x.Number).Distinct().Count() != rules.FileRules.Count)
-                    throw new ArgumentException(Resources.DuplicateRuleNumber, nameof(path));
-
-                return rules;
+                return rules.FileRules.Select(static x => x.Number).Distinct().Count() != rules.FileRules.Count
+                    ? throw new ArgumentException(Resources.DuplicateRuleNumber, nameof(path))
+                    : rules;
             }
             catch (InvalidOperationException ex)
             {

@@ -97,7 +97,7 @@ internal static partial class StringExtensions
     ///     of <see cref="object" />  in args.
     /// </returns>
     /// <exception cref="ArgumentNullException">
-    ///     Either <paramref name="format" /> or <paramref name="args" /> is <c>Null.</c>.
+    ///     Either <paramref name="format" /> or <paramref name="args" /> is <c>Null</c>.
     /// </exception>
     /// <exception cref="FormatException">
     ///     <paramref name="format" />is invalid.
@@ -132,7 +132,7 @@ internal static partial class StringExtensions
     ///     of <see cref="object" />  in args.
     /// </returns>
     /// <exception cref="ArgumentNullException">
-    ///     Either <paramref name="format" /> or <paramref name="args" /> is <c>Null.</c>.
+    ///     Either <paramref name="format" /> or <paramref name="args" /> is <c>Null</c>.
     /// </exception>
     /// <exception cref="FormatException">
     ///     <paramref name="format" />is invalid.

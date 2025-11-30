@@ -404,7 +404,7 @@ Write: {4}</value>
     <value>Failed to start the new process '{0}'</value>
   </data>
   <data name="FailedToStartAsNotFound" xml:space="preserve">
-    <value>Failed to start the new process '{0}' as its not found at {1} (expanded to {2})</value>
+    <value>Failed to start the new process '{0}' as it's not found at {1} (expanded to {2})</value>
   </data>
   <data name="Restarting" xml:space="preserve">
     <value>Restarting '{0}'</value>
@@ -463,11 +463,11 @@ Copying {3} at {4}{5}</value>
     <value>{0} free on backup disk</value>
   </data>
   <data name="CopyFilesStillToCopy" xml:space="preserve">
-    <value>{0:n0} files still to backup at {1}.
+    <value>{0:n0} files still to back up at {1}.
 </value>
   </data>
   <data name="CopyFilesToBackup" xml:space="preserve">
-    <value>{0:n0} files to backup at {1}</value>
+    <value>{0:n0} files to back up at {1}</value>
   </data>
   <data name="CopyFileInternalSkipping" xml:space="preserve">
     <value>[{0}/{1}] {2} free.
@@ -483,7 +483,7 @@ Skipping {3} as not enough free space</value>
     <value>Stopping all '{0}' processes that match</value>
   </data>
   <data name="FilesCountIsTooLow" xml:space="preserve">
-    <value>ERROR: The count of files to backup is too low. Check connections to nas drives</value>
+    <value>ERROR: The count of files to back up is too low. Check connections to nas drives</value>
   </data>
   <data name="ServiceMonitoringNotRunning" xml:space="preserve">
     <value>Service monitoring is not running</value>

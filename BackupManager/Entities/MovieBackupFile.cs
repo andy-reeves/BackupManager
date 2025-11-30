@@ -117,34 +117,6 @@ internal sealed class MovieBackupFile : VideoBackupFileBase
         return s;
     }
 
-    // TV one
-    /* public override string GetFileName()
-     {
-         string s;
-
-         if (SpecialFeature != SpecialFeature.None)
-             s = $"{Title}-{SpecialFeature.ToEnumMember()}";
-         else
-         {
-             s = $"{Title} ";
-             if (Season.HasValue()) s += $"s{Season}";
-             s += $"{Episode}";
-             if (EpisodeTitle.HasValue()) s += $" {EpisodeTitle}";
-             if (QualityFull != string.Empty) s += $" {QualityFull}";
-             if (MediaInfoVideoDynamicRangeType != MediaInfoVideoDynamicRangeType.Unknown) s += $"[{MediaInfoVideoDynamicRangeType.ToEnumMember()}]";
-
-             if (MediaInfoAudioChannels != MediaInfoAudioChannels.Unknown)
-             {
-                 var audioChannels = MediaInfoAudioChannels.ToEnumMember();
-                 if (!s.EndsWithIgnoreCase("]")) s += " ";
-                 s += $"[{MediaInfoAudioCodec.ToEnumMember()} {audioChannels}]";
-                 if (MediaInfoVideoCodec != MediaInfoVideoCodec.Unknown) s += $"[{MediaInfoVideoCodec.ToEnumMember()}]";
-             }
-         }
-         s += $"{Extension}";
-         return s;
-     }*/
-
     private bool ParseMediaInfoFromFileName(string filename)
     {
         const int specialFeatureTitleGroup = 1;
