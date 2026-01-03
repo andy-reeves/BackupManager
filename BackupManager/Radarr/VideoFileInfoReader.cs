@@ -10,7 +10,7 @@
 // With a few fixes and changes
 // you also need:
 // MediaInfoModel.cs
-// These use ffprobe.exe (which needs libcrypto-3-x64.dll, libcurl.dll, libmediainfo.dll and libssl-3-x64.dll
+// These use FFprobe.exe (which needs libcrypto-3-x64.dll, libcurl.dll, libmediainfo.dll and libssl-3-x64.dll
 // These were last copied from Radarr on 19.03.24
 // main changes/fixes are: check the first 10 frames to determine [HDR10] instead of [PQ]
 //
@@ -431,10 +431,12 @@ internal sealed class VideoFileInfoReader
     }
 
     // ReSharper disable once FunctionComplexityOverflow
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
     public MediaInfoModel GetMediaInfo(string filename)
     {
         try
         {
+            // ReSharper disable once StringLiteralTypo
             var ffprobeOutput = FFProbe.GetStreamJson(filename, ffOptions: new FFOptions { ExtraArguments = "-probesize 50000000" });
             var analysis = FFProbe.AnalyseStreamJson(ffprobeOutput);
             var primaryVideoStream = GetPrimaryVideoStream(analysis);

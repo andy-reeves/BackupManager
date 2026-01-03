@@ -112,7 +112,6 @@ internal sealed class SubtitlesBackupFile : ExtendedBackupFileBase
 
                 // More than 1 video file so we do this:
                 // Check for a video file that matches this name (apart from the subtitles extensions) - use that if found
-                // If it's not found us the trimmed Title to check that
                 var titleWithoutExt = Title;
 
                 foreach (var video in from videoFile in videoFiles

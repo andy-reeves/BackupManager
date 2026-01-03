@@ -22,6 +22,7 @@ public sealed class FullTestA
     }
 
     [Fact]
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
     public void Test()
     {
         // Step 1 - set up the directories and config
