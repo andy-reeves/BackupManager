@@ -11,12 +11,15 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 
 using BackupManager.Entities;
 using BackupManager.Extensions;
 using BackupManager.Properties;
+
+using Timer = System.Timers.Timer;
 
 namespace BackupManager;
 
@@ -25,7 +28,7 @@ internal sealed class FileSystemWatcher
     private const int NOTIFY_FILTERS_VALID_MASK = (int)(NotifyFilters.Attributes | NotifyFilters.CreationTime | NotifyFilters.DirectoryName | NotifyFilters.FileName |
                                                         NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.Security | NotifyFilters.Size);
 
-    private static readonly object _lock = new();
+    private static readonly Lock _lock = new();
 
     private readonly List<System.IO.FileSystemWatcher> watcherList = [];
 
