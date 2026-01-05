@@ -259,3 +259,6 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/.github/upgrades/assessment.csv
+/.github/upgrades/assessment.json
+/.github/upgrades/assessment.md
