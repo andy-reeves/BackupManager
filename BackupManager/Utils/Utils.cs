@@ -178,7 +178,7 @@ internal static partial class Utils
     /// </summary>
     internal static readonly bool InDebugBuild;
 
-    private static readonly object _lock = new();
+    private static readonly Lock _lock = new();
 
     private static readonly HttpClient _client = new();
 

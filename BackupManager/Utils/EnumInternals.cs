@@ -57,7 +57,7 @@ internal static partial class Utils
             foreach (var value in Values)
             {
                 var description = GetDescription(value);
-                if (ValueToDescriptionMap != null) ValueToDescriptionMap[value] = description;
+                if (ValueToDescriptionMap != null) _ = ValueToDescriptionMap.TryAdd(value, description);
                 if (description == null) continue;
 
                 if (DescriptionToValueMap != null) _ = DescriptionToValueMap.TryAdd(description, value);

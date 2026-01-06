@@ -26,8 +26,6 @@ public sealed class BackupFile : IEquatable<BackupFile>
 {
     private string contentsHash;
 
-    private string directory;
-
     private string disk;
 
     private DateTime? diskCheckedTime;
@@ -35,8 +33,6 @@ public sealed class BackupFile : IEquatable<BackupFile>
     private string extension;
 
     private string fileName;
-
-    private string relativePath;
 
     public BackupFile() { }
 
@@ -58,14 +54,14 @@ public sealed class BackupFile : IEquatable<BackupFile>
     [XmlElement("Path")]
     public string RelativePath
     {
-        get => relativePath;
+        get;
 
         set
         {
             if (Utils.StringContainsFixedSpace(value)) value = Utils.ReplaceFixedSpace(value);
-            if (relativePath == value) return;
+            if (field == value) return;
 
-            relativePath = value;
+            field = value;
             extension = null;
         }
     }
@@ -80,12 +76,12 @@ public sealed class BackupFile : IEquatable<BackupFile>
     /// </summary>
     public string Directory
     {
-        get => directory;
+        get;
 
         set
         {
             if (Utils.StringContainsFixedSpace(value)) value = Utils.ReplaceFixedSpace(value);
-            directory = value;
+            field = value;
         }
     }
 

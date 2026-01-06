@@ -10,27 +10,29 @@ namespace BackupManager.Extensions;
 
 internal static class DateTimeExtensions
 {
-    /// <summary>
-    ///     Convert datetime to UNIX time
-    /// </summary>
     /// <param name="dateTime"></param>
-    /// <returns></returns>
-
-    // ReSharper disable once UnusedMember.Global
-    internal static string ToUnixTime(this DateTime dateTime)
+    extension(DateTime dateTime)
     {
-        var dto = new DateTimeOffset(dateTime.ToUniversalTime());
-        return dto.ToUnixTimeSeconds().ToString();
-    }
+        /// <summary>
+        ///     Convert datetime to UNIX time
+        /// </summary>
+        /// <returns></returns>
 
-    /// <summary>
-    ///     Convert datetime to UNIX time including milliseconds
-    /// </summary>
-    /// <param name="dateTime"></param>
-    /// <returns></returns>
-    internal static string ToUnixTimeMilliseconds(this DateTime dateTime)
-    {
-        var dto = new DateTimeOffset(dateTime.ToUniversalTime());
-        return dto.ToUnixTimeMilliseconds().ToString();
+        // ReSharper disable once UnusedMember.Global
+        internal string ToUnixTime()
+        {
+            var dto = new DateTimeOffset(dateTime.ToUniversalTime());
+            return dto.ToUnixTimeSeconds().ToString();
+        }
+
+        /// <summary>
+        ///     Convert datetime to UNIX time including milliseconds
+        /// </summary>
+        /// <returns></returns>
+        internal string ToUnixTimeMilliseconds()
+        {
+            var dto = new DateTimeOffset(dateTime.ToUniversalTime());
+            return dto.ToUnixTimeMilliseconds().ToString();
+        }
     }
 }

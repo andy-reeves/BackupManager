@@ -41,7 +41,7 @@ public sealed class MediaBackup
     // This happened with The Porridge movie which is also stored as a Tv episode.
     private readonly Dictionary<string, BackupFile> indexFolderAndRelativePath = new(StringComparer.CurrentCultureIgnoreCase);
 
-    private readonly object lockObject = new();
+    private readonly Lock lockObject = new();
 
     internal readonly FileSystemWatcher Watcher = new();
 

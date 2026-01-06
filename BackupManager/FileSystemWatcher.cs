@@ -32,25 +32,11 @@ internal sealed class FileSystemWatcher
 
     private readonly List<System.IO.FileSystemWatcher> watcherList = [];
 
-    private string[] directories = [];
-
-    private string filter = "*.*";
-
-    private bool includeSubdirectories;
-
-    private NotifyFilters notifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName;
-
-    private int processChangesInterval = 30_000;
-
     private Timer processChangesTimer;
-
-    private string regExFilter;
 
     private bool reset;
 
     private Timer scanDirectoriesTimer;
-
-    private int scanInterval = 60_000;
 
     internal bool Running { get; private set; }
 
@@ -59,16 +45,16 @@ internal sealed class FileSystemWatcher
     /// </summary>
     internal string[] Directories
     {
-        get => directories;
+        get;
 
         set
         {
-            if (directories == value) return;
+            if (field == value) return;
 
-            directories = value;
+            field = value;
             Restart();
         }
-    }
+    } = [];
 
     /// <summary>
     ///     Minimum time in milliseconds since this directory (or any items changed in the directory) was last changed before
@@ -84,32 +70,32 @@ internal sealed class FileSystemWatcher
     /// </summary>
     public int ProcessChangesInterval
     {
-        get => processChangesInterval;
+        get;
 
         set
         {
-            if (processChangesInterval == value) return;
+            if (field == value) return;
 
-            processChangesInterval = value;
-            if (processChangesTimer != null) processChangesTimer.Interval = value;
+            field = value;
+            processChangesTimer?.Interval = value;
         }
-    }
+    } = 30_000;
 
     /// <summary>
     ///     Interval in milliseconds between scan directory events being raised. Default is 60 seconds.
     /// </summary>
     public int ScanInterval
     {
-        get => scanInterval;
+        get;
 
         set
         {
-            if (scanInterval == value) return;
+            if (field == value) return;
 
-            scanInterval = value;
-            if (scanDirectoriesTimer != null) scanDirectoriesTimer.Interval = value;
+            field = value;
+            scanDirectoriesTimer?.Interval = value;
         }
-    }
+    } = 60_000;
 
     /// <summary>
     ///     This is a Collection of files/directories where changes have been detected and the last time they changed.
@@ -128,35 +114,35 @@ internal sealed class FileSystemWatcher
     [SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
     internal NotifyFilters NotifyFilter
     {
-        get => notifyFilter;
+        get;
 
         set
         {
             if (((int)value & ~NOTIFY_FILTERS_VALID_MASK) != 0)
                 throw new ArgumentException(string.Format(Resources.InvalidEnumArgument, nameof(value), (int)value, nameof(NotifyFilters)));
 
-            if (notifyFilter == value) return;
+            if (field == value) return;
 
-            notifyFilter = value;
+            field = value;
             Restart();
         }
-    }
+    } = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName;
 
     /// <summary>
     ///     Gets or sets the filter string, used to determine what files are monitored in a directory.
     /// </summary>
     public string Filter
     {
-        get => filter;
+        get;
 
         set
         {
-            if (filter == value) return;
+            if (field == value) return;
 
-            filter = value;
+            field = value;
             Restart();
         }
-    }
+    } = "*.*";
 
     /// <summary>
     ///     Gets or sets the RegexFilter string, used to determine what files are monitored in a directory. They match the
@@ -165,13 +151,13 @@ internal sealed class FileSystemWatcher
     /// </summary>
     public string RegexFilter
     {
-        get => regExFilter;
+        get;
 
         set
         {
-            if (regExFilter == value) return;
+            if (field == value) return;
 
-            regExFilter = value;
+            field = value;
             Restart();
         }
     }
@@ -181,13 +167,13 @@ internal sealed class FileSystemWatcher
     /// </summary>
     public bool IncludeSubdirectories
     {
-        get => includeSubdirectories;
+        get;
 
         set
         {
-            if (includeSubdirectories == value) return;
+            if (field == value) return;
 
-            includeSubdirectories = value;
+            field = value;
             Restart();
         }
     }

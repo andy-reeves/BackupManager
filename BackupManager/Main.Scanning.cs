@@ -126,7 +126,7 @@ internal sealed partial class Main
         }
 
         // Update the last scan endDateTime as it wasn't set in the loop
-        if (scanInfo != null) scanInfo.EndDateTime = DateTime.Now;
+        scanInfo?.EndDateTime = DateTime.Now;
         return Utils.TraceOut(true);
     }
 

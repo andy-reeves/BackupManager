@@ -23,8 +23,6 @@ namespace BackupManager.Entities;
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 public sealed class DirectoryScan : IEquatable<DirectoryScan>
 {
-    private TimeSpan scanDuration;
-
     public DirectoryScan() { }
 
     public DirectoryScan(DirectoryScanType typeOfScan, string path, DateTime startDateTime, string id)
@@ -61,8 +59,8 @@ public sealed class DirectoryScan : IEquatable<DirectoryScan>
         {
             if (EndDateTime.Equals(DateTime.MinValue)) return TimeSpan.Zero;
 
-            scanDuration = EndDateTime - StartDateTime;
-            return scanDuration;
+            field = EndDateTime - StartDateTime;
+            return field;
         }
     }
 

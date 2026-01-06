@@ -26,7 +26,7 @@ internal static class Int64Extensions
         switch (bytes)
         {
             case < 0:
-                return "-" + SizeSuffix(-bytes);
+                return "-" + (-bytes).SizeSuffix();
             case 0:
                 return "0 bytes";
         }
