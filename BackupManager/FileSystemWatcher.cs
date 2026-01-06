@@ -342,9 +342,12 @@ internal sealed class FileSystemWatcher
     {
         if (e.ChangeType is not WatcherChangeTypes.Created and not WatcherChangeTypes.Changed and not WatcherChangeTypes.Deleted and not WatcherChangeTypes.Renamed) return;
         if (Utils.GetFileSystemEntryType(e.FullPath) == FileSystemEntryType.Directory) return;
-        if (RegexFilter.HasValue() && !Regex.IsMatch(e.FullPath, RegexFilter)) return;
-        if (e.FullPath.Contains(Utils.IS_DIRECTORY_WRITABLE_GUID) || e.FullPath.Contains(Utils.SPEED_TEST_GUID)) return;
 
+        if (RegexFilter.HasValue() && !Regex.IsMatch(e.FullPath, RegexFilter))
+        {
+            Utils.Trace("Path matches Regex so skipping");
+            return;
+        }
         _ = FileSystemChanges.AddOrUpdate(new FileSystemEntry(e.FullPath, DateTime.Now));
 
         // As soon as there's something changed we start our event timers

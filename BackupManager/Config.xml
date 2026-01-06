@@ -41,6 +41,7 @@
   </FileRenameRules>
 
   <!-- Only files matching this filter are used for File System scanning -->
+  <!--  <DirectoriesFilterRegEx>.*(?&lt;!tmp|bazarr_write_test)$</DirectoriesFilterRegEx> -->
   <DirectoriesFilterRegEx>(.*(?&lt;!\.tmp)|.*\\_Backup\\.*)$</DirectoriesFilterRegEx>
 
   <DirectoriesToHealthCheckOnOff>true</DirectoriesToHealthCheckOnOff>
