@@ -28,6 +28,9 @@
     <DefineConstants>$(DefineConstants);FILEDELETE;FILEMOVE;DIRECTORYDELETE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <EmbeddedResource Remove="Main.1.resx" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="ConfigSchema.xsd" />
     <None Remove="MediaBackupSchema.xsd" />
     <None Remove="RulesSchema.xsd" />

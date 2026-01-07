@@ -21,6 +21,27 @@ namespace BackupManager.Extensions;
 [SuppressMessage("ReSharper", "UnusedMember.Global")]
 internal static partial class StringExtensions
 {
+    /// <summary>
+    ///     Concatenates a specified separator string between each element of a specified sequence, yielding a single
+    ///     concatenated string.
+    /// </summary>
+    /// <param name="source">
+    ///     The sequence of strings to join.
+    /// </param>
+    /// <param name="separator">
+    ///     The separator to join the strings with.
+    /// </param>
+    /// <returns>
+    ///     A single concatenated string.
+    /// </returns>
+    public static string JoinWith(this IEnumerable<string> source, string separator)
+    {
+        return string.Join(separator, source.ToArray());
+    }
+
+    [GeneratedRegex("([0-9]st)|([0-9]th)|([0-9]rd)|([0-9]nd)", RegexOptions.IgnoreCase, "en-GB")]
+    private static partial Regex MyRegex();
+
     /// <param name="text"></param>
     extension(string text)
     {
@@ -196,24 +217,6 @@ internal static partial class StringExtensions
         {
             return Regex.IsMatch(text, regex, options);
         }
-    }
-
-    /// <summary>
-    ///     Concatenates a specified separator string between each element of a specified sequence, yielding a single
-    ///     concatenated string.
-    /// </summary>
-    /// <param name="source">
-    ///     The sequence of strings to join.
-    /// </param>
-    /// <param name="separator">
-    ///     The separator to join the strings with.
-    /// </param>
-    /// <returns>
-    ///     A single concatenated string.
-    /// </returns>
-    public static string JoinWith(this IEnumerable<string> source, string separator)
-    {
-        return string.Join(separator, source.ToArray());
     }
 
     /// <param name="s">
@@ -434,7 +437,4 @@ internal static partial class StringExtensions
             return s?.IndexOf(toCheck, comp) >= 0;
         }
     }
-
-    [GeneratedRegex("([0-9]st)|([0-9]th)|([0-9]rd)|([0-9]nd)", RegexOptions.IgnoreCase, "en-GB")]
-    private static partial Regex MyRegex();
 }
