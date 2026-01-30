@@ -66,7 +66,7 @@ public sealed class UtilsGetVersionPlex
     }
 
     [Theory]
-    [InlineData("1.43.0.10467", ApplicationType.Plex)]
+    [InlineData("1.42.2.10156", ApplicationType.Plex)]
     [InlineData("1.43.0.10467", ApplicationType.PlexPass)]
     public void GetLatestVersionNumber(string expectedVersionNumber, ApplicationType applicationType, string branchName = "master")
     {
