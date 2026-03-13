@@ -394,8 +394,8 @@ internal sealed partial class Main
             Utils.LogWithPushover(BackupAction.ScanDirectory, Resources.Started, false, true);
             UpdateStatusLabel(ct, string.Format(Resources.Scanning, string.Empty));
 
-            /* Moved a bunch of files from one disk to another
-            
+            // Moved a bunch of files from one disk to another
+            /*
             var a = mediaBackup.BackupFiles.Where(static f => f.Directory.EqualsIgnoreCase(@"\\nas5\assets2\_TV"));
 
             foreach(var b in a)
@@ -429,6 +429,7 @@ b.RelativePath.StartsWithIgnoreCase(@"Third Watch {tvdb-73107}") ||
                     b.RelativePath.StartsWithIgnoreCase(@"The Shannara Chronicles {tvdb-289096}") ||
                     b.RelativePath.StartsWithIgnoreCase(@"The Sex Business {tvdb-348417}") ||
                     b.RelativePath.StartsWithIgnoreCase(@"The Serpent {tvdb-368813}") ||
+                    b.RelativePath.StartsWithIgnoreCase(@"What We Do in the Shadows {tvdb-358211}") ||
                     b.RelativePath.StartsWithIgnoreCase(@"Who Killed Jeffrey Epstein {tvdb-389739}")) 
 
 
