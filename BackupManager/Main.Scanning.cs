@@ -393,6 +393,53 @@ internal sealed partial class Main
             DisableControlsForAsyncTasks(ct);
             Utils.LogWithPushover(BackupAction.ScanDirectory, Resources.Started, false, true);
             UpdateStatusLabel(ct, string.Format(Resources.Scanning, string.Empty));
+
+            /* Moved a bunch of files from one disk to another
+            
+            var a = mediaBackup.BackupFiles.Where(static f => f.Directory.EqualsIgnoreCase(@"\\nas5\assets2\_TV"));
+
+            foreach(var b in a)
+            {
+                if (b.RelativePath.StartsWithIgnoreCase(@"westworld") ||
+                    b.RelativePath.StartsWithIgnoreCase(@"vikings") ||
+                    b.RelativePath.StartsWithIgnoreCase(@"The X-Files") ||
+                    b.RelativePath.StartsWithIgnoreCase(@"WandaVision {tvdb-362392}") ||
+
+                   b.RelativePath.StartsWithIgnoreCase(@"Victorious {tvdb-152721}") ||
+                   b.RelativePath.StartsWithIgnoreCase(@"Under the Banner of Heaven {tvdb-405549}") ||
+                   b.RelativePath.StartsWithIgnoreCase(@"Two Weeks to Live {tvdb-366129}") ||
+                   b.RelativePath.StartsWithIgnoreCase(@"Trying {tvdb-375903}") ||
+                   b.RelativePath.StartsWithIgnoreCase(@"Trust Us With Your Life {tvdb-258814}") ||
+b.RelativePath.StartsWithIgnoreCase(@"Tremors {tvdb-71262}") ||
+b.RelativePath.StartsWithIgnoreCase(@"Third Watch {tvdb-73107}") ||
+                   b.RelativePath.StartsWithIgnoreCase(@"There's Something About Movies {tvdb-363406}") ||
+                   b.RelativePath.StartsWithIgnoreCase(@"Them {tvdb-372974}") ||
+                   b.RelativePath.StartsWithIgnoreCase(@"The Worst Witch (2017) {tvdb-321884}") ||
+                   b.RelativePath.StartsWithIgnoreCase(@"The Wilds {tvdb-349826}") ||
+                   b.RelativePath.StartsWithIgnoreCase(@"The Walking Dead The Ones Who Live {tvdb-427202}") ||
+                   b.RelativePath.StartsWithIgnoreCase(@"The Undoing {tvdb-369307}") ||
+                   b.RelativePath.StartsWithIgnoreCase(@"The Tudors {tvdb-79925}") ||
+                   b.RelativePath.StartsWithIgnoreCase(@"The Traitors {tvdb-420543}") ||
+                    b.RelativePath.StartsWithIgnoreCase(@"The Tourist {tvdb-395919}") ||
+                    b.RelativePath.StartsWithIgnoreCase(@"The Third Day {tvdb-366477}") ||
+                    b.RelativePath.StartsWithIgnoreCase(@"The Syndicate {tvdb-253485}") ||
+                    b.RelativePath.StartsWithIgnoreCase(@"The Stand (2020) {tvdb-359583}") ||
+                    b.RelativePath.StartsWithIgnoreCase(@"The Spy {tvdb-368109}") ||
+                    b.RelativePath.StartsWithIgnoreCase(@"The Sister {tvdb-371395}") ||
+                    b.RelativePath.StartsWithIgnoreCase(@"The Shannara Chronicles {tvdb-289096}") ||
+                    b.RelativePath.StartsWithIgnoreCase(@"The Sex Business {tvdb-348417}") ||
+                    b.RelativePath.StartsWithIgnoreCase(@"The Serpent {tvdb-368813}") ||
+                    b.RelativePath.StartsWithIgnoreCase(@"Who Killed Jeffrey Epstein {tvdb-389739}")) 
+
+
+                {
+                    Utils.LogWithPushover(BackupAction.ScanDirectory, $"File {b.FullPath} is being renamed to {b.FullPath.Replace(@"\\nas5\assets2\_TV\", @"\\nas2\assets1\TV\")}");
+                    b.Directory = @"\\nas2\assets1\_TV";
+                }
+            }
+
+            this.mediaBackup.Save(ct);
+            */
             ScanAllDirectories(false, ct);
             ResetAllControls();
         }
