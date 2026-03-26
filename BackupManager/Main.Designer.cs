@@ -65,6 +65,7 @@
             scanDirectoriesWithChangesButton = new System.Windows.Forms.Button();
             scanLastDirectoriesButton = new System.Windows.Forms.Button();
             saveButton = new System.Windows.Forms.Button();
+            button2 = new System.Windows.Forms.Button();
             button1 = new System.Windows.Forms.Button();
             button3 = new System.Windows.Forms.Button();
             scheduledBackupTimerButton = new System.Windows.Forms.Button();
@@ -149,6 +150,7 @@
             tvShowComboBox = new System.Windows.Forms.ComboBox();
             label18 = new System.Windows.Forms.Label();
             groupBox3 = new System.Windows.Forms.GroupBox();
+            setTVShowForSeasonButton = new System.Windows.Forms.Button();
             editionComboBox = new System.Windows.Forms.ComboBox();
             label22 = new System.Windows.Forms.Label();
             episodeComboBox = new System.Windows.Forms.ComboBox();
@@ -161,7 +163,6 @@
             label19 = new System.Windows.Forms.Label();
             movieRuntimeTextBox = new System.Windows.Forms.TextBox();
             setMovieRuntimeButton = new System.Windows.Forms.Button();
-            setTVShowForSeasonButton = new System.Windows.Forms.Button();
             pushoverGroupBox.SuspendLayout();
             groupBox2.SuspendLayout();
             listFilesInDirectoryGroupBox.SuspendLayout();
@@ -580,6 +581,18 @@
             toolTip.SetToolTip(saveButton, "Saves the media xml file if its changed");
             saveButton.UseVisualStyleBackColor = true;
             saveButton.Click += SaveButton_Click;
+            // 
+            // button2
+            // 
+            button2.Location = new System.Drawing.Point(828, 426);
+            button2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            button2.Name = "button2";
+            button2.Size = new System.Drawing.Size(234, 27);
+            button2.TabIndex = 122;
+            button2.Text = "Move TV Show";
+            toolTip.SetToolTip(button2, "Reports the latest scan times for the directories");
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += MoveTvShowButtonClick;
             // 
             // button1
             // 
@@ -1499,6 +1512,17 @@
             groupBox3.TabStop = false;
             groupBox3.Text = "TV show cache";
             // 
+            // setTVShowForSeasonButton
+            // 
+            setTVShowForSeasonButton.Location = new System.Drawing.Point(227, 83);
+            setTVShowForSeasonButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            setTVShowForSeasonButton.Name = "setTVShowForSeasonButton";
+            setTVShowForSeasonButton.Size = new System.Drawing.Size(103, 27);
+            setTVShowForSeasonButton.TabIndex = 126;
+            setTVShowForSeasonButton.Text = "Set for season";
+            setTVShowForSeasonButton.UseVisualStyleBackColor = true;
+            setTVShowForSeasonButton.Click += SetTVShowForSeasonButton_Click;
+            // 
             // editionComboBox
             // 
             editionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -1620,22 +1644,12 @@
             setMovieRuntimeButton.UseVisualStyleBackColor = true;
             setMovieRuntimeButton.Click += SetMovieRuntimeButton_Click;
             // 
-            // setTVShowForSeasonButton
-            // 
-            setTVShowForSeasonButton.Location = new System.Drawing.Point(227, 83);
-            setTVShowForSeasonButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            setTVShowForSeasonButton.Name = "setTVShowForSeasonButton";
-            setTVShowForSeasonButton.Size = new System.Drawing.Size(103, 27);
-            setTVShowForSeasonButton.TabIndex = 126;
-            setTVShowForSeasonButton.Text = "Set for season";
-            setTVShowForSeasonButton.UseVisualStyleBackColor = true;
-            setTVShowForSeasonButton.Click += SetTVShowForSeasonButton_Click;
-            // 
             // Main
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1416, 601);
+            Controls.Add(button2);
             Controls.Add(groupBox6);
             Controls.Add(groupBox3);
             Controls.Add(refreshTvEpisodesButton);
@@ -1863,6 +1877,7 @@
         private System.Windows.Forms.ComboBox editionComboBox;
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.Button setTVShowForSeasonButton;
+        private System.Windows.Forms.Button button2;
     }
 }
 

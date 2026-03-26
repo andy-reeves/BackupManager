@@ -1520,4 +1520,28 @@ internal sealed partial class Main : Form
         ResetTokenSource();
         mediaBackup.Save(mainCt);
     }
+
+    private void MoveTvShowButtonClick(object sender, EventArgs e)
+    {
+        // Pick a TV show and then a disk to move it to
+        // find all the files for the show and set the Directory and then save the media
+
+        // TODO put this in a combo box
+        var targetDirectory = @"\\nas2\_assets3\_TV";
+        var text = (string)tvShowComboBox.SelectedItem;
+
+        // "71489" - Law and order criminal intent and "72389" - 3rd rock
+        if (text.HasNoValue() || tvShowRuntimeTextBox.Text.HasNoValue()) return;
+
+        var showId = Convert.ToInt32(text.SubstringBefore('-').Trim());
+        var showName = text.SubstringAfterIgnoreCase(" - ").Trim() + " {tvdb-" + showId + @"}\";
+        var files = mediaBackup.GetBackupFiles(true).Where(f => f.RelativePath.StartsWithIgnoreCase(showName));
+
+        foreach (var file in files)
+        {
+            file.Directory = targetDirectory;
+            Utils.Log($"Moving {file.FullPath} to {targetDirectory}");
+        }
+        mediaBackup.Save(mainCt);
+    }
 }
