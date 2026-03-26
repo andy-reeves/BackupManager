@@ -65,7 +65,7 @@
             scanDirectoriesWithChangesButton = new System.Windows.Forms.Button();
             scanLastDirectoriesButton = new System.Windows.Forms.Button();
             saveButton = new System.Windows.Forms.Button();
-            button2 = new System.Windows.Forms.Button();
+            moveTVButton = new System.Windows.Forms.Button();
             button1 = new System.Windows.Forms.Button();
             button3 = new System.Windows.Forms.Button();
             scheduledBackupTimerButton = new System.Windows.Forms.Button();
@@ -163,6 +163,10 @@
             label19 = new System.Windows.Forms.Label();
             movieRuntimeTextBox = new System.Windows.Forms.TextBox();
             setMovieRuntimeButton = new System.Windows.Forms.Button();
+            groupBox7 = new System.Windows.Forms.GroupBox();
+            moveTvShowComboBox = new System.Windows.Forms.ComboBox();
+            directoryComboBox = new System.Windows.Forms.ComboBox();
+            label23 = new System.Windows.Forms.Label();
             pushoverGroupBox.SuspendLayout();
             groupBox2.SuspendLayout();
             listFilesInDirectoryGroupBox.SuspendLayout();
@@ -176,6 +180,7 @@
             groupBox4.SuspendLayout();
             groupBox3.SuspendLayout();
             groupBox6.SuspendLayout();
+            groupBox7.SuspendLayout();
             SuspendLayout();
             // 
             // scanAllDirectoriesButton
@@ -582,17 +587,17 @@
             saveButton.UseVisualStyleBackColor = true;
             saveButton.Click += SaveButton_Click;
             // 
-            // button2
+            // moveTVButton
             // 
-            button2.Location = new System.Drawing.Point(828, 426);
-            button2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            button2.Name = "button2";
-            button2.Size = new System.Drawing.Size(234, 27);
-            button2.TabIndex = 122;
-            button2.Text = "Move TV Show";
-            toolTip.SetToolTip(button2, "Reports the latest scan times for the directories");
-            button2.UseVisualStyleBackColor = true;
-            button2.Click += MoveTvShowButtonClick;
+            moveTVButton.Location = new System.Drawing.Point(133, 88);
+            moveTVButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            moveTVButton.Name = "moveTVButton";
+            moveTVButton.Size = new System.Drawing.Size(114, 27);
+            moveTVButton.TabIndex = 122;
+            moveTVButton.Text = "Move TV Show";
+            toolTip.SetToolTip(moveTVButton, "Reports the latest scan times for the directories");
+            moveTVButton.UseVisualStyleBackColor = true;
+            moveTVButton.Click += MoveTvShowButtonClick;
             // 
             // button1
             // 
@@ -1455,7 +1460,7 @@
             setTvShowRuntimeButton.Location = new System.Drawing.Point(227, 50);
             setTvShowRuntimeButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             setTvShowRuntimeButton.Name = "setTvShowRuntimeButton";
-            setTvShowRuntimeButton.Size = new System.Drawing.Size(103, 27);
+            setTvShowRuntimeButton.Size = new System.Drawing.Size(89, 27);
             setTvShowRuntimeButton.TabIndex = 116;
             setTvShowRuntimeButton.Text = "Set for show";
             setTvShowRuntimeButton.UseVisualStyleBackColor = true;
@@ -1476,7 +1481,7 @@
             tvShowComboBox.FormattingEnabled = true;
             tvShowComboBox.Location = new System.Drawing.Point(10, 22);
             tvShowComboBox.Name = "tvShowComboBox";
-            tvShowComboBox.Size = new System.Drawing.Size(320, 23);
+            tvShowComboBox.Size = new System.Drawing.Size(303, 23);
             tvShowComboBox.TabIndex = 118;
             tvShowComboBox.SelectedIndexChanged += TvShowComboBox_SelectedIndexChanged;
             // 
@@ -1505,9 +1510,9 @@
             groupBox3.Controls.Add(clearCacheForTvShowButton);
             groupBox3.Controls.Add(tvShowRuntimeTextBox);
             groupBox3.Controls.Add(setTvShowRuntimeButton);
-            groupBox3.Location = new System.Drawing.Point(1067, 382);
+            groupBox3.Location = new System.Drawing.Point(1084, 382);
             groupBox3.Name = "groupBox3";
-            groupBox3.Size = new System.Drawing.Size(339, 162);
+            groupBox3.Size = new System.Drawing.Size(322, 162);
             groupBox3.TabIndex = 120;
             groupBox3.TabStop = false;
             groupBox3.Text = "TV show cache";
@@ -1517,7 +1522,7 @@
             setTVShowForSeasonButton.Location = new System.Drawing.Point(227, 83);
             setTVShowForSeasonButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             setTVShowForSeasonButton.Name = "setTVShowForSeasonButton";
-            setTVShowForSeasonButton.Size = new System.Drawing.Size(103, 27);
+            setTVShowForSeasonButton.Size = new System.Drawing.Size(88, 27);
             setTVShowForSeasonButton.TabIndex = 126;
             setTVShowForSeasonButton.Text = "Set for season";
             setTVShowForSeasonButton.UseVisualStyleBackColor = true;
@@ -1583,10 +1588,10 @@
             // 
             // setRuntimeForEpisodeButton
             // 
-            setRuntimeForEpisodeButton.Location = new System.Drawing.Point(227, 115);
+            setRuntimeForEpisodeButton.Location = new System.Drawing.Point(219, 115);
             setRuntimeForEpisodeButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             setRuntimeForEpisodeButton.Name = "setRuntimeForEpisodeButton";
-            setRuntimeForEpisodeButton.Size = new System.Drawing.Size(103, 27);
+            setRuntimeForEpisodeButton.Size = new System.Drawing.Size(96, 27);
             setRuntimeForEpisodeButton.TabIndex = 120;
             setRuntimeForEpisodeButton.Text = "Set for episode";
             setRuntimeForEpisodeButton.UseVisualStyleBackColor = true;
@@ -1644,12 +1649,55 @@
             setMovieRuntimeButton.UseVisualStyleBackColor = true;
             setMovieRuntimeButton.Click += SetMovieRuntimeButton_Click;
             // 
+            // groupBox7
+            // 
+            groupBox7.Controls.Add(label23);
+            groupBox7.Controls.Add(directoryComboBox);
+            groupBox7.Controls.Add(moveTVButton);
+            groupBox7.Controls.Add(moveTvShowComboBox);
+            groupBox7.Location = new System.Drawing.Point(821, 427);
+            groupBox7.Name = "groupBox7";
+            groupBox7.Size = new System.Drawing.Size(255, 124);
+            groupBox7.TabIndex = 127;
+            groupBox7.TabStop = false;
+            groupBox7.Text = "Move TV show";
+            // 
+            // moveTvShowComboBox
+            // 
+            moveTvShowComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            moveTvShowComboBox.FormattingEnabled = true;
+            moveTvShowComboBox.Location = new System.Drawing.Point(10, 22);
+            moveTvShowComboBox.Name = "moveTvShowComboBox";
+            moveTvShowComboBox.Size = new System.Drawing.Size(237, 23);
+            moveTvShowComboBox.TabIndex = 118;
+            // 
+            // directoryComboBox
+            // 
+            directoryComboBox.BackColor = System.Drawing.SystemColors.Window;
+            directoryComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            directoryComboBox.FormattingEnabled = true;
+            directoryComboBox.Location = new System.Drawing.Point(66, 56);
+            directoryComboBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            directoryComboBox.Name = "directoryComboBox";
+            directoryComboBox.Size = new System.Drawing.Size(181, 23);
+            directoryComboBox.TabIndex = 53;
+            // 
+            // label23
+            // 
+            label23.AutoSize = true;
+            label23.Location = new System.Drawing.Point(7, 59);
+            label23.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label23.Name = "label23";
+            label23.Size = new System.Drawing.Size(55, 15);
+            label23.TabIndex = 127;
+            label23.Text = "Directory";
+            // 
             // Main
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1416, 601);
-            Controls.Add(button2);
+            Controls.Add(groupBox7);
             Controls.Add(groupBox6);
             Controls.Add(groupBox3);
             Controls.Add(refreshTvEpisodesButton);
@@ -1739,6 +1787,8 @@
             groupBox3.PerformLayout();
             groupBox6.ResumeLayout(false);
             groupBox6.PerformLayout();
+            groupBox7.ResumeLayout(false);
+            groupBox7.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -1877,7 +1927,11 @@
         private System.Windows.Forms.ComboBox editionComboBox;
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.Button setTVShowForSeasonButton;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button moveTVButton;
+        private System.Windows.Forms.GroupBox groupBox7;
+        private System.Windows.Forms.ComboBox moveTvShowComboBox;
+        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.ComboBox directoryComboBox;
     }
 }
 

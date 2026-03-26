@@ -1525,16 +1525,13 @@ internal sealed partial class Main : Form
     {
         // Pick a TV show and then a disk to move it to
         // find all the files for the show and set the Directory and then save the media
+        if (directoryComboBox.SelectedItem == null) return;
 
-        // TODO put this in a combo box
-        var targetDirectory = @"\\nas2\_assets3\_TV";
-        var text = (string)tvShowComboBox.SelectedItem;
+        var targetDirectory = directoryComboBox.SelectedItem.ToString();
+        var text = (string)moveTvShowComboBox.SelectedItem;
+        if (text.HasNoValue()) return;
 
-        // "71489" - Law and order criminal intent and "72389" - 3rd rock
-        if (text.HasNoValue() || tvShowRuntimeTextBox.Text.HasNoValue()) return;
-
-        var showId = Convert.ToInt32(text.SubstringBefore('-').Trim());
-        var showName = text.SubstringAfterIgnoreCase(" - ").Trim() + " {tvdb-" + showId + @"}\";
+        var showName = text.SubstringAfterIgnoreCase(" - ").Trim() + " {tvdb-" + Convert.ToInt32(text.SubstringBefore('-').Trim()) + @"}";
         var files = mediaBackup.GetBackupFiles(true).Where(f => f.RelativePath.StartsWithIgnoreCase(showName));
 
         foreach (var file in files)

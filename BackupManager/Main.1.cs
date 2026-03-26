@@ -204,6 +204,7 @@ internal sealed partial class Main
         directoriesComboBox.Items.AddRange([.. directoriesArray]);
         restoreDirectoryComboBox.Items.AddRange([.. directoriesArray]);
         scanDirectoryComboBox.Items.AddRange([.. directoriesArray]);
+        directoryComboBox.Items.AddRange([.. directoriesArray]);
     }
 
     private void AddMoviesToCaches()
@@ -253,6 +254,7 @@ internal sealed partial class Main
             tvShowEditions[tvEp.Title].Add(tvEp.Edition);
         }
         tvShowComboBox.Items.AddRange([.. tvShowNames.OrderBy(static i => i.Value.Title).ToDictionary(static i => i.Key, static i => i.Value).Keys]);
+        moveTvShowComboBox.Items.AddRange([.. tvShowNames.OrderBy(static i => i.Value.Title).ToDictionary(static i => i.Key, static i => i.Value).Keys]);
     }
 
     internal void UpdateBackupDiskTextBoxFromConfig()
