@@ -911,13 +911,12 @@ internal static partial class Utils
 
         if (backupAction == BackupAction.Error || (!delayBeforeSending && !delayAfterSending))
         {
-            _ = TaskWrapper(Task.Run(() => SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, text)),
-                new CancellationTokenSource().Token);
+            _ = TaskWrapper(Task.Run(() => SendPushoverMessage(Enum.GetName(backupAction), priority, retry, expires, text)), new CancellationTokenSource().Token);
         }
         else
         {
             if (delayBeforeSending) Task.Delay(1000).Wait();
-            SendPushoverMessage(Enum.GetName(typeof(BackupAction), backupAction), priority, retry, expires, text);
+            SendPushoverMessage(Enum.GetName(backupAction), priority, retry, expires, text);
             if (delayAfterSending) Task.Delay(1000).Wait();
         }
     }
