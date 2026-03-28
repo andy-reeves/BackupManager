@@ -223,6 +223,7 @@ internal sealed partial class Main
             movieNames.TryAdd($"{Convert.ToInt32(movie.TmdbId),0:D7} - {movie.Title} ({movie.ReleaseYear}) {edition}", movie);
         }
         movieComboBox.Items.AddRange([.. movieNames.OrderBy(static i => i.Value.Title).ToDictionary(static i => i.Key, static i => i.Value).Keys]);
+        moveMovieComboBox.Items.AddRange([.. movieNames.OrderBy(static i => i.Value.Title).ToDictionary(static i => i.Key, static i => i.Value).Keys]);
     }
 
     private void AddTvShowsToCaches()

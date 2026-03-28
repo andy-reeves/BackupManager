@@ -1528,11 +1528,24 @@ internal sealed partial class Main : Form
         if (directoryComboBox.SelectedItem == null) return;
 
         var targetDirectory = directoryComboBox.SelectedItem.ToString();
-        var text = (string)moveTvShowComboBox.SelectedItem;
-        if (text.HasNoValue()) return;
 
-        var showName = text.SubstringAfterIgnoreCase(" - ").Trim() + " {tvdb-" + Convert.ToInt32(text.SubstringBefore('-').Trim()) + @"}";
-        var files = mediaBackup.GetBackupFiles(true).Where(f => f.RelativePath.StartsWithIgnoreCase(showName));
+        // Move a selected TV show or a Movie not zero and not both
+        if (moveTvShowComboBox.SelectedItem == null && moveMovieComboBox.SelectedItem == null) return;
+
+        //Check TV Show
+        var text = (string)moveTvShowComboBox.SelectedItem;
+        string showOrMovieName;
+
+        if (text.HasValue())
+            showOrMovieName = text.SubstringAfterIgnoreCase(" - ").Trim() + " {tvdb-" + Convert.ToInt32(text.SubstringBefore('-').Trim()) + @"}";
+        else
+        {
+            text = (string)moveMovieComboBox.SelectedItem;
+            if (text.HasNoValue()) return;
+
+            showOrMovieName = text.SubstringAfterIgnoreCase(" - ").SubstringBeforeLastIgnoreCase(")");
+        }
+        var files = mediaBackup.GetBackupFiles(true).Where(f => f.RelativePath.StartsWithIgnoreCase(showOrMovieName));
 
         foreach (var file in files)
         {
@@ -1540,5 +1553,8 @@ internal sealed partial class Main : Form
             Utils.Log($"Moving {file.FullPath} to {targetDirectory}");
         }
         mediaBackup.Save(mainCt);
+        moveMovieComboBox.SelectedIndex = -1;
+        moveTvShowComboBox.SelectedIndex = -1;
+        directoryComboBox.SelectedIndex = -1;
     }
 }

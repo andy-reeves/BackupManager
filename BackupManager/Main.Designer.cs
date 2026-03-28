@@ -164,9 +164,12 @@
             movieRuntimeTextBox = new System.Windows.Forms.TextBox();
             setMovieRuntimeButton = new System.Windows.Forms.Button();
             groupBox7 = new System.Windows.Forms.GroupBox();
-            moveTvShowComboBox = new System.Windows.Forms.ComboBox();
-            directoryComboBox = new System.Windows.Forms.ComboBox();
+            moveMovieComboBox = new System.Windows.Forms.ComboBox();
             label23 = new System.Windows.Forms.Label();
+            directoryComboBox = new System.Windows.Forms.ComboBox();
+            moveTvShowComboBox = new System.Windows.Forms.ComboBox();
+            label24 = new System.Windows.Forms.Label();
+            label25 = new System.Windows.Forms.Label();
             pushoverGroupBox.SuspendLayout();
             groupBox2.SuspendLayout();
             listFilesInDirectoryGroupBox.SuspendLayout();
@@ -469,7 +472,7 @@
             // 
             // openLogFileButton
             // 
-            openLogFileButton.Location = new System.Drawing.Point(566, 548);
+            openLogFileButton.Location = new System.Drawing.Point(566, 644);
             openLogFileButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             openLogFileButton.Name = "openLogFileButton";
             openLogFileButton.Size = new System.Drawing.Size(232, 27);
@@ -577,7 +580,7 @@
             // 
             // saveButton
             // 
-            saveButton.Location = new System.Drawing.Point(305, 548);
+            saveButton.Location = new System.Drawing.Point(305, 644);
             saveButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             saveButton.Name = "saveButton";
             saveButton.Size = new System.Drawing.Size(232, 27);
@@ -589,12 +592,12 @@
             // 
             // moveTVButton
             // 
-            moveTVButton.Location = new System.Drawing.Point(133, 88);
+            moveTVButton.Location = new System.Drawing.Point(159, 158);
             moveTVButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             moveTVButton.Name = "moveTVButton";
-            moveTVButton.Size = new System.Drawing.Size(114, 27);
+            moveTVButton.Size = new System.Drawing.Size(88, 27);
             moveTVButton.TabIndex = 122;
-            moveTVButton.Text = "Move TV Show";
+            moveTVButton.Text = "Move asset";
             toolTip.SetToolTip(moveTVButton, "Reports the latest scan times for the directories");
             moveTVButton.UseVisualStyleBackColor = true;
             moveTVButton.Click += MoveTvShowButtonClick;
@@ -1061,7 +1064,7 @@
             // statusStrip
             // 
             statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { toolStripStatusLabel, toolStripProgressBar });
-            statusStrip.Location = new System.Drawing.Point(0, 579);
+            statusStrip.Location = new System.Drawing.Point(0, 679);
             statusStrip.Name = "statusStrip";
             statusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
             statusStrip.Size = new System.Drawing.Size(1416, 22);
@@ -1084,7 +1087,7 @@
             // cancelButton
             // 
             cancelButton.Enabled = false;
-            cancelButton.Location = new System.Drawing.Point(1213, 548);
+            cancelButton.Location = new System.Drawing.Point(1213, 644);
             cancelButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             cancelButton.Name = "cancelButton";
             cancelButton.Size = new System.Drawing.Size(114, 27);
@@ -1217,7 +1220,7 @@
             // 
             // notOnABackupDiskTextBox
             // 
-            notOnABackupDiskTextBox.Location = new System.Drawing.Point(130, 489);
+            notOnABackupDiskTextBox.Location = new System.Drawing.Point(130, 588);
             notOnABackupDiskTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             notOnABackupDiskTextBox.Name = "notOnABackupDiskTextBox";
             notOnABackupDiskTextBox.ReadOnly = true;
@@ -1227,7 +1230,7 @@
             // label9
             // 
             label9.AutoSize = true;
-            label9.Location = new System.Drawing.Point(1, 491);
+            label9.Location = new System.Drawing.Point(2, 590);
             label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label9.Name = "label9";
             label9.Size = new System.Drawing.Size(119, 15);
@@ -1236,7 +1239,7 @@
             // 
             // totalFilesTextBox
             // 
-            totalFilesTextBox.Location = new System.Drawing.Point(130, 457);
+            totalFilesTextBox.Location = new System.Drawing.Point(130, 556);
             totalFilesTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             totalFilesTextBox.Name = "totalFilesTextBox";
             totalFilesTextBox.ReadOnly = true;
@@ -1246,7 +1249,7 @@
             // label10
             // 
             label10.AutoSize = true;
-            label10.Location = new System.Drawing.Point(68, 459);
+            label10.Location = new System.Drawing.Point(64, 558);
             label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label10.Name = "label10";
             label10.Size = new System.Drawing.Size(57, 15);
@@ -1255,7 +1258,7 @@
             // 
             // notOnABackupDiskSizeTextBox
             // 
-            notOnABackupDiskSizeTextBox.Location = new System.Drawing.Point(200, 489);
+            notOnABackupDiskSizeTextBox.Location = new System.Drawing.Point(200, 588);
             notOnABackupDiskSizeTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             notOnABackupDiskSizeTextBox.Name = "notOnABackupDiskSizeTextBox";
             notOnABackupDiskSizeTextBox.ReadOnly = true;
@@ -1264,7 +1267,7 @@
             // 
             // totalFilesSizeTextBox
             // 
-            totalFilesSizeTextBox.Location = new System.Drawing.Point(200, 457);
+            totalFilesSizeTextBox.Location = new System.Drawing.Point(200, 556);
             totalFilesSizeTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             totalFilesSizeTextBox.Name = "totalFilesSizeTextBox";
             totalFilesSizeTextBox.ReadOnly = true;
@@ -1273,7 +1276,7 @@
             // 
             // estimatedFinishTimeTextBox
             // 
-            estimatedFinishTimeTextBox.Location = new System.Drawing.Point(972, 552);
+            estimatedFinishTimeTextBox.Location = new System.Drawing.Point(972, 648);
             estimatedFinishTimeTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             estimatedFinishTimeTextBox.Name = "estimatedFinishTimeTextBox";
             estimatedFinishTimeTextBox.ReadOnly = true;
@@ -1283,7 +1286,7 @@
             // label11
             // 
             label11.AutoSize = true;
-            label11.Location = new System.Drawing.Point(851, 554);
+            label11.Location = new System.Drawing.Point(851, 650);
             label11.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label11.Name = "label11";
             label11.Size = new System.Drawing.Size(118, 15);
@@ -1292,7 +1295,7 @@
             // 
             // filesMarkedAsDeletedSizeTextBox
             // 
-            filesMarkedAsDeletedSizeTextBox.Location = new System.Drawing.Point(200, 521);
+            filesMarkedAsDeletedSizeTextBox.Location = new System.Drawing.Point(200, 620);
             filesMarkedAsDeletedSizeTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             filesMarkedAsDeletedSizeTextBox.Name = "filesMarkedAsDeletedSizeTextBox";
             filesMarkedAsDeletedSizeTextBox.ReadOnly = true;
@@ -1301,7 +1304,7 @@
             // 
             // filesMarkedAsDeletedTextBox
             // 
-            filesMarkedAsDeletedTextBox.Location = new System.Drawing.Point(130, 521);
+            filesMarkedAsDeletedTextBox.Location = new System.Drawing.Point(130, 620);
             filesMarkedAsDeletedTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             filesMarkedAsDeletedTextBox.Name = "filesMarkedAsDeletedTextBox";
             filesMarkedAsDeletedTextBox.ReadOnly = true;
@@ -1311,7 +1314,7 @@
             // label12
             // 
             label12.AutoSize = true;
-            label12.Location = new System.Drawing.Point(15, 523);
+            label12.Location = new System.Drawing.Point(18, 622);
             label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label12.Name = "label12";
             label12.Size = new System.Drawing.Size(103, 15);
@@ -1363,7 +1366,7 @@
             // 
             // oldestBackupDiskAgeTextBox
             // 
-            oldestBackupDiskAgeTextBox.Location = new System.Drawing.Point(200, 552);
+            oldestBackupDiskAgeTextBox.Location = new System.Drawing.Point(200, 648);
             oldestBackupDiskAgeTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             oldestBackupDiskAgeTextBox.Name = "oldestBackupDiskAgeTextBox";
             oldestBackupDiskAgeTextBox.ReadOnly = true;
@@ -1372,7 +1375,7 @@
             // 
             // oldestBackupDiskTextBox
             // 
-            oldestBackupDiskTextBox.Location = new System.Drawing.Point(130, 552);
+            oldestBackupDiskTextBox.Location = new System.Drawing.Point(130, 648);
             oldestBackupDiskTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             oldestBackupDiskTextBox.Name = "oldestBackupDiskTextBox";
             oldestBackupDiskTextBox.ReadOnly = true;
@@ -1382,7 +1385,7 @@
             // label16
             // 
             label16.AutoSize = true;
-            label16.Location = new System.Drawing.Point(15, 554);
+            label16.Location = new System.Drawing.Point(14, 650);
             label16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label16.Name = "label16";
             label16.Size = new System.Drawing.Size(107, 15);
@@ -1651,52 +1654,84 @@
             // 
             // groupBox7
             // 
+            groupBox7.Controls.Add(label25);
+            groupBox7.Controls.Add(label24);
+            groupBox7.Controls.Add(moveMovieComboBox);
             groupBox7.Controls.Add(label23);
             groupBox7.Controls.Add(directoryComboBox);
             groupBox7.Controls.Add(moveTVButton);
             groupBox7.Controls.Add(moveTvShowComboBox);
             groupBox7.Location = new System.Drawing.Point(821, 427);
             groupBox7.Name = "groupBox7";
-            groupBox7.Size = new System.Drawing.Size(255, 124);
+            groupBox7.Size = new System.Drawing.Size(255, 195);
             groupBox7.TabIndex = 127;
             groupBox7.TabStop = false;
-            groupBox7.Text = "Move TV show";
+            groupBox7.Text = "Move Movie or TV show";
             // 
-            // moveTvShowComboBox
+            // moveMovieComboBox
             // 
-            moveTvShowComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            moveTvShowComboBox.FormattingEnabled = true;
-            moveTvShowComboBox.Location = new System.Drawing.Point(10, 22);
-            moveTvShowComboBox.Name = "moveTvShowComboBox";
-            moveTvShowComboBox.Size = new System.Drawing.Size(237, 23);
-            moveTvShowComboBox.TabIndex = 118;
-            // 
-            // directoryComboBox
-            // 
-            directoryComboBox.BackColor = System.Drawing.SystemColors.Window;
-            directoryComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            directoryComboBox.FormattingEnabled = true;
-            directoryComboBox.Location = new System.Drawing.Point(66, 56);
-            directoryComboBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            directoryComboBox.Name = "directoryComboBox";
-            directoryComboBox.Size = new System.Drawing.Size(181, 23);
-            directoryComboBox.TabIndex = 53;
+            moveMovieComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            moveMovieComboBox.FormattingEnabled = true;
+            moveMovieComboBox.Location = new System.Drawing.Point(10, 90);
+            moveMovieComboBox.Name = "moveMovieComboBox";
+            moveMovieComboBox.Size = new System.Drawing.Size(237, 23);
+            moveMovieComboBox.TabIndex = 120;
             // 
             // label23
             // 
             label23.AutoSize = true;
-            label23.Location = new System.Drawing.Point(7, 59);
+            label23.Location = new System.Drawing.Point(7, 126);
             label23.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label23.Name = "label23";
             label23.Size = new System.Drawing.Size(55, 15);
             label23.TabIndex = 127;
             label23.Text = "Directory";
             // 
+            // directoryComboBox
+            // 
+            directoryComboBox.BackColor = System.Drawing.SystemColors.Window;
+            directoryComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            directoryComboBox.FormattingEnabled = true;
+            directoryComboBox.Location = new System.Drawing.Point(66, 123);
+            directoryComboBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            directoryComboBox.Name = "directoryComboBox";
+            directoryComboBox.Size = new System.Drawing.Size(181, 23);
+            directoryComboBox.TabIndex = 53;
+            // 
+            // moveTvShowComboBox
+            // 
+            moveTvShowComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            moveTvShowComboBox.FormattingEnabled = true;
+            moveTvShowComboBox.Location = new System.Drawing.Point(10, 41);
+            moveTvShowComboBox.Name = "moveTvShowComboBox";
+            moveTvShowComboBox.Size = new System.Drawing.Size(237, 23);
+            moveTvShowComboBox.TabIndex = 118;
+            // 
+            // label24
+            // 
+            label24.AutoSize = true;
+            label24.Location = new System.Drawing.Point(10, 72);
+            label24.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label24.Name = "label24";
+            label24.Size = new System.Drawing.Size(40, 15);
+            label24.TabIndex = 128;
+            label24.Text = "Movie";
+            // 
+            // label25
+            // 
+            label25.AutoSize = true;
+            label25.Location = new System.Drawing.Point(10, 22);
+            label25.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label25.Name = "label25";
+            label25.Size = new System.Drawing.Size(53, 15);
+            label25.TabIndex = 129;
+            label25.Text = "TV Show";
+            // 
             // Main
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(1416, 601);
+            ClientSize = new System.Drawing.Size(1416, 701);
             Controls.Add(groupBox7);
             Controls.Add(groupBox6);
             Controls.Add(groupBox3);
@@ -1760,8 +1795,8 @@
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             MaximizeBox = false;
-            MaximumSize = new System.Drawing.Size(1432, 640);
-            MinimumSize = new System.Drawing.Size(1432, 640);
+            MaximumSize = new System.Drawing.Size(1432, 740);
+            MinimumSize = new System.Drawing.Size(1432, 740);
             Name = "Main";
             SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -1932,6 +1967,9 @@
         private System.Windows.Forms.ComboBox moveTvShowComboBox;
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.ComboBox directoryComboBox;
+        private System.Windows.Forms.ComboBox moveMovieComboBox;
+        private System.Windows.Forms.Label label25;
+        private System.Windows.Forms.Label label24;
     }
 }
 
