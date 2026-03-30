@@ -598,9 +598,8 @@ internal sealed partial class Main
         {
             cancelButton, testPushoverEmergencyButton, testPushoverHighButton, testPushoverNormalButton, testPushoverLowButton, listFilesInDirectoryButton,
             listFilesNotCheckedInXXButton, listFilesNotOnBackupDiskButton, listFilesOnBackupDiskButton, listFilesWithDuplicateContentHashcodesButton,
-            listMoviesWithMultipleFilesButton, processesGroupBox, pushoverGroupBox, listFilesGroupBox, listBackupDiskStatusByDiskNumberButton,
-            listFilesInDirectoryGroupBox, monitoringButton, listBackupDiskStatusByFreeSpaceButton, listFilesOnBackupDiskGroupBox, openLogFileButton,
-            allBackupDisksGroupBox
+            listMoviesWithMultipleFilesButton, processesGroupBox, listFilesGroupBox, listBackupDiskStatusByDiskNumberButton, listFilesInDirectoryGroupBox,
+            monitoringButton, listBackupDiskStatusByFreeSpaceButton, listFilesOnBackupDiskGroupBox, openLogFileButton, allBackupDisksGroupBox
         };
 
         // ReSharper restore BadListLineBreaks
