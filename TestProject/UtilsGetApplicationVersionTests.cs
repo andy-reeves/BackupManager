@@ -19,8 +19,8 @@ public sealed class UtilsGetApplicationVersionTests
     [Theory]
     [InlineData("1.5.6", ApplicationType.Bazarr)]
     [InlineData("1.43.0.10492", ApplicationType.PlexPass)]
-    [InlineData("2.3.0.5236", ApplicationType.Prowlarr)]
-    [InlineData("6.0.4.10291", ApplicationType.Radarr)]
+    [InlineData("2.3.5.5327", ApplicationType.Prowlarr)]
+    [InlineData("6.1.1.10360", ApplicationType.Radarr)]
     [InlineData("4.5.5", ApplicationType.SABnzbd)]
     [InlineData("4.0.17.2953", ApplicationType.Sonarr)]
     public void GetVersionNumber(string expectedInstalledVersionNumber, ApplicationType applicationType)
@@ -47,8 +47,8 @@ public sealed class UtilsGetVersionSABnzbd
 public sealed class UtilsGetVersionProwlarr
 {
     [Theory]
-    [InlineData("2.3.0", ApplicationType.Prowlarr)]
-    [InlineData("2.3.5", ApplicationType.Prowlarr, "develop")]
+    [InlineData("2.3.5", ApplicationType.Prowlarr)]
+    [InlineData("2.3.6", ApplicationType.Prowlarr, "develop")]
     public void GetLatestVersionNumber(string expectedVersionNumber, ApplicationType applicationType, string branchName = "master")
     {
         Assert.Equal(expectedVersionNumber, Utils.GetLatestApplicationVersionNumber(applicationType, branchName));

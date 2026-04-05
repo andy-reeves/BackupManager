@@ -19,7 +19,7 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
     public TvEpisodeBackupFile(string path)
     {
         OriginalPath = path;
-        Extension = Path.GetExtension(path);
+        Extension = Path.GetExtension(path).ToLowerInvariant();
         var fileName = Path.GetFileName(path);
         DirectoryName = Path.GetDirectoryName(path);
         IsValidFileName = new Regex(FileNameRegex).IsMatch(fileName);
@@ -33,7 +33,7 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
 
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     protected override string FileNameRegex =>
-        @"^(?:(.*)-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer)|(.*)\s(?:s?(\d{1,4})?(e\d{2,4}-?(?:e\d{2,4})?|\d{4}-\d\d-\d\d))(.*?)(?:\[(DVD|SDTV|WEB(?:Rip|DL)|Bluray|HDTV)(?:-((?:480|576|720|1080|2160)p(?:\sRemux)??)??(?:\sProper)??)?\])??(?:\[((?:DV)??(?:(?:\s)??HDR10(?:Plus)??)??|PQ|HLG)\])??(?:\[(DTS(?:\sHD|-(?:X|ES|HD\s(?:M|HR)A))??|(?:TrueHD|EAC3)(?:\sAtmos)??|AC3|FLAC|PCM|MP[23]|A[AV]C|Opus|Vorbis|WMA)\s([1-8]\.[01])\])??(?:\[([hx]26[45]|MPEG(?:[24])?|XviD|V(?:C1|P9)|DivX|HEVC|AVC|RGB)\])??)\.(m(?:kv|p(?:4|e?g))|avi)$";
+        @"^(?:(.*)-(featurette|other|interview|scene|short|deleted|behindthescenes|trailer)|(.*)\s(?:s?(\d{1,4})?(e\d{2,4}-?(?:e\d{2,4})?|\d{4}-\d\d-\d\d))(.*?)(?:\[(DVD|SDTV|WEB(?:Rip|DL)|Bluray|HDTV)(?:-((?:480|576|720|1080|2160)p(?:\sRemux)??)??(?:\sProper)??)?\])??(?:\[((?:DV)??(?:(?:\s)??HDR10(?:Plus)??)??|PQ|HLG)\])??(?:\[(DTS(?:\sHD|-(?:X|ES|HD\s(?:M|HR)A))??|(?:TrueHD|EAC3)(?:\sAtmos)??|AC3|FLAC|PCM|MP[23]|A[AV]C|Opus|Vorbis|WMA)\s([1-8]\.[01])\])??(?:\[([hx]26[45]|MPEG(?:[24])?|XviD|V(?:C1|P9)|DivX|HEVC|AVC|RGB)\])??)\.([mM](?:[kK][vV]|p(?:4|e?g))|avi)$";
 
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     protected override string DirectoryRegex => @"^.*\\_TV(?:\s\(non-tvdb\))?\\(.*)\s{t[mv]db-(\d{1,7}?)}(?:\s{edition-(.+)})?(?:\\(?:Season\s(\d+)|(Specials)))?$";
@@ -157,7 +157,7 @@ internal sealed class TvEpisodeBackupFile : VideoBackupFileBase
         var episode = match.Groups[episodeGroup].Value;
         var specialFeatureTitle = match.Groups[specialFeatureTitleGroup].Value;
         var specialFeature = match.Groups[specialFeatureGroup].Value;
-        var extension = match.Groups[extensionGroup].Value.Trim();
+        var extension = match.Groups[extensionGroup].Value.Trim().ToLowerInvariant();
         MediaInfoVideoCodec = Utils.GetEnumFromAttributeValue<MediaInfoVideoCodec>(videoCodec);
         MediaInfoAudioCodec = Utils.GetEnumFromAttributeValue<MediaInfoAudioCodec>(audioCodec);
         MediaInfoAudioChannels = Utils.GetEnumFromAttributeValue<MediaInfoAudioChannels>(audioChannels);
