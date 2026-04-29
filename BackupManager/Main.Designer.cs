@@ -66,6 +66,7 @@
             scanLastDirectoriesButton = new System.Windows.Forms.Button();
             saveButton = new System.Windows.Forms.Button();
             moveTVButton = new System.Windows.Forms.Button();
+            singleSpeedTestButton = new System.Windows.Forms.Button();
             button1 = new System.Windows.Forms.Button();
             button3 = new System.Windows.Forms.Button();
             scheduledBackupTimerButton = new System.Windows.Forms.Button();
@@ -173,6 +174,8 @@
             tabPage1 = new System.Windows.Forms.TabPage();
             tabPage2 = new System.Windows.Forms.TabPage();
             tabPage3 = new System.Windows.Forms.TabPage();
+            label26 = new System.Windows.Forms.Label();
+            diskToSpeedTestTextBox = new System.Windows.Forms.TextBox();
             tabPage10 = new System.Windows.Forms.TabPage();
             tabPage4 = new System.Windows.Forms.TabPage();
             tabPage5 = new System.Windows.Forms.TabPage();
@@ -180,9 +183,6 @@
             tabPage7 = new System.Windows.Forms.TabPage();
             tabPage8 = new System.Windows.Forms.TabPage();
             tabPage11 = new System.Windows.Forms.TabPage();
-            singleSpeedTestButton = new System.Windows.Forms.Button();
-            label26 = new System.Windows.Forms.Label();
-            diskToSpeedTestTextBox = new System.Windows.Forms.TextBox();
             groupBox2.SuspendLayout();
             listFilesInDirectoryGroupBox.SuspendLayout();
             listFilesOnBackupDiskGroupBox.SuspendLayout();
@@ -624,6 +624,18 @@
             toolTip.SetToolTip(moveTVButton, "Reports the latest scan times for the directories");
             moveTVButton.UseVisualStyleBackColor = true;
             moveTVButton.Click += MoveTvShowButtonClick;
+            // 
+            // singleSpeedTestButton
+            // 
+            singleSpeedTestButton.Location = new System.Drawing.Point(394, 205);
+            singleSpeedTestButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            singleSpeedTestButton.Name = "singleSpeedTestButton";
+            singleSpeedTestButton.Size = new System.Drawing.Size(157, 27);
+            singleSpeedTestButton.TabIndex = 102;
+            singleSpeedTestButton.Text = "Speed test";
+            toolTip.SetToolTip(singleSpeedTestButton, "Runs the speed test on all directories");
+            singleSpeedTestButton.UseVisualStyleBackColor = true;
+            singleSpeedTestButton.Click += singleSpeedTestButton_Click;
             // 
             // button1
             // 
@@ -1810,6 +1822,25 @@
             tabPage3.Text = "Connected disks";
             tabPage3.UseVisualStyleBackColor = true;
             // 
+            // label26
+            // 
+            label26.AutoSize = true;
+            label26.Location = new System.Drawing.Point(294, 179);
+            label26.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label26.Name = "label26";
+            label26.Size = new System.Drawing.Size(99, 15);
+            label26.TabIndex = 103;
+            label26.Text = "Disk to speed test";
+            // 
+            // diskToSpeedTestTextBox
+            // 
+            diskToSpeedTestTextBox.Location = new System.Drawing.Point(394, 176);
+            diskToSpeedTestTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            diskToSpeedTestTextBox.Name = "diskToSpeedTestTextBox";
+            diskToSpeedTestTextBox.Size = new System.Drawing.Size(157, 23);
+            diskToSpeedTestTextBox.TabIndex = 104;
+            diskToSpeedTestTextBox.Text = "C:\\";
+            // 
             // tabPage10
             // 
             tabPage10.Controls.Add(allBackupDisksGroupBox);
@@ -1886,37 +1917,6 @@
             tabPage11.TabIndex = 10;
             tabPage11.Text = "Config";
             tabPage11.UseVisualStyleBackColor = true;
-            // 
-            // singleSpeedTestButton
-            // 
-            singleSpeedTestButton.Location = new System.Drawing.Point(394, 205);
-            singleSpeedTestButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            singleSpeedTestButton.Name = "singleSpeedTestButton";
-            singleSpeedTestButton.Size = new System.Drawing.Size(157, 27);
-            singleSpeedTestButton.TabIndex = 102;
-            singleSpeedTestButton.Text = "Speed test";
-            toolTip.SetToolTip(singleSpeedTestButton, "Runs the speed test on all directories");
-            singleSpeedTestButton.UseVisualStyleBackColor = true;
-            singleSpeedTestButton.Click += singleSpeedTestButton_Click;
-            // 
-            // label26
-            // 
-            label26.AutoSize = true;
-            label26.Location = new System.Drawing.Point(294, 179);
-            label26.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            label26.Name = "label26";
-            label26.Size = new System.Drawing.Size(99, 15);
-            label26.TabIndex = 103;
-            label26.Text = "Disk to speed test";
-            // 
-            // diskToSpeedTestTextBox
-            // 
-            diskToSpeedTestTextBox.Location = new System.Drawing.Point(394, 176);
-            diskToSpeedTestTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            diskToSpeedTestTextBox.Name = "diskToSpeedTestTextBox";
-            diskToSpeedTestTextBox.Size = new System.Drawing.Size(157, 23);
-            diskToSpeedTestTextBox.TabIndex = 104;
-            diskToSpeedTestTextBox.Text = "C:\\";
             // 
             // Main
             // 

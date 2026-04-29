@@ -1357,8 +1357,8 @@ internal static partial class Utils
 
         for (var j = 1; j <= testIterations; j++)
         {
-            var firstPathFilename = sourcePath + "\\" + j + SPEED_TEST_GUID + "test.tmp";
-            var secondPathFilename = destinationPath + "\\" + j + SPEED_TEST_GUID + "test.tmp";
+            var firstPathFilename = Path.Combine(sourcePath, j + SPEED_TEST_GUID + "test.tmp");
+            var secondPathFilename = Path.Combine(destinationPath, j + SPEED_TEST_GUID + "test.tmp");
             if (File.Exists(firstPathFilename)) _ = File.Delete(firstPathFilename);
             if (File.Exists(secondPathFilename)) _ = File.Delete(secondPathFilename);
 
