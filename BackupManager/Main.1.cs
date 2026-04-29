@@ -568,6 +568,34 @@ internal sealed partial class Main
         }
     }
 
+    private void SpeedTestSingleDirectoriesAsync(CancellationToken ct)
+    {
+        try
+        {
+            Utils.TraceIn();
+            if (longRunningActionExecutingRightNow) return;
+            if (diskToSpeedTestTextBox.Text.HasNoValue()) return;
+
+            DisableControlsForAsyncTasks(ct);
+            Utils.LogWithPushover(BackupAction.SpeedTest, Resources.Started, false, true);
+
+            //var disksAndFirstDirectories = Utils.GetDiskAndFirstDirectory(config.DirectoriesToBackup);
+            //EnableProgressBar(0, disksAndFirstDirectories.Length);
+            var directory = diskToSpeedTestTextBox.Text;
+            UpdateStatusLabel(ct, string.Format(Resources.SpeedTesting, directory));
+            if (!Utils.Directory.IsWritable(directory)) return;
+
+            Utils.DiskSpeedTest(directory, Utils.ConvertMBtoBytes(config.SpeedTestFileSize), config.SpeedTestIterations, out var readSpeed, out var writeSpeed, ct);
+            Utils.LogWithPushover(BackupAction.SpeedTest, $"{directory}, Read: {Utils.FormatSpeed(readSpeed)} Write: {Utils.FormatSpeed(writeSpeed)}");
+            Utils.LogWithPushover(BackupAction.SpeedTest, Resources.Completed, true);
+            ResetAllControls();
+        }
+        finally
+        {
+            Utils.TraceOut();
+        }
+    }
+
     private void ClearEstimatedFinish()
     {
         estimatedFinishTimeTextBox.TextWithInvoke(string.Empty);

@@ -1557,4 +1557,12 @@ internal sealed partial class Main : Form
         moveTvShowComboBox.SelectedIndex = -1;
         directoryComboBox.SelectedIndex = -1;
     }
+
+    private void singleSpeedTestButton_Click(object sender, EventArgs e)
+    {
+        Utils.TraceIn();
+        ResetTokenSource();
+        _ = TaskWrapper(() => SpeedTestSingleDirectoriesAsync(mainCt), mainCt);
+        Utils.TraceOut();
+    }
 }
