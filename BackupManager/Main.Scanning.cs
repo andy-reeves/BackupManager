@@ -215,7 +215,7 @@ internal sealed partial class Main
         if (currentPercentComplete % 10 != 0 || currentPercentComplete <= reportedPercentComplete || toolStripProgressBar.Maximum < 25) return;
 
         reportedPercentComplete = currentPercentComplete;
-        Utils.LogWithPushover(BackupAction.ProcessFiles, string.Format(Resources.ProcessingPercentage, currentPercentComplete), true, true);
+        Utils.Log(BackupAction.ProcessFiles, string.Format(Resources.ProcessingPercentage, currentPercentComplete));
         Utils.Trace($"{fileCounterForMultiThreadProcessing} Processing {file}");
         Utils.TraceOut();
     }
