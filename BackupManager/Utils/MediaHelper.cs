@@ -360,6 +360,15 @@ internal static partial class Utils
             {
                 return -1;
             }
+
+            //  catch (System.Text.Json.JsonReaderException)
+            //  {
+            //      return -1;
+            //  }
+            catch (Exception)
+            {
+                return -1;
+            }
         }
 
         internal static decimal FormatAudioChannels(MediaInfoModel mediaInfo)
