@@ -613,6 +613,10 @@ internal static partial class Utils
             {
                 return -1;
             }
+            catch (Exception)
+            {
+                return -1;
+            }
         }
     }
 }
