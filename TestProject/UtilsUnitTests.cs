@@ -326,12 +326,12 @@ public sealed class UtilsUnitTests
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     public void GetRootPath()
     {
-        var a = Utils.GetRootPath(@"\\nas2\assets1\_TV");
+        var a = Utils.GetRootPath(@"\\nas1\assets1\_TV");
         Assert.NotNull(a);
-        Assert.Equal(@"\\nas2\assets1", a);
-        a = Utils.GetRootPath(@"\\nas2\assets1\_TV\Show1\Season 1\Episode1.mkv");
+        Assert.Equal(@"\\nas1\assets1", a);
+        a = Utils.GetRootPath(@"\\nas1\assets1\_TV\Show1\Season 1\Episode1.mkv");
         Assert.NotNull(a);
-        Assert.Equal(@"\\nas2\assets1", a);
+        Assert.Equal(@"\\nas1\assets1", a);
         var path = Path.Combine(Path.GetTempPath(), "Folder1");
         Utils.Directory.EnsurePath(path);
         var file1 = Path.Combine(path, "test.tmp");

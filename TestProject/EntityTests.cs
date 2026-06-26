@@ -275,7 +275,7 @@ public sealed class EntityTests
     [Fact]
     public void BackupDisk()
     {
-        const string backupShareName = @"d:\";
+        const string backupShareName = @"\\nas1\USB1";
         const string backupDiskName = "backup 45";
         var backupDisk = new BackupDisk(backupDiskName, backupShareName);
         Assert.Equal(Path.Combine(backupShareName, backupDiskName), backupDisk.BackupPath);
