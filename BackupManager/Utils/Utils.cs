@@ -1207,6 +1207,8 @@ internal static partial class Utils
 
     internal static T GetEnumFromAttributeValue<T>(string value)
     {
+        if (value == null) return default;
+
         foreach (var enumFromAttributeValue in from memberInfo in typeof(T).GetTypeInfo().DeclaredMembers
                  let attributeValue = memberInfo.GetCustomAttribute<EnumMemberAttribute>(false)?.Value
                  where string.Equals(attributeValue, value, StringComparison.InvariantCultureIgnoreCase)

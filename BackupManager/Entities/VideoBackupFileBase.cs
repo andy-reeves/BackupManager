@@ -87,8 +87,7 @@ internal abstract class VideoBackupFileBase : ExtendedBackupFileBase
                             Utils.LogWithPushover(BackupAction.Error, $"{OriginalPath} is {VideoResolution} and so can't be {VideoQuality}");
                         break;
                     case VideoResolution.Unknown:
-                        Utils.LogWithPushover(BackupAction.Error, $"{OriginalPath} can't be {VideoResolution}");
-                        break;
+                        return false;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
