@@ -132,11 +132,8 @@ internal static partial class Utils
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
         internal static string FormatVideoCodec(MediaInfoModel mediaInfo)
         {
-            if (mediaInfo?.VideoFormat == null)
-            {
-                LogWithPushover(BackupAction.General, PushoverPriority.High, $"About to return null for {mediaInfo?.Title}");
-                return null;
-            }
+            if (mediaInfo?.VideoFormat == null) return null;
+
             var videoFormat = mediaInfo.VideoFormat.Trim();
             var videoCodecId = mediaInfo.VideoCodecId ?? string.Empty;
 
