@@ -57,11 +57,8 @@ internal static partial class Utils
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
         internal static string FormatAudioCodec(MediaInfoModel mediaInfo)
         {
-            if (mediaInfo?.AudioFormat == null)
-            {
-                LogWithPushover(BackupAction.General, PushoverPriority.High, $"About to return null for {mediaInfo?.Title}");
-                return null;
-            }
+            if (mediaInfo?.AudioFormat == null) return null;
+
             var audioFormat = mediaInfo.AudioFormat.Trim();
             var audioCodecId = mediaInfo.AudioCodecId ?? string.Empty;
             var audioProfile = mediaInfo.AudioProfile ?? string.Empty;
