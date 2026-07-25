@@ -545,7 +545,13 @@ internal sealed partial class Main : Form
     private static void KillCopyProcess()
     {
         Utils.TraceIn();
-        if (Utils.CopyProcess is { HasExited: false }) Utils.CopyProcess?.Kill();
+
+        if (Utils.CopyProcess is { HasExited: false })
+        {
+            Utils.Trace("Killing CopyProcess");
+            Utils.CopyProcess?.Kill();
+            Utils.Trace($"Copy process HasExited = {Utils.CopyProcess?.HasExited}");
+        }
         Utils.TraceOut();
     }
 

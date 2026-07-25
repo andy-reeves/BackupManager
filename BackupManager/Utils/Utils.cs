@@ -149,9 +149,9 @@ internal static partial class Utils
 
     /// <summary>
     ///     Windows MAX_PATH of 256 characters. We create new paths on backup disks so we want this shorter on all source
-    ///     files. Its now 200.
+    ///     files. Its now 240.
     /// </summary>
-    internal const int MAX_PATH = 230;
+    internal const int MAX_PATH = 240;
 
     internal const string IS_DIRECTORY_WRITABLE_GUID = "{A2E236CE-87F1-4942-93B0-31B463142B8D}";
 
