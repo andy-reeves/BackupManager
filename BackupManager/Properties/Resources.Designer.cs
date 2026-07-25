@@ -826,7 +826,7 @@ namespace BackupManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} has a path longer than 256 characters. Please rename manually..
+        ///   Looks up a localized string similar to {0} has a path longer than {1} characters. Please rename manually..
         /// </summary>
         internal static string PathTooLong {
             get {

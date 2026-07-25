@@ -124,7 +124,7 @@ internal sealed partial class Main
     {
         foreach (var file in mediaBackup.BackupFiles.Where(static file => file.FullPath.Length > Utils.MAX_PATH))
         {
-            Utils.LogWithPushover(BackupAction.Error, string.Format(Resources.PathTooLong, file.FullPath));
+            Utils.LogWithPushover(BackupAction.Error, string.Format(Resources.PathTooLong, file.FullPath, Utils.MAX_PATH));
         }
     }
 

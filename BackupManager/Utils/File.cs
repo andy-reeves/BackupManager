@@ -392,8 +392,8 @@ internal static partial class Utils
             TraceIn(sourceFileName, destFileName);
             if (destFileName == null || sourceFileName == null) return false;
 
-            if (sourceFileName.Length > MAX_PATH) throw new NotSupportedException($"Source file name {sourceFileName} exceeds 256 characters");
-            if (destFileName.Length > MAX_PATH) throw new NotSupportedException($"Destination file name {destFileName} exceeds 256 characters");
+            if (sourceFileName.Length > MAX_PATH) throw new NotSupportedException($"Source file name {sourceFileName} exceeds {MAX_PATH} characters");
+            if (destFileName.Length > MAX_PATH) throw new NotSupportedException($"Destination file name {destFileName} exceeds {MAX_PATH} characters");
             if (Exists(destFileName)) throw new NotSupportedException("Destination file already exists");
 
             Directory.EnsureForFilePath(destFileName);
