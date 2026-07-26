@@ -168,7 +168,7 @@ public sealed class BackupDisk : IEquatable<BackupDisk>
             .Where(static file => ((file.Attributes & FileAttributes.Hidden) == 0) & ((file.Attributes & FileAttributes.System) == 0));
 
         // In here there should be 1 directory starting with 'backup '
-        // for network attached backup disks (on asustor in particular) the backup share disk wil lhave multiple directories in the root folder
+        // for network attached backup disks (on asustor in particular) the backup share disk will have multiple directories in the root folder
         return (from directoryInfo in directoriesInRootDirectory where directoryInfo.Name.StartsWithIgnoreCase("backup ") select directoryInfo.Name).FirstOrDefault();
     }
 
