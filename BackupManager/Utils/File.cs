@@ -442,12 +442,22 @@ internal static partial class Utils
             // InvalidOperationException is thrown if we access the Process and its already completed
             catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
             {
+                Trace("Inside the exception handler of File.Copy");
+
+                if (ct.IsCancellationRequested)
+                {
+                    Trace("Cancellation requested");
+                    return TraceOut(false);
+                }
                 var hashSource = GetShortMd5Hash(sourceFileName);
 
                 while (!IsAccessible(destFileName) || GetShortMd5Hash(destFileName) != hashSource)
                 {
                     Wait(1);
-                    ct.ThrowIfCancellationRequested();
+                    if (!ct.IsCancellationRequested) continue;
+
+                    Trace("Cancellation requested inside while() loop");
+                    return TraceOut(false);
                 }
                 return TraceOut(true);
             }

@@ -48,7 +48,7 @@ public sealed class UtilsGetVersionProwlarr
 {
     [Theory]
     [InlineData("2.5.2", ApplicationType.Prowlarr)]
-    [InlineData("2.6.0", ApplicationType.Prowlarr, "develop")]
+    [InlineData("2.6.2", ApplicationType.Prowlarr, "develop")]
     public void GetLatestVersionNumber(string expectedVersionNumber, ApplicationType applicationType, string branchName = "master")
     {
         Assert.Equal(expectedVersionNumber, Utils.GetLatestApplicationVersionNumber(applicationType, branchName));
