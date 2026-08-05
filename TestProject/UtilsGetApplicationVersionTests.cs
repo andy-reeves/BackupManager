@@ -18,7 +18,7 @@ public sealed class UtilsGetApplicationVersionTests
 {
     [Theory]
     [InlineData("1.6.0", ApplicationType.Bazarr)]
-    [InlineData("1.43.3.10828", ApplicationType.PlexPass)]
+    [InlineData("1.43.3.10861", ApplicationType.PlexPass)]
     [InlineData("2.5.2.5491", ApplicationType.Prowlarr)]
     [InlineData("6.3.0.10514", ApplicationType.Radarr)]
     [InlineData("5.0.4", ApplicationType.SABnzbd)]
@@ -66,7 +66,7 @@ public sealed class UtilsGetVersionPlex
     }
 
     [Theory]
-    [InlineData("1.43.3.10828", ApplicationType.Plex)]
+    [InlineData("1.43.3.10861", ApplicationType.Plex)]
     [InlineData("1.43.0.10467", ApplicationType.PlexPass)]
     public void GetLatestVersionNumber(string expectedVersionNumber, ApplicationType applicationType, string branchName = "master")
     {
