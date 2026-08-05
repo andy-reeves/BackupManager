@@ -451,21 +451,24 @@ internal static partial class Utils
                 }
                 var hashSource = GetShortMd5Hash(sourceFileName);
                 var x = 0;
+                const int maxRetries = 10;
+                const int waitTime = 100;
 
-                while ((!IsAccessible(destFileName) || GetShortMd5Hash(destFileName) != hashSource) && x < 5)
+                while ((!IsAccessible(destFileName) || GetShortMd5Hash(destFileName) != hashSource) && x < maxRetries)
                 {
-                    Wait(250);
+                    Wait(waitTime);
 
                     if (ct.IsCancellationRequested)
                     {
                         Trace("Cancellation requested inside while() loop");
                         return TraceOut(false);
                     }
+                    Trace($"x in loop is {x}");
                     x++;
                 }
-                if (x != 5) return TraceOut(true);
+                if (x != maxRetries) return TraceOut(true);
 
-                Trace("Counter got to 5");
+                Trace($"Counter got to {maxRetries}");
                 return TraceOut(false);
             }
         }
