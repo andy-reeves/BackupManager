@@ -450,16 +450,23 @@ internal static partial class Utils
                     return TraceOut(false);
                 }
                 var hashSource = GetShortMd5Hash(sourceFileName);
+                var x = 0;
 
-                while (!IsAccessible(destFileName) || GetShortMd5Hash(destFileName) != hashSource)
+                while ((!IsAccessible(destFileName) || GetShortMd5Hash(destFileName) != hashSource) && x < 5)
                 {
-                    Wait(1);
-                    if (!ct.IsCancellationRequested) continue;
+                    Wait(250);
 
-                    Trace("Cancellation requested inside while() loop");
-                    return TraceOut(false);
+                    if (ct.IsCancellationRequested)
+                    {
+                        Trace("Cancellation requested inside while() loop");
+                        return TraceOut(false);
+                    }
+                    x++;
                 }
-                return TraceOut(true);
+                if (x != 5) return TraceOut(true);
+
+                Trace("Counter got to 5");
+                return TraceOut(false);
             }
         }
 
