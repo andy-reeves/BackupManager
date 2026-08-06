@@ -469,7 +469,7 @@ internal static partial class Utils
                 if (x != maxRetries) return TraceOut(true);
 
                 Trace($"Counter got to {maxRetries}");
-                return TraceOut(false);
+                throw new OperationCanceledException("Cancel called during FileCopy");
             }
         }
 
