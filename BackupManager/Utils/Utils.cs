@@ -303,11 +303,13 @@ internal static partial class Utils
                 case ApplicationType.SABnzbd:
                     return GitHubVersionNumberParser($"https://raw.githubusercontent.com/sabnzbd/sabnzbd/{branchName}/sabnzbd/version.py", "__version__", "=", 1);
                 case ApplicationType.Sonarr:
-                    task = Task.Run(() => client.GetStringAsync($"https://services.sonarr.tv/v1/update/{branchName}?version=4.0"));
+                    client.DefaultRequestHeaders.Clear();
+                    client.DefaultRequestHeaders.Add("User-Agent", "Sonarr/4.0.0.7431");
+                    task = Task.Run(() => client.GetStringAsync($"https://services.sonarr.tv/v1/update/{branchName}/changes?version=4.0"));
                     task.Wait();
                     response = task.Result;
                     node = JsonNode.Parse(response);
-                    return node?["updatePackage"]?["version"]?.ToString();
+                    return node?[0]?["version"]?.ToString();
                 case ApplicationType.Radarr:
                     task = Task.Run(() => client.GetStringAsync($"https://radarr.servarr.com/update/{branchName}?version=5.0"));
                     task.Wait();

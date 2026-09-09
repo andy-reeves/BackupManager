@@ -21,7 +21,7 @@ public sealed class UtilsGetApplicationVersionTests
     [InlineData("1.43.3.10896", ApplicationType.PlexPass)]
     [InlineData("2.5.2.5491", ApplicationType.Prowlarr)]
     [InlineData("6.3.0.10514", ApplicationType.Radarr)]
-    [InlineData("5.1.2", ApplicationType.SABnzbd)]
+    [InlineData("5.1.3", ApplicationType.SABnzbd)]
     [InlineData("4.0.19.2979", ApplicationType.Sonarr)]
     public void GetVersionNumber(string expectedInstalledVersionNumber, ApplicationType applicationType)
     {
