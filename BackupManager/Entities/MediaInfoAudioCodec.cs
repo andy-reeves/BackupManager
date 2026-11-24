@@ -55,5 +55,7 @@ internal enum MediaInfoAudioCodec
 
     [EnumMember(Value = "Vorbis")] Vorbis,
 
-    [EnumMember(Value = "WMA")] WMA
+    [EnumMember(Value = "WMA")] WMA,
+
+    [EnumMember(Value = "HE-AAC")] HE_AAC
 }

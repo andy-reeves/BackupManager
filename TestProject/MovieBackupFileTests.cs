@@ -54,6 +54,7 @@ public sealed class MovieBackupFileTests
     [InlineData("Special video-featurette.mkv", true)]
     [InlineData(@"\\nas2\assets3\_Movies (non-tmdb)\Aliens (1986)\Aliens (1986) [Remux-2160p][HDR10][AC3 5.1].mkv", true)]
     [InlineData(@"Gangster Story (1959) {tmdb-81720} [DVD][MP2 2.0][MPEG2].mkv", true)]
+    [InlineData(@"Stranger Next Door (2023) {tmdb-1009776} [WEBDL-1080p][HE-AAC 2.0][h264].mkv", true)]
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     public void MovieNameOnlyTests(string fileName, bool isValidFileName, string expectedFileName = "")
     {
